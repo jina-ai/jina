@@ -10,4 +10,5 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
