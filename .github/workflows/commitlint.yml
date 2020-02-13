@@ -1,4 +1,4 @@
-name: Commitlint
+name: commit lint
 on: [pull_request]
 
 jobs:
