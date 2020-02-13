@@ -1,17 +1,20 @@
 # Contributing Guidelines
 
 
-❤️ First, thank you for your great initiative! We welcome all kinds of contributions from the open-source community, individual committers and institutional partners. Without your active involvement, Jina can't be successful.  
+❤️ First, thank you for your great initiative! 
 
-## ❤️ Making Your First Commit 
 
-The beginning is always the hardest part. But fear not, even if you find a typo, a missing docstring or incomplete unit test, simply correct them by making a commit to jina. Here are the steps:
+We welcome all kinds of contributions from the open-source community, individual committers and institutional partners. Without your active involvement, Jina can't be successful.  
+
+## Making Your First Commit 
+
+The beginning is always the hardest part. But fear not, if you find any typo, missing docstring or incomplete unit test, simply correct them by making a commit to jina. Here are the steps:
 
 1. Create a new branch, say `fix-jina-typo-1`
 2. Fix/improve the codebase
 3. Commit the changes. Note the **commit message must follow [the naming style](#commit-message-naming)**, say `fix(readme): improve the readability and move sections`
 4. Make a pull request. It can simply be one of your commit messages, just copy paste it, e.g. `fix(readme): improve the readability and move sections`
-5. Submit your pull request and wait for all checks passed (usually 10 minutes)
+5. Submit your pull request and wait for all checks passed:
     - Coding style
     - Commit and PR styles check
     - All unit tests

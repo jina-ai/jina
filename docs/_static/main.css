@@ -20,24 +20,49 @@
 /*}*/
 
 
-/*.wy-nav-content {*/
-/*    max-width: none;*/
-/*}*/
+.wy-nav-content {
+    max-width: 1280px;
+    margin: auto !important;
+}
+
+.wy-nav-content-wrap {
+    background: none;
+}
+
+.wy-menu-vertical header, .wy-menu-vertical p.caption {
+    font-size: inherit;
+    color: #fff;
+}
 
 
-/*.wy-nav-side {*/
-/*    position: fixed;*/
-/*    top: 0;*/
-/*    bottom: 0;*/
-/*    left: 0;*/
-/*    padding-bottom: 2em;*/
-/*    overflow-x: hidden;*/
-/*    overflow-y: hidden;*/
-/*    min-height: 100%;*/
-/*    color: #9b9b9b;*/
-/*    !*background: #343131;*!*/
-/*    z-index: 200;*/
-/*}*/
+.wy-menu-vertical a {
+    font-size: inherit;
+    margin: 10px
+
+}
+
+.wy-menu-vertical li.current {
+    background-color: #fcfcfc;
+    color: #2980B9;
+}
+
+.wy-menu-vertical li.current a {
+    border: none;
+}
+
+
+.wy-menu-vertical li.toctree-l1.current>a {
+    border: none;
+}
+
+.wy-nav-side {
+    background: #2980B9;
+}
+
+.wy-menu-vertical a:hover {
+    background-color: #fcfcfc;
+    color: #2980B9;
+}
 
 /*.wy-dropdown-menu > dd > a:hover {*/
 /*    background: #247ba0ff;*/
