@@ -126,3 +126,5 @@ toy*.yml
 *.tmp
 
 shell/jina-wizard.sh
+/junit/
+/tests/junit/
