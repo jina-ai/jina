@@ -9,6 +9,10 @@ from ..excepts import WaitPendingMessage, DriverNotInstalled, BadDriverGroup, No
 from ..helper import yaml
 from ..proto import jina_pb2
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    from ..peapods.pea import Pea
+
 _req_key_map = {
     'ControlRequest': jina_pb2.Request.ControlRequest,
     'IndexRequest': jina_pb2.Request.IndexRequest,

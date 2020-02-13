@@ -83,7 +83,8 @@ class NTLogger:
         self.context = self._planify(context)
         self.log_level = log_level
 
-    def _planify(self, msg):
+    @staticmethod
+    def _planify(msg):
         return re.sub(u'\u001b\[.*?[@-~]', '', msg)
 
     def info(self, msg: str, **kwargs):

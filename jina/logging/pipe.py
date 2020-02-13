@@ -4,6 +4,9 @@ import sys
 import time
 from collections import defaultdict
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    import argparse
 
 class PipeLogger:
     def __init__(self, args: 'argparse.Namespace'):

@@ -13,5 +13,5 @@ class JinaTestCase(unittest.TestCase):
             if os.path.exists(k):
                 os.remove(k)
 
-    def add_tmpfile(self, str):
-        self.tmp_files.append(str)
+    def add_tmpfile(self, path):
+        self.tmp_files.append(path)

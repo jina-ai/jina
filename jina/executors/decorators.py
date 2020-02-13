@@ -41,6 +41,7 @@ def as_ndarray(func: Callable, dtype=np.float32):
     """Convert an :class:`BaseExecutor` function returns to a ``numpy.ndarray``,
     the following type are supported: `EagerTensor`, `Tensor`, `list`
 
+    :param func: the function to decorate
     :param dtype: the converted dtype of the ``numpy.ndarray``
     """
 

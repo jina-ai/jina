@@ -7,6 +7,9 @@ from typing import List, Callable
 from ...excepts import UnknownControlCommand, EventLoopEnd
 from ...proto import jina_pb2
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    from ...peapods.pea import Pea
 
 def handler_fn_template(exec_fn: Callable, pea: 'Pea',
                         req: 'jina_pb2.Request',

@@ -429,6 +429,7 @@ class Flow:
                 flow.train(bytes_gen=my_reader())
 
         :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param callback: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(raw_bytes, mode='train', **kwargs).start(callback)
@@ -468,6 +469,7 @@ class Flow:
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
         :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param callback: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(raw_bytes, mode='index', **kwargs).start(callback)
@@ -508,6 +510,7 @@ class Flow:
                 flow.search(bytes_gen=my_reader())
 
         :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param callback: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(raw_bytes, mode='search', **kwargs).start(callback)

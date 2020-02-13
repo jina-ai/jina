@@ -3,6 +3,10 @@
 from .helper import routes2str, add_route
 from ..proto import jina_pb2
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    from ..peapods.pea import Pea
+
 
 def hook_fn_template(pea: 'Pea', msg: 'jina_pb2.Message', *args, **kwargs) -> None:
     """ A template of the hook function, it will modify ``msg`` inplace.

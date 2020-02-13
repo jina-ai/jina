@@ -4,7 +4,11 @@ from typing import Iterator, Callable
 from .grpc import GrpcClient
 from .helper import ProgressBar
 from ...logging.profile import TimeContext
-from ...proto import jina_pb2
+
+if False:
+    # fix type-hint complain for sphinx and flake
+    import argparse
+    from ...proto import jina_pb2
 
 
 class PyClient(GrpcClient):

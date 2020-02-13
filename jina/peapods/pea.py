@@ -14,6 +14,10 @@ from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'Pea']
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    import argparse
+
 
 class PeaMeta(type):
     """Meta class of :class:`Pea` to enable switching between ``thread`` and ``process`` backend. """

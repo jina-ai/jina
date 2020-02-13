@@ -5,6 +5,10 @@ import grpc
 from ...logging.base import get_logger
 from ...proto import jina_pb2_grpc
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    import argparse
+
 
 class GrpcClient:
     """

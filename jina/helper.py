@@ -1,4 +1,3 @@
-import importlib.util
 import os
 import random
 import string
@@ -15,7 +14,6 @@ from termcolor import colored
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
-           'get_first_available_gpu',
            'PathImporter', 'random_port', 'random_identity']
 
 
@@ -37,20 +35,6 @@ def print_load_table(load_stat):
 def call_obj_fn(obj, fn: str):
     if obj is not None and hasattr(obj, fn):
         getattr(obj, fn)()
-
-
-def get_first_available_gpu():
-    try:
-        import GPUtil
-        r = GPUtil.getAvailable(order='random',
-                                maxMemory=0.5,
-                                maxLoad=0.5,
-                                limit=1)
-        if r:
-            return r[0]
-        raise ValueError
-    except Exception:
-        return -1
 
 
 def touch_dir(base_dir: str) -> None:
@@ -136,7 +120,6 @@ def countdown(t: int, logger=None, reason: str = 'I am blocking this thread'):
 
 def load_contrib_module():
     if not os.getenv('JINA_CONTRIB_MODULE_IS_LOADING'):
-        import importlib.util
 
         contrib = os.getenv('JINA_CONTRIB_MODULE')
         os.environ['JINA_CONTRIB_MODULE_IS_LOADING'] = 'true'
@@ -172,6 +155,7 @@ class PathImporter:
 
     @staticmethod
     def _path_import(absolute_path):
+        import importlib.util
         module_name = PathImporter._get_module_name(absolute_path)
         spec = importlib.util.spec_from_file_location(module_name, absolute_path)
         module = importlib.util.module_from_spec(spec)

@@ -8,6 +8,10 @@ from ..executors import import_executors
 from ..helper import yaml
 from ..logging import default_logger
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    import argparse
+
 
 class ImportChecker:
     """Check all executors, drivers and handler functions in the package. """

@@ -17,6 +17,11 @@ from ..logging.base import get_logger
 from ..proto import jina_pb2
 
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    import argparse
+    import logging
+
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
     has three sockets for input, output and control. `Zmqlet` is one of the key components in :class:`jina.peapods.pea.Pea`.

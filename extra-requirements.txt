@@ -1,0 +1,42 @@
+# FORMAT
+# Put your extra requirements here in the following format
+#
+# package[version]: tag1, tag2, ...
+#
+# AVAILABLE TAGS
+#
+# nlp, cv, ml, video, audio, numeric,  encode, index, prep, score, route, gpu, http
+#
+# REMARKS ON TAGS
+# 1. Try to reuse the existing tags if possible.
+#    If you intend to create a new tag, keep it alphabetical, short and general
+# 2. Package name itself is a tag already, so you dont need to tag it again.
+#    For example, 'flair>=0.4.1: flair' is redundant
+# 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
+# 4. Tag `all` is reserved for representing all packages
+
+bert-serving-server>=1.8.6: bert, nlp, encode
+bert-serving-client>=1.8.6: bert, nlp, encode
+flair>=0.4.1:               nlp, bert, encode
+annoy==1.15.2:              index
+jieba:                      chinese, nlp
+opencv-python>=4.0.0:       cv, prep
+imagehash>=4.0:             cv
+image:                      cv
+peakutils:                  cv
+plyvel>=1.0.5:              index
+pylint:                     test
+memory_profiler>=0.55.0:    test
+psutil>=5.6.1:              test
+gputil>=1.4.0:              gpu
+pytorch-transformers:       nlp, bert, encode
+onnxruntime:                encode, ml
+librosa>=0.7.0:             audio
+scipy:                      numeric
+sklearn:                    ml
+flask:                      http
+aiohttp:                    http
+
+
+
+

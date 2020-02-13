@@ -6,6 +6,9 @@ from functools import wraps
 
 from termcolor import colored
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    import logging
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     """Get the memory usage of the current process and all sub-processes.

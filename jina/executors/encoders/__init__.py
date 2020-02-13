@@ -3,6 +3,9 @@ from typing import Any
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
 
+if False:
+    # fix type-hint complain for sphinx and flake
+    import numpy as np
 
 class BaseEncoder(BaseExecutor):
     """``BaseEncoder`` encodes chunk into vector representation.

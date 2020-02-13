@@ -275,7 +275,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 # the first line should always starts with !ClassName
                 fp.readline()
                 tmp = yaml.load(fp)
-                if 'metas' in tmp and 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
+                if tmp and 'metas' in tmp and 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
                     mod = tmp['metas']['py_modules']
 
                     if isinstance(mod, str):
