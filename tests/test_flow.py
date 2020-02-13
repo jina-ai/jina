@@ -10,7 +10,7 @@ class MyTestCase(JinaTestCase):
         bytes_gen = (b'aaa' for _ in range(10))
         f = (Flow()
              .add(driver='route'))
-        with f.build() as fl:
+        with f.build(runtime='thread') as fl:
             fl.index(raw_bytes=bytes_gen)
 
 
