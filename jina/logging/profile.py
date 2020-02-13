@@ -20,7 +20,8 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
     except ModuleNotFoundError:
         from . import default_logger
-        default_logger.warning('module "resource" can not be found and you are likely running it on Windows')
+        default_logger.error('module "resource" can not be found and you are likely running it on Windows, '
+                             'i will return 0')
         return 0
 
 

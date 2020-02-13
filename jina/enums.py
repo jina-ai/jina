@@ -2,10 +2,10 @@
 Miscellaneous enums used in jina
 """
 
-from enum import Enum
+from enum import IntEnum
 
 
-class BetterEnum(Enum):
+class BetterEnum(IntEnum):
     def __str__(self):
         return self.name
 
