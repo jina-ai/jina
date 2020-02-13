@@ -5,9 +5,10 @@ on: [push]
 jobs:
   build:
 
-    runs-on: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: [3.7, 3.8]
 
     steps:
