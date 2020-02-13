@@ -2,7 +2,7 @@ name: commit lint
 on: [pull_request]
 
 jobs:
-  lint:
+  commit_lint:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,8 +3,7 @@ name: py unit test
 on: [pull_request]
 
 jobs:
-  build:
-
+  unit_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
