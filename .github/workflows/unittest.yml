@@ -1,14 +1,13 @@
-name: Python package
+name: py unit test
 
-on: [push]
+on: [pull_request]
 
 jobs:
-  build:
-
+  unit_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest]
+        os: [macos-latest, ubuntu-latest]
         python-version: [3.7, 3.8]
 
     steps:

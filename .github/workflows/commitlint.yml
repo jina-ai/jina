@@ -1,0 +1,14 @@
+name: commit lint
+on: [pull_request]
+
+jobs:
+  commit_lint:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
+      - uses: wagoid/commitlint-github-action@v1
