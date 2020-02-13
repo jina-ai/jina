@@ -1,0 +1,3 @@
+!NumpyIndexer
+specs:
+  data_path: 'test.gzip'

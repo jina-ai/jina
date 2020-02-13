@@ -1,0 +1,78 @@
+Jina Environment Variables
+==========================
+
+Here is the list of environment variables that ``jina`` respects during runtime.
+
+.. note::
+    These enviroment variables must be set **before** starting ``jina`` or before any ``import jina`` in Python. Changing the variables while ``jina`` is running may result in unexpected result and exceptions.
+
+.. confval:: JINA_PROFILING
+
+    Set to any non-empty value to turn on service-level time profiling for JINA.
+
+    :default: unset
+
+.. confval:: JINA_WARN_UNNAMED
+
+    Set to any non-empty value to turn on the warning for unnamed executors.
+
+    :default: unset
+
+.. confval:: JINA_VCS_VERSION
+
+    Git version of ``jina``. This is used when ``--check_version`` is turned on. For official docker image of ``jina``, ``JINA_VCS_VERSION`` is automatically set to the git version during the building procedure.
+
+    :default: the git head version for ``jina`` image. If you are using ``jina`` locally outside docker container then this is unset.
+
+.. confval:: JINA_CONTROL_PORT
+
+    Control port of all pods.
+
+    :default: unset. A random port will be used for each :func:`Pod`.
+
+
+.. confval:: JINA_CONTRIB_MODULE
+
+    Paths of the third party components.
+
+    :default: unset
+
+.. confval:: JINA_IPC_SOCK_TMP
+
+    Temp directory when using IPC sockets for the control port, not used on Windows system or when the control port is over TCP sockets.
+
+.. confval:: JINA_LOG_FORMAT
+
+    Control where the logs output to. Possible values: ``TXT`` for plain text format, which is the uncolored version of the screen output. ```JSON`` for structured log output.
+
+    :default: unset, aka stdout only.
+
+.. confval:: JINA_SOCKET_HWM
+
+    High-watermarks of ZMQ send & receive sockets. Reference: http://api.zeromq.org/master:zmq-setsockopt
+
+    :default: 4
+
+.. confval:: JINA_ARRAY_QUANT
+
+    Quantization scheme when storing ndarray into protobuf message, useful for reducing the network latency and saving bandwidth. Possible values: ``fp16`` (almost lossless), ``uint8``.
+
+    :default: unset
+
+.. confval:: JINA_NO_COLOR_LOG
+
+    Show colored logs in stdout, set to any non-empty value to disable the color log, e.g. if you want to pipe the log into other apps.
+
+    :default: unset
+
+.. confval:: JINA_EXECUTOR_WORKDIR
+
+    The default executor working directory, where dumping and IO output happens.
+
+    :default: unset
+
+.. confval:: JINA_VERBOSITY
+
+    The log verbosity of the jina logger. Possible values are ``DEBUG``, ``WARNING``, ``INFO``, ``ERROR``, ``CRITICAL``.
+
+    :default: ``INFO``

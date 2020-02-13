@@ -1,0 +1,18 @@
+# my ignore file
+.git/
+.pyre/
+.idea/
+.eggs/
+docs/
+
+*egg*/
+README.md
+MAINTAINERS
+test*.yml
+toy*
+release.sh
+shell/
+.tmp/
+.github/
+Dockerfiles/
+.dockerignore

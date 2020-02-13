@@ -1,0 +1,9 @@
+handlers:
+  SearchRequest:
+    - handler_chunk_search
+    - handler_meta_search_chunk: meta_query
+  IndexRequest:
+    - handler_chunk_index
+    - handler_prune_chunk
+    - handler_meta_index_chunk: meta_add
+help: index and search embeddings and meta information of chunks
