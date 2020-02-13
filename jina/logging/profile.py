@@ -1,5 +1,4 @@
 import os
-import resource
 import time
 from collections import defaultdict
 from functools import wraps
@@ -10,12 +9,19 @@ if False:
     # fix type-hint complain for sphinx and flake
     import logging
 
+
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     """Get the memory usage of the current process and all sub-processes.
 
     :param unit: unit of the memory, default in Gigabytes
     """
-    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
+    try:
+        import resource
+        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
+    except ModuleNotFoundError:
+        from . import default_logger
+        default_logger.warning('module "resource" can not be found and you are likely running it on Windows')
+        return 0
 
 
 def profiling(func):
