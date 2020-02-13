@@ -1,0 +1,3 @@
+*.md *.rst LICENSE docs/        @jina-ai/pr
+*.py *.sh *.yml Dockerfiles/    @jina-ai/dev
+.github                 @jina-ai/meta
