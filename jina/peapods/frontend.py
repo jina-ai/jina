@@ -15,7 +15,7 @@ from ..proto import jina_pb2_grpc
 class FrontendPea:
 
     def __init__(self, args):
-        if not args.proxy:
+        if not args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self.logger = get_logger(self.__class__.__name__, **vars(args))
