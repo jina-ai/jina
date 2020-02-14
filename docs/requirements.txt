@@ -1,3 +1,4 @@
+sphinx
 sphinx-argparse
 sphinxcontrib-apidoc
 sphinx-autodoc-typehints
