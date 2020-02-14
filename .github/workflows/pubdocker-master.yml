@@ -8,11 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - name: Set env
+      run: |
+        echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
+        echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     - name: Publish to Registry
       uses: HurricanKai/Publish-Docker-Github-Action@master
       env:
-        BUILD_DATE: ${{ date -u +"%Y-%m-%dT%H:%M:%SZ" }}
-        VCS_REF: ${{ github.sha }}
         TARGET: base
       with:
         name: jina-ai/_jina
