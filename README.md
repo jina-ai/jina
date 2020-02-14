@@ -23,8 +23,10 @@ If you are using `pyenv` to control the Python virtual environment, make sure th
 
 To build the document locally, you need to have Docker installed. Then simply run 
 ```bash
-bash ./make-doc.sh
+bash ./make-doc.sh 8080
 ```
+
+The documentation is available at `http://0.0.0.0:8080/`. Simply remove `8080` from the arguments if you do not want to view generated docs in the browser. 
 
 ## Getting Started
 
