@@ -11,8 +11,8 @@ jobs:
     - name: Publish to Registry
       uses: HurricanKai/Publish-Docker-Github-Action@master
       env:
-        BUILD_DATE: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-        VCS_REF: $GITHUB_SHA
+        BUILD_DATE: ${{ date -u +"%Y-%m-%dT%H:%M:%SZ" }}
+        VCS_REF: ${{ github.sha }}
         TARGET: base
       with:
         name: jina-ai/_jina
