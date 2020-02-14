@@ -19,7 +19,7 @@ ADD jina ./jina/
 RUN apk add --no-cache \
             --virtual=.build-dependencies \
             build-base g++ gfortran file binutils zeromq-dev \
-            musl-dev python3-dev openblas-dev && \
+            musl-dev python3-dev openblas-dev linux-headers && \
     apk add --no-cache libstdc++ openblas libzmq && \
     ln -s locale.h /usr/include/xlocale.h && \
     pip install . --no-cache-dir --compile && \

@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        linux: [alpine, debian]
+        linux: [debian] #[alpine, debian]
     steps:
     - uses: actions/checkout@master
     - name: Set env

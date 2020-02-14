@@ -1,33 +1,59 @@
-# _jina
+# jina
 Jina is the cloud-native semantic search solution powered by SOTA AI technology
 
 
-## Prerequisites
 
-Jina requires Python 3.7.
+## Getting Started
 
+The simplest way to run `jina` is via the docker container. 
 
-## Install
+### Run with docker image
 
 ```bash
-git clone https://github.com/jina-ai/_jina
-cd _jina && pip install .
+docker login -u USERNAME -p TOKEN docker.pkg.github.com
+docker run docker.pkg.github.com/jina-ai/jina/jina:master-debian
 ```
 
-For developers who want to edit the project’s code and test the changes on-the-fly, please use `pip install -e .` 
+This command downloads the latest Jina image and runs it in a container. When the container runs, it prints an help message and exits.
 
-If you are using `pyenv` to control the Python virtual environment, make sure the codebase is marked by `pyenv local 3.7.x`
+
+If you want to run Jina without Docker, please maker sure you have Python 3.7 installed. 
+If you are using `pyenv` to control the Python virtual environment, make sure the Jina codebase is covered by `pyenv local 3.7.x`
+
+### Install from PyPi
+ 
+```bash
+pip install jina
+jina --help
+```
+
+### Install from this Git repository
+
+```bash
+pip install git+https://github.com/jina-ai/jina.git
+jina --help
+```
+
+### (Dev mode) Install from your local folk/clone 
+
+For developers who want to edit the project’s code and test the changes on-the-fly, 
+
+```bash
+git clone https://github.com/jina-ai/jina
+cd jina && pip install -e .
+jina --help
+``` 
   
   
 ## Documentation 
 
-To build the document locally, you need to have Docker installed. Then simply run 
+To build the documentation locally, you need to have Docker installed. Clone this repository and run the following command: 
 ```bash
 bash ./make-doc.sh 8080
 ```
 
-The documentation is available at `http://0.0.0.0:8080/`. Simply remove `8080` from the arguments if you do not want to view generated docs in the browser. 
+The documentation is now available at `http://0.0.0.0:8080/`.  Removing `8080` from the arguments if you do not want to view generated docs in the browser. 
 
-## Getting Started
+## License
 
-
+If you have downloaded a copy of the GNES binary or source code, please note that Jina's binary and source code are both licensed under the [Apache 2.0](LICENSE).
