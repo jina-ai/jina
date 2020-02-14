@@ -14,8 +14,6 @@ jobs:
         echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
-      env:
-        TARGET: base
       with:
         name: jina-ai/jina/jina
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -23,5 +21,4 @@ jobs:
         registry: docker.pkg.github.com
         dockerfile: Dockerfiles/debian.Dockerfile
         buildargs: BUILD_DATE, VCS_REF
-        buildoptions: "--rm --target ${{env.TARGET}}"
         tags: "latest, master, dev, ${{env.VCS_REF}}"

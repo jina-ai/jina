@@ -1,4 +1,4 @@
-FROM python:3.7.6-alpine AS base
+FROM python:3.7.6-alpine
 
 ARG VCS_REF
 ARG BUILD_DATE
