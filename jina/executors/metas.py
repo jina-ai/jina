@@ -69,7 +69,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
     .. code-block:: yaml
 
         !MyAwesomeExecutor
-        specs:
+        with:
           ...
         metas:
           name: my_transformer  # a customized name
@@ -79,13 +79,13 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 .. note::
     The overwrite priority is:
 
-    metas defined in YAML > class attribute > default.metas
+    metas defined in YAML > class attribute > metas.defaults
 
 """
 
 import os
 
-metas = {
+defaults = {
     'is_trained': False,
     'is_updated': False,
     'batch_size': None,

@@ -4,8 +4,11 @@ on:
     branches:
       - master
 jobs:
-  build:
+  build_docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        linux: [alpine, debian]
     steps:
     - uses: actions/checkout@master
     - name: Set env
@@ -19,6 +22,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: docker.pkg.github.com
-        dockerfile: Dockerfiles/debian.Dockerfile
+        dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
         buildargs: BUILD_DATE, VCS_REF
-        tags: "latest, master, dev"
+        tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"

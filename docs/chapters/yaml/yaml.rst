@@ -14,7 +14,7 @@ The executor YAML config follows the syntax below.
 .. code-block:: yaml
 
     !MetaProtoIndexer
-    specs:
+    with:
       data_path: $TEST_WORKDIR/doc.gzip
     metas:  # <- metas defined in :mod``
       name: doc_indexer  # a customized name
@@ -24,7 +24,7 @@ The executor YAML config follows the syntax below.
 
     The class of the executor, can be any class inherited from :mod:`jina.executors.BaseExecutor`. Note that it must starts with ``!`` to tell the YAML parser that the section below is describing this class.
 
-.. confval:: specs
+.. confval:: with
 
     A list of arguments in the :func:`__init__` function of this executor. One can use environment variables here to expand the variables.
 
@@ -33,9 +33,9 @@ The executor YAML config follows the syntax below.
     A list of meta arguments defined in :mod:`jina.executors.default`.
 
 
-If an executor has no :func:`__init__` or :func:`__init__` requires no arguments, then one do not need to write ``specs`` at all.
+If an executor has no :func:`__init__` or :func:`__init__` requires no arguments, then one do not need to write ``with`` at all.
 
-In the minimum case, if you don't want to specify any ``specs`` and ``metas``, you can simply write:
+In the minimum case, if you don't want to specify any ``with`` and ``metas``, you can simply write:
 
 .. highlight:: yaml
 .. code-block:: yaml
@@ -64,18 +64,18 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
     !CompoundExecutor
     components:
     - !NumpyIndexer
-      specs:
+      with:
         num_dim: -1
         index_key: HNSW32
         data_path: $TEST_WORKDIR/vec.idx
       metas:
         name: my_vec_indexer
     - !MetaProtoIndexer
-      specs:
+      with:
         data_path: $TEST_WORKDIR/chunk.gzip
       metas:
         name: chunk_meta_indexer
-    specs:
+    with:
       routes:
         meta_add:
           chunk_meta_indexer: add
@@ -91,9 +91,9 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
 
 .. confval:: components
 
-    A list of executors specified. Note that ``metas.name`` must be specified if you want to later quote this executor in ``specs.routes``.
+    A list of executors specified. Note that ``metas.name`` must be specified if you want to later quote this executor in ``with.routes``.
 
-.. confval:: specs
+.. confval:: with
 
     .. confval:: routes
 
