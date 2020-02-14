@@ -13,11 +13,11 @@ jobs:
         echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
         echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     - name: Publish to Registry
-      uses: HurricanKai/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@master
       env:
         TARGET: base
       with:
-        name: jina-ai/jina
+        name: jina-ai/jina/jina
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: docker.pkg.github.com
