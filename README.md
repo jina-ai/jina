@@ -1,11 +1,14 @@
-# jina
-Jina is the cloud-native semantic search solution powered by SOTA AI technology
+# Jina
 
+![Build Docker Status Badge](https://github.com/jina-ai/jina/workflows/Build%20Docker/badge.svg)
+![Unit Test Status Badge](https://github.com/jina-ai/jina/workflows/Unit%20Test/badge.svg)
+
+Jina is *the* cloud-native semantic search solution powered by SOTA AI technology.
 
 
 ## Getting Started
 
-The simplest way to run `jina` is via the docker container. 
+The simplest way to run Jina is via the docker container. 
 
 ### Run with docker image
 
@@ -17,8 +20,8 @@ docker run docker.pkg.github.com/jina-ai/jina/jina:master-debian
 This command downloads the latest Jina image and runs it in a container. When the container runs, it prints an help message and exits.
 
 
-If you want to run Jina without Docker, please maker sure you have Python 3.7 installed. 
-If you are using `pyenv` to control the Python virtual environment, make sure the Jina codebase is covered by `pyenv local 3.7.x`
+If you want to run Jina without Docker, please make sure you have Python 3.7 installed. 
+If you are using `pyenv` for controlling the Python virtual environment, make sure the Jina codebase is covered by `pyenv local 3.7.x`
 
 ### Install from PyPi
  

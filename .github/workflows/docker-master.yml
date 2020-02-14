@@ -1,4 +1,4 @@
-name: Publish Docker image for the new master
+name: Build Docker
 on:
   push:
     branches:
