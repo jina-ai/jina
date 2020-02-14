@@ -10,7 +10,7 @@ from typing import Dict, Any, Union, TypeVar, Type, List
 import ruamel.yaml.constructor
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
-from .default import metas
+from .metas import defaults
 from ..helper import yaml, parse_arg, print_load_table, PathImporter
 from ..logging.base import get_logger
 from ..logging.profile import profiling
@@ -39,7 +39,7 @@ class ExecutorType(type):
 
         # set attribute with priority
         # metas in YAML > class attribute > default_jina_config
-        for k, v in metas.items():
+        for k, v in defaults.items():
             if k in jina_config:
                 v = jina_config[k]
             v = _expand_env_var(v)
@@ -80,7 +80,7 @@ class BaseExecutor(metaclass=ExecutorType):
     """
     The base class of the executor, can be used to build encoder, indexer, etc.
 
-    Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.default.metas`.
+    Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.metas.defaults`.
 
     All arguments in the :func:`__init__` can be specified with a ``with`` map in the YAML config. Example:
 
@@ -111,7 +111,7 @@ class BaseExecutor(metaclass=ExecutorType):
         Methods of the :class:`BaseExecutor` can be decorated via :mod:`jina.executors.decorators`.
 
     .. seealso::
-        Meta fields :mod:`jina.executors.default.metas`.
+        Meta fields :mod:`jina.executors.metas.defaults`.
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
@@ -411,8 +411,8 @@ class BaseExecutor(metaclass=ExecutorType):
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        p = {k: getattr(data, k) for k, v in metas.items() if getattr(data, k) != v}
-        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in metas}
+        p = {k: getattr(data, k) for k, v in defaults.items() if getattr(data, k) != v}
+        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in defaults}
         r = {}
         if a:
             r['with'] = a
