@@ -24,4 +24,4 @@ jobs:
         dockerfile: Dockerfiles/debian.Dockerfile
         buildargs: BUILD_DATE, VCS_REF
         buildoptions: "--rm --target $TARGET"
-        tags: master
+        tags: "latest, master, dev, $VCS_REF"
