@@ -1,0 +1,25 @@
+name: Publish Docker image for the new master
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Publish to Registry
+      uses: HurricanKai/Publish-Docker-Github-Action@master
+      env:
+        BUILD_DATE: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        VCS_REF: $GITHUB_SHA
+        TARGET: base
+      with:
+        name: jina-ai/_jina
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: docker.pkg.github.com
+        dockerfile: Dockerfiles/debian.Dockerfile
+        buildargs: BUILD_DATE, VCS_REF
+        buildoptions: "--rm --target $TARGET"
+        tags: "master,dev"

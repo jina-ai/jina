@@ -1,14 +1,26 @@
-name: py unit test
+name: Unit test
 
 on: [pull_request]
 
 jobs:
+  commit_lint:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
+      - uses: wagoid/commitlint-github-action@v1
+
   unit_test:
+    needs: commit_lint
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.7]  # [3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
