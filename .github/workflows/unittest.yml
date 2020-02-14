@@ -1,4 +1,4 @@
-name: commit lint then unit test
+name: Unit test
 
 on: [pull_request]
 
@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.7]  # [3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
