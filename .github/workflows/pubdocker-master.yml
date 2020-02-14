@@ -21,4 +21,4 @@ jobs:
         registry: docker.pkg.github.com
         dockerfile: Dockerfiles/debian.Dockerfile
         buildargs: BUILD_DATE, VCS_REF
-        tags: "latest, master, dev, ${{env.VCS_REF}}"
+        tags: "latest, master, dev"
