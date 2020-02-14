@@ -1,7 +1,7 @@
 !CompoundExecutor
 components:
   - !NumpyIndexer
-    specs:
+    with:
       num_dim: -1
       index_key: HNSW32
       data_path: $TEST_WORKDIR/vec.idx
@@ -9,12 +9,12 @@ components:
       name: my_vec_indexer  # a customized name
       work_dir: $TEST_WORKDIR
   - !MetaProtoIndexer
-    specs:
+    with:
       data_path: $TEST_WORKDIR/chunk.gzip
     metas:
       name: chunk_meta_indexer
       work_dir: $TEST_WORKDIR
-specs:
+with:
   routes:
     meta_add:
       chunk_meta_indexer: add

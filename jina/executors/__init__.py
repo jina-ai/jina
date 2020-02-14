@@ -82,7 +82,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.default.metas`.
 
-    All arguments in the :func:`__init__` can be specified with a ``specs`` map in the YAML config. Example:
+    All arguments in the :func:`__init__` can be specified with a ``with`` map in the YAML config. Example:
 
     .. highlight:: python
     .. code-block:: python
@@ -97,7 +97,7 @@ class BaseExecutor(metaclass=ExecutorType):
     .. code-block:: yaml
 
         !MyAwesomeExecutor
-        specs:
+        with:
             awesomeness: 5
 
     To use an executor in a :class:`jina.peapods.pea.Pea` or :class:`jina.peapods.pod.Pod`,
@@ -376,7 +376,7 @@ class BaseExecutor(metaclass=ExecutorType):
             cls.init_from_yaml = True
 
             if cls.store_args_kwargs:
-                p = data.get('specs', {})  # type: Dict[str, Any]
+                p = data.get('with', {})  # type: Dict[str, Any]
                 a = p.pop('args') if 'args' in p else ()
                 k = p.pop('kwargs') if 'kwargs' in p else {}
                 # maybe there are some hanging kwargs in "parameters"
@@ -384,7 +384,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 tmp_p = {kk: _expand_env_var(vv) for kk, vv in {**k, **p}.items()}
                 obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}))
             else:
-                tmp_p = {kk: _expand_env_var(vv) for kk, vv in data.get('specs', {}).items()}
+                tmp_p = {kk: _expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**tmp_p, metas=data.get('metas', {}))
 
             obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
@@ -415,7 +415,7 @@ class BaseExecutor(metaclass=ExecutorType):
         a = {k: v for k, v in data._init_kwargs_dict.items() if k not in metas}
         r = {}
         if a:
-            r['specs'] = a
+            r['with'] = a
         if p:
             r['metas'] = p
         return r

@@ -24,7 +24,7 @@ class CompoundExecutor(BaseExecutor):
             name: dummyB-e3acc910
         metas:
           name: CompoundExecutor-2768c74f
-        specs:
+        with:
           resolve_all: true
           routes:
             say:
@@ -116,7 +116,7 @@ class CompoundExecutor(BaseExecutor):
 
             !CompoundExecutor
             components: ...
-            specs:
+            with:
               resolve_all: true
               routes:
                 say:

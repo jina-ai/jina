@@ -69,7 +69,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
     .. code-block:: yaml
 
         !MyAwesomeExecutor
-        specs:
+        with:
           ...
         metas:
           name: my_transformer  # a customized name
