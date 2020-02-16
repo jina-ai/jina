@@ -34,16 +34,19 @@
     color: #fff;
 }
 
+.reference .internal a {
+    display: flex;
+    align-items: center;
+}
 
 .wy-menu-vertical a {
     font-size: inherit;
-    margin: 10px
-
+    margin: 0;
+    line-height: 2.5;
 }
 
 .wy-menu-vertical li.current {
     background-color: #fcfcfc;
-    color: #2980B9;
 }
 
 .wy-menu-vertical li.current a {
@@ -53,6 +56,49 @@
 
 .wy-menu-vertical li.toctree-l1.current > a {
     border: none;
+    background-color: #f8f4ff;
+}
+
+.wy-menu-vertical li.toctree-l2.current > a {
+    border: none;
+    background-color: #f8f4ff;
+}
+
+.wy-menu-vertical li.toctree-l3.current > a {
+    border: none;
+    background-color: #f8f4ff;
+}
+
+.wy-menu-vertical li.toctree-l4.current > a {
+    border: none;
+    background-color: #f8f4ff;
+}
+
+.wy-menu-vertical li.toctree-l5.current > a {
+    border: none;
+    background-color: #f8f4ff;
+}
+
+
+.wy-menu-vertical li.toctree-l1.current li.toctree-l2 > a {
+    border: none;
+    background-color: #f8f4ff;
+}
+
+
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
+    border: none;
+    background-color: #f8f4ff;
+}
+
+.wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a {
+    border: none;
+    background-color: #dfe0ec;
+}
+
+.wy-menu-vertical li.toctree-l4.current li.toctree-l5 > a {
+    border: none;
+    background-color: #f8f4ff;
 }
 
 .wy-side-nav-search input[type=text] {
@@ -93,9 +139,6 @@
     color: #092756;
 }
 
-.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
-    background: none;
-}
 
 input {
     font-size: 100% !important;
