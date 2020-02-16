@@ -3,14 +3,15 @@ import threading
 from collections import OrderedDict
 from contextlib import ExitStack
 from functools import wraps
-from typing import Union, Tuple, List, Set, Dict, Optional, Iterator, Callable
+from typing import Union, Tuple, List, Set, Dict, Optional, Iterator, Callable, Type, TextIO, Any
 
+import ruamel.yaml
 from pkg_resources import resource_stream
 
 from .. import __default_host__
 from ..enums import FlowBuildLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
-from ..helper import yaml
+from ..helper import yaml, expand_env_var
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..main.parser import set_pod_parser, set_frontend_parser
@@ -18,7 +19,7 @@ from ..peapods.pod import Pod, SocketType, FrontendPod
 
 
 def build_required(required_level: 'FlowBuildLevel'):
-    """Annotate a function so that it requires certain build level to run.
+    """Annotate a function so that it requires certaidn build level to run.
 
     :param required_level: required build level to run this function.
 
@@ -52,9 +53,21 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 
 class Flow:
-    def __init__(self, driver_yaml_path: str = None, sse: bool = False, *args, **kwargs):
+    def __init__(self, driver_yaml_path: str = None, sse_logger: bool = False, runtime: str = 'process',
+                 image_name: str = 'jina:latest-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
+                 **kwargs):
+        """Initialize a flow object
+
+        :param driver_yaml_path: the file path of the driver map
+        :param sse_logger: to enable the server-side event logger or not
+        :param runtime: the runtime that each pod in this flow runs on
+        :param kwargs: other keyword arguments that will be shared by all pods in this flow
+        """
         self.logger = get_logger(self.__class__.__name__)
-        self.with_sse_logger = sse
+        self.with_sse_logger = sse_logger
+        self.image_name = image_name
+        self.repository = repository
+        self.runtime = runtime
         self._common_kwargs = kwargs
 
         with resource_stream('jina', '/'.join(('resources', 'drivers-default.yml'))) as rs:
@@ -71,6 +84,59 @@ class Flow:
         self._pod_name_counter = {k: 0 for k in self.support_drivers.keys()}
         self._last_changed_pod = []
         self._add_frontend()
+
+    @classmethod
+    def to_yaml(cls, representer, data):
+        """Required by :mod:`ruamel.yaml.constructor` """
+        tmp = data._dump_instance_to_yaml(data)
+        return representer.represent_mapping('!' + cls.__name__, tmp)
+
+    @classmethod
+    def from_yaml(cls, constructor, node, stop_on_import_error=False):
+        """Required by :mod:`ruamel.yaml.constructor` """
+        return cls._get_instance_from_yaml(constructor, node, stop_on_import_error)[0]
+
+    @classmethod
+    def load_config(cls: Type['Flow'], filename: Union[str, TextIO]) -> 'Flow':
+        """Build an executor from a YAML file.
+
+        :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
+        :return: an executor object
+        """
+        yaml.register_class(Flow)
+        if not filename: raise FileNotFoundError
+        if isinstance(filename, str):
+            # deserialize from the yaml
+            with open(filename, encoding='utf8') as fp:
+                return yaml.load(fp)
+        else:
+            with filename:
+                return yaml.load(filename)
+
+    @classmethod
+    def _get_instance_from_yaml(cls, constructor, node, stop_on_import_error=False):
+
+        data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
+            constructor, node, deep=True)
+
+        p = data.get('with', {})  # type: Dict[str, Any]
+        a = p.pop('args') if 'args' in p else ()
+        k = p.pop('kwargs') if 'kwargs' in p else {}
+        # maybe there are some hanging kwargs in "parameters"
+        tmp_a = (expand_env_var(v) for v in a)
+        tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
+        obj = cls(*tmp_a, **tmp_p)
+
+        pp = data.get('pods', {})
+        for pod_name, pod_attr in pp.items():
+            obj.add(name=pod_name, **pod_attr, copy_flow=False)
+
+        obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
+
+        # if node.tag in {'!CompoundExecutor'}:
+        #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
+
+        return obj, data
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
@@ -191,7 +257,7 @@ class Flow:
         driver_type = kwargs.get('driver', None)
         pod_name = kwargs.get('name', None)
 
-        if driver_type not in op_flow.support_drivers:
+        if driver_type and driver_type not in op_flow.support_drivers:
             raise ValueError(
                 'pod: %s is not supported, should be one of %s' % (driver_type, op_flow.support_drivers.keys()))
 
@@ -310,16 +376,17 @@ class Flow:
         """
 
         op_flow = self._build_graph(copy_flow)
+        runtime = runtime or op_flow.runtime
 
         if not runtime:
-            op_flow.logger.warning('no specified backend, build_level stays at %s, '
-                                   'and you can not run this flow.' % op_flow._build_level)
+            op_flow.logger.error('no specified runtime, build_level stays at %s, '
+                                 'and you can not run this flow.' % op_flow._build_level)
         elif runtime in {'thread', 'process'}:
             for p in op_flow._pod_nodes.values():
                 p.set_parallel_runtime(runtime)
             op_flow._build_level = FlowBuildLevel.RUNTIME
         else:
-            raise NotImplementedError('backend=%s is not supported yet' % runtime)
+            raise NotImplementedError('runtime=%s is not supported yet' % runtime)
 
         return op_flow
 
@@ -405,7 +472,7 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            with f.build(backend='thread') as flow:
+            with f.build(runtime='thread') as flow:
                 flow.train(txt_file='aa.txt')
                 flow.train(image_zip_file='aa.zip', batch_size=64)
                 flow.train(video_zip_file='aa.zip')
@@ -425,7 +492,7 @@ class Flow:
                 for _ in range(10):
                     yield b'abcdfeg'   # each yield generates a document for training
 
-            with f.build(backend='thread') as flow:
+            with f.build(runtime='thread') as flow:
                 flow.train(bytes_gen=my_reader())
 
         :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
@@ -443,7 +510,7 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            with f.build(backend='thread') as flow:
+            with f.build(runtime='thread') as flow:
                 flow.index(txt_file='aa.txt')
                 flow.index(image_zip_file='aa.zip', batch_size=64)
                 flow.index(video_zip_file='aa.zip')
@@ -463,7 +530,7 @@ class Flow:
                 for _ in range(10):
                     yield b'abcdfeg'  # each yield generates a document to index
 
-            with f.build(backend='thread') as flow:
+            with f.build(runtime='thread') as flow:
                 flow.index(bytes_gen=my_reader())
 
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
@@ -486,7 +553,7 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            with f.build(backend='thread') as flow:
+            with f.build(runtime='thread') as flow:
                 flow.search(txt_file='aa.txt')
                 flow.search(image_zip_file='aa.zip', batch_size=64)
                 flow.search(video_zip_file='aa.zip')
@@ -506,7 +573,7 @@ class Flow:
                 for _ in range(10):
                     yield b'abcdfeg'   # each yield generates a query for searching
 
-            with f.build(backend='thread') as flow:
+            with f.build(runtime='thread') as flow:
                 flow.search(bytes_gen=my_reader())
 
         :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
@@ -514,3 +581,22 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(raw_bytes, mode='search', **kwargs).start(callback)
+
+    @build_required(FlowBuildLevel.GRAPH)
+    def to_swarm_yaml(self, path: TextIO):
+        """
+        Generate the docker swarm YAML compose file
+
+        :param path: the output yaml path
+        """
+        swarm_yml = {'version': '3.4',
+                     'services': {}}
+
+        for k, v in self._pod_nodes.items():
+            swarm_yml['services'][k] = {
+                'image': self.image_name,
+                'command': v.to_cli_command(),
+                'deploy': {'replicas': 1}
+            }
+
+        yaml.dump(swarm_yml, path)

@@ -43,6 +43,14 @@ class Pod:
         self.deducted_tail = None
         self.peas_args = self._parse_args()
 
+    def to_cli_command(self):
+        if isinstance(self, FrontendPod):
+            cmd = 'jina frontend'
+        else:
+            cmd = 'jina pod'
+
+        return '%s %s' % (cmd, ' '.join(self.cli_args))
+
     def _parse_args(self):
         peas_args = {
             'head': None,

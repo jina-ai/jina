@@ -1,6 +1,6 @@
 # Jina
 
-![Build Docker Status Badge](https://github.com/jina-ai/jina/workflows/Build%20Docker/badge.svg)
+![Build Docker](https://github.com/jina-ai/jina/workflows/Build%20Docker/badge.svg?branch=master)
 ![Unit Test Status Badge](https://github.com/jina-ai/jina/workflows/Unit%20Test/badge.svg)
 
 Jina is *the* cloud-native semantic search solution powered by SOTA AI technology.
@@ -46,6 +46,12 @@ git clone https://github.com/jina-ai/jina
 cd jina && pip install -e .
 jina --help
 ``` 
+
+To uninstall your local version:
+
+```bash
+pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
+```
   
   
 ## Documentation 

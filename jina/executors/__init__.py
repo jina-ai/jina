@@ -5,13 +5,13 @@ import tempfile
 import uuid
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, Any, Union, TypeVar, Type, List
+from typing import Dict, Any, Union, TypeVar, Type, List, TextIO
 
 import ruamel.yaml.constructor
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import defaults
-from ..helper import yaml, parse_arg, print_load_table, PathImporter
+from ..helper import yaml, print_load_table, PathImporter, expand_env_var
 from ..logging.base import get_logger
 from ..logging.profile import profiling
 
@@ -42,7 +42,7 @@ class ExecutorType(type):
         for k, v in defaults.items():
             if k in jina_config:
                 v = jina_config[k]
-            v = _expand_env_var(v)
+            v = expand_env_var(v)
             if not hasattr(obj, k):
                 setattr(obj, k, v)
 
@@ -261,7 +261,7 @@ class BaseExecutor(metaclass=ExecutorType):
         return True
 
     @classmethod
-    def load_config(cls: Type[AnyExecutor], filename: str) -> AnyExecutor:
+    def load_config(cls: Type[AnyExecutor], filename: Union[str, TextIO]) -> AnyExecutor:
         """Build an executor from a YAML file.
 
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
@@ -362,7 +362,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
         _jina_config = data.get('metas', {})
         for k, v in _jina_config.items():
-            _jina_config[k] = _expand_env_var(v)
+            _jina_config[k] = expand_env_var(v)
         if _jina_config:
             data['metas'] = _jina_config
 
@@ -380,11 +380,11 @@ class BaseExecutor(metaclass=ExecutorType):
                 a = p.pop('args') if 'args' in p else ()
                 k = p.pop('kwargs') if 'kwargs' in p else {}
                 # maybe there are some hanging kwargs in "parameters"
-                tmp_a = (_expand_env_var(v) for v in a)
-                tmp_p = {kk: _expand_env_var(vv) for kk, vv in {**k, **p}.items()}
+                tmp_a = (expand_env_var(v) for v in a)
+                tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
                 obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}))
             else:
-                tmp_p = {kk: _expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
+                tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**tmp_p, metas=data.get('metas', {}))
 
             obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
@@ -507,8 +507,3 @@ def import_executors(path: str = __path__[0], namespace: str = 'jina.executors',
     JINA_GLOBAL.executors_imported = True
 
 
-def _expand_env_var(v: str) -> str:
-    if isinstance(v, str):
-        return parse_arg(os.path.expandvars(v))
-    else:
-        return v

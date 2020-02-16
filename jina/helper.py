@@ -14,7 +14,7 @@ from termcolor import colored
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
-           'PathImporter', 'random_port', 'random_identity']
+           'PathImporter', 'random_port', 'random_identity', 'expand_env_var']
 
 
 def print_load_table(load_stat):
@@ -194,3 +194,10 @@ def random_identity() -> str:
 
 
 yaml = _get_yaml()
+
+
+def expand_env_var(v: str) -> str:
+    if isinstance(v, str):
+        return parse_arg(os.path.expandvars(v))
+    else:
+        return v
