@@ -7,6 +7,7 @@ if False:
     # fix type-hint complain for sphinx and flake
     import numpy as np
 
+
 class BaseEncoder(BaseExecutor):
     """``BaseEncoder`` encodes chunk into vector representation.
 
@@ -15,6 +16,7 @@ class BaseEncoder(BaseExecutor):
     .. seealso::
         :mod:`jina.drivers.handlers.encode`
     """
+
     def encode(self, data: Any, *args, **kwargs) -> Any:
         pass
 

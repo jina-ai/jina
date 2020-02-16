@@ -79,5 +79,3 @@ class FrontendPea:
 
                 for r in asyncio.as_completed(recv_tasks):
                     yield await r
-
-

@@ -505,5 +505,3 @@ def import_executors(path: str = __path__[0], namespace: str = 'jina.executors',
             default_logger.error('theses modules or classes can not be imported %s' % bad_imports)
 
     JINA_GLOBAL.executors_imported = True
-
-

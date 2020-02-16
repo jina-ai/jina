@@ -22,6 +22,7 @@ class BaseIndexer(BaseExecutor):
         more than one files. One is the serialized version of the :class:`BaseIndexer` object, often ends with ``.bin``
         the other is the file specified by the ``data_path``.
     """
+
     def __init__(self,
                  data_path: str,
                  *args, **kwargs):

@@ -6,7 +6,6 @@ import numpy as np
 from ..proto import jina_pb2
 
 
-
 def blob2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
     """Convert a blob protobuf to a numpy ndarray.
 

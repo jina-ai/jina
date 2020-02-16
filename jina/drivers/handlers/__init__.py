@@ -11,6 +11,7 @@ if False:
     # fix type-hint complain for sphinx and flake
     from ...peapods.pea import Pea
 
+
 def handler_fn_template(exec_fn: Callable, pea: 'Pea',
                         req: 'jina_pb2.Request',
                         msg: 'jina_pb2.Message',

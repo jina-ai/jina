@@ -16,11 +16,11 @@ from ..excepts import MismatchedVersion
 from ..logging.base import get_logger
 from ..proto import jina_pb2
 
-
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
     import logging
+
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
