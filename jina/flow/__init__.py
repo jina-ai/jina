@@ -3,7 +3,7 @@ import threading
 from collections import OrderedDict
 from contextlib import ExitStack
 from functools import wraps
-from typing import Union, Tuple, List, Set, Dict, Optional, Iterator, Callable, Type, TextIO
+from typing import Union, Tuple, List, Set, Dict, Optional, Iterator, Callable, Type, TextIO, Any
 
 import ruamel.yaml
 from pkg_resources import resource_stream
