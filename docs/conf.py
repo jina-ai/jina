@@ -26,7 +26,7 @@ release = __version__
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'tests']
-pygments_style = 'paraiso-dark'
+pygments_style = 'colorful'
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     # 'canonical_url': '',
@@ -68,7 +68,8 @@ extensions = [
     'sphinx_rtd_theme',
     'recommonmark',
     'sphinxcontrib.autoyaml',
-    'sphinx_markdown_tables'
+    'sphinx_markdown_tables',
+    'sphinx_copybutton'
 ]
 
 apidoc_module_dir = '../jina/'

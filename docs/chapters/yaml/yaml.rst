@@ -161,3 +161,41 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
     .. confval:: (optional) executor_func
 
         If the handler is paired with certain executor function, then here should be the name of it
+
+
+:class:`Flow` YAML Sytanx
+---------------------------
+
+:class:`jina.flow.Flow` can be loaded from a YAML config file. It follows the following syntax as the example below:
+
+.. highlight:: yaml
+.. code-block:: yaml
+
+    !Flow
+    with:
+      driver_yaml_path:
+      sse_logger: true
+    pods:
+      chunk_seg:
+        driver: segment
+        replicas: 3
+      encode1:
+        driver: index-meta-doc
+        replicas: 2
+        recv_from: chunk_seg
+      encode2:
+        driver: index-meta-doc
+        replicas: 2
+        recv_from: chunk_seg
+      join_all:
+        recv_from: [encode1, encode2]
+
+A valid Flow specification starts with ``!Flow`` as the first line.
+
+.. confval:: with
+
+     A list of arguments in the :func:`jina.flow.Flow.__init__` function
+
+.. confval:: pods
+
+     A map of :class:`jina.peapods.pod.Pod` contained in the flow. The key is the name of this pod and the value is a map of arguments accepted by :command:`jina pod`. One can refer in ``send_to`` and ``recv_from`` to a pod by its name.
