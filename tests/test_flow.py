@@ -17,7 +17,9 @@ class MyTestCase(JinaTestCase):
     def test_load_flow_from_yaml(self):
         with open('yaml/test-flow.yml') as fp:
             a = Flow.load_config(fp)
-            print(a)
+            with open('yaml/swarm-out.yml', 'w') as fp, a as fl:
+                fl.to_swarm_yaml(fp)
+            #self.add_tmpfile('yaml/swarm-out.yml')
 
 
 if __name__ == '__main__':

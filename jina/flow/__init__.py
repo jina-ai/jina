@@ -53,7 +53,8 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 
 class Flow:
-    def __init__(self, driver_yaml_path: str = None, sse_logger: bool = False, runtime: str = 'process', *args,
+    def __init__(self, driver_yaml_path: str = None, sse_logger: bool = False, runtime: str = 'process',
+                 image_name: str = 'jina:latest-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
                  **kwargs):
         """Initialize a flow object
 
@@ -64,6 +65,9 @@ class Flow:
         """
         self.logger = get_logger(self.__class__.__name__)
         self.with_sse_logger = sse_logger
+        self.image_name = image_name
+        self.repository = repository
+        self.runtime = runtime
         self._common_kwargs = kwargs
 
         with resource_stream('jina', '/'.join(('resources', 'drivers-default.yml'))) as rs:
@@ -77,7 +81,6 @@ class Flow:
 
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'Pod']
         self._build_level = FlowBuildLevel.EMPTY
-        self.runtime = runtime
         self._pod_name_counter = {k: 0 for k in self.support_drivers.keys()}
         self._last_changed_pod = []
         self._add_frontend()
@@ -578,3 +581,22 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(raw_bytes, mode='search', **kwargs).start(callback)
+
+    @build_required(FlowBuildLevel.GRAPH)
+    def to_swarm_yaml(self, path: TextIO):
+        """
+        Generate the docker swarm YAML compose file
+
+        :param path: the output yaml path
+        """
+        swarm_yml = {'version': '3.4',
+                     'services': {}}
+
+        for k, v in self._pod_nodes.items():
+            swarm_yml['services'][k] = {
+                'image': self.image_name,
+                'command': v.to_cli_command(),
+                'deploy': {'replicas': 1}
+            }
+
+        yaml.dump(swarm_yml, path)

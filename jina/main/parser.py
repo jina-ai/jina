@@ -98,7 +98,7 @@ def set_flow_parser(parser=None):
     gp.add_argument('--output_type', type=FlowOutputType.from_string,
                     choices=list(FlowOutputType), default=FlowOutputType.SHELL_PROC,
                     help='type of the output')
-    gp.add_argument('--output_path', type=argparse.FileType('w'),
+    gp.add_argument('--output_path', type=argparse.FileType('w', encoding='utf8'),
                     help='output path of the flow')
 
     return parser
