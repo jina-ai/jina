@@ -199,3 +199,58 @@ A valid Flow specification starts with ``!Flow`` as the first line.
 .. confval:: pods
 
      A map of :class:`jina.peapods.pod.Pod` contained in the flow. The key is the name of this pod and the value is a map of arguments accepted by :command:`jina pod`. One can refer in ``send_to`` and ``recv_from`` to a pod by its name.
+
+The flows given by the following Python code and the YAML config are identical.
+
+.. highlight:: python
+.. code-block:: python
+
+    f = (Flow(driver_yaml_path='my-driver.yml')
+         .add(name='chunk_seg', driver='segment',
+              exec_yaml_path='preprocess/gif2chunk.yml',
+              replicas=3)
+         .add(name='doc_idx', driver='index-meta-doc',
+              exec_yaml_path='index/doc.yml')
+         .add(name='tf_encode', driver='encode',
+              exec_yaml_path='encode/encode.yml',
+              replicas=3, recv_from='chunk_seg')
+         .add(name='chunk_idx', driver='index-chunk-and-meta',
+              exec_yaml_path='index/npvec.yml')
+         .join(['doc_idx', 'chunk_idx'])
+         )
+
+.. highlight:: yaml
+.. code-block:: yaml
+
+    !Flow  # my-flow.yml
+    with:
+      driver_yaml_path: my-driver.yml
+    pods:
+      chunk_seg:
+        driver: segment
+        exec_yaml_path: preprocess/gif2chunk.yml
+        replicas: 3
+      doc_idx:
+        driver: index-meta-doc
+        exec_yaml_path: index/doc.yml
+      tf_encode:
+        driver: encode
+        exec_yaml_path: encode/encode.yml
+        recv_from: chunk_seg
+        replicas: 3
+      chunk_idx:
+        driver: index-chunk-and-meta
+        exec_yaml_path: index/npvec.yml
+      join_all:
+        driver: merge
+        recv_from: [doc_idx, chunk_idx]
+
+.. highlight:: python
+.. code-block:: python
+
+    from jina.flow import Flow
+    g = Flow.load_config('my-flow.yml')
+
+    assert(f==g)  # return True
+
+Note that you can replace the value of ``replicas`` with an environment variables ``$REPLICAS`` in the YAML and it will be expanded during :func:`load_config`.

@@ -24,7 +24,6 @@ class Pod:
         :param kwargs: unparsed argument in dict, if given the
         :param send_to: a list of names this Pod send message to
         :param recv_from: a list of names this Pod receive message from
-        :param cli_args:
         """
         self.peas = []
 
@@ -42,6 +41,9 @@ class Pod:
         self.deducted_head = None
         self.deducted_tail = None
         self.peas_args = self._parse_args()
+
+    def __eq__(self, other):
+        return all(getattr(self, v) == getattr(other, v) for v in ('name', 'send_to', 'recv_from'))
 
     def to_cli_command(self):
         if isinstance(self, FrontendPod):

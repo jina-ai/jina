@@ -129,7 +129,8 @@ class Flow:
 
         pp = data.get('pods', {})
         for pod_name, pod_attr in pp.items():
-            obj.add(name=pod_name, **pod_attr, copy_flow=False)
+            p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pod_attr.items()}
+            obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
 
         obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
 
@@ -228,7 +229,7 @@ class Flow:
         """
         if len(recv_from) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(recv_from) > 1')
-        return self.add(name='joiner', driver='merge', num_part=len(recv_from), recv_from=recv_from, *args, **kwargs)
+        return self.add(name='joiner', driver='merge', recv_from=recv_from, *args, **kwargs)
 
     def add(self,
             recv_from: Union[str, Tuple[str], List[str]] = None,
@@ -277,6 +278,7 @@ class Flow:
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
+        kwargs['num_part'] = len(recv_from)
         op_flow._pod_nodes[pod_name] = Pod(kwargs=kwargs, send_to=send_to, recv_from=recv_from)
 
         op_flow.set_last_pod(pod_name, False)
@@ -446,7 +448,7 @@ class Flow:
         else:
             b = other
 
-        return a._pod_edges == b._pod_edges
+        return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.RUNTIME)
     def _get_client(self, bytes_gen: Iterator[bytes] = None, **kwargs):

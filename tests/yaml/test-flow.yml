@@ -14,5 +14,5 @@ pods:
     driver: index-meta-doc
     replicas: 2
     recv_from: chunk_seg
-  join_all:
+  joiner:
     recv_from: [encode1, encode2]
