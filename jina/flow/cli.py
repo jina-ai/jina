@@ -5,6 +5,7 @@ if False:
     import argparse
 
 
-class FlowCLI(Flow):
+class FlowCLI:
     def __init__(self, args: 'argparse.Namespace'):
-        super().__init__(**vars(args))
+        with open(args.flow_yaml_path) as fp:
+            fl = Flow.load_config(fp)

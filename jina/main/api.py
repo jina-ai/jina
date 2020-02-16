@@ -31,3 +31,8 @@ def client(args):
     """Start a client connects to the frontend"""
     from ..clients.python import PyClient
     PyClient(args)
+
+
+def flow(args):
+    from ..flow.cli import FlowCLI
+    FlowCLI(args)

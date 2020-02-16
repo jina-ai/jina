@@ -84,8 +84,8 @@ class Driver:
             self.attach_to(pea)
 
         self.pending_msgs = defaultdict(list)  # type: Dict[str, List]
-        # always install the default handler
 
+        # always install the default handler
         driver_map = self.install_from_config(
             resource_filename('jina', '/'.join(('resources', 'drivers-default.yml'))),
             'default') if install_default else None
@@ -94,8 +94,10 @@ class Driver:
         if not driver_yaml_path:
             driver_yaml_path = resource_filename('jina', '/'.join(('resources', 'drivers-default.yml')))
         if driver_group:
-            self.logger.info('additional driver to be installed: %s:%s' % (driver_yaml_path, driver_group))
+            self.logger.info('driver %s from %s to be installed' % (driver_yaml_path, driver_group))
             self.install_from_config(driver_yaml_path, driver_group, driver_map)
+        else:
+            self.logger.warning('no driver is installed, this Pod/Pea can only handle control request then')
 
     def attach_to(self, pea: 'Pea'):
         """Attach this driver to a Pea

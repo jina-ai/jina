@@ -1,0 +1,13 @@
+!Flow
+with:
+  driver_yaml_path:
+  sse_logger: true
+pods:
+  chunk_seg:
+    driver: segment
+    replicas: 3
+  doc_idx:
+    driver: index-meta-doc
+    replicas: 2
+  join_all:
+    recv_from: [doc_idx, chunk_seg]

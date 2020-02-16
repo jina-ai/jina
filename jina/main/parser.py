@@ -89,22 +89,17 @@ def set_logger_parser(parser=None):
 
 
 def set_flow_parser(parser=None):
-    import sys
     if not parser:
         parser = set_base_parser()
     from ..enums import FlowOutputType
 
     gp = add_arg_group(parser, 'flow arguments')
-
-    gp.add_argument('--driver_yaml_path', type=valid_yaml_path,
-                    help='the driver map of the pod, it should be a readable stream or a valid file path')
-    gp.add_argument('--flow_yaml_path', type=valid_yaml_path,
-                    help='a yaml file represents a flow')
+    gp.add_argument('flow_yaml_path', type=valid_yaml_path, help='a yaml file represents a flow')
     gp.add_argument('--output_type', type=FlowOutputType.from_string,
                     choices=list(FlowOutputType), default=FlowOutputType.SHELL_PROC,
                     help='type of the output')
     gp.add_argument('--output_path', type=argparse.FileType('w'),
-                    default=sys.stdout, help='output path of the flow')
+                    help='output path of the flow')
 
     return parser
 
