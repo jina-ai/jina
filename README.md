@@ -65,4 +65,4 @@ The documentation is now available at `http://0.0.0.0:8080/`.  Removing `8080` f
 
 ## License
 
-If you have downloaded a copy of the GNES binary or source code, please note that Jina's binary and source code are both licensed under the [Apache 2.0](LICENSE).
+If you have downloaded a copy of the Jina binary or source code, please note that Jina's binary and source code are both licensed under the [Apache 2.0](LICENSE).
