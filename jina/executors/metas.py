@@ -93,6 +93,6 @@ defaults = {
     'name': None,
     'on_gpu': False,
     'warn_unnamed': os.environ.get('JINA_WARN_UNNAMED', False),
-    'max_snapshot': 0,  # depreciated
+    'max_snapshot': 0,  # deprecated
     'py_modules': None
 }
