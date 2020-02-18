@@ -13,11 +13,30 @@ The simplest way to run Jina is via the docker container.
 ### Run with docker image
 
 ```bash
-docker login -u USERNAME -p TOKEN docker.pkg.github.com
-docker run docker.pkg.github.com/jina-ai/jina/jina:master-debian
+docker run jinaai/jina:master-debian
 ```
 
-This command downloads the latest Jina image and runs it in a container. When the container runs, it prints an help message and exits.
+This command downloads the latest Jina image from [Docker Hub](https://hub.docker.com/repository/docker/jinaai/) and runs it in a container. When the container runs, it prints an help message and exits.
+
+<details>
+ <summary>Other Jina docker image mirrors: (click to expand...)</summary>
+
+#### Github Package
+
+```bash
+docker login -u USERNAME -p TOKEN docker.pkg.github.com
+docker run docker.pkg.github.com/jina-ai/jina/jina:[tag]
+```
+
+#### Tencent Cloud
+
+```bash
+docker login -u USERNAME -p TOKEN ccr.ccs.tencentyun.com
+docker run ccr.ccs.tencentyun.com/jina/jina:[tag]
+```
+
+
+</details>
 
 
 If you want to run Jina without Docker, please make sure you have Python 3.7 installed. 
