@@ -9,6 +9,9 @@ from ..enums import *
 from ..helper import random_port, random_identity
 from ..main.parser import set_pod_parser
 
+if False:
+    import argparse
+
 
 class Pod:
     """A Pod is a set of peas, which run in parallel. They share the same input and output socket.
@@ -146,8 +149,20 @@ class Pod:
 
     def __enter__(self):
         self.stack = ExitStack()
-        for s in self.all_args:
-            p = Pea(s)
+        # start head and tail
+        if self.peas_args['head']:
+            p = Pea(self.peas_args['head'])
+            self.peas.append(p)
+            self.stack.enter_context(p)
+
+        if self.peas_args['tail']:
+            p = Pea(self.peas_args['tail'])
+            self.peas.append(p)
+            self.stack.enter_context(p)
+
+        # start real peas and accumulate the storage id
+        for idx, s in enumerate(self.peas_args['peas']):
+            p = Pea(s, replica_id=idx)
             self.peas.append(p)
             self.stack.enter_context(p)
         return self

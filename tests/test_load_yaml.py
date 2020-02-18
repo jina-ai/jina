@@ -2,6 +2,7 @@ import unittest
 
 import ruamel.yaml
 
+from jina.helper import expand_env_var
 from tests import JinaTestCase
 
 
@@ -28,6 +29,9 @@ class MyTestCase(JinaTestCase):
 
         b = BaseExecutor.load_config('yaml/dummy_ext_exec_sucess.yml')
         self.assertEqual(b.__class__.__name__, 'DummyExternalIndexer')
+
+    def test_expand_env(self):
+        print(expand_env_var('${PATH}-${AA}'))
 
 
 if __name__ == '__main__':

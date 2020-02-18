@@ -1,0 +1,14 @@
+!CompoundExecutor
+components:
+  - !MetaProtoIndexer
+    with:
+      index_filename: tmp1
+    metas:
+      name: test1
+  - !MetaProtoIndexer
+    with:
+      index_filename: tmp2
+    metas:
+      name: test2
+metas:
+  name: compound1

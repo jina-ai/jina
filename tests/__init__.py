@@ -11,7 +11,10 @@ class JinaTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         for k in self.tmp_files:
             if os.path.exists(k):
-                os.remove(k)
+                if os.path.isfile(k):
+                    os.remove(k)
+                elif os.path.isdir(k):
+                    os.rmdir(k)
 
-    def add_tmpfile(self, path):
-        self.tmp_files.append(path)
+    def add_tmpfile(self, *path):
+        self.tmp_files.extend(path)

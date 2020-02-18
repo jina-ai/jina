@@ -166,9 +166,12 @@ def set_pod_parser(parser=None):
                      help='number of parallel peas in the pod running at the same time (i.e. replicas), '
                           '`port_in` and `port_out` will be set to random, '
                           'and routers will be added automatically when necessary')
-    gp4.add_argument('--parallel_type', '--replica_type', type=ParallelType.from_string, choices=list(ParallelType),
+    gp4.add_argument('--parallel_type', type=ParallelType.from_string, choices=list(ParallelType),
                      default=ParallelType.PUSH_NONBLOCK,
                      help='parallel type of the concurrent peas')
+    gp4.add_argument('--separated_workspace', action='store_true', default=False,
+                     help='the data and config files are separated for each pea in this pod, '
+                          'only effective when `num_parallel` > 1')
 
     gp5 = add_arg_group(parser, 'pod messaging arguments')
     gp5.add_argument('--check_version', action='store_true', default=False,

@@ -35,7 +35,7 @@ class NumpyIndexer(BaseIndexer):
 
         :return: a gzip file stream
         """
-        return gzip.open(self.data_path, 'ab', compresslevel=self.compress_level)
+        return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
 
     def get_query_handler(self) -> Optional['np.ndarray']:
         """Open a gzip file and load it as a numpy ndarray
@@ -43,7 +43,7 @@ class NumpyIndexer(BaseIndexer):
         :return: a numpy ndarray of vectors
         """
         if self.num_dim and self.dtype:
-            with gzip.open(self.data_path, 'rb') as fp:
+            with gzip.open(self.index_abspath, 'rb') as fp:
                 vecs = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
 
         if self.key_bytes and self.key_dtype:
@@ -62,7 +62,7 @@ class NumpyIndexer(BaseIndexer):
 
         :return: a gzip file stream
         """
-        return gzip.open(self.data_path, 'wb', compresslevel=self.compress_level)
+        return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         if not self.num_dim:
@@ -83,7 +83,7 @@ class NumpyIndexer(BaseIndexer):
                 "keys' dtype %s does not match with indexers keys's dtype: %s" %
                 (keys.dtype.name, self.key_dtype))
 
-        self.add_handler.write(vectors.tobytes())
+        self.write_handler.write(vectors.tobytes())
         self.key_bytes += keys.tobytes()
         self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]

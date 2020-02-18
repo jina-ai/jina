@@ -51,3 +51,11 @@ class FlowMissingPodError(Exception):
 
 class FlowBuildLevelError(Exception):
     """Flow exception when required build level is higher than the current build level."""
+
+
+class EmptyExecutorYAML(Exception):
+    """The yaml config file is empty, nothing to read from there."""
+
+
+class BadWorkspace(Exception):
+    """Can not determine the separate storage strategy for the executor"""

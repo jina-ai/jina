@@ -15,10 +15,11 @@ The executor YAML config follows the syntax below.
 
     !MetaProtoIndexer
     with:
-      data_path: $TEST_WORKDIR/doc.gzip
+      index_filename: doc.gzip
     metas:  # <- metas defined in :mod``
       name: doc_indexer  # a customized name
-      work_dir: $TEST_WORKDIR
+      workspace: $TEST_WORKDIR
+
 
 .. confval:: !SomeExecutorClass
 
@@ -67,12 +68,12 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
       with:
         num_dim: -1
         index_key: HNSW32
-        data_path: $TEST_WORKDIR/vec.idx
+        index_filename: vec.idx
       metas:
         name: my_vec_indexer
     - !MetaProtoIndexer
       with:
-        data_path: $TEST_WORKDIR/chunk.gzip
+        index_filename: chunk.gzip
       metas:
         name: chunk_meta_indexer
     with:
@@ -87,7 +88,7 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
           my_vec_indexer: add
     metas:
       name: chunk_compound_indexer
-      work_dir: $TEST_WORKDIR
+      workspace: $TEST_WORKDIR
 
 .. confval:: components
 
