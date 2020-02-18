@@ -10,18 +10,27 @@ jobs:
       matrix:
         linux: [debian] #[alpine, debian]
     steps:
-    - uses: actions/checkout@master
-    - name: Set env
-      run: |
-        echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
-        echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
-      with:
-        name: jina-ai/jina/jina
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: docker.pkg.github.com
-        dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
-        buildargs: BUILD_DATE, VCS_REF
-        tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
+      - uses: actions/checkout@master
+      - name: Set env
+        run: |
+          echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
+          echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      - name: Publish to Github Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jina-ai/jina/jina
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.pkg.github.com
+          dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
+          buildargs: BUILD_DATE, VCS_REF
+          tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
+      - name: Publish to Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jinaai/jina
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
+          buildargs: BUILD_DATE, VCS_REF
+          tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
