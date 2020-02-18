@@ -34,13 +34,13 @@ jobs:
           dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
           buildargs: BUILD_DATE, VCS_REF
           tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
-      - name: Publish to Tencent Cloud Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: jina/jina
-          username: ${{ secrets.TCLOUD_USER }}
-          password: ${{ secrets.TCLOUD_PASSWORD }}
-          registry: ccr.ccs.tencentyun.com
-          dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF
-          tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
+#      - name: Publish to Tencent Cloud Registry
+#        uses: elgohr/Publish-Docker-Github-Action@master
+#        with:
+#          name: jina/jina
+#          username: ${{ secrets.TCLOUD_USER }}
+#          password: ${{ secrets.TCLOUD_PASSWORD }}
+#          registry: ccr.ccs.tencentyun.com
+#          dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
+#          buildargs: BUILD_DATE, VCS_REF
+#          tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
