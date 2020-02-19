@@ -4,14 +4,14 @@ with:
   sse_logger: true
 pods:
   chunk_seg:
-    driver: segment
+    driver_group: segment
     replicas: 3
   encode1:
-    driver: index-meta-doc
+    driver_group: index-meta-doc
     replicas: 2
     recv_from: chunk_seg
   encode2:
-    driver: index-meta-doc
+    driver_group: index-meta-doc
     replicas: 2
     recv_from: chunk_seg
   joiner:

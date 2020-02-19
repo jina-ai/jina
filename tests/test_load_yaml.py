@@ -1,7 +1,6 @@
 import unittest
 
 import ruamel.yaml
-
 from jina.helper import expand_env_var
 from tests import JinaTestCase
 

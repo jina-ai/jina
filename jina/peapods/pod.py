@@ -257,7 +257,7 @@ def _set_peas_args(args, head_args, tail_args):
 
 def _set_router_args(args):
     args.exec_yaml_path = None
-    args.driver = 'route'
+    args.driver_group = 'route'
     args.name = 'router'
 
 

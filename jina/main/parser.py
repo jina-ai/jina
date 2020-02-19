@@ -122,10 +122,10 @@ def set_pod_parser(parser=None):
     gp1.add_argument('--exec_yaml_path', type=valid_yaml_path,
                      help='the yaml config of the executor, it should be a readable stream,'
                           ' or a valid file path, or a supported class name.')
-    gp1.add_argument('--driver', type=str,
-                     help='the driver group to be installed on this pod')
     gp1.add_argument('--driver_yaml_path', type=valid_yaml_path,
                      help='the driver map of the pod, it should be a readable stream or a valid file path')
+    gp1.add_argument('--driver_group', type=str,
+                     help='the driver group to be installed on this pod')
 
     gp2 = add_arg_group(parser, 'pod network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),

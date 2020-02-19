@@ -229,7 +229,7 @@ class Flow:
         """
         if len(recv_from) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(recv_from) > 1')
-        return self.add(name='joiner', driver='merge', recv_from=recv_from, *args, **kwargs)
+        return self.add(name='joiner', driver_group='merge', recv_from=recv_from, *args, **kwargs)
 
     def add(self,
             recv_from: Union[str, Tuple[str], List[str]] = None,
@@ -255,7 +255,7 @@ class Flow:
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
-        driver_type = kwargs.get('driver', None)
+        driver_type = kwargs.get('driver_group', None)
         pod_name = kwargs.get('name', None)
 
         if driver_type and driver_type not in op_flow.support_drivers:

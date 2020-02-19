@@ -49,9 +49,9 @@ class FrontendPea:
         def __init__(self, args, logger):
             super().__init__()
             self.args = args
-            self.name = args.name or args.driver or self.__class__.__name__
+            self.name = args.name or args.driver_group or self.__class__.__name__
             self.logger = logger or get_logger(self.name, **vars(args))
-            self.driver = Driver(self, self.args.driver_yaml_path, self.args.driver)
+            self.driver = Driver(self, self.args.driver_yaml_path, self.args.driver_group)
             self.driver.verify()
 
         def recv_callback(self, msg):

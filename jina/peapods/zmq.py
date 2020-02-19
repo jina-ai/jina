@@ -34,7 +34,7 @@ class Zmqlet:
         :param logger: the logger to use
         """
         self.args = args
-        self.name = args.name or args.driver or self.__class__.__name__
+        self.name = args.name or args.driver_group or self.__class__.__name__
         self.logger = logger or get_logger(self.name, **vars(args))
         self.send_recv_kwargs = dict(
             check_version=self.args.check_version,

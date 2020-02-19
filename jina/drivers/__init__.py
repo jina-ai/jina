@@ -154,10 +154,10 @@ class Driver:
 
         return driver_map
 
-    def install(self, driver: Dict) -> None:
-        """ Install a group of handlers, pre- and post-hooks into this driver
+    def install(self, driver_group: Dict) -> None:
+        """ Install a group of handlers, pre- and post-hooks into this driver_group
 
-        :param driver: the driver map to be installed
+        :param driver_group: the driver_group map to be installed
 
         Example YAML spec:
 
@@ -172,15 +172,15 @@ class Driver:
 
         """
 
-        if 'handlers' in driver:
-            for k, v in driver['handlers'].items():
+        if 'handlers' in driver_group:
+            for k, v in driver_group['handlers'].items():
                 self.add_handlers(import_driver_fns(funcs=v), _req_key_map[k])
 
-        if 'pre_hooks' in driver:
-            self.add_pre_hook(import_driver_fns(funcs=driver['pre_hooks']))
+        if 'pre_hooks' in driver_group:
+            self.add_pre_hook(import_driver_fns(funcs=driver_group['pre_hooks']))
 
-        if 'post_hooks' in driver:
-            self.add_pre_hook(import_driver_fns(funcs=driver['post_hooks']))
+        if 'post_hooks' in driver_group:
+            self.add_pre_hook(import_driver_fns(funcs=driver_group['post_hooks']))
 
     def verify(self):
         """ Validate this driver to check if it is usable, otherwise raise a ``DriverNotInstalled`` exception

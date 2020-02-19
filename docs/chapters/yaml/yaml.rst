@@ -110,16 +110,17 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
 :class:`Driver` YAML Sytanx
 ---------------------------
 
-:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.Pod` and :mod:`jina.executors`. A driver map is a collection of drivers which can be referred by the Pod via CLI (``jina pod --driver_yaml_path --driver``).
+:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.Pod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the Pod via CLI (``jina pod --driver_yaml_path --driver_group``).
 
 .. highlight:: yaml
 .. code-block:: yaml
 
+    # this YAML files is a "Driver Map"
     drivers:
-      encode:
+      encode:  # <== this is a "Driver Group"
         handlers:
           /:
-            - handler_encode_doc: encode
+            - handler_encode_doc: encode   # this is a "Driver" attached to a Executor function
 
       segment:
         handlers:
@@ -139,7 +140,7 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
 
 .. confval:: drivers
 
-    A map of the names to the handlers, the name can be referred in ``jina pod --driver``
+    A map of the driver group to the handlers, the name can be referred in ``jina pod --driver_group``
 
 .. confval:: handlers
 
@@ -178,14 +179,14 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
       sse_logger: true
     pods:
       chunk_seg:
-        driver: segment
+        driver_group: segment
         replicas: 3
       encode1:
-        driver: index-meta-doc
+        driver_group: index-meta-doc
         replicas: 2
         recv_from: chunk_seg
       encode2:
-        driver: index-meta-doc
+        driver_group: index-meta-doc
         replicas: 2
         recv_from: chunk_seg
       join_all:
@@ -207,15 +208,15 @@ The flows given by the following Python code and the YAML config are identical.
 .. code-block:: python
 
     f = (Flow(driver_yaml_path='my-driver.yml')
-         .add(name='chunk_seg', driver='segment',
+         .add(name='chunk_seg', driver_group='segment',
               exec_yaml_path='preprocess/gif2chunk.yml',
               replicas=3)
-         .add(name='doc_idx', driver='index-meta-doc',
+         .add(name='doc_idx', driver_group='index-meta-doc',
               exec_yaml_path='index/doc.yml')
-         .add(name='tf_encode', driver='encode',
+         .add(name='tf_encode', driver_group='encode',
               exec_yaml_path='encode/encode.yml',
               replicas=3, recv_from='chunk_seg')
-         .add(name='chunk_idx', driver='index-chunk-and-meta',
+         .add(name='chunk_idx', driver_group='index-chunk-and-meta',
               exec_yaml_path='index/npvec.yml')
          .join(['doc_idx', 'chunk_idx'])
          )
@@ -228,22 +229,22 @@ The flows given by the following Python code and the YAML config are identical.
       driver_yaml_path: my-driver.yml
     pods:
       chunk_seg:
-        driver: segment
+        driver_group: segment
         exec_yaml_path: preprocess/gif2chunk.yml
         replicas: 3
       doc_idx:
-        driver: index-meta-doc
+        driver_group: index-meta-doc
         exec_yaml_path: index/doc.yml
       tf_encode:
-        driver: encode
+        driver_group: encode
         exec_yaml_path: encode/encode.yml
         recv_from: chunk_seg
         replicas: 3
       chunk_idx:
-        driver: index-chunk-and-meta
+        driver_group: index-chunk-and-meta
         exec_yaml_path: index/npvec.yml
       join_all:
-        driver: merge
+        driver_group: merge
         recv_from: [doc_idx, chunk_idx]
 
 .. highlight:: python

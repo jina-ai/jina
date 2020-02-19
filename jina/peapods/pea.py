@@ -69,7 +69,7 @@ class Pea(metaclass=PeaMeta):
         """
         super().__init__()
         self.args = args
-        self.name = args.name or args.driver or self.__class__.__name__
+        self.name = args.name or args.driver_group or self.__class__.__name__
         self.logger = get_logger(self.name, **vars(args))
         self.is_ready = self._get_event()
         self.is_event_loop = self._get_event()
@@ -84,7 +84,7 @@ class Pea(metaclass=PeaMeta):
         """Load driver to this Pea, specified by ``driver_yaml_path`` and ``driver`` from CLI arguments
 
         """
-        self.driver = Driver(self, self.args.driver_yaml_path, self.args.driver)
+        self.driver = Driver(self, self.args.driver_yaml_path, self.args.driver_group)
         self.driver.verify()
 
     def load_executor(self):
