@@ -1,25 +1,25 @@
-name: Docker BuildX
-
-on:
-  push:
-    branches: master
-
-jobs:
-  buildx:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v1
-        with:
-          version: latest
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
-      - name: Run Buildx
-        run: |
-          docker buildx build \
-            --platform linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x \
-            --output "type=image,push=false" \
-            --file ./Dockerfiles/alpine.Dockerfile .
+#name: Docker BuildX
+#
+#on:
+#  push:
+#    branches: master
+#
+#jobs:
+#  buildx:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#      - name: Set up Docker Buildx
+#        id: buildx
+#        uses: crazy-max/ghaction-docker-buildx@v1
+#        with:
+#          version: latest
+#      - name: Available platforms
+#        run: echo ${{ steps.buildx.outputs.platforms }}
+#      - name: Run Buildx
+#        run: |
+#          docker buildx build \
+#            --platform linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
+#            --output "type=image,push=false" \
+#            --file ./Dockerfiles/alpine.Dockerfile .
