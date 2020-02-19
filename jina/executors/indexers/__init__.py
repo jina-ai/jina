@@ -20,17 +20,13 @@ class BaseIndexer(BaseExecutor):
     .. note::
         Calling :func:`save` to save a :class:`BaseIndexer` will create
         more than one files. One is the serialized version of the :class:`BaseIndexer` object, often ends with ``.bin``
-        the other is the file specified by the ``data_path``.
     """
 
     def __init__(self,
-                 data_path: str,
+                 index_filename: str,
                  *args, **kwargs):
-        """
-        :param data_path: the index file path
-        """
         super().__init__(*args, **kwargs)
-        self.data_path = data_path
+        self.index_filename = index_filename  #: the file name of the stored index, no path is required
         self._size = 0
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
@@ -40,6 +36,11 @@ class BaseIndexer(BaseExecutor):
         :param vectors: vector representations in B x D
         """
         pass
+
+    def post_init(self):
+        """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
+        self._query_handler = None
+        self._write_handler = None
 
     def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
@@ -51,50 +52,52 @@ class BaseIndexer(BaseExecutor):
         """
         pass
 
-    def post_init(self):
-        """Load indexed data or create new index from ``data_path``"""
-        super().post_init()
+    @property
+    def index_abspath(self) -> str:
+        """Get the file path of the index storage
 
-        self.query_handler, self.add_handler = self._load_index()
+        """
+        return self.get_file_from_workspace(self.index_filename)
 
-        if self.query_handler is None:
+    @property
+    def query_handler(self):
+        """A readable and indexable object, could be dict, map, list, numpy array etc. """
+
+        if self._query_handler is None and os.path.exists(self.index_abspath):
+            self._query_handler = self.get_query_handler()
+
+        if self._query_handler is None:
             self.logger.warning('"query_handler" is None, you can not query from it. '
                                 'If you are indexing data, that is fine. '
                                 'It just means you can not do querying-while-indexing, and you later have to '
                                 'switch to query mode to use this index')
+        return self._query_handler
 
-        if self.add_handler is None:
+    @property
+    def write_handler(self):
+        """A writable and indexable object, could be dict, map, list, numpy array etc. """
+
+        if self._write_handler is None:
+            if os.path.exists(self.index_abspath):
+                self._write_handler = self.get_add_handler()
+            else:
+                self._write_handler = self.get_create_handler()
+        if self._write_handler is None:
             self.logger.warning('"write_handler" is None, you may not add data to this index, '
                                 'unless "write_handler" is later assigned with a meaningful value')
-
-    def _load_index(self):
-        if hasattr(self, 'data_path') and self.data_path:
-            try:
-                if not os.path.exists(self.data_path):
-                    raise FileNotFoundError('"data_path" %s is not exist' % self.data_path)
-                if os.path.isdir(self.data_path):
-                    raise IsADirectoryError('"data_path" must be a file path, but %s is a directory' % self.data_path)
-                self.logger.info('loading index from %s ...' % self.data_path)
-                return self.get_query_handler(), self.get_add_handler()
-            except (RuntimeError, FileNotFoundError, IsADirectoryError):
-                self.logger.warning('fail to load index from %s, will create an empty one' % self.data_path)
-                return None, self.get_create_handler()
-            except FileExistsError:
-                self.logger.error('%s already exists and exist_mode is set to exclusive, '
-                                  'will stop to prevent accidentally overriding data' % self.data_path)
-                raise FileExistsError
+        return self._write_handler
 
     def get_query_handler(self):
-        """Get a *readable* index handler when the ``data_path`` already exist, need to be overrided
+        """Get a *readable* index handler when the ``index_abspath`` already exist, need to be overrided
         """
         raise NotImplementedError
 
     def get_add_handler(self):
-        """Get a *writable* index handler when the ``data_path`` already exist, need to be overrided"""
+        """Get a *writable* index handler when the ``index_abspath`` already exist, need to be overrided"""
         raise NotImplementedError
 
     def get_create_handler(self):
-        """Get a *writable* index handler when the ``data_path`` does not exist, need to be overrided"""
+        """Get a *writable* index handler when the ``index_abspath`` does not exist, need to be overrided"""
         raise NotImplementedError
 
     @property
@@ -110,10 +113,10 @@ class BaseIndexer(BaseExecutor):
     def close(self):
         """Close all file-handlers and release all resources. """
         self.flush()
-        call_obj_fn(self.add_handler, 'close')
+        call_obj_fn(self.write_handler, 'close')
         call_obj_fn(self.query_handler, 'close')
         super().close()
 
     def flush(self):
-        """Flush all buffered data to ``data_path`` """
-        call_obj_fn(self.add_handler, 'flush')
+        """Flush all buffered data to ``index_abspath`` """
+        call_obj_fn(self.write_handler, 'flush')

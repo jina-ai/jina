@@ -4,16 +4,16 @@ components:
     with:
       num_dim: -1
       index_key: HNSW32
-      data_path: $TEST_WORKDIR/vec.idx
+      index_filename: vec.idx
     metas:
       name: my_vec_indexer  # a customized name
-      work_dir: $TEST_WORKDIR
+      workspace: $TEST_WORKDIR
   - !MetaProtoIndexer
     with:
-      data_path: $TEST_WORKDIR/chunk.gzip
+      index_filename: chunk.gzip
     metas:
       name: chunk_meta_indexer
-      work_dir: $TEST_WORKDIR
+      workspace: $TEST_WORKDIR
 with:
   routes:
     meta_add:
@@ -26,4 +26,4 @@ with:
       my_vec_indexer: add
 metas:
   name: chunk_compound_indexer
-  work_dir: $TEST_WORKDIR
+  workspace: $TEST_WORKDIR

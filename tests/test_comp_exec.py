@@ -78,7 +78,7 @@ class MyTestCase(JinaTestCase):
     def test_compound_from_yaml(self):
         a = BaseExecutor.load_config('yaml/npvec.yml')
         for c in a.components:
-            self.add_tmpfile(c.data_path)
+            self.add_tmpfile(c.index_abspath)
         self.assertTrue(isinstance(a, CompoundExecutor))
         self.assertTrue(callable(getattr(a, 'add')))
         self.assertTrue(callable(getattr(a, 'query')))

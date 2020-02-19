@@ -1,0 +1,10 @@
+!CompoundExecutor
+components:
+  - !BaseExecutor
+    metas:
+      name: test1
+  - !BaseExecutor
+    metas:
+      name: test2
+metas:
+  name: compound0

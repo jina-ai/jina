@@ -26,7 +26,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         :type: int
         :default: ``None``
 
-    .. confval:: work_dir
+    .. confval:: workspace
 
         the working directory, for dumping and loading serialized executor.
 
@@ -57,9 +57,32 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         :type: str/List[str]
         :default: ``None``
 
+    .. confval:: replica_id
+
+        the integer index used for distinguish each replica of this executor, useful in :attr:`replica_workspace`
+
+        :type: int
+        :default: 0
+
+    .. confval:: separated_workspace
+
+        whether to isolate the data of the replicas of this executor. If ``True``, then each replica works in its own
+        workspace specified in :attr:`replica_workspace`
+
+        :type: bool
+        :default: ``False``
+        
+    .. confval:: replica_workspace
+
+        the workspace of each replica, useful when :attr:`separated_workspace` is set to True. All data and IO operations
+        related to this replica will be conducted under this workspace. It is often set as the sub-directory of :attr:`workspace`.
+
+        :type: str
+        :default: ``{workspace}/{name}-{replica_id}``
+
 
     .. warning::
-        ``name`` and ``work_dir`` must be set if you want to serialize/deserialize this executor.
+        ``name`` and ``workspace`` must be set if you want to serialize/deserialize this executor.
 
 
 
@@ -74,7 +97,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         metas:
           name: my_transformer  # a customized name
           is_trained: true  # indicate the model has been trained
-          work_dir: ./  # path for serialize/deserialize
+          workspace: ./  # path for serialize/deserialize
 
 .. note::
     The overwrite priority is:
@@ -89,10 +112,13 @@ defaults = {
     'is_trained': False,
     'is_updated': False,
     'batch_size': None,
-    'work_dir': os.environ.get('JINA_EXECUTOR_WORKDIR', os.getcwd()),
+    'workspace': os.environ.get('JINA_EXECUTOR_WORKDIR', os.getcwd()),
     'name': None,
     'on_gpu': False,
     'warn_unnamed': os.environ.get('JINA_WARN_UNNAMED', False),
-    'max_snapshot': 0,  # deprecated
-    'py_modules': None
+    'max_snapshot': 0,  # depreciated
+    'py_modules': None,
+    'replica_id': 0,
+    'separated_workspace': False,
+    'replica_workspace': '{workspace}/{name}-{replica_id}',
 }

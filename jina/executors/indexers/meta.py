@@ -15,7 +15,7 @@ class MetaProtoIndexer(BaseIndexer):
 
     def get_query_handler(self):
         r = {}
-        with gzip.open(self.data_path, 'rt') as fp:
+        with gzip.open(self.index_abspath, 'rt') as fp:
             for l in fp:
                 if l:
                     tmp = json.loads(l)
@@ -28,7 +28,7 @@ class MetaProtoIndexer(BaseIndexer):
         """Append to the existing gzip file using text appending mode """
 
         # note this write mode must be append, otherwise the index will be overwrite in the search time
-        return gzip.open(self.data_path, 'at', compresslevel=self.compress_level)
+        return gzip.open(self.index_abspath, 'at', compresslevel=self.compress_level)
 
     def get_create_handler(self):
         """Creat a new gzip file"""
@@ -39,8 +39,8 @@ class MetaProtoIndexer(BaseIndexer):
 
         :param obj: an object can be jsonify
         """
-        json.dump(obj, self.add_handler)
-        self.add_handler.write('\n')
+        json.dump(obj, self.write_handler)
+        self.write_handler.write('\n')
 
     def query(self, key: int) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
         """ Find the protobuf chunk/doc using id

@@ -5,12 +5,15 @@ import tempfile
 import uuid
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, Union, TypeVar, Type, List, TextIO
 
 import ruamel.yaml.constructor
+from ruamel.yaml import StringIO
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import defaults
+from ..excepts import EmptyExecutorYAML, BadWorkspace
 from ..helper import yaml, print_load_table, PathImporter, expand_env_var
 from ..logging.base import get_logger
 from ..logging.profile import profiling
@@ -167,7 +170,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
         The file name ends with `.bin`.
         """
-        return os.path.join(self.work_dir, '%s.bin' % self.name)
+        return self.get_file_from_workspace('%s.bin' % self.name)
 
     @property
     def config_abspath(self) -> str:
@@ -175,7 +178,28 @@ class BaseExecutor(metaclass=ExecutorType):
 
         The file name ends with `.yml`.
         """
-        return os.path.join(self.work_dir, '%s.yml' % self.name)
+        return self.get_file_from_workspace('%s.yml' % self.name)
+
+    @property
+    def current_workspace(self) -> str:
+        """ Get the path of the current workspace.
+
+        :return: if ``separated_workspace`` is set to ``False`` then ``metas.workspace`` is returned,
+                otherwise the ``metas.replica_workspace`` is returned
+        """
+        work_dir = self.replica_workspace if self.separated_workspace else self.workspace  # type: str
+        work_dir = work_dir.format(**self.__dict__)
+        return work_dir
+
+    def get_file_from_workspace(self, name: str) -> str:
+        """Get a usable file path under the current workspace
+
+        :param name: the name of the file
+
+        :return depending on ``metas.separated_workspace`` the file could be located in ``metas.workspace`` or ``metas.replica_workspace``
+        """
+        Path(self.current_workspace).mkdir(parents=True, exist_ok=True)
+        return os.path.join(self.current_workspace, name)
 
     def __getstate__(self):
         d = dict(self.__dict__)
@@ -261,10 +285,14 @@ class BaseExecutor(metaclass=ExecutorType):
         return True
 
     @classmethod
-    def load_config(cls: Type[AnyExecutor], filename: Union[str, TextIO]) -> AnyExecutor:
+    def load_config(cls: Type[AnyExecutor], filename: Union[str, TextIO], separated_workspace: bool = False,
+                    replica_id: int = None) -> AnyExecutor:
         """Build an executor from a YAML file.
 
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
+        :param separated_workspace: the dump and data files associated to this executor will be stored separately for
+                each replica, which will be indexed by the ``replica_id``
+        :param replica_id: the id of the storage of this replica, only effective when ``separated_workspace=True``
         :return: an executor object
         """
         if not filename: raise FileNotFoundError
@@ -272,25 +300,37 @@ class BaseExecutor(metaclass=ExecutorType):
         if isinstance(filename, str):
             # first scan, find if external modules are specified
             with open(filename, encoding='utf8') as fp:
-                # the first line should always starts with !ClassName
-                fp.readline()
-                tmp = yaml.load(fp)
-                if tmp and 'metas' in tmp and 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
-                    mod = tmp['metas']['py_modules']
+                # ignore all lines start with ! because they could trigger the deserialization of that class
+                safe_yml = '\n'.join(v if not v.startswith('!') else v.replace('!', '__tag: ') for v in fp)
+                tmp = yaml.load(safe_yml)
+                if tmp:
+                    if 'metas' in tmp and 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
+                        mod = tmp['metas']['py_modules']
 
-                    if isinstance(mod, str):
-                        if not os.path.isabs(mod):
-                            mod = os.path.join(os.path.dirname(filename), mod)
-                        PathImporter.add_modules(mod)
-                    elif isinstance(mod, list):
-                        mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(filename), m) for m in mod]
-                        PathImporter.add_modules(*mod)
-                    else:
-                        raise TypeError('%r is not acceptable, only str or list are acceptable' % type(mod))
+                        if isinstance(mod, str):
+                            if not os.path.isabs(mod):
+                                mod = os.path.join(os.path.dirname(filename), mod)
+                            PathImporter.add_modules(mod)
+                        elif isinstance(mod, list):
+                            mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(filename), m) for m in mod]
+                            PathImporter.add_modules(*mod)
+                        else:
+                            raise TypeError('%r is not acceptable, only str or list are acceptable' % type(mod))
+                    if separated_workspace:
+                        if 'metas' not in tmp:
+                            tmp['metas'] = {}
+                        tmp['metas']['separated_workspace'] = True
+                        if replica_id is not None or isinstance(replica_id, int):
+                            tmp['metas']['replica_id'] = replica_id
+                        else:
+                            raise BadWorkspace
+                else:
+                    raise EmptyExecutorYAML('%s is empty? nothing to read from there' % filename)
 
-            # second scan, deserialize from the yaml
-            with open(filename, encoding='utf8') as fp:
-                return yaml.load(fp)
+                stream = StringIO()
+                yaml.dump(tmp, stream)
+                tmp_s = stream.getvalue().strip().replace('__tag: ', '!')
+                return yaml.load(tmp_s)
         else:
             with filename:
                 return yaml.load(filename)
@@ -360,9 +400,11 @@ class BaseExecutor(metaclass=ExecutorType):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 
-        _jina_config = data.get('metas', {})
+        _jina_config = {k: v for k, v in defaults.items()}
+        _jina_config.update(data.get('metas', {}))
         for k, v in _jina_config.items():
             _jina_config[k] = expand_env_var(v)
+
         if _jina_config:
             data['metas'] = _jina_config
 
@@ -404,9 +446,19 @@ class BaseExecutor(metaclass=ExecutorType):
     @staticmethod
     def _get_dump_path_from_config(jina_config: Dict):
         if 'name' in jina_config:
-            dump_path = os.path.join(jina_config.get('work_dir', os.getcwd()), '%s.bin' % jina_config['name'])
-            if os.path.exists(dump_path):
-                return dump_path
+            if jina_config.get('separated_workspace', False):
+                if 'replica_id' in jina_config and isinstance(jina_config['replica_id'], int):
+                    work_dir = jina_config['replica_workspace'].format(**jina_config)
+                    dump_path = os.path.join(work_dir, '%s.%s' % (jina_config['name'], 'bin'))
+                    if os.path.exists(dump_path):
+                        return dump_path
+                else:
+                    raise BadWorkspace('separated_workspace=True but replica_id is unset')
+            else:
+                dump_path = os.path.join(jina_config.get('workspace', os.getcwd()),
+                                         '%s.%s' % (jina_config['name'], 'bin'))
+                if os.path.exists(dump_path):
+                    return dump_path
 
     @staticmethod
     def _dump_instance_to_yaml(data):

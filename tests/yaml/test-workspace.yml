@@ -1,0 +1,5 @@
+!BaseExecutor
+metas:
+  name: test1
+  separted_workspace: true
+  replica_id: 0

@@ -21,6 +21,13 @@ Jina Documentation
 
 .. toctree::
    :maxdepth: 1
+   :caption: Frequently Asked Questions
+
+   chapters/faq/user
+   chapters/faq/dev
+
+.. toctree::
+   :maxdepth: 1
    :caption: Miscs
 
    chapters/troubleshooting.md

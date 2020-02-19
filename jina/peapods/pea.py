@@ -61,10 +61,11 @@ class Pea(metaclass=PeaMeta):
         else:
             raise NotImplementedError
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', replica_id: int = None):
         """ Create a new :class:`Pea` object
 
         :param args: the arguments received from the CLI
+        :param replica_id: the id used to separate the storage of each pea, only used when ``args.separate_storage=True``
         """
         super().__init__()
         self.args = args
@@ -75,6 +76,7 @@ class Pea(metaclass=PeaMeta):
 
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.last_dump_time = time.perf_counter()
+        self.replica_id = replica_id
 
         self._timer = TimeDict()
 
@@ -95,7 +97,8 @@ class Pea(metaclass=PeaMeta):
         """
         if self.args.exec_yaml_path:
             try:
-                self.executor = BaseExecutor.load_config(self.args.exec_yaml_path)
+                self.executor = BaseExecutor.load_config(self.args.exec_yaml_path,
+                                                         self.args.separated_workspace, self.replica_id)
             except FileNotFoundError:
                 raise ExecutorFailToLoad('can not executor from %s' % self.args.exec_yaml_path)
         else:
@@ -110,7 +113,7 @@ class Pea(metaclass=PeaMeta):
         if self.args.read_only:
             self.logger.info('executor is not saved as "read_only" is set to true for this Pea')
         elif not hasattr(self, 'executor'):
-            self.logger.info('this Pea contains no executor, no need to save')
+            self.logger.debug('this Pea contains no executor, no need to save')
         elif ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
             if self.executor.save():
                 self.logger.info('dumped changes to the executor, %3.0fs since last the save'

@@ -30,6 +30,10 @@ class CompoundExecutor(BaseExecutor):
             say:
             - dummyB-e3acc910
             - say
+
+    .. note::
+        All components ``workspace` and ``replica_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
+
     """
 
     class _FnWrapper:
@@ -169,10 +173,18 @@ class CompoundExecutor(BaseExecutor):
             self._components = comps()
             if not isinstance(self._components, list):
                 raise TypeError('components expect a list of executors, receiving %r' % type(self._components))
+            self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
         else:
             self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
+
+    def _set_comp_workspace(self):
+        # overrider the workspace setting for all components
+        for c in self.components:
+            c.separated_workspace = self.separated_workspace
+            c.workspace = self.workspace
+            c.replica_workspace = self.current_workspace
 
     def _resolve_routes(self):
         if self._routes:
@@ -206,13 +218,14 @@ class CompoundExecutor(BaseExecutor):
             raise AttributeError('bad names: %s and %s' % (comp_name, comp_fn_name))
 
     def _set_routes(self) -> None:
+        import inspect
         # add all existing routes
         r = defaultdict(list)
         common = {}  # set(dir(BaseExecutor()))
 
         for c in self.components:
-            for m in dir(c):
-                if callable(getattr(c, m)) and not m.startswith('_') and m not in common:
+            for m, _ in inspect.getmembers(c, predicate=inspect.ismethod):
+                if not m.startswith('_') and m not in common:
                     r[m].append((c.name, getattr(c, m)))
 
         new_routes = []
