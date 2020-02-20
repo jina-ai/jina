@@ -6,7 +6,7 @@ from .. import BaseExecutor
 
 
 class BaseRanker(BaseExecutor):
-    """The base class for a `Scorer`. A `Scorer` translates the chunk-wise score (distance) to the doc-wise score.
+    """The base class for a `Ranker`. A `Ranker` translates the chunk-wise score (distance) to the doc-wise score.
 
     In the query-time, :class:`BaseRanker` is an almost-always required component.
     Because in the end we want to retrieve top-k documents of given query-document not top-k chunks of
