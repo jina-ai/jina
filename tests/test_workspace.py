@@ -77,7 +77,3 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(a[0].save_abspath, a[1].save_abspath, a[0].index_abspath, a[1].index_abspath,
                              a.current_workspace)
 
-        # now load them
-        for j in range(3):
-            b = BaseExecutor.load_config('yaml/test-compound-indexer2.yml', True, j)
-            print(b['test_numpy'].int2ext_key)
