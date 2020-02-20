@@ -77,6 +77,9 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(a[0].save_abspath, a[1].save_abspath, a[0].index_abspath, a[1].index_abspath,
                              a.current_workspace)
 
+        recovered_vecs = []
         for j in range(3):
             a = BaseExecutor.load_config('yaml/test-compound-indexer2.yml', True, j)
-            print(a)
+            recovered_vecs.append(a[1].query_handler)
+
+        np.testing.assert_almost_equal(all_vecs, np.concatenate(recovered_vecs))
