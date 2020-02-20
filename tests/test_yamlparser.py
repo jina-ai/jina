@@ -1,5 +1,6 @@
 import os
 
+from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import yaml, expand_dict
 from tests import JinaTestCase
 
@@ -39,3 +40,8 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(a.sda, 1)
         a.__dict__['components'] = list()
         self.assertTrue(isinstance(a.components, list))
+
+    def test_yaml_fill(self):
+        with open('yaml/test-expand2.yml') as fp:
+            a = yaml.load(fp)
+        print(fill_metas_with_defaults(a))

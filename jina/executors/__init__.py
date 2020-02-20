@@ -13,7 +13,7 @@ import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
-from .metas import defaults
+from .metas import defaults, get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace
 from ..helper import yaml, print_load_table, PathImporter, expand_dict
 from ..logging.base import get_logger
@@ -34,7 +34,7 @@ class ExecutorType(type):
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
 
-        jina_config = {k: v for k, v in defaults.items()}
+        jina_config = get_default_metas()
 
         if 'metas' in kwargs:
             jina_config.update(kwargs.pop('metas'))
@@ -326,6 +326,7 @@ class BaseExecutor(metaclass=ExecutorType):
                             raise BadWorkspace
                 else:
                     raise EmptyExecutorYAML('%s is empty? nothing to read from there' % filename)
+                tmp = fill_metas_with_defaults(tmp)
                 tmp = expand_dict(tmp)
                 stream = StringIO()
                 yaml.dump(tmp, stream)
@@ -400,7 +401,7 @@ class BaseExecutor(metaclass=ExecutorType):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 
-        _jina_config = {k: v for k, v in defaults.items()}
+        _jina_config = get_default_metas()
         _jina_config.update(data.get('metas', {}))
         _jina_config = expand_dict(_jina_config)
         # for k, v in _jina_config.items():
