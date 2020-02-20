@@ -1,5 +1,6 @@
 import os
 import pickle
+import re
 import sys
 import tempfile
 import uuid
@@ -301,7 +302,7 @@ class BaseExecutor(metaclass=ExecutorType):
             # first scan, find if external modules are specified
             with open(filename, encoding='utf8') as fp:
                 # ignore all lines start with ! because they could trigger the deserialization of that class
-                safe_yml = '\n'.join(v if not v.startswith('!') else v.replace('!', '__tag: ') for v in fp)
+                safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
                 tmp = yaml.load(safe_yml)
                 if tmp:
                     if 'metas' in tmp and 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
