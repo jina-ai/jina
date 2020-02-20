@@ -230,22 +230,22 @@ def expand_dict(d: Dict) -> Dict[str, Any]:
                 else:
                     p.append(v)
 
-    def _replace(sub_d: Union[Dict, List], p, pp):
+    def _replace(sub_d: Union[Dict, List], p):
         if isinstance(sub_d, Dict):
             for k, v in sub_d.items():
                 if isinstance(v, dict) or isinstance(v, list):
-                    _replace(v, p.__dict__[k], p)
+                    _replace(v, p.__dict__[k])
                 else:
                     if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[k] = expand_env_var(v.format(root=expand_map, this=p, parent=pp))
+                        sub_d[k] = expand_env_var(v.format(root=expand_map, this=p))
         elif isinstance(sub_d, List):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict) or isinstance(v, list):
-                    _replace(v, p[idx], p)
+                    _replace(v, p[idx])
                 else:
                     if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[idx] = expand_env_var(v.format(root=expand_map, this=p, parent=pp))
+                        sub_d[idx] = expand_env_var(v.format(root=expand_map, this=p))
 
     _scan(d, expand_map)
-    _replace(d, expand_map, expand_map)
+    _replace(d, expand_map)
     return d

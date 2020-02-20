@@ -43,7 +43,7 @@ class ExecutorType(type):
 
         # set attribute with priority
         # metas in YAML > class attribute > default_jina_config
-        jina_config = expand_dict(jina_config)
+        # jina_config = expand_dict(jina_config)
 
         for k, v in jina_config.items():
             if not hasattr(obj, k):
@@ -188,7 +188,6 @@ class BaseExecutor(metaclass=ExecutorType):
                 otherwise the ``metas.replica_workspace`` is returned
         """
         work_dir = self.replica_workspace if self.separated_workspace else self.workspace  # type: str
-        work_dir = work_dir.format(**self.__dict__)
         return work_dir
 
     def get_file_from_workspace(self, name: str) -> str:
@@ -304,7 +303,11 @@ class BaseExecutor(metaclass=ExecutorType):
                 safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
                 tmp = yaml.load(safe_yml)
                 if tmp:
-                    if 'metas' in tmp and 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
+                    if 'metas' not in tmp:
+                        tmp['metas'] = {}
+                    tmp = fill_metas_with_defaults(tmp)
+
+                    if 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
                         mod = tmp['metas']['py_modules']
 
                         if isinstance(mod, str):
@@ -316,17 +319,13 @@ class BaseExecutor(metaclass=ExecutorType):
                             PathImporter.add_modules(*mod)
                         else:
                             raise TypeError('%r is not acceptable, only str or list are acceptable' % type(mod))
-                    if separated_workspace:
-                        if 'metas' not in tmp:
-                            tmp['metas'] = {}
-                        tmp['metas']['separated_workspace'] = True
-                        if replica_id is not None or isinstance(replica_id, int):
-                            tmp['metas']['replica_id'] = replica_id
-                        else:
-                            raise BadWorkspace
+
+                    tmp['metas']['separated_workspace'] = separated_workspace
+                    tmp['metas']['replica_id'] = replica_id
+
                 else:
                     raise EmptyExecutorYAML('%s is empty? nothing to read from there' % filename)
-                tmp = fill_metas_with_defaults(tmp)
+
                 tmp = expand_dict(tmp)
                 stream = StringIO()
                 yaml.dump(tmp, stream)
@@ -403,7 +402,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
         _jina_config = get_default_metas()
         _jina_config.update(data.get('metas', {}))
-        _jina_config = expand_dict(_jina_config)
+        # _jina_config = expand_dict(_jina_config)
         # for k, v in _jina_config.items():
         #     _jina_`config[k] = expand_env_var(v)
 
@@ -452,7 +451,7 @@ class BaseExecutor(metaclass=ExecutorType):
         if 'name' in jina_config:
             if jina_config.get('separated_workspace', False):
                 if 'replica_id' in jina_config and isinstance(jina_config['replica_id'], int):
-                    work_dir = jina_config['replica_workspace'].format(**jina_config)
+                    work_dir = jina_config['replica_workspace']
                     dump_path = os.path.join(work_dir, '%s.%s' % (jina_config['name'], 'bin'))
                     if os.path.exists(dump_path):
                         return dump_path

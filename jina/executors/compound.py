@@ -197,7 +197,7 @@ class CompoundExecutor(BaseExecutor):
             self._components = comps()
             if not isinstance(self._components, list):
                 raise TypeError('components expect a list of executors, receiving %r' % type(self._components))
-            self._set_comp_workspace()
+            # self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
         else:
