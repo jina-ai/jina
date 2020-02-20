@@ -1,11 +1,13 @@
 import os
 import random
+import re
 import string
 import sys
 import threading
 import time
 from itertools import islice
-from typing import Iterator, Any, Union, List
+from types import SimpleNamespace
+from typing import Iterator, Any, Union, List, Dict
 
 import numpy as np
 from ruamel.yaml import YAML
@@ -201,3 +203,49 @@ def expand_env_var(v: str) -> str:
         return parse_arg(os.path.expandvars(v))
     else:
         return v
+
+
+def expand_dict(d: Dict) -> Dict[str, Any]:
+    expand_map = SimpleNamespace()
+
+    def _scan(sub_d: Union[Dict, List], p):
+        if isinstance(sub_d, Dict):
+            for k, v in sub_d.items():
+                if isinstance(v, dict):
+                    p.__dict__[k] = SimpleNamespace()
+                    _scan(v, p.__dict__[k])
+                elif isinstance(v, list):
+                    p.__dict__[k] = list()
+                    _scan(v, p.__dict__[k])
+                else:
+                    p.__dict__[k] = v
+        elif isinstance(sub_d, List):
+            for idx, v in enumerate(sub_d):
+                if isinstance(v, dict):
+                    p.append(SimpleNamespace())
+                    _scan(v, p[idx])
+                elif isinstance(v, list):
+                    p.append(list())
+                    _scan(v, p[idx])
+                else:
+                    p.append(v)
+
+    def _replace(sub_d: Union[Dict, List], p, pp):
+        if isinstance(sub_d, Dict):
+            for k, v in sub_d.items():
+                if isinstance(v, dict) or isinstance(v, list):
+                    _replace(v, p.__dict__[k], p)
+                else:
+                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                        sub_d[k] = expand_env_var(v.format(root=expand_map, this=p, parent=pp))
+        elif isinstance(sub_d, List):
+            for idx, v in enumerate(sub_d):
+                if isinstance(v, dict) or isinstance(v, list):
+                    _replace(v, p[idx], p)
+                else:
+                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                        sub_d[idx] = expand_env_var(v.format(root=expand_map, this=p, parent=pp))
+
+    _scan(d, expand_map)
+    _replace(d, expand_map, expand_map)
+    return d

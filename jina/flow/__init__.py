@@ -70,7 +70,7 @@ class Flow:
         self.runtime = runtime
         self._common_kwargs = kwargs
 
-        with resource_stream('jina', '/'.join(('resources', 'drivers-default.yml'))) as rs:
+        with resource_stream('jina', '/'.join(('resources', 'drivers.default.yml'))) as rs:
             self.support_drivers = yaml.load(rs)['drivers']
 
         if driver_yaml_path:

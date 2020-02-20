@@ -52,7 +52,7 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(a.current_workspace)
             all_subspace.add(a.current_workspace)
 
-        self.assertTrue(len(all_subspace) == 3)
+        self.assertEqual(len(all_subspace), 3)
 
     def test_compound_indexer_rw(self):
         all_vecs = np.random.random([6, 5])

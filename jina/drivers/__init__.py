@@ -87,12 +87,12 @@ class Driver:
 
         # always install the default handler
         driver_map = self.install_from_config(
-            resource_filename('jina', '/'.join(('resources', 'drivers-default.yml'))),
+            resource_filename('jina', '/'.join(('resources', 'drivers.default.yml'))),
             'default') if install_default else None
 
         # if given, then install the given handler
         if not driver_yaml_path:
-            driver_yaml_path = resource_filename('jina', '/'.join(('resources', 'drivers-default.yml')))
+            driver_yaml_path = resource_filename('jina', '/'.join(('resources', 'drivers.default.yml')))
         if driver_group:
             # self.logger.info('driver %s from %s to be installed' % (driver_yaml_path, driver_group))
             self.install_from_config(driver_yaml_path, driver_group, driver_map)

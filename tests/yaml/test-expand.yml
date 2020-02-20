@@ -1,0 +1,16 @@
+components:
+  - with:
+      index_filename: metaproto
+    metas:
+      name: test_meta
+      good_var:
+        - 1
+        - 2
+      bad_var: hello
+  - with:
+      index_filename: npidx
+    metas:
+      name: test_numpy
+metas:
+  name: real-compound
+rootvar: 123

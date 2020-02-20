@@ -1,0 +1,12 @@
+is_trained: false
+is_updated: false
+batch_size:
+workspace: $PWD
+name:
+on_gpu: false
+warn_unnamed: false
+max_snapshot: 0
+py_modules:
+replica_id: 0
+separated_workspace: false
+replica_workspace: '{this.workspace}/{this.name}-{this.replica_id}'
