@@ -379,8 +379,22 @@ class Flow:
         Build the current flow and make it ready to use
 
         :param runtime: supported 'thread', 'process', 'swarm', 'k8s', 'shell', if None then only build graph only
-        :param copy_flow: return the copy of the current flow
+        :param copy_flow: return the copy of the current flow.
         :return: the current flow (by default)
+
+        .. note::
+            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
+
+            .. highlight:: python
+            .. code-block:: python
+
+                f = Flow()
+                with f.build(copy_flow=True) as fl:
+                    fl.index()
+
+                with f.build(copy_flow=False) as fl:
+                    fl.search()
+
         """
 
         op_flow = self._build_graph(copy_flow)
