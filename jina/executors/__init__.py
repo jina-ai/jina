@@ -1,5 +1,6 @@
 import os
 import pickle
+import re
 import sys
 import tempfile
 import uuid
@@ -12,9 +13,9 @@ import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
-from .metas import defaults
+from .metas import defaults, get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace
-from ..helper import yaml, print_load_table, PathImporter, expand_env_var
+from ..helper import yaml, print_load_table, PathImporter, expand_dict
 from ..logging.base import get_logger
 from ..logging.profile import profiling
 
@@ -33,19 +34,18 @@ class ExecutorType(type):
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
 
+        jina_config = get_default_metas()
+
         if 'metas' in kwargs:
-            jina_config = kwargs.pop('metas')
-        else:
-            jina_config = {}
+            jina_config.update(kwargs.pop('metas'))
 
         obj = type.__call__(cls, *args, **kwargs)
 
         # set attribute with priority
         # metas in YAML > class attribute > default_jina_config
-        for k, v in defaults.items():
-            if k in jina_config:
-                v = jina_config[k]
-            v = expand_env_var(v)
+        # jina_config = expand_dict(jina_config)
+
+        for k, v in jina_config.items():
             if not hasattr(obj, k):
                 setattr(obj, k, v)
 
@@ -188,7 +188,6 @@ class BaseExecutor(metaclass=ExecutorType):
                 otherwise the ``metas.replica_workspace`` is returned
         """
         work_dir = self.replica_workspace if self.separated_workspace else self.workspace  # type: str
-        work_dir = work_dir.format(**self.__dict__)
         return work_dir
 
     def get_file_from_workspace(self, name: str) -> str:
@@ -301,10 +300,14 @@ class BaseExecutor(metaclass=ExecutorType):
             # first scan, find if external modules are specified
             with open(filename, encoding='utf8') as fp:
                 # ignore all lines start with ! because they could trigger the deserialization of that class
-                safe_yml = '\n'.join(v if not v.startswith('!') else v.replace('!', '__tag: ') for v in fp)
+                safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
                 tmp = yaml.load(safe_yml)
                 if tmp:
-                    if 'metas' in tmp and 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
+                    if 'metas' not in tmp:
+                        tmp['metas'] = {}
+                    tmp = fill_metas_with_defaults(tmp)
+
+                    if 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
                         mod = tmp['metas']['py_modules']
 
                         if isinstance(mod, str):
@@ -316,17 +319,14 @@ class BaseExecutor(metaclass=ExecutorType):
                             PathImporter.add_modules(*mod)
                         else:
                             raise TypeError('%r is not acceptable, only str or list are acceptable' % type(mod))
-                    if separated_workspace:
-                        if 'metas' not in tmp:
-                            tmp['metas'] = {}
-                        tmp['metas']['separated_workspace'] = True
-                        if replica_id is not None or isinstance(replica_id, int):
-                            tmp['metas']['replica_id'] = replica_id
-                        else:
-                            raise BadWorkspace
+
+                    tmp['metas']['separated_workspace'] = separated_workspace
+                    tmp['metas']['replica_id'] = replica_id
+
                 else:
                     raise EmptyExecutorYAML('%s is empty? nothing to read from there' % filename)
 
+                tmp = expand_dict(tmp)
                 stream = StringIO()
                 yaml.dump(tmp, stream)
                 tmp_s = stream.getvalue().strip().replace('__tag: ', '!')
@@ -400,10 +400,11 @@ class BaseExecutor(metaclass=ExecutorType):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 
-        _jina_config = {k: v for k, v in defaults.items()}
+        _jina_config = get_default_metas()
         _jina_config.update(data.get('metas', {}))
-        for k, v in _jina_config.items():
-            _jina_config[k] = expand_env_var(v)
+        # _jina_config = expand_dict(_jina_config)
+        # for k, v in _jina_config.items():
+        #     _jina_`config[k] = expand_env_var(v)
 
         if _jina_config:
             data['metas'] = _jina_config
@@ -422,12 +423,14 @@ class BaseExecutor(metaclass=ExecutorType):
                 a = p.pop('args') if 'args' in p else ()
                 k = p.pop('kwargs') if 'kwargs' in p else {}
                 # maybe there are some hanging kwargs in "parameters"
-                tmp_a = (expand_env_var(v) for v in a)
-                tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
+                # tmp_a = (expand_env_var(v) for v in a)
+                # tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
+                tmp_a = a
+                tmp_p = {kk: vv for kk, vv in {**k, **p}.items()}
                 obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}))
             else:
-                tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
-                obj = cls(**tmp_p, metas=data.get('metas', {}))
+                # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
+                obj = cls(**data.get('with', {}), metas=data.get('metas', {}))
 
             obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
             cls.init_from_yaml = False
@@ -448,7 +451,7 @@ class BaseExecutor(metaclass=ExecutorType):
         if 'name' in jina_config:
             if jina_config.get('separated_workspace', False):
                 if 'replica_id' in jina_config and isinstance(jina_config['replica_id'], int):
-                    work_dir = jina_config['replica_workspace'].format(**jina_config)
+                    work_dir = jina_config['replica_workspace']
                     dump_path = os.path.join(work_dir, '%s.%s' % (jina_config['name'], 'bin'))
                     if os.path.exists(dump_path):
                         return dump_path

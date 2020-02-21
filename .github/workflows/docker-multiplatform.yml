@@ -3,7 +3,7 @@ name: Docker BuildX
 on:
   push:
     branches-ignore:
-      - '**'  # temporially ignore all
+      - '**'  # temporally ignore all
 
 jobs:
   buildx:

@@ -1,7 +1,7 @@
 !Flow
 with:
   driver_yaml_path:
-  sse_logger: true
+  sse_logger: false
 pods:
   chunk_seg:
     driver_group: segment

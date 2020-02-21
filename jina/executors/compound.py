@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List, Callable
+from typing import Dict, List, Callable, Union
 
 from . import BaseExecutor, AnyExecutor
 
@@ -30,6 +30,16 @@ class CompoundExecutor(BaseExecutor):
             say:
             - dummyB-e3acc910
             - say
+
+    One can access the component of a :class:`CompoundExecutor` via index, e.g.
+
+    .. highlight:: python
+    .. code-block:: python
+
+        c = BaseExecutor.load_config('compound-example.yaml')
+        assertTrue(c[0] == c['dummyA-1ef90ea8'])
+        c[0].add(obj)
+
 
     .. note::
         All components ``workspace` and ``replica_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
@@ -131,6 +141,7 @@ class CompoundExecutor(BaseExecutor):
         super().__init__(*args, **kwargs)
         self._components = None  # type: List[AnyExecutor]
         self._routes = routes
+        self._is_updated = False  #: the internal update state of this compound executor
         self.resolve_all = resolve_all
 
     @property
@@ -141,13 +152,12 @@ class CompoundExecutor(BaseExecutor):
     @property
     def is_updated(self) -> bool:
         """Return ``True``  if any components is updated"""
-        return self.components and any(c.is_updated for c in self.components)
+        return (self.components and any(c.is_updated for c in self.components)) or self._is_updated
 
     @is_updated.setter
     def is_updated(self, val: bool):
-        """Set :attr:`is_updated` for all components of this :class:`CompoundExecutor` """
-        for c in self.components:
-            c.is_updated = val
+        """Set :attr:`is_updated` for this :class:`CompoundExecutor`. Note, not to all its components """
+        self._is_updated = val
 
     @is_trained.setter
     def is_trained(self, val: bool):
@@ -155,9 +165,23 @@ class CompoundExecutor(BaseExecutor):
         for c in self.components:
             c.is_trained = val
 
+    def save(self, filename: str = None) -> bool:
+        """
+        Serialize this compound executor along with all components in it to binary files
+
+        :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
+        :return: successfully dumped or not
+
+        It uses ``pickle`` for dumping.
+        """
+        for c in self.components:
+            c.save()
+        super().save()
+
     @property
     def components(self) -> List[AnyExecutor]:
-        """Return all component executors"""
+        """Return all component executors as a list. The list follows the order as defined in the YAML config or the
+        pre-given order when calling the setter. """
         return self._components
 
     @components.setter
@@ -173,7 +197,7 @@ class CompoundExecutor(BaseExecutor):
             self._components = comps()
             if not isinstance(self._components, list):
                 raise TypeError('components expect a list of executors, receiving %r' % type(self._components))
-            self._set_comp_workspace()
+            # self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
         else:
@@ -269,3 +293,16 @@ class CompoundExecutor(BaseExecutor):
         if not from_dump and 'components' in data:
             obj.components = lambda: data['components']
         return obj
+
+    def __getitem__(self, item: Union[int, str]):
+        if isinstance(item, int):
+            return self.components[item]
+        elif isinstance(item, str):
+            for c in self.components:
+                if c.name == item:
+                    return c
+        else:
+            raise AttributeError('CompoundExecutor only supports int or string index')
+
+    def __iter__(self):
+        return self.components.__iter__()

@@ -24,7 +24,7 @@ class MyTestCase(JinaTestCase):
         with open('yaml/test-flow.yml') as fp:
             a = Flow.load_config(fp)
 
-        b = (Flow(driver_yaml_path='', sse_logger=True)
+        b = (Flow(driver_yaml_path='', sse_logger=False)
              .add(name='chunk_seg', driver_group='segment', replicas=3)
              .add(name='encode1', driver_group='index-meta-doc', replicas=2)
              .add(name='encode2', driver_group='index-meta-doc', replicas=2, recv_from='chunk_seg')

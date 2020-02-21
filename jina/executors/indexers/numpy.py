@@ -65,6 +65,9 @@ class NumpyIndexer(BaseIndexer):
         return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+        if len(vectors.shape) != 2:
+            raise ValueError('vectors shape %s is not valid, expecting "vectors" to have rank of 2' % vectors.shape)
+
         if not self.num_dim:
             self.num_dim = vectors.shape[1]
             self.dtype = vectors.dtype.name

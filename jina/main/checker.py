@@ -27,7 +27,7 @@ class ImportChecker:
 
         default_logger.info('\navailable driver groups\n'.upper())
         from pkg_resources import resource_stream
-        with resource_stream('jina', '/'.join(('resources', 'drivers-default.yml'))) as fp:
+        with resource_stream('jina', '/'.join(('resources', 'drivers.default.yml'))) as fp:
             default_logger.info(', '.join(v for v in yaml.load(fp)['drivers'].keys()))
 
         default_logger.info('\nenvironment variables\n'.upper())
