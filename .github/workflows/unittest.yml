@@ -45,3 +45,4 @@ jobs:
         pip install pytest-cov
         cd tests && pytest *.py --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov=com --cov-report=xml --cov-report=html
       shell: bash
+      timeout-minutes: 5
