@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 
 import numpy as np
@@ -56,9 +57,7 @@ class MyTestCase(JinaTestCase):
             self.assertTrue(os.path.exists('test2-%d/tmp2' % j))
             self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d' % j)
 
-    def test_query(self):
-        f = Flow().add(exec_yaml_path='yaml/test-query.yml',
-                       driver_group='index-chunk', replicas=3, separated_workspace=True)
+        time.sleep(3)
         with f.build(copy_flow=True) as fl:
             fl.search(raw_bytes=random_docs(1), in_proto=True, callback=get_result, top_k=100)
 
