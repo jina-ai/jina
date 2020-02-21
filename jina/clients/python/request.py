@@ -1,18 +1,19 @@
 import ctypes
 import random
-from typing import Iterator
+from typing import Iterator, Union
 
 from ...helper import batch_iterator
 from ...proto import jina_pb2
 
 
-def _generate(data: Iterator[bytes], batch_size: int = 0,
-              doc_id_start: int = 0, request_id_start: int = 0,
+def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document']], batch_size: int = 0,
+              first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: str = 'index', top_k: int = 50,
+              in_proto: bool = False,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     for pi in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
-        req.request_id = request_id_start
+        req.request_id = first_request_id
 
         if mode == 'search':
             if top_k <= 0:
@@ -22,12 +23,15 @@ def _generate(data: Iterator[bytes], batch_size: int = 0,
 
         for raw_bytes in pi:
             d = getattr(req, mode).docs.add()
-            d.doc_id = doc_id_start if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
-            d.raw_bytes = raw_bytes
+            if in_proto:
+                d.CopyFrom(raw_bytes)
+            else:
+                d.raw_bytes = raw_bytes
+            d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0
-            doc_id_start += 1
+            first_doc_id += 1
         yield req
-        request_id_start += 1
+        first_request_id += 1
 
 
 def index(*args, **kwargs):

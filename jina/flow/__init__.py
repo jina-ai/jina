@@ -1,5 +1,7 @@
 import copy
+import re
 import threading
+import time
 from collections import OrderedDict
 from contextlib import ExitStack
 from functools import wraps
@@ -255,19 +257,23 @@ class Flow:
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
-        driver_type = kwargs.get('driver_group', None)
+        driver_group = kwargs.get('driver_group', None)
         pod_name = kwargs.get('name', None)
 
-        if driver_type and driver_type not in op_flow.support_drivers:
+        if driver_group not in op_flow.support_drivers:
             raise ValueError(
-                'pod: %s is not supported, should be one of %s' % (driver_type, op_flow.support_drivers.keys()))
+                'driver_group=%s is not supported, should be one of %s' % (
+                    driver_group, op_flow.support_drivers.keys()))
 
         if pod_name in op_flow._pod_nodes:
             raise FlowTopologyError('name: %s is used in this Flow already!' % pod_name)
 
         if not pod_name:
-            pod_name = '%s%d' % (driver_type if driver_type else 'default', op_flow._pod_name_counter[driver_type])
-            op_flow._pod_name_counter[driver_type] += 1
+            pod_name = '%s%d' % (driver_group if driver_group else 'default', op_flow._pod_name_counter[driver_group])
+            # make sure pod_name is a valid Python identifier
+            pod_name = re.sub('[^0-9a-zA-Z_]', '', pod_name)
+            pod_name = re.sub('^[^a-zA-Z_]+', '', pod_name)
+            op_flow._pod_name_counter[driver_group] += 1
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name
@@ -427,6 +433,7 @@ class Flow:
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
         self._build_level = FlowBuildLevel.EMPTY
+        time.sleep(1)  # sleep for a while until all resources are safely closed
         self.logger.critical(
             'flow is closed and all resources should be released already, current build level is %s' % self._build_level)
 
@@ -458,7 +465,7 @@ class Flow:
         _, p_args, _ = self._get_parsed_args(self, PyClient.__name__, kwargs, parser=set_client_cli_parser)
         p_args.grpc_port = self._pod_nodes['frontend'].grpc_port
         p_args.grpc_host = self._pod_nodes['frontend'].grpc_host
-        c = PyClient(p_args, delay=True)
+        c = PyClient(p_args)
         if bytes_gen:
             c.raw_bytes = bytes_gen
         return c

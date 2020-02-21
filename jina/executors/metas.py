@@ -1,5 +1,18 @@
 """The default meta config that all executors follow, they can be overrided by the YAML config
 
+.. warning::
+
+    When you define your own Executor class, make sure your attributes/methods name do not
+    conflict with the name listed below.
+
+
+.. note::
+    Essentially, the meta config can be set in two places: as part of the YAML file, or as the class attribute
+    via :func:`__init__` or in class definition. When multiple meta specification exists, the overwrite priority is:
+
+    metas defined in YAML > metas defined as class attribute > metas default values listed below
+
+
 Any executor inherited from :class:`BaseExecutor` always has the following **meta** fields:
 
     .. confval:: is_trained
@@ -99,10 +112,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
           is_trained: true  # indicate the model has been trained
           workspace: ./  # path for serialize/deserialize
 
-.. note::
-    The overwrite priority is:
 
-    metas defined in YAML > class attribute > metas.defaults
 
 """
 from typing import Dict, Union, List
@@ -120,6 +130,11 @@ def get_default_metas() -> Dict:
 
 
 def fill_metas_with_defaults(d: Dict) -> Dict:
+    """Fill the incomplete ``metas`` field with complete default values
+
+    :param d: the loaded YAML map
+    """
+
     def _scan(sub_d: Union[Dict, List]):
         if isinstance(sub_d, Dict):
             for k, v in sub_d.items():

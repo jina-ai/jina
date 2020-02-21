@@ -11,7 +11,7 @@ def handler_chunk2doc_score(exec_fn, pea, req, msg, pre_reqs, prev_msgs):
     """
     exec = pea.executor
 
-    for d in req.docs:
+    for d in req.docs:  # d is a query in this context, i.e. for each query, compute separately
         match_idx = []
         query_chunk_meta = {}
         match_chunk_meta = {}

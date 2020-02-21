@@ -1,5 +1,6 @@
-import zipfile
-from typing import Iterator, Callable
+from typing import Iterator, Callable, Union
+
+from jina.excepts import BadClient
 
 from .grpc import GrpcClient
 from .helper import ProgressBar
@@ -14,7 +15,7 @@ if False:
 class PyClient(GrpcClient):
     """A simple Python client for connecting to the frontend """
 
-    def __init__(self, args: 'argparse.Namespace', delay: bool = False):
+    def __init__(self, args: 'argparse.Namespace'):
         """
 
         :param args: args provided by the CLI
@@ -23,23 +24,6 @@ class PyClient(GrpcClient):
         """
         super().__init__(args)
         self._raw_bytes = None
-        if not delay:
-            self._raw_bytes = self._get_raw_bytes_from_args(args)
-            self.start()
-
-    @staticmethod
-    def _get_raw_bytes_from_args(args):
-        if args.txt_file:
-            all_bytes = (v.encode() for v in args.txt_file)
-        elif args.image_zip_file:
-            zipfile_ = zipfile.ZipFile(args.image_zip_file)
-            all_bytes = (zipfile_.open(v).read() for v in zipfile_.namelist())
-        elif args.video_zip_file:
-            zipfile_ = zipfile.ZipFile(args.video_zip_file)
-            all_bytes = (zipfile_.open(v).read() for v in zipfile_.namelist())
-        else:
-            all_bytes = None
-        return all_bytes
 
     def call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
         """ Calling the server, better use :func:`start` instead.
@@ -59,21 +43,21 @@ class PyClient(GrpcClient):
                     try:
                         callback(resp)
                     except Exception as ex:
-                        self.logger.error('error in callback: %s' % ex, exc_info=True)
+                        raise BadClient('error in client\'s callback: %s' % ex)
                 p_bar.update()
 
     @property
-    def raw_bytes(self) -> Iterator[bytes]:
+    def raw_bytes(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes]]:
         """ An iterator of bytes, each element represents a document's raw content,
         i.e. ``raw_bytes`` defined int the protobuf
         """
         if self._raw_bytes:
             return self._raw_bytes
         else:
-            raise ValueError('raw_bytes is empty or not set')
+            raise BadClient('raw_bytes is empty or not set')
 
     @raw_bytes.setter
-    def raw_bytes(self, bytes_gen: Iterator[bytes]):
+    def raw_bytes(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes]]):
         if self._raw_bytes:
             self.logger.warning('raw_bytes is not empty, overrided')
         self._raw_bytes = bytes_gen

@@ -59,3 +59,7 @@ class EmptyExecutorYAML(Exception):
 
 class BadWorkspace(Exception):
     """Can not determine the separate storage strategy for the executor"""
+
+
+class BadClient(Exception):
+    """A wrongly defined grpc client, can not communicate with jina server correctly """
