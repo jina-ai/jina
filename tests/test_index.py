@@ -1,8 +1,8 @@
 import os
-import time
 import unittest
 
 import numpy as np
+
 from jina.drivers.helper import array2blob
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -54,9 +54,11 @@ class MyTestCase(JinaTestCase):
         for j in range(3):
             self.assertTrue(os.path.exists('test2-%d/test2.bin' % j))
             self.assertTrue(os.path.exists('test2-%d/tmp2' % j))
-            self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d')
+            self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d' % j)
 
-        time.sleep(3)
+    def test_query(self):
+        f = Flow().add(exec_yaml_path='yaml/test-query.yml',
+                       driver_group='index-chunk', replicas=3, separated_workspace=True)
         with f.build(copy_flow=True) as fl:
             fl.search(raw_bytes=random_docs(1), in_proto=True, callback=get_result, top_k=100)
 
