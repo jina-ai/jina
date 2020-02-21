@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 
 
@@ -15,6 +16,7 @@ class JinaTestCase(unittest.TestCase):
                     os.remove(k)
                 elif os.path.isdir(k):
                     os.rmdir(k)
+        time.sleep(3)
 
     def add_tmpfile(self, *path):
         self.tmp_files.extend(path)
