@@ -15,4 +15,5 @@ pods:
     replicas: 2
     recv_from: chunk_seg
   joiner:
+    driver_group: merge
     recv_from: [encode1, encode2]
