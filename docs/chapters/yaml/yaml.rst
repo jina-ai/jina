@@ -104,7 +104,7 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
             A:
                 B: C
 
-        It defines a function mapping so that a `new` function :func:`A` is created for this compound executor and points to :func:`B.C`. Note that ``B`` must be a valid name defined in ``components.metas.name``
+        It defines a function mapping so that a new function :func:`A` is created for this compound executor and points to :func:`B.C`. Note that ``B`` must be a valid name defined in ``components.metas.name``
 
 
 Referencing Variables in :class:`Executor` and :class:`CompoundExecutor` YAML

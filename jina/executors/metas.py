@@ -76,7 +76,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         the integer index used for distinguish each replica of this executor, useful in :attr:`replica_workspace`
 
         :type: int
-        :default: 0
+        :default: ``'{root.metas.replica_id}'``
 
     .. confval:: separated_workspace
 
@@ -84,7 +84,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         workspace specified in :attr:`replica_workspace`
 
         :type: bool
-        :default: ``False``
+        :default: ``'{root.metas.separated_workspace}'``
         
     .. confval:: replica_workspace
 
@@ -92,13 +92,16 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         related to this replica will be conducted under this workspace. It is often set as the sub-directory of :attr:`workspace`.
 
         :type: str
-        :default: ``{workspace}/{name}-{replica_id}``
+        :default: ``'{root.metas.workspace}/{root.metas.name}-{root.metas.replica_id}'``
 
 
     .. warning::
         ``name`` and ``workspace`` must be set if you want to serialize/deserialize this executor.
 
+    .. note::
 
+        ``separated_workspace``, ``replica_workspace`` and ``replica_id`` is set in a way that when the executor ``A`` is used as
+        a component of a :class:`jina.executors.compound.CompoundExecutor` ``B``, then ``A``'s setting will be overrided by B's counterpart.
 
     These **meta** fields can be accessed via `self.is_trained` or loaded from a YAML config via :func:`load_config`:
 
