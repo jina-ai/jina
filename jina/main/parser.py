@@ -1,6 +1,6 @@
 import argparse
 
-from termcolor import colored
+from ..helper import colored
 
 
 def add_arg_group(parser, title):
@@ -33,7 +33,7 @@ def valid_yaml_path(path, to_stream=False):
 def set_base_parser():
     from .. import __version__, __proto_version__
     from google.protobuf.internal import api_implementation
-    from termcolor import colored
+    from ..helper import colored
     import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
     # create the top-level parser
     parser = argparse.ArgumentParser(

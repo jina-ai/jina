@@ -8,10 +8,9 @@ from logging import Formatter
 from logging.handlers import QueueHandler
 from typing import Union
 
-from termcolor import colored
-
 from .profile import used_memory
 from ..enums import LogVerbosity
+from ..helper import colored
 
 
 class ColorFormatter(Formatter):
@@ -24,9 +23,6 @@ class ColorFormatter(Formatter):
         'ERROR': dict(color='white', on_color='on_red'),  # 31 for red
         'CRITICAL': dict(color='white', on_color='on_green'),  # white on red bg
     }  #: log-level to color mapping
-
-    PREFIX = '\033['  #: control chars prefix of the color
-    SUFFIX = '\033[0m'  #: control chars suffix of the color
 
     def format(self, record):
         cr = copy(record)
@@ -170,10 +166,7 @@ def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse
 
             console_handler = logging.StreamHandler(sys.stdout)
             console_handler.setLevel(verbose_level.value)
-            if os.environ.get('JINA_NO_COLOR_LOG', False):
-                console_handler.setFormatter(PlainFormatter(fmt_str))
-            else:
-                console_handler.setFormatter(ColorFormatter(fmt_str))
+            console_handler.setFormatter(ColorFormatter(fmt_str))
             logger.addHandler(console_handler)
 
             if os.environ.get('JINA_LOG_FORMAT') == 'TXT':

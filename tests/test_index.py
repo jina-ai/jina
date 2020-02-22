@@ -37,14 +37,14 @@ def get_result(resp):
 class MyTestCase(JinaTestCase):
 
     def test_doc_iters(self):
-        a = random_docs(10, 5)
+        a = random_docs(3, 5)
         for d in a:
             print(d)
 
     def test_simple_route(self):
         f = Flow().add(driver_group='route')
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_index(self):
         f = Flow().add(exec_yaml_path='yaml/test-index.yml',

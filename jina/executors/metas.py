@@ -41,7 +41,8 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. confval:: workspace
 
-        the working directory, for dumping and loading serialized executor.
+        the working directory, for persisting the artifacts of the executor. An artifact is a file or collection of files
+        used during a workflow run.
 
         :type: str
         :default: environment variable :confval:`JINA_EXECUTOR_WORKDIR`, if not set then using current working dir, aka ``cwd``.
@@ -117,8 +118,9 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 """
 from typing import Dict, Union, List
 
-from jina.helper import yaml
 from pkg_resources import resource_stream
+
+from jina.helper import yaml
 
 with resource_stream('jina', '/'.join(('resources', 'executors.metas.default.yml'))) as fp:
     defaults = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))

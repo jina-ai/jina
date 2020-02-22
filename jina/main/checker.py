@@ -1,11 +1,9 @@
 import os
 
-from termcolor import colored
-
 from .. import __jina_env__
 from ..drivers import import_driver_fns
 from ..executors import import_executors
-from ..helper import yaml
+from ..helper import colored, yaml
 from ..logging import default_logger
 
 if False:

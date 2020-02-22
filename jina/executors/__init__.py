@@ -150,7 +150,7 @@ class BaseExecutor(metaclass=ExecutorType):
             - index files
             - numpy arrays
 
-        .. note::
+        .. warning::
             All class members created here will NOT be serialized when calling :func:`save`. Therefore if you
             want to store them, please override the :func:`__getstate__`.
         """
@@ -229,13 +229,24 @@ class BaseExecutor(metaclass=ExecutorType):
     @profiling
     def save(self, filename: str = None) -> bool:
         """
-        Serialize the object to a binary file
+        Persist data of this executor to the :attr:`workspace` (or :attr:`replica_workspace`). The data could be
+        a file or collection of files produced/used during an executor run.
+
+        These are some of the common data that you might want to persist:
+
+            - binary dump/pickle of the executor
+            - the indexed files
+            - (pre)trained models
+
+        .. warning::
+            All class members created here will NOT be serialized when calling :func:`save`. Therefore if you
+            want to store them, please implement the :func:`__getstate__`.
+
+        It uses ``pickle`` for dumping. For members/attributes that are not valid or not efficient for ``pickle``, you
+        need to implement their own persistence strategy in the :func:`__getstate__`.
 
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
-        :return: successfully dumped or not
-
-        It uses ``pickle`` for dumping.
-
+        :return: successfully persisted or not
         """
         if not self.is_updated:
             self.logger.info('no update since %s, will not save. '
@@ -261,7 +272,7 @@ class BaseExecutor(metaclass=ExecutorType):
             pickle.dump(self, fp)
             self._last_snapshot_ts = datetime.now()
 
-        self.logger.critical('this executor (%s) is serialized to %s' % (self.name, f))
+        self.logger.critical('artifacts of this executor (%s) is persisted to %s' % (self.name, f))
         return True
 
     @profiling
