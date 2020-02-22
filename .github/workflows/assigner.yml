@@ -1,4 +1,4 @@
-name: "Issue Assigner"
+name: Issue Assign
 
 on: [issues, issue_comment]
 

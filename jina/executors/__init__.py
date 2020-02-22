@@ -7,6 +7,7 @@ import uuid
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Dict, Any, Union, TypeVar, Type, List, TextIO
 
 import ruamel.yaml.constructor
@@ -15,13 +16,19 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import defaults, get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace
-from ..helper import yaml, print_load_table, PathImporter, expand_dict
+from ..helper import yaml, print_load_table, PathImporter, expand_dict, expand_env_var
 from ..logging.base import get_logger
 from ..logging.profile import profiling
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'import_executors']
 
 AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
+
+# some variables may be self-referred and they must be resolved at here
+_ref_desolve_map = SimpleNamespace()
+_ref_desolve_map.__dict__['metas'] = SimpleNamespace()
+_ref_desolve_map.__dict__['metas'].__dict__['replica_id'] = 0
+_ref_desolve_map.__dict__['metas'].__dict__['separated_workspace'] = False
 
 
 class ExecutorType(type):
@@ -34,10 +41,7 @@ class ExecutorType(type):
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
 
-        jina_config = get_default_metas()
-
-        if 'metas' in kwargs:
-            jina_config.update(kwargs.pop('metas'))
+        m = kwargs.pop('metas') if 'metas' in kwargs else {}
 
         obj = type.__call__(cls, *args, **kwargs)
 
@@ -45,11 +49,7 @@ class ExecutorType(type):
         # metas in YAML > class attribute > default_jina_config
         # jina_config = expand_dict(jina_config)
 
-        for k, v in jina_config.items():
-            if not hasattr(obj, k):
-                setattr(obj, k, v)
-
-        getattr(obj, '_post_init_wrapper', lambda *x: None)()
+        getattr(obj, '_post_init_wrapper', lambda *x: None)(m)
         return obj
 
     @staticmethod
@@ -125,7 +125,23 @@ class BaseExecutor(metaclass=ExecutorType):
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
 
-    def _post_init_wrapper(self):
+    def _post_init_wrapper(self, cur_metas: Dict = None):
+
+        if not cur_metas:
+            cur_metas = get_default_metas()
+
+        unresolved_attr = False
+        # set self values filtered by those non-exist, and non-expandable
+        for k, v in cur_metas.items():
+            if not hasattr(self, k):
+                if isinstance(v, str):
+                    if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                        setattr(self, k, v)
+                    else:
+                        unresolved_attr = True
+                else:
+                    setattr(self, k, v)
+
         if not getattr(self, 'name', None):
             _id = str(uuid.uuid4()).split('-')[0]
             _name = '%s-%s' % (self.__class__.__name__, _id)
@@ -136,9 +152,27 @@ class BaseExecutor(metaclass=ExecutorType):
                     'persisting this executor on disk.' % _name)
             setattr(self, 'name', _name)
 
-        _before = set(list(self.__dict__.keys()))
+        if unresolved_attr:
+            _tmp = vars(self)
+            _tmp['metas'] = cur_metas
+            new_metas = expand_dict(_tmp)['metas']
+
+            # set self values filtered by those non-exist, and non-expandable
+            for k, v in new_metas.items():
+                if not hasattr(self, k):
+                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                        v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
+                    if isinstance(v, str):
+                        if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                            setattr(self, k, v)
+                        else:
+                            raise ValueError('%s=%s is not expandable or badly referred' % (k, v))
+                    else:
+                        setattr(self, k, v)
+
+        _before = set(list(vars(self).keys()))
         self.post_init()
-        self._post_init_vars = {k for k in self.__dict__ if k not in _before}
+        self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def post_init(self):
         """
@@ -296,7 +330,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def load_config(cls: Type[AnyExecutor], filename: Union[str, TextIO], separated_workspace: bool = False,
-                    replica_id: int = None) -> AnyExecutor:
+                    replica_id: int = 0) -> AnyExecutor:
         """Build an executor from a YAML file.
 
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from

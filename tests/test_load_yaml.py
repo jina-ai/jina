@@ -1,6 +1,7 @@
 import unittest
 
 import ruamel.yaml
+
 from jina.helper import expand_env_var
 from tests import JinaTestCase
 
@@ -20,6 +21,8 @@ class MyTestCase(JinaTestCase):
         b = BaseExecutor.load_config('yaml/dummy_exec1.yml')
         b.save()
         self.add_tmpfile(b.save_abspath)
+        b.save_config()
+        self.add_tmpfile(b.config_abspath)
         b.close()
 
     def test_load_external(self):
