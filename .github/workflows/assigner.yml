@@ -1,0 +1,12 @@
+name: Issue Assign
+
+on: [issues, issue_comment]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: estrada9166/issue-assigner@v1
+        with:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          WITH_COMMENTS: true
