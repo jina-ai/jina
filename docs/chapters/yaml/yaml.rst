@@ -31,7 +31,7 @@ The executor YAML config follows the syntax below.
 
 .. confval:: metas
 
-    A list of meta arguments defined in :mod:`jina.executors.default`.
+    A list of meta arguments defined in :mod:`jina.executors.metas`.
 
 
 If an executor has no :func:`__init__` or :func:`__init__` requires no arguments, then one do not need to write ``with`` at all.
@@ -42,7 +42,7 @@ In the minimum case, if you don't want to specify any ``with`` and ``metas``, yo
 .. code-block:: yaml
 
     # encoder.yml
-    !AwesomeExecutor {}
+    !AwesomeExecutor
 
 Or even not using this YAML but simply write:
 
@@ -105,6 +105,51 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
                 B: C
 
         It defines a function mapping so that a `new` function :func:`A` is created for this compound executor and points to :func:`B.C`. Note that ``B`` must be a valid name defined in ``components.metas.name``
+
+
+Referencing Variables in :class:`Executor` and :class:`CompoundExecutor` YAML
+-----------------------------------------------------------------------------
+
+In the YAML config, one can reference environment variables with ``$ENV``, or using ``{path.variable}`` to reference the variable defined inside the YAML. For example,
+
+.. highlight:: yaml
+.. code-block:: yaml
+
+    components:
+      - with:
+          index_filename: metaproto
+        metas:
+          name: test_meta
+          good_var:
+            - 1
+            - 2
+          bad_var: '{root.metas.name}'
+      - with:
+          index_filename: npidx
+        metas:
+          name: test_numpy
+          bad_var: '{root.components[0].metas.good_var[1]}'  # expand to the string 'real-compound'
+          float_var: '{root.float.val}'  # expand to the float 0.232
+          mixed: '{root.float.val}-{root.components[0].metas.good_var[1]}-{root.metas.name}'  # expand to the string '0.232-2-real-compound'
+          mixed_env: '{root.float.val}-$ENV1'  # expand to the string '0.232-a'
+          name_shortcut: '{this.name}'  # expand to the string 'test_nunpy'
+    metas:
+      name: real-compound
+    rootvar: 123
+    float:
+      val: 0.232
+
+.. confval:: root.var
+
+    Referring to the top-level variable defined in the root.
+
+.. confval:: this.var
+
+    Referring to the same-level variable.
+
+.. note::
+    One must quote the string when using referenced values, i.e. ``'{root.metas.name}'`` but not ``{root.metas.name}``.
+
 
 
 :class:`Driver` YAML Sytanx
