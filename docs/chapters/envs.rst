@@ -12,6 +12,14 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: unset
 
+
+.. confval:: JINA_PROFILING_LOGGER
+
+    Set to any non-empty value to turn on the profiling logger for JINA, results will be stored in a timestamped JSON file.
+
+    :default: unset
+
+
 .. confval:: JINA_WARN_UNNAMED
 
     Set to any non-empty value to turn on the warning for unnamed executors.
@@ -59,7 +67,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: unset
 
-.. confval:: JINA_NO_COLOR_LOG
+.. confval:: JINA_NO_ANSI_COLOR
 
     Show colored logs in stdout, set to any non-empty value to disable the color log, e.g. if you want to pipe the log into other apps.
 

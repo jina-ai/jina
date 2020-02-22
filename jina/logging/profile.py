@@ -3,7 +3,7 @@ import time
 from collections import defaultdict
 from functools import wraps
 
-from termcolor import colored
+from ..helper import colored
 
 if False:
     # fix type-hint complain for sphinx and flake

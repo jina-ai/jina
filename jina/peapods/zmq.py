@@ -8,11 +8,11 @@ from typing import Tuple
 
 import zmq
 import zmq.asyncio
-from termcolor import colored
 
 from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
+from ..helper import colored
 from ..logging.base import get_logger
 from ..proto import jina_pb2
 

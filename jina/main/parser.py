@@ -1,6 +1,6 @@
 import argparse
 
-from termcolor import colored
+from ..helper import colored
 
 
 def add_arg_group(parser, title):
@@ -21,7 +21,7 @@ def valid_yaml_path(path, to_stream=False):
             return path
     elif path.isidentifier():
         # possible class name
-        return io.StringIO('!%s {}' % path)
+        return io.StringIO('!%s' % path)
     elif path.startswith('!'):
         # possible YAML content
         return io.StringIO(path)
@@ -33,7 +33,7 @@ def valid_yaml_path(path, to_stream=False):
 def set_base_parser():
     from .. import __version__, __proto_version__
     from google.protobuf.internal import api_implementation
-    from termcolor import colored
+    from ..helper import colored
     import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
     # create the top-level parser
     parser = argparse.ArgumentParser(
@@ -272,21 +272,12 @@ def set_frontend_parser(parser=None):
 
 
 def set_client_cli_parser(parser=None):
-    import sys
     if not parser:
         parser = set_base_parser()
     _set_grpc_parser(parser)
 
     gp1 = add_arg_group(parser, 'client-specific arguments')
     _gp = gp1.add_mutually_exclusive_group()
-
-    _gp.add_argument('--txt_file', type=argparse.FileType('r'),
-                     default=sys.stdin,
-                     help='text file to be used, each line is a doc/query')
-    _gp.add_argument('--image_zip_file', type=str,
-                     help='image zip file to be used, consists of multiple images')
-    _gp.add_argument('--video_zip_file', type=str,
-                     help='video zip file to be used, consists of multiple videos')
 
     gp1.add_argument('--batch_size', type=int, default=100,
                      help='the size of the request to split')
@@ -296,9 +287,16 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--top_k', type=int,
                      default=10,
                      help='top_k results returned in the search mode')
-    gp1.add_argument('--start_doc_id', type=int,
+    gp1.add_argument('--first_doc_id', type=int,
                      default=0,
-                     help='the start number of doc id')
+                     help='the starting number of doc id, the consequent doc_id will increment by one')
+    gp1.add_argument('--in_proto', action='store_true', default=False,
+                     help='if the input data is already in protobuf Document format, or in raw bytes')
+    _gp.add_argument('--first_request_id', type=int,
+                     default=0,
+                     help='the starting number of request id, the consequent request_id will increment by one')
+    _gp.add_argument('--random_doc_id', action='store_true', default=False,
+                     help='randomize the doc_id, if this is set then `first_request_id` is ignored')
 
     return parser
 

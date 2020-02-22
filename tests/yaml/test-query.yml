@@ -1,0 +1,6 @@
+!NumpyIndexer
+with:
+  index_filename: tmp2
+metas:
+  name: test2
+  workspace: test-index-file

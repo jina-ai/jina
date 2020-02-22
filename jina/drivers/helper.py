@@ -113,7 +113,7 @@ def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
     route_str = [r.pod for r in msg.envelope.routes]
     if flag_current:
         route_str.append('⚐')
-    from termcolor import colored
+    from ..helper import colored
     return colored('▸', 'green').join(route_str)
 
 

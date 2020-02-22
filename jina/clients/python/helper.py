@@ -1,7 +1,7 @@
 import sys
 import time
 
-from termcolor import colored
+from ...helper import colored
 
 
 class ProgressBar:

@@ -1,5 +1,18 @@
 """The default meta config that all executors follow, they can be overrided by the YAML config
 
+.. warning::
+
+    When you define your own Executor class, make sure your attributes/methods name do not
+    conflict with the name listed below.
+
+
+.. note::
+    Essentially, the meta config can be set in two places: as part of the YAML file, or as the class attribute
+    via :func:`__init__` or in class definition. When multiple meta specification exists, the overwrite priority is:
+
+    metas defined in YAML > metas defined as class attribute > metas default values listed below
+
+
 Any executor inherited from :class:`BaseExecutor` always has the following **meta** fields:
 
     .. confval:: is_trained
@@ -28,7 +41,8 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. confval:: workspace
 
-        the working directory, for dumping and loading serialized executor.
+        the working directory, for persisting the artifacts of the executor. An artifact is a file or collection of files
+        used during a workflow run.
 
         :type: str
         :default: environment variable :confval:`JINA_EXECUTOR_WORKDIR`, if not set then using current working dir, aka ``cwd``.
@@ -99,16 +113,14 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
           is_trained: true  # indicate the model has been trained
           workspace: ./  # path for serialize/deserialize
 
-.. note::
-    The overwrite priority is:
 
-    metas defined in YAML > class attribute > metas.defaults
 
 """
 from typing import Dict, Union, List
 
-from jina.helper import yaml
 from pkg_resources import resource_stream
+
+from jina.helper import yaml
 
 with resource_stream('jina', '/'.join(('resources', 'executors.metas.default.yml'))) as fp:
     defaults = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
@@ -120,6 +132,11 @@ def get_default_metas() -> Dict:
 
 
 def fill_metas_with_defaults(d: Dict) -> Dict:
+    """Fill the incomplete ``metas`` field with complete default values
+
+    :param d: the loaded YAML map
+    """
+
     def _scan(sub_d: Union[Dict, List]):
         if isinstance(sub_d, Dict):
             for k, v in sub_d.items():

@@ -1,6 +1,7 @@
 import os
 
 import grpc
+from jina.excepts import BadClient
 
 from ...logging.base import get_logger
 from ...proto import jina_pb2_grpc
@@ -58,8 +59,12 @@ class GrpcClient:
             self.call(*args, **kwargs)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
-        except Exception as ex:
-            self.logger.error(ex)
+        except grpc.RpcError as rpc_error_call:  # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
+            my_code = rpc_error_call.code()
+            my_details = rpc_error_call.details()
+            raise BadClient('%s error in grpc: %s '
+                            'often the case is that you define/send a bad input iterator to jina, '
+                            'please double check your input iterator' % (my_code, my_details))
         finally:
             self.close()
 
