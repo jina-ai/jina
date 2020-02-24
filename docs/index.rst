@@ -41,6 +41,14 @@ Jina Documentation
 
 .. toctree::
    :maxdepth: 1
+   :glob:
+   :caption: Jina Enhancement Proposals (JEPs)
+
+   chapters/jep/main
+   chapters/jep/jep-*
+
+.. toctree::
+   :maxdepth: 1
    :caption: Release Notes
 
    chapters/release-process.md
