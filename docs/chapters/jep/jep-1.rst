@@ -1,5 +1,5 @@
-JEP 1 --- Refactoring ``Driver``
-================================
+JEP 1 --- Redesigning ``Driver`` and its relations to ``Executors``
+===================================================================
 
 - Author: Han Xiao (han.xiao@jina.ai)
 - Jina VCS version: ``ece529e``
@@ -173,7 +173,7 @@ Certain behaviors are followed by all executors, it makes sense to have a :file:
 
 .. confval:: requests.pre and requests.post
 
-    ``requests.pre`` defines how to handle the message before calling ``requests.on`, and ``requests.post`` defines how to handle the message after calling ``requests.on`. For example,
+    ``requests.pre`` defines how to handle the message before calling ``requests.on``, and ``requests.post`` defines how to handle the message after calling ``requests.on``. They are applied to all requests including the ``ControlRequest``. They For example,
 
     .. highlight:: yaml
     .. code-block:: yaml
@@ -186,3 +186,6 @@ Certain behaviors are followed by all executors, it makes sense to have a :file:
                 - driver: hook_add_route_to_msg
             post:
                 - driver: update_timestamp
+
+    In the current implementation, these functions in ``pre`` and ``post`` have *nothing* to do with the executor. They are pure drivers defined in :mod:`jina.drivers`. However, we decide to keep the syntax aligned with ``requests.on``.
+
