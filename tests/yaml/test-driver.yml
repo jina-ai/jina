@@ -1,0 +1,6 @@
+- !DocMetaSearchDriver
+  with:
+    executor: blah
+    method: goto
+- !ControlReqDriver {}
+- !BaseDriver {}

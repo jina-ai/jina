@@ -1,9 +1,7 @@
 import os
 
 from .. import __jina_env__
-from ..drivers import import_driver_fns
-from ..executors import import_executors
-from ..helper import colored, yaml
+from ..helper import colored, yaml, import_classes
 from ..logging import default_logger
 
 if False:
@@ -16,10 +14,12 @@ class ImportChecker:
 
     def __init__(self, args: 'argparse.Namespace'):
         default_logger.info('\navailable executors\n'.upper())
-        import_executors(show_import_table=True)
+        import jina.executors
+        import_classes(jina.executors.ExecutorType, jina.executors.__path__[0], show_import_table=True)
 
-        default_logger.info('\navailable driver functions\n'.upper())
-        import_driver_fns(show_import_table=True)
+        default_logger.info('\navailable drivers\n'.upper())
+        import jina.drivers
+        import_classes(jina.drivers.DriverType, jina.drivers.__path__[0], show_import_table=True)
 
         # check available driver group
 

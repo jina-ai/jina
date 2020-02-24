@@ -1,9 +1,12 @@
 import multiprocessing
 import threading
 import time
+from collections import defaultdict
+from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
 from ..drivers import Driver
+from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
     DriverNotInstalled, NoRequestHandler
@@ -80,6 +83,63 @@ class Pea(metaclass=PeaMeta):
 
         self._timer = TimeDict()
 
+        self._request = None
+        self._message = None
+        self._prev_requests = None
+        self._prev_messages = None
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
+
+    def register_msg(self, msg: 'jina_pb2.Message') -> None:
+        """Register the current message to this pea
+
+        :param msg: the message received
+        """
+        self._request = getattr(msg.request, msg.request.WhichOneof('body'))
+        self._message = msg
+        msg_type = type(self._request)
+
+        if self.args.num_part > 1 and msg_type != jina_pb2.Request.ControlRequest:
+            # do not wait for control request
+            req_id = msg.envelope.request_id
+            self._pending_msgs[req_id].append(msg)
+            num_req = len(self._pending_msgs[req_id])
+
+            if num_req == self.args.num_part:
+                self._prev_messages = self._pending_msgs.pop(req_id)
+                self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
+            else:
+                self.logger.debug('waiting for %d/%d %s messages' % (num_req, self.args.num_part, msg_type))
+                raise WaitPendingMessage
+        else:
+            self._prev_requests = None
+            self._prev_messages = None
+
+    @property
+    def request(self) -> 'jina_pb2.Request':
+        """Get the current request body inside the protobuf message"""
+        return self._request
+
+    @property
+    def prev_requests(self) -> List['jina_pb2.Request']:
+        """Get all previous requests that has the same ``request_id``
+
+        This returns ``None`` when ``num_part=1``.
+        """
+        return self._prev_requests
+
+    @property
+    def message(self) -> 'jina_pb2.Message':
+        """Get the current protobuf message to be processed"""
+        return self._message
+
+    @property
+    def prev_messages(self) -> List['jina_pb2.Message']:
+        """Get all previous messages that has the same ``request_id``
+
+        This returns ``None`` when ``num_part=1``.
+        """
+        return self._prev_messages
+
     def load_driver(self):
         """Load driver to this Pea, specified by ``driver_yaml_path`` and ``driver`` from CLI arguments
 
@@ -129,13 +189,25 @@ class Pea(metaclass=PeaMeta):
 
             self._timer.reset()
 
+    def pre_hook(self, msg: 'jina_pb2.Message') -> None:
+        msg_type = msg.request.WhichOneof('body')
+        self.logger.info('received "%s" from %s' % (msg_type, routes2str(msg, flag_current=True)))
+        add_route(msg.envelope, self.name, self.args.identity)
+
+    def post_hook(self, msg: 'jina_pb2.Message') -> None:
+        msg.envelope.routes[-1].end_time.GetCurrentTime()
+
     def run(self):
         """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
         with Zmqlet(self.args, logger=self.logger) as zmqlet:
 
             def _callback(msg):
                 try:
-                    return self.driver.callback(msg)
+                    self.pre_hook(msg)
+                    self.register_msg(msg)
+                    self.executor.apply()
+                    self.post_hook(msg)
+                    return msg
                 except WaitPendingMessage:
                     pass
                 except EventLoopEnd:

@@ -1,8 +1,10 @@
-JEP 1 --- Redesigning ``Driver`` and its relations to ``Executors``
-===================================================================
+JEP 1 --- Redesigning ``Driver`` and its relation to ``Executor``
+=================================================================
 
 - Author: Han Xiao (han.xiao@jina.ai)
-- Jina VCS version: ``ece529e``
+- Based on Jina VCS version: ``@ece529e``
+- Merged to Jina VCS version: TBA
+- Released in Jina version: TBA
 - Date: 24.02.2020
 
 .. contents:: Table of Contents
@@ -24,6 +26,7 @@ The poses multiple problems such as:
 - As people working on executor, they have a very vague clue how it will work in the microservice/network settings. They later have to design the corresponding ``driver_group`` to match the logic of the executor.
 - Almost every executor needs a driver, separating the driver from the executor seems unnecessary.
 - Two YAML configs are cross-referencing the others. This is error-prone.
+- The name ``driver`` and ``handler`` are used interchangeably and they can be very confusing.
 
 What we are expecting is the driver specification defined inside the executor YAML config, such as
 
@@ -101,7 +104,7 @@ The ``requests`` field is defined at the same level with ``metas`` and ``with``.
 
     The corresponding driver to use, defined in :mod:`jina.drivers`. It is **always required**.
 
-The ``on`` field supports multiple methods/drivers, and they are called in the order of how they defined. For example,
+The ``on`` field supports multiple methods/drivers, and they are being called in the order of how they defined. For example,
 
 .. highlight:: yaml
 .. code-block:: yaml
@@ -171,7 +174,7 @@ Certain behaviors are followed by all executors, it makes sense to have a :file:
                     - driver: handler_control_req
 
 
-.. confval:: requests.pre and requests.post
+.. confval:: requests.pre/.post
 
     ``requests.pre`` defines how to handle the message before calling ``requests.on``, and ``requests.post`` defines how to handle the message after calling ``requests.on``. They are applied to all requests including the ``ControlRequest``. They For example,
 
@@ -188,4 +191,8 @@ Certain behaviors are followed by all executors, it makes sense to have a :file:
                 - driver: update_timestamp
 
     In the current implementation, these functions in ``pre`` and ``post`` have *nothing* to do with the executor. They are pure drivers defined in :mod:`jina.drivers`. However, we decide to keep the syntax aligned with ``requests.on``.
+
+
+Redefining :class:`jina.drivers.Driver`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -1,14 +1,13 @@
 import os
 import pickle
 import re
-import sys
 import tempfile
 import uuid
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TypeVar, Type, List, TextIO
+from typing import Dict, Any, Union, TypeVar, Type, TextIO
 
 import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
@@ -16,11 +15,12 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import defaults, get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace
-from ..helper import yaml, print_load_table, PathImporter, expand_dict, expand_env_var
+from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_tags_from_node, \
+    import_classes
 from ..logging.base import get_logger
 from ..logging.profile import profiling
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'import_executors']
+__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
 AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 
@@ -124,6 +124,8 @@ class BaseExecutor(metaclass=ExecutorType):
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
+        self._drivers = defaultdict(list)
+        self._attached_pea = None
 
     def _post_init_wrapper(self, cur_metas: Dict = None):
 
@@ -340,7 +342,9 @@ class BaseExecutor(metaclass=ExecutorType):
         :return: an executor object
         """
         if not filename: raise FileNotFoundError
-        import_executors(show_import_table=False, import_once=True)
+        import_classes(ExecutorType, __path__[0], show_import_table=False, import_once=True)
+        import jina.drivers
+        import_classes(jina.drivers.DriverType, jina.drivers.__path__[0], show_import_table=False, import_once=True)
         # first scan, find if external modules are specified
         with (open(filename, encoding='utf8') if isinstance(filename, str) else filename) as fp:
             # ignore all lines start with ! because they could trigger the deserialization of that class
@@ -402,20 +406,6 @@ class BaseExecutor(metaclass=ExecutorType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    @staticmethod
-    def _get_tags_from_node(node):
-        def node_recurse_generator(n):
-            if n.tag.startswith('!'):
-                yield n.tag.lstrip('!')
-            for nn in n.value:
-                if isinstance(nn, tuple):
-                    for k in nn:
-                        yield from node_recurse_generator(k)
-                elif isinstance(nn, ruamel.yaml.nodes.Node):
-                    yield from node_recurse_generator(nn)
-
-        return list(set(list(node_recurse_generator(node))))
-
     @classmethod
     def to_yaml(cls, representer, data):
         """Required by :mod:`ruamel.yaml.constructor` """
@@ -430,7 +420,7 @@ class BaseExecutor(metaclass=ExecutorType):
     @classmethod
     def _get_instance_from_yaml(cls, constructor, node, stop_on_import_error=False):
         try:
-            import_executors(execs=cls._get_tags_from_node(node))
+            import_executors(execs=get_tags_from_node(node))
         except ImportError as ex:
             if stop_on_import_error:
                 raise RuntimeError('Cannot import module, pip install may required') from ex
@@ -515,89 +505,3 @@ class BaseExecutor(metaclass=ExecutorType):
         if p:
             r['metas'] = p
         return r
-
-
-def import_executors(path: str = __path__[0], namespace: str = 'jina.executors', execs: Union[str, List[str]] = None,
-                     show_import_table: bool = False, import_once: bool = False):
-    """
-    Import all or selected executors into the runtime. This is used during :func:`load_config` to register the YAML
-    constructor beforehand. It can be also used to import third-part or external executors.
-
-    :param path: the package path for search
-    :param namespace: the namespace to add given the ``path``
-    :param execs: the list of executor names to import
-    :param show_import_table: show the import result as a table
-    :param import_once: import everything only once, to avoid repeated import
-    """
-
-    from .. import JINA_GLOBAL
-    if import_once and JINA_GLOBAL.executors_imported:
-        return
-
-    from setuptools import find_packages
-    from pkgutil import iter_modules
-
-    modules = set()
-
-    for info in iter_modules([path]):
-        if not info.ispkg:
-            modules.add('.'.join([namespace, info.name]))
-
-    for pkg in find_packages(path):
-        modules.add('.'.join([namespace, pkg]))
-        pkgpath = path + '/' + pkg.replace('.', '/')
-        if sys.version_info.major == 2 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
-            for _, name, ispkg in iter_modules([pkgpath]):
-                if not ispkg:
-                    modules.add('.'.join([namespace, pkg, name]))
-        else:
-            for info in iter_modules([pkgpath]):
-                if not info.ispkg:
-                    modules.add('.'.join([namespace, pkg, info.name]))
-
-    load_stat = defaultdict(list)
-    bad_imports = []
-
-    if isinstance(execs, str):
-        execs = {execs}
-    elif isinstance(execs, list):
-        execs = set(execs)
-    elif execs is None:
-        execs = {}
-    else:
-        raise TypeError('target_exes must be a set, but received %r' % execs)
-
-    import importlib
-    for m in modules:
-        try:
-            mod = importlib.import_module(m)
-            for k in dir(mod):
-                # import the class
-                if isinstance(getattr(mod, k), ExecutorType) and (not execs or k in execs):
-                    try:
-                        getattr(mod, k)
-                        load_stat[m].append((k, True, ''))
-                        if k in execs:
-                            execs.remove(k)
-                            if not execs:
-                                return  # target execs are all found and loaded, return
-                    except Exception as ex:
-                        load_stat[m].append((k, False, ex))
-                        bad_imports.append('.'.join([m, k]))
-                        if k in execs:
-                            raise ex  # target class is found but not loaded, raise return
-        except Exception as ex:
-            load_stat[m].append(('', False, ex))
-            bad_imports.append(m)
-
-    if execs:
-        raise ImportError('%s can not be found in jina' % execs)
-
-    if show_import_table:
-        print_load_table(load_stat)
-    else:
-        if bad_imports:
-            from jina.logging import default_logger
-            default_logger.error('theses modules or classes can not be imported %s' % bad_imports)
-
-    JINA_GLOBAL.executors_imported = True

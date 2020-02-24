@@ -25,4 +25,6 @@ from types import SimpleNamespace
 __default_host__ = '0.0.0.0'
 
 JINA_GLOBAL = SimpleNamespace()
-JINA_GLOBAL.executors_imported = False
+JINA_GLOBAL.imported = SimpleNamespace()
+JINA_GLOBAL.imported.executors = False
+JINA_GLOBAL.imported.drivers = False
