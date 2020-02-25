@@ -4,16 +4,13 @@ with:
   sse_logger: false
 pods:
   chunk_seg:
-    driver_group: segment
     replicas: 3
   encode1:
-    driver_group: index-meta-doc
     replicas: 2
     recv_from: chunk_seg
   encode2:
-    driver_group: index-meta-doc
     replicas: 2
     recv_from: chunk_seg
   joiner:
-    driver_group: merge
+    yaml_path: merge
     recv_from: [encode1, encode2]

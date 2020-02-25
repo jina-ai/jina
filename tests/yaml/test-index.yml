@@ -3,3 +3,13 @@ with:
   index_filename: tmp2
 metas:
   name: test2
+requests:
+  on:
+    SearchRequest:
+      - !ChunkSearchDriver
+        with:
+          method: query
+    IndexRequest:
+      - !ChunkIndexDriver
+        with:
+          method: add

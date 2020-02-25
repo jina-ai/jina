@@ -47,8 +47,7 @@ class MyTestCase(JinaTestCase):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_index(self):
-        f = Flow().add(yaml_path='yaml/test-index.yml',
-                       driver_group='index-chunk', replicas=3, separated_workspace=True)
+        f = Flow().add(yaml_path='yaml/test-index.yml', replicas=3, separated_workspace=True)
         with f.build(copy_flow=True) as fl:
             fl.index(raw_bytes=random_docs(1000), in_proto=True)
 
