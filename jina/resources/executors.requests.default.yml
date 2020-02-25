@@ -1,4 +1,3 @@
-requests:
-  on:
-    ControlRequest:
-      - driver: ControlReqDriver
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
