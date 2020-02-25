@@ -88,7 +88,7 @@ class Pea(metaclass=PeaMeta):
         self._prev_messages = None
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
 
-    def register_msg(self, msg: 'jina_pb2.Message') -> None:
+    def register(self, msg: 'jina_pb2.Message') -> None:
         """Register the current message to this pea
 
         :param msg: the message received
@@ -193,8 +193,8 @@ class Pea(metaclass=PeaMeta):
             def _callback(msg):
                 try:
                     self.pre_hook(msg)
-                    self.register_msg(msg)
-                    self.executor.apply()
+                    self.register(msg)
+                    self.executor.on(msg)
                     self.post_hook(msg)
                     return msg
                 except WaitPendingMessage:
