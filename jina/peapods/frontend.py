@@ -6,8 +6,8 @@ import grpc
 
 from .grpc_asyncio import AsyncioExecutor
 from .zmq import AsyncZmqlet, add_envelope
-from ..drivers import Driver
-from ..excepts import WaitPendingMessage, EventLoopEnd, NoRequestHandler
+from ..excepts import WaitPendingMessage, EventLoopEnd, NoDriverForRequest
+from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..proto import jina_pb2_grpc
 
@@ -49,19 +49,19 @@ class FrontendPea:
         def __init__(self, args, logger):
             super().__init__()
             self.args = args
-            self.name = args.name or args.driver_group or self.__class__.__name__
+            self.name = args.name or self.__class__.__name__
             self.logger = logger or get_logger(self.name, **vars(args))
-            self.driver = Driver(self, self.args.driver_yaml_path, self.args.driver_group)
-            self.driver.verify()
+            self.executor = BaseExecutor()
+            self.executor.attach(pea=self)
 
         def recv_callback(self, msg):
             try:
-                return self.driver.callback(msg)
+                return self.executor(msg.__class__.__name__)
             except WaitPendingMessage:
                 self.logger.error('frontend should not receive partial message, it can not do reduce')
             except EventLoopEnd:
                 self.logger.error('event loop end signal should not be raised in the frontend')
-            except NoRequestHandler:
+            except NoDriverForRequest:
                 # remove envelope and send back the request
                 return msg.request
 

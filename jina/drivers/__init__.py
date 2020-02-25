@@ -16,6 +16,7 @@ if False:
 
 class DriverType(type):
 
+
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
@@ -34,13 +35,36 @@ class DriverType(type):
 
 
 class BaseDriver(metaclass=DriverType):
+    """Driver is an intermediate layer between :class:`jina.executors.BaseExecutor` and
+     :class:`jina.peapods.pea.Pea`. It is protobuf- and context-aware. A ``Driver`` reads the protobuf message
+     and extracts the required information using ``handler`` or ``hook``, and then feed to an ``Executor``.
+     After the result is returned, the driver will change the protobuf message accordingly and handover to ``Pea``.
+
+     .. note:: Rationale and Goals
+
+         The call chain here is as follows:
+
+         Pea/Pod -> Driver (specified by a driver map config) -> Handlers/Hooks -> Executor (specified by the compound yaml
+         config).
+
+         Thus, the handler function is either designed to knows what executor's function to call, or it receives a function
+         name specified by the driver map.
+
+         Goal 1: we don't want to frequently change handlers, hooks and executors. Sometimes we can't change their code (in
+         a different language or in a docker image).
+
+         Goal 2: the naming of a compound route is quite arbitrary, we want to restrict such arbitrary in the yaml config
+         file, not in the actual code.
+    """
+
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, *args, **kwargs):
-        pass
+        self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.Pea` (& :class:`jina.executors.BaseExecutor`)
 
     def attach(self, pea: 'Pea', *args, **kwargs):
         self.pea = pea
+        self.attached = True
 
     @property
     def req(self) -> 'jina_pb2.Request':
@@ -113,6 +137,7 @@ class BaseDriver(metaclass=DriverType):
         d = dict(self.__dict__)
         if 'pea' in d:
             del d['pea']
+        d['attached'] = False
         return d
 
 
@@ -153,7 +178,7 @@ class BaseExecutorDriver(BaseDriver):
     def __getstate__(self):
         """Do not save the executor and executor function, as it would be cross-referencing and unserializable.
         In other words, a deserialized :class:`BaseExecutorDriver` from file is always unattached. """
-        d = dict(self.__dict__)
+        d = super().__getstate__()
         if '_exec' in d:
             del d['_exec']
         if '_exec_fn' in d:

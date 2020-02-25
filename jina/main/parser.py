@@ -19,12 +19,15 @@ def valid_yaml_path(path, to_stream=False):
             return open(path, encoding='utf8')
         else:
             return path
-    elif path.isidentifier():
-        # possible class name
-        return io.StringIO('!%s' % path)
+    elif path.lower() in {'route', 'merge', 'clear'}:
+        from pkg_resources import resource_filename
+        return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
     elif path.startswith('!'):
         # possible YAML content
         return io.StringIO(path)
+    elif path.isidentifier():
+        # possible class name
+        return io.StringIO('!%s' % path)
     else:
         raise argparse.ArgumentTypeError('%s can not be resolved, it should be a readable stream,'
                                          ' or a valid file path, or a supported class name.' % path)
@@ -117,16 +120,9 @@ def set_pod_parser(parser=None):
                      help='the name of this pod, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=random_identity(),
                      help='the identity of the pod, default a random string')
-
-    gp1 = add_arg_group(parser, 'pod logic arguments')
-    gp1.add_argument('--exec_yaml_path', type=valid_yaml_path,
+    gp0.add_argument('--yaml_path', type=valid_yaml_path, default='BaseExecutor',
                      help='the yaml config of the executor, it should be a readable stream,'
                           ' or a valid file path, or a supported class name.')
-    gp1.add_argument('--driver_yaml_path', type=valid_yaml_path,
-                     help='the driver map of the pod, it should be a readable stream or a valid file path')
-    gp1.add_argument('--driver_group', type=str,
-                     help='the driver group to be installed on this pod')
-
     gp2 = add_arg_group(parser, 'pod network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),
                      help='port for input data, default a random port between [49152, 65536]')

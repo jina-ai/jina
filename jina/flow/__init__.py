@@ -1,5 +1,4 @@
 import copy
-import re
 import threading
 import time
 from collections import OrderedDict
@@ -8,7 +7,6 @@ from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Optional, Iterator, Callable, Type, TextIO, Any
 
 import ruamel.yaml
-from pkg_resources import resource_stream
 
 from .. import __default_host__
 from ..enums import FlowBuildLevel
@@ -55,7 +53,7 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 
 class Flow:
-    def __init__(self, driver_yaml_path: str = None, sse_logger: bool = False, runtime: str = 'process',
+    def __init__(self, sse_logger: bool = False, runtime: str = 'process',
                  image_name: str = 'jina:latest-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
                  **kwargs):
         """Initialize a flow object
@@ -72,18 +70,9 @@ class Flow:
         self.runtime = runtime
         self._common_kwargs = kwargs
 
-        with resource_stream('jina', '/'.join(('resources', 'drivers.default.yml'))) as rs:
-            self.support_drivers = yaml.load(rs)['drivers']
-
-        if driver_yaml_path:
-            # load additional drivers
-            with open(driver_yaml_path) as rs:
-                self.support_drivers.update(yaml.load(rs)['drivers'])
-            self._common_kwargs['driver_yaml_path'] = driver_yaml_path
-
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'Pod']
         self._build_level = FlowBuildLevel.EMPTY
-        self._pod_name_counter = {k: 0 for k in self.support_drivers.keys()}
+        self._pod_name_counter = 0
         self._last_changed_pod = []
         self._add_frontend()
 
@@ -231,7 +220,7 @@ class Flow:
         """
         if len(recv_from) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(recv_from) > 1')
-        return self.add(name='joiner', driver_group='merge', recv_from=recv_from, *args, **kwargs)
+        return self.add(name='joiner', yaml_path='merge', recv_from=recv_from, *args, **kwargs)
 
     def add(self,
             recv_from: Union[str, Tuple[str], List[str]] = None,
@@ -257,23 +246,14 @@ class Flow:
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
-        driver_group = kwargs.get('driver_group', None)
         pod_name = kwargs.get('name', None)
-
-        if driver_group not in op_flow.support_drivers:
-            raise ValueError(
-                'driver_group=%s is not supported, should be one of %s' % (
-                    driver_group, op_flow.support_drivers.keys()))
 
         if pod_name in op_flow._pod_nodes:
             raise FlowTopologyError('name: %s is used in this Flow already!' % pod_name)
 
         if not pod_name:
-            pod_name = '%s%d' % (driver_group if driver_group else 'default', op_flow._pod_name_counter[driver_group])
-            # make sure pod_name is a valid Python identifier
-            pod_name = re.sub('[^0-9a-zA-Z_]', '', pod_name)
-            pod_name = re.sub('^[^a-zA-Z_]+', '', pod_name)
-            op_flow._pod_name_counter[driver_group] += 1
+            pod_name = '%s%d' % ('pod', op_flow._pod_name_counter)
+            op_flow._pod_name_counter += 1
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name

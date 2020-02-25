@@ -8,7 +8,7 @@ from .zmq import send_ctrl_message, Zmqlet
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
-    DriverNotInstalled, NoRequestHandler
+    DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
@@ -71,7 +71,7 @@ class Pea(metaclass=PeaMeta):
         """
         super().__init__()
         self.args = args
-        self.name = args.name or args.driver_group or self.__class__.__name__
+        self.name = args.name or self.__class__.__name__
         self.logger = get_logger(self.name, **vars(args))
         self.is_ready = self._get_event()
         self.is_event_loop = self._get_event()
@@ -89,7 +89,8 @@ class Pea(metaclass=PeaMeta):
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
 
     def register(self, msg: 'jina_pb2.Message') -> None:
-        """Register the current message to this pea
+        """Register the current message to this pea, so that all message-related properties are up-to-date, including
+        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`.
 
         :param msg: the message received
         """
@@ -132,6 +133,10 @@ class Pea(metaclass=PeaMeta):
         return self._message
 
     @property
+    def request_type(self) -> str:
+        return self._request.__class__.__name__
+
+    @property
     def prev_messages(self) -> List['jina_pb2.Message']:
         """Get all previous messages that has the same ``request_id``
 
@@ -143,13 +148,13 @@ class Pea(metaclass=PeaMeta):
         """Load the executor to this Pea, specified by ``exec_yaml_path`` CLI argument.
 
         """
-        if self.args.exec_yaml_path:
+        if self.args.yaml_path:
             try:
-                self.executor = BaseExecutor.load_config(self.args.exec_yaml_path,
+                self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.replica_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
-                raise ExecutorFailToLoad('can not executor from %s' % self.args.exec_yaml_path)
+                raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)
         else:
             self.logger.warning('this Pea has no executor attached, you may want to double-check '
                                 'if it is a mistake or on purpose (using this Pea as router/map-reduce)')
@@ -179,11 +184,13 @@ class Pea(metaclass=PeaMeta):
             self._timer.reset()
 
     def pre_hook(self, msg: 'jina_pb2.Message') -> None:
+        """Pre-hook function, what to do after first receiving the message """
         msg_type = msg.request.WhichOneof('body')
         self.logger.info('received "%s" from %s' % (msg_type, routes2str(msg, flag_current=True)))
         add_route(msg.envelope, self.name, self.args.identity)
 
     def post_hook(self, msg: 'jina_pb2.Message') -> None:
+        """Post-hook function, what to do before handing out the message """
         msg.envelope.routes[-1].end_time.GetCurrentTime()
 
     def run(self):
@@ -194,7 +201,7 @@ class Pea(metaclass=PeaMeta):
                 try:
                     self.pre_hook(msg)
                     self.register(msg)
-                    self.executor.on(msg)
+                    self.executor(self.request_type)
                     self.post_hook(msg)
                     return msg
                 except WaitPendingMessage:
@@ -229,7 +236,7 @@ class Pea(metaclass=PeaMeta):
                 self.logger.error(ex, exc_info=True)
             except DriverNotInstalled:
                 self.logger.error('no driver is installed to this service, this service will do nothing')
-            except NoRequestHandler:
+            except NoDriverForRequest:
                 self.logger.error('no matched handler for the request, this service is badly configured')
             except KeyboardInterrupt:
                 self.logger.warning('user cancel the process')

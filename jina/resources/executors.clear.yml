@@ -1,0 +1,8 @@
+!BaseEncoder
+with: {}
+metas:
+  name: clear
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest]:
+      - !ReqPruneDriver {}

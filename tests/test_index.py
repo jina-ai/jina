@@ -42,12 +42,12 @@ class MyTestCase(JinaTestCase):
             print(d)
 
     def test_simple_route(self):
-        f = Flow().add(driver_group='route')
+        f = Flow().add(yaml_path='route')
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_index(self):
-        f = Flow().add(exec_yaml_path='yaml/test-index.yml',
+        f = Flow().add(yaml_path='yaml/test-index.yml',
                        driver_group='index-chunk', replicas=3, separated_workspace=True)
         with f.build(copy_flow=True) as fl:
             fl.index(raw_bytes=random_docs(1000), in_proto=True)

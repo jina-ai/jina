@@ -1,5 +1,7 @@
 import unittest
 
+from pkg_resources import resource_filename
+
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import DocMetaSearchDriver
@@ -41,6 +43,17 @@ class MyTestCase(JinaTestCase):
         c = BaseExecutor.load(a.save_abspath)
         self.assertEqual(a._drivers, c._drivers)
         self.add_tmpfile(a.save_abspath)
+
+    def test_resource_executor(self):
+        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors.route.yml'))))
+        self.assertEqual(a.name, 'route')
+        self.assertEqual(len(a._drivers), 4)
+        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors.merge.yml'))))
+        self.assertEqual(a.name, 'merge')
+        self.assertEqual(len(a._drivers), 4)
+        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors.clear.yml'))))
+        self.assertEqual(a.name, 'clear')
+        self.assertEqual(len(a._drivers), 4)
 
 
 if __name__ == '__main__':

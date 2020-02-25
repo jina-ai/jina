@@ -13,7 +13,7 @@ from ruamel.yaml import StringIO
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import defaults, get_default_metas, fill_metas_with_defaults
-from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile
+from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var
 from ..logging.base import get_logger
 from ..logging.profile import profiling
@@ -527,3 +527,13 @@ class BaseExecutor(metaclass=ExecutorType):
         for v in self._drivers.values():
             for d in v:
                 d.attach(executor=self, *args, **kwargs)
+
+    def __call__(self, req_type, *args, **kwargs):
+        if req_type in self._drivers:
+            for d in self._drivers[req_type]:
+                if d.attached:
+                    d()
+                else:
+                    raise UnattachedDriver(d)
+        else:
+            raise NoDriverForRequest(req_type)

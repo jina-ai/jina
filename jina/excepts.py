@@ -37,8 +37,12 @@ class BadDriverMap(Exception):
     """The YAML driver map is in a bad format"""
 
 
-class NoRequestHandler(Exception):
+class NoDriverForRequest(Exception):
     """No matched handler for this request """
+
+
+class UnattachedDriver(Exception):
+    """Driver is not attached to any Pea or executor"""
 
 
 class FlowTopologyError(Exception):
