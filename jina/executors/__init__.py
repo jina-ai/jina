@@ -6,14 +6,14 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TypeVar, Type, TextIO
+from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
 
 import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import defaults, get_default_metas, fill_metas_with_defaults
-from ..excepts import EmptyExecutorYAML, BadWorkspace
+from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var
 from ..logging.base import get_logger
 from ..logging.profile import profiling
@@ -123,7 +123,7 @@ class BaseExecutor(metaclass=ExecutorType):
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
-        self._drivers = {}
+        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
         self._attached_pea = None
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None):
@@ -131,9 +131,9 @@ class BaseExecutor(metaclass=ExecutorType):
         if not _metas:
             _metas = get_default_metas()
 
-        if not _requests:
-            from .requests import get_default_requests
-            _requests = get_default_requests()
+        # if not _requests:
+        #     from .requests import get_default_requests
+        #     _requests = get_default_requests()
 
         self._fill_metas(_metas)
         self._fill_requests(_requests)
@@ -143,7 +143,7 @@ class BaseExecutor(metaclass=ExecutorType):
         self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def _fill_requests(self, _requests):
-        if 'on' in _requests and isinstance(_requests['on'], dict):
+        if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
             for req_type, drivers in _requests['on'].items():
                 if isinstance(req_type, list) or isinstance(req_type, tuple):
                     for r in req_type:
@@ -406,8 +406,11 @@ class BaseExecutor(metaclass=ExecutorType):
         It uses ``pickle`` for loading.
         """
         if not filename: raise FileNotFoundError
-        with open(filename, 'rb') as fp:
-            return pickle.load(fp)
+        try:
+            with open(filename, 'rb') as fp:
+                return pickle.load(fp)
+        except EOFError:
+            raise BadPersistantFile('broken file %s can not be loaded' % filename)
 
     def close(self):
         """
@@ -515,3 +518,12 @@ class BaseExecutor(metaclass=ExecutorType):
         if p:
             r['metas'] = p
         return r
+
+    def attach(self, *args, **kwargs):
+        """Attach this executor to a :class:`jina.peapods.pea.Pea`.
+
+        This is called inside the initializing of a :class:`jina.peapods.pea.Pea`.
+        """
+        for v in self._drivers.values():
+            for d in v:
+                d.attach(executor=self, *args, **kwargs)

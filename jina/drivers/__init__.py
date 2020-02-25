@@ -92,17 +92,28 @@ class BaseDriver(metaclass=DriverType):
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
-    def from_yaml(cls, constructor, node, stop_on_import_error=False):
+    def from_yaml(cls, constructor, node):
         """Required by :mod:`ruamel.yaml.constructor` """
-        return cls._get_instance_from_yaml(constructor, node, stop_on_import_error)
+        return cls._get_instance_from_yaml(constructor, node)
 
     @classmethod
-    def _get_instance_from_yaml(cls, constructor, node, stop_on_import_error=False):
+    def _get_instance_from_yaml(cls, constructor, node):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 
         obj = cls(**data.get('with', {}))
         return obj
+
+    def __eq__(self, other):
+        return self.__class__ == other.__class__
+
+    def __getstate__(self):
+        """Do not save the Pea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
+        file is always unattached. """
+        d = dict(self.__dict__)
+        if 'pea' in d:
+            del d['pea']
+        return d
 
 
 class BaseExecutorDriver(BaseDriver):
@@ -139,3 +150,12 @@ class BaseExecutorDriver(BaseDriver):
         if self._method_name:
             self._exec_fn = getattr(self.exec, self._method_name)
 
+    def __getstate__(self):
+        """Do not save the executor and executor function, as it would be cross-referencing and unserializable.
+        In other words, a deserialized :class:`BaseExecutorDriver` from file is always unattached. """
+        d = dict(self.__dict__)
+        if '_exec' in d:
+            del d['_exec']
+        if '_exec_fn' in d:
+            del d['_exec_fn']
+        return d

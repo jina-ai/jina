@@ -63,3 +63,7 @@ class BadWorkspace(Exception):
 
 class BadClient(Exception):
     """A wrongly defined grpc client, can not communicate with jina server correctly """
+
+
+class BadPersistantFile(Exception):
+    """Bad or broken dump file that can not be deserialized with ``pickle.load``"""

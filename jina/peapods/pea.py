@@ -5,7 +5,6 @@ from collections import defaultdict
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
-from ..drivers import Driver
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
@@ -140,25 +139,15 @@ class Pea(metaclass=PeaMeta):
         """
         return self._prev_messages
 
-    def load_driver(self):
-        """Load driver to this Pea, specified by ``driver_yaml_path`` and ``driver`` from CLI arguments
-
-        """
-        self.driver = Driver(self, self.args.driver_yaml_path, self.args.driver_group)
-        self.driver.verify()
-
     def load_executor(self):
         """Load the executor to this Pea, specified by ``exec_yaml_path`` CLI argument.
-
-        .. note::
-            A non-executor :class:`Pea` is possible but then :func:`load_driver` must be implemented. Otherwise this
-            Pea will have no actual logic at all.
 
         """
         if self.args.exec_yaml_path:
             try:
                 self.executor = BaseExecutor.load_config(self.args.exec_yaml_path,
                                                          self.args.separated_workspace, self.replica_id)
+                self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad('can not executor from %s' % self.args.exec_yaml_path)
         else:
@@ -268,7 +257,6 @@ class Pea(metaclass=PeaMeta):
 
         """
         self.load_executor()
-        self.load_driver()
 
     def close(self):
         """Gracefully close this pea and release all resources """

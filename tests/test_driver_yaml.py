@@ -36,6 +36,11 @@ class MyTestCase(JinaTestCase):
         b = BaseExecutor.load_config(p)
         self.assertEqual(a._drivers, b._drivers)
         self.add_tmpfile(p)
+        a.touch()
+        a.save()
+        c = BaseExecutor.load(a.save_abspath)
+        self.assertEqual(a._drivers, c._drivers)
+        self.add_tmpfile(a.save_abspath)
 
 
 if __name__ == '__main__':
