@@ -505,7 +505,7 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
             chunk_byte_type = ctype.encode()
             if ctype == 'raw_bytes':
                 chunk_bytes.append(c.raw_bytes)
-                c.ClearField('raw')
+                c.ClearField('raw_bytes')
             elif ctype == 'blob':
                 chunk_bytes.append(c.blob.raw_bytes)
                 c.blob.ClearField('raw_bytes')
