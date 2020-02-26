@@ -1,0 +1,8 @@
+!BaseEncoder
+with: {}
+metas:
+  name: merge
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest]:
+      - !MergeDriver {}

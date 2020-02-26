@@ -1,26 +1,24 @@
 import os
 import pickle
 import re
-import sys
 import tempfile
 import uuid
-from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TypeVar, Type, List, TextIO
+from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
 
 import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
-from .metas import defaults, get_default_metas, fill_metas_with_defaults
-from ..excepts import EmptyExecutorYAML, BadWorkspace
-from ..helper import yaml, print_load_table, PathImporter, expand_dict, expand_env_var
+from .metas import get_default_metas, fill_metas_with_defaults
+from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
+from ..helper import yaml, PathImporter, expand_dict, expand_env_var
 from ..logging.base import get_logger
 from ..logging.profile import profiling
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'import_executors']
+__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
 AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 
@@ -42,6 +40,7 @@ class ExecutorType(type):
         getattr(cls, 'pre_init', lambda *x: None)()
 
         m = kwargs.pop('metas') if 'metas' in kwargs else {}
+        r = kwargs.pop('requests') if 'requests' in kwargs else {}
 
         obj = type.__call__(cls, *args, **kwargs)
 
@@ -49,7 +48,7 @@ class ExecutorType(type):
         # metas in YAML > class attribute > default_jina_config
         # jina_config = expand_dict(jina_config)
 
-        getattr(obj, '_post_init_wrapper', lambda *x: None)(m)
+        getattr(obj, '_post_init_wrapper', lambda *x: None)(m, r)
         return obj
 
     @staticmethod
@@ -124,15 +123,42 @@ class BaseExecutor(metaclass=ExecutorType):
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
+        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
+        self._attached_pea = None
 
-    def _post_init_wrapper(self, cur_metas: Dict = None):
+    def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None):
 
-        if not cur_metas:
-            cur_metas = get_default_metas()
+        if not _metas:
+            _metas = get_default_metas()
 
+        # if not _requests:
+        #     from .requests import get_default_requests
+        #     _requests = get_default_requests()
+
+        self._fill_metas(_metas)
+        self._fill_requests(_requests)
+
+        _before = set(list(vars(self).keys()))
+        self.post_init()
+        self._post_init_vars = {k for k in vars(self) if k not in _before}
+
+    def _fill_requests(self, _requests):
+        if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
+            for req_type, drivers in _requests['on'].items():
+                if isinstance(req_type, list) or isinstance(req_type, tuple):
+                    for r in req_type:
+                        if r not in self._drivers:
+                            self._drivers[r] = list()
+                        self._drivers[r].extend(drivers)
+                else:
+                    if req_type not in self._drivers:
+                        self._drivers[req_type] = list()
+                    self._drivers[req_type].extend(drivers)
+
+    def _fill_metas(self, _metas):
         unresolved_attr = False
         # set self values filtered by those non-exist, and non-expandable
-        for k, v in cur_metas.items():
+        for k, v in _metas.items():
             if not hasattr(self, k):
                 if isinstance(v, str):
                     if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
@@ -141,7 +167,6 @@ class BaseExecutor(metaclass=ExecutorType):
                         unresolved_attr = True
                 else:
                     setattr(self, k, v)
-
         if not getattr(self, 'name', None):
             _id = str(uuid.uuid4()).split('-')[0]
             _name = '%s-%s' % (self.__class__.__name__, _id)
@@ -151,10 +176,9 @@ class BaseExecutor(metaclass=ExecutorType):
                     'naming is important as it provides an unique identifier when '
                     'persisting this executor on disk.' % _name)
             setattr(self, 'name', _name)
-
         if unresolved_attr:
             _tmp = vars(self)
-            _tmp['metas'] = cur_metas
+            _tmp['metas'] = _metas
             new_metas = expand_dict(_tmp)['metas']
 
             # set self values filtered by those non-exist, and non-expandable
@@ -169,10 +193,6 @@ class BaseExecutor(metaclass=ExecutorType):
                             raise ValueError('%s=%s is not expandable or badly referred' % (k, v))
                     else:
                         setattr(self, k, v)
-
-        _before = set(list(vars(self).keys()))
-        self.post_init()
-        self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def post_init(self):
         """
@@ -340,7 +360,6 @@ class BaseExecutor(metaclass=ExecutorType):
         :return: an executor object
         """
         if not filename: raise FileNotFoundError
-        import_executors(show_import_table=False, import_once=True)
         # first scan, find if external modules are specified
         with (open(filename, encoding='utf8') if isinstance(filename, str) else filename) as fp:
             # ignore all lines start with ! because they could trigger the deserialization of that class
@@ -387,8 +406,11 @@ class BaseExecutor(metaclass=ExecutorType):
         It uses ``pickle`` for loading.
         """
         if not filename: raise FileNotFoundError
-        with open(filename, 'rb') as fp:
-            return pickle.load(fp)
+        try:
+            with open(filename, 'rb') as fp:
+                return pickle.load(fp)
+        except EOFError:
+            raise BadPersistantFile('broken file %s can not be loaded' % filename)
 
     def close(self):
         """
@@ -402,24 +424,12 @@ class BaseExecutor(metaclass=ExecutorType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    @staticmethod
-    def _get_tags_from_node(node):
-        def node_recurse_generator(n):
-            if n.tag.startswith('!'):
-                yield n.tag.lstrip('!')
-            for nn in n.value:
-                if isinstance(nn, tuple):
-                    for k in nn:
-                        yield from node_recurse_generator(k)
-                elif isinstance(nn, ruamel.yaml.nodes.Node):
-                    yield from node_recurse_generator(nn)
-
-        return list(set(list(node_recurse_generator(node))))
-
     @classmethod
     def to_yaml(cls, representer, data):
         """Required by :mod:`ruamel.yaml.constructor` """
         tmp = data._dump_instance_to_yaml(data)
+        if getattr(data, '_drivers'):
+            tmp['requests'] = {'on': data._drivers}
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
@@ -429,26 +439,19 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def _get_instance_from_yaml(cls, constructor, node, stop_on_import_error=False):
-        try:
-            import_executors(execs=cls._get_tags_from_node(node))
-        except ImportError as ex:
-            if stop_on_import_error:
-                raise RuntimeError('Cannot import module, pip install may required') from ex
-
-        # if node.tag in {'!PipelineEncoder', '!CompoundExecutor'}:
-        #     os.unsetenv('JINA_WARN_UNNAMED')
-
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 
-        _jina_config = get_default_metas()
-        _jina_config.update(data.get('metas', {}))
-        # _jina_config = expand_dict(_jina_config)
-        # for k, v in _jina_config.items():
-        #     _jina_`config[k] = expand_env_var(v)
+        _meta_config = get_default_metas()
+        _meta_config.update(data.get('metas', {}))
+        if _meta_config:
+            data['metas'] = _meta_config
 
-        if _jina_config:
-            data['metas'] = _jina_config
+        from ..executors.requests import get_default_reqs
+        _requests = get_default_reqs()
+        _requests['on'].update(data.get('requests', {'on': {}})['on'])
+        if _requests:
+            data['requests'] = _requests
 
         dump_path = cls._get_dump_path_from_config(data.get('metas', {}))
         load_from_dump = False
@@ -468,10 +471,10 @@ class BaseExecutor(metaclass=ExecutorType):
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
                 tmp_a = a
                 tmp_p = {kk: vv for kk, vv in {**k, **p}.items()}
-                obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}))
+                obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}), requests=data.get('requests', {}))
             else:
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
-                obj = cls(**data.get('with', {}), metas=data.get('metas', {}))
+                obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
 
             obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
             cls.init_from_yaml = False
@@ -479,7 +482,7 @@ class BaseExecutor(metaclass=ExecutorType):
         # if node.tag in {'!CompoundExecutor'}:
         #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
 
-        if not _jina_config:
+        if not _meta_config:
             obj.logger.warning(
                 '"metas" config is not found in this yaml file, '
                 'this map is important as it provides an unique identifier when '
@@ -488,27 +491,28 @@ class BaseExecutor(metaclass=ExecutorType):
         return obj, data, load_from_dump
 
     @staticmethod
-    def _get_dump_path_from_config(jina_config: Dict):
-        if 'name' in jina_config:
-            if jina_config.get('separated_workspace', False):
-                if 'replica_id' in jina_config and isinstance(jina_config['replica_id'], int):
-                    work_dir = jina_config['replica_workspace']
-                    dump_path = os.path.join(work_dir, '%s.%s' % (jina_config['name'], 'bin'))
+    def _get_dump_path_from_config(meta_config: Dict):
+        if 'name' in meta_config:
+            if meta_config.get('separated_workspace', False):
+                if 'replica_id' in meta_config and isinstance(meta_config['replica_id'], int):
+                    work_dir = meta_config['replica_workspace']
+                    dump_path = os.path.join(work_dir, '%s.%s' % (meta_config['name'], 'bin'))
                     if os.path.exists(dump_path):
                         return dump_path
                 else:
                     raise BadWorkspace('separated_workspace=True but replica_id is unset or set to a bad value')
             else:
-                dump_path = os.path.join(jina_config.get('workspace', os.getcwd()),
-                                         '%s.%s' % (jina_config['name'], 'bin'))
+                dump_path = os.path.join(meta_config.get('workspace', os.getcwd()),
+                                         '%s.%s' % (meta_config['name'], 'bin'))
                 if os.path.exists(dump_path):
                     return dump_path
 
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        p = {k: getattr(data, k) for k, v in defaults.items() if getattr(data, k) != v}
-        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in defaults}
+        _defaults = get_default_metas()
+        p = {k: getattr(data, k) for k, v in _defaults.items() if getattr(data, k) != v}
+        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in _defaults}
         r = {}
         if a:
             r['with'] = a
@@ -516,88 +520,21 @@ class BaseExecutor(metaclass=ExecutorType):
             r['metas'] = p
         return r
 
+    def attach(self, *args, **kwargs):
+        """Attach this executor to a :class:`jina.peapods.pea.Pea`.
 
-def import_executors(path: str = __path__[0], namespace: str = 'jina.executors', execs: Union[str, List[str]] = None,
-                     show_import_table: bool = False, import_once: bool = False):
-    """
-    Import all or selected executors into the runtime. This is used during :func:`load_config` to register the YAML
-    constructor beforehand. It can be also used to import third-part or external executors.
+        This is called inside the initializing of a :class:`jina.peapods.pea.Pea`.
+        """
+        for v in self._drivers.values():
+            for d in v:
+                d.attach(executor=self, *args, **kwargs)
 
-    :param path: the package path for search
-    :param namespace: the namespace to add given the ``path``
-    :param execs: the list of executor names to import
-    :param show_import_table: show the import result as a table
-    :param import_once: import everything only once, to avoid repeated import
-    """
-
-    from .. import JINA_GLOBAL
-    if import_once and JINA_GLOBAL.executors_imported:
-        return
-
-    from setuptools import find_packages
-    from pkgutil import iter_modules
-
-    modules = set()
-
-    for info in iter_modules([path]):
-        if not info.ispkg:
-            modules.add('.'.join([namespace, info.name]))
-
-    for pkg in find_packages(path):
-        modules.add('.'.join([namespace, pkg]))
-        pkgpath = path + '/' + pkg.replace('.', '/')
-        if sys.version_info.major == 2 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
-            for _, name, ispkg in iter_modules([pkgpath]):
-                if not ispkg:
-                    modules.add('.'.join([namespace, pkg, name]))
+    def __call__(self, req_type, *args, **kwargs):
+        if req_type in self._drivers:
+            for d in self._drivers[req_type]:
+                if d.attached:
+                    d()
+                else:
+                    raise UnattachedDriver(d)
         else:
-            for info in iter_modules([pkgpath]):
-                if not info.ispkg:
-                    modules.add('.'.join([namespace, pkg, info.name]))
-
-    load_stat = defaultdict(list)
-    bad_imports = []
-
-    if isinstance(execs, str):
-        execs = {execs}
-    elif isinstance(execs, list):
-        execs = set(execs)
-    elif execs is None:
-        execs = {}
-    else:
-        raise TypeError('target_exes must be a set, but received %r' % execs)
-
-    import importlib
-    for m in modules:
-        try:
-            mod = importlib.import_module(m)
-            for k in dir(mod):
-                # import the class
-                if isinstance(getattr(mod, k), ExecutorType) and (not execs or k in execs):
-                    try:
-                        getattr(mod, k)
-                        load_stat[m].append((k, True, ''))
-                        if k in execs:
-                            execs.remove(k)
-                            if not execs:
-                                return  # target execs are all found and loaded, return
-                    except Exception as ex:
-                        load_stat[m].append((k, False, ex))
-                        bad_imports.append('.'.join([m, k]))
-                        if k in execs:
-                            raise ex  # target class is found but not loaded, raise return
-        except Exception as ex:
-            load_stat[m].append(('', False, ex))
-            bad_imports.append(m)
-
-    if execs:
-        raise ImportError('%s can not be found in jina' % execs)
-
-    if show_import_table:
-        print_load_table(load_stat)
-    else:
-        if bad_imports:
-            from jina.logging import default_logger
-            default_logger.error('theses modules or classes can not be imported %s' % bad_imports)
-
-    JINA_GLOBAL.executors_imported = True
+            raise NoDriverForRequest(req_type)

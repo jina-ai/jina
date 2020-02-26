@@ -119,19 +119,21 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
 
 """
+
 from typing import Dict, Union, List
-
-from pkg_resources import resource_stream
-
-from jina.helper import yaml
-
-with resource_stream('jina', '/'.join(('resources', 'executors.metas.default.yml'))) as fp:
-    defaults = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
 
 def get_default_metas() -> Dict:
     """Get a copy of default meta variables"""
-    return {k: v for k, v in defaults.items()}
+    import copy
+    from pkg_resources import resource_stream
+
+    from ..helper import yaml
+
+    with resource_stream('jina', '/'.join(('resources', 'executors.metas.default.yml'))) as fp:
+        _defaults = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
+
+    return copy.deepcopy(_defaults)
 
 
 def fill_metas_with_defaults(d: Dict) -> Dict:

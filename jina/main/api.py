@@ -7,7 +7,7 @@ def pod(args):
 
 def frontend(args):
     """Start a frontend"""
-    from jina.peapods.pod import FrontendPod
+    from ..peapods.pod import FrontendPod
     with FrontendPod(args) as fs:
         fs.join()
 

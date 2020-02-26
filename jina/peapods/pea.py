@@ -1,12 +1,14 @@
 import multiprocessing
 import threading
 import time
+from collections import defaultdict
+from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
-from ..drivers import Driver
+from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
-    DriverNotInstalled, NoRequestHandler
+    DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
@@ -69,7 +71,7 @@ class Pea(metaclass=PeaMeta):
         """
         super().__init__()
         self.args = args
-        self.name = args.name or args.driver_group or self.__class__.__name__
+        self.name = args.name or self.__class__.__name__
         self.logger = get_logger(self.name, **vars(args))
         self.is_ready = self._get_event()
         self.is_event_loop = self._get_event()
@@ -80,27 +82,83 @@ class Pea(metaclass=PeaMeta):
 
         self._timer = TimeDict()
 
-    def load_driver(self):
-        """Load driver to this Pea, specified by ``driver_yaml_path`` and ``driver`` from CLI arguments
+        self._request = None
+        self._message = None
+        self._prev_requests = None
+        self._prev_messages = None
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
 
+    def handle(self, msg: 'jina_pb2.Message') -> 'Pea':
+        """Register the current message to this pea, so that all message-related properties are up-to-date, including
+        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
+        this message.
+
+        :param msg: the message received
         """
-        self.driver = Driver(self, self.args.driver_yaml_path, self.args.driver_group)
-        self.driver.verify()
+        self._request = getattr(msg.request, msg.request.WhichOneof('body'))
+        self._message = msg
+        msg_type = type(self._request)
+
+        if self.args.num_part > 1 and msg_type != jina_pb2.Request.ControlRequest:
+            # do not wait for control request
+            req_id = msg.envelope.request_id
+            self._pending_msgs[req_id].append(msg)
+            num_req = len(self._pending_msgs[req_id])
+
+            if num_req == self.args.num_part:
+                self._prev_messages = self._pending_msgs.pop(req_id)
+                self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
+            else:
+                self.logger.debug('waiting for %d/%d %s messages' % (num_req, self.args.num_part, msg_type))
+                raise WaitPendingMessage
+        else:
+            self._prev_requests = None
+            self._prev_messages = None
+
+        self.executor(self.request_type)
+        return self
+
+    @property
+    def request(self) -> 'jina_pb2.Request':
+        """Get the current request body inside the protobuf message"""
+        return self._request
+
+    @property
+    def prev_requests(self) -> List['jina_pb2.Request']:
+        """Get all previous requests that has the same ``request_id``
+
+        This returns ``None`` when ``num_part=1``.
+        """
+        return self._prev_requests
+
+    @property
+    def message(self) -> 'jina_pb2.Message':
+        """Get the current protobuf message to be processed"""
+        return self._message
+
+    @property
+    def request_type(self) -> str:
+        return self._request.__class__.__name__
+
+    @property
+    def prev_messages(self) -> List['jina_pb2.Message']:
+        """Get all previous messages that has the same ``request_id``
+
+        This returns ``None`` when ``num_part=1``.
+        """
+        return self._prev_messages
 
     def load_executor(self):
         """Load the executor to this Pea, specified by ``exec_yaml_path`` CLI argument.
 
-        .. note::
-            A non-executor :class:`Pea` is possible but then :func:`load_driver` must be implemented. Otherwise this
-            Pea will have no actual logic at all.
-
         """
-        if self.args.exec_yaml_path:
+        if self.args.yaml_path:
             try:
-                self.executor = BaseExecutor.load_config(self.args.exec_yaml_path,
+                self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.replica_id)
+                self.executor.attach(pea=self)
             except FileNotFoundError:
-                raise ExecutorFailToLoad('can not executor from %s' % self.args.exec_yaml_path)
+                raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)
         else:
             self.logger.warning('this Pea has no executor attached, you may want to double-check '
                                 'if it is a mistake or on purpose (using this Pea as router/map-reduce)')
@@ -129,13 +187,26 @@ class Pea(metaclass=PeaMeta):
 
             self._timer.reset()
 
+    def pre_hook(self, msg: 'jina_pb2.Message') -> 'Pea':
+        """Pre-hook function, what to do after first receiving the message """
+        msg_type = msg.request.WhichOneof('body')
+        self.logger.info('received "%s" from %s' % (msg_type, routes2str(msg, flag_current=True)))
+        add_route(msg.envelope, self.name, self.args.identity)
+        return self
+
+    def post_hook(self, msg: 'jina_pb2.Message') -> 'Pea':
+        """Post-hook function, what to do before handing out the message """
+        msg.envelope.routes[-1].end_time.GetCurrentTime()
+        return self
+
     def run(self):
         """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
         with Zmqlet(self.args, logger=self.logger) as zmqlet:
 
             def _callback(msg):
                 try:
-                    return self.driver.callback(msg)
+                    self.pre_hook(msg).handle(msg).post_hook(msg)
+                    return msg
                 except WaitPendingMessage:
                     pass
                 except EventLoopEnd:
@@ -168,7 +239,7 @@ class Pea(metaclass=PeaMeta):
                 self.logger.error(ex, exc_info=True)
             except DriverNotInstalled:
                 self.logger.error('no driver is installed to this service, this service will do nothing')
-            except NoRequestHandler:
+            except NoDriverForRequest:
                 self.logger.error('no matched handler for the request, this service is badly configured')
             except KeyboardInterrupt:
                 self.logger.warning('user cancel the process')
@@ -196,7 +267,6 @@ class Pea(metaclass=PeaMeta):
 
         """
         self.load_executor()
-        self.load_driver()
 
     def close(self):
         """Gracefully close this pea and release all resources """

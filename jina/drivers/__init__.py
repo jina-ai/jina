@@ -1,391 +1,184 @@
-import sys
-from collections import defaultdict
-from typing import List
-from typing import Tuple, Union, Callable, Dict
+from typing import Callable, List
 
-from pkg_resources import resource_filename
+import ruamel.yaml.constructor
 
-from ..excepts import WaitPendingMessage, DriverNotInstalled, BadDriverGroup, NoRequestHandler
+from ..executors.compound import CompoundExecutor
+from ..executors.decorators import store_init_kwargs
 from ..helper import yaml
 from ..proto import jina_pb2
 
 if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.pea import Pea
-
-_req_key_map = {
-    'ControlRequest': jina_pb2.Request.ControlRequest,
-    'IndexRequest': jina_pb2.Request.IndexRequest,
-    'TrainRequest': jina_pb2.Request.TrainRequest,
-    'SearchRequest': jina_pb2.Request.SearchRequest,
-    '/': [jina_pb2.Request.IndexRequest,
-          jina_pb2.Request.TrainRequest,
-          jina_pb2.Request.SearchRequest]
-}
+    from ..executors import AnyExecutor
+    import logging
 
 
-class Driver:
-    """Driver is an intermediate layer between :class:`jina.executors.BaseExecutor` and
-     :class:`jina.peapods.pea.Pea`. It is protobuf- and context-aware. A ``Driver`` reads the protobuf message
-     and extracts the required information using ``handler`` or ``hook``, and then feed to an ``Executor``.
-     After the result is returned, the driver will change the protobuf message accordingly and handover to ``Pea``.
+class DriverType(type):
 
-     .. note:: Rationale and Goals
+    def __new__(cls, *args, **kwargs):
+        _cls = super().__new__(cls, *args, **kwargs)
+        return cls.register_class(_cls)
 
-         The call chain here is as follows:
+    @staticmethod
+    def register_class(cls):
+        reg_cls_set = getattr(cls, '_registered_class', set())
+        if cls.__name__ not in reg_cls_set:
+            # print('reg class: %s' % cls.__name__)
+            cls.__init__ = store_init_kwargs(cls.__init__)
 
-         Pea/Pod -> Driver (specified by a driver map config) -> Handlers/Hooks -> Executor (specified by the compound yaml
-         config).
+            reg_cls_set.add(cls.__name__)
+            setattr(cls, '_registered_class', reg_cls_set)
+        yaml.register_class(cls)
+        return cls
 
-         Thus, the handler function is either designed to knows what executor's function to call, or it receives a function
-         name specified by the driver map.
 
-         Goal 1: we don't want to frequently change handlers, hooks and executors. Sometimes we can't change their code (in
-         a different language or in a docker image).
+class BaseDriver(metaclass=DriverType):
+    """A :class:`BaseDriver` is a logic unit above the :class:`jina.peapods.pea.Pea`.
+    It reads the protobuf message, extracts/modifies the required information and then return
+    the message back to :class:`jina.peapods.pea.Pea`.
 
-         Goal 2: the naming of a compound route is quite arbitrary, we want to restrict such arbitrary in the yaml config
-         file, not in the actual code.
+    A :class:`BaseDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.Pea` before using. This is done by
+    :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
-    def __init__(self, pea: 'Pea' = None, driver_yaml_path: str = None, driver_group: str = None,
-                 install_default: bool = True):
+    store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
+
+    def __init__(self, *args, **kwargs):
+        self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.Pea` (& :class:`jina.executors.BaseExecutor`)
+        self.pea = None
+
+    def attach(self, pea: 'Pea', *args, **kwargs):
+        """Attach this driver to a :class:`jina.peapods.pea.Pea`
+
+        :param pea: the pea to be attached.
         """
+        self.pea = pea
+        self.attached = True
 
-        :param pea: a :class:`jina.peapods.pea.Pea` object the driver attached to
-        :param driver_yaml_path: the yaml file path to the driver map
-        :param driver_group: a group of drivers to be installed
-        :param install_default: install default handlers and hooks to this driver
+    @property
+    def req(self) -> 'jina_pb2.Request':
+        """Get the current request, shortcut to ``self.pea.request``"""
+        return self.pea.request
 
-        A ``driver_map`` must have two fields ``drivers``. Below is an YAML example:
+    @property
+    def prev_reqs(self) -> List['jina_pb2.Request']:
+        """Get all previous requests that has the same ``request_id``, shortcut to ``self.pea.prev_requests``
 
-        .. highlight:: yaml
-        .. code-block:: yaml
-
-            drivers:
-              encode:
-                handlers:
-                  /:
-                    - handler_encode_doc
-                help: encode documents into embeddings
-
-        - ``drivers``: a mapping grouped by name and handler-group
-
-            - ``handlers``: a mapping grouped by events and handlers:
-                `ControlRequest`, `IndexRequest`, `TrainRequest`, `SearchRequest`, note ``/`` represents all types of requests
-
-                - list of function names, functions will be called in this order
-            - ``help``: help text of this driver group
-
+        This returns ``None`` when ``num_part=1``.
         """
+        return self.pea.prev_requests
 
-        self._handlers = defaultdict(list)
-        self._pre_hooks, self._post_hooks = [], []
-        if pea:
-            self.attach_to(pea)
+    @property
+    def msg(self) -> 'jina_pb2.Message':
+        """Get the current request, shortcut to ``self.pea.message``"""
+        return self.pea.message
 
-        self.pending_msgs = defaultdict(list)  # type: Dict[str, List]
+    @property
+    def prev_msgs(self) -> List['jina_pb2.Message']:
+        """Get all previous messages that has the same ``request_id``, shortcut to ``self.pea.prev_messages``
 
-        # always install the default handler
-        driver_map = self.install_from_config(
-            resource_filename('jina', '/'.join(('resources', 'drivers.default.yml'))),
-            'default') if install_default else None
-
-        # if given, then install the given handler
-        if not driver_yaml_path:
-            driver_yaml_path = resource_filename('jina', '/'.join(('resources', 'drivers.default.yml')))
-        if driver_group:
-            # self.logger.info('driver %s from %s to be installed' % (driver_yaml_path, driver_group))
-            self.install_from_config(driver_yaml_path, driver_group, driver_map)
-        # else:
-        #     self.logger.warning('no driver is installed, this Pod/Pea can only handle control request then')
-
-    def attach_to(self, pea: 'Pea'):
-        """Attach this driver to a Pea
-
-        :param pea: :class:`Pea` to attach
+        This returns ``None`` when ``num_part=1``.
         """
-        self.context = pea
-        self.logger = self.context.logger
+        return self.pea.prev_messages
 
-    def install_from_config(self, driver_yaml_path: str, driver_group: str, driver_map: Dict = None) -> Dict:
-        """ Install a group of handlers, pre- and post-hooks into this driver from a YAML config file
+    @property
+    def logger(self) -> 'logging.Logger':
+        """Shortcut to ``self.pea.logger``"""
+        return self.pea.logger
 
-        :param driver_yaml_path: the yaml file path to the driver map, ``drivers`` field is required
-        :param driver_group: a group of drivers to be installed
-        :param driver_map: the existing driver map to be built on
-        :return: loaded driver map from the yaml file, which can be used in the proceeding :func:`install_from_config`
+    def __call__(self, *args, **kwargs) -> None:
+        raise NotImplementedError
 
-        Example YAML spec:
+    @staticmethod
+    def _dump_instance_to_yaml(data):
+        # note: we only save non-default property for the sake of clarity
+        a = {k: v for k, v in data._init_kwargs_dict.items()}
+        r = {}
+        if a:
+            r['with'] = a
+        return r
 
-        .. highlight:: yaml
-        .. code-block:: yaml
+    @classmethod
+    def to_yaml(cls, representer, data):
+        """Required by :mod:`ruamel.yaml.constructor` """
+        tmp = data._dump_instance_to_yaml(data)
+        return representer.represent_mapping('!' + cls.__name__, tmp)
 
-            drivers:
-              dummyA:
-                handlers:
-                  ControlRequest:
-                    - handler_control_req
-                pre_hooks:
-                  - hook_add_route_to_msg
-                post_hooks:
-                  - hook_update_timestamp
-                help: the default driver configurations for all
+    @classmethod
+    def from_yaml(cls, constructor, node):
+        """Required by :mod:`ruamel.yaml.constructor` """
+        return cls._get_instance_from_yaml(constructor, node)
 
-              encode:
-                handlers:
-                  /:
-                    - handler_encode_doc
-                help: encode documents into embeddings
-        """
-        if not driver_map:
-            driver_map = {}
+    @classmethod
+    def _get_instance_from_yaml(cls, constructor, node):
+        data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
+            constructor, node, deep=True)
 
-        if isinstance(driver_yaml_path, str):
-            with open(driver_yaml_path, encoding='utf8') as fp:
-                driver_map.update(yaml.load(fp)['drivers'])
-        else:
-            with driver_yaml_path:
-                driver_map.update(yaml.load(driver_yaml_path)['drivers'])
+        obj = cls(**data.get('with', {}))
+        return obj
 
-        if driver_group in driver_map:
-            self.install(driver_map[driver_group])
-        else:
-            raise BadDriverGroup('can not find %s in the driver group from %s' % (driver_group, driver_yaml_path))
+    def __eq__(self, other):
+        return self.__class__ == other.__class__
 
-        return driver_map
-
-    def install(self, driver_group: Dict) -> None:
-        """ Install a group of handlers, pre- and post-hooks into this driver_group
-
-        :param driver_group: the driver_group map to be installed
-
-        Example YAML spec:
-
-        .. highlight:: yaml
-        .. code-block:: yaml
-
-          encode:
-            handlers:
-              /:
-                - handler_encode_doc
-            help: encode documents into embeddings
-
-        """
-
-        if 'handlers' in driver_group:
-            for k, v in driver_group['handlers'].items():
-                self.add_handlers(import_driver_fns(funcs=v), _req_key_map[k])
-
-        if 'pre_hooks' in driver_group:
-            self.add_pre_hook(import_driver_fns(funcs=driver_group['pre_hooks']))
-
-        if 'post_hooks' in driver_group:
-            self.add_pre_hook(import_driver_fns(funcs=driver_group['post_hooks']))
-
-    def verify(self):
-        """ Validate this driver to check if it is usable, otherwise raise a ``DriverNotInstalled`` exception
-        """
-        if not self._handlers or not self.context:
-            raise DriverNotInstalled
-
-    def add_handlers(self, f: Union[Tuple[Callable, str], List[Tuple[Callable, str]]],
-                     req_type: Union[List, Tuple, type] = (jina_pb2.Request.IndexRequest,
-                                                           jina_pb2.Request.TrainRequest,
-                                                           jina_pb2.Request.SearchRequest)):
-        """Add new handlers to this driver
-
-        :param f: the function or list of functions. The function must follow the signature of a ``handler``.
-        :param req_type: the request type to bind
-        """
-
-        if not isinstance(f, list):
-            f = [f]
-
-        if isinstance(req_type, list) or isinstance(req_type, tuple):
-            for m in req_type:
-                self._handlers[m].extend(f)
-        else:
-            self._handlers[req_type].extend(f)
-
-    def add_pre_hook(self, f: Union[Tuple[Callable, str], List[Tuple[Callable, str]]]):
-        """Add a pre-handler hook to this driver. This hooks will be invoked *before* handling the message.
-
-        :param f: the function or list of functions. The function must follow the signature of a ``hook``.
-        """
-
-        if not isinstance(f, list):
-            f = [f]
-        self._pre_hooks.extend(f)
-
-    def add_post_hook(self, f: Union[Tuple[Callable, str], List[Tuple[Callable, str]]]):
-        """Add a post-handler hook to this driver. This hooks will be invoked *after* handling the message.
-
-        :param f: the function or list of functions. The function must follow the signature of a ``hook``.
-        """
-        if not isinstance(f, list):
-            f = [f]
-
-        self._post_hooks.extend(f)
-
-    def do_handlers(self, msg: 'jina_pb2.Message', *args, **kwargs):
-        """Apply the handler functions on the message
-
-        :param msg: the protobuf message to be applied on
-        """
-        req = getattr(msg.request, msg.request.WhichOneof('body'))
-        msg_type = type(req)
-
-        fns = self._handlers[msg_type]
-
-        if fns:
-            self.logger.debug('handling message with %r' % fns)
-
-            if self.context.args.num_part > 1 and msg_type != jina_pb2.Request.ControlRequest:
-                # do not wait for control request
-                req_id = msg.envelope.request_id
-                self.pending_msgs[req_id].append(msg)
-                num_req = len(self.pending_msgs[req_id])
-
-                if num_req == self.context.args.num_part:
-                    prev_msgs = self.pending_msgs.pop(req_id)
-                    prev_reqs = [getattr(v.request, v.request.WhichOneof('body')) for v in prev_msgs]
-                else:
-                    self.logger.debug('waiting for %d/%d %s messages' % (num_req, self.context.args.num_part, msg_type))
-                    raise WaitPendingMessage
-            else:
-                prev_reqs = None
-                prev_msgs = None
-
-            for fn, exec_fn in fns:
-                if exec_fn and hasattr(self.context, 'executor'):
-                    exec_fn = getattr(self.context.executor, exec_fn)
-                else:
-                    exec_fn = None
-                fn(exec_fn, self.context, req, msg, prev_reqs, prev_msgs, *args, **kwargs)
-        else:
-            raise NoRequestHandler(msg_type)
-
-    def do_pre_hooks(self, msg: 'jina_pb2.Message', *args, **kwargs):
-        """Apply the pre-handler hook functions to the message
-
-        :param msg: the protobuf message to be applied on
-        """
-        self._do_hooks(msg)
-
-    def do_post_hooks(self, msg: 'jina_pb2.Message', *args, **kwargs):
-        """Apply the post-handler hook functions to the message
-
-        :param msg: the protobuf message to be applied on
-        """
-        self._do_hooks(msg, pre=False)
-
-    def _do_hooks(self, msg: 'jina_pb2.Message', pre: bool = True, *args, **kwargs):
-        for fn, _ in (self._pre_hooks if pre else self._post_hooks):
-            try:
-                fn(self.context, msg, *args, **kwargs)
-            except Exception as ex:
-                self.logger.warning('the %s-hook function %r throws an exception, '
-                                    'this wont affect the server but you may want to pay attention' % (
-                                        'pre' if pre else 'post', fn))
-                self.logger.error(ex, exc_info=True)
-
-    def callback(self, msg: 'jina_pb2.Message'):
-        """Apply the complete callback cycle pre->handler->post to the message.
-
-        :param msg: the protobuf message to be applied on
-        """
-        self.do_pre_hooks(msg)
-        self.do_handlers(msg)
-        self.do_post_hooks(msg)
-        return msg
+    def __getstate__(self):
+        """Do not save the Pea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
+        file is always unattached. """
+        d = dict(self.__dict__)
+        if 'pea' in d:
+            del d['pea']
+        d['attached'] = False
+        return d
 
 
-def import_driver_fns(path: str = __path__[0], namespace: str = 'jina.drivers',
-                      funcs: List[Union[str, Dict]] = None,
-                      show_import_table: bool = False, import_once: bool = False) -> List[Tuple[Callable, str]]:
-    """ Import all or selected driver functions into the runtime
+class BaseExecutableDriver(BaseDriver):
+    """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.pea.Pea` and :class:`jina.executors.BaseExecutor`
+        It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
+        finally it returns the message back to :class:`jina.peapods.pea.Pea`.
 
-    :param path: the package path for search
-    :param namespace: the namespace to add given the ``path``
-    :param funcs: the list of function names to import
-    :param show_import_table: show the import result as a table
-    :param import_once: import everything only once, to avoid repeated import
-    :return: a list of driver functions found
-
+        A :class:`BaseExecutableDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.Pea` and :class:`jina.executors.BaseExecutor` before using.
+        This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
-    from .. import JINA_GLOBAL
-    if import_once and JINA_GLOBAL.drivers_imported:
-        return []
+    def __init__(self, executor: str = None, method: str = None, *args, **kwargs):
+        """ Initialize a :class:`BaseExecutableDriver`
 
-    from setuptools import find_packages
-    from pkgutil import iter_modules
+        :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+        :param method: the function name of the executor that the driver feeds to
+        """
+        super().__init__(*args, **kwargs)
+        self._executor_name = executor
+        self._method_name = method
+        self._exec = None
+        self._exec_fn = None
 
-    modules = set()
+    @property
+    def exec(self) -> 'AnyExecutor':
+        """the executor that attached """
+        return self._exec
 
-    for info in iter_modules([path]):
-        if not info.ispkg:
-            modules.add('.'.join([namespace, info.name]))
+    @property
+    def exec_fn(self) -> Callable:
+        """the function of :func:`jina.executors.BaseExecutor` to call """
+        return self._exec_fn
 
-    for pkg in find_packages(path):
-        modules.add('.'.join([namespace, pkg]))
-        pkgpath = path + '/' + pkg.replace('.', '/')
-        if sys.version_info.major == 2 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
-            for _, name, ispkg in iter_modules([pkgpath]):
-                if not ispkg:
-                    modules.add('.'.join([namespace, pkg, name]))
+    def attach(self, executor: 'AnyExecutor', *args, **kwargs):
+        """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
+        super().attach(*args, **kwargs)
+        if self._executor_name and isinstance(executor, CompoundExecutor):
+            self._exec = executor.components[self._executor_name]
         else:
-            for info in iter_modules([pkgpath]):
-                if not info.ispkg:
-                    modules.add('.'.join([namespace, pkg, info.name]))
+            self._exec = executor
 
-    if funcs:
-        load_fns = [None] * len(funcs)  # type: List[Tuple[Callable, str]]
-        func_names = {}  # type: Dict[str, Tuple]
-        for idx, k in enumerate(funcs):
-            if isinstance(k, str):
-                func_names[k] = idx, None
-            elif isinstance(k, dict):
-                func_names[list(k.keys())[0]] = idx, list(k.values())[0]
-            else:
-                raise TypeError('%r is not a string or dict ' % type(k))
-    else:
-        func_names = None
-    load_stat = defaultdict(list)
-    bad_imports = []
+        if self._method_name:
+            self._exec_fn = getattr(self.exec, self._method_name)
 
-    import importlib
-    for m in modules:
-        try:
-            mod = importlib.import_module(m)
-            for k in dir(mod):
-                # import the class
-                if callable(getattr(mod, k)) and (not func_names or (k in func_names)):
-                    try:
-                        _f = getattr(mod, k)
-                        load_stat[m].append((k, True, ''))
-                        if func_names and (k in func_names):
-                            load_fns[func_names[k][0]] = _f, func_names[k][1]
-                            if None not in load_fns:
-                                return load_fns  # target execs are all found and loaded, return
-                    except Exception as ex:
-                        load_stat[m].append((k, False, ex))
-                        bad_imports.append('.'.join([m, k]))
-                        if k in funcs:
-                            raise ex  # target fns is found but not loaded, raise return
-        except Exception as ex:
-            load_stat[m].append(('', False, ex))
-            bad_imports.append(m)
-
-    if show_import_table:
-        from ..helper import print_load_table
-        print_load_table(load_stat)
-    else:
-        if bad_imports:
-            from jina.logging import default_logger
-            default_logger.error('theses modules or classes can not be imported %s' % bad_imports)
-
-    if funcs and (None in load_fns):
-        raise ImportError('funcs %s result in %s can not be found in %s (%s)' % (funcs, load_fns, namespace, path))
-
-    JINA_GLOBAL.drivers_imported = True
+    def __getstate__(self):
+        """Do not save the executor and executor function, as it would be cross-referencing and unserializable.
+        In other words, a deserialized :class:`BaseExecutableDriver` from file is always unattached. """
+        d = super().__getstate__()
+        if '_exec' in d:
+            del d['_exec']
+        if '_exec_fn' in d:
+            del d['_exec_fn']
+        return d

@@ -1,0 +1,8 @@
+!BaseEncoder
+with: {}
+metas:
+  name: route
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest]:
+      - !ForwardDriver {}

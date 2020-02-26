@@ -37,8 +37,12 @@ class BadDriverMap(Exception):
     """The YAML driver map is in a bad format"""
 
 
-class NoRequestHandler(Exception):
+class NoDriverForRequest(Exception):
     """No matched handler for this request """
+
+
+class UnattachedDriver(Exception):
+    """Driver is not attached to any Pea or executor"""
 
 
 class FlowTopologyError(Exception):
@@ -63,3 +67,7 @@ class BadWorkspace(Exception):
 
 class BadClient(Exception):
     """A wrongly defined grpc client, can not communicate with jina server correctly """
+
+
+class BadPersistantFile(Exception):
+    """Bad or broken dump file that can not be deserialized with ``pickle.load``"""

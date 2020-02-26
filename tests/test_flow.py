@@ -9,7 +9,7 @@ class MyTestCase(JinaTestCase):
     def test_simple_flow(self):
         bytes_gen = (b'aaa' for _ in range(10))
         f = (Flow()
-             .add(driver_group='route'))
+             .add(yaml_path='route'))
         with f.build(runtime='thread') as fl:
             fl.index(raw_bytes=bytes_gen)
 
@@ -24,12 +24,11 @@ class MyTestCase(JinaTestCase):
         with open('yaml/test-flow.yml') as fp:
             a = Flow.load_config(fp)
 
-        b = (Flow(driver_yaml_path='', sse_logger=False)
-             .add(name='chunk_seg', driver_group='segment', replicas=3)
-             .add(name='encode1', driver_group='index-meta-doc', replicas=2)
-             .add(name='encode2', driver_group='index-meta-doc', replicas=2, recv_from='chunk_seg')
-             .join(['encode1', 'encode2'])
-             )
+        b = (Flow(sse_logger=False)
+             .add(name='chunk_seg', replicas=3)
+             .add(name='encode1', replicas=2)
+             .add(name='encode2', replicas=2, recv_from='chunk_seg')
+             .join(['encode1', 'encode2']))
 
         self.assertEqual(a, b)
 

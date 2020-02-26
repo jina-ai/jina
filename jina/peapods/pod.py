@@ -256,8 +256,8 @@ def _set_peas_args(args, head_args, tail_args):
 
 
 def _set_router_args(args):
-    args.exec_yaml_path = None
-    args.driver_group = 'route'
+    from pkg_resources import resource_filename
+    args.yaml_path = resource_filename('jina', '/'.join(('resources', 'executors.route.yml')))
     args.name = 'router'
 
 

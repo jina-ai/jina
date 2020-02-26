@@ -1,9 +1,8 @@
 from typing import Iterator, Callable, Union
 
-from jina.excepts import BadClient
-
 from .grpc import GrpcClient
 from .helper import ProgressBar
+from ...excepts import BadClient
 from ...logging.profile import TimeContext
 
 if False:

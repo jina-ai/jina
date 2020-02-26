@@ -1,0 +1,11 @@
+!BaseEncoder
+with: {}
+metas:
+  name: blah
+requests:
+  on:
+    [SearchRequest]:
+      - !EncodeDriver
+        with:
+          method: encode
+      - !ChunkPruneDriver {}

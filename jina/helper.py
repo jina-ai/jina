@@ -10,7 +10,7 @@ from types import SimpleNamespace
 from typing import Iterator, Any, Union, List, Dict
 
 import numpy as np
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML, nodes
 
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
@@ -19,7 +19,7 @@ __all__ = ['batch_iterator', 'yaml',
 
 
 def print_load_table(load_stat):
-    from jina.logging import default_logger
+    from .logging import default_logger
 
     load_table = []
     for k, v in load_stat.items():
@@ -300,3 +300,23 @@ def colored(text, color=None, on_color=None, attrs=None):
                     text = fmt_str % (_ATTRIBUTES[attr], text)
         text += _RESET
     return text
+
+
+def get_tags_from_node(node) -> List[str]:
+    """Traverse the YAML by node and return all tags
+
+    :param node: the YAML node to be traversed
+    """
+
+    def node_recurse_generator(n):
+        if n.tag.startswith('!'):
+            yield n.tag.lstrip('!')
+        for nn in n.value:
+            if isinstance(nn, tuple):
+                for k in nn:
+                    yield from node_recurse_generator(k)
+            elif isinstance(nn, nodes.Node):
+                yield from node_recurse_generator(nn)
+
+    return list(set(list(node_recurse_generator(node))))
+
