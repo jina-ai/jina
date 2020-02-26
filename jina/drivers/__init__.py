@@ -149,6 +149,8 @@ class BaseExecutableDriver(BaseDriver):
         super().__init__(*args, **kwargs)
         self._executor_name = executor
         self._method_name = method
+        self._exec = None
+        self._exec_fn = None
 
     @property
     def exec(self) -> 'AnyExecutor':
