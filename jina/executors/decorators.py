@@ -6,7 +6,7 @@ from typing import Callable, Any, Union, Iterator, List
 
 import numpy as np
 
-from .metas import defaults
+from .metas import get_default_metas
 from ..helper import batch_iterator
 
 
@@ -82,7 +82,8 @@ def store_init_kwargs(func):
         if func.__name__ != '__init__':
             raise TypeError('this decorator should only be used on __init__ method of an executor')
         taboo = {'self', 'args', 'kwargs'}
-        taboo.update(defaults.keys())
+        _defaults = get_default_metas()
+        taboo.update(_defaults.keys())
         all_pars = inspect.signature(func).parameters
         tmp = {k: v.default for k, v in all_pars.items() if k not in taboo}
         tmp_list = [k for k in all_pars.keys() if k not in taboo]

@@ -12,7 +12,7 @@ import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs
-from .metas import defaults, get_default_metas, fill_metas_with_defaults
+from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var
 from ..logging.base import get_logger
@@ -429,7 +429,7 @@ class BaseExecutor(metaclass=ExecutorType):
         """Required by :mod:`ruamel.yaml.constructor` """
         tmp = data._dump_instance_to_yaml(data)
         if getattr(data, '_drivers'):
-            tmp['drivers'] = data._drivers
+            tmp['requests'] = {'on': data._drivers}
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
@@ -447,8 +447,8 @@ class BaseExecutor(metaclass=ExecutorType):
         if _meta_config:
             data['metas'] = _meta_config
 
-        from ..executors.requests import get_default_requests
-        _requests = get_default_requests()
+        from ..executors.requests import get_default_reqs
+        _requests = get_default_reqs()
         _requests['on'].update(data.get('requests', {'on': {}})['on'])
         if _requests:
             data['requests'] = _requests
@@ -510,8 +510,9 @@ class BaseExecutor(metaclass=ExecutorType):
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        p = {k: getattr(data, k) for k, v in defaults.items() if getattr(data, k) != v}
-        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in defaults}
+        _defaults = get_default_metas()
+        p = {k: getattr(data, k) for k, v in _defaults.items() if getattr(data, k) != v}
+        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in _defaults}
         r = {}
         if a:
             r['with'] = a

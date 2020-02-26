@@ -19,7 +19,7 @@ __all__ = ['batch_iterator', 'yaml',
 
 
 def print_load_table(load_stat):
-    from jina.logging import default_logger
+    from .logging import default_logger
 
     load_table = []
     for k, v in load_stat.items():

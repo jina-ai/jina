@@ -1,8 +1,8 @@
 import os
 
 import grpc
-from jina.excepts import BadClient
 
+from ...excepts import BadClient
 from ...logging.base import get_logger
 from ...proto import jina_pb2_grpc
 

@@ -122,7 +122,7 @@ def import_classes(namespace: str, targets=None,
         print_load_table(load_stat)
     else:
         if bad_imports:
-            from jina.logging import default_logger
+            from .logging import default_logger
             default_logger.error('theses modules or classes can not be imported %s' % bad_imports)
 
     if namespace == 'jina.executors':
