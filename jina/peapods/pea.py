@@ -88,9 +88,10 @@ class Pea(metaclass=PeaMeta):
         self._prev_messages = None
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
 
-    def register(self, msg: 'jina_pb2.Message') -> None:
+    def handle(self, msg: 'jina_pb2.Message') -> 'Pea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
-        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`.
+        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
+        this message.
 
         :param msg: the message received
         """
@@ -113,6 +114,9 @@ class Pea(metaclass=PeaMeta):
         else:
             self._prev_requests = None
             self._prev_messages = None
+
+        self.executor(self.request_type)
+        return self
 
     @property
     def request(self) -> 'jina_pb2.Request':
@@ -183,15 +187,17 @@ class Pea(metaclass=PeaMeta):
 
             self._timer.reset()
 
-    def pre_hook(self, msg: 'jina_pb2.Message') -> None:
+    def pre_hook(self, msg: 'jina_pb2.Message') -> 'Pea':
         """Pre-hook function, what to do after first receiving the message """
         msg_type = msg.request.WhichOneof('body')
         self.logger.info('received "%s" from %s' % (msg_type, routes2str(msg, flag_current=True)))
         add_route(msg.envelope, self.name, self.args.identity)
+        return self
 
-    def post_hook(self, msg: 'jina_pb2.Message') -> None:
+    def post_hook(self, msg: 'jina_pb2.Message') -> 'Pea':
         """Post-hook function, what to do before handing out the message """
         msg.envelope.routes[-1].end_time.GetCurrentTime()
+        return self
 
     def run(self):
         """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
@@ -199,10 +205,7 @@ class Pea(metaclass=PeaMeta):
 
             def _callback(msg):
                 try:
-                    self.pre_hook(msg)
-                    self.register(msg)
-                    self.executor(self.request_type)
-                    self.post_hook(msg)
+                    self.pre_hook(msg).handle(msg).post_hook(msg)
                     return msg
                 except WaitPendingMessage:
                     pass

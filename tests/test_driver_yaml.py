@@ -4,7 +4,7 @@ from pkg_resources import resource_filename
 
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
-from jina.drivers.search import DocMetaSearchDriver
+from jina.drivers.search import MetaDocSearchDriver
 from jina.executors import BaseExecutor
 from jina.helper import yaml
 from tests import JinaTestCase
@@ -16,7 +16,7 @@ class MyTestCase(JinaTestCase):
         with open('yaml/test-driver.yml', encoding='utf8') as fp:
             a = yaml.load(fp)
 
-        self.assertTrue(isinstance(a[0], DocMetaSearchDriver))
+        self.assertTrue(isinstance(a[0], MetaDocSearchDriver))
         self.assertTrue(isinstance(a[1], ControlReqDriver))
         self.assertTrue(isinstance(a[2], BaseDriver))
 
@@ -26,7 +26,7 @@ class MyTestCase(JinaTestCase):
         with open('test_driver.yml', encoding='utf8') as fp:
             b = yaml.load(fp)
 
-        self.assertTrue(isinstance(b, DocMetaSearchDriver))
+        self.assertTrue(isinstance(b, MetaDocSearchDriver))
         self.assertEqual(b._executor_name, a[0]._executor_name)
 
         self.add_tmpfile('test_driver.yml')

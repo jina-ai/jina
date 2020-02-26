@@ -15,7 +15,7 @@ class ControlReqDriver(BaseDriver):
         elif self.req.command == jina_pb2.Request.ControlRequest.STATUS:
             self.msg.envelope.status = jina_pb2.Envelope.READY
         else:
-            raise UnknownControlCommand('dont know how to handle %s' % self.req)
+            raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
 
 
 class LogInfoDriver(BaseDriver):

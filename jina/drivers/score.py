@@ -1,14 +1,13 @@
 # lift the chunk-level topk to doc-level topk
 import numpy as np
 
-from . import BaseExecutorDriver
+from . import BaseExecutableDriver
 from .helper import pb_obj2dict
 
 
-class Chunk2DocScoreDriver(BaseExecutorDriver):
+class Chunk2DocScoreDriver(BaseExecutableDriver):
     """Extract chunk-level score and use the executor to compute the doc-level score
 
-    It requires ``ctx`` has :class:`jina.executors.rankers.BaseRanker` equipped.
     """
 
     def __call__(self, *args, **kwargs):

@@ -1,11 +1,9 @@
-from . import BaseExecutorDriver
+from . import BaseExecutableDriver
 from .helper import extract_chunks, array2blob
 
 
-class EncodeDriver(BaseExecutorDriver):
+class EncodeDriver(BaseExecutableDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
-
-    It requires ``ctx`` has :class:`jina.executors.encoders.BaseEncoder` equipped.
     """
 
     def __call__(self, *args, **kwargs):

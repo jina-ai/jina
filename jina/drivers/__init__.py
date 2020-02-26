@@ -16,7 +16,6 @@ if False:
 
 class DriverType(type):
 
-
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
@@ -35,34 +34,25 @@ class DriverType(type):
 
 
 class BaseDriver(metaclass=DriverType):
-    """Driver is an intermediate layer between :class:`jina.executors.BaseExecutor` and
-     :class:`jina.peapods.pea.Pea`. It is protobuf- and context-aware. A ``Driver`` reads the protobuf message
-     and extracts the required information using ``handler`` or ``hook``, and then feed to an ``Executor``.
-     After the result is returned, the driver will change the protobuf message accordingly and handover to ``Pea``.
+    """A :class:`BaseDriver` is a logic unit above the :class:`jina.peapods.pea.Pea`.
+    It reads the protobuf message, extracts/modifies the required information and then return
+    the message back to :class:`jina.peapods.pea.Pea`.
 
-     .. note:: Rationale and Goals
-
-         The call chain here is as follows:
-
-         Pea/Pod -> Driver (specified by a driver map config) -> Handlers/Hooks -> Executor (specified by the compound yaml
-         config).
-
-         Thus, the handler function is either designed to knows what executor's function to call, or it receives a function
-         name specified by the driver map.
-
-         Goal 1: we don't want to frequently change handlers, hooks and executors. Sometimes we can't change their code (in
-         a different language or in a docker image).
-
-         Goal 2: the naming of a compound route is quite arbitrary, we want to restrict such arbitrary in the yaml config
-         file, not in the actual code.
+    A :class:`BaseDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.Pea` before using. This is done by
+    :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, *args, **kwargs):
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.Pea` (& :class:`jina.executors.BaseExecutor`)
+        self.pea = None
 
     def attach(self, pea: 'Pea', *args, **kwargs):
+        """Attach this driver to a :class:`jina.peapods.pea.Pea`
+
+        :param pea: the pea to be attached.
+        """
         self.pea = pea
         self.attached = True
 
@@ -141,15 +131,20 @@ class BaseDriver(metaclass=DriverType):
         return d
 
 
-class BaseExecutorDriver(BaseDriver):
+class BaseExecutableDriver(BaseDriver):
+    """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.pea.Pea` and :class:`jina.executors.BaseExecutor`
+        It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
+        finally it returns the message back to :class:`jina.peapods.pea.Pea`.
+
+        A :class:`BaseExecutableDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.Pea` and :class:`jina.executors.BaseExecutor` before using.
+        This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
+    """
 
     def __init__(self, executor: str = None, method: str = None, *args, **kwargs):
-        """ Initialize a driver
+        """ Initialize a :class:`BaseExecutableDriver`
 
-        :param executor:
-        :param method:
-        :param args:
-        :param kwargs:
+        :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+        :param method: the function name of the executor that the driver feeds to
         """
         super().__init__(*args, **kwargs)
         self._executor_name = executor
@@ -166,6 +161,7 @@ class BaseExecutorDriver(BaseDriver):
         return self._exec_fn
 
     def attach(self, executor: 'AnyExecutor', *args, **kwargs):
+        """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
             self._exec = executor.components[self._executor_name]
@@ -177,7 +173,7 @@ class BaseExecutorDriver(BaseDriver):
 
     def __getstate__(self):
         """Do not save the executor and executor function, as it would be cross-referencing and unserializable.
-        In other words, a deserialized :class:`BaseExecutorDriver` from file is always unattached. """
+        In other words, a deserialized :class:`BaseExecutableDriver` from file is always unattached. """
         d = super().__getstate__()
         if '_exec' in d:
             del d['_exec']

@@ -1,11 +1,10 @@
-from . import BaseExecutorDriver
+from . import BaseExecutableDriver
 from .helper import extract_chunks
 
 
-class DocMetaSearchDriver(BaseExecutorDriver):
+class MetaDocSearchDriver(BaseExecutableDriver):
     """Fill in the doc-level top-k results using the :class:`jina.executors.indexers.meta.MetaProtoIndexer`
 
-    It requires ``ctx`` has ``MetaProtoIndexer`` equipped.
     """
 
     def __call__(self, *args, **kwargs):
@@ -14,10 +13,9 @@ class DocMetaSearchDriver(BaseExecutorDriver):
                 tk.match_doc.CopyFrom(self.exec_fn(tk.match_doc.doc_id))
 
 
-class ChunkMetaSearchDriver(BaseExecutorDriver):
+class MetaChunkSearchDriver(BaseExecutableDriver):
     """Fill in the chunk-level top-k results using the :class:`jina.executors.indexers.meta.MetaProtoIndexer`
 
-    It requires ``ctx`` has ``MetaProtoIndexer`` equipped.
     """
 
     def __call__(self, *args, **kwargs):
@@ -27,10 +25,9 @@ class ChunkMetaSearchDriver(BaseExecutorDriver):
                     k.match_chunk.CopyFrom(self.exec_fn(k.match_chunk.chunk_id))
 
 
-class ChunkSearchDriver(BaseExecutorDriver):
+class ChunkSearchDriver(BaseExecutableDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
-    It requires ``ctx`` has :class:`jina.executors.indexers.BaseIndexer` equipped.
     """
 
     def __call__(self, *args, **kwargs):

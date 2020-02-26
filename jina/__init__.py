@@ -33,7 +33,7 @@ JINA_GLOBAL.imported.drivers = False
 def import_classes(namespace: str, targets=None,
                    show_import_table: bool = False, import_once: bool = False):
     """
-    Import all or selected executors into the runtime. This is used during :func:`load_config` to register the YAML
+    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML
     constructor beforehand. It can be also used to import third-part or external executors.
 
     :param namespace: the namespace to import
@@ -89,7 +89,7 @@ def import_classes(namespace: str, targets=None,
     elif targets is None:
         targets = {}
     else:
-        raise TypeError('target_exes must be a set, but received %r' % targets)
+        raise TypeError('target must be a set, but received %r' % targets)
 
     import importlib
     for m in modules:

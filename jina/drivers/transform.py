@@ -1,11 +1,10 @@
-from . import BaseExecutorDriver
+from . import BaseExecutableDriver
 from .helper import array2blob, pb_obj2dict
 
 
-class ChunkTransformDriver(BaseExecutorDriver):
+class ChunkTransformDriver(BaseExecutableDriver):
     """Transform the chunk-level information on given keys using the executor
 
-    It requires ``ctx`` has :class:`jina.executors.transformers.BaseChunkTransformer` equipped
     """
 
     def __call__(self, *args, **kwargs):
@@ -24,10 +23,9 @@ class ChunkTransformDriver(BaseExecutorDriver):
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
 
 
-class DocTransformDriver(BaseExecutorDriver):
+class DocTransformDriver(BaseExecutableDriver):
     """Transform the doc-level information on given keys using the executor
 
-    It requires ``ctx`` has :class:`jina.executors.transformers.BaseDocTransformer` equipped
     """
 
     def __call__(self, *args, **kwargs):
@@ -37,10 +35,9 @@ class DocTransformDriver(BaseExecutorDriver):
                 setattr(d, k, v)
 
 
-class SegmentDriver(BaseExecutorDriver):
-    """Segment document into chunk using the executor
+class SegmentDriver(BaseExecutableDriver):
+    """Segment document into chunks using the executor
 
-    It requires ``ctx`` has :class:`jina.executors.transformers.BaseSegmenter` equipped
     """
 
     def __call__(self, *args, **kwargs):

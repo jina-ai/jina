@@ -1,13 +1,12 @@
 import numpy as np
 
-from . import BaseExecutorDriver
+from . import BaseExecutableDriver
 from .helper import extract_chunks
 
 
-class ChunkIndexDriver(BaseExecutorDriver):
+class ChunkIndexDriver(BaseExecutableDriver):
     """Extract chunk-level embeddings and add it to the executor
 
-    It requires ``ctx`` has :class:`jina.executors.indexers.BaseIndexer` equipped.
     """
 
     def __call__(self, *args, **kwargs):
@@ -23,10 +22,9 @@ class ChunkIndexDriver(BaseExecutorDriver):
             self.exec_fn(np.array([c.chunk_id for c in chunk_pts]), np.stack(embed_vecs))
 
 
-class DocMetaIndexDriver(BaseExecutorDriver):
+class MetaDocIndexDriver(BaseExecutableDriver):
     """Serialize the documents in the request to JSON and write it using the executor
 
-    It requires ``ctx`` has ``meta_writer`` equipped.
     """
 
     def __call__(self, *args, **kwargs):
@@ -36,10 +34,9 @@ class DocMetaIndexDriver(BaseExecutorDriver):
             self.exec_fn(content)
 
 
-class ChunkMetaIndexDriver(BaseExecutorDriver):
+class MetaChunkIndexDriver(BaseExecutableDriver):
     """Serialize all chunks in the request to JSON and write it using the executor
 
-    It requires ``ctx`` has ``meta_writer`` equipped.
     """
 
     def __call__(self, *args, **kwargs):
