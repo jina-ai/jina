@@ -1,17 +1,20 @@
-# my ignore file
-.git/
-.pyre/
-.idea/
-.eggs/
-docs/
+# ignore everything
+**
+.*
 
-*egg*/
-MAINTAINERS
-test*.yml
-toy*
-release.sh
-shell/
-.tmp/
-.github/
-Dockerfiles/
-.dockerignore
+# Allow files and directories
+!jina/**
+!setup.py
+!*requirements.txt
+!README.md
+!MANIFEST.in
+!tests/**
+
+# Ignore unnecessary files inside allowed directories
+# This should go after the allowed directories
+
+**/*.log
+**/Thumbs.db
+**/.pyre/
+**/.eggs/
+__pycache__

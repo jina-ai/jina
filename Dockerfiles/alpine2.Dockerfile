@@ -1,4 +1,4 @@
-FROM python:3.7.6-slim
+FROM python:3.7.6-alpine
 
 ARG VCS_REF
 ARG BUILD_DATE
@@ -11,18 +11,25 @@ LABEL maintainer="dev-team@jina.ai" \
       org.label-schema.name="Jina" \
       org.label-schema.description="Jina is the cloud-native semantic search solution powered by SOTA AI technology"
 
-RUN apt-get update && apt-get install --no-install-recommends -y python3-numpy python3-scipy && \
-    apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /jina/
 
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD jina ./jina/
 
-RUN ln -s locale.h /usr/include/xlocale.h && \
+RUN apk add --no-cache \
+            --virtual=.build-dependencies \
+            build-base g++ gfortran file binutils zeromq-dev \
+            musl-dev python3-dev openblas-dev linux-headers && \
+    apk add --no-cache libstdc++ openblas libzmq && \
+    ln -s locale.h /usr/include/xlocale.h && \
     pip install . --no-cache-dir --compile && \
-    rm -rf /tmp/* && rm -rf /jina && \
-    rm /usr/include/xlocale.h
+    find /usr/lib/python3.7/ -name 'tests' -exec rm -r '{}' + && \
+    find /usr/lib/python3.7/site-packages/ -name '*.so' -print -exec sh -c 'file "{}" | grep -q "not stripped" && strip -s "{}"' \; && \
+    rm /usr/include/xlocale.h && \
+    rm -rf /tmp/* && \
+    rm -rf /jina && \
+    apk del .build-dependencies && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /
 
