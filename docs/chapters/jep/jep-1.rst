@@ -16,7 +16,7 @@ JEP 1 --- Redesigning ``Driver`` and its relation to ``Executor``
 Abstract
 --------
 
-We describe why and how we refactor the :class:`jina.drivers.BaseDriver` and make it as a part of :class:`jina.drivers.BaseExecutor`.
+We describe why and how we refactor the :class:`jina.drivers.BaseDriver` and make it as a part of :class:`jina.executors.BaseExecutor`.
 
 
 Rationale
@@ -244,7 +244,10 @@ Certain behaviors are followed by all executors, it makes sense to have a :file:
 Backwards Compatibility
 -----------------------
 
-- ``--driver_yaml_path`` and ``driver_group`` are removed from CLI arguments. Flow interface is also affected.
-- ``--exec_yaml_path`` is renamed to ``yaml_path`` as now the Pod only needs one YAML config file.
-- :file:`resources/drivers.default.yml` is kept only for references, it is not used in any Python code anymore.
-- Purely driver-powered ``Pea`` such as :func:`route`, :func:`merge`:, :func:`clear` are now implemented with :file:`resources/drivers.route.yml`, :file:`resources/merge.default.yml` and :file:`resources/drivers.clear.yml`
+- The old :mod:`jina.drivers` module is essentially removed.
+- The Pod arguments ``--driver_yaml_path`` and ``driver_group`` are removed. Flow interface is also affected.
+- The Pod arguments ``--exec_yaml_path`` is renamed to ``yaml_path`` as now the Pod only needs one YAML config file.
+- :file:`resources/drivers.default.yml` is kept only for references, it is not used in any Python code anymore. This file is expected to be removed in the future release.
+- A solely driver-powered ``Pea`` such as :func:`route`, :func:`merge`:, :func:`clear` are now implemented with :file:`resources/drivers.route.yml`, :file:`resources/merge.default.yml` and :file:`resources/drivers.clear.yml`. The Pod arguments  ``--yaml_path`` is also adapted to accept ``route``,  ``merge``,  ``clear`` as shortcuts.
+
+
