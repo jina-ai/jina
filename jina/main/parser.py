@@ -38,6 +38,7 @@ def set_base_parser():
     from google.protobuf.internal import api_implementation
     from ..helper import colored
     import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
+    from grpc import _grpcio_metadata
     # create the top-level parser
     parser = argparse.ArgumentParser(
         epilog='Jina (v%s) is a cloud-native semantic search engine '
@@ -68,7 +69,7 @@ def set_base_parser():
                                  numpy.__version__,
                                  google.protobuf.__version__,
                                  api_implementation._default_implementation_type,
-                                 grpc.__version__,
+                                 getattr(grpc, '__version__', _grpcio_metadata.__version__),
                                  ruamel.yaml.__version__),
                         help='show version and crucial dependants, environment variables')
     gp1 = add_arg_group(parser, 'logging arguments')

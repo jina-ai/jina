@@ -16,11 +16,9 @@ WORKDIR /jina/
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD jina ./jina/
 
-RUN apk add --no-cache \
-            --virtual=.build-dependencies \
-            build-base g++ gfortran file binutils zeromq-dev \
-            musl-dev python3-dev openblas-dev linux-headers && \
-    apk add --no-cache libstdc++ openblas libzmq && \
+ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
+
+RUN apk add --no-cache py3-pyzmq py3-numpy py3-scipy grpc && \
     ln -s locale.h /usr/include/xlocale.h && \
     pip install . --no-cache-dir --compile && \
     find /usr/lib/python3.7/ -name 'tests' -exec rm -r '{}' + && \
@@ -28,7 +26,6 @@ RUN apk add --no-cache \
     rm /usr/include/xlocale.h && \
     rm -rf /tmp/* && \
     rm -rf /jina && \
-    apk del .build-dependencies && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /
