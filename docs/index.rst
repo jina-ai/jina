@@ -21,10 +21,18 @@ Jina Documentation
 
 .. toctree::
    :maxdepth: 1
-   :caption: Frequently Asked Questions
+   :glob:
+   :caption: Jina Enhancement Proposals (JEPs)
 
-   chapters/faq/user
-   chapters/faq/dev
+   chapters/jep/main
+   chapters/jep/jep-*
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contributing
+
+   chapters/CONTRIBUTING.md
+
 
 .. toctree::
    :maxdepth: 1
@@ -34,18 +42,12 @@ Jina Documentation
    chapters/swarm-tutorial.md
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contributing
-
-   chapters/CONTRIBUTING.md
-
-.. toctree::
    :maxdepth: 1
-   :glob:
-   :caption: Jina Enhancement Proposals (JEPs)
+   :caption: Frequently Asked Questions
 
-   chapters/jep/main
-   chapters/jep/jep-*
+   chapters/faq/user
+   chapters/faq/dev
+
 
 .. toctree::
    :maxdepth: 1
