@@ -24,7 +24,7 @@ Rationale
 
 In the current implementation, the driver config is placed separately from the executor config. They are connected through CLI parameters ``--driver_yaml_path`` and ``--driver_group`` on the Pea’s level.
 
-The poses multiple problems such as:
+This poses multiple problems such as:
 
 - As people working on executor, they have a very vague clue how it will work in the microservice/network settings. They later have to design the corresponding ``driver_group`` to match the logic of the executor.
 - Almost every executor needs a driver, separating the driver from the executor seems unnecessary.
@@ -57,20 +57,21 @@ What we are expecting is the driver specification defined inside the executor YA
       workspace: $TEST_WORKDIR
     on:
       SearchRequest:  # under request type1
-        - name: my_vec_indexer
-          method: query
-          driver: chunk_search
-        - name: chunk_meta_indexer
-          method: meta_query
-          driver: handlr_meta_search_chunk
+        - !ChunkSearchDriver:
+            with:
+              name: my_vec_indexer
+              method: query
+        - !ChunkMetaSearchDriver
+            with:
+              method: meta_query
       IndexRequest:    # under request type2
-        - name: my_vec_indexer
-          method: add
-          driver: handler_chunk_index
-        - driver: handler_prune_chunk
-        - name: chunk_meta_indexer
-          method: add
-          driver: handler_meta_index_chunk
+        - !ChunkIndexDriver
+            with:
+                method: add
+        - !PruneChunkDriver {}
+        - !MetaChunkDriver
+            with:
+                method: add
 
 The above YAML illustrates a simple example when writing JEP-1, please refer to the docs for the final YAML syntax and specification.
 
@@ -88,29 +89,12 @@ New design of the ``Executor``, ``Driver`` and ``Pea``
 
 |
 
-Each public ``Executor`` function requires a ``Driver`` if this function want to process the Protobuf message from the ``Pea``.  If a ``Executor`` exposes multiple function interfaces, e.g. :func:`add`, :func:`query`, then multiple ``Driver`` need to be implemented respectively. This is because each function requires different information from the Protobuf message, thus requires different extraction and filling strategies of each ``Driver``.
+Each public ``Executor`` function requires a ``Driver`` if this function want to process the Protobuf message from the ``Pea``.  If an ``Executor`` exposes multiple function interfaces, e.g. :func:`add`, :func:`query`, then multiple ``Driver`` need to be implemented respectively. This is because each function requires different information from the Protobuf message, thus requires different extraction and filling strategies of each ``Driver``.
 
 A ``Driver`` has access to both ``Executor`` and ``Pea``'s context. In particular, it can access any function from the ``Executor`` and the current message and previous messages received from ``Pea``.
 
 The same executor may work differently under different incoming requests, this is defined by chaining multiple drivers together as a driver group. The executor invokes different driver group according to the type of message that the Pea received.
 
-
-Serialization of ``Driver``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-We make :class:`jina.drivers.BaseDriver` and :class:`jina.drivers.BaseExecutableDriver` loadable from YAML configs. The arguments of :func:`__init__` can be specified via ``with``, and a non-parametric :func:`__init__` can be specified via ``{}`` For example,
-
-.. highlight:: yaml
-.. code-block:: yaml
-
-    - !MetaDocSearchDriver
-      with:
-        executor: blah
-        method: goto
-    - !ControlReqDriver {}
-    - !BaseDriver {}
-
-Very similar to how it is defined for :class:`jina.executors.BaseExecutor`.
 
 
 Connecting ``Driver``, ``Pea`` and ``Executor``
@@ -137,8 +121,7 @@ Depending on the ``Driver`` type, :class:`jina.drivers.BaseExecutableDriver` is 
 
 Adding ``requests.on`` syntax
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``requests`` field is defined at the same level with ``metas`` and ``with``. The ``on`` field describes what will the executor do on certain network requests. For example, for a :class:`jina.executors.encode.BaseEncoder`, which is expected to do :func:`encode` in any circumstances. The ``on`` field should be defined as follows:
+The ``requests`` field is used to define the behavior of the executor under different requests. It is defined at the same level with ``metas`` and ``with``. The ``on`` field describes what will the executor do on certain network requests. For example, for a :class:`jina.executors.encode.BaseEncoder`, which is expected to do :func:`encode` in any circumstances. The ``on`` field should be defined as follows:
 
 .. highlight:: yaml
 .. code-block:: yaml
@@ -153,6 +136,7 @@ The ``requests`` field is defined at the same level with ``metas`` and ``with``.
                     with:
                         method: encode
 
+In the future, there may be other subfields implemented right under the ``requests`` field.
 
 
 .. confval:: requests.on.[RequestType]
@@ -241,6 +225,28 @@ Certain behaviors are followed by all executors, it makes sense to have a :file:
                     - !ControlReqDriver {}
 
 
+Serialization of ``Driver``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When :func:`jina.drivers.BaseExecutableDriver.save` or :func:`jina.drivers.BaseExecutableDriver.save_config` is called, then the driver it contains will be also saved as a part of YAML or as a part of the binary pickle. Note, that the driver deserialized from the binary/YAML will be always "unattached". This is because the attached ``Pea`` and ``Executor`` should not be serialized while saving.
+
+
+We make :class:`jina.drivers.BaseDriver` and :class:`jina.drivers.BaseExecutableDriver` loadable from YAML configs. The arguments of :func:`__init__` can be specified via ``with``, and a non-parametric :func:`__init__` can be specified via ``{}`` For example,
+
+.. highlight:: yaml
+.. code-block:: yaml
+
+    - !MetaDocSearchDriver
+      with:
+        executor: blah
+        method: goto
+    - !ControlReqDriver {}
+    - !BaseDriver {}
+
+Very similar to how it is defined for :class:`jina.executors.BaseExecutor`.
+
+
+
 Backwards Compatibility
 -----------------------
 
@@ -248,6 +254,6 @@ Backwards Compatibility
 - The Pod arguments ``--driver_yaml_path`` and ``driver_group`` are removed. Flow interface is also affected.
 - The Pod arguments ``--exec_yaml_path`` is renamed to ``yaml_path`` as now the Pod only needs one YAML config file.
 - :file:`resources/drivers.default.yml` is kept only for references, it is not used in any Python code anymore. This file is expected to be removed in the future release.
-- A solely driver-powered ``Pea`` such as :func:`route`, :func:`merge`:, :func:`clear` are now implemented with :file:`resources/drivers.route.yml`, :file:`resources/merge.default.yml` and :file:`resources/drivers.clear.yml`. The Pod arguments  ``--yaml_path`` is also adapted to accept ``route``,  ``merge``,  ``clear`` as shortcuts.
+- A solely driver-powered ``Pea`` such as :func:`route`, :func:`merge`, :func:`clear` are now implemented with :file:`resources/drivers.route.yml`, :file:`resources/merge.default.yml` and :file:`resources/drivers.clear.yml`. The Pod arguments  ``--yaml_path`` is also adapted to accept ``route``,  ``merge``,  ``clear`` as shortcuts.
 
 

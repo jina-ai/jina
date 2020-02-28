@@ -12,7 +12,7 @@ We learn from the `PEP standard <https://www.python.org/dev/peps/pep-0001/#what-
 Who should write JEP?
 ---------------------
 
-The KEP process begins with a new idea for Jina. It is highly recommended that a single JEP contain a single key proposal or new idea. Small enhancements or patches often don't need a JEP and can be injected into the Jina development workflow with a Github submission to the Jina issue tracker.
+The JEP process begins with a new idea for Jina. It is highly recommended that a single JEP contain a single key proposal or new idea. Small enhancements or patches often don't need a JEP and can be injected into the Jina development workflow with a Github submission to the Jina issue tracker.
 
 The following scenarios may require a JEP:
 
@@ -61,7 +61,7 @@ Suggested Sections
     Motivation
     ----------
 
-    [Clearly explain why the existing language specification is inadequate to address the problem that the JEP solves.]
+    [Clearly explain why the existing code is inadequate to address the problem that the JEP solves.]
 
 
     Rationale
@@ -73,7 +73,7 @@ Suggested Sections
     Specification
     -------------
 
-    [Describe the syntax and semantics of any new language feature.]
+    [Describe the syntax and semantics of any new feature.]
 
 
     Backwards Compatibility
