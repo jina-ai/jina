@@ -16,5 +16,5 @@
 # 4. Tag `all` is reserved for representing all packages
 
 scipy:                      numeric, index
-flask:                      http
-
+flask:                      http, sse
+docker:                     flow
