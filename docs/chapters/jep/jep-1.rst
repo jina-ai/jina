@@ -228,10 +228,10 @@ Certain behaviors are followed by all executors, it makes sense to have a :file:
 Serialization of ``Driver``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When :func:`jina.drivers.BaseExecutableDriver.save` or :func:`jina.drivers.BaseExecutableDriver.save_config` is called, then the driver it contains will be also saved as a part of YAML or as a part of the binary pickle. Note, that the driver deserialized from the binary/YAML will be always "unattached". This is because the attached ``Pea`` and ``Executor`` should not be serialized while saving.
+When :func:`jina.drivers.BaseExecutableDriver.save` or :func:`jina.drivers.BaseExecutableDriver.save_config` is called, then the driver it contains will be also saved as a part of YAML or as a part of the binary pickle. Note, that the driver deserialized from the binary/YAML will be always "unattached". This is because the attached ``Pea`` and ``Executor`` should not be serialized while saving. Thus it has to call :func:`attach` for making it connected to :class:`jina.peapods.pea.Pea` and :class:`jina.executuors.BaseExecutor` again.
 
 
-We make :class:`jina.drivers.BaseDriver` and :class:`jina.drivers.BaseExecutableDriver` loadable from YAML configs. The arguments of :func:`__init__` can be specified via ``with``, and a non-parametric :func:`__init__` can be specified via ``{}`` For example,
+We make :class:`jina.drivers.BaseDriver` and :class:`jina.drivers.BaseExecutableDriver` loadable from YAML configs. The arguments of :func:`__init__` can be specified via ``with``, and a non-parametric :func:`__init__` can be specified via ``{}``. Very similar to how it is defined for :class:`jina.executors.BaseExecutor`. For example,
 
 .. highlight:: yaml
 .. code-block:: yaml
@@ -243,9 +243,6 @@ We make :class:`jina.drivers.BaseDriver` and :class:`jina.drivers.BaseExecutable
     - !ControlReqDriver {}
     - !BaseDriver {}
 
-Very similar to how it is defined for :class:`jina.executors.BaseExecutor`.
-
-
 
 Backwards Compatibility
 -----------------------
@@ -254,6 +251,6 @@ Backwards Compatibility
 - The Pod arguments ``--driver_yaml_path`` and ``driver_group`` are removed. Flow interface is also affected.
 - The Pod arguments ``--exec_yaml_path`` is renamed to ``yaml_path`` as now the Pod only needs one YAML config file.
 - :file:`resources/drivers.default.yml` is kept only for references, it is not used in any Python code anymore. This file is expected to be removed in the future release.
-- A solely driver-powered ``Pea`` such as :func:`route`, :func:`merge`, :func:`clear` are now implemented with :file:`resources/drivers.route.yml`, :file:`resources/merge.default.yml` and :file:`resources/drivers.clear.yml`. The Pod arguments  ``--yaml_path`` is also adapted to accept ``route``,  ``merge``,  ``clear`` as shortcuts.
+- A solely driver-powered ``Pea`` such as :func:`route`, :func:`merge`, :func:`clear` are now implemented with :file:`resources/executors.route.yml`, :file:`resources/executors.merge.yml` and :file:`resources/executors.clear.yml`. The Pod arguments  ``--yaml_path`` is also adapted to accept ``route``,  ``merge``,  ``clear`` as shortcuts.
 
 
