@@ -1,1 +1,0 @@
-/Users/hanxiao/Documents/_jina/jina/executors/__init__.py

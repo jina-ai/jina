@@ -25,7 +25,7 @@ Jina Documentation
    :caption: Jina Enhancement Proposals (JEPs)
 
    chapters/jep/main
-   chapters/jep/jep-*
+   chapters/jep/**/jep-*
 
 .. toctree::
    :maxdepth: 2
