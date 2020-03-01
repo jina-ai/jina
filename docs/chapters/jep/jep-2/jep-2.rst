@@ -113,7 +113,10 @@ All keyword arguments of `p1` now forward to ``jina-encoder:cv-blah``. So instea
 
 .. literalinclude:: flow.py
    :language: python
-   :lines: 410-413
+   :emphasize-lines: 410-413
+   :linenos:
+   :lines: 405-415
+
 
 It should run the Pod via :command:`docker run jina-encoder:cv-blah --name p1 --yaml_path ./encode.yml`.
 
@@ -142,9 +145,12 @@ Each container contains a ``Pea``, not a ``Pod``, therefore a ``Pea`` should pro
     ``image`` is defined at the ``Pod`` level. It describes all non-head and non-tail peas should be running with. If it is specified, then the following code needs to behave differently:
 
     .. literalinclude:: pod.py
-
        :language: python
-       :lines: 164-169
+       :lines: 160-170
+       :emphasize-lines: 164-169
+       :linenos:
+
+
 
 These lines should start Docker containers with args followed.
 
