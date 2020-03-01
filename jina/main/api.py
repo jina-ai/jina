@@ -5,6 +5,13 @@ def pod(args):
         p.join()
 
 
+def pea(args):
+    """Start a Pea"""
+    from ..peapods.pea import Pea
+    with Pea(args) as p:
+        p.join()
+
+
 def frontend(args):
     """Start a frontend"""
     from ..peapods.pod import FrontendPod

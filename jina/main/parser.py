@@ -108,15 +108,15 @@ def set_flow_parser(parser=None):
     return parser
 
 
-def set_pod_parser(parser=None):
-    from ..enums import SocketType, ParallelType
+def set_pea_parser(parser=None):
+    from ..enums import SocketType
     from ..helper import random_port, random_identity
     from .. import __default_host__
     import os
     if not parser:
         parser = set_base_parser()
 
-    gp0 = add_arg_group(parser, 'pod basic arguments')
+    gp0 = add_arg_group(parser, 'pea basic arguments')
     gp0.add_argument('--name', type=str,
                      help='the name of this pod, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=random_identity(),
@@ -124,7 +124,8 @@ def set_pod_parser(parser=None):
     gp0.add_argument('--yaml_path', type=valid_yaml_path, default='BaseExecutor',
                      help='the yaml config of the executor, it should be a readable stream,'
                           ' or a valid file path, or a supported class name.')
-    gp2 = add_arg_group(parser, 'pod network arguments')
+
+    gp2 = add_arg_group(parser, 'pea network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),
                      help='port for input data, default a random port between [49152, 65536]')
     gp2.add_argument('--port_out', type=int, default=random_port(),
@@ -146,7 +147,7 @@ def set_pod_parser(parser=None):
     gp2.add_argument('--timeout', type=int, default=-1,
                      help='timeout (ms) of all communication, -1 for waiting forever')
 
-    gp3 = add_arg_group(parser, 'pod IO arguments')
+    gp3 = add_arg_group(parser, 'pea IO arguments')
     gp3.add_argument('--dump_interval', type=int, default=240,
                      help='serialize the model in the pod every n seconds if model changes. '
                           '-1 means --read_only. ')
@@ -155,6 +156,35 @@ def set_pod_parser(parser=None):
     gp3.add_argument('--read_only', action='store_true', default=False,
                      help='do not allow the pod to modify the model, '
                           'dump_interval will be ignored')
+    gp3.add_argument('--separated_workspace', action='store_true', default=False,
+                     help='the data and config files are separated for each pea in this pod, '
+                          'only effective when `num_parallel` > 1')
+    gp3.add_argument('--replica_id', type=int, default=0,
+                     help='the id of the storage of this replica, only effective when `separated_workspace=True`')
+
+    gp5 = add_arg_group(parser, 'pea messaging arguments')
+    gp5.add_argument('--check_version', action='store_true', default=False,
+                     help='comparing the jina and proto version of incoming message with local setup, '
+                          'mismatch raise an exception')
+    gp5.add_argument('--array_in_pb', action='store_true', default=False,
+                     help='sending raw_bytes and numpy ndarray together within or separately from the protobuf message, '
+                          'the latter often yields a better network efficiency')
+    gp5.add_argument('--num_part', type=int, default=1,
+                     help='wait until the number of parts of message are all received')
+
+    gp6 = add_arg_group(parser, 'pea EXPERIMENTAL arguments')
+    gp6.add_argument('--memory_hwm', type=int, default=-1,
+                     help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
+                          '-1 means no restriction')
+
+    return parser
+
+
+def set_pod_parser(parser=None):
+    from ..enums import ParallelType
+    if not parser:
+        parser = set_base_parser()
+    set_pea_parser(parser)
 
     gp4 = add_arg_group(parser, 'pod runtime arguments')
     gp4.add_argument('--parallel_runtime', type=str, choices=['thread', 'process'], default='thread',
@@ -166,24 +196,7 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--parallel_type', type=ParallelType.from_string, choices=list(ParallelType),
                      default=ParallelType.PUSH_NONBLOCK,
                      help='parallel type of the concurrent peas')
-    gp4.add_argument('--separated_workspace', action='store_true', default=False,
-                     help='the data and config files are separated for each pea in this pod, '
-                          'only effective when `num_parallel` > 1')
-
-    gp5 = add_arg_group(parser, 'pod messaging arguments')
-    gp5.add_argument('--check_version', action='store_true', default=False,
-                     help='comparing the jina and proto version of incoming message with local setup, '
-                          'mismatch raise an exception')
-    gp5.add_argument('--array_in_pb', action='store_true', default=False,
-                     help='sending raw_bytes and numpy ndarray together within or separately from the protobuf message, '
-                          'the latter often yields a better network efficiency')
-    gp5.add_argument('--num_part', type=int, default=1,
-                     help='wait until the number of parts of message are all received')
-
-    gp6 = add_arg_group(parser, 'pod EXPERIMENTAL arguments')
-    gp6.add_argument('--memory_hwm', type=int, default=-1,
-                     help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
-                          '-1 means no restriction')
+    gp4.add_argument('--image', type=str, help='the name of the docker image that this pea runs with')
 
     return parser
 

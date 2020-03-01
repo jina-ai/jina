@@ -44,7 +44,7 @@ To add containerization feature to the :class:`jina.flow.Flow`, we first need to
 - Each pod runs in its own container;
     This is a special case of "some pods run outside of the container".
 
-As one can observe from the list, designing an API that allows Pods running locally or remotely, inside or outside the container is the key of this JEP. Imagine we add two new arguments when spawning each pod, ``host`` and ``docker_image``. Note that these two arguments should not be added to the arguments of :class:`jina.peapods.pod.Pod` but to :func:`jina.flow.Flow.add`.
+As one can observe from the list, designing an API that allows Pods running locally or remotely, inside or outside the container is the key of this JEP. Imagine we add two new arguments when spawning each pod, ``host`` and ``image``. Note that these two arguments should not be added to the arguments of :class:`jina.peapods.pod.Pod` but to :func:`jina.flow.Flow.add`.
 
 
 Can we support remote Pod in the Flow API?
@@ -87,12 +87,66 @@ That is, in the current Flow API a remote pod must be "bind" on both input socke
 
 Note, it is difficult to guarantee a "bi-bind" Pod in an arbitrary flow. Depending on the topology, the input/output socket may switch the role between "bind" and "connect". Implementing heuristics to maximize the chance that a remote Pod enjoys  "bi-bind" may be possible, but is tedious and not very cost-effective.
 
-As the conclusion, **we decide not to support remote Pod in this JEP.** All pods can only run locally.
+As the conclusion, **we decide not to support remote Pod in this JEP.** All pods are limited to run locally.
 
 
 Run pods in their own container
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. confval:: image
+
+    ``image`` describes the docker image that a ``Pod`` will be running with, e.g. ``jina-encoder:nlp-bert:0.1``.
+
+    :type: str
+
+First, we may need a good naming convention for the image tag. This needs to be discussed separately.
+
+Let's look at the following example:
+
+.. highlight:: python
+.. code-block:: python
+
+    f = (Flow().add(name='p1', yaml_path='./encode.yml', image='jina-encoder:cv-blah')  # -> p1 runs in the container
+                .add(name='p2'))
+
+All keyword arguments of `p1` now forward to ``jina-encoder:cv-blah``. So instead of running process/thread in
+
+.. literalinclude:: flow.py
+   :language: python
+   :lines: 410-413
+
+It should run the Pod via :command:`docker run jina-encoder:cv-blah --name p1 --yaml_path ./encode.yml`.
+
+But how to handle multiple replicas?
+
+Note a Pod can contain multiple Peas when ``--replicas > 1``. If a Pod is wrapped in a container, then that means all its Peas, including the head and tail are all running in the container.
+
+This poses a problem. The head and tail of a Pod can be eliminated during the :func:`jina.flow.Flow.build`. The structure of a Pod is "broken" because of this. We can of course omit the heuristic of topology optimization when ``image`` and ``replicas`` are both set. But before that, let's first think what does it mean when a user specify ``replicas`` and ``image`` at the same time. Does it mean running one container but having ``replicas`` number of peas inside the container, or does it mean running ``replicas`` number of containers? The following figure illustrates the difference.
+
+.. image:: JEP2-Pod-Container.svg
+   :align: center
+   :width: 60%
+
+|
+
+In the Docker documentation, ``replicas`` is defined as "the number of containers that should be running at any given time". We follow this definition and choose the last interpretation in the figure above. This should offer us more flexibility and consistency with Docker and Kubernetes API.
+
+Each container contains a ``Pea``, not a ``Pod``, therefore a ``Pea`` should provide a CLI with the following additional argument as well.
+
+.. confval:: replica_id
+
+    A ``Pea`` is always unary, it has no replicas. ``replicas_id`` represent an integer index that its parent ``Pod`` assign to it. ``replica_id`` is defined on the ``Pea`` level.
+
+.. confval:: image
+
+    ``image`` is defined at the ``Pod`` level. It describes all non-head and non-tail peas should be running with. If it is specified, then the following code needs to behave differently:
+
+    .. literalinclude:: pod.py
+
+       :language: python
+       :lines: 164-169
+
+These lines should start Docker containers with args followed.
 
 
 Specification

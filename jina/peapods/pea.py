@@ -63,7 +63,7 @@ class Pea(metaclass=PeaMeta):
         else:
             raise NotImplementedError
 
-    def __init__(self, args: 'argparse.Namespace', replica_id: int = None):
+    def __init__(self, args: 'argparse.Namespace'):
         """ Create a new :class:`Pea` object
 
         :param args: the arguments received from the CLI
@@ -78,7 +78,6 @@ class Pea(metaclass=PeaMeta):
 
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.last_dump_time = time.perf_counter()
-        self.replica_id = replica_id
 
         self._timer = TimeDict()
 
@@ -155,7 +154,7 @@ class Pea(metaclass=PeaMeta):
         if self.args.yaml_path:
             try:
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
-                                                         self.args.separated_workspace, self.replica_id)
+                                                         self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)

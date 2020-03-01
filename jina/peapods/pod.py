@@ -36,8 +36,8 @@ class Pod:
             self.cli_args, self._args, self.unk_args = _get_parsed_args(kwargs, parser)
 
         self.name = self._args.name
-        self.send_to = send_to if send_to else set()
-        self.recv_from = recv_from if recv_from else set()
+        self.send_to = send_to if send_to else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+        self.recv_from = recv_from if recv_from else set()  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.is_head_router = False
         self.is_tail_router = False
@@ -162,7 +162,8 @@ class Pod:
 
         # start real peas and accumulate the storage id
         for idx, s in enumerate(self.peas_args['peas']):
-            p = Pea(s, replica_id=idx)
+            s.replica_id = idx
+            p = Pea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
         return self
