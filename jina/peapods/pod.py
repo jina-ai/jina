@@ -3,10 +3,10 @@ from contextlib import ExitStack
 from typing import Set, Dict, Callable
 
 from .frontend import FrontendPea
-from .pea import Pea
+from .pea import Pea, ContainerizedPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, random_identity
+from ..helper import random_port, random_identity, kwargs2list
 from ..main.parser import set_pod_parser
 
 if False:
@@ -163,7 +163,10 @@ class Pod:
         # start real peas and accumulate the storage id
         for idx, s in enumerate(self.peas_args['peas']):
             s.replica_id = idx
-            p = Pea(s)
+            if s.image:
+                p = ContainerizedPea(s)
+            else:
+                p = Pea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
         return self
@@ -291,23 +294,7 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
 
 
 def _get_parsed_args(kwargs, parser):
-    args = []
-    for k, v in kwargs.items():
-        if isinstance(v, bool):
-            if v:
-                if not k.startswith('no_') and not k.startswith('no-'):
-                    args.append('--%s' % k)
-                else:
-                    args.append('--%s' % k[3:])
-            else:
-                if k.startswith('no_') or k.startswith('no-'):
-                    args.append('--%s' % k)
-                else:
-                    args.append('--no_%s' % k)
-        elif isinstance(v, list):  # for nargs
-            args.extend(['--%s' % k, *(str(vv) for vv in v)])
-        else:
-            args.extend(['--%s' % k, str(v)])
+    args = kwargs2list(kwargs)
     try:
         p_args, unknown_args = parser().parse_known_args(args)
     except SystemExit:

@@ -7,31 +7,6 @@ def add_arg_group(parser, title):
     return parser.add_argument_group(' '.join(v[0].upper() + v[1:] for v in title.split(' ')))
 
 
-def valid_yaml_path(path, to_stream=False):
-    # priority, filepath > classname > default
-    import os
-    import io
-    if hasattr(path, 'read'):
-        # already a readable stream
-        return path
-    elif os.path.exists(path):
-        if to_stream:
-            return open(path, encoding='utf8')
-        else:
-            return path
-    elif path.lower() in {'route', 'merge', 'clear'}:
-        from pkg_resources import resource_filename
-        return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
-    elif path.startswith('!'):
-        # possible YAML content
-        return io.StringIO(path)
-    elif path.isidentifier():
-        # possible class name
-        return io.StringIO('!%s' % path)
-    else:
-        raise argparse.ArgumentTypeError('%s can not be resolved, it should be a readable stream,'
-                                         ' or a valid file path, or a supported class name.' % path)
-
 
 def set_base_parser():
     from .. import __version__, __proto_version__
@@ -98,7 +73,7 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('flow_yaml_path', type=valid_yaml_path, help='a yaml file represents a flow')
+    gp.add_argument('flow_yaml_path', type=str, help='a yaml file represents a flow')
     gp.add_argument('--output_type', type=FlowOutputType.from_string,
                     choices=list(FlowOutputType), default=FlowOutputType.SHELL_PROC,
                     help='type of the output')
@@ -121,9 +96,10 @@ def set_pea_parser(parser=None):
                      help='the name of this pod, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=random_identity(),
                      help='the identity of the pod, default a random string')
-    gp0.add_argument('--yaml_path', type=valid_yaml_path, default='BaseExecutor',
+    gp0.add_argument('--yaml_path', type=str, default='BaseExecutor',
                      help='the yaml config of the executor, it should be a readable stream,'
-                          ' or a valid file path, or a supported class name.')
+                          ' or a valid file path, or a supported class name.')  # pod(no use) -> pea
+    gp0.add_argument('--image', type=str, help='the name of the docker image that this pea runs with')
 
     gp2 = add_arg_group(parser, 'pea network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),
@@ -176,6 +152,8 @@ def set_pea_parser(parser=None):
     gp6.add_argument('--memory_hwm', type=int, default=-1,
                      help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
                           '-1 means no restriction')
+    gp6.add_argument('--parallel_runtime', type=str, choices=['thread', 'process'], default='thread',
+                     help='the parallel runtime of the pod')
 
     return parser
 
@@ -187,8 +165,6 @@ def set_pod_parser(parser=None):
     set_pea_parser(parser)
 
     gp4 = add_arg_group(parser, 'pod runtime arguments')
-    gp4.add_argument('--parallel_runtime', type=str, choices=['thread', 'process'], default='thread',
-                     help='the parallel runtime of the pod')
     gp4.add_argument('--num_parallel', '--replicas', type=int, default=1,
                      help='number of parallel peas in the pod running at the same time (i.e. replicas), '
                           '`port_in` and `port_out` will be set to random, '
@@ -196,7 +172,6 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--parallel_type', type=ParallelType.from_string, choices=list(ParallelType),
                      default=ParallelType.PUSH_NONBLOCK,
                      help='parallel type of the concurrent peas')
-    gp4.add_argument('--image', type=str, help='the name of the docker image that this pea runs with')
 
     return parser
 
@@ -322,9 +297,11 @@ def get_main_parser():
     set_logger_parser(sp.add_parser('log', help='receive piped log output and beautify the log', formatter_class=_chf))
 
     # cli
-    set_pod_parser(sp.add_parser('pod', help='start a pod service', formatter_class=_chf))
+    set_pea_parser(sp.add_parser('pea', help='start a pea', formatter_class=_chf))
+    set_pod_parser(sp.add_parser('pod', help='start a pod', formatter_class=_chf))
     set_frontend_parser(sp.add_parser('frontend', help='start a frontend pod', formatter_class=_chf))
-    set_client_cli_parser(sp.add_parser('client', help='start a client connects to a frontend', formatter_class=_chf))
+    set_client_cli_parser(
+        sp.add_parser('client', help='start a client connects to a frontend pod', formatter_class=_chf))
     set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 

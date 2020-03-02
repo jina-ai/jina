@@ -10,11 +10,12 @@ from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWate
     EventLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
+from ..helper import kwargs2list
 from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
-__all__ = ['PeaMeta', 'Pea']
+__all__ = ['PeaMeta', 'Pea', 'ContainerizedPea']
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -50,18 +51,84 @@ class PeaMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
+def _get_event(obj):
+    if isinstance(obj, threading.Thread):
+        return threading.Event()
+    elif isinstance(obj, multiprocessing.Process):
+        return multiprocessing.Event()
+    else:
+        raise NotImplementedError
+
+
+class ContainerizedPea(metaclass=PeaMeta):
+
+    def __init__(self, args: 'argparse.Namespace'):
+        super().__init__()
+        import docker
+        self.args = args
+        self.name = args.name or self.__class__.__name__
+        self.logger = get_logger(self.name, **vars(args))
+        self._container = None
+        self._client = docker.from_env()
+        self.is_ready = _get_event(self)
+        self.is_event_loop = _get_event(self)
+        self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
+
+    def run(self):
+        try:
+            non_defaults = {}
+            from ..main.parser import set_pea_parser
+            _defaults = vars(set_pea_parser().parse_args([]))
+            for k, v in vars(self.args).items():
+                if _defaults[k] != v:
+                    non_defaults[k] = v
+
+            _args = kwargs2list(non_defaults)
+            self._container = self._client.containers.run(self.args.image, _args,
+                                                          detach=True, auto_remove=True,
+                                                          ports={'%d/tcp' % v: v for v in
+                                                                 [self.args.port_ctrl,
+                                                                  self.args.port_in,
+                                                                  self.args.port_out]})
+
+            self.is_event_loop.set()
+            # self.logger.critical('ready and listening')
+            self.is_ready.set()
+            for line in self._container.logs(stream=True):
+                if self.is_event_loop.is_set():
+                    self.logger.info(line.strip().decode())
+                else:
+                    raise EventLoopEnd
+        except EventLoopEnd:
+            self.logger.info('break from the event loop')
+        except KeyboardInterrupt:
+            self.logger.warning('user cancel the process')
+        finally:
+            self.is_ready.set()
+            self.is_event_loop.clear()
+            self._container.stop()
+        self.logger.critical('terminated')
+
+    def close(self):
+        """Gracefully close this pea and release all resources """
+        if self.is_event_loop.is_set():
+            self.logger.info(self.ctrl_addr)
+            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                                     timeout=self.args.timeout)
+
+    def __enter__(self):
+        self.start()
+        self.is_ready.wait()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+
 class Pea(metaclass=PeaMeta):
     """Pea is an unary service unit which provides network interface and
     communicates with others via protobuf and ZeroMQ
     """
-
-    def _get_event(self):
-        if isinstance(self, threading.Thread):
-            return threading.Event()
-        elif isinstance(self, multiprocessing.Process):
-            return multiprocessing.Event()
-        else:
-            raise NotImplementedError
 
     def __init__(self, args: 'argparse.Namespace'):
         """ Create a new :class:`Pea` object
@@ -73,8 +140,8 @@ class Pea(metaclass=PeaMeta):
         self.args = args
         self.name = args.name or self.__class__.__name__
         self.logger = get_logger(self.name, **vars(args))
-        self.is_ready = self._get_event()
-        self.is_event_loop = self._get_event()
+        self.is_ready = _get_event(self)
+        self.is_event_loop = _get_event(self)
 
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.last_dump_time = time.perf_counter()

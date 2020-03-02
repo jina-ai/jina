@@ -1,4 +1,4 @@
-!BaseEncoder
+!BaseExecutor
 with: {}
 metas:
   name: merge

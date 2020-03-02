@@ -320,3 +320,48 @@ def get_tags_from_node(node) -> List[str]:
 
     return list(set(list(node_recurse_generator(node))))
 
+
+def kwargs2list(kwargs: Dict):
+    args = []
+    for k, v in kwargs.items():
+        if isinstance(v, bool):
+            if v:
+                if not k.startswith('no_') and not k.startswith('no-'):
+                    args.append('--%s' % k)
+                else:
+                    args.append('--%s' % k[3:])
+            else:
+                if k.startswith('no_') or k.startswith('no-'):
+                    args.append('--%s' % k)
+                else:
+                    args.append('--no_%s' % k)
+        elif isinstance(v, list):  # for nargs
+            args.extend(['--%s' % k, *(str(vv) for vv in v)])
+        else:
+            args.extend(['--%s' % k, str(v)])
+    return args
+
+
+def valid_yaml_path(path: str, to_stream: bool = False):
+    # priority, filepath > classname > default
+    import io
+    if hasattr(path, 'read'):
+        # already a readable stream
+        return path
+    elif os.path.exists(path):
+        if to_stream:
+            return open(path, encoding='utf8')
+        else:
+            return path
+    elif path.lower() in {'route', 'merge', 'clear'}:
+        from pkg_resources import resource_filename
+        return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
+    elif path.startswith('!'):
+        # possible YAML content
+        return io.StringIO(path)
+    elif path.isidentifier():
+        # possible class name
+        return io.StringIO('!%s' % path)
+    else:
+        raise TypeError('%s can not be resolved, it should be a readable stream,'
+                        ' or a valid file path, or a supported class name.' % path)

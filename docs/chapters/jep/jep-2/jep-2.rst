@@ -134,7 +134,7 @@ This poses a problem. The head and tail of a Pod can be eliminated during the :f
 
 In the Docker documentation, ``replicas`` is defined as "the number of containers that should be running at any given time". We follow this definition and choose the last interpretation in the figure above. This should offer us more flexibility and consistency with Docker and Kubernetes API.
 
-Each container contains a ``Pea``, not a ``Pod``, therefore a ``Pea`` should provide a CLI with the following additional argument as well.
+**Each container contains a ``Pea``, not a ``Pod``, therefore a ``Pea`` should provide a CLI with the some additional argument.**
 
 .. confval:: replica_id
 
@@ -150,9 +150,15 @@ Each container contains a ``Pea``, not a ``Pod``, therefore a ``Pea`` should pro
        :emphasize-lines: 164-169
        :linenos:
 
-
-
 These lines should start Docker containers with args followed.
+
+The ``Pod`` will inherit these CLI arguments.
+
+
+A minimum Jina Docker Contianer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 
 
 Specification

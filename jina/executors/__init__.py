@@ -14,7 +14,7 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, PathImporter, expand_dict, expand_env_var
+from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
 from ..logging.base import get_logger
 from ..logging.profile import profiling
 
@@ -360,6 +360,7 @@ class BaseExecutor(metaclass=ExecutorType):
         :return: an executor object
         """
         if not filename: raise FileNotFoundError
+        filename = valid_yaml_path(filename)
         # first scan, find if external modules are specified
         with (open(filename, encoding='utf8') if isinstance(filename, str) else filename) as fp:
             # ignore all lines start with ! because they could trigger the deserialization of that class

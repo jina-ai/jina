@@ -1,7 +1,7 @@
 is_trained: false
 is_updated: false
 batch_size:
-workspace: $PWD
+workspace: './'
 name:
 on_gpu: false
 warn_unnamed: false
