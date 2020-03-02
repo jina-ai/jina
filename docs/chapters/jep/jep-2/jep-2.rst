@@ -71,7 +71,7 @@ Assuming the Pod is started already on the ``host``, then writing ``host`` as an
                 .join(['p1', 'p2']))  # -> p3
 
 
-In the example, `p3` is blocking the flow until `p1` and `p2` are all done. `p3` is on the "bind" side, `p1` and `p2` are on the "connect" side. Therefore, it is in fact `p3` who needs to expose its IP to `p1` and `p2` to make sure ``p2.host_out = p3.host`` and ``p2.host_out = p3.host``, not in the other way. Simply put, the ``host`` argument of `p1` and `p2` is useless in this case. Besides that, as `p1` and `p2` are already running in remote (manually), their ``host_out`` is not changeable by the Flow. This simple use case is not even possible if the Flow can not spawn Pod remotely.
+In the example, `p3` is blocking the flow until `p1` and `p2` are all done. `p3` is on the "bind" side, `p1` and `p2` are on the "connect" side. Therefore, it is in fact `p3` who needs to expose its IP to `p1` and `p2` to make sure ``p1.host_out = p3.host`` and ``p2.host_out = p3.host``, not in the other way. Simply put, the ``host`` argument of `p1` and `p2` is useless in this case. Besides that, as `p1` and `p2` are already running in remote (manually), their ``host_out`` is not changeable by the Flow. This simple use case is not even possible if the Flow can not spawn Pod remotely.
 
 So what can we support? If a remote pod is on the "bind" side, and the local pods are on the "connect" side, then this works fine. Though in this case we can simply use the existing ``host_in``, ``host_out``. For example,
 
@@ -167,4 +167,3 @@ Specification
 
 Backwards Compatibility
 -----------------------
-
