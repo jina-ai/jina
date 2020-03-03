@@ -241,8 +241,8 @@ class Pea(metaclass=PeaMeta):
         try:
             self.post_init()
             self.is_event_loop.set()
-            self.logger.critical('ready and listening')
             self.is_ready.set()
+            self.logger.critical('ready and listening')
             self.event_loop_start()
         except EventLoopEnd:
             self.logger.info('break from the event loop')
@@ -263,8 +263,8 @@ class Pea(metaclass=PeaMeta):
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
             self.is_ready.set()
-            self.is_event_loop.clear()
             self.event_loop_stop()
+            self.is_event_loop.clear()
 
         self.logger.critical('terminated')
 
@@ -332,12 +332,16 @@ class ContainerizedPea(Pea):
                                                       # network_mode='host',
                                                       # publish_all_ports=True
                                                       )
+        # wait until the container is ready
+        self.logger.debug(self.status)
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
+        logger = get_logger('↳', **vars(self.args), fmt_str='↳ %(message)s')
+
         for line in self._container.logs(stream=True):
             if self.is_event_loop.is_set():
-                self.logger.info(line.strip().decode())
+                logger.info(line.strip().decode())
             else:
                 raise EventLoopEnd
 

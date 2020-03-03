@@ -109,7 +109,7 @@ class NTLogger:
             sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
 
 
-def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse: bool = False,
+def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse: bool = False, fmt_str: str = None,
                **kwargs) -> Union['logging.Logger', 'NTLogger']:
     """Get a logger with configurations
 
@@ -125,8 +125,9 @@ def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse
     """
     from .. import __uptime__
     from .queue import __log_queue__, __profile_queue__
-    fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
-              f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
+    if not fmt_str:
+        fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
+                  f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
 
     timed_fmt_str = f'%(asctime)s:' + fmt_str
 
