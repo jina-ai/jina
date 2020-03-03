@@ -126,17 +126,18 @@ class BaseExecutor(metaclass=ExecutorType):
         self._drivers = {}  # type: Dict[str, List['BaseDriver']]
         self._attached_pea = None
 
-    def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None):
+    def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
 
-        if not _metas:
-            _metas = get_default_metas()
+        if fill_in_metas:
+            if not _metas:
+                _metas = get_default_metas()
 
-        # if not _requests:
-        #     from .requests import get_default_requests
-        #     _requests = get_default_requests()
+            if not _requests:
+                from ..executors.requests import get_default_reqs
+                _requests = get_default_reqs(type.mro(self.__class__))
 
-        self._fill_metas(_metas)
-        self._fill_requests(_requests)
+            self._fill_metas(_metas)
+            self._fill_requests(_requests)
 
         _before = set(list(vars(self).keys()))
         self.post_init()
@@ -149,11 +150,13 @@ class BaseExecutor(metaclass=ExecutorType):
                     for r in req_type:
                         if r not in self._drivers:
                             self._drivers[r] = list()
-                        self._drivers[r].extend(drivers)
+                        if self._drivers[r] != drivers:
+                            self._drivers[r].extend(drivers)
                 else:
                     if req_type not in self._drivers:
                         self._drivers[req_type] = list()
-                    self._drivers[req_type].extend(drivers)
+                    if self._drivers[req_type] != drivers:
+                        self._drivers[req_type].extend(drivers)
 
     def _fill_metas(self, _metas):
         unresolved_attr = False
@@ -265,7 +268,7 @@ class BaseExecutor(metaclass=ExecutorType):
         self.__dict__.update(d)
         self.logger = get_logger(self.__class__.__name__)
         try:
-            self._post_init_wrapper()
+            self._post_init_wrapper(fill_in_metas=False)
         except ImportError as ex:
             self.logger.warning('ImportError is often caused by a missing component, '
                                 'which often can be solved by "pip install" relevant package. %s' % ex, exc_info=True)
@@ -447,12 +450,6 @@ class BaseExecutor(metaclass=ExecutorType):
         _meta_config.update(data.get('metas', {}))
         if _meta_config:
             data['metas'] = _meta_config
-
-        from ..executors.requests import get_default_reqs
-        _requests = get_default_reqs()
-        _requests['on'].update(data.get('requests', {'on': {}})['on'])
-        if _requests:
-            data['requests'] = _requests
 
         dump_path = cls._get_dump_path_from_config(data.get('metas', {}))
         load_from_dump = False

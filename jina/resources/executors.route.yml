@@ -6,3 +6,5 @@ requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
       - !ForwardDriver {}
+      ControlRequest:
+        - !ControlReqDriver {}

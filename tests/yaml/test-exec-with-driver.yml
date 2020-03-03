@@ -9,3 +9,5 @@ requests:
         with:
           method: encode
       - !ChunkPruneDriver {}
+      ControlRequest:
+        - !ControlReqDriver {}

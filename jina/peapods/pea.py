@@ -74,6 +74,8 @@ class Pea(metaclass=PeaMeta):
         super().__init__()
         self.args = args
         self.name = args.name or self.__class__.__name__
+        if args.replica_id >= 0:
+            self.name = '%s-%d' % (self.name, args.replica_id)
         self.logger = get_logger(self.name, **vars(args))
         self.is_ready = _get_event(self)
         self.is_event_loop = _get_event(self)
@@ -201,6 +203,7 @@ class Pea(metaclass=PeaMeta):
         return self
 
     def event_loop_start(self):
+        """Start the event loop """
         with Zmqlet(self.args, logger=self.logger) as zmqlet:
             def _callback(msg):
                 try:
@@ -223,6 +226,7 @@ class Pea(metaclass=PeaMeta):
                 self.check_memory_watermark()
 
     def event_loop_stop(self):
+        """Stop the event loop """
         if hasattr(self, 'executor'):
             if not self.args.exit_no_dump:
                 self.save_executor(dump_interval=0)
@@ -294,6 +298,10 @@ class Pea(metaclass=PeaMeta):
 
 
 class ContainerizedPea(Pea):
+    """A Pea that wraps another "dockerized" Pea
+
+    It requires a non-empty valid ``args.image``.
+    """
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
@@ -318,6 +326,7 @@ class ContainerizedPea(Pea):
                                                               self.args.port_out]})
 
     def event_loop_start(self):
+        """Direct the log from the container to local console """
         for line in self._container.logs(stream=True):
             if self.is_event_loop.is_set():
                 self.logger.info(line.strip().decode())
@@ -325,4 +334,5 @@ class ContainerizedPea(Pea):
                 raise EventLoopEnd
 
     def event_loop_stop(self):
+        """Stop the container """
         self._container.stop()

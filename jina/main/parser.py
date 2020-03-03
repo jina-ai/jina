@@ -135,7 +135,7 @@ def set_pea_parser(parser=None):
     gp3.add_argument('--separated_workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
                           'only effective when `num_parallel` > 1')
-    gp3.add_argument('--replica_id', type=int, default=0,
+    gp3.add_argument('--replica_id', type=int, default=-1,
                      help='the id of the storage of this replica, only effective when `separated_workspace=True`')
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
