@@ -24,6 +24,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
 
 container_name = 'jina/mwu-encoder'
 client = docker.from_env()
+print(getpath('mwu-encoder/'))
 client.images.build(path=getpath('mwu-encoder/'), tag=container_name)
 client.close()
 
