@@ -17,6 +17,10 @@ from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'Pea', 'ContainerizedPea']
 
+# temporary fix for python 3.8 on macos where the default start is set to "spawn"
+# https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+_mp = multiprocessing.get_context('fork')
+
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
@@ -38,7 +42,7 @@ class PeaMeta(type):
         # switch to the new backend
         _cls = {
             'thread': threading.Thread,
-            'process': multiprocessing.Process
+            'process': _mp.Process
         }[args[0].parallel_runtime]
 
         # rebuild the class according to mro
@@ -54,8 +58,8 @@ class PeaMeta(type):
 def _get_event(obj):
     if isinstance(obj, threading.Thread):
         return threading.Event()
-    elif isinstance(obj, multiprocessing.Process):
-        return multiprocessing.Event()
+    elif isinstance(obj, _mp.Process):
+        return _mp.Event()
     else:
         raise NotImplementedError
 
@@ -237,8 +241,8 @@ class Pea(metaclass=PeaMeta):
         try:
             self.post_init()
             self.is_event_loop.set()
-            self.logger.critical('ready and listening')
             self.is_ready.set()
+            self.logger.critical('ready and listening')
             self.event_loop_start()
         except EventLoopEnd:
             self.logger.info('break from the event loop')
@@ -259,8 +263,8 @@ class Pea(metaclass=PeaMeta):
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
             self.is_ready.set()
-            self.is_event_loop.clear()
             self.event_loop_stop()
+            self.is_event_loop.clear()
 
         self.logger.critical('terminated')
 
@@ -313,9 +317,12 @@ class ContainerizedPea(Pea):
         non_defaults = {}
         from ..main.parser import set_pea_parser
         _defaults = vars(set_pea_parser().parse_args([]))
+        taboo = {'image'}  # the image arg should be ignored otherwise it keeps using ContainerizedPea in the container
         for k, v in vars(self.args).items():
-            if _defaults[k] != v:
+            if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
+        # non_defaults['host_in'] = '127.0.0.1'
+        # non_defaults['host_out'] = '127.0.0.1'
 
         _args = kwargs2list(non_defaults)
         self._container = self._client.containers.run(self.args.image, _args,
@@ -323,16 +330,24 @@ class ContainerizedPea(Pea):
                                                       ports={'%d/tcp' % v: v for v in
                                                              [self.args.port_ctrl,
                                                               self.args.port_in,
-                                                              self.args.port_out]})
+                                                              self.args.port_out]},
+                                                      # network_mode='host',
+                                                      # publish_all_ports=True
+                                                      )
+        # wait until the container is ready
+        self.logger.debug(self.status)
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
+        logger = get_logger('↳', **vars(self.args), fmt_str='↳ %(message)s')
+
         for line in self._container.logs(stream=True):
             if self.is_event_loop.is_set():
-                self.logger.info(line.strip().decode())
+                logger.info(line.strip().decode())
             else:
                 raise EventLoopEnd
 
     def event_loop_stop(self):
         """Stop the container """
         self._container.stop()
+        self._client.close()

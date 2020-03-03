@@ -7,7 +7,6 @@ def add_arg_group(parser, title):
     return parser.add_argument_group(' '.join(v[0].upper() + v[1:] for v in title.split(' ')))
 
 
-
 def set_base_parser():
     from .. import __version__, __proto_version__
     from google.protobuf.internal import api_implementation
@@ -134,7 +133,7 @@ def set_pea_parser(parser=None):
                           'dump_interval will be ignored')
     gp3.add_argument('--separated_workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
-                          'only effective when `num_parallel` > 1')
+                          'only effective when Pod\'s `num_parallel` > 1')
     gp3.add_argument('--replica_id', type=int, default=-1,
                      help='the id of the storage of this replica, only effective when `separated_workspace=True`')
 
@@ -195,10 +194,11 @@ def _set_grpc_parser(parser=None):
     if not parser:
         parser = set_base_parser()
     from ..helper import random_port
+    from .. import __default_host__
     gp1 = add_arg_group(parser, 'grpc-specific arguments')
     gp1.add_argument('--grpc_host',
                      type=str,
-                     default='0.0.0.0',
+                     default=__default_host__,
                      help='host address of the grpc service')
     gp1.add_argument('--grpc_port',
                      type=int,

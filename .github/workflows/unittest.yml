@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
         python-version: [3.7, 3.8]
 
     steps:
@@ -41,6 +41,8 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        # make sure docker exist
+        docker ps
         cd tests && python -m unittest *.py -v
       #      run: |
       #        pip install pytest

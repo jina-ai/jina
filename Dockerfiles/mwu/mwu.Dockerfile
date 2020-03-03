@@ -1,5 +1,3 @@
-FROM jinaai/jina:latest-debian
-
-ENV PWD=./
+FROM jinaai/jina:master-debian
 
 ENTRYPOINT ["jina", "pod", "--yaml_path", "route"]

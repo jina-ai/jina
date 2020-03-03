@@ -26,5 +26,5 @@ class EncodeDriver(BaseExecutableDriver):
                     c.embedding.CopyFrom(array2blob(emb))
             except Exception as ex:
                 self.logger.error(ex, exc_info=True)
-                self.logger.warning('encoder service throws an exception, '
+                self.logger.warning('encoder driver throws an exception, '
                                     'the sequel pipeline may not work properly')
