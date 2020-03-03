@@ -55,6 +55,37 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(a.name, 'clear')
         self.assertEqual(len(a._drivers), 4)
 
+    def test_multiple_executor(self):
+        from jina.executors.encoders import BaseEncoder
+        from jina.executors.indexers import BaseIndexer
+        from jina.executors.rankers import BaseRanker
+        from jina.executors.transformers import BaseDocTransformer
+        from jina.executors.transformers import BaseChunkTransformer
+
+        class D1(BaseEncoder):
+            pass
+        d1 = D1()
+        self.assertEqual(len(d1._drivers), 4)
+
+        class D2(BaseIndexer):
+            pass
+        d2 = D2('dummy.bin')
+        self.assertEqual(len(d2._drivers), 1)
+
+        class D3(BaseRanker):
+            pass
+        d3 = D3()
+        self.assertEqual(len(d3._drivers), 2)
+
+        class D4(BaseDocTransformer):
+            pass
+        d4 = D4()
+        self.assertEqual(len(d4._drivers), 4)
+
+        class D5(BaseChunkTransformer):
+            pass
+        d5 = D5()
+        self.assertEqual(len(d5._drivers), 4)
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,7 +3,7 @@ on:
     - !ControlReqDriver {}
   SearchRequest:
     - !ChunkPruneDriver {}  # embedding info on chunk is used and no need anymore
-    - !Chunk2DocScoreDriver {}
+    - !Chunk2DocScoreDriver
       with:
         method: score
     - !DocPruneDriver {}  # no need on chunk-level info anymore
