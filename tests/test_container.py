@@ -20,18 +20,18 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
         yield d
 
 
+import docker
+
+container_name = 'jina/mwu-encoder'
+client = docker.from_env()
+client.images.build(path='mwu-encoder/', tag=container_name)
+client.close()
+
+
 class MyTestCase(JinaTestCase):
 
-    def setUp(self) -> None:
-        super().setUp()
-        import docker
-        self.container_name = 'jina/mwu-encoder'
-        client = docker.from_env()
-        client.images.build(path='mwu-encoder/', tag=self.container_name)
-        client.close()
-
     def test_simple_container(self):
-        args = set_pea_parser().parse_args(['--image', self.container_name])
+        args = set_pea_parser().parse_args(['--image', container_name])
         print(args)
 
         with ContainerizedPea(args) as cp:
