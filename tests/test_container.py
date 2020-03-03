@@ -47,9 +47,9 @@ class MyTestCase(JinaTestCase):
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
 
-    # def test_flow_with_container(self):
-    #     f = (Flow()
-    #          .add(name='dummyEncoder', image=container_name))
-    #
-    #     with f.build() as fl:
-    #         fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+    def test_flow_with_container(self):
+        f = (Flow()
+             .add(name='dummyEncoder', image=container_name))
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
