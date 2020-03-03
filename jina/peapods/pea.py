@@ -17,6 +17,10 @@ from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'Pea', 'ContainerizedPea']
 
+# temporary fix for python 3.8 on macos where the default start is set to "spawn"
+# https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+_mp = multiprocessing.get_context('fork')
+
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
@@ -38,7 +42,7 @@ class PeaMeta(type):
         # switch to the new backend
         _cls = {
             'thread': threading.Thread,
-            'process': multiprocessing.Process
+            'process': _mp.Process
         }[args[0].parallel_runtime]
 
         # rebuild the class according to mro
@@ -54,8 +58,8 @@ class PeaMeta(type):
 def _get_event(obj):
     if isinstance(obj, threading.Thread):
         return threading.Event()
-    elif isinstance(obj, multiprocessing.Process):
-        return multiprocessing.Event()
+    elif isinstance(obj, _mp.Process):
+        return _mp.Event()
     else:
         raise NotImplementedError
 
