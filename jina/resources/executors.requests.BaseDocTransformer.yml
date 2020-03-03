@@ -2,6 +2,6 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   [SearchRequest, TrainRequest, IndexRequest]:
-  - !DocTransformDriver {}
-    with:
-      method: transform
+    - !DocTransformDriver {}
+      with:
+        method: transform

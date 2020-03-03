@@ -6,5 +6,5 @@ requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
       - !MergeDriver {}
-      ControlRequest:
-        - !ControlReqDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}
