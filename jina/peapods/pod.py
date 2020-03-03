@@ -163,10 +163,7 @@ class Pod:
         # start real peas and accumulate the storage id
         for idx, s in enumerate(self.peas_args['peas']):
             s.replica_id = idx
-            if s.image:
-                p = ContainerizedPea(s)
-            else:
-                p = Pea(s)
+            p = ContainerizedPea(s) if s.image else Pea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
         return self
