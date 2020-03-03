@@ -6,7 +6,7 @@ from jina.flow import Flow
 from jina.main.parser import set_pea_parser
 from jina.peapods.pea import ContainerizedPea
 from jina.proto import jina_pb2
-from tests import JinaTestCase, getpath
+from tests import JinaTestCase
 
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
@@ -24,8 +24,10 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
 
 container_name = 'jina/mwu-encoder'
 client = docker.from_env()
-print(getpath('mwu-encoder/'))
-client.images.build(path=getpath('mwu-encoder/'), tag=container_name)
+import os
+
+print(os.path.dirname(__file__))
+client.images.build(path='mwu-encoder/', tag=container_name)
 client.close()
 
 
