@@ -1,12 +1,11 @@
 import unittest
 
-from pkg_resources import resource_filename
-
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import MetaDocSearchDriver
 from jina.executors import BaseExecutor
 from jina.helper import yaml
+from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
@@ -64,28 +63,34 @@ class MyTestCase(JinaTestCase):
 
         class D1(BaseEncoder):
             pass
+
         d1 = D1()
         self.assertEqual(len(d1._drivers), 4)
 
         class D2(BaseIndexer):
             pass
+
         d2 = D2('dummy.bin')
         self.assertEqual(len(d2._drivers), 1)
 
         class D3(BaseRanker):
             pass
+
         d3 = D3()
         self.assertEqual(len(d3._drivers), 2)
 
         class D4(BaseDocTransformer):
             pass
+
         d4 = D4()
         self.assertEqual(len(d4._drivers), 4)
 
         class D5(BaseChunkTransformer):
             pass
+
         d5 = D5()
         self.assertEqual(len(d5._drivers), 4)
+
 
 if __name__ == '__main__':
     unittest.main()
