@@ -194,10 +194,11 @@ def _set_grpc_parser(parser=None):
     if not parser:
         parser = set_base_parser()
     from ..helper import random_port
+    from .. import __default_host__
     gp1 = add_arg_group(parser, 'grpc-specific arguments')
     gp1.add_argument('--grpc_host',
                      type=str,
-                     default='0.0.0.0',
+                     default=__default_host__,
                      help='host address of the grpc service')
     gp1.add_argument('--grpc_port',
                      type=int,

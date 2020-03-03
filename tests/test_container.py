@@ -1,7 +1,5 @@
 import time
 
-import numpy as np
-from jina.drivers.helper import array2blob
 from jina.flow import Flow
 from jina.main.parser import set_pea_parser
 from jina.peapods.pea import ContainerizedPea
@@ -15,7 +13,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
             c = d.chunks.add()
-            c.embedding.CopyFrom(array2blob(np.random.random([embed_dim])))
+            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
             c.chunk_id = c_id
             c.doc_id = j
             c_id += 1
@@ -30,6 +28,7 @@ class MyTestCase(JinaTestCase):
         self.container_name = 'jina/mwu-encoder'
         client = docker.from_env()
         client.images.build(path='mwu-encoder/', tag=self.container_name)
+        client.close()
 
     def test_simple_container(self):
         args = set_pea_parser().parse_args(['--image', self.container_name])
@@ -38,9 +37,16 @@ class MyTestCase(JinaTestCase):
         with ContainerizedPea(args) as cp:
             time.sleep(5)
 
-    def test_flow_container(self):
+    def test_flow_no_container(self):
         f = (Flow()
-             .add(name='dummyEncoder', image=self.container_name))
+             .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
 
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True)
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+
+    # def test_flow_with_container(self):
+    #     f = (Flow()
+    #          .add(name='dummyEncoder', image=self.container_name))
+    #
+    #     with f.build() as fl:
+    #         fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)

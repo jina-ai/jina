@@ -328,7 +328,10 @@ class ContainerizedPea(Pea):
                                                       ports={'%d/tcp' % v: v for v in
                                                              [self.args.port_ctrl,
                                                               self.args.port_in,
-                                                              self.args.port_out]})
+                                                              self.args.port_out]},
+                                                      # network_mode='host',
+                                                      # publish_all_ports=True
+                                                      )
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
@@ -341,3 +344,4 @@ class ContainerizedPea(Pea):
     def event_loop_stop(self):
         """Stop the container """
         self._container.stop()
+        self._client.close()
