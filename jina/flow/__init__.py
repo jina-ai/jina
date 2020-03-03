@@ -11,7 +11,7 @@ import ruamel.yaml
 from .. import __default_host__
 from ..enums import FlowBuildLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
-from ..helper import yaml, expand_env_var
+from ..helper import yaml, expand_env_var, kwargs2list
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..main.parser import set_pod_parser, set_frontend_parser
@@ -152,23 +152,7 @@ class Flow:
     @staticmethod
     def _get_parsed_args(op_flow, name, kwargs, parser=set_pod_parser):
         kwargs.update(op_flow._common_kwargs)
-        args = []
-        for k, v in kwargs.items():
-            if isinstance(v, bool):
-                if v:
-                    if not k.startswith('no_') and not k.startswith('no-'):
-                        args.append('--%s' % k)
-                    else:
-                        args.append('--%s' % k[3:])
-                else:
-                    if k.startswith('no_') or k.startswith('no-'):
-                        args.append('--%s' % k)
-                    else:
-                        args.append('--no_%s' % k)
-            elif isinstance(v, list):  # for nargs
-                args.extend(['--%s' % k, *(str(vv) for vv in v)])
-            else:
-                args.extend(['--%s' % k, str(v)])
+        args = kwargs2list(kwargs)
         try:
             p_args, unknown_args = parser().parse_known_args(args)
             if unknown_args:

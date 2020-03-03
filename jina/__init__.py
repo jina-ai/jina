@@ -133,3 +133,8 @@ def import_classes(namespace: str, targets=None,
 
 import_classes('jina.executors', show_import_table=False, import_once=True)
 import_classes('jina.drivers', show_import_table=False, import_once=True)
+
+# manually install the default signal handler
+import signal
+
+signal.signal(signal.SIGINT, signal.default_int_handler)

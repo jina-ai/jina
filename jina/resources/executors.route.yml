@@ -1,4 +1,4 @@
-!BaseEncoder
+!BaseExecutor
 with: {}
 metas:
   name: route
@@ -6,3 +6,5 @@ requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
       - !ForwardDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}

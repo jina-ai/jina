@@ -1,4 +1,4 @@
-!BaseEncoder
+!BaseExecutor
 with: {}
 metas:
   name: clear
@@ -6,3 +6,5 @@ requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
       - !ReqPruneDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}

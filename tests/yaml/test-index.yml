@@ -13,3 +13,5 @@ requests:
       - !ChunkIndexDriver
         with:
           method: add
+    ControlRequest:
+      - !ControlReqDriver {}

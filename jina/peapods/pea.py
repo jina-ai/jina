@@ -10,11 +10,12 @@ from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWate
     EventLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
+from ..helper import kwargs2list
 from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
-__all__ = ['PeaMeta', 'Pea']
+__all__ = ['PeaMeta', 'Pea', 'ContainerizedPea']
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -50,20 +51,21 @@ class PeaMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
+def _get_event(obj):
+    if isinstance(obj, threading.Thread):
+        return threading.Event()
+    elif isinstance(obj, multiprocessing.Process):
+        return multiprocessing.Event()
+    else:
+        raise NotImplementedError
+
+
 class Pea(metaclass=PeaMeta):
     """Pea is an unary service unit which provides network interface and
     communicates with others via protobuf and ZeroMQ
     """
 
-    def _get_event(self):
-        if isinstance(self, threading.Thread):
-            return threading.Event()
-        elif isinstance(self, multiprocessing.Process):
-            return multiprocessing.Event()
-        else:
-            raise NotImplementedError
-
-    def __init__(self, args: 'argparse.Namespace', replica_id: int = None):
+    def __init__(self, args: 'argparse.Namespace'):
         """ Create a new :class:`Pea` object
 
         :param args: the arguments received from the CLI
@@ -72,13 +74,14 @@ class Pea(metaclass=PeaMeta):
         super().__init__()
         self.args = args
         self.name = args.name or self.__class__.__name__
+        if args.replica_id >= 0:
+            self.name = '%s-%d' % (self.name, args.replica_id)
         self.logger = get_logger(self.name, **vars(args))
-        self.is_ready = self._get_event()
-        self.is_event_loop = self._get_event()
+        self.is_ready = _get_event(self)
+        self.is_event_loop = _get_event(self)
 
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.last_dump_time = time.perf_counter()
-        self.replica_id = replica_id
 
         self._timer = TimeDict()
 
@@ -155,7 +158,7 @@ class Pea(metaclass=PeaMeta):
         if self.args.yaml_path:
             try:
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
-                                                         self.args.separated_workspace, self.replica_id)
+                                                         self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)
@@ -199,10 +202,9 @@ class Pea(metaclass=PeaMeta):
         msg.envelope.routes[-1].end_time.GetCurrentTime()
         return self
 
-    def run(self):
-        """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
+    def event_loop_start(self):
+        """Start the event loop """
         with Zmqlet(self.args, logger=self.logger) as zmqlet:
-
             def _callback(msg):
                 try:
                     self.pre_hook(msg).handle(msg).post_hook(msg)
@@ -213,46 +215,52 @@ class Pea(metaclass=PeaMeta):
                     zmqlet.send_message(msg)
                     raise EventLoopEnd
 
-            try:
-                self.post_init()
-                self.is_event_loop.set()
-                self.logger.critical('ready and listening')
-                self.is_ready.set()
+            while self.is_event_loop.is_set():
+                msg = zmqlet.recv_message(callback=_callback)
+                if msg is not None:
+                    zmqlet.send_message(msg)
+                else:
+                    continue
 
-                while self.is_event_loop.is_set():
-                    msg = zmqlet.recv_message(callback=_callback)
-                    if msg is not None:
-                        zmqlet.send_message(msg)
-                    else:
-                        continue
+                self.save_executor(self.args.dump_interval)
+                self.check_memory_watermark()
 
-                    self.save_executor(self.args.dump_interval)
-                    self.check_memory_watermark()
-            except EventLoopEnd:
-                self.logger.info('break from the event loop')
-            except ExecutorFailToLoad:
-                self.logger.error('component can not be correctly loaded, terminated')
-            except MemoryOverHighWatermark:
-                self.logger.error(
-                    'memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
-            except UnknownControlCommand as ex:
-                self.logger.error(ex, exc_info=True)
-            except DriverNotInstalled:
-                self.logger.error('no driver is installed to this service, this service will do nothing')
-            except NoDriverForRequest:
-                self.logger.error('no matched handler for the request, this service is badly configured')
-            except KeyboardInterrupt:
-                self.logger.warning('user cancel the process')
-            except Exception as ex:
-                self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
-            finally:
-                self.is_ready.set()
-                self.is_event_loop.clear()
+    def event_loop_stop(self):
+        """Stop the event loop """
+        if hasattr(self, 'executor'):
+            if not self.args.exit_no_dump:
+                self.save_executor(dump_interval=0)
+            self.executor.close()
 
-                if not self.args.exit_no_dump:
-                    self.save_executor(dump_interval=0)
-                if hasattr(self, 'executor'):
-                    self.executor.close()
+    def run(self):
+        """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
+        try:
+            self.post_init()
+            self.is_event_loop.set()
+            self.logger.critical('ready and listening')
+            self.is_ready.set()
+            self.event_loop_start()
+        except EventLoopEnd:
+            self.logger.info('break from the event loop')
+        except ExecutorFailToLoad:
+            self.logger.error('component can not be correctly loaded, terminated')
+        except MemoryOverHighWatermark:
+            self.logger.error(
+                'memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
+        except UnknownControlCommand as ex:
+            self.logger.error(ex, exc_info=True)
+        except DriverNotInstalled:
+            self.logger.error('no driver is installed to this service, this service will do nothing')
+        except NoDriverForRequest:
+            self.logger.error('no matched handler for the request, this service is badly configured')
+        except KeyboardInterrupt:
+            self.logger.warning('user cancel the process')
+        except Exception as ex:
+            self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
+        finally:
+            self.is_ready.set()
+            self.is_event_loop.clear()
+            self.event_loop_stop()
 
         self.logger.critical('terminated')
 
@@ -287,3 +295,44 @@ class Pea(metaclass=PeaMeta):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+
+class ContainerizedPea(Pea):
+    """A Pea that wraps another "dockerized" Pea
+
+    It requires a non-empty valid ``args.image``.
+    """
+
+    def __init__(self, args: 'argparse.Namespace'):
+        super().__init__(args)
+        import docker
+        self._container = None
+        self._client = docker.from_env()
+
+    def post_init(self):
+        non_defaults = {}
+        from ..main.parser import set_pea_parser
+        _defaults = vars(set_pea_parser().parse_args([]))
+        for k, v in vars(self.args).items():
+            if _defaults[k] != v:
+                non_defaults[k] = v
+
+        _args = kwargs2list(non_defaults)
+        self._container = self._client.containers.run(self.args.image, _args,
+                                                      detach=True, auto_remove=True,
+                                                      ports={'%d/tcp' % v: v for v in
+                                                             [self.args.port_ctrl,
+                                                              self.args.port_in,
+                                                              self.args.port_out]})
+
+    def event_loop_start(self):
+        """Direct the log from the container to local console """
+        for line in self._container.logs(stream=True):
+            if self.is_event_loop.is_set():
+                self.logger.info(line.strip().decode())
+            else:
+                raise EventLoopEnd
+
+    def event_loop_stop(self):
+        """Stop the container """
+        self._container.stop()
