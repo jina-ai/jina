@@ -317,8 +317,9 @@ class ContainerizedPea(Pea):
         non_defaults = {}
         from ..main.parser import set_pea_parser
         _defaults = vars(set_pea_parser().parse_args([]))
+        taboo = {'image'}  # the image arg should be ignored otherwise it keeps using ContainerizedPea in the container
         for k, v in vars(self.args).items():
-            if _defaults[k] != v:
+            if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
 
         _args = kwargs2list(non_defaults)
