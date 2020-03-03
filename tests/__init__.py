@@ -18,3 +18,10 @@ class JinaTestCase(unittest.TestCase):
 
     def add_tmpfile(self, *path):
         self.tmp_files.extend(path)
+
+
+dirname = os.path.dirname(__file__)
+
+
+def getpath(p):
+    return os.path.join(dirname, p)
