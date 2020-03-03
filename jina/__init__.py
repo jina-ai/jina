@@ -22,7 +22,7 @@ __jina_env__ = ('JINA_PROFILING',
 
 from types import SimpleNamespace
 
-__default_host__ = '127.0.0.1'
+__default_host__ = '0.0.0.0'
 
 JINA_GLOBAL = SimpleNamespace()
 JINA_GLOBAL.imported = SimpleNamespace()

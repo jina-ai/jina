@@ -321,6 +321,8 @@ class ContainerizedPea(Pea):
         for k, v in vars(self.args).items():
             if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
+        # non_defaults['host_in'] = '127.0.0.1'
+        # non_defaults['host_out'] = '127.0.0.1'
 
         _args = kwargs2list(non_defaults)
         self._container = self._client.containers.run(self.args.image, _args,

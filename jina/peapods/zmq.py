@@ -13,6 +13,7 @@ from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
 from ..helper import colored
+from ..logging import default_logger
 from ..logging.base import get_logger
 from ..proto import jina_pb2
 
@@ -99,17 +100,17 @@ class Zmqlet:
             ctrl_sock, ctrl_addr = _init_socket(ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND)
         self.logger.debug('control over %s' % (colored(ctrl_addr, 'yellow')))
 
-        in_sock, _ = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                  self.args.identity)
+        in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
+                                        self.args.identity)
         self.logger.debug('input %s:%s' % (self.args.host_in, colored(self.args.port_in, 'yellow')))
-        out_sock, _ = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                   self.args.identity)
+        out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
+                                          self.args.identity)
         self.logger.debug('output %s:%s' % (self.args.host_out, colored(self.args.port_out, 'yellow')))
         self.logger.info(
-            'input %s:%s\t output %s:%s\t control over %s' % (
-                self.args.host_in, colored(self.args.port_in, 'yellow'),
-                self.args.host_out, colored(self.args.port_out, 'yellow'),
-                colored(ctrl_addr, 'yellow')))
+            'input %s \t output %s\t control over %s' %
+            (colored(in_addr, 'yellow'),
+             colored(out_addr, 'yellow'),
+             colored(ctrl_addr, 'yellow')))
         return ctx, in_sock, out_sock, ctrl_sock
 
     def _get_zmq_ctx(self):
@@ -427,7 +428,11 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
             if port is None:
                 sock.bind_to_random_port('tcp://%s' % host)
             else:
-                sock.bind('tcp://%s:%d' % (host, port))
+                try:
+                    sock.bind('tcp://%s:%d' % (host, port))
+                except zmq.error.ZMQError as ex:
+                    default_logger.error('error when binding port %d to %s' % (port, host))
+                    raise ex
     else:
         if port is None:
             sock.connect(host)
