@@ -99,6 +99,8 @@ def set_pea_parser(parser=None):
                      help='the yaml config of the executor, it should be a readable stream,'
                           ' or a valid file path, or a supported class name.')  # pod(no use) -> pea
     gp0.add_argument('--image', type=str, help='the name of the docker image that this pea runs with')
+    gp0.add_argument('--pull_latest', action='store_true', default=False,
+                     help='pull the latest image before running')
 
     gp2 = add_arg_group(parser, 'pea network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),
@@ -106,9 +108,9 @@ def set_pea_parser(parser=None):
     gp2.add_argument('--port_out', type=int, default=random_port(),
                      help='port for output data, default a random port between [49152, 65536]')
     gp2.add_argument('--host_in', type=str, default=__default_host__,
-                     help='host address for input')
+                     help='host address for input, by default it is localhost')
     gp2.add_argument('--host_out', type=str, default=__default_host__,
-                     help='host address for output')
+                     help='host address for output, by default it is localhost')
     gp2.add_argument('--socket_in', type=SocketType.from_string, choices=list(SocketType),
                      default=SocketType.PULL_BIND,
                      help='socket type for input port')
@@ -171,6 +173,7 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--parallel_type', type=ParallelType.from_string, choices=list(ParallelType),
                      default=ParallelType.PUSH_NONBLOCK,
                      help='parallel type of the concurrent peas')
+    gp4.add_argument('--hostname', type=str, help='hostname for this pod')
 
     return parser
 
@@ -199,7 +202,7 @@ def _set_grpc_parser(parser=None):
     gp1.add_argument('--grpc_host',
                      type=str,
                      default=__default_host__,
-                     help='host address of the grpc service')
+                     help='host address of the grpc service, by default it is localhost')
     gp1.add_argument('--grpc_port',
                      type=int,
                      default=random_port(),

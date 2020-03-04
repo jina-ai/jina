@@ -21,8 +21,9 @@ __jina_env__ = ('JINA_PROFILING',
                 'JINA_ARRAY_QUANT')
 
 from types import SimpleNamespace
+import os
 
-__default_host__ = '0.0.0.0'
+__default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 
 JINA_GLOBAL = SimpleNamespace()
 JINA_GLOBAL.imported = SimpleNamespace()

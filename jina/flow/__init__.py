@@ -54,7 +54,7 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 class Flow:
     def __init__(self, sse_logger: bool = False, runtime: str = 'process',
-                 image_name: str = 'jina:latest-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
+                 image_name: str = 'jina:master-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
                  **kwargs):
         """Initialize a flow object
 
@@ -300,7 +300,7 @@ class Flow:
                 s_pod.tail_args.socket_out = SocketType.PUB_BIND
                 s_pod.tail_args.host_out = __default_host__
                 e_pod.head_args.socket_in = SocketType.SUB_CONNECT
-                e_pod.head_args.host_in = s_name
+                e_pod.head_args.host_in = s_name  # the hostname of s_pod
                 e_pod.head_args.port_in = s_pod.tail_args.port_out
             elif len(edges_with_same_end) > 1 and len(edges_with_same_start) == 1:
                 Pod.connect(s_pod, e_pod, bind_on_first=False)
@@ -370,6 +370,8 @@ class Flow:
         elif runtime in {'thread', 'process'}:
             for p in op_flow._pod_nodes.values():
                 p.set_parallel_runtime(runtime)
+                if not p._args.image:
+                    p.force_local()
             op_flow._build_level = FlowBuildLevel.RUNTIME
         else:
             raise NotImplementedError('runtime=%s is not supported yet' % runtime)

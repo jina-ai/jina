@@ -24,7 +24,7 @@ jobs:
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
           buildargs: BUILD_DATE, VCS_REF
-          tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
+          tags: "master-${{ matrix.linux }}, dev-${{ matrix.linux }}"
       - name: Publish to Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           dockerfile: Dockerfiles/${{ matrix.linux }}.Dockerfile
           buildargs: BUILD_DATE, VCS_REF
-          tags: "latest-${{ matrix.linux }}, master-${{ matrix.linux }}"
+          tags: "master-${{ matrix.linux }}, dev-${{ matrix.linux }}"
 #      - name: Publish to Tencent Cloud Registry
 #        uses: elgohr/Publish-Docker-Github-Action@master
 #        with:

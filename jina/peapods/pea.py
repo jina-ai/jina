@@ -5,6 +5,7 @@ from collections import defaultdict
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
+from .. import __default_host__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
@@ -321,20 +322,25 @@ class ContainerizedPea(Pea):
         for k, v in vars(self.args).items():
             if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
-        # non_defaults['host_in'] = '127.0.0.1'
-        # non_defaults['host_out'] = '127.0.0.1'
+        # non_defaults['host_in'] = __default_host__
+        # non_defaults['host_out'] = __default_host__
+        # network = self._client.networks.create('mynetwork')
 
         _args = kwargs2list(non_defaults)
+        if self.args.pull_latest:
+            self._client.images.pull(self.args.image)
         self._container = self._client.containers.run(self.args.image, _args,
                                                       detach=True, auto_remove=True,
-                                                      ports={'%d/tcp' % v: v for v in
+                                                      ports={'%d/tcp' % v: (__default_host__, v) for v in
                                                              [self.args.port_ctrl,
                                                               self.args.port_in,
                                                               self.args.port_out]},
-                                                      # network_mode='host',
+                                                      name=self.name,
+                                                      # network='mynetwork',
                                                       # publish_all_ports=True
                                                       )
         # wait until the container is ready
+        self.logger.info('waiting ready signal from the container')
         self.logger.debug(self.status)
 
     def event_loop_start(self):

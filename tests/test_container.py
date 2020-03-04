@@ -1,5 +1,8 @@
+import os
 import time
+import unittest
 
+os.environ['JINA_DEFAULT_HOST'] = '127.0.0.1'
 import docker
 
 from jina.flow import Flow
@@ -24,7 +27,6 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
 
 container_name = 'jina/mwu-encoder'
 client = docker.from_env()
-import os
 
 print(os.path.dirname(__file__))
 client.images.build(path='mwu-encoder/', tag=container_name)
@@ -47,6 +49,7 @@ class MyTestCase(JinaTestCase):
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
 
+    @unittest.skip
     def test_flow_with_container(self):
         f = (Flow()
              .add(name='dummyEncoder', image=container_name))

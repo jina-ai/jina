@@ -81,6 +81,12 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
 .. confval:: JINA_VERBOSITY
 
-    The log verbosity of the jina logger. Possible values are ``DEBUG``, ``WARNING``, ``INFO``, ``ERROR``, ``CRITICAL``.
+    The log verbosity of the Jina logger. Possible values are ``DEBUG``, ``WARNING``, ``INFO``, ``ERROR``, ``CRITICAL``.
 
     :default: ``INFO``
+
+.. confval:: JINA_DEFAULT_HOST
+
+    The default host address of Jina.
+
+    :default: `0.0.0.0`

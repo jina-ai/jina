@@ -144,6 +144,12 @@ class Pod:
         for s in self.all_args:
             s.parallel_runtime = runtime
             # for thread and process backend which runs locally, host_in and host_out should not be set
+            # s.host_in = __default_host__
+            # s.host_out = __default_host__
+
+    def force_local(self):
+        """Forcing all peas to run on ``__default_host__``"""
+        for s in self.all_args:
             s.host_in = __default_host__
             s.host_out = __default_host__
 
