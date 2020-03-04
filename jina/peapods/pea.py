@@ -207,6 +207,12 @@ class Pea(metaclass=PeaMeta):
         msg.envelope.routes[-1].end_time.GetCurrentTime()
         return self
 
+    def set_ready(self):
+        """Set the status of the pea to ready """
+        self.is_ready.set()
+        self.is_event_loop.set()
+        self.logger.critical('ready and listening')
+
     def event_loop_start(self):
         """Start the event loop """
         with Zmqlet(self.args, logger=self.logger) as zmqlet:
@@ -219,6 +225,8 @@ class Pea(metaclass=PeaMeta):
                 except EventLoopEnd:
                     zmqlet.send_message(msg)
                     raise EventLoopEnd
+
+            self.set_ready()
 
             while self.is_event_loop.is_set():
                 msg = zmqlet.recv_message(callback=_callback)
@@ -241,9 +249,6 @@ class Pea(metaclass=PeaMeta):
         """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             self.post_init()
-            self.is_event_loop.set()
-            self.is_ready.set()
-            self.logger.critical('ready and listening')
             self.event_loop_start()
         except EventLoopEnd:
             self.logger.info('break from the event loop')
@@ -342,9 +347,11 @@ class ContainerizedPea(Pea):
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
         self.logger.debug(self.status)
+        self.set_ready()
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
+
         logger = get_logger('↳', **vars(self.args), fmt_str='↳ %(message)s')
 
         for line in self._container.logs(stream=True):

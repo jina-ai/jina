@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import tempfile
+import time
 import uuid
 from typing import List, Callable
 from typing import Tuple
@@ -107,16 +108,17 @@ class Zmqlet:
                                           self.args.identity)
         self.logger.debug('output %s:%s' % (self.args.host_out, colored(self.args.port_out, 'yellow')))
         self.logger.info(
-            'input %s \t output %s\t control over %s' %
-            (colored(in_addr, 'yellow'),
-             colored(out_addr, 'yellow'),
-             colored(ctrl_addr, 'yellow')))
+            'input %s (%s) \t output %s (%s)\t control over %s (%s)' %
+            (colored(in_addr, 'yellow'), self.args.socket_in,
+             colored(out_addr, 'yellow'), self.args.socket_out,
+             colored(ctrl_addr, 'yellow'), SocketType.PAIR_BIND))
         return ctx, in_sock, out_sock, ctrl_sock
 
     def _get_zmq_ctx(self):
         return zmq.Context()
 
     def __enter__(self):
+        time.sleep(1)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

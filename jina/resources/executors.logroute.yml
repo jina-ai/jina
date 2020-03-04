@@ -1,0 +1,10 @@
+!BaseExecutor
+with: {}
+metas:
+  name: route
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest]:
+      - !LogInfoDriver {}
+      ControlRequest:
+        - !ControlReqDriver {}

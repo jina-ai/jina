@@ -353,7 +353,7 @@ def valid_yaml_path(path: str, to_stream: bool = False):
             return open(path, encoding='utf8')
         else:
             return path
-    elif path.lower() in {'route', 'merge', 'clear'}:
+    elif path.lower() in {'route', 'merge', 'clear', 'logroute'}:
         from pkg_resources import resource_filename
         return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
     elif path.startswith('!'):

@@ -14,6 +14,8 @@ LABEL maintainer="dev-team@jina.ai" \
 RUN apt-get update && apt-get install --no-install-recommends -y python3-numpy python3-scipy && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
+
 WORKDIR /jina/
 
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
