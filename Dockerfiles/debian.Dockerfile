@@ -32,6 +32,6 @@ WORKDIR /
 ENV JINA_VCS_VERSION=$VCS_REF
 ENV JINA_BUILD_DATE=$BUILD_DATE
 
-COPY entrypoint.sh /usr/local/bin
+COPY jina-entrypoint.sh /usr/local/bin
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["jina-entrypoint.sh"]

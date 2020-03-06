@@ -9,7 +9,7 @@
 !README.md
 !MANIFEST.in
 !tests/**
-!entrypoint.sh
+!jina-entrypoint.sh
 
 # Ignore unnecessary files inside allowed directories
 # This should go after the allowed directories
