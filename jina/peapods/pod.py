@@ -6,7 +6,7 @@ from .frontend import FrontendPea
 from .pea import Pea, ContainerizedPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, random_identity, kwargs2list
+from ..helper import random_port, random_identity, kwargs2list, fill_in_host
 from ..main.parser import set_pod_parser
 
 if False:
@@ -63,12 +63,12 @@ class Pod:
             'peas': []
         }
 
-        if self._args.num_parallel > 1:
+        if self._args.replicas > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
-            peas_args['head'] = _copy_to_head_args(self._args, self._args.parallel_type.is_push)
+            peas_args['head'] = _copy_to_head_args(self._args, self._args.replica_type.is_push)
             peas_args['tail'] = _copy_to_tail_args(self._args,
-                                                   self._args.num_part if self._args.parallel_type.is_block else 1)
+                                                   self._args.num_part if self._args.replica_type.is_block else 1)
             peas_args['peas'] = _set_peas_args(self._args, peas_args['head'], peas_args['tail'])
             self.is_head_router = True
             self.is_tail_router = True
@@ -136,13 +136,13 @@ class Pod:
         """Get the number of running :class:`Pea`"""
         return len(self.peas)
 
-    def set_parallel_runtime(self, runtime: str):
+    def set_runtime(self, runtime: str):
         """Set the parallel runtime of this Pod.
 
         :param runtime: possible values: process, thread
         """
         for s in self.all_args:
-            s.parallel_runtime = runtime
+            s.runtime = runtime
             # for thread and process backend which runs locally, host_in and host_out should not be set
             # s.host_in = __default_host__
             # s.host_out = __default_host__
@@ -189,10 +189,10 @@ class Pod:
 
     def connect_to_last(self, pod: 'Pod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
-        if self._args.num_parallel > 1 and self.is_head_router:
+        if self._args.replicas > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
             # only reset its output
-            pod.tail_args = _copy_to_head_args(pod.tail_args, self._args.parallel_type.is_push, as_router=False)
+            pod.tail_args = _copy_to_head_args(pod.tail_args, self._args.replica_type.is_push, as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, pod.tail_args, self.tail_args)
             # remove the head node
@@ -205,11 +205,11 @@ class Pod:
 
     def connect_to_next(self, pod: 'Pod'):
         """Eliminate the tail node by connecting next_args node directly to peas """
-        if self._args.num_parallel > 1 and self.is_tail_router:
+        if self._args.replicas > 1 and self.is_tail_router:
             # keep the port_out and socket_out of next_arts
             # only reset its input
             pod.head_args = _copy_to_tail_args(pod.head_args,
-                                               self._args.num_part if self._args.parallel_type.is_block else 1,
+                                               self._args.num_part if self._args.replica_type.is_block else 1,
                                                as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, self.head_args, pod.head_args)
@@ -234,30 +234,34 @@ class Pod:
             second.head_args.socket_in = SocketType.PULL_CONNECT
 
             first.tail_args.host_out = __default_host__
-            second.head_args.host_in = first.name
+            second.head_args.host_in = fill_in_host(bind_args=first.tail_args,
+                                                    connect_args=second.head_args)
             second.head_args.port_in = first.tail_args.port_out
         else:
             first.tail_args.socket_out = SocketType.PUSH_CONNECT
             second.head_args.socket_in = SocketType.PULL_BIND
 
-            first.tail_args.host_out = second.name
+            first.tail_args.host_out = fill_in_host(connect_args=first.tail_args,
+                                                    bind_args=second.head_args)
             second.head_args.host_in = __default_host__
             first.tail_args.port_out = second.head_args.port_in
 
 
 def _set_peas_args(args, head_args, tail_args):
     result = []
-    for _ in range(args.num_parallel):
+    for _ in range(args.replicas):
         _args = copy.deepcopy(args)
         _args.port_in = head_args.port_out
         _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
         _args.identity = random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
-        if args.parallel_type.is_push:
+        if args.replica_type.is_push:
             _args.socket_in = SocketType.PULL_CONNECT
         else:
             _args.socket_in = SocketType.SUB_CONNECT
+        _args.host_in = fill_in_host(bind_args=head_args, connect_args=_args)
+        _args.host_out = fill_in_host(bind_args=tail_args, connect_args=_args)
         result.append(_args)
     return result
 

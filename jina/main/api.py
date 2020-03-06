@@ -27,11 +27,13 @@ def log(args):
 
 def check(args):
     """Check jina config, settings, imports, network etc"""
-    from .checker import ImportChecker, NetworkChecker
-    if args.check == 'import':
-        ImportChecker(args)
-    elif args.check == 'network':
-        NetworkChecker(args)
+    from .checker import ImportChecker
+    ImportChecker(args)
+
+
+def ping(args):
+    from .checker import NetworkChecker
+    NetworkChecker(args)
 
 
 def client(args):

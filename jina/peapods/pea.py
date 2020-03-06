@@ -1,17 +1,17 @@
 import multiprocessing
+import os
 import threading
 import time
 from collections import defaultdict
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
-from .. import __default_host__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
-from ..helper import kwargs2list
+from ..helper import kwargs2list, valid_yaml_path
 from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
@@ -44,7 +44,7 @@ class PeaMeta(type):
         _cls = {
             'thread': threading.Thread,
             'process': _mp.Process
-        }[args[0].parallel_runtime]
+        }[args[0].runtime]
 
         # rebuild the class according to mro
         for c in cls.mro()[-2::-1]:
@@ -165,6 +165,7 @@ class Pea(metaclass=PeaMeta):
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
+                # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:
                 raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)
         else:
@@ -207,6 +208,12 @@ class Pea(metaclass=PeaMeta):
         msg.envelope.routes[-1].end_time.GetCurrentTime()
         return self
 
+    def set_ready(self):
+        """Set the status of the pea to ready """
+        self.is_ready.set()
+        self.is_event_loop.set()
+        self.logger.critical('ready and listening')
+
     def event_loop_start(self):
         """Start the event loop """
         with Zmqlet(self.args, logger=self.logger) as zmqlet:
@@ -219,6 +226,8 @@ class Pea(metaclass=PeaMeta):
                 except EventLoopEnd:
                     zmqlet.send_message(msg)
                     raise EventLoopEnd
+
+            self.set_ready()
 
             while self.is_event_loop.is_set():
                 msg = zmqlet.recv_message(callback=_callback)
@@ -241,9 +250,6 @@ class Pea(metaclass=PeaMeta):
         """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             self.post_init()
-            self.is_event_loop.set()
-            self.is_ready.set()
-            self.logger.critical('ready and listening')
             self.event_loop_start()
         except EventLoopEnd:
             self.logger.info('break from the event loop')
@@ -313,6 +319,7 @@ class ContainerizedPea(Pea):
         import docker
         self._container = None
         self._client = docker.from_env()
+        self._yaml_mounted_path = '/config.yml'  #: the external yaml config will be mounted to this path
 
     def post_init(self):
         non_defaults = {}
@@ -326,25 +333,49 @@ class ContainerizedPea(Pea):
         # non_defaults['host_out'] = __default_host__
         # network = self._client.networks.create('mynetwork')
 
-        _args = kwargs2list(non_defaults)
         if self.args.pull_latest:
             self._client.images.pull(self.args.image)
+
+        _volumes = {}
+        if self.args.yaml_path:
+            if os.path.exists(self.args.yaml_path):
+                # external YAML config, need to be volumed into the container
+                non_defaults['yaml_path'] = '/' + os.path.basename(self.args.yaml_path)
+                _volumes = {os.path.abspath(self.args.yaml_path): {'bind': non_defaults['yaml_path'], 'mode': 'ro'}}
+            elif not valid_yaml_path(self.args.yaml_path):
+                raise FileNotFoundError('yaml_path %s is not like a path, please check it' % self.args.yaml_path)
+
+        _expose_port = [self.args.port_ctrl]
+        if self.args.socket_in.is_bind:
+            _expose_port.append(self.args.port_in)
+        if self.args.socket_out.is_bind:
+            _expose_port.append(self.args.port_out)
+
+        from sys import platform
+        if platform == "linux" or platform == "linux2":
+            net_mode = 'host'
+        else:
+            net_mode = None
+
+        _args = kwargs2list(non_defaults)
         self._container = self._client.containers.run(self.args.image, _args,
                                                       detach=True, auto_remove=True,
-                                                      ports={'%d/tcp' % v: (__default_host__, v) for v in
-                                                             [self.args.port_ctrl,
-                                                              self.args.port_in,
-                                                              self.args.port_out]},
+                                                      ports={'%d/tcp' % v: v for v in
+                                                             _expose_port},
                                                       name=self.name,
+                                                      volumes=_volumes,
+                                                      network_mode=net_mode
                                                       # network='mynetwork',
                                                       # publish_all_ports=True
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
         self.logger.debug(self.status)
+        self.set_ready()
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
+
         logger = get_logger('↳', **vars(self.args), fmt_str='↳ %(message)s')
 
         for line in self._container.logs(stream=True):
@@ -355,5 +386,7 @@ class ContainerizedPea(Pea):
 
     def event_loop_stop(self):
         """Stop the container """
-        self._container.stop()
-        self._client.close()
+        if getattr(self, '_container', None):
+            self._container.stop()
+        if getattr(self, '_client', None):
+            self._client.close()

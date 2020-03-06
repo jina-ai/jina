@@ -98,7 +98,10 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--yaml_path', type=str, default='BaseExecutor',
                      help='the yaml config of the executor, it should be a readable stream,'
                           ' or a valid file path, or a supported class name.')  # pod(no use) -> pea
-    gp0.add_argument('--image', type=str, help='the name of the docker image that this pea runs with')
+    gp0.add_argument('--image', type=str,
+                     help='the name of the docker image that this pea runs with. when this and '
+                          '--yaml_path are both given then the docker image '
+                          'is used but its original yaml configuration is replaced by the given yaml_path')
     gp0.add_argument('--pull_latest', action='store_true', default=False,
                      help='pull the latest image before running')
 
@@ -108,9 +111,11 @@ def set_pea_parser(parser=None):
     gp2.add_argument('--port_out', type=int, default=random_port(),
                      help='port for output data, default a random port between [49152, 65536]')
     gp2.add_argument('--host_in', type=str, default=__default_host__,
-                     help='host address for input, by default it is localhost')
+                     help='host address for input, by default it is %s' % __default_host__)
     gp2.add_argument('--host_out', type=str, default=__default_host__,
-                     help='host address for output, by default it is localhost')
+                     help='host address for output, by default it is %s' % __default_host__)
+    gp2.add_argument('--host', type=str, default=__default_host__,
+                     help='host address of this Pea, by default it is %s' % __default_host__)
     gp2.add_argument('--socket_in', type=SocketType.from_string, choices=list(SocketType),
                      default=SocketType.PULL_BIND,
                      help='socket type for input port')
@@ -135,7 +140,7 @@ def set_pea_parser(parser=None):
                           'dump_interval will be ignored')
     gp3.add_argument('--separated_workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
-                          'only effective when Pod\'s `num_parallel` > 1')
+                          'only effective when Pod\'s `replicas` > 1')
     gp3.add_argument('--replica_id', type=int, default=-1,
                      help='the id of the storage of this replica, only effective when `separated_workspace=True`')
 
@@ -153,28 +158,26 @@ def set_pea_parser(parser=None):
     gp6.add_argument('--memory_hwm', type=int, default=-1,
                      help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
                           '-1 means no restriction')
-    gp6.add_argument('--parallel_runtime', type=str, choices=['thread', 'process'], default='thread',
+    gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='thread',
                      help='the parallel runtime of the pod')
 
     return parser
 
 
 def set_pod_parser(parser=None):
-    from ..enums import ParallelType
+    from ..enums import ReplicaType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
 
-    gp4 = add_arg_group(parser, 'pod runtime arguments')
-    gp4.add_argument('--num_parallel', '--replicas', type=int, default=1,
+    gp4 = add_arg_group(parser, 'pod replica arguments')
+    gp4.add_argument('--replicas', type=int, default=1,
                      help='number of parallel peas in the pod running at the same time (i.e. replicas), '
                           '`port_in` and `port_out` will be set to random, '
                           'and routers will be added automatically when necessary')
-    gp4.add_argument('--parallel_type', type=ParallelType.from_string, choices=list(ParallelType),
-                     default=ParallelType.PUSH_NONBLOCK,
-                     help='parallel type of the concurrent peas')
-    gp4.add_argument('--hostname', type=str, help='hostname for this pod')
-
+    gp4.add_argument('--replica_type', type=ReplicaType.from_string, choices=list(ReplicaType),
+                     default=ReplicaType.PUSH_NONBLOCK,
+                     help='replica type of the concurrent peas')
     return parser
 
 
@@ -182,11 +185,9 @@ def set_healthcheck_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--host', type=str, default='127.0.0.1',
-                        help='host address of the checked service')
-    parser.add_argument('--port', type=int, required=True,
-                        help='control port of the checked service')
-    parser.add_argument('--timeout', type=int, default=1000,
+    parser.add_argument('address', type=str,
+                        help='host address of the checked pod/pea, e.g. 0.0.0.0:5555')
+    parser.add_argument('--timeout', type=int, default=3000,
                         help='timeout (ms) of one check, -1 for waiting forever')
     parser.add_argument('--retries', type=int, default=3,
                         help='max number of tried health checks before exit 1')
@@ -308,15 +309,15 @@ def get_main_parser():
     set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 
-    # check
-    pp = sp.add_parser('check', help='check jina config, settings, imports, network etc', formatter_class=_chf)
-    spp = pp.add_subparsers(dest='check',
-                            description='use "%(prog)-8s check [sub-command] --help" '
-                                        'to get detailed information about each sub-command', required=True)
+    # # check
+    # pp = sp.add_parser('check', help='check jina config, settings, imports, network etc', formatter_class=_chf)
+    # spp = pp.add_subparsers(dest='check',
+    #                         description='use "%(prog)-8s check [sub-command] --help" '
+    #                                     'to get detailed information about each sub-command', required=True)
 
     set_healthcheck_parser(
-        spp.add_parser('network', help='do network health check on a jina pod', formatter_class=_chf))
-    spp.add_parser('import', help='check import of all executors', formatter_class=_chf)
+        sp.add_parser('ping', help='ping a jina pod and do a network health check', formatter_class=_chf))
+    sp.add_parser('import', help='check import of all executors', formatter_class=_chf)
     return parser
 
 
@@ -348,8 +349,8 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
     def _get_default_metavar_for_optional(self, action):
         return ''
 
-    def _get_default_metavar_for_positional(self, action):
-        return ''
+    # def _get_default_metavar_for_positional(self, action):
+    #     return ''
 
     def _expand_help(self, action):
         params = dict(vars(action), prog=self._prog)

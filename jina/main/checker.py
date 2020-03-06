@@ -37,18 +37,25 @@ class NetworkChecker:
 
     def __init__(self, args: 'argparse.Namespace'):
         from ..peapods.pea import send_ctrl_message
-        from ..proto import jina_pb2, add_version
+        from ..proto import jina_pb2
+        from ..logging.profile import TimeContext
         import time
-        ctrl_addr = 'tcp://%s:%d' % (args.host, args.port)
-        msg = jina_pb2.Message()
-        add_version(msg.envelope)
-        msg.request.control.command = jina_pb2.Request.ControlRequest.STATUS
-        for j in range(args.retries):
-            r = send_ctrl_message(ctrl_addr, msg, timeout=args.timeout)
-            if not r:
-                print('%s is not responding, retry (%d/%d) in 1s' % (ctrl_addr, j + 1, args.retries))
-            else:
-                print('%s returns %s' % (ctrl_addr, r))
-                exit(0)
-            time.sleep(1)
-        exit(1)
+        ctrl_addr = 'tcp://%s' % args.address
+        try:
+            total_time = 0
+            total_success = 0
+            for j in range(args.retries):
+                with TimeContext('ping %s at %d round' % (ctrl_addr, j)) as tc:
+                    r = send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.STATUS, timeout=args.timeout)
+                    if not r:
+                        print('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))
+                    else:
+                        total_success += 1
+                        print('returns %s' % r)
+                total_time += tc.duration
+                time.sleep(1)
+            print('success %d out of %d with ' % (total_success, args.retries))
+            if total_success > 0:
+                print('avg. latency: %.3f sec' % (total_time / total_success))
+        except KeyboardInterrupt:
+            pass

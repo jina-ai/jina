@@ -1,8 +1,6 @@
 import os
 import time
-import unittest
 
-os.environ['JINA_DEFAULT_HOST'] = '127.0.0.1'
 import docker
 
 from jina.flow import Flow
@@ -35,12 +33,24 @@ client.close()
 
 class MyTestCase(JinaTestCase):
 
+    def tearDown(self) -> None:
+        super().tearDown()
+        time.sleep(2)
+
     def test_simple_container(self):
         args = set_pea_parser().parse_args(['--image', container_name])
         print(args)
 
         with ContainerizedPea(args) as cp:
-            time.sleep(5)
+            time.sleep(2)
+
+    def test_simple_container_with_ext_yaml(self):
+        args = set_pea_parser().parse_args(['--image', container_name,
+                                            '--yaml_path', './mwu-encoder/mwu_encoder_ext.yml'])
+        print(args)
+
+        with ContainerizedPea(args) as cp:
+            time.sleep(2)
 
     def test_flow_no_container(self):
         f = (Flow()
@@ -49,10 +59,28 @@ class MyTestCase(JinaTestCase):
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
 
-    @unittest.skip
     def test_flow_with_container(self):
         f = (Flow()
              .add(name='dummyEncoder', image=container_name))
 
         with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+
+    def test_flow_with_container_ext_yaml(self):
+        f = (Flow()
+             .add(name='dummyEncoder', image=container_name, yaml_path='./mwu-encoder/mwu_encoder_ext.yml'))
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+
+    def test_flow_with_replica_container_ext_yaml(self):
+        f = (Flow()
+             .add(name='dummyEncoder',
+                  image=container_name,
+                  yaml_path='./mwu-encoder/mwu_encoder_ext.yml',
+                  replicas=3))
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)

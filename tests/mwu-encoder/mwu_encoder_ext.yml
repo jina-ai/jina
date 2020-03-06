@@ -1,0 +1,7 @@
+!MWUEncoder
+with:
+  greetings: hello im from external yaml!
+metas:
+  name: ext-mwu-encoder
+  py_modules: mwu_encoder.py
+  workspace: ./
