@@ -365,3 +365,23 @@ def valid_yaml_path(path: str, to_stream: bool = False):
     else:
         raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
                                 ' or a valid file path, or a supported class name.' % path)
+
+
+def fill_in_host(bind_args, connect_args):
+    from . import __default_host__
+    bind_local = (bind_args.host == '0.0.0.0')
+    bind_docker = (bind_args.image is not None and bind_args.image)
+    conn_local = (connect_args.host == '0.0.0.0')
+    conn_docker = (connect_args.image is not None and connect_args.image)
+    bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
+    if bind_local and conn_local and conn_docker:
+        return 'host.docker.internal'
+    elif bind_local and conn_local and not conn_docker:
+        return __default_host__
+    elif not bind_local and bind_conn_same_remote:
+        if conn_docker:
+            return 'host.docker.internal'
+        else:
+            return __default_host__
+    else:
+        return bind_args.host

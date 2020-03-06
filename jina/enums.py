@@ -18,7 +18,7 @@ class BetterEnum(IntEnum):
             raise ValueError('%s is not a valid enum for %s' % (s.upper(), cls))
 
 
-class ParallelType(BetterEnum):
+class ReplicaType(BetterEnum):
     """The enum for representing the parallel type of peas in a pod
 
     .. note::
@@ -32,7 +32,7 @@ class ParallelType(BetterEnum):
     def is_push(self) -> bool:
         """
 
-        :return: if this :class:`ParallelType` is using `push` protocol
+        :return: if this :class:`ReplicaType` is using `push` protocol
         """
         return self.value == 1
 
@@ -40,7 +40,7 @@ class ParallelType(BetterEnum):
     def is_block(self) -> bool:
         """
 
-        :return: if this :class:`ParallelType` is requiring `block` protocol
+        :return: if this :class:`ReplicaType` is requiring `block` protocol
         """
         return self.value == 2
 

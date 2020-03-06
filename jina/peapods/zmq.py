@@ -118,7 +118,7 @@ class Zmqlet:
         return zmq.Context()
 
     def __enter__(self):
-        time.sleep(1)
+        time.sleep(.1)  # sleep a bit until everything is ready
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

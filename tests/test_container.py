@@ -1,6 +1,5 @@
 import os
 import time
-import unittest
 
 import docker
 
@@ -60,10 +59,28 @@ class MyTestCase(JinaTestCase):
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
 
-    @unittest.skip
     def test_flow_with_container(self):
         f = (Flow()
              .add(name='dummyEncoder', image=container_name))
 
         with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+
+    def test_flow_with_container_ext_yaml(self):
+        f = (Flow()
+             .add(name='dummyEncoder', image=container_name, yaml_path='./mwu-encoder/mwu_encoder_ext.yml'))
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+
+    def test_flow_with_replica_container_ext_yaml(self):
+        f = (Flow()
+             .add(name='dummyEncoder',
+                  image=container_name,
+                  yaml_path='./mwu-encoder/mwu_encoder_ext.yml',
+                  replicas=3))
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)

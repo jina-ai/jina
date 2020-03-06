@@ -158,6 +158,53 @@ The ``Pod`` will inherit these CLI arguments.
 New CLI argument
 ^^^^^^^^^^^^^^^^
 
+..confval:: hostname
+
+    Useful when the current Pea socket is ``BIND`` and other Peas ``CONNECT`` to it,
+
+    - a remote IP address (72.214.121.283), remote
+    - The DNS name (e.g. encoder-1), local/remote
+    - 0.0.0.0, local
+    - host.docker.internal, local
+
+    :type: str
+
+..confval:: remote
+
+    To tell if the Pea is running remotely or locally
+
+    :type: bool
+
+.. confval:: image
+
+    If set then the Pea is running inside the docker
+
+    :type: str
+
+
+Specification
+-------------
+
+If the ``socket_type`` is BIND, then it is always bind to ``tcp://0.0.0.0:port``. The key problem is to determine the ``host_in`` and ``host_out`` when the ``socket_type`` is CONNECT.
+
+Logic when connecting, the Pea that opens a BIND socket is *Server*, and the Pea connects to it as *Client*:
+
+
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
+|         |        |                     |                       |                      | BIND                                 |                                           |
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
+|         |        |                     | Local                 |                      | Remote                               |                                           |
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
+|         |        |                     | Docker                | Host Thread/Process  | Docker                               | Host Thread/Process                       |
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
+| CONNECT | Local  | Docker              | host.docker.internal* | host.docker.internal | hostname_of_BIND                     | hostname_of_BIND                          |
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
+|         |        | Host Thread/Process | 0.0.0.0               | 0.0.0.0              | hostname_of_BIND                     | hostname_of_BIND                          |
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
+|         | Remote | Docker              | hostname_of_BIND      | hostname_of_BIND     | Same Remote? Then follow local-local | Different Remote?Then follow remote-local |
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
+|         |        | Host Thread/Process | hostname_of_BIND      | hostname_of_BIND     |                                      |                                           |
++---------+--------+---------------------+-----------------------+----------------------+--------------------------------------+-------------------------------------------+
 
 
 A minimum Jina Docker Contianer

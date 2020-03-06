@@ -11,7 +11,7 @@ import ruamel.yaml
 from .. import __default_host__
 from ..enums import FlowBuildLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
-from ..helper import yaml, expand_env_var, kwargs2list
+from ..helper import yaml, expand_env_var, kwargs2list, fill_in_host
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..main.parser import set_pod_parser, set_frontend_parser
@@ -298,9 +298,9 @@ class Flow:
 
             if len(edges_with_same_start) > 1 and len(edges_with_same_end) == 1:
                 s_pod.tail_args.socket_out = SocketType.PUB_BIND
-                s_pod.tail_args.host_out = __default_host__
+                s_pod.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
                 e_pod.head_args.socket_in = SocketType.SUB_CONNECT
-                e_pod.head_args.host_in = s_name  # the hostname of s_pod
+                e_pod.head_args.host_in = fill_in_host(s_pod.tail_args, e_pod.head_args)  # the hostname of s_pod
                 e_pod.head_args.port_in = s_pod.tail_args.port_out
             elif len(edges_with_same_end) > 1 and len(edges_with_same_start) == 1:
                 Pod.connect(s_pod, e_pod, bind_on_first=False)
@@ -369,9 +369,9 @@ class Flow:
                                  'and you can not run this flow.' % op_flow._build_level)
         elif runtime in {'thread', 'process'}:
             for p in op_flow._pod_nodes.values():
-                p.set_parallel_runtime(runtime)
-                if not p._args.image:
-                    p.force_local()
+                p.set_runtime(runtime)
+                # if not p._args.image:
+                #     p.force_local()
             op_flow._build_level = FlowBuildLevel.RUNTIME
         else:
             raise NotImplementedError('runtime=%s is not supported yet' % runtime)

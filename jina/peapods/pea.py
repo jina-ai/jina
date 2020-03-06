@@ -44,7 +44,7 @@ class PeaMeta(type):
         _cls = {
             'thread': threading.Thread,
             'process': _mp.Process
-        }[args[0].parallel_runtime]
+        }[args[0].runtime]
 
         # rebuild the class according to mro
         for c in cls.mro()[-2::-1]:
