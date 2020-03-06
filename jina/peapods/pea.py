@@ -360,7 +360,7 @@ class ContainerizedPea(Pea):
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
-        # self.logger.debug(self.status)
+        self.logger.debug(self.status)
         self.set_ready()
 
     def event_loop_start(self):
