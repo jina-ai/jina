@@ -363,5 +363,5 @@ def valid_yaml_path(path: str, to_stream: bool = False):
         # possible class name
         return io.StringIO('!%s' % path)
     else:
-        raise TypeError('%s can not be resolved, it should be a readable stream,'
-                        ' or a valid file path, or a supported class name.' % path)
+        raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
+                                ' or a valid file path, or a supported class name.' % path)

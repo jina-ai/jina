@@ -1,7 +1,7 @@
 import os
 import time
+import unittest
 
-os.environ['JINA_DEFAULT_HOST'] = '127.0.0.1'
 import docker
 
 from jina.flow import Flow
@@ -34,8 +34,20 @@ client.close()
 
 class MyTestCase(JinaTestCase):
 
+    def tearDown(self) -> None:
+        super().tearDown()
+        time.sleep(2)
+
     def test_simple_container(self):
         args = set_pea_parser().parse_args(['--image', container_name])
+        print(args)
+
+        with ContainerizedPea(args) as cp:
+            time.sleep(5)
+
+    def test_simple_container_with_ext_yaml(self):
+        args = set_pea_parser().parse_args(['--image', container_name,
+                                            '--yaml_path', './mwu-encoder/mwu_encoder_ext.yml'])
         print(args)
 
         with ContainerizedPea(args) as cp:
@@ -48,7 +60,7 @@ class MyTestCase(JinaTestCase):
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
 
-    # @unittest.skip
+    @unittest.skip
     def test_flow_with_container(self):
         f = (Flow()
              .add(name='dummyEncoder', image=container_name))

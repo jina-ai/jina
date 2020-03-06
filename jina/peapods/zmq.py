@@ -426,8 +426,11 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
         if use_ipc:
             sock.bind(host)
         else:
-            # when it is bind, then we can only bind to local, right?
-            host = __default_host__
+            # JEP2, if it is bind, then always bind to local
+            if host != __default_host__:
+                default_logger.warning(
+                    'host is set from %s to %s as the socket is in BIND type' % (host, __default_host__))
+                host = __default_host__
             if port is None:
                 sock.bind_to_random_port('tcp://%s' % host)
             else:
