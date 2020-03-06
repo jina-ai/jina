@@ -18,9 +18,7 @@ ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/pytho
 
 WORKDIR /jina/
 
-ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md script/set-docker-host.sh ./
-
-RUN bash set-docker-host.sh
+ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 
 ADD jina ./jina/
 
@@ -34,4 +32,6 @@ WORKDIR /
 ENV JINA_VCS_VERSION=$VCS_REF
 ENV JINA_BUILD_DATE=$BUILD_DATE
 
-ENTRYPOINT ["jina"]
+COPY entrypoint.sh /usr/local/bin
+
+ENTRYPOINT ["entrypoint.sh"]

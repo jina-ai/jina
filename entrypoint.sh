@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # See https://github.com/docker/for-linux/issues/264
@@ -9,3 +9,5 @@ then
 else
     echo "host.docker.internal already defined"
 fi
+
+jina "$@"
