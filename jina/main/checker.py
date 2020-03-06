@@ -41,11 +41,21 @@ class NetworkChecker:
         from ..logging.profile import TimeContext
         import time
         ctrl_addr = 'tcp://%s' % args.address
-        for j in range(args.retries):
-            with TimeContext('ping %s at %d round' % (ctrl_addr, j)):
-                r = send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.STATUS, timeout=args.timeout)
-                if not r:
-                    print('%s is not responding, retry (%d/%d) in 1s' % (ctrl_addr, j + 1, args.retries))
-                else:
-                    print('%s returns %s' % (ctrl_addr, r))
-            time.sleep(1)
+        try:
+            total_time = 0
+            total_success = 0
+            for j in range(args.retries):
+                with TimeContext('ping %s at %d round' % (ctrl_addr, j)) as tc:
+                    r = send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.STATUS, timeout=args.timeout)
+                    if not r:
+                        print('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))
+                    else:
+                        total_success += 1
+                        print('returns %s' % r)
+                total_time += tc.duration
+                time.sleep(1)
+            print('success %d out of %d with ' % (total_success, args.retries))
+            if total_success > 0:
+                print('avg. latency: %.3f sec' % (total_time / total_success))
+        except KeyboardInterrupt:
+            pass

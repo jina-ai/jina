@@ -185,9 +185,9 @@ def set_healthcheck_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--address', type=str, required=True,
+    parser.add_argument('address', type=str,
                         help='host address of the checked pod/pea, e.g. 0.0.0.0:5555')
-    parser.add_argument('--timeout', type=int, default=1000,
+    parser.add_argument('--timeout', type=int, default=3000,
                         help='timeout (ms) of one check, -1 for waiting forever')
     parser.add_argument('--retries', type=int, default=3,
                         help='max number of tried health checks before exit 1')
@@ -349,8 +349,8 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
     def _get_default_metavar_for_optional(self, action):
         return ''
 
-    def _get_default_metavar_for_positional(self, action):
-        return ''
+    # def _get_default_metavar_for_positional(self, action):
+    #     return ''
 
     def _expand_help(self, action):
         params = dict(vars(action), prog=self._prog)

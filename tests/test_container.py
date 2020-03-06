@@ -42,7 +42,7 @@ class MyTestCase(JinaTestCase):
         print(args)
 
         with ContainerizedPea(args) as cp:
-            time.sleep(5)
+            time.sleep(2)
 
     def test_simple_container_with_ext_yaml(self):
         args = set_pea_parser().parse_args(['--image', container_name,
@@ -50,7 +50,7 @@ class MyTestCase(JinaTestCase):
         print(args)
 
         with ContainerizedPea(args) as cp:
-            time.sleep(5)
+            time.sleep(2)
 
     def test_flow_no_container(self):
         f = (Flow()
