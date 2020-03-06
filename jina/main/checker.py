@@ -37,18 +37,15 @@ class NetworkChecker:
 
     def __init__(self, args: 'argparse.Namespace'):
         from ..peapods.pea import send_ctrl_message
-        from ..proto import jina_pb2, add_version
+        from ..proto import jina_pb2
+        from ..logging.profile import TimeContext
         import time
-        ctrl_addr = 'tcp://%s:%d' % (args.host, args.port)
-        msg = jina_pb2.Message()
-        add_version(msg.envelope)
-        msg.request.control.command = jina_pb2.Request.ControlRequest.STATUS
+        ctrl_addr = 'tcp://%s' % args.address
         for j in range(args.retries):
-            r = send_ctrl_message(ctrl_addr, msg, timeout=args.timeout)
-            if not r:
-                print('%s is not responding, retry (%d/%d) in 1s' % (ctrl_addr, j + 1, args.retries))
-            else:
-                print('%s returns %s' % (ctrl_addr, r))
-                exit(0)
+            with TimeContext('ping %s at %d round' % (ctrl_addr, j)):
+                r = send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.STATUS, timeout=args.timeout)
+                if not r:
+                    print('%s is not responding, retry (%d/%d) in 1s' % (ctrl_addr, j + 1, args.retries))
+                else:
+                    print('%s returns %s' % (ctrl_addr, r))
             time.sleep(1)
-        exit(1)

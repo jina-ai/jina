@@ -185,10 +185,8 @@ def set_healthcheck_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--host', type=str, default='127.0.0.1',
-                        help='host address of the checked service')
-    parser.add_argument('--port', type=int, required=True,
-                        help='control port of the checked service')
+    parser.add_argument('--address', type=str, required=True,
+                        help='host address of the checked pod/pea, e.g. 0.0.0.0:5555')
     parser.add_argument('--timeout', type=int, default=1000,
                         help='timeout (ms) of one check, -1 for waiting forever')
     parser.add_argument('--retries', type=int, default=3,
@@ -311,15 +309,15 @@ def get_main_parser():
     set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 
-    # check
-    pp = sp.add_parser('check', help='check jina config, settings, imports, network etc', formatter_class=_chf)
-    spp = pp.add_subparsers(dest='check',
-                            description='use "%(prog)-8s check [sub-command] --help" '
-                                        'to get detailed information about each sub-command', required=True)
+    # # check
+    # pp = sp.add_parser('check', help='check jina config, settings, imports, network etc', formatter_class=_chf)
+    # spp = pp.add_subparsers(dest='check',
+    #                         description='use "%(prog)-8s check [sub-command] --help" '
+    #                                     'to get detailed information about each sub-command', required=True)
 
     set_healthcheck_parser(
-        spp.add_parser('network', help='do network health check on a jina pod', formatter_class=_chf))
-    spp.add_parser('import', help='check import of all executors', formatter_class=_chf)
+        sp.add_parser('ping', help='ping a jina pod and do a network health check', formatter_class=_chf))
+    sp.add_parser('import', help='check import of all executors', formatter_class=_chf)
     return parser
 
 

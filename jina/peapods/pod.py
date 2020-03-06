@@ -66,9 +66,9 @@ class Pod:
         if self._args.replicas > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
-            peas_args['head'] = _copy_to_head_args(self._args, self._args.parallel_type.is_push)
+            peas_args['head'] = _copy_to_head_args(self._args, self._args.replica_type.is_push)
             peas_args['tail'] = _copy_to_tail_args(self._args,
-                                                   self._args.num_part if self._args.parallel_type.is_block else 1)
+                                                   self._args.num_part if self._args.replica_type.is_block else 1)
             peas_args['peas'] = _set_peas_args(self._args, peas_args['head'], peas_args['tail'])
             self.is_head_router = True
             self.is_tail_router = True
@@ -192,7 +192,7 @@ class Pod:
         if self._args.replicas > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
             # only reset its output
-            pod.tail_args = _copy_to_head_args(pod.tail_args, self._args.parallel_type.is_push, as_router=False)
+            pod.tail_args = _copy_to_head_args(pod.tail_args, self._args.replica_type.is_push, as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, pod.tail_args, self.tail_args)
             # remove the head node
@@ -209,7 +209,7 @@ class Pod:
             # keep the port_out and socket_out of next_arts
             # only reset its input
             pod.head_args = _copy_to_tail_args(pod.head_args,
-                                               self._args.num_part if self._args.parallel_type.is_block else 1,
+                                               self._args.num_part if self._args.replica_type.is_block else 1,
                                                as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, self.head_args, pod.head_args)
@@ -256,7 +256,7 @@ def _set_peas_args(args, head_args, tail_args):
         _args.port_ctrl = random_port()
         _args.identity = random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
-        if args.parallel_type.is_push:
+        if args.replica_type.is_push:
             _args.socket_in = SocketType.PULL_CONNECT
         else:
             _args.socket_in = SocketType.SUB_CONNECT
