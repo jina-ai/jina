@@ -335,6 +335,7 @@ class ContainerizedPea(Pea):
 
         if self.args.pull_latest:
             self._client.images.pull(self.args.image)
+
         _volumes = {}
         if self.args.yaml_path:
             if os.path.exists(self.args.yaml_path):
@@ -343,18 +344,27 @@ class ContainerizedPea(Pea):
                 _volumes = {os.path.abspath(self.args.yaml_path): {'bind': non_defaults['yaml_path'], 'mode': 'ro'}}
             elif not valid_yaml_path(self.args.yaml_path):
                 raise FileNotFoundError('yaml_path %s is not like a path, please check it' % self.args.yaml_path)
+
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
             _expose_port.append(self.args.port_in)
         if self.args.socket_out.is_bind:
             _expose_port.append(self.args.port_out)
+
+        from sys import platform
+        if platform == "linux" or platform == "linux2":
+            net_mode = 'host'
+        else:
+            net_mode = None
+
         _args = kwargs2list(non_defaults)
         self._container = self._client.containers.run(self.args.image, _args,
                                                       detach=True, auto_remove=True,
                                                       ports={'%d/tcp' % v: v for v in
                                                              _expose_port},
                                                       name=self.name,
-                                                      volumes=_volumes
+                                                      volumes=_volumes,
+                                                      network_mode=net_mode
                                                       # network='mynetwork',
                                                       # publish_all_ports=True
                                                       )

@@ -369,18 +369,25 @@ def valid_yaml_path(path: str, to_stream: bool = False):
 
 def fill_in_host(bind_args, connect_args):
     from . import __default_host__
+    from sys import platform
+
     bind_local = (bind_args.host == '0.0.0.0')
     bind_docker = (bind_args.image is not None and bind_args.image)
     conn_local = (connect_args.host == '0.0.0.0')
     conn_docker = (connect_args.image is not None and connect_args.image)
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
+    if platform == "linux" or platform == "linux2":
+        local_host = '0.0.0.0'
+    else:
+        local_host = 'host.docker.internal'
+
     if bind_local and conn_local and conn_docker:
-        return 'host.docker.internal'
+        return local_host
     elif bind_local and conn_local and not conn_docker:
         return __default_host__
     elif not bind_local and bind_conn_same_remote:
         if conn_docker:
-            return 'host.docker.internal'
+            return local_host
         else:
             return __default_host__
     else:
