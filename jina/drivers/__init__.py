@@ -166,7 +166,7 @@ class BaseExecutableDriver(BaseDriver):
         """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
-            self._exec = executor.components[self._executor_name]
+            self._exec = executor[self._executor_name]
         else:
             self._exec = executor
 
