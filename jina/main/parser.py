@@ -102,8 +102,9 @@ def set_pea_parser(parser=None):
                      help='the name of the docker image that this pea runs with. when this and '
                           '--yaml_path are both given then the docker image '
                           'is used but its original yaml configuration is replaced by the given yaml_path')
-    gp0.add_argument('--entrypoint', type=str, default='jina pod',
-                     help='the entrypoint command corresponds to the ENTRYPOINT in docker image syntax.')
+    gp0.add_argument('--entrypoint', type=str,
+                     help='the entrypoint command overrides the ENTRYPOINT in docker image. '
+                          'when not set then the docker image ENTRYPOINT takes effective.')
     gp0.add_argument('--pull_latest', action='store_true', default=False,
                      help='pull the latest image before running')
 

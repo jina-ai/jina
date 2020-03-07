@@ -65,21 +65,21 @@ class MyTestCase(JinaTestCase):
              .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
 
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_with_container(self):
         f = (Flow()
              .add(name='dummyEncoder', image=img_name))
 
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_with_container_ext_yaml(self):
         f = (Flow()
              .add(name='dummyEncoder', image=img_name, yaml_path='./mwu-encoder/mwu_encoder_ext.yml'))
 
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_with_replica_container_ext_yaml(self):
         f = (Flow()
@@ -89,39 +89,39 @@ class MyTestCase(JinaTestCase):
                   replicas=3))
 
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_topo1(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute')
-             .add(name='d2', image='jinaai/jina:master-debian', yaml_path='logroute')
+             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
+             .add(name='d2', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
              .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
-                  recv_from='d1')
+                  recv_from='d1', entrypoint='jina pod')
              .join(['d3', 'd2'])
              )
 
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_topo_mixed(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute')
+             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
              .add(name='d2', yaml_path='logroute')
              .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
-                  recv_from='d1')
+                  recv_from='d1', entrypoint='jina pod')
              .join(['d3', 'd2'])
              )
 
         with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_topo_replicas(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='route', replicas=3)
+             .add(name='d1', image='jinaai/jina:master-debian', entrypoint='jina pod', yaml_path='route', replicas=3)
              .add(name='d2', yaml_path='route', replicas=3)
-             .add(name='d3', image='jinaai/jina:master-debian', yaml_path='route',
+             .add(name='d3', image='jinaai/jina:master-debian', entrypoint='jina pod', yaml_path='route',
                   recv_from='d1')
              .join(['d3', 'd2'])
              )
