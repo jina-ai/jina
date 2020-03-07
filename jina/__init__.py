@@ -24,7 +24,7 @@ from types import SimpleNamespace
 import os
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
-__ready_signal__ = 'is ready and listening'
+__ready_signal__ = 'ready and listening'
 
 JINA_GLOBAL = SimpleNamespace()
 JINA_GLOBAL.imported = SimpleNamespace()
