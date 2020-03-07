@@ -105,8 +105,7 @@ class MyTestCase(JinaTestCase):
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
 
-
-    def test_flow_topo2(self):
+    def test_flow_topo_mixed(self):
         f = (Flow()
              .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute')
              .add(name='d2', yaml_path='logroute')
@@ -117,3 +116,15 @@ class MyTestCase(JinaTestCase):
 
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+
+    def test_flow_topo_replicas(self):
+        f = (Flow()
+             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='route', replicas=3)
+             .add(name='d2', yaml_path='route', replicas=3)
+             .add(name='d3', image='jinaai/jina:master-debian', yaml_path='route',
+                  recv_from='d1')
+             .join(['d3', 'd2'])
+             )
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(1000), in_proto=True)

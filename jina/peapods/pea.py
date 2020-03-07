@@ -117,8 +117,8 @@ class Pea(metaclass=PeaMeta):
                 self._prev_messages = self._pending_msgs.pop(req_id)
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
             else:
-                self.logger.debug('waiting for %d/%d %s messages' % (num_req, self.args.num_part, msg_type))
                 raise WaitPendingMessage
+            self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, msg_type))
         else:
             self._prev_requests = None
             self._prev_messages = None
