@@ -104,3 +104,16 @@ class MyTestCase(JinaTestCase):
 
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
+
+
+    def test_flow_topo2(self):
+        f = (Flow()
+             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute')
+             .add(name='d2', yaml_path='logroute')
+             .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
+                  recv_from='d1')
+             .join(['d3', 'd2'])
+             )
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=print)
