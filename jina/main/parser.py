@@ -98,12 +98,22 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--yaml_path', type=str, default='BaseExecutor',
                      help='the yaml config of the executor, it should be a readable stream,'
                           ' or a valid file path, or a supported class name.')  # pod(no use) -> pea
-    gp0.add_argument('--image', type=str,
-                     help='the name of the docker image that this pea runs with. when this and '
-                          '--yaml_path are both given then the docker image '
-                          'is used but its original yaml configuration is replaced by the given yaml_path')
-    gp0.add_argument('--pull_latest', action='store_true', default=False,
+
+    gp1 = add_arg_group(parser, 'pea container arguments')
+    gp1.add_argument('--image', type=str,
+                     help='the name of the docker image that this pea runs with. it is also served as an indicator '
+                          'of containerization. '
+                          'when this and --yaml_path are both given then the docker image '
+                          'is used and its original yaml configuration is replaced by the given yaml_path')
+    gp1.add_argument('--entrypoint', type=str,
+                     help='the entrypoint command overrides the ENTRYPOINT in docker image. '
+                          'when not set then the docker image ENTRYPOINT takes effective.')
+    gp1.add_argument('--pull_latest', action='store_true', default=False,
                      help='pull the latest image before running')
+    gp1.add_argument('--volumes', type=str, nargs='*',
+                     help='the path on the host to be mounted inside the container. '
+                          'they will be mounted to the root path, i.e. /user/test/my-workspace will be mounted to '
+                          '/my-workspace inside the container. all volumes are mounted with read-write mode.')
 
     gp2 = add_arg_group(parser, 'pea network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),
@@ -127,7 +137,11 @@ def set_pea_parser(parser=None):
     gp2.add_argument('--ctrl_with_ipc', action='store_true', default=False,
                      help='use ipc protocol for control socket')
     gp2.add_argument('--timeout', type=int, default=-1,
-                     help='timeout (ms) of all communication, -1 for waiting forever')
+                     help='timeout (ms) of all requests, -1 for waiting forever')
+    gp2.add_argument('--ctrl_timeout', type=int, default=5000,
+                     help='timeout (ms) of the control request, -1 for waiting forever')
+    gp2.add_argument('--ready_timeout', type=int, default=5000,
+                     help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
 
     gp3 = add_arg_group(parser, 'pea IO arguments')
     gp3.add_argument('--dump_interval', type=int, default=240,

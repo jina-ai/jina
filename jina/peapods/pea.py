@@ -3,9 +3,11 @@ import os
 import threading
 import time
 from collections import defaultdict
+from pathlib import Path
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
+from .. import __ready_signal__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
@@ -16,7 +18,7 @@ from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
-__all__ = ['PeaMeta', 'Pea', 'ContainerizedPea']
+__all__ = ['PeaMeta', 'Pea', 'ContainerPea']
 
 # temporary fix for python 3.8 on macos where the default start is set to "spawn"
 # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
@@ -117,8 +119,8 @@ class Pea(metaclass=PeaMeta):
                 self._prev_messages = self._pending_msgs.pop(req_id)
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
             else:
-                self.logger.debug('waiting for %d/%d %s messages' % (num_req, self.args.num_part, msg_type))
                 raise WaitPendingMessage
+            self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, msg_type))
         else:
             self._prev_requests = None
             self._prev_messages = None
@@ -212,7 +214,7 @@ class Pea(metaclass=PeaMeta):
         """Set the status of the pea to ready """
         self.is_ready.set()
         self.is_event_loop.set()
-        self.logger.critical('ready and listening')
+        self.logger.critical(__ready_signal__)
 
     def event_loop_start(self):
         """Start the event loop """
@@ -269,7 +271,7 @@ class Pea(metaclass=PeaMeta):
         except Exception as ex:
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
-            self.is_ready.set()
+            # self.is_ready.set()
             self.event_loop_stop()
             self.is_event_loop.clear()
 
@@ -297,18 +299,21 @@ class Pea(metaclass=PeaMeta):
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
         return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                 timeout=self.args.timeout)
+                                 timeout=self.args.ctrl_timeout)
 
     def __enter__(self):
         self.start()
-        self.is_ready.wait()
-        return self
+        if self.is_ready.wait(self.args.ready_timeout / 1000):
+            return self
+        else:
+            raise TimeoutError('this Pea (name=%s) can not be initialized after %dms' % (self.name,
+                                                                                         self.args.ready_timeout))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
 
-class ContainerizedPea(Pea):
+class ContainerPea(Pea):
     """A Pea that wraps another "dockerized" Pea
 
     It requires a non-empty valid ``args.image``.
@@ -319,19 +324,18 @@ class ContainerizedPea(Pea):
         import docker
         self._container = None
         self._client = docker.from_env()
-        self._yaml_mounted_path = '/config.yml'  #: the external yaml config will be mounted to this path
 
     def post_init(self):
         non_defaults = {}
         from ..main.parser import set_pea_parser
         _defaults = vars(set_pea_parser().parse_args([]))
-        taboo = {'image'}  # the image arg should be ignored otherwise it keeps using ContainerizedPea in the container
+        # the image arg should be ignored otherwise it keeps using ContainerPea in the container
+        # basically all args in Pea-docker arg group should be ignored.
+        # this prevent setting containerPea twice
+        taboo = {'image', 'entrypoint', 'volumes', 'pull_latest'}
         for k, v in vars(self.args).items():
             if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
-        # non_defaults['host_in'] = __default_host__
-        # non_defaults['host_out'] = __default_host__
-        # network = self._client.networks.create('mynetwork')
 
         if self.args.pull_latest:
             self._client.images.pull(self.args.image)
@@ -341,9 +345,14 @@ class ContainerizedPea(Pea):
             if os.path.exists(self.args.yaml_path):
                 # external YAML config, need to be volumed into the container
                 non_defaults['yaml_path'] = '/' + os.path.basename(self.args.yaml_path)
-                _volumes = {os.path.abspath(self.args.yaml_path): {'bind': non_defaults['yaml_path'], 'mode': 'ro'}}
+                _volumes[os.path.abspath(self.args.yaml_path)] = {'bind': non_defaults['yaml_path'], 'mode': 'ro'}
             elif not valid_yaml_path(self.args.yaml_path):
                 raise FileNotFoundError('yaml_path %s is not like a path, please check it' % self.args.yaml_path)
+        if self.args.volumes:
+            for p in self.args.volumes:
+                Path(os.path.abspath(p)).mkdir(parents=True, exist_ok=True)
+                _p = '/' + os.path.basename(p)
+                _volumes[os.path.abspath(p)] = {'bind': _p, 'mode': 'rw'}
 
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
@@ -364,29 +373,50 @@ class ContainerizedPea(Pea):
                                                              _expose_port},
                                                       name=self.name,
                                                       volumes=_volumes,
-                                                      network_mode=net_mode
+                                                      network_mode=net_mode,
+                                                      entrypoint=self.args.entrypoint,
                                                       # network='mynetwork',
                                                       # publish_all_ports=True
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
-        self.logger.debug(self.status)
-        self.set_ready()
+        self.is_event_loop.set()
+        # if self.status:
+        #     self.set_ready()
+        # else:
+        #     self.logger.warning(
+        #         'the container did not send ready signal after %d ms, something is wrong' % self.args.ctrl_timeout)
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
+        import docker
 
         logger = get_logger('↳', **vars(self.args), fmt_str='↳ %(message)s')
-
-        for line in self._container.logs(stream=True):
-            if self.is_event_loop.is_set():
-                logger.info(line.strip().decode())
-            else:
-                raise EventLoopEnd
+        try:
+            for line in self._container.logs(stream=True):
+                if self.is_event_loop.is_set():
+                    msg = line.strip().decode()
+                    # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
+                    # print all error message when fails
+                    if __ready_signal__ in msg:
+                        self.is_ready.set()
+                        self.logger.critical(__ready_signal__)
+                    logger.info(line.strip().decode())
+                else:
+                    raise EventLoopEnd
+        except docker.errors.NotFound:
+            self.logger.error('the container can not be started, check your arguments, entrypoint')
 
     def event_loop_stop(self):
         """Stop the container """
+
+        import docker
+
         if getattr(self, '_container', None):
-            self._container.stop()
+            try:
+                self._container.stop()
+            except docker.errors.NotFound:
+                self.logger.warning(
+                    'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()
