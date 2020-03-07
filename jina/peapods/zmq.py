@@ -195,7 +195,7 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
 
     :param address: the socket address to send
     :param cmd: the control command to send
-    :param timeout: the waiting time (in second) for the response
+    :param timeout: the waiting time (in ms) for the response
     """
     # control message is short, set a timeout and ask for quick response
     with zmq.Context() as ctx:

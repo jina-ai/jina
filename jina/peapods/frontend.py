@@ -27,11 +27,13 @@ class FrontendPea:
         self.bind_address = '{0}:{1}'.format(args.grpc_host, args.grpc_port)
         self.server.add_insecure_port(self.bind_address)
         self._stop_event = threading.Event()
+        self.is_ready = threading.Event()
 
     def __enter__(self):
         self.server.start()
         self.logger.critical('listening at: %s' % self.bind_address)
         self._stop_event.clear()
+        self.is_ready.set()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

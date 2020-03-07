@@ -269,7 +269,7 @@ class Pea(metaclass=PeaMeta):
         except Exception as ex:
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
-            self.is_ready.set()
+            # self.is_ready.set()
             self.event_loop_stop()
             self.is_event_loop.clear()
 
@@ -297,12 +297,15 @@ class Pea(metaclass=PeaMeta):
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
         return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                 timeout=self.args.timeout)
+                                 timeout=self.args.ctrl_timeout)
 
     def __enter__(self):
         self.start()
-        self.is_ready.wait()
-        return self
+        if self.is_ready.wait(self.args.ready_timeout / 1000):
+            return self
+        else:
+            raise TimeoutError('this Pea (name=%s) can not be initialized after %dms' % (self.name,
+                                                                                         self.args.ready_timeout))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
@@ -319,7 +322,6 @@ class ContainerizedPea(Pea):
         import docker
         self._container = None
         self._client = docker.from_env()
-        self._yaml_mounted_path = '/config.yml'  #: the external yaml config will be mounted to this path
 
     def post_init(self):
         non_defaults = {}
@@ -329,9 +331,6 @@ class ContainerizedPea(Pea):
         for k, v in vars(self.args).items():
             if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
-        # non_defaults['host_in'] = __default_host__
-        # non_defaults['host_out'] = __default_host__
-        # network = self._client.networks.create('mynetwork')
 
         if self.args.pull_latest:
             self._client.images.pull(self.args.image)
@@ -364,29 +363,50 @@ class ContainerizedPea(Pea):
                                                              _expose_port},
                                                       name=self.name,
                                                       volumes=_volumes,
-                                                      network_mode=net_mode
+                                                      network_mode=net_mode,
+                                                      entrypoint=self.args.entrypoint,
                                                       # network='mynetwork',
                                                       # publish_all_ports=True
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
-        self.logger.debug(self.status)
-        self.set_ready()
+        self.is_event_loop.set()
+        # if self.status:
+        #     self.set_ready()
+        # else:
+        #     self.logger.warning(
+        #         'the container did not send ready signal after %d ms, something is wrong' % self.args.ctrl_timeout)
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
+        import docker
 
         logger = get_logger('↳', **vars(self.args), fmt_str='↳ %(message)s')
-
-        for line in self._container.logs(stream=True):
-            if self.is_event_loop.is_set():
-                logger.info(line.strip().decode())
-            else:
-                raise EventLoopEnd
+        try:
+            for line in self._container.logs(stream=True):
+                if self.is_event_loop.is_set():
+                    msg = line.strip().decode()
+                    # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
+                    # print all error message when fails
+                    if 'ready and listening' in msg:
+                        self.is_ready.set()
+                        self.logger.critical('ready and listening')
+                    logger.info(line.strip().decode())
+                else:
+                    raise EventLoopEnd
+        except docker.errors.NotFound:
+            self.logger.error('the container can not be started, check your arguments, entrypoint')
 
     def event_loop_stop(self):
         """Stop the container """
+
+        import docker
+
         if getattr(self, '_container', None):
-            self._container.stop()
+            try:
+                self._container.stop()
+            except docker.errors.NotFound:
+                self.logger.warning(
+                    'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()

@@ -102,6 +102,8 @@ def set_pea_parser(parser=None):
                      help='the name of the docker image that this pea runs with. when this and '
                           '--yaml_path are both given then the docker image '
                           'is used but its original yaml configuration is replaced by the given yaml_path')
+    gp0.add_argument('--entrypoint', type=str, default='jina pod',
+                     help='the entrypoint command corresponds to the ENTRYPOINT in docker image syntax.')
     gp0.add_argument('--pull_latest', action='store_true', default=False,
                      help='pull the latest image before running')
 
@@ -127,7 +129,11 @@ def set_pea_parser(parser=None):
     gp2.add_argument('--ctrl_with_ipc', action='store_true', default=False,
                      help='use ipc protocol for control socket')
     gp2.add_argument('--timeout', type=int, default=-1,
-                     help='timeout (ms) of all communication, -1 for waiting forever')
+                     help='timeout (ms) of all requests, -1 for waiting forever')
+    gp2.add_argument('--ctrl_timeout', type=int, default=5000,
+                     help='timeout (ms) of the control request, -1 for waiting forever')
+    gp2.add_argument('--ready_timeout', type=int, default=5000,
+                     help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
 
     gp3 = add_arg_group(parser, 'pea IO arguments')
     gp3.add_argument('--dump_interval', type=int, default=240,

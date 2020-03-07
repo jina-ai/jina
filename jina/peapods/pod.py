@@ -1,6 +1,6 @@
 import copy
 from contextlib import ExitStack
-from typing import Set, Dict, Callable
+from typing import Set, Dict, Callable, List
 
 from .frontend import FrontendPea
 from .pea import Pea, ContainerizedPea
@@ -172,7 +172,21 @@ class Pod:
             p = ContainerizedPea(s) if s.image else Pea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
+
         return self
+
+    @property
+    def status(self) -> List:
+        """The status of a Pod is the list of status of all its Peas """
+        return [p.status for p in self.peas]
+
+    def wait_ready(self) -> None:
+        """Wait till the ready signal of this Pod.
+
+        The pod is ready only when all the contained Peas returns is_ready
+        """
+        for p in self.peas:
+            p.is_ready.wait()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stack.close()
