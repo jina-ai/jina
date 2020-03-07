@@ -5,7 +5,7 @@ import docker
 
 from jina.flow import Flow
 from jina.main.parser import set_pea_parser, set_pod_parser
-from jina.peapods.pea import ContainerizedPea
+from jina.peapods.pea import ContainerPea
 from jina.peapods.pod import Pod
 from jina.proto import jina_pb2
 from tests import JinaTestCase
@@ -49,7 +49,7 @@ class MyTestCase(JinaTestCase):
         args = set_pea_parser().parse_args(['--image', img_name])
         print(args)
 
-        with ContainerizedPea(args) as cp:
+        with ContainerPea(args) as cp:
             time.sleep(2)
 
     def test_simple_container_with_ext_yaml(self):
@@ -57,7 +57,7 @@ class MyTestCase(JinaTestCase):
                                             '--yaml_path', './mwu-encoder/mwu_encoder_ext.yml'])
         print(args)
 
-        with ContainerizedPea(args) as cp:
+        with ContainerPea(args) as cp:
             time.sleep(2)
 
     def test_flow_no_container(self):
@@ -128,3 +128,14 @@ class MyTestCase(JinaTestCase):
 
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(1000), in_proto=True)
+
+    def test_container_volume(self):
+        f = (Flow()
+             .add(name='dummyEncoder', image=img_name, volumes='./abc', yaml_path='mwu-encoder/mwu_encoder_upd.yml'))
+
+        with f.build() as fl:
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+        out_file = './abc/ext-mwu-encoder.bin'
+        self.assertTrue(os.path.exists(out_file))
+        self.add_tmpfile(out_file, './abc')

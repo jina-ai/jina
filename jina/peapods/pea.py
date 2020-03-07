@@ -3,6 +3,7 @@ import os
 import threading
 import time
 from collections import defaultdict
+from pathlib import Path
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
@@ -16,7 +17,7 @@ from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
-__all__ = ['PeaMeta', 'Pea', 'ContainerizedPea']
+__all__ = ['PeaMeta', 'Pea', 'ContainerPea']
 
 # temporary fix for python 3.8 on macos where the default start is set to "spawn"
 # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
@@ -311,7 +312,7 @@ class Pea(metaclass=PeaMeta):
         self.close()
 
 
-class ContainerizedPea(Pea):
+class ContainerPea(Pea):
     """A Pea that wraps another "dockerized" Pea
 
     It requires a non-empty valid ``args.image``.
@@ -327,7 +328,10 @@ class ContainerizedPea(Pea):
         non_defaults = {}
         from ..main.parser import set_pea_parser
         _defaults = vars(set_pea_parser().parse_args([]))
-        taboo = {'image'}  # the image arg should be ignored otherwise it keeps using ContainerizedPea in the container
+        # the image arg should be ignored otherwise it keeps using ContainerPea in the container
+        # basically all args in Pea-docker arg group should be ignored.
+        # this prevent setting containerPea twice
+        taboo = {'image', 'entrypoint', 'volumes', 'pull_latest'}
         for k, v in vars(self.args).items():
             if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
@@ -340,9 +344,14 @@ class ContainerizedPea(Pea):
             if os.path.exists(self.args.yaml_path):
                 # external YAML config, need to be volumed into the container
                 non_defaults['yaml_path'] = '/' + os.path.basename(self.args.yaml_path)
-                _volumes = {os.path.abspath(self.args.yaml_path): {'bind': non_defaults['yaml_path'], 'mode': 'ro'}}
+                _volumes[os.path.abspath(self.args.yaml_path)] = {'bind': non_defaults['yaml_path'], 'mode': 'ro'}
             elif not valid_yaml_path(self.args.yaml_path):
                 raise FileNotFoundError('yaml_path %s is not like a path, please check it' % self.args.yaml_path)
+        if self.args.volumes:
+            for p in self.args.volumes:
+                Path(os.path.abspath(p)).mkdir(parents=True, exist_ok=True)
+                _p = '/' + os.path.basename(p)
+                _volumes[os.path.abspath(p)] = {'bind': _p, 'mode': 'rw'}
 
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
