@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
+from .. import __ready_signal__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
@@ -213,7 +214,7 @@ class Pea(metaclass=PeaMeta):
         """Set the status of the pea to ready """
         self.is_ready.set()
         self.is_event_loop.set()
-        self.logger.critical('ready and listening')
+        self.logger.critical(__ready_signal__)
 
     def event_loop_start(self):
         """Start the event loop """
@@ -397,9 +398,9 @@ class ContainerPea(Pea):
                     msg = line.strip().decode()
                     # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
                     # print all error message when fails
-                    if 'ready and listening' in msg:
+                    if __ready_signal__ in msg:
                         self.is_ready.set()
-                        self.logger.critical('ready and listening')
+                        self.logger.critical(__ready_signal__)
                     logger.info(line.strip().decode())
                 else:
                     raise EventLoopEnd
