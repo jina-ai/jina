@@ -214,8 +214,9 @@ message Request {
             TERMINATE = 0; // shutdown the Pod
             STATUS = 1; // check the status of the Pod
         }
-
         Command command = 1; // the control command
+
+        map<string, string> args = 2;  // the pea arguments
     }
 }
 

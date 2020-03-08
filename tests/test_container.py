@@ -4,8 +4,9 @@ import time
 import docker
 
 from jina.flow import Flow
-from jina.main.parser import set_pea_parser, set_pod_parser
-from jina.peapods.pea import ContainerPea
+from jina.main.checker import NetworkChecker
+from jina.main.parser import set_pea_parser, set_pod_parser, set_ping_parser
+from jina.peapods.pea import ContainerPea, Pea
 from jina.peapods.pod import Pod
 from jina.proto import jina_pb2
 from tests import JinaTestCase
@@ -139,3 +140,13 @@ class MyTestCase(JinaTestCase):
         out_file = './abc/ext-mwu-encoder.bin'
         self.assertTrue(os.path.exists(out_file))
         self.add_tmpfile(out_file, './abc')
+
+    def test_ping(self):
+        a1 = set_pea_parser().parse_args([])
+        a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print_response'])
+
+        with self.assertRaises(SystemExit) as cm:
+            with Pea(a1):
+                NetworkChecker(a2)
+
+        self.assertEqual(cm.exception.code, 0)
