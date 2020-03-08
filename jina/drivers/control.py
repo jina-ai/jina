@@ -14,6 +14,10 @@ class ControlReqDriver(BaseDriver):
             raise EventLoopEnd
         elif self.req.command == jina_pb2.Request.ControlRequest.STATUS:
             self.msg.envelope.status = jina_pb2.Envelope.READY
+            for k, v in vars(self.pea.args).items():
+                self.req.args[k] = str(v)
+        elif self.req.command == jina_pb2.Request.ControlRequest.DRYRUN:
+            self.msg.envelope.status = jina_pb2.Envelope.READY
         else:
             raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
 

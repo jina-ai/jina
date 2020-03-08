@@ -4,11 +4,11 @@ from .grpc import GrpcClient
 from .helper import ProgressBar
 from ...excepts import BadClient
 from ...logging.profile import TimeContext
+from ...proto import jina_pb2
 
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
-    from ...proto import jina_pb2
 
 
 class PyClient(GrpcClient):
@@ -60,3 +60,21 @@ class PyClient(GrpcClient):
         if self._raw_bytes:
             self.logger.warning('raw_bytes is not empty, overrided')
         self._raw_bytes = bytes_gen
+
+    def dry_run(self) -> bool:
+        """Send a DRYRUN request to the server, passing through all pods on the server
+        useful for testing connectivity and debuging
+
+        :return: if dry run is successful or not
+        """
+
+        def req_gen():
+            req = jina_pb2.Request()
+            req.control.command = jina_pb2.Request.ControlRequest.DRYRUN
+            yield req
+
+        for resp in self._stub.Call(req_gen()):
+            self.logger.info(resp)
+            return True
+
+        return False

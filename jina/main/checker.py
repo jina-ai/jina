@@ -39,23 +39,31 @@ class NetworkChecker:
         from ..peapods.pea import send_ctrl_message
         from ..proto import jina_pb2
         from ..logging.profile import TimeContext
+        from google.protobuf.json_format import MessageToJson
         import time
-        ctrl_addr = 'tcp://%s' % args.address
+        ctrl_addr = 'tcp://%s:%d' % (args.address, args.port)
         try:
             total_time = 0
             total_success = 0
             for j in range(args.retries):
-                with TimeContext('ping %s at %d round' % (ctrl_addr, j)) as tc:
+                with TimeContext('ping %s at %d round' % (ctrl_addr, j), default_logger) as tc:
                     r = send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.STATUS, timeout=args.timeout)
                     if not r:
-                        print('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))
+                        default_logger.warning('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))
                     else:
                         total_success += 1
-                        print('returns %s' % r)
+                        if args.print_response:
+                            default_logger.info('returns %s' % MessageToJson(r))
                 total_time += tc.duration
                 time.sleep(1)
-            print('success %d out of %d with ' % (total_success, args.retries))
+            if total_success < args.retries:
+                default_logger.warning('message lost %.0f%% (%d/%d) ' % (
+                    (1 - total_success / args.retries) * 100, args.retries - total_success, args.retries))
             if total_success > 0:
-                print('avg. latency: %.3f sec' % (total_time / total_success))
+                default_logger.critical('avg. latency: %.0f ms' % (total_time / total_success * 1000))
+                exit(0)
         except KeyboardInterrupt:
             pass
+
+        # returns 1 (anomaly) when it comes to here
+        exit(1)

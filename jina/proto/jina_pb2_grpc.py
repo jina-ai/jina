@@ -5,34 +5,34 @@ from . import jina_pb2 as jina__pb2
 
 
 class JinaRPCStub(object):
-    """*
-    jina gRPC service.
+  """*
+  jina gRPC service.
+  """
+
+  def __init__(self, channel):
+    """Constructor.
+
+    Args:
+      channel: A grpc.Channel.
     """
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-          channel: A grpc.Channel.
-        """
-        self.Call = channel.stream_stream(
-            '/jina.JinaRPC/Call',
-            request_serializer=jina__pb2.Request.SerializeToString,
+    self.Call = channel.stream_stream(
+        '/jina.JinaRPC/Call',
+        request_serializer=jina__pb2.Request.SerializeToString,
         response_deserializer=jina__pb2.Request.FromString,
         )
 
 
 class JinaRPCServicer(object):
-    """*
-    jina gRPC service.
-    """
+  """*
+  jina gRPC service.
+  """
 
-    def Call(self, request_iterator, context):
-        """Pass in a Request and a filled Request with topk_results will be returned.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+  def Call(self, request_iterator, context):
+    """Pass in a Request and a filled Request with topk_results will be returned.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
 
 
 def add_JinaRPCServicer_to_server(servicer, server):

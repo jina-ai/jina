@@ -107,9 +107,11 @@ class Pea(metaclass=PeaMeta):
         """
         self._request = getattr(msg.request, msg.request.WhichOneof('body'))
         self._message = msg
-        msg_type = type(self._request)
+        req_type = type(self._request)
 
-        if self.args.num_part > 1 and msg_type != jina_pb2.Request.ControlRequest:
+        if self.args.num_part > 1 and (req_type != jina_pb2.Request.ControlRequest
+                                       or (req_type == jina_pb2.Request.ControlRequest
+                                           and self._request.command == jina_pb2.Request.ControlRequest.DRYRUN)):
             # do not wait for control request
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
@@ -120,7 +122,7 @@ class Pea(metaclass=PeaMeta):
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
             else:
                 raise WaitPendingMessage
-            self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, msg_type))
+            self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, req_type))
         else:
             self._prev_requests = None
             self._prev_messages = None

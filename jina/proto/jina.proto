@@ -213,9 +213,11 @@ message Request {
         enum Command {
             TERMINATE = 0; // shutdown the Pod
             STATUS = 1; // check the status of the Pod
+            DRYRUN = 2; // passing this pod without take any action, and send the request to the next pod
         }
-
         Command command = 1; // the control command
+
+        map<string, string> args = 2;  // the pea arguments
     }
 }
 

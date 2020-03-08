@@ -195,16 +195,20 @@ def set_pod_parser(parser=None):
     return parser
 
 
-def set_healthcheck_parser(parser=None):
+def set_ping_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
     parser.add_argument('address', type=str,
-                        help='host address of the checked pod/pea, e.g. 0.0.0.0:5555')
+                        help='host address of the target pod/pea, e.g. 0.0.0.0')
+    parser.add_argument('port', type=int,
+                        help='the control port of the target pod/pea')
     parser.add_argument('--timeout', type=int, default=3000,
                         help='timeout (ms) of one check, -1 for waiting forever')
     parser.add_argument('--retries', type=int, default=3,
                         help='max number of tried health checks before exit 1')
+    parser.add_argument('--print_response',  action='store_true', default=False,
+                        help='print the response when received')
     return parser
 
 
@@ -312,14 +316,14 @@ def get_main_parser():
                                description='use "%(prog)-8s [sub-command] --help" '
                                            'to get detailed information about each sub-command', required=True)
 
-    set_logger_parser(sp.add_parser('log', help='receive piped log output and beautify the log', formatter_class=_chf))
+
 
     # cli
-    set_pea_parser(sp.add_parser('pea', help='start a pea', formatter_class=_chf))
     set_pod_parser(sp.add_parser('pod', help='start a pod', formatter_class=_chf))
+    set_pea_parser(sp.add_parser('pea', help='start a pea', formatter_class=_chf))
     set_frontend_parser(sp.add_parser('frontend', help='start a frontend pod', formatter_class=_chf))
     set_client_cli_parser(
-        sp.add_parser('client', help='start a client connects to a frontend pod', formatter_class=_chf))
+        sp.add_parser('client', help='start a client and connect it to a frontend', formatter_class=_chf))
     set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 
@@ -329,9 +333,10 @@ def get_main_parser():
     #                         description='use "%(prog)-8s check [sub-command] --help" '
     #                                     'to get detailed information about each sub-command', required=True)
 
-    set_healthcheck_parser(
-        sp.add_parser('ping', help='ping a jina pod and do a network health check', formatter_class=_chf))
-    sp.add_parser('import', help='check import of all executors', formatter_class=_chf)
+    set_ping_parser(
+        sp.add_parser('ping', help='ping a pod for a network health check', formatter_class=_chf))
+    sp.add_parser('check', help='check the import status all executors and drivers', formatter_class=_chf)
+    set_logger_parser(sp.add_parser('log', help='receive piped log output and beautify the log', formatter_class=_chf))
     return parser
 
 

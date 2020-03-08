@@ -10,7 +10,7 @@ import ruamel.yaml
 
 from .. import __default_host__
 from ..enums import FlowBuildLevel
-from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
+from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
 from ..helper import yaml, expand_env_var, kwargs2list, fill_in_host
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
@@ -570,6 +570,12 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(raw_bytes, mode='search', **kwargs).start(callback)
+
+    def dry_run(self, **kwargs):
+        """Send a DRYRUN request to this flow, passing through all pods in this flow
+        useful for testing connectivity and debugging"""
+        if not self._get_client(mode='search', **kwargs).dry_run():
+            raise FlowConnectivityError('a dry run shows this flow is badly connected due to the network settings')
 
     @build_required(FlowBuildLevel.GRAPH)
     def to_swarm_yaml(self, path: TextIO):
