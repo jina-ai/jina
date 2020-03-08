@@ -1,7 +1,6 @@
 import os
 import time
-
-import docker
+import unittest
 
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
@@ -24,19 +23,29 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
         yield d
 
 
+built = False
 img_name = 'jina/mwu-encoder'
-client = docker.from_env()
-
-print(os.path.dirname(__file__))
-client.images.build(path='mwu-encoder/', tag=img_name)
-client.close()
 
 
+def build_image():
+    if not built:
+        import docker
+        client = docker.from_env()
+        print(os.path.dirname(__file__))
+        client.images.build(path='mwu-encoder/', tag=img_name)
+        client.close()
+
+
+@unittest.skipIf(os.getenv('JINA_SKIP_CONTAINER_TESTS', False), 'skip the container test')
 class MyTestCase(JinaTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
         time.sleep(2)
+
+    def setUp(self) -> None:
+        super().setUp()
+        build_image()
 
     def test_simple_container(self):
         args = set_pea_parser().parse_args(['--image', img_name])
