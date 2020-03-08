@@ -1,13 +1,11 @@
 import os
 import time
-
-import docker
+import unittest
 
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
-from jina.main.parser import set_pea_parser, set_pod_parser, set_ping_parser
+from jina.main.parser import set_pea_parser, set_ping_parser
 from jina.peapods.pea import ContainerPea, Pea
-from jina.peapods.pod import Pod
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
@@ -25,26 +23,29 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
         yield d
 
 
+built = False
 img_name = 'jina/mwu-encoder'
-client = docker.from_env()
-
-print(os.path.dirname(__file__))
-client.images.build(path='mwu-encoder/', tag=img_name)
-client.close()
 
 
+def build_image():
+    if not built:
+        import docker
+        client = docker.from_env()
+        print(os.path.dirname(__file__))
+        client.images.build(path='mwu-encoder/', tag=img_name)
+        client.close()
+
+
+@unittest.skipIf(os.getenv('JINA_SKIP_CONTAINER_TESTS', False), 'skip the container test')
 class MyTestCase(JinaTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
         time.sleep(2)
 
-    def test_pod_status(self):
-        args = set_pod_parser().parse_args(['--replicas', '3'])
-        with Pod(args) as p:
-            self.assertEqual(len(p.status), p.num_peas)
-            for v in p.status:
-                self.assertIsNotNone(v)
+    def setUp(self) -> None:
+        super().setUp()
+        build_image()
 
     def test_simple_container(self):
         args = set_pea_parser().parse_args(['--image', img_name])
@@ -60,13 +61,6 @@ class MyTestCase(JinaTestCase):
 
         with ContainerPea(args) as cp:
             time.sleep(2)
-
-    def test_flow_no_container(self):
-        f = (Flow()
-             .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
-
-        with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_with_container(self):
         f = (Flow()
@@ -142,25 +136,9 @@ class MyTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(out_file))
         self.add_tmpfile(out_file, './abc')
 
-    def test_ping(self):
-        a1 = set_pea_parser().parse_args([])
-        a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print_response'])
-        a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
+    def test_container_ping(self):
         a4 = set_pea_parser().parse_args(['--image', img_name])
         a5 = set_ping_parser().parse_args(['0.0.0.0', str(a4.port_ctrl), '--print_response'])
-
-        with self.assertRaises(SystemExit) as cm:
-            with Pea(a1):
-                NetworkChecker(a2)
-
-        self.assertEqual(cm.exception.code, 0)
-
-        # test with bad addresss
-        with self.assertRaises(SystemExit) as cm:
-            with Pea(a1):
-                NetworkChecker(a3)
-
-        self.assertEqual(cm.exception.code, 1)
 
         # test with container
         with self.assertRaises(SystemExit) as cm:
@@ -168,10 +146,3 @@ class MyTestCase(JinaTestCase):
                 NetworkChecker(a5)
 
         self.assertEqual(cm.exception.code, 0)
-
-    def test_dryrun(self):
-        f = (Flow()
-             .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
-
-        with f.build() as fl:
-            fl.dry_run()

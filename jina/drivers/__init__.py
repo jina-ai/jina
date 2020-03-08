@@ -1,9 +1,10 @@
+import inspect
+from functools import wraps
 from typing import Callable, List
 
 import ruamel.yaml.constructor
 
 from ..executors.compound import CompoundExecutor
-from ..executors.decorators import store_init_kwargs
 from ..helper import yaml
 from ..proto import jina_pb2
 
@@ -12,6 +13,39 @@ if False:
     from ..peapods.pea import Pea
     from ..executors import AnyExecutor
     import logging
+
+
+def store_init_kwargs(func):
+    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
+
+    @wraps(func)
+    def arg_wrapper(self, *args, **kwargs):
+        if func.__name__ != '__init__':
+            raise TypeError('this decorator should only be used on __init__ method of a driver')
+        taboo = {'self', 'args', 'kwargs'}
+        all_pars = inspect.signature(func).parameters
+        tmp = {k: v.default for k, v in all_pars.items() if k not in taboo}
+        tmp_list = [k for k in all_pars.keys() if k not in taboo]
+        # set args by aligning tmp_list with arg values
+        for k, v in zip(tmp_list, args):
+            tmp[k] = v
+        # set kwargs
+        for k, v in kwargs.items():
+            if k in tmp:
+                tmp[k] = v
+
+        if self.store_args_kwargs:
+            if args: tmp['args'] = args
+            if kwargs: tmp['kwargs'] = {k: v for k, v in kwargs.items() if k not in taboo}
+
+        if hasattr(self, '_init_kwargs_dict'):
+            self._init_kwargs_dict.update(tmp)
+        else:
+            self._init_kwargs_dict = tmp
+        f = func(self, *args, **kwargs)
+        return f
+
+    return arg_wrapper
 
 
 class DriverType(type):

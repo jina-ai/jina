@@ -1,4 +1,4 @@
-FROM python:3.7.6-alpine
+FROM python:3.8-alpine
 
 ARG VCS_REF
 ARG BUILD_DATE
@@ -16,13 +16,13 @@ WORKDIR /jina/
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD jina ./jina/
 
-ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
+ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.8/dist-packages:/usr/local/lib/python3.8/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
 
 RUN apk add --no-cache py3-pyzmq py3-numpy py3-scipy grpc && \
     ln -s locale.h /usr/include/xlocale.h && \
     pip install . --no-cache-dir --compile && \
-    find /usr/lib/python3.7/ -name 'tests' -exec rm -r '{}' + && \
-    find /usr/lib/python3.7/site-packages/ -name '*.so' -print -exec sh -c 'file "{}" | grep -q "not stripped" && strip -s "{}"' \; && \
+    find /usr/lib/python3.8/ -name 'tests' -exec rm -r '{}' + && \
+    find /usr/lib/python3.8/site-packages/ -name '*.so' -print -exec sh -c 'file "{}" | grep -q "not stripped" && strip -s "{}"' \; && \
     rm /usr/include/xlocale.h && \
     rm -rf /tmp/* && \
     rm -rf /jina && \

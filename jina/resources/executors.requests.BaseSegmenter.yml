@@ -2,6 +2,6 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   [SearchRequest, TrainRequest, IndexRequest]:
-    - !SegmentDriver {}
+    - !SegmentDriver
       with:
         method: transform

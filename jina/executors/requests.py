@@ -1,5 +1,7 @@
 from typing import Dict, List
 
+_defaults = {}
+
 
 def get_default_reqs(cls_mro: List[type]) -> Dict:
     """Get a copy of default meta variables
@@ -8,17 +10,19 @@ def get_default_reqs(cls_mro: List[type]) -> Dict:
     """
     import copy
 
-    from pkg_resources import resource_stream
-
+    global _defaults
     from ..helper import yaml
 
     for cls in cls_mro:
         try:
-            with resource_stream('jina',
-                                 '/'.join(('resources', 'executors.requests.%s.yml' % cls.__name__))) as fp:
-                _defaults = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
+            if cls.__name__ not in _defaults:
+                from pkg_resources import resource_stream
+                with resource_stream('jina',
+                                     '/'.join(('resources', 'executors.requests.%s.yml' % cls.__name__))) as fp:
+                    _defaults[cls.__name__] = \
+                        yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
-            return copy.deepcopy(_defaults)
+            return copy.deepcopy(_defaults[cls.__name__])
         except FileNotFoundError:
             pass
 

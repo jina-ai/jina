@@ -1,8 +1,8 @@
 name: Docker Build
 on:
   push:
-    branches:
-      - master
+    branches-ignore:
+      - '**'  # temporally ignore all
 jobs:
   build_docker:
     runs-on: ubuntu-latest
