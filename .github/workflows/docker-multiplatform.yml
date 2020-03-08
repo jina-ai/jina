@@ -19,14 +19,6 @@ jobs:
       - name: Available platforms
         run: |
           echo ${{ steps.buildx.outputs.platforms }}
-      - name: Run Buildx and Upload to Docker Cloud
-        run: |
-          docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
-            --output "type=registry" \
-            -t jinaai/jina:master-debian -t jinaai/jina:dev-debian \
-            --file ./Dockerfiles/debianx.Dockerfile .
       - name: Run Buildx and Upload to Github
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} docker.pkg.github.com
@@ -34,4 +26,12 @@ jobs:
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
             --output "type=registry" \
             -t docker.pkg.github.com/jina-ai/jina/jina:master-debian -t docker.pkg.github.com/jina-ai/jina/jina:dev-debian \
+            --file ./Dockerfiles/debianx.Dockerfile .
+      - name: Run Buildx and Upload to Docker Cloud
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
+            --output "type=registry" \
+            -t jinaai/jina:master-debian -t jinaai/jina:dev-debian \
             --file ./Dockerfiles/debianx.Dockerfile .
