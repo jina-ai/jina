@@ -107,6 +107,12 @@ def import_classes(namespace: str, targets=None,
                             targets.remove(k)
                             if not targets:
                                 return  # target execs are all found and loaded, return
+                        try:
+                            # load the default request for this executor if possible
+                            from .executors.requests import get_default_reqs
+                            get_default_reqs(type.mro(getattr(mod, k)))
+                        except ValueError:
+                            pass
                     except Exception as ex:
                         load_stat[m].append((k, False, ex))
                         bad_imports.append('.'.join([m, k]))
@@ -132,9 +138,9 @@ def import_classes(namespace: str, targets=None,
     elif namespace == 'jina.drivers':
         JINA_GLOBAL.imported.drivers = True
 
-
-import_classes('jina.executors', show_import_table=False, import_once=True)
+# driver first, as executor may contain driver
 import_classes('jina.drivers', show_import_table=False, import_once=True)
+import_classes('jina.executors', show_import_table=False, import_once=True)
 
 # manually install the default signal handler
 import signal

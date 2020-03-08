@@ -34,7 +34,7 @@ ADD tests /jina/tests/
 RUN jina --version
 WORKDIR /jina/tests
 ENV PYTHONPATH=$PYTHONPATH:/jina/
-RUN python -m unittest *.py -v
+RUN python -m unittest test_index.py -v
 #RUN python -c 'f = open("yaml/test-index.yml"); print(f.read())'
 
 WORKDIR /
