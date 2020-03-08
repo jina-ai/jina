@@ -49,6 +49,10 @@ class FlowTopologyError(Exception):
     """Flow exception when the topology is ambiguous."""
 
 
+class FlowConnectivityError(Exception):
+    """Flow exception when the flow is not connective via network."""
+
+
 class FlowMissingPodError(Exception):
     """Flow exception when a pod can not be found in the flow."""
 

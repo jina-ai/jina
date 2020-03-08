@@ -136,10 +136,16 @@ class Zmqlet:
         :param msg: the protobuf message to send
         """
         # choose output sock
-        if msg.request and msg.request.WhichOneof('body') and \
-                isinstance(getattr(msg.request, msg.request.WhichOneof('body')),
-                           jina_pb2.Request.ControlRequest):
-            o_sock = self.ctrl_sock
+
+        _req = getattr(msg.request, msg.request.WhichOneof('body'))
+        _req_type = type(_req)
+
+        if _req_type == jina_pb2.Request.ControlRequest:
+            if _req.command == jina_pb2.Request.ControlRequest.DRYRUN:
+                # pass this control message to the next
+                o_sock = self.out_sock
+            else:
+                o_sock = self.ctrl_sock
         else:
             o_sock = self.out_sock
 

@@ -128,6 +128,7 @@ class MyTestCase(JinaTestCase):
              )
 
         with f.build() as fl:
+            fl.dry_run()
             fl.index(raw_bytes=random_docs(1000), in_proto=True)
 
     def test_container_volume(self):
@@ -167,3 +168,10 @@ class MyTestCase(JinaTestCase):
                 NetworkChecker(a5)
 
         self.assertEqual(cm.exception.code, 0)
+
+    def test_dryrun(self):
+        f = (Flow()
+             .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
+
+        with f.build() as fl:
+            fl.dry_run()
