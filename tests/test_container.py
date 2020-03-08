@@ -144,9 +144,26 @@ class MyTestCase(JinaTestCase):
     def test_ping(self):
         a1 = set_pea_parser().parse_args([])
         a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print_response'])
+        a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
+        a4 = set_pea_parser().parse_args(['--image', img_name])
+        a5 = set_ping_parser().parse_args(['0.0.0.0', str(a4.port_ctrl), '--print_response'])
 
         with self.assertRaises(SystemExit) as cm:
             with Pea(a1):
                 NetworkChecker(a2)
+
+        self.assertEqual(cm.exception.code, 0)
+
+        # test with bad addresss
+        with self.assertRaises(SystemExit) as cm:
+            with Pea(a1):
+                NetworkChecker(a3)
+
+        self.assertEqual(cm.exception.code, 1)
+
+        # test with container
+        with self.assertRaises(SystemExit) as cm:
+            with Pea(a4):
+                NetworkChecker(a5)
 
         self.assertEqual(cm.exception.code, 0)

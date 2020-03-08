@@ -56,9 +56,11 @@ class NetworkChecker:
                             default_logger.info('returns %s' % MessageToJson(r))
                 total_time += tc.duration
                 time.sleep(1)
-            default_logger.info('success %d out of %d with ' % (total_success, args.retries))
+            if total_success < args.retries:
+                default_logger.warning('message lost %.0f%% (%d/%d) ' % (
+                    (1 - total_success / args.retries) * 100, args.retries - total_success, args.retries))
             if total_success > 0:
-                default_logger.info('avg. latency: %.3f sec' % (total_time / total_success))
+                default_logger.critical('avg. latency: %.0f ms' % (total_time / total_success * 1000))
                 exit(0)
         except KeyboardInterrupt:
             pass
