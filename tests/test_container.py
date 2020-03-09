@@ -51,7 +51,7 @@ class MyTestCase(JinaTestCase):
         args = set_pea_parser().parse_args(['--image', img_name])
         print(args)
 
-        with ContainerPea(args) as cp:
+        with ContainerPea(args):
             time.sleep(2)
 
     def test_simple_container_with_ext_yaml(self):
@@ -59,17 +59,17 @@ class MyTestCase(JinaTestCase):
                                             '--yaml_path', './mwu-encoder/mwu_encoder_ext.yml'])
         print(args)
 
-        with ContainerPea(args) as cp:
+        with ContainerPea(args):
             time.sleep(2)
 
-    def test_flow_with_container(self):
+    def test_flow_with_one_container_pod(self):
         f = (Flow()
              .add(name='dummyEncoder', image=img_name))
 
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
-    def test_flow_with_container_ext_yaml(self):
+    def test_flow_with_one_container_ext_yaml(self):
         f = (Flow()
              .add(name='dummyEncoder', image=img_name, yaml_path='./mwu-encoder/mwu_encoder_ext.yml'))
 
@@ -94,8 +94,7 @@ class MyTestCase(JinaTestCase):
              .add(name='d2', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
              .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
                   recv_from='d1', entrypoint='jina pod')
-             .join(['d3', 'd2'])
-             )
+             .join(['d3', 'd2']))
 
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)

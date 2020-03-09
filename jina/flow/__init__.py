@@ -55,21 +55,19 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 
 class Flow:
-    def __init__(self, sse_logger: bool = False, runtime: str = 'process',
+    def __init__(self, sse_logger: bool = False,
                  image_name: str = 'jina:master-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
                  **kwargs):
         """Initialize a flow object
 
         :param driver_yaml_path: the file path of the driver map
         :param sse_logger: to enable the server-side event logger or not
-        :param runtime: the runtime that each pod in this flow runs on
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
         """
         self.logger = get_logger(self.__class__.__name__)
         self.with_sse_logger = sse_logger
         self.image_name = image_name
         self.repository = repository
-        self.runtime = runtime
         self._common_kwargs = kwargs
 
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -261,7 +259,6 @@ class Flow:
         """
         Build the current flow and make it ready to use
 
-        :param runtime: supported 'thread', 'process', 'swarm', 'k8s', 'shell', if None then only build graph only
         :param copy_flow: return the copy of the current flow.
         :return: the current flow (by default)
 
@@ -323,7 +320,7 @@ class Flow:
             if len(edges_with_same_start) > 1 and len(edges_with_same_end) == 1:
                 FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUB_BIND)
             elif len(edges_with_same_end) > 1 and len(edges_with_same_start) == 1:
-                FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
+                FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             elif len(edges_with_same_start) == 1 and len(edges_with_same_end) == 1:
                 # in this case, either side can be BIND
                 # we prefer frontend to be always BIND

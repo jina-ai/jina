@@ -239,10 +239,12 @@ class FlowPod(Pod):
             first.tail_args.port_out = second.head_args.port_in
         elif first_socket_type == SocketType.PUB_BIND:
             first.tail_args.socket_out = SocketType.PUB_BIND
-            first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
             second.head_args.socket_in = SocketType.SUB_CONNECT
-            second.head_args.host_in = _fill_in_host(first.tail_args, second.head_args)  # the hostname of s_pod
-            first.head_args.port_in = first.tail_args.port_out
+
+            first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
+            second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
+                                                     connect_args=second.head_args)  # the hostname of s_pod
+            second.head_args.port_in = first.tail_args.port_out
         else:
             raise NotImplementedError('%r is not supported here' % first_socket_type)
 
@@ -391,8 +393,8 @@ class FrontendPod(Pod):
         return self._args.grpc_host
 
 
-class FrontendFlowPod(FlowPod, FrontendPod):
+class FrontendFlowPod(FrontendPod, FlowPod):
     """A :class:`FlowPod` that holds a Frontend """
 
     def __init__(self, kwargs: Dict = None):
-        super().__init__(kwargs, parser=set_frontend_parser)
+        FlowPod.__init__(self, kwargs, parser=set_frontend_parser)
