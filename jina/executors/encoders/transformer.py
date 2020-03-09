@@ -5,21 +5,22 @@ from . import BaseTextEncoder
 from ...excepts import EncoderFailToLoad
 
 from transformers import BertModel, BertTokenizer, OpenAIGPTModel, \
-    OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, TransfoXLModel, \
-    TransfoXLTokenizer, XLNetModel, XLNetTokenizer, XLMModel, \
+    OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
+    XLNetModel, XLNetTokenizer, XLMModel, \
     XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
     RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer
+    # TransfoXLModel, TransfoXLTokenizer, \
 
 MODELS = {
     'bert-base-uncased': (BertModel, BertTokenizer),
     'openai-gpt': (OpenAIGPTModel, OpenAIGPTTokenizer),
     'gpt2': (GPT2Model, GPT2Tokenizer),
-    # 'transfo-xl-wt103': (TransfoXLModel, TransfoXLTokenizer),
     'xlnet-base-cased': (XLNetModel, XLNetTokenizer),
     'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer),
     'distilbert-base-cased': (DistilBertModel, DistilBertTokenizer),
     'roberta-base': (RobertaModel, RobertaTokenizer),
     'xlm-roberta-base': (XLMRobertaModel, XLMRobertaTokenizer)
+    # 'transfo-xl-wt103': (TransfoXLModel, TransfoXLTokenizer),
 }
 
 
@@ -48,6 +49,7 @@ class TransformerTextEncoder(BaseTextEncoder):
         self.model = None
         self.tokenizer = None
         self.max_length = max_length
+        self.cls_pos = None
 
     def post_init(self):
         model_class, tokenizer_class = MODELS[self.model_name]
@@ -60,9 +62,20 @@ class TransformerTextEncoder(BaseTextEncoder):
 
         try:
             self.tokenizer = tokenizer_class.from_pretrained(self.model_name)
+            self.tokenizer.padding_side = 'right'
         except Exception:
             self.logger.warning('failed load tokenizer')
             raise EncoderFailToLoad
+
+        if self.model_name in ('bert-base-uncased', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base'):
+            self.cls_pos = 'head'
+        elif self.model_name in ('xlnet-base-cased'):
+            self.tokenizer.pad_token = '<PAD>'
+            self.model.resize_token_embeddings(len(self.tokenizer))
+            self.cls_pos = 'tail'
+        elif self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
+            self.tokenizer.pad_token = '<PAD>'
+            self.model.resize_token_embeddings(len(self.tokenizer))
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
@@ -70,38 +83,68 @@ class TransformerTextEncoder(BaseTextEncoder):
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
-        pad_token_id = self.tokenizer.pad_token_id
-        if pad_token_id is None:
-            self.tokenizer.pad_token = '<PAD>'
-            self.model.resize_token_embeddings(len(self.tokenizer))
-        seq_ids = torch.tensor(
-            [self.tokenizer.encode(t, max_length=self.max_length, pad_to_max_length=True, padding_side='right')
-             for t in data.tolist()])
-        mask_ids = torch.tensor(
-            [[1] * (len(t) + 2) + [0] * (self.max_length - len(t) - 2) for t in data.tolist()])
-        print("{}".format(seq_ids))
+        token_ids_batch = []
+        mask_ids_batch = []
+        for c_idx in range(data.shape[0]):
+            token_ids = self.tokenizer.encode(
+                data[c_idx], pad_to_max_length=True, max_length=self.max_length)
+            mask_ids = [0 if t == self.tokenizer.pad_token_id else 1 for t in token_ids]
+            token_ids_batch.append(token_ids)
+            mask_ids_batch.append(mask_ids)
+        token_ids_batch = torch.tensor(token_ids_batch)
+        mask_ids_batch = torch.tensor(mask_ids_batch)
         with torch.no_grad():
-            seq_output, *extra_output = self.model(seq_ids, attention_mask=mask_ids)
+            seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             if self.pooling_strategy == 'cls':
-                if len(extra_output) == 1 and isinstance(extra_output[0], torch.Tensor):
-                    output = extra_output[0].numpy()
-                else:
+                if self.cls_pos is None:
+                    self.logger.critical("cls is not supported: {}".format(self.model_name))
                     raise NotImplementedError
+                output = self._reduce_cls(self, seq_output.numpy(), mask_ids_batch.numpy(), cls_pos=self.cls_pos)
+            elif self.pooling_strategy == 'reduce-mean':
+                output = self._reduce_mean(seq_output.numpy(), mask_ids_batch.numpy())
+            elif self.pooling_strategy == 'reduce-max':
+                output = self._reduce_max(seq_output.numpy(), mask_ids_batch.numpy())
             else:
-                seq_output = seq_output.numpy()
-                emb_dim = seq_output.shape[2]
-                mask_2d = mask_ids.numpy()
-                mask = np.tile(mask_2d, (emb_dim, 1, 1))
-                mask = np.rollaxis(mask, 0, 3)
-                output = mask * seq_output
-                if self.pooling_strategy == 'reduce-mean':
-                    output = np.sum(output, axis=1) / np.sum(mask, axis=1)
-                elif self.pooling_strategy == 'reduce-max':
-                    neg_mask = (mask_2d - 1) * 1e10
-                    neg_mask = np.tile(neg_mask, (emb_dim, 1, 1))
-                    neg_mask = np.rollaxis(neg_mask, 0, 3)
-                    output += neg_mask
-                    output = np.max(output, axis=1)
-                else:
-                    raise NotImplementedError
+                self.logger.critical("pooling strategy not found: {}".format(self.pooling_strategy))
+                raise NotImplementedError
         return output
+
+    @staticmethod
+    def _reduce_mean(data, mask_2d):
+        emb_dim = data.shape[2]
+        mask = np.tile(mask_2d, (emb_dim, 1, 1))
+        mask = np.rollaxis(mask, 0, 3)
+        output = mask * data
+        return np.sum(output, axis=1) / np.sum(mask, axis=1)
+
+    @staticmethod
+    def _reduce_max(data, mask_2d):
+        emb_dim = data.shape[2]
+        mask = np.tile(mask_2d, (emb_dim, 1, 1))
+        mask = np.rollaxis(mask, 0, 3)
+        output = mask * data
+        neg_mask = (mask_2d - 1) * 1e10
+        neg_mask = np.tile(neg_mask, (emb_dim, 1, 1))
+        neg_mask = np.rollaxis(neg_mask, 0, 3)
+        output += neg_mask
+        return np.max(output, axis=1)
+
+    @staticmethod
+    def _reduce_cls(cls, data, mask_2d, cls_pos='head'):
+        mask_pruned = cls._prune_mask(mask_2d, cls_pos)
+        return cls._reduce_mean(data, mask_pruned)
+
+    @staticmethod
+    def _prune_mask(mask, cls_pos='head'):
+        result = np.zeros(mask.shape)
+        if cls_pos == 'head':
+            mask_row = np.zeros((1, mask.shape[1]))
+            mask_row[0, 0] = 1
+            result = np.tile(mask_row, (mask.shape[0], 1))
+        elif cls_pos == 'tail':
+            for num_tokens in np.sum(mask, axis=1).tolist():
+                result[num_tokens-1] = 1
+        else:
+            raise NotImplementedError
+        return result
+
