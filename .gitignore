@@ -128,3 +128,4 @@ toy*.yml
 shell/jina-wizard.sh
 /junit/
 /tests/junit/
+/docs/chapters/proto/docs.md
