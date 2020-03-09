@@ -6,6 +6,7 @@ Command-Line Interface
    :caption: Starting Jina in the Console
 
    jina-pod
+   jina-pea
    jina-flow
    jina-client
    jina-frontend
@@ -14,7 +15,7 @@ Command-Line Interface
 .. toctree::
    :caption: Tooling and Helpers
 
+   jina-ping
+   jina-check
    jina-log
-   jina-check-import
-   jina-check-network
    jina

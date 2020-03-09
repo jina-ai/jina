@@ -22,14 +22,14 @@ This command downloads the latest Jina image from [Docker Hub](https://hub.docke
 <details>
  <summary>Other Jina docker image mirrors: (click to expand...)</summary>
 
-#### Github Package
+#### Github Package (Do not support multiarch)
 
 ```bash
 docker login -u USERNAME -p TOKEN docker.pkg.github.com
 docker run docker.pkg.github.com/jina-ai/jina/jina:[tag]
 ```
 
-#### Tencent Cloud
+#### Tencent Cloud (Too slow to upload)
 
 ```bash
 docker login -u USERNAME -p TOKEN ccr.ccs.tencentyun.com
