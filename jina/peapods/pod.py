@@ -31,6 +31,11 @@ class Pod:
         self.deducted_tail = None
         self.peas_args = self._parse_args()
 
+    @property
+    def name(self) -> str:
+        """The name of this :class:`Pod`. """
+        return self._args.name
+
     def _parse_args(self):
         peas_args = {
             'head': None,
@@ -110,6 +115,9 @@ class Pod:
     def num_peas(self) -> int:
         """Get the number of running :class:`Pea`"""
         return len(self.peas)
+
+    def __eq__(self, other: 'Pod'):
+        return self.num_peas == other.num_peas and self.name == other.name
 
     def set_runtime(self, runtime: str):
         """Set the parallel runtime of this Pod.

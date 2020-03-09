@@ -47,13 +47,13 @@ class MyTestCase(JinaTestCase):
         bytes_gen = (b'aaa' for _ in range(10))
         f = (Flow()
              .add(yaml_path='route'))
-        with f.build(runtime='thread') as fl:
+        with f.build() as fl:
             fl.index(raw_bytes=bytes_gen)
 
     def test_load_flow_from_yaml(self):
         with open('yaml/test-flow.yml') as fp:
             a = Flow.load_config(fp)
-            with open('yaml/swarm-out.yml', 'w') as fp, a as fl:
+            with open('yaml/swarm-out.yml', 'w') as fp, a.build() as fl:
                 fl.to_swarm_yaml(fp)
             self.add_tmpfile('yaml/swarm-out.yml')
 
