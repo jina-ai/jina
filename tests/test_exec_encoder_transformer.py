@@ -5,6 +5,7 @@ from jina.executors.encoders.transformer import TransformerTextEncoder
 
 
 class MyTestCase(JinaTestCase):
+    @unittest.skip("skip tests depending on pretraining models")
     def test_encoding_results(self):
         encoder = TransformerTextEncoder()
         test_data = np.array(['a', 'b', 'xy'])
@@ -12,6 +13,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoded_data.shape[0], 3)
         self.assertIs(type(encoded_data), np.ndarray)
 
+    @unittest.skip("skip tests depending on pretraining models")
     def test_all_encoders(self):
         from jina.executors.encoders.transformer import MODELS
         for model_name in MODELS:
