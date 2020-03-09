@@ -1,13 +1,13 @@
 import copy
 from contextlib import ExitStack
-from typing import Set, Dict, Callable, List
+from typing import Set, Dict, List, Callable
 
 from .frontend import FrontendPea
 from .pea import Pea, ContainerPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, random_identity, kwargs2list, fill_in_host
-from ..main.parser import set_pod_parser
+from ..helper import random_port, random_identity, kwargs2list
+from ..main.parser import set_pod_parser, set_frontend_parser
 
 if False:
     import argparse
@@ -15,46 +15,26 @@ if False:
 
 class Pod:
     """A Pod is a set of peas, which run in parallel. They share the same input and output socket.
-    Internally, the peas can run with the process/thread backend.
+    Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
-    def __init__(self, args: 'argparse.Namespace' = None, kwargs: Dict = None, send_to: Set[str] = None,
-                 recv_from: Set[str] = None, parser: Callable = set_pod_parser):
+    def __init__(self, args: 'argparse.Namespace'):
         """
 
-        :param args: arguments parsed from the CLI, if given then ``kwargs`` is ignored
-        :param name: the name of the Pod
-        :param kwargs: unparsed argument in dict, if given the
-        :param send_to: a list of names this Pod send message to
-        :param recv_from: a list of names this Pod receive message from
+        :param args: arguments parsed from the CLI
         """
         self.peas = []
-
-        if args:
-            self._args = args
-        else:
-            self.cli_args, self._args, self.unk_args = _get_parsed_args(kwargs, parser)
-
-        self.name = self._args.name
-        self.send_to = send_to if send_to else set()  #: used in the :class:`jina.flow.Flow` to build the graph
-        self.recv_from = recv_from if recv_from else set()  #: used in the :class:`jina.flow.Flow` to build the graph
-
+        self._args = args
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
         self.peas_args = self._parse_args()
 
-    def __eq__(self, other):
-        return all(getattr(self, v) == getattr(other, v) for v in ('name', 'send_to', 'recv_from'))
-
-    def to_cli_command(self):
-        if isinstance(self, FrontendPod):
-            cmd = 'jina frontend'
-        else:
-            cmd = 'jina pod'
-
-        return '%s %s' % (cmd, ' '.join(self.cli_args))
+    @property
+    def name(self) -> str:
+        """The name of this :class:`Pod`. """
+        return self._args.name
 
     def _parse_args(self):
         peas_args = {
@@ -136,6 +116,9 @@ class Pod:
         """Get the number of running :class:`Pea`"""
         return len(self.peas)
 
+    def __eq__(self, other: 'Pod'):
+        return self.num_peas == other.num_peas and self.name == other.name
+
     def set_runtime(self, runtime: str):
         """Set the parallel runtime of this Pod.
 
@@ -147,13 +130,14 @@ class Pod:
             # s.host_in = __default_host__
             # s.host_out = __default_host__
 
-    def force_local(self):
-        """Forcing all peas to run on ``__default_host__``"""
-        for s in self.all_args:
-            s.host_in = __default_host__
-            s.host_out = __default_host__
+    def start(self):
+        """Start to run all Peas in this Pod.
 
-    def __enter__(self):
+        Remember to close the Pod with :meth:`close`.
+
+        Note that this method has a timeout of ``ready_timeout`` set in CLI,
+        which is inherited from :class:`jina.peapods.peas.Pea`
+        """
         self.stack = ExitStack()
         # start head and tail
         if self.peas_args['head']:
@@ -173,6 +157,8 @@ class Pod:
             self.peas.append(p)
             self.stack.enter_context(p)
 
+    def __enter__(self):
+        self.start()
         return self
 
     @property
@@ -200,6 +186,67 @@ class Pod:
             pass
         finally:
             self.peas.clear()
+
+
+class FlowPod(Pod):
+    """A :class:`FlowPod` is like a :class:`Pod`, but it exposes more interfaces for tweaking its connections with
+    other Pods, which comes in handy when used in the Flow API """
+
+    def __init__(self, kwargs: Dict = None, send_to: Set[str] = None,
+                 recv_from: Set[str] = None, parser: Callable = set_pod_parser):
+        """
+
+        :param kwargs: unparsed argument in dict, if given the
+        :param send_to: a list of names this Pod send message to
+        :param recv_from: a list of names this Pod receive message from
+        """
+        self.cli_args, self._args, self.unk_args = _get_parsed_args(kwargs, parser)
+        super().__init__(self._args)
+        self.send_to = send_to if send_to else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+        self.recv_from = recv_from if recv_from else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+
+    def to_cli_command(self):
+        if isinstance(self, FrontendPod):
+            cmd = 'jina frontend'
+        else:
+            cmd = 'jina pod'
+
+        return '%s %s' % (cmd, ' '.join(self.cli_args))
+
+    @staticmethod
+    def connect(first: 'Pod', second: 'Pod', first_socket_type: 'SocketType'):
+        """Connect two Pods
+
+        :param first: the first Pod
+        :param second: the second Pod
+        :param first_socket_type: socket type of the first Pod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
+        """
+        if first_socket_type == SocketType.PUSH_BIND:
+            first.tail_args.socket_out = SocketType.PUSH_BIND
+            second.head_args.socket_in = SocketType.PULL_CONNECT
+
+            first.tail_args.host_out = __default_host__
+            second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
+                                                     connect_args=second.head_args)
+            second.head_args.port_in = first.tail_args.port_out
+        elif first_socket_type == SocketType.PUSH_CONNECT:
+            first.tail_args.socket_out = SocketType.PUSH_CONNECT
+            second.head_args.socket_in = SocketType.PULL_BIND
+
+            first.tail_args.host_out = _fill_in_host(connect_args=first.tail_args,
+                                                     bind_args=second.head_args)
+            second.head_args.host_in = __default_host__
+            first.tail_args.port_out = second.head_args.port_in
+        elif first_socket_type == SocketType.PUB_BIND:
+            first.tail_args.socket_out = SocketType.PUB_BIND
+            second.head_args.socket_in = SocketType.SUB_CONNECT
+
+            first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
+            second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
+                                                     connect_args=second.head_args)  # the hostname of s_pod
+            second.head_args.port_in = first.tail_args.port_out
+        else:
+            raise NotImplementedError('%r is not supported here' % first_socket_type)
 
     def connect_to_last(self, pod: 'Pod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
@@ -235,31 +282,6 @@ class Pod:
         else:
             raise ValueError('the current pod has no tail router, deduct the tail is confusing')
 
-    @staticmethod
-    def connect(first: 'Pod', second: 'Pod', bind_on_first: bool):
-        """Connect two Pods
-
-        :param first: the first Pod
-        :param second: the second Pod
-        :param bind_on_first: do socket binding on the first Pod
-        """
-        if bind_on_first:
-            first.tail_args.socket_out = SocketType.PUSH_BIND
-            second.head_args.socket_in = SocketType.PULL_CONNECT
-
-            first.tail_args.host_out = __default_host__
-            second.head_args.host_in = fill_in_host(bind_args=first.tail_args,
-                                                    connect_args=second.head_args)
-            second.head_args.port_in = first.tail_args.port_out
-        else:
-            first.tail_args.socket_out = SocketType.PUSH_CONNECT
-            second.head_args.socket_in = SocketType.PULL_BIND
-
-            first.tail_args.host_out = fill_in_host(connect_args=first.tail_args,
-                                                    bind_args=second.head_args)
-            second.head_args.host_in = __default_host__
-            first.tail_args.port_out = second.head_args.port_in
-
 
 def _set_peas_args(args, head_args, tail_args):
     result = []
@@ -274,8 +296,8 @@ def _set_peas_args(args, head_args, tail_args):
             _args.socket_in = SocketType.PULL_CONNECT
         else:
             _args.socket_in = SocketType.SUB_CONNECT
-        _args.host_in = fill_in_host(bind_args=head_args, connect_args=_args)
-        _args.host_out = fill_in_host(bind_args=tail_args, connect_args=_args)
+        _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
+        _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
         result.append(_args)
     return result
 
@@ -324,16 +346,41 @@ def _get_parsed_args(kwargs, parser):
     return args, p_args, unknown_args
 
 
-class FrontendPod(Pod):
-    """A Pod-like Frontend """
+def _fill_in_host(bind_args, connect_args):
+    from sys import platform
 
-    def __enter__(self):
+    bind_local = (bind_args.host == '0.0.0.0')
+    bind_docker = (bind_args.image is not None and bind_args.image)
+    conn_local = (connect_args.host == '0.0.0.0')
+    conn_docker = (connect_args.image is not None and connect_args.image)
+    bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
+    if platform == "linux" or platform == "linux2":
+        local_host = '0.0.0.0'
+    else:
+        local_host = 'host.docker.internal'
+
+    if bind_local and conn_local and conn_docker:
+        return local_host
+    elif bind_local and conn_local and not conn_docker:
+        return __default_host__
+    elif not bind_local and bind_conn_same_remote:
+        if conn_docker:
+            return local_host
+        else:
+            return __default_host__
+    else:
+        return bind_args.host
+
+
+class FrontendPod(Pod):
+    """A :class:`Pod` that holds a Frontend """
+
+    def start(self):
         self.stack = ExitStack()
         for s in self.all_args:
             p = FrontendPea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
-        return self
 
     @property
     def grpc_port(self) -> int:
@@ -344,3 +391,10 @@ class FrontendPod(Pod):
     def grpc_host(self) -> str:
         """Get the grpc host name """
         return self._args.grpc_host
+
+
+class FrontendFlowPod(FrontendPod, FlowPod):
+    """A :class:`FlowPod` that holds a Frontend """
+
+    def __init__(self, kwargs: Dict = None):
+        FlowPod.__init__(self, kwargs, parser=set_frontend_parser)

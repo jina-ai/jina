@@ -9,7 +9,7 @@ from .zmq import AsyncZmqlet, add_envelope
 from ..excepts import WaitPendingMessage, EventLoopEnd, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
-from ..proto import jina_pb2_grpc
+from ..proto import jina_pb2_grpc, jina_pb2
 
 
 class FrontendPea:
@@ -81,3 +81,17 @@ class FrontendPea:
 
                 for r in asyncio.as_completed(recv_tasks):
                     yield await r
+
+        def Spawn(self, request, context):
+            _req = getattr(request, request.WhichOneof('body'))
+            req_type = type(_req)
+
+            if (req_type == jina_pb2.Request.ControlRequest
+                    and _req.command == jina_pb2.Request.ControlRequest.SPAWN):
+                from ..main.parser import set_pod_parser
+                from ..peapods.pod import Pod
+                _args = set_pod_parser().parse_args(_req.arg_list)
+                with Pod(_args) as p:
+                    for l in p.log_stream():
+                        _req.logs = l
+                        yield request

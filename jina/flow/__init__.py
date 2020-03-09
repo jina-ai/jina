@@ -4,18 +4,20 @@ import time
 from collections import OrderedDict
 from contextlib import ExitStack
 from functools import wraps
-from typing import Union, Tuple, List, Set, Dict, Optional, Iterator, Callable, Type, TextIO, Any
+from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 
 import ruamel.yaml
 
-from .. import __default_host__
 from ..enums import FlowBuildLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, kwargs2list, fill_in_host
+from ..helper import yaml, expand_env_var, kwargs2list
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
-from ..main.parser import set_pod_parser, set_frontend_parser
-from ..peapods.pod import Pod, SocketType, FrontendPod
+from ..main.parser import set_pod_parser
+from ..peapods.pod import SocketType, FlowPod, FrontendFlowPod
+
+if False:
+    from ..proto import jina_pb2
 
 
 def build_required(required_level: 'FlowBuildLevel'):
@@ -53,24 +55,22 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 
 class Flow:
-    def __init__(self, sse_logger: bool = False, runtime: str = 'process',
+    def __init__(self, sse_logger: bool = False,
                  image_name: str = 'jina:master-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
                  **kwargs):
         """Initialize a flow object
 
         :param driver_yaml_path: the file path of the driver map
         :param sse_logger: to enable the server-side event logger or not
-        :param runtime: the runtime that each pod in this flow runs on
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
         """
         self.logger = get_logger(self.__class__.__name__)
         self.with_sse_logger = sse_logger
         self.image_name = image_name
         self.repository = repository
-        self.runtime = runtime
         self._common_kwargs = kwargs
 
-        self._pod_nodes = OrderedDict()  # type: Dict[str, 'Pod']
+        self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = []
@@ -191,7 +191,7 @@ class Flow:
 
         kwargs.update(self._common_kwargs)
         kwargs['name'] = 'frontend'
-        self._pod_nodes[pod_name] = FrontendPod(kwargs=kwargs, parser=set_frontend_parser)
+        self._pod_nodes[pod_name] = FrontendFlowPod(kwargs)
 
         self.set_last_pod(pod_name, False)
 
@@ -249,13 +249,34 @@ class Flow:
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
         kwargs['num_part'] = len(recv_from)
-        op_flow._pod_nodes[pod_name] = Pod(kwargs=kwargs, send_to=send_to, recv_from=recv_from)
+        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, send_to=send_to, recv_from=recv_from)
 
         op_flow.set_last_pod(pod_name, False)
 
         return op_flow
 
-    def _build_graph(self, copy_flow: bool) -> 'Flow':
+    def build(self, copy_flow: bool = True) -> 'Flow':
+        """
+        Build the current flow and make it ready to use
+
+        :param copy_flow: return the copy of the current flow.
+        :return: the current flow (by default)
+
+        .. note::
+            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
+
+            .. highlight:: python
+            .. code-block:: python
+
+                f = Flow()
+                with f.build(copy_flow=True) as fl:
+                    fl.index()
+
+                with f.build(copy_flow=False) as fl:
+                    fl.search()
+
+        """
+
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         _pod_edges = set()
@@ -297,13 +318,9 @@ class Flow:
             # host_in and host_out is only set when corresponding socket is CONNECT
 
             if len(edges_with_same_start) > 1 and len(edges_with_same_end) == 1:
-                s_pod.tail_args.socket_out = SocketType.PUB_BIND
-                s_pod.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
-                e_pod.head_args.socket_in = SocketType.SUB_CONNECT
-                e_pod.head_args.host_in = fill_in_host(s_pod.tail_args, e_pod.head_args)  # the hostname of s_pod
-                e_pod.head_args.port_in = s_pod.tail_args.port_out
+                FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUB_BIND)
             elif len(edges_with_same_end) > 1 and len(edges_with_same_start) == 1:
-                Pod.connect(s_pod, e_pod, bind_on_first=False)
+                FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             elif len(edges_with_same_start) == 1 and len(edges_with_same_end) == 1:
                 # in this case, either side can be BIND
                 # we prefer frontend to be always BIND
@@ -313,14 +330,14 @@ class Flow:
                         # connect frontend directly to peas
                         e_pod.connect_to_last(s_pod)
                     else:
-                        Pod.connect(s_pod, e_pod, bind_on_first=True)
+                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
                 elif e_name == 'frontend':
                     if s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
                         # connect frontend directly to peas only if this is unblock router
                         # as frontend can not block & reduce message
                         s_pod.connect_to_next(e_pod)
                     else:
-                        Pod.connect(s_pod, e_pod, bind_on_first=False)
+                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
                 else:
                     e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
                     if e_pod.is_head_router and not s_pod.is_tail_router:
@@ -328,7 +345,7 @@ class Flow:
                     elif s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
                         s_pod.connect_to_next(e_pod)
                     else:
-                        Pod.connect(s_pod, e_pod, bind_on_first=False)
+                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             else:
                 raise FlowTopologyError('found %d edges start with %s and %d edges end with %s, '
                                         'this type of topology is ambiguous and should not exist, '
@@ -338,56 +355,25 @@ class Flow:
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 
-    def build(self, runtime: Optional[str] = 'process', copy_flow: bool = False, *args, **kwargs) -> 'Flow':
-        """
-        Build the current flow and make it ready to use
-
-        :param runtime: supported 'thread', 'process', 'swarm', 'k8s', 'shell', if None then only build graph only
-        :param copy_flow: return the copy of the current flow.
-        :return: the current flow (by default)
-
-        .. note::
-            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
-
-            .. highlight:: python
-            .. code-block:: python
-
-                f = Flow()
-                with f.build(copy_flow=True) as fl:
-                    fl.index()
-
-                with f.build(copy_flow=False) as fl:
-                    fl.search()
-
-        """
-
-        op_flow = self._build_graph(copy_flow)
-        runtime = runtime or op_flow.runtime
-
-        if not runtime:
-            op_flow.logger.error('no specified runtime, build_level stays at %s, '
-                                 'and you can not run this flow.' % op_flow._build_level)
-        elif runtime in {'thread', 'process'}:
-            for p in op_flow._pod_nodes.values():
-                p.set_runtime(runtime)
-                # if not p._args.image:
-                #     p.force_local()
-            op_flow._build_level = FlowBuildLevel.RUNTIME
-        else:
-            raise NotImplementedError('runtime=%s is not supported yet' % runtime)
-
-        return op_flow
-
     def __call__(self, *args, **kwargs):
         return self.build(*args, **kwargs)
 
     def __enter__(self):
-        if self._build_level.value < FlowBuildLevel.RUNTIME.value:
-            self.logger.warning(
-                'current build_level=%s, lower than required. '
-                'build the flow now via build() with default parameters' % self._build_level)
-            self.build()
+        self.start()
+        return self
 
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    @build_required(FlowBuildLevel.GRAPH)
+    def start(self):
+        """Start to run all Pods in this Flow.
+
+        Remember to close the Flow with :meth:`close`.
+
+        Note that this method has a timeout of ``ready_timeout`` set in CLI,
+        which is inherited all the way from :class:`jina.peapods.peas.Pea`
+        """
         if self.with_sse_logger:
             sse_logger = threading.Thread(name='sse-logger', target=start_sse_logger)
             sse_logger.setDaemon(True)
@@ -402,11 +388,6 @@ class Flow:
             sum(v.num_peas for v in self._pod_nodes.values())))
 
         self.logger.critical('flow is now ready for use, current build_level is %s' % self._build_level)
-
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
 
     def close(self):
         """Close the flow and release all resources associated to it. """
@@ -426,18 +407,18 @@ class Flow:
         """
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            a = self.build(runtime=None, copy_flow=True)
+            a = self.build(copy_flow=True)
         else:
             a = self
 
         if other._build_level.value < FlowBuildLevel.GRAPH.value:
-            b = other.build(runtime=None, copy_flow=True)
+            b = other.build(copy_flow=True)
         else:
             b = other
 
         return a._pod_nodes == b._pod_nodes
 
-    @build_required(FlowBuildLevel.RUNTIME)
+    @build_required(FlowBuildLevel.GRAPH)
     def _get_client(self, bytes_gen: Iterator[bytes] = None, **kwargs):
         from ..main.parser import set_client_cli_parser
         from ..clients.python import PyClient

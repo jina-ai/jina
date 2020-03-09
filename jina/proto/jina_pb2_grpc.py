@@ -20,6 +20,11 @@ class JinaRPCStub(object):
         request_serializer=jina__pb2.Request.SerializeToString,
         response_deserializer=jina__pb2.Request.FromString,
         )
+    self.Spawn = channel.unary_stream(
+        '/jina.JinaRPC/Spawn',
+        request_serializer=jina__pb2.SpawnRequest.SerializeToString,
+        response_deserializer=jina__pb2.SpawnRequest.FromString,
+        )
 
 
 class JinaRPCServicer(object):
@@ -34,6 +39,13 @@ class JinaRPCServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def Spawn(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_JinaRPCServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -41,6 +53,11 @@ def add_JinaRPCServicer_to_server(servicer, server):
           servicer.Call,
           request_deserializer=jina__pb2.Request.FromString,
           response_serializer=jina__pb2.Request.SerializeToString,
+      ),
+      'Spawn': grpc.unary_stream_rpc_method_handler(
+          servicer.Spawn,
+          request_deserializer=jina__pb2.SpawnRequest.FromString,
+          response_serializer=jina__pb2.SpawnRequest.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
