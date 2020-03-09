@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
 from tests import JinaTestCase
-from jina.executors.encoders.transformer import PyTorchTransformers
+from jina.executors.encoders.transformer import TransformerTextEncoder
 
 
 class MyTestCase(JinaTestCase):
     def test_encoding_results(self):
-        encoder = PyTorchTransformers()
+        encoder = TransformerTextEncoder()
         test_data = np.array(['a', 'b', 'xy'])
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape[0], 3)
@@ -16,7 +16,7 @@ class MyTestCase(JinaTestCase):
         from jina.executors.encoders.transformer import MODELS
         for model_name in MODELS:
             print("{}".format(model_name))
-            encoder = PyTorchTransformers(model_name)
+            encoder = TransformerTextEncoder(model_name, max_length=9)
             test_data = np.array(['a', 'b', 'xy'])
             encoded_data = encoder.encode(test_data)
             self.assertEqual(encoded_data.shape[0], 3, '{} failed'.format(model_name))

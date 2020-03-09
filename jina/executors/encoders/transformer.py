@@ -23,12 +23,25 @@ MODELS = {
 }
 
 
-class PyTorchTransformers(BaseTextEncoder):
+class TransformerTextEncoder(BaseTextEncoder):
+    """
+    TransformerTextEncoder encodes data from an array of string in size `B` into a ndarray in size `B x D`.
+    Internally, TransformerTextEncoder wraps the pytorch-version of transformers from huggingface.
+    """
     def __init__(self,
                  model_name: str = 'bert-base-uncased',
                  pooling_strategy: str = 'reduce-mean',
                  max_length: int = 64,
                  *args, **kwargs):
+        """
+
+        :param model_name: the name of the model. Supported models include 'bert-base-uncased', 'openai-gpt', 'gpt2',
+            'xlm-mlm-enfr-1024', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base' .
+        :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
+            strategies include 'cls', 'reduce-mean', 'reduce-max'.
+        :param max_length: the max length to truncate the tokenized sequences to.
+        """
+
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.pooling_strategy = pooling_strategy
@@ -52,17 +65,28 @@ class PyTorchTransformers(BaseTextEncoder):
             raise EncoderFailToLoad
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+
+        :param data: a 1d array of string type in size `B`
+        :return: an ndarray in size `B x D`
+        """
         pad_token_id = self.tokenizer.pad_token_id
         if pad_token_id is None:
-            self.tokenizer.pad_token = '[PAD]'
+            self.tokenizer.pad_token = '<PAD>'
+            self.model.resize_token_embeddings(len(self.tokenizer))
         seq_ids = torch.tensor(
-            [self.tokenizer.encode(t, max_length=self.max_length, pad_to_max_length=True) for t in data.tolist()])
+            [self.tokenizer.encode(t, max_length=self.max_length, pad_to_max_length=True, padding_side='right')
+             for t in data.tolist()])
         mask_ids = torch.tensor(
             [[1] * (len(t) + 2) + [0] * (self.max_length - len(t) - 2) for t in data.tolist()])
+        print("{}".format(seq_ids))
         with torch.no_grad():
             seq_output, *extra_output = self.model(seq_ids, attention_mask=mask_ids)
-            if len(extra_output) == 1 and isinstance(extra_output[0], torch.Tensor):
-                output = extra_output[0].numpy()
+            if self.pooling_strategy == 'cls':
+                if len(extra_output) == 1 and isinstance(extra_output[0], torch.Tensor):
+                    output = extra_output[0].numpy()
+                else:
+                    raise NotImplementedError
             else:
                 seq_output = seq_output.numpy()
                 emb_dim = seq_output.shape[2]
