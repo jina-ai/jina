@@ -18,5 +18,5 @@
 scipy:                      numeric, index
 flask:                      http, sse
 docker:                     flow
-torch==1.4.0+cpu:           nlp, encode
+torch==1.4.0:               nlp, encode
 transformers:               nlp, encode
