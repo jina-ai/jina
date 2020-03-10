@@ -2,26 +2,6 @@ import numpy as np
 import torch
 
 from . import BaseTextEncoder
-from ...excepts import EncoderFailToLoad
-
-from transformers import BertModel, BertTokenizer, OpenAIGPTModel, \
-    OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
-    XLNetModel, XLNetTokenizer, XLMModel, \
-    XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
-    RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer
-    # TransfoXLModel, TransfoXLTokenizer, \
-
-MODELS = {
-    'bert-base-uncased': (BertModel, BertTokenizer),
-    'openai-gpt': (OpenAIGPTModel, OpenAIGPTTokenizer),
-    'gpt2': (GPT2Model, GPT2Tokenizer),
-    'xlnet-base-cased': (XLNetModel, XLNetTokenizer),
-    'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer),
-    'distilbert-base-cased': (DistilBertModel, DistilBertTokenizer),
-    'roberta-base': (RobertaModel, RobertaTokenizer),
-    'xlm-roberta-base': (XLMRobertaModel, XLMRobertaTokenizer)
-    # 'transfo-xl-wt103': (TransfoXLModel, TransfoXLTokenizer),
-}
 
 
 class TransformerTextEncoder(BaseTextEncoder):
@@ -52,20 +32,30 @@ class TransformerTextEncoder(BaseTextEncoder):
         self.cls_pos = None
 
     def post_init(self):
+        from transformers import BertModel, BertTokenizer, OpenAIGPTModel, \
+            OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
+            XLNetModel, XLNetTokenizer, XLMModel, \
+            XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
+            RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer
+        # TransfoXLModel, TransfoXLTokenizer, \
+
+        MODELS = {
+            'bert-base-uncased': (BertModel, BertTokenizer),
+            'openai-gpt': (OpenAIGPTModel, OpenAIGPTTokenizer),
+            'gpt2': (GPT2Model, GPT2Tokenizer),
+            'xlnet-base-cased': (XLNetModel, XLNetTokenizer),
+            'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer),
+            'distilbert-base-cased': (DistilBertModel, DistilBertTokenizer),
+            'roberta-base': (RobertaModel, RobertaTokenizer),
+            'xlm-roberta-base': (XLMRobertaModel, XLMRobertaTokenizer)
+            # 'transfo-xl-wt103': (TransfoXLModel, TransfoXLTokenizer),
+        }
+
         model_class, tokenizer_class = MODELS[self.model_name]
 
-        try:
-            self.model = model_class.from_pretrained(self.model_name)
-        except Exception:
-            self.logger.warning('failed load model')
-            raise EncoderFailToLoad
-
-        try:
-            self.tokenizer = tokenizer_class.from_pretrained(self.model_name)
-            self.tokenizer.padding_side = 'right'
-        except Exception:
-            self.logger.warning('failed load tokenizer')
-            raise EncoderFailToLoad
+        self.model = model_class.from_pretrained(self.model_name)
+        self.tokenizer = tokenizer_class.from_pretrained(self.model_name)
+        self.tokenizer.padding_side = 'right'
 
         if self.model_name in ('bert-base-uncased', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base'):
             self.cls_pos = 'head'
@@ -97,7 +87,7 @@ class TransformerTextEncoder(BaseTextEncoder):
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             if self.pooling_strategy == 'cls':
                 if self.cls_pos is None:
-                    self.logger.critical("cls is not supported: {}".format(self.model_name))
+                    self.logger.error("cls is not supported: {}".format(self.model_name))
                     raise NotImplementedError
                 output = self._reduce_cls(self, seq_output.numpy(), mask_ids_batch.numpy(), cls_pos=self.cls_pos)
             elif self.pooling_strategy == 'reduce-mean':
@@ -105,9 +95,14 @@ class TransformerTextEncoder(BaseTextEncoder):
             elif self.pooling_strategy == 'reduce-max':
                 output = self._reduce_max(seq_output.numpy(), mask_ids_batch.numpy())
             else:
-                self.logger.critical("pooling strategy not found: {}".format(self.pooling_strategy))
+                self.logger.error("pooling strategy not found: {}".format(self.pooling_strategy))
                 raise NotImplementedError
         return output
+
+    def __getstate__(self):
+        self.model.save_pretrained(self.current_workspace)
+        self.tokenizer.save_pretrained(self.current_workspace)
+        return super().__getstate__()
 
     @staticmethod
     def _reduce_mean(data, mask_2d):

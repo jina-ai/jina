@@ -71,7 +71,3 @@ class BadClient(Exception):
 
 class BadPersistantFile(Exception):
     """Bad or broken dump file that can not be deserialized with ``pickle.load``"""
-
-
-class EncoderFailToLoad(Exception):
-    """The encoder fail to load the model or the tokenizer"""
