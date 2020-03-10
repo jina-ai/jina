@@ -55,10 +55,11 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoder_loaded.max_length, encoder.max_length)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
-        self.tmp_files.append(encoder_loaded.config_abspath)
-        self.tmp_files.append(encoder_loaded.save_abspath)
         self.tmp_files.append(encoder.config_abspath)
         self.tmp_files.append(encoder.save_abspath)
+        self.tmp_files.append(encoder_loaded.config_abspath)
+        self.tmp_files.append(encoder_loaded.save_abspath)
+        self.tmp_files.append(encoder.encoder_abspath)
 
     def test_save_and_load_config(self):
         encoder = TransformerTextEncoder(max_length=10, pooling_strategy='cls')
@@ -71,6 +72,7 @@ class MyTestCase(JinaTestCase):
 
         self.tmp_files.append(encoder_loaded.config_abspath)
         self.tmp_files.append(encoder_loaded.save_abspath)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import os
 
 from . import BaseTextEncoder
 
@@ -13,6 +14,7 @@ class TransformerTextEncoder(BaseTextEncoder):
                  model_name: str = 'bert-base-uncased',
                  pooling_strategy: str = 'reduce-mean',
                  max_length: int = 64,
+                 encoder_abspath: str = '',
                  *args, **kwargs):
         """
 
@@ -21,6 +23,8 @@ class TransformerTextEncoder(BaseTextEncoder):
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
             strategies include 'cls', 'reduce-mean', 'reduce-max'.
         :param max_length: the max length to truncate the tokenized sequences to.
+        :param encoder_abspath: the absolute saving path of the encoder. If a valid path is given, the encoder will be
+            loaded from the given path.
         """
 
         super().__init__(*args, **kwargs)
@@ -30,6 +34,7 @@ class TransformerTextEncoder(BaseTextEncoder):
         self.tokenizer = None
         self.max_length = max_length
         self.cls_pos = None
+        self.encoder_abspath = encoder_abspath
 
     def post_init(self):
         from transformers import BertModel, BertTokenizer, OpenAIGPTModel, \
@@ -38,8 +43,15 @@ class TransformerTextEncoder(BaseTextEncoder):
             XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
             RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer
         # TransfoXLModel, TransfoXLTokenizer, \
+        if self.encoder_abspath:
+            if not os.path.exists(self.encoder_abspath):
+                self.logger.error("encoder path not found: {}".format(self.encoder_abspath))
+                raise ValueError
+            self.tokenizer.from_pretrained(self.encoder_abspath)
+            self.model.from_pretrained(self.encoder_abspath)
+            return
 
-        MODELS = {
+        model_dict = {
             'bert-base-uncased': (BertModel, BertTokenizer),
             'openai-gpt': (OpenAIGPTModel, OpenAIGPTTokenizer),
             'gpt2': (GPT2Model, GPT2Tokenizer),
@@ -51,7 +63,7 @@ class TransformerTextEncoder(BaseTextEncoder):
             # 'transfo-xl-wt103': (TransfoXLModel, TransfoXLTokenizer),
         }
 
-        model_class, tokenizer_class = MODELS[self.model_name]
+        model_class, tokenizer_class = model_dict[self.model_name]
 
         self.model = model_class.from_pretrained(self.model_name)
         self.tokenizer = tokenizer_class.from_pretrained(self.model_name)
@@ -100,8 +112,13 @@ class TransformerTextEncoder(BaseTextEncoder):
         return output
 
     def __getstate__(self):
-        self.model.save_pretrained(self.current_workspace)
-        self.tokenizer.save_pretrained(self.current_workspace)
+        save_path = os.path.join(self.current_workspace, "transformer")
+        self.encoder_abspath = save_path
+        if not os.path.exists(save_path):
+            self.logger.info("create folder for saving transformer models: {}".format(save_path))
+            os.mkdir(save_path)
+        self.model.save_pretrained(save_path)
+        self.tokenizer.save_pretrained(save_path)
         return super().__getstate__()
 
     @staticmethod
