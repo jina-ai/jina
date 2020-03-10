@@ -18,3 +18,4 @@
 scipy:                      numeric, index
 flask:                      http, sse
 docker:                     flow
+flair:                      nlp, encode
