@@ -9,11 +9,26 @@ from ...excepts import BadPersistantFile
 
 
 class FlairTextEncoder(BaseTextEncoder):
+    """
+    `FlairTextEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
+    Internally, `FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
+    """
     def __init__(self,
                  embeddings: Union[Tuple[str], List[str]] = ('word:glove', 'flair:news-forward', 'flair:news-backward'),
                  pooling_strategy: str = 'reduce-mean',
                  *args,
                  **kwargs):
+        """
+
+        :param embeddings: the name of the embeddings. Supported models include
+        - 'word:[ID]': the classic word embedding model, the `[ID]` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/CLASSIC_WORD_EMBEDDINGS.md
+        - 'flair:[ID]': the contextual embedding model, the `[ID]` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
+        = 'pooledflair:[ID]': the pooled version of the contextual embedding model, the `[ID]` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/FLAIR_EMBEDDINGS.md
+        - 'byte-pair:[ID]': the subword-level embedding model, the `[ID]` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/BYTE_PAIR_EMBEDDINGS.md
+        :param pooling_strategy:
+        :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
+            strategies include 'reduce-mean', 'reduce-min', 'reduce-max'.
+        """
         super().__init__(*args, **kwargs)
         self.embeddings = embeddings
         self.encoder_abspath = ""
@@ -47,17 +62,17 @@ class FlairTextEncoder(BaseTextEncoder):
                 raise BadPersistantFile('broken file {} can not be loaded'.format(self.encoder_abspath))
         embeddings_list = []
         for e in self.embeddings:
-            model_name, model_subname = e.split(':', maxsplit=1)
+            model_name, model_id = e.split(':', maxsplit=1)
             emb = None
             try:
                 if model_name == 'flair':
-                    emb = FlairEmbeddings(model_subname)
+                    emb = FlairEmbeddings(model_id)
                 elif model_name == 'word':
-                    emb = WordEmbeddings(model_subname)
+                    emb = WordEmbeddings(model_id)
                 elif model_name == 'byte-pair':
-                    emb = BytePairEmbeddings(model_subname)
+                    emb = BytePairEmbeddings(model_id)
                 elif model_name == 'pooledflair':
-                    emb = PooledFlairEmbeddings(model_subname)
+                    emb = PooledFlairEmbeddings(model_id)
             except ValueError:
                 self.logger.error("embedding not found: {}".format(e))
                 continue
@@ -67,6 +82,11 @@ class FlairTextEncoder(BaseTextEncoder):
             self.model = DocumentPoolEmbeddings(embeddings_list, pooling=self.pooling_strategy)
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+
+        :param data: a 1d array of string type in size `B`
+        :return: an ndarray in size `B x D`
+        """
         from flair.embeddings import Sentence
         c_batch = []
         for c_idx in range(data.shape[0]):
