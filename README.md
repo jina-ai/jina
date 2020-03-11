@@ -9,7 +9,7 @@ Jina is *the* cloud-native semantic search solution powered by SOTA AI technolog
 
 ## Getting Started
 
-The simplest way to run Jina is via the docker container. 
+The simplest way to run Jina is via the docker container.  
 
 ### Run with docker image
 
@@ -72,7 +72,7 @@ To uninstall your local version:
 ```bash
 pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
 ```
-  
+
   
 ## Documentation 
 

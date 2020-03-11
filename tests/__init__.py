@@ -1,5 +1,6 @@
 import os
 import unittest
+import shutil
 
 
 class JinaTestCase(unittest.TestCase):
@@ -14,7 +15,7 @@ class JinaTestCase(unittest.TestCase):
                 if os.path.isfile(k):
                     os.remove(k)
                 elif os.path.isdir(k):
-                    os.rmdir(k)
+                    shutil.rmtree(k, ignore_errors=False, onerror=None)
 
     def add_tmpfile(self, *path):
         self.tmp_files.extend(path)

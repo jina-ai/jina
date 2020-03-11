@@ -18,4 +18,6 @@
 scipy:                      numeric, index
 flask:                      http, sse
 docker:                     flow
+torch:                      framework
+transformers:               nlp, encode
 flair:                      nlp, encode
