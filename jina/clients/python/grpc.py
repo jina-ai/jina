@@ -1,4 +1,5 @@
 import os
+from typing import Callable
 
 import grpc
 
@@ -42,7 +43,7 @@ class GrpcClient:
         # attache response handler
         self.logger.critical('client is ready at %s:%d!' % (self.args.grpc_host, self.args.grpc_port))
 
-    def call(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         """Calling the grpc server """
         raise NotImplementedError
 
@@ -53,10 +54,18 @@ class GrpcClient:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def start(self, *args, **kwargs):
-        """Wrapping :func:`call` and provide exception captures """
+    def start(self, call_fn: Callable = None, *args, **kwargs):
+        """Wrapping :func:`call` and provide exception captures
+
+        :param call_fn: function to wrap, when not given then :meth:`self._call` is wrapped
+        """
+
+        r = None
         try:
-            self.call(*args, **kwargs)
+            if call_fn:
+                r = call_fn(*args, **kwargs)
+            else:
+                r = self._call(*args, **kwargs)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.RpcError as rpc_error_call:  # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
@@ -68,7 +77,10 @@ class GrpcClient:
         finally:
             self.close()
 
+        return r
+
     def close(self):
         """Gracefully shutdown the client and release all grpc-related resources """
-        self._channel.close()
-        self._stub = None
+        if self._stub:
+            self._channel.close()
+            self._stub = None

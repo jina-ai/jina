@@ -275,6 +275,8 @@ def set_frontend_parser(parser=None):
     gp1.add_argument('--sleep_ms', type=int, default=50,
                      help='the sleep interval (ms) to control the frontend sending speed. '
                           'Note, sleep_ms=0 may result in bad load-balancing as all workload are pushed to one worker')
+    gp1.add_argument('--allow_spawn', action='store_true', default=False,
+                     help='accept the spawn requests sent from other remote Jina')
     return parser
 
 

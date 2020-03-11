@@ -157,6 +157,20 @@ class Pod:
             self.peas.append(p)
             self.stack.enter_context(p)
 
+    @property
+    def log_iterator(self):
+        """Get the last log using iterator """
+        while True:
+
+            if all(not p.is_event_loop.is_set() for p in self.peas):
+                break
+
+            for p in self.peas:
+                if p.is_event_loop.is_set():
+                    p.log_event.wait(1)
+                    yield p.log_event.record
+                    p.log_event.clear()
+
     def __enter__(self):
         self.start()
         return self

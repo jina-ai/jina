@@ -3,12 +3,46 @@ from typing import Iterator, Callable, Union
 from .grpc import GrpcClient
 from .helper import ProgressBar
 from ...excepts import BadClient
+from ...helper import kwargs2list
+from ...logging import get_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
 
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
+
+
+class SpawnPeaPyClient(GrpcClient):
+
+    def __init__(self, args: 'argparse.Namespace', pea_args: 'argparse.Namespace'):
+        super().__init__(args)
+        self.pea_args = pea_args
+
+    def _call(self):
+        _args = kwargs2list(vars(self.pea_args))
+        req = jina_pb2.SpawnRequest()
+        req.pea.args.extend(_args)
+        logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
+        for resp in self._stub.Spawn(req):
+            for l in resp.logs:
+                logger.info(l)
+
+
+class SpawnPodPyClient(GrpcClient):
+
+    def __init__(self, args: 'argparse.Namespace', pod_args: 'argparse.Namespace'):
+        super().__init__(args)
+        self.pod_args = pod_args
+
+    def _call(self):
+        _args = kwargs2list(vars(self.pod_args))
+        req = jina_pb2.SpawnRequest()
+        req.pod.args.extend(_args)
+        logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
+        for resp in self._stub.Spawn(req):
+            for l in resp.logs:
+                logger.info(l)
 
 
 class PyClient(GrpcClient):
@@ -24,7 +58,7 @@ class PyClient(GrpcClient):
         super().__init__(args)
         self._raw_bytes = None
 
-    def call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
+    def _call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
         """ Calling the server, better use :func:`start` instead.
 
         :param callback: a callback function, invoke after every response is received

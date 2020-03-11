@@ -15,7 +15,8 @@ from ruamel.yaml import YAML, nodes
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
-           'PathImporter', 'random_port', 'random_identity', 'expand_env_var', 'colored']
+           'PathImporter', 'random_port', 'random_identity', 'expand_env_var',
+           'colored', 'kwargs2list', 'valid_yaml_path']
 
 
 def print_load_table(load_stat):
@@ -324,21 +325,14 @@ def get_tags_from_node(node) -> List[str]:
 def kwargs2list(kwargs: Dict):
     args = []
     for k, v in kwargs.items():
-        if isinstance(v, bool):
-            if v:
-                if not k.startswith('no_') and not k.startswith('no-'):
+        if v is not None:
+            if isinstance(v, bool):
+                if v:
                     args.append('--%s' % k)
-                else:
-                    args.append('--%s' % k[3:])
+            elif isinstance(v, list):  # for nargs
+                args.extend(['--%s' % k, *(str(vv) for vv in v)])
             else:
-                if k.startswith('no_') or k.startswith('no-'):
-                    args.append('--%s' % k)
-                else:
-                    args.append('--no_%s' % k)
-        elif isinstance(v, list):  # for nargs
-            args.extend(['--%s' % k, *(str(vv) for vv in v)])
-        else:
-            args.extend(['--%s' % k, str(v)])
+                args.extend(['--%s' % k, str(v)])
     return args
 
 

@@ -39,6 +39,7 @@ def profiling(func):
 
     """
     from . import profile_logger
+
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
         if os.environ.get('JINA_PROFILING', False):

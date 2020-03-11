@@ -6,7 +6,7 @@ import grpc
 
 from .grpc_asyncio import AsyncioExecutor
 from .zmq import AsyncZmqlet, add_envelope
-from ..excepts import WaitPendingMessage, EventLoopEnd, NoDriverForRequest
+from ..excepts import WaitPendingMessage, EventLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..proto import jina_pb2_grpc, jina_pb2
@@ -23,6 +23,8 @@ class FrontendPea:
             AsyncioExecutor(),
             options=[('grpc.max_send_message_length', args.max_message_size),
                      ('grpc.max_receive_message_length', args.max_message_size)])
+        if args.allow_spawn:
+            self.logger.warning('SECURITY ALERT! this frontend allows SpawnRequest from remote Jina')
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._Pea(args, self.logger), self.server)
         self.bind_address = '{0}:{1}'.format(args.grpc_host, args.grpc_port)
         self.server.add_insecure_port(self.bind_address)
@@ -82,16 +84,34 @@ class FrontendPea:
                 for r in asyncio.as_completed(recv_tasks):
                     yield await r
 
-        def Spawn(self, request, context):
+        async def Spawn(self, request, context):
             _req = getattr(request, request.WhichOneof('body'))
-            req_type = type(_req)
-
-            if (req_type == jina_pb2.Request.ControlRequest
-                    and _req.command == jina_pb2.Request.ControlRequest.SPAWN):
-                from ..main.parser import set_pod_parser
-                from ..peapods.pod import Pod
-                _args = set_pod_parser().parse_args(_req.arg_list)
-                with Pod(_args) as p:
-                    for l in p.log_stream():
-                        _req.logs = l
-                        yield request
+            if self.args.allow_spawn:
+                _req_type = type(_req)
+                if _req_type == jina_pb2.SpawnRequest.PeaSpawnRequest:
+                    from ..main.parser import set_pea_parser
+                    from ..peapods.pea import Pea
+                    _args = set_pea_parser().parse_args(_req.args)
+                    with Pea(_args) as p:
+                        for l in p.log_iterator:
+                            request.logs.append(l)
+                            yield request
+                elif _req_type == jina_pb2.SpawnRequest.PodSpawnRequest:
+                    from ..main.parser import set_pod_parser
+                    from ..peapods.pod import Pod
+                    _args = set_pod_parser().parse_args(_req.args)
+                    with Pod(_args) as p:
+                        for l in p.log_stream():
+                            request.logs.append(l)
+                            yield request
+                elif _req_type == jina_pb2.SpawnRequest.FlowPodSpawnRequest:
+                    pass
+                else:
+                    raise BadRequestType('don\'t know how to handle %r' % _req_type)
+            else:
+                warn_msg = f'the frontend at {self.args.grpc_host}:{self.args.grpc_port} does not support remote spawn, please restart it with --allow_spawn'
+                request.logs.append(warn_msg)
+                request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED
+                self.logger.warning(warn_msg)
+                for j in range(1):
+                    yield request
