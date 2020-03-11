@@ -82,4 +82,4 @@ class FlairTextEncoder(BaseTextEncoder):
             self.logger.info("create folder for saving flair models: {}".format(save_path))
             os.mkdir(save_path)
         with open(self.encoder_abspath, 'wb') as f:
-            pickle.dump(self, f)
+            pickle.dump(self.model, f)
