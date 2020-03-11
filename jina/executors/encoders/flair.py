@@ -83,3 +83,4 @@ class FlairTextEncoder(BaseTextEncoder):
             os.mkdir(save_path)
         with open(self.encoder_abspath, 'wb') as f:
             pickle.dump(self.model, f)
+        return super().__getstate__()

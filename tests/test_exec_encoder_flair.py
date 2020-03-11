@@ -53,7 +53,7 @@ class MyTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(encoder.save_abspath))
         encoder_loaded = BaseExecutor.load(encoder.save_abspath)
 
-        # self.assertEqual(encoder_loaded.embeddings, encoder.embeddings)
+        self.assertEqual(encoder_loaded.embeddings, encoder.embeddings)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
         self.tmp_files.append(encoder.config_abspath)
