@@ -72,7 +72,7 @@ To uninstall your local version:
 ```bash
 pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
 ```
-  
+
   
 ## Documentation 
 
