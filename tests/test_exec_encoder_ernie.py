@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import os
+import sys
 
 from tests import JinaTestCase
 from jina.executors.encoders.ernie import ErnieTextEncoder
@@ -17,6 +18,7 @@ class MyTestCase(JinaTestCase):
         self.assertIs(type(encoded_data), np.ndarray)
         self.add_tmpfile(encoder.vocab_filename)
 
+    @unittest.skipIf(sys.version_info >= (3, 8, 0))
     def test_save_and_load(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])
@@ -37,6 +39,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_filename)
 
+    @unittest.skipIf(sys.version_info >= (3, 8, 0))
     def test_save_and_load_config(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])
