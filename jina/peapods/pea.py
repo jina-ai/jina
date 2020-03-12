@@ -83,9 +83,10 @@ class Pea(metaclass=PeaMeta):
         self.name = args.name or self.__class__.__name__
         if args.replica_id >= 0:
             self.name = '%s-%d' % (self.name, args.replica_id)
-        self.logger = get_logger(self.name, **vars(args))
+        self.log_event = _get_event(self)
         self.is_ready = _get_event(self)
         self.is_event_loop = _get_event(self)
+        self.logger = get_logger(self.name, **vars(args), log_event=self.log_event)
 
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.last_dump_time = time.perf_counter()
@@ -159,6 +160,20 @@ class Pea(metaclass=PeaMeta):
         This returns ``None`` when ``num_part=1``.
         """
         return self._prev_messages
+
+    @property
+    def log_iterator(self):
+        """Get the last log using iterator """
+        while self.is_event_loop.is_set():
+            yield from self.last_log_record
+        yield '%r has just been terminated, won\'t be able to track its log anymore' % self
+
+    @property
+    def last_log_record(self):
+        """Yield the last log record if exist """
+        if self.log_event.wait(.0001):
+            yield self.log_event.record
+            self.log_event.clear()
 
     def load_executor(self):
         """Load the executor to this Pea, specified by ``exec_yaml_path`` CLI argument.
@@ -393,7 +408,7 @@ class ContainerPea(Pea):
         """Direct the log from the container to local console """
         import docker
 
-        logger = get_logger('↳', **vars(self.args), fmt_str='↳ %(message)s')
+        logger = get_logger('🐳', **vars(self.args), fmt_str='🐳 %(message)s')
         try:
             for line in self._container.logs(stream=True):
                 if self.is_event_loop.is_set():

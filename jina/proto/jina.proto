@@ -217,7 +217,7 @@ message Request {
         }
         Command command = 1; // the control command
 
-        map<string, string> args = 2;  // the pea arguments, useful in STATUS
+        map<string, string> args = 2; // the pea arguments, useful in STATUS
     }
 }
 
@@ -225,22 +225,36 @@ message SpawnRequest {
 
     // Spawn a pea remotely, requires args of a pea
     message PeaSpawnRequest {
-        repeated string args = 1;  // a list of args string for Pea
+        repeated string args = 1; // a list of args string for Pea
     }
 
     // Spawn a pod remotely, requires args of a pea
     message PodSpawnRequest {
-        repeated string args = 1;  // a list of args string for Pod
+        repeated string args = 1; // a list of args string for Pod
     }
 
     // Spawn a parsed pod remotely, requires parsed pod structure
-    message FlowPodSpawnRequest {
-        PeaSpawnRequest head = 1;  // a list of args string for the head Pea
-        PeaSpawnRequest tail = 2;  // a list of args string for the tail Pea
-        repeated PeaSpawnRequest peas = 3;  // a list of args string for the Peas
+    message PodDictSpawnRequest {
+        PeaSpawnRequest head = 1; // a list of args string for the head Pea
+        PeaSpawnRequest tail = 2; // a list of args string for the tail Pea
+        repeated PeaSpawnRequest peas = 3; // a list of args string for the Peas
     }
 
-    repeated string logs = 4;  // the logs of started Pod
+    oneof body {
+        PeaSpawnRequest pea = 1;
+        PodSpawnRequest pod = 2;
+        PodDictSpawnRequest cust_pod = 3;
+    }
+
+    enum Status {
+        SUCCESS = 0; // success
+        ERROR_OTHER = 1; // other error
+        ERROR_DUPLICATE = 2; // already a exisiting pea/pod running
+        ERROR_NOTALLOWED = 3; // not allowed to open pea/pod remotely
+    }
+
+    string log_record = 4; // one line of the log record
+    Status status = 5; // status info
 }
 
 /**

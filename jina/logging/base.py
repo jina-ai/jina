@@ -69,6 +69,25 @@ class ProfileFormatter(Formatter):
         return json.dumps(cr.msg, sort_keys=True)
 
 
+class EventHandler(logging.StreamHandler):
+    """
+    A cross-thread/process logger that allows fetching via iterator
+
+    .. warning::
+
+        Some logs may be missing, no clear reason why.
+    """
+
+    def __init__(self, event):
+        super().__init__()
+        self._event = event
+
+    def emit(self, record):
+        if record.levelno >= self.level:
+            self._event.record = self.format(record)
+            self._event.set()
+
+
 class NTLogger:
     def __init__(self, context: str, log_level: 'LogVerbosity'):
         """A compatible logger for Windows system, colors are all removed to keep compat.
@@ -110,6 +129,7 @@ class NTLogger:
 
 
 def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse: bool = False, fmt_str: str = None,
+               log_event=None,
                **kwargs) -> Union['logging.Logger', 'NTLogger']:
     """Get a logger with configurations
 
@@ -147,6 +167,11 @@ def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse
         logger.setLevel(verbose_level.value)
 
         logger.handlers = []
+        if log_event is not None:
+            event_handler = EventHandler(log_event)
+            event_handler.setLevel(verbose_level.value)
+            event_handler.setFormatter(ColorFormatter(fmt_str))
+            logger.addHandler(event_handler)
 
         if profiling:
             file_handler = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
