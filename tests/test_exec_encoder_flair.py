@@ -54,7 +54,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoder_loaded.embeddings, encoder.embeddings)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
-        self.tmp_files.append(
+        self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.encoder_abspath)
 
     def test_save_and_load_config(self):
@@ -67,7 +67,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(tuple(encoder_loaded.embeddings), encoder.embeddings)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
-        self.tmp_files.append(encoder_loaded.config_abspath, encoder_loaded.save_abspath)
+        self.add_tmpfile(encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
 
 if __name__ == '__main__':
