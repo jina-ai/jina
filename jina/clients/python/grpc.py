@@ -42,7 +42,7 @@ class GrpcClient:
         # attache response handler
         self.logger.critical('client is ready at %s:%d!' % (self.args.grpc_host, self.args.grpc_port))
 
-    def _call(self, *args, **kwargs):
+    def call(self, *args, **kwargs):
         """Calling the grpc server """
         raise NotImplementedError
 
@@ -54,14 +54,12 @@ class GrpcClient:
         self.close()
 
     def start(self, *args, **kwargs):
-        """Wrapping :func:`call` and provide exception captures
-
-        :param call_fn: function to wrap, when not given then :meth:`self._call` is wrapped
+        """Wrapping :meth:`call` and provide exception captures
         """
 
         r = None
         try:
-            r = self._call(*args, **kwargs)
+            r = self.call(*args, **kwargs)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.RpcError as rpc_error_call:  # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.

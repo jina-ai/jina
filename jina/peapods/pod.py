@@ -23,7 +23,7 @@ class Pod:
         """
 
         :param args: arguments parsed from the CLI
-        :param peas_args: head, tail, peas argument dict
+        :param peas_args: head, tail, peas argument dict, when given then ``args`` is ignored
         """
         self.peas = []
         self._args = args

@@ -84,11 +84,7 @@ class EventHandler(logging.StreamHandler):
 
     def emit(self, record):
         if record.levelno >= self.level:
-            if self._event.is_set():
-                # the previous message has not be emitted yet, append to it
-                self._event.record += '\n' + self.format(record)
-            else:
-                self._event.record = self.format(record)
+            self._event.record = self.format(record)
             self._event.set()
 
 

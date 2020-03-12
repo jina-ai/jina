@@ -3,7 +3,7 @@ import time
 import unittest
 from multiprocessing import Process
 
-from jina.clients.python import SpawnPeaPyClient, SpawnPodPyClient, SpawnCustPodPyClient
+from jina.clients.python import SpawnPeaPyClient, SpawnPodPyClient, SpawnDictPodPyClient
 from jina.logging import get_logger
 from jina.main.parser import set_frontend_parser, _set_grpc_parser, set_pea_parser, set_pod_parser
 from jina.peapods.pod import FrontendPod, Pod
@@ -36,6 +36,10 @@ class MyTestCase(JinaTestCase):
         logger.critical('crit')
         time.sleep(.1)
 
+    def tearDown(self) -> None:
+        time.sleep(2)
+        super().tearDown()
+
     def test_remote_not_allowed(self):
         f_args = set_frontend_parser().parse_args([])
         c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
@@ -56,6 +60,7 @@ class MyTestCase(JinaTestCase):
         t.daemon = True
         t.start()
 
+        time.sleep(1)
         SpawnPeaPyClient(c_args, p_args).start()
 
     def test_remote_pod(self):
@@ -87,7 +92,7 @@ class MyTestCase(JinaTestCase):
         t.daemon = True
         t.start()
 
-        SpawnCustPodPyClient(c_args, p.peas_args).start()
+        SpawnDictPodPyClient(c_args, p.peas_args).start()
 
 
 if __name__ == '__main__':

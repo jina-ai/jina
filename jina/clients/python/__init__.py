@@ -1,4 +1,4 @@
-from typing import Iterator, Callable, Union, Dict
+from typing import Iterator, Callable, Union, Any
 
 from .grpc import GrpcClient
 from .helper import ProgressBar
@@ -17,13 +17,16 @@ if False:
 class SpawnPeaPyClient(GrpcClient):
     body_tag = 'pea'
 
-    def __init__(self, args: 'argparse.Namespace', peapod_args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', peas_args: Any):
         super().__init__(args)
-        self.peapod_args = kwargs2list(vars(peapod_args))
+        self.peas_args = peas_args
 
-    def _call(self):
+    def call(self):
         req = jina_pb2.SpawnRequest()
-        getattr(req, self.body_tag).args.extend(self.peapod_args)
+        getattr(req, self.body_tag).args.extend(kwargs2list(vars(self.peas_args)))
+        self.remote_logging(req)
+
+    def remote_logging(self, req):
         logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
         for resp in self._stub.Spawn(req):
             logger.info(resp.log_record)
@@ -33,17 +36,13 @@ class SpawnPodPyClient(SpawnPeaPyClient):
     body_tag = 'pod'
 
 
-class SpawnCustPodPyClient(GrpcClient):
-    def __init__(self, args: 'argparse.Namespace',
-                 peas_args: Dict[str, 'argparse.Namespace'] = None):
-        super().__init__(args)
-        self.peas_args = peas_args
+class SpawnDictPodPyClient(SpawnPeaPyClient):
 
     @staticmethod
     def convert2pea_args(args: 'argparse.Namespace'):
         return kwargs2list(vars(set_pea_parser().parse_known_args(kwargs2list(vars(args)))[0]))
 
-    def _call(self):
+    def call(self):
         req = jina_pb2.SpawnRequest()
         if self.peas_args['head']:
             req.cust_pod.head.args.extend(self.convert2pea_args(self.peas_args['head']))
@@ -54,9 +53,7 @@ class SpawnCustPodPyClient(GrpcClient):
                 _a = req.cust_pod.peas.add()
                 _a.args.extend(self.convert2pea_args(q))
 
-        logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
-        for resp in self._stub.Spawn(req):
-            logger.info(resp.log_record)
+        self.remote_logging(req)
 
 
 class PyClient(GrpcClient):
@@ -72,7 +69,7 @@ class PyClient(GrpcClient):
         super().__init__(args)
         self._raw_bytes = None
 
-    def _call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
+    def call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
         """ Calling the server, better use :func:`start` instead.
 
         :param callback: a callback function, invoke after every response is received
