@@ -1,5 +1,4 @@
 import os
-from typing import Callable
 
 import grpc
 
@@ -54,7 +53,7 @@ class GrpcClient:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def start(self, call_fn: Callable = None, *args, **kwargs):
+    def start(self, *args, **kwargs):
         """Wrapping :func:`call` and provide exception captures
 
         :param call_fn: function to wrap, when not given then :meth:`self._call` is wrapped
@@ -62,10 +61,7 @@ class GrpcClient:
 
         r = None
         try:
-            if call_fn:
-                r = call_fn(*args, **kwargs)
-            else:
-                r = self._call(*args, **kwargs)
+            r = self._call(*args, **kwargs)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.RpcError as rpc_error_call:  # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.

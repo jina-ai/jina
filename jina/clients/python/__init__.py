@@ -14,33 +14,22 @@ if False:
 
 
 class SpawnPeaPyClient(GrpcClient):
+    body_tag = 'pea'
 
-    def __init__(self, args: 'argparse.Namespace', pea_args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', peapod_args: 'argparse.Namespace'):
         super().__init__(args)
-        self.pea_args = pea_args
+        self.peapod_args = kwargs2list(vars(peapod_args))
 
     def _call(self):
-        _args = kwargs2list(vars(self.pea_args))
         req = jina_pb2.SpawnRequest()
-        req.pea.args.extend(_args)
+        getattr(req, self.body_tag).args.extend(self.peapod_args)
         logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
         for resp in self._stub.Spawn(req):
             logger.info(resp.log_record)
 
 
-class SpawnPodPyClient(GrpcClient):
-
-    def __init__(self, args: 'argparse.Namespace', pod_args: 'argparse.Namespace'):
-        super().__init__(args)
-        self.pod_args = pod_args
-
-    def _call(self):
-        _args = kwargs2list(vars(self.pod_args))
-        req = jina_pb2.SpawnRequest()
-        req.pod.args.extend(_args)
-        logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
-        for resp in self._stub.Spawn(req):
-            logger.info(resp.log_record)
+class SpawnPodPyClient(SpawnPeaPyClient):
+    body_tag = 'pod'
 
 
 class PyClient(GrpcClient):
