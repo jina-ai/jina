@@ -1,0 +1,41 @@
+import numpy as np
+
+
+def reduce_mean(data, mask_2d):
+    emb_dim = data.shape[2]
+    mask = np.tile(mask_2d, (emb_dim, 1, 1))
+    mask = np.rollaxis(mask, 0, 3)
+    output = mask * data
+    return np.sum(output, axis=1) / np.sum(mask, axis=1)
+
+
+def reduce_max(data, mask_2d):
+    emb_dim = data.shape[2]
+    mask = np.tile(mask_2d, (emb_dim, 1, 1))
+    mask = np.rollaxis(mask, 0, 3)
+    output = mask * data
+    neg_mask = (mask_2d - 1) * 1e10
+    neg_mask = np.tile(neg_mask, (emb_dim, 1, 1))
+    neg_mask = np.rollaxis(neg_mask, 0, 3)
+    output += neg_mask
+    return np.max(output, axis=1)
+
+
+def reduce_cls(data, mask_2d, cls_pos='head'):
+    mask_pruned = prune_mask(mask_2d, cls_pos)
+    return reduce_mean(data, mask_pruned)
+
+
+def prune_mask(mask, cls_pos='head'):
+    result = np.zeros(mask.shape)
+    if cls_pos == 'head':
+        mask_row = np.zeros((1, mask.shape[1]))
+        mask_row[0, 0] = 1
+        result = np.tile(mask_row, (mask.shape[0], 1))
+    elif cls_pos == 'tail':
+        for num_tokens in np.sum(mask, axis=1).tolist():
+            result[num_tokens - 1] = 1
+    else:
+        raise NotImplementedError
+    return result
+

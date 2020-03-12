@@ -1,11 +1,8 @@
 from typing import Union, Tuple, List
-import os
-import pickle
 import numpy as np
 import torch
 
 from . import BaseTextEncoder
-from ...excepts import BadPersistantFile
 
 
 class FlairTextEncoder(BaseTextEncoder):
