@@ -6,10 +6,12 @@ from contextlib import ExitStack
 import grpc
 
 from .grpc_asyncio import AsyncioExecutor
+from .pea import Pea
 from .zmq import AsyncZmqlet, add_envelope
 from ..excepts import WaitPendingMessage, EventLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
+from ..main.parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
 
 
@@ -90,31 +92,30 @@ class FrontendPea:
                     yield await r
 
         async def Spawn(self, request, context):
+            from .pod import Pod
             _req = getattr(request, request.WhichOneof('body'))
             if self.args.allow_spawn:
                 _req_type = type(_req)
                 if _req_type == jina_pb2.SpawnRequest.PeaSpawnRequest:
-                    from ..main.parser import set_pea_parser
-                    from ..peapods.pea import Pea
                     _args = set_pea_parser().parse_args(_req.args)
                     p = Pea(_args)
-                    self.stack.enter_context(p)
-                    for l in p.log_iterator:
-                        request.log_record = l
-                        yield request
                 elif _req_type == jina_pb2.SpawnRequest.PodSpawnRequest:
-                    from ..main.parser import set_pod_parser
-                    from ..peapods.pod import Pod
                     _args = set_pod_parser().parse_args(_req.args)
                     p = Pod(_args)
-                    self.stack.enter_context(p)
-                    for l in p.log_iterator:
-                        request.log_record = l
-                        yield request
-                elif _req_type == jina_pb2.SpawnRequest.FlowPodSpawnRequest:
-                    pass
+                elif _req_type == jina_pb2.SpawnRequest.PodDictSpawnRequest:
+                    peas_args = {
+                        'head': set_pea_parser().parse_args(_req.head.args) if _req.head.args else None,
+                        'tail': set_pea_parser().parse_args(_req.tail.args) if _req.tail.args else None,
+                        'peas': [set_pea_parser().parse_args(q.args) for q in _req.peas] if _req.peas else []
+                    }
+                    p = Pod(None, peas_args=peas_args)
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)
+
+                self.stack.enter_context(p)
+                for l in p.log_iterator:
+                    request.log_record = l
+                    yield request
             else:
                 warn_msg = f'the frontend at {self.args.grpc_host}:{self.args.grpc_port} does not support remote spawn, please restart it with --allow_spawn'
                 request.log_record = warn_msg
