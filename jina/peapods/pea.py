@@ -165,7 +165,13 @@ class Pea(metaclass=PeaMeta):
     def log_iterator(self):
         """Get the last log using iterator """
         while self.is_event_loop.is_set():
-            self.log_event.wait()
+            yield from self.last_log_record
+        yield '%r has just been terminated, won\'t be able to track its log anymore' % self
+
+    @property
+    def last_log_record(self):
+        """Yield the last log record if exist """
+        if self.log_event.wait(.0001):
             yield self.log_event.record
             self.log_event.clear()
 

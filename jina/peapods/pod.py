@@ -159,17 +159,26 @@ class Pod:
 
     @property
     def log_iterator(self):
-        """Get the last log using iterator """
-        while True:
+        """Get the last log using iterator
 
+        The :class:`Pod` log iterator goes through all peas :attr:`log_iterator` and
+        poll them sequentially. If non all them is active anymore, aka :attr:`is_event_loop`
+        is False, then the iterator ends.
+
+        .. warning::
+
+            The log may not strictly follow the time order given that we are polling the log
+            from all peas in the sequential manner.
+        """
+        while True:
             if all(not p.is_event_loop.is_set() for p in self.peas):
                 break
 
             for p in self.peas:
                 if p.is_event_loop.is_set():
-                    p.log_event.wait(1)
-                    yield p.log_event.record
-                    p.log_event.clear()
+                    yield from p.last_log_record
+                else:
+                    yield '%r has just been terminated, won\'t be able to track its log anymore' % p
 
     def __enter__(self):
         self.start()

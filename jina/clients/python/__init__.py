@@ -25,8 +25,7 @@ class SpawnPeaPyClient(GrpcClient):
         req.pea.args.extend(_args)
         logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
         for resp in self._stub.Spawn(req):
-            for l in resp.logs:
-                logger.info(l)
+            logger.info(resp.log_record)
 
 
 class SpawnPodPyClient(GrpcClient):
@@ -41,8 +40,7 @@ class SpawnPodPyClient(GrpcClient):
         req.pod.args.extend(_args)
         logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
         for resp in self._stub.Spawn(req):
-            for l in resp.logs:
-                logger.info(l)
+            logger.info(resp.log_record)
 
 
 class PyClient(GrpcClient):

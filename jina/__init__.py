@@ -4,7 +4,7 @@ __version__ = '0.0.1'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.10'
+__proto_version__ = '0.0.11'
 
 from datetime import datetime
 

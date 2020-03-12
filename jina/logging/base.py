@@ -70,6 +70,13 @@ class ProfileFormatter(Formatter):
 
 
 class EventHandler(logging.StreamHandler):
+    """
+    A cross-thread/process logger that allows fetching via iterator
+
+    .. warning::
+
+        Some logs may be missing, no clear reason why.
+    """
 
     def __init__(self, event):
         super().__init__()
@@ -77,7 +84,11 @@ class EventHandler(logging.StreamHandler):
 
     def emit(self, record):
         if record.levelno >= self.level:
-            self._event.record = self.format(record)
+            if self._event.is_set():
+                # the previous message has not be emitted yet, append to it
+                self._event.record += '\n' + self.format(record)
+            else:
+                self._event.record = self.format(record)
             self._event.set()
 
 

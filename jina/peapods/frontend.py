@@ -1,6 +1,7 @@
 import asyncio
 import os
 import threading
+from contextlib import ExitStack
 
 import grpc
 
@@ -25,7 +26,9 @@ class FrontendPea:
                      ('grpc.max_receive_message_length', args.max_message_size)])
         if args.allow_spawn:
             self.logger.warning('SECURITY ALERT! this frontend allows SpawnRequest from remote Jina')
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self._Pea(args, self.logger), self.server)
+
+        self.p_servicer = self._Pea(args, self.logger)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.p_servicer, self.server)
         self.bind_address = '{0}:{1}'.format(args.grpc_host, args.grpc_port)
         self.server.add_insecure_port(self.bind_address)
         self._stop_event = threading.Event()
@@ -39,10 +42,11 @@ class FrontendPea:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.server.stop(None)
         self.stop()
 
     def stop(self):
+        self.p_servicer.close()
+        self.server.stop(None)
         self._stop_event.set()
 
     def join(self):
@@ -57,6 +61,7 @@ class FrontendPea:
             self.logger = logger or get_logger(self.name, **vars(args))
             self.executor = BaseExecutor()
             self.executor.attach(pea=self)
+            self.stack = ExitStack()
 
         def recv_callback(self, msg):
             try:
@@ -92,26 +97,31 @@ class FrontendPea:
                     from ..main.parser import set_pea_parser
                     from ..peapods.pea import Pea
                     _args = set_pea_parser().parse_args(_req.args)
-                    with Pea(_args) as p:
-                        for l in p.log_iterator:
-                            request.logs.append(l)
-                            yield request
+                    p = Pea(_args)
+                    self.stack.enter_context(p)
+                    for l in p.log_iterator:
+                        request.log_record = l
+                        yield request
                 elif _req_type == jina_pb2.SpawnRequest.PodSpawnRequest:
                     from ..main.parser import set_pod_parser
                     from ..peapods.pod import Pod
                     _args = set_pod_parser().parse_args(_req.args)
-                    with Pod(_args) as p:
-                        for l in p.log_stream():
-                            request.logs.append(l)
-                            yield request
+                    p = Pod(_args)
+                    self.stack.enter_context(p)
+                    for l in p.log_iterator:
+                        request.log_record = l
+                        yield request
                 elif _req_type == jina_pb2.SpawnRequest.FlowPodSpawnRequest:
                     pass
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)
             else:
                 warn_msg = f'the frontend at {self.args.grpc_host}:{self.args.grpc_port} does not support remote spawn, please restart it with --allow_spawn'
-                request.logs.append(warn_msg)
+                request.log_record = warn_msg
                 request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED
                 self.logger.warning(warn_msg)
                 for j in range(1):
                     yield request
+
+        def close(self):
+            self.stack.close()

@@ -253,7 +253,7 @@ message SpawnRequest {
         ERROR_NOTALLOWED = 3; // not allowed to open pea/pod remotely
     }
 
-    repeated string logs = 4; // the logs of started Pod
+    string log_record = 4; // one line of the log record
     Status status = 5; // status info
 }
 

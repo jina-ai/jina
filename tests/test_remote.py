@@ -1,6 +1,7 @@
 import threading
 import time
 import unittest
+from multiprocessing import Process
 
 from jina.clients.python import SpawnPeaPyClient, SpawnPodPyClient
 from jina.logging import get_logger
@@ -10,7 +11,6 @@ from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
-
     def test_logging_thread(self):
         _event = threading.Event()
         logger = get_logger('mytest', log_event=_event)
@@ -47,15 +47,31 @@ class MyTestCase(JinaTestCase):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
         c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
         p_args = set_pea_parser().parse_args([])
-        with FrontendPod(f_args):
-            SpawnPeaPyClient(c_args, p_args).start()
+
+        def start_frontend():
+            with FrontendPod(f_args):
+                time.sleep(5)
+
+        t = Process(target=start_frontend)
+        t.daemon = True
+        t.start()
+
+        SpawnPeaPyClient(c_args, p_args).start()
 
     def test_remote_pod(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
         c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
-        p_args = set_pod_parser().parse_args([])
-        with FrontendPod(f_args):
-            SpawnPodPyClient(c_args, p_args).start()
+        p_args = set_pod_parser().parse_args(['--replicas', '3'])
+
+        def start_frontend():
+            with FrontendPod(f_args):
+                time.sleep(5)
+
+        t = Process(target=start_frontend)
+        t.daemon = True
+        t.start()
+
+        SpawnPodPyClient(c_args, p_args).start()
 
 
 if __name__ == '__main__':
