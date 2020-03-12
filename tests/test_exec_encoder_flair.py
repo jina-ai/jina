@@ -22,7 +22,7 @@ class MyTestCase(JinaTestCase):
     model_subname_dict['pooledflair'] = model_subname_dict['flair']
     model_list = ["{}:{}".format(model_name, subname) for model_name, v in model_subname_dict.items() for subname in v]
     pooling_list = [
-        'reduce-max', 'reduce-min', 'reduce-mean'
+        'max', 'min', 'mean'
     ]
 
     @unittest.skip("skip tests depending on pretraining models")
@@ -44,7 +44,7 @@ class MyTestCase(JinaTestCase):
 
     def test_save_and_load(self):
         encoder = FlairTextEncoder(
-            embeddings=('word:glove', ), pooling_strategy='reduce-mean', workspace=os.environ['TEST_WORKDIR'])
+            embeddings=('word:glove', ), pooling_strategy='mean', workspace=os.environ['TEST_WORKDIR'])
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
 
@@ -56,15 +56,12 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoder_loaded.embeddings, encoder.embeddings)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
-        self.tmp_files.append(encoder.config_abspath)
-        self.tmp_files.append(encoder.save_abspath)
-        self.tmp_files.append(encoder_loaded.config_abspath)
-        self.tmp_files.append(encoder_loaded.save_abspath)
-        self.tmp_files.append(encoder.encoder_abspath)
+        self.tmp_files.append(
+            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.encoder_abspath)
 
     def test_save_and_load_config(self):
         encoder = FlairTextEncoder(
-            embeddings=('word:glove',), pooling_strategy='reduce-mean', workspace=os.environ['TEST_WORKDIR'])
+            embeddings=('word:glove',), pooling_strategy='mean', workspace=os.environ['TEST_WORKDIR'])
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
 
@@ -72,8 +69,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(tuple(encoder_loaded.embeddings), encoder.embeddings)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
-        self.tmp_files.append(encoder_loaded.config_abspath)
-        self.tmp_files.append(encoder_loaded.save_abspath)
+        self.tmp_files.append(encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
 
 if __name__ == '__main__':
