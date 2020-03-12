@@ -45,14 +45,18 @@ class MyTestCase(JinaTestCase):
             embeddings=('word:glove', ), pooling_strategy='mean', workspace=os.environ['TEST_WORKDIR'])
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
+        test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
+        encoded_data_control = encoder.encode(test_data)
 
         encoder.touch()
         encoder.save()
         self.assertTrue(os.path.exists(encoder.save_abspath))
         encoder_loaded = BaseExecutor.load(encoder.save_abspath)
+        encoded_data_test = encoder_loaded.encode(test_data)
 
         self.assertEqual(encoder_loaded.embeddings, encoder.embeddings)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
+        np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)

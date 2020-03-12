@@ -34,8 +34,7 @@ class FlairTextEncoder(BaseTextEncoder):
         self.model = None
 
     def post_init(self):
-        from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings
-        from flair.embeddings import DocumentPoolEmbeddings
+        from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, DocumentPoolEmbeddings
 
         if self.model is not None:
             return
