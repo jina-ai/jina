@@ -56,18 +56,37 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 class Flow:
     def __init__(self, sse_logger: bool = False,
-                 image_name: str = 'jina:master-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
+                 image_name: str = 'jina:master-debian',
+                 repository: str = 'docker.pkg.github.com/jina-ai/jina',
+                 optimized: bool = True,
+                 *args,
                  **kwargs):
         """Initialize a flow object
 
         :param driver_yaml_path: the file path of the driver map
         :param sse_logger: to enable the server-side event logger or not
+        :param optimized: trailing away redundant routers. however, this may change the frontend zmq socket to BIND
+                            and hence not allow multiple clients connected to the frontend at the same time.
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
+
+
+        More explain on ``optimized``:
+
+        As an example, the following flow will generates a 6 Peas,
+
+        .. highlight:: python
+        .. code-block:: python
+
+            f = Flow(optimized=False).add(yaml_path='route', replicas=3)
+
+        The optimized version will generate 4 Peas, but it will force the :class:`FrontendPea` to take BIND role,
+        as the head and tail routers are removed.
         """
         self.logger = get_logger(self.__class__.__name__)
         self.with_sse_logger = sse_logger
         self.image_name = image_name
         self.repository = repository
+        self.optimized = optimized
         self._common_kwargs = kwargs
 
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -319,31 +338,31 @@ class Flow:
 
             if len(edges_with_same_start) > 1 and len(edges_with_same_end) == 1:
                 FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUB_BIND)
-            elif len(edges_with_same_end) > 1 and len(edges_with_same_start) == 1:
+            elif len(edges_with_same_start) == 1 and len(edges_with_same_end) > 1:
                 FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             elif len(edges_with_same_start) == 1 and len(edges_with_same_end) == 1:
                 # in this case, either side can be BIND
-                # we prefer frontend to be always BIND
+                # we prefer frontend to be always CONNECT so that multiple clients can connect to it
                 # check if either node is frontend
                 if s_name == 'frontend':
-                    if e_pod.is_head_router:
+                    if self.optimized and e_pod.is_head_router:
                         # connect frontend directly to peas
-                        e_pod.connect_to_last(s_pod)
-                    else:
-                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
-                elif e_name == 'frontend':
-                    if s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
-                        # connect frontend directly to peas only if this is unblock router
-                        # as frontend can not block & reduce message
-                        s_pod.connect_to_next(e_pod)
+                        e_pod.connect_to_tail_of(s_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
+                elif e_name == 'frontend':
+                    if self.optimized and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                        # connect frontend directly to peas only if this is unblock router
+                        # as frontend can not block & reduce message
+                        s_pod.connect_to_head_of(e_pod)
+                    else:
+                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
                 else:
                     e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
-                    if e_pod.is_head_router and not s_pod.is_tail_router:
-                        e_pod.connect_to_last(s_pod)
-                    elif s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
-                        s_pod.connect_to_next(e_pod)
+                    if self.optimized and e_pod.is_head_router and not s_pod.is_tail_router:
+                        e_pod.connect_to_tail_of(s_pod)
+                    elif self.optimized and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                        s_pod.connect_to_head_of(e_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             else:

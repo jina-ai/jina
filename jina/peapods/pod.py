@@ -274,7 +274,7 @@ class FlowPod(Pod):
         else:
             raise NotImplementedError('%r is not supported here' % first_socket_type)
 
-    def connect_to_last(self, pod: 'Pod'):
+    def connect_to_tail_of(self, pod: 'Pod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
         if self._args.replicas > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
@@ -290,7 +290,7 @@ class FlowPod(Pod):
         else:
             raise ValueError('the current pod has no head router, deduct the head is confusing')
 
-    def connect_to_next(self, pod: 'Pod'):
+    def connect_to_head_of(self, pod: 'Pod'):
         """Eliminate the tail node by connecting next_args node directly to peas """
         if self._args.replicas > 1 and self.is_tail_router:
             # keep the port_out and socket_out of next_arts

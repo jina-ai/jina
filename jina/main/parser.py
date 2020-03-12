@@ -269,8 +269,9 @@ def set_frontend_parser(parser=None):
 
     gp1 = add_arg_group(parser, 'frontend arguments')
     gp1.set_defaults(name='frontend',
-                     socket_in=SocketType.PULL_BIND,
-                     socket_out=SocketType.PUSH_BIND,
+                     socket_in=SocketType.PULL_CONNECT,  # otherwise there can be only one client at a time
+                     socket_out=SocketType.PUSH_CONNECT,
+                     ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                      read_only=True)
     gp1.add_argument('--sleep_ms', type=int, default=50,
                      help='the sleep interval (ms) to control the frontend sending speed. '

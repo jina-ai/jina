@@ -1,6 +1,7 @@
 import os
 import time
 import unittest
+from multiprocessing import Process
 
 import numpy as np
 
@@ -45,6 +46,38 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(yaml_path='route')
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+    def test_two_client_route_replicas(self):
+        f = Flow(optimized=True).add(yaml_path='route', replicas=3)
+
+        def start_client(fl):
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+        with f.build() as fl:
+            t1 = Process(target=start_client, args=(fl,))
+            t1.daemon = True
+            t2 = Process(target=start_client, args=(fl,))
+            t2.daemon = True
+
+            t1.start()
+            t2.start()
+            time.sleep(5)
+
+    def test_two_client_route(self):
+        f = Flow().add(yaml_path='route')
+
+        def start_client(fl):
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+        with f.build() as fl:
+            t1 = Process(target=start_client, args=(fl,))
+            t1.daemon = True
+            t2 = Process(target=start_client, args=(fl,))
+            t2.daemon = True
+
+            t1.start()
+            t2.start()
+            time.sleep(5)
 
     def test_index(self):
         f = Flow().add(yaml_path='yaml/test-index.yml', replicas=3, separated_workspace=True)
