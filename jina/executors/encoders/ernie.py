@@ -17,12 +17,12 @@ class ErnieTextEncoder(BaseTextEncoder):
         self.max_seq_length = max_length
         self.device = device
         self.vocab_filename = ""
+
+    def post_init(self):
         self.exe = None
         self.model = None
         self.inputs = None
         self.outputs = None
-
-    def post_init(self):
         import paddlehub as hub
         import paddle.fluid as fluid
         from bert.tokenization import bert_tokenization
