@@ -55,7 +55,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
         self.add_tmpfile(
-            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.encoder_abspath)
+            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
     def test_save_and_load_config(self):
         encoder = FlairTextEncoder(
