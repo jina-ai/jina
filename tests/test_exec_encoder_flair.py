@@ -16,8 +16,6 @@ class MyTestCase(JinaTestCase):
                   'news-forward-fast', 'news-backward-fast',
                   'mix-forward', 'mix-backward'],
         'byte-pair': ['en', 'de', 'fr'],
-        # 'elmo': ['small', 'medium', 'large', 'original', 'pubmed'],
-        # 'fasttext': ['/path/to/custom_fasttext_embeddings.bin']
     }
     model_subname_dict['pooledflair'] = model_subname_dict['flair']
     model_list = ["{}:{}".format(model_name, subname) for model_name, v in model_subname_dict.items() for subname in v]

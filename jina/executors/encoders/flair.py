@@ -16,7 +16,6 @@ class FlairTextEncoder(BaseTextEncoder):
     def __init__(self,
                  embeddings: Union[Tuple[str], List[str]] = ('word:glove', 'flair:news-forward', 'flair:news-backward'),
                  pooling_strategy: str = 'mean',
-                 encoder_filename: str = 'flair.bin',
                  *args,
                  **kwargs):
         """
@@ -28,11 +27,9 @@ class FlairTextEncoder(BaseTextEncoder):
         - ``byte-pair:[ID]``: the subword-level embedding model, the ``[ID]`` are listed at https://github.com/flairNLP/flair/blob/master/resources/docs/embeddings/BYTE_PAIR_EMBEDDINGS.md
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
             strategies include ``mean``, ``min``, ``max``.
-        :encoder_filename: the file name for saving the flair encoder.
         """
         super().__init__(*args, **kwargs)
         self.embeddings = embeddings
-        self.encoder_abspath = os.path.join(self.current_workspace, encoder_filename)
         self.pooling_strategy = pooling_strategy
         self.model = None
 
@@ -40,15 +37,8 @@ class FlairTextEncoder(BaseTextEncoder):
         from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings
         from flair.embeddings import DocumentPoolEmbeddings
 
-        if os.path.exists(self.encoder_abspath):
-            try:
-                with open(self.encoder_abspath, 'rb') as fp:
-                    self.model = pickle.load(fp)
-                    self.logger.info('load flair encoder model from {}'.format(self.encoder_abspath))
-            except EOFError:
-                raise BadPersistantFile('broken file {} can not be loaded'.format(self.encoder_abspath))
-        else:
-            self.logger.warning('encoder path not found: {}'.format(self.encoder_abspath))
+        if self.model is not None:
+            return
         embeddings_list = []
         for e in self.embeddings:
             model_name, model_id = e.split(':', maxsplit=1)
@@ -81,8 +71,3 @@ class FlairTextEncoder(BaseTextEncoder):
         c_batch = [Sentence(row) for row in data]
         self.model.embed(c_batch)
         return torch.stack([c_text.get_embedding() for c_text in c_batch]).detach().numpy()
-
-    def __getstate__(self):
-        with open(self.encoder_abspath, 'wb') as f:
-            pickle.dump(self.model, f)
-        return super().__getstate__()
