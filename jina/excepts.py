@@ -75,3 +75,11 @@ class BadClient(Exception):
 
 class BadPersistantFile(Exception):
     """Bad or broken dump file that can not be deserialized with ``pickle.load``"""
+
+
+class BadRequestType(Exception):
+    """Bad request type and the pod does not know how to handle """
+
+
+class GRPCFrontendError(Exception):
+    """Some bad thing happens in the grpc frontend side"""

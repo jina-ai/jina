@@ -2,7 +2,7 @@ import os
 
 import grpc
 
-from ...excepts import BadClient
+from ...excepts import BadClient, GRPCFrontendError
 from ...logging.base import get_logger
 from ...proto import jina_pb2_grpc
 
@@ -54,21 +54,32 @@ class GrpcClient:
         self.close()
 
     def start(self, *args, **kwargs):
-        """Wrapping :func:`call` and provide exception captures """
+        """Wrapping :meth:`call` and provide exception captures
+        """
+
+        r = None
         try:
-            self.call(*args, **kwargs)
+            r = self.call(*args, **kwargs)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.RpcError as rpc_error_call:  # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
             my_code = rpc_error_call.code()
             my_details = rpc_error_call.details()
-            raise BadClient('%s error in grpc: %s '
-                            'often the case is that you define/send a bad input iterator to jina, '
-                            'please double check your input iterator' % (my_code, my_details))
+            if my_code == grpc.StatusCode.UNAVAILABLE:
+                self.logger.warning('the server at is not available or is closed already')
+            elif my_code == grpc.StatusCode.INTERNAL:
+                raise GRPCFrontendError('internal error on the server side')
+            else:
+                raise BadClient('%s error in grpc: %s '
+                                'often the case is that you define/send a bad input iterator to jina, '
+                                'please double check your input iterator' % (my_code, my_details))
         finally:
             self.close()
 
+        return r
+
     def close(self):
         """Gracefully shutdown the client and release all grpc-related resources """
-        self._channel.close()
-        self._stub = None
+        if self._stub:
+            self._channel.close()
+            self._stub = None

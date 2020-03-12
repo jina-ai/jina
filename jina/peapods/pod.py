@@ -1,6 +1,6 @@
 import copy
 from contextlib import ExitStack
-from typing import Set, Dict, List, Callable
+from typing import Set, Dict, List, Callable, Optional, Union
 
 from .frontend import FrontendPea
 from .pea import Pea, ContainerPea
@@ -18,10 +18,12 @@ class Pod:
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: Optional['argparse.Namespace'],
+                 peas_args: Dict[str, Union['argparse.Namespace', List['argparse.Namespace']]] = None):
         """
 
         :param args: arguments parsed from the CLI
+        :param peas_args: head, tail, peas argument dict, when given then ``args`` is ignored
         """
         self.peas = []
         self._args = args
@@ -29,7 +31,7 @@ class Pod:
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self.peas_args = self._parse_args()
+        self.peas_args = peas_args or self._parse_args()
 
     @property
     def name(self) -> str:
@@ -43,17 +45,18 @@ class Pod:
             'peas': []
         }
 
-        if self._args.replicas > 1:
-            # reasons to separate head and tail from peas is that they
-            # can be deducted based on the previous and next pods
-            peas_args['head'] = _copy_to_head_args(self._args, self._args.replica_type.is_push)
-            peas_args['tail'] = _copy_to_tail_args(self._args,
-                                                   self._args.num_part if self._args.replica_type.is_block else 1)
-            peas_args['peas'] = _set_peas_args(self._args, peas_args['head'], peas_args['tail'])
-            self.is_head_router = True
-            self.is_tail_router = True
-        else:
-            peas_args['peas'] = [self._args]
+        if self._args:
+            if self._args.replicas > 1:
+                # reasons to separate head and tail from peas is that they
+                # can be deducted based on the previous and next pods
+                peas_args['head'] = _copy_to_head_args(self._args, self._args.replica_type.is_push)
+                peas_args['tail'] = _copy_to_tail_args(self._args,
+                                                       self._args.num_part if self._args.replica_type.is_block else 1)
+                peas_args['peas'] = _set_peas_args(self._args, peas_args['head'], peas_args['tail'])
+                self.is_head_router = True
+                self.is_tail_router = True
+            else:
+                peas_args['peas'] = [self._args]
         return peas_args
 
     @property
@@ -157,6 +160,29 @@ class Pod:
             self.peas.append(p)
             self.stack.enter_context(p)
 
+    @property
+    def log_iterator(self):
+        """Get the last log using iterator
+
+        The :class:`Pod` log iterator goes through all peas :attr:`log_iterator` and
+        poll them sequentially. If non all them is active anymore, aka :attr:`is_event_loop`
+        is False, then the iterator ends.
+
+        .. warning::
+
+            The log may not strictly follow the time order given that we are polling the log
+            from all peas in the sequential manner.
+        """
+        while True:
+            if all(not p.is_event_loop.is_set() for p in self.peas):
+                break
+
+            for p in self.peas:
+                if p.is_event_loop.is_set():
+                    yield from p.last_log_record
+                else:
+                    yield '%r has just been terminated, won\'t be able to track its log anymore' % p
+
     def __enter__(self):
         self.start()
         return self
@@ -192,7 +218,7 @@ class FlowPod(Pod):
     """A :class:`FlowPod` is like a :class:`Pod`, but it exposes more interfaces for tweaking its connections with
     other Pods, which comes in handy when used in the Flow API """
 
-    def __init__(self, kwargs: Dict = None, send_to: Set[str] = None,
+    def __init__(self, kwargs: Dict, send_to: Set[str] = None,
                  recv_from: Set[str] = None, parser: Callable = set_pod_parser):
         """
 
