@@ -1,6 +1,6 @@
 import os
-import unittest
 import shutil
+import unittest
 
 
 class JinaTestCase(unittest.TestCase):

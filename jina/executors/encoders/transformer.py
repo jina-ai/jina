@@ -1,6 +1,6 @@
-import numpy as np
-import torch
 import os
+
+import numpy as np
 
 from . import BaseTextEncoder
 
@@ -10,6 +10,7 @@ class TransformerTextEncoder(BaseTextEncoder):
     TransformerTextEncoder encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, TransformerTextEncoder wraps the pytorch-version of transformers from huggingface.
     """
+
     def __init__(self,
                  model_name: str = 'bert-base-uncased',
                  pooling_strategy: str = 'reduce-mean',
@@ -85,6 +86,9 @@ class TransformerTextEncoder(BaseTextEncoder):
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
+
+        import torch
+
         token_ids_batch = []
         mask_ids_batch = []
         for c_idx in range(data.shape[0]):
@@ -155,8 +159,7 @@ class TransformerTextEncoder(BaseTextEncoder):
             result = np.tile(mask_row, (mask.shape[0], 1))
         elif cls_pos == 'tail':
             for num_tokens in np.sum(mask, axis=1).tolist():
-                result[num_tokens-1] = 1
+                result[num_tokens - 1] = 1
         else:
             raise NotImplementedError
         return result
-
