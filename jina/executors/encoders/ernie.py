@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from . import BaseTextEncoder
-from .helper import reduce_mean, reduce_max, reduce_cls
+from .helper import reduce_mean, reduce_max
 
 
 class ErnieTextEncoder(BaseTextEncoder):
@@ -45,7 +45,7 @@ class ErnieTextEncoder(BaseTextEncoder):
         self.exe = fluid.Executor(place)
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        padded_token_ids, padded_text_type_ids, padded_position_ids, padded_task_ids, input_mask, seq_lens = \
+        padded_token_ids, padded_text_type_ids, padded_position_ids, padded_task_ids, input_mask = \
             self.ndarray2ids(data)
         cls_emb, unpad_top_layer_emb = self.exe.run(
             program=self.model,
@@ -61,11 +61,6 @@ class ErnieTextEncoder(BaseTextEncoder):
             },
             return_numpy=False
         )
-        self.logger.critical("seq_length: {}".format(seq_lens))
-        self.logger.critical("mask_id: {}".format(input_mask))
-        self.logger.critical("mask_id: {}".format(input_mask.squeeze().shape))
-        self.logger.critical("unpad_top_layer_emb: {}".format(
-            np.array(unpad_top_layer_emb).shape))
         if self.pooling_strategy == 'cls':
             output = np.array(cls_emb)
         elif self.pooling_strategy == 'mean':
@@ -117,38 +112,30 @@ class ErnieTextEncoder(BaseTextEncoder):
             batch_token_ids.append(token_ids)
             batch_text_type_ids.append(text_type_ids)
             batch_position_ids.append(position_ids)
-        padded_token_ids, input_mask, seq_lens = self.pad_batch_data(
+        padded_token_ids, input_mask = self.pad_batch_data(
             batch_token_ids,
             pad_idx=self.tokenizer.vocab['[PAD]'],
-            return_input_mask=True,
-            return_seq_lens=True)
+            return_input_mask=True)
         padded_text_type_ids = self.pad_batch_data(
             batch_text_type_ids, pad_idx=self.tokenizer.vocab['[PAD]'])
         padded_position_ids = self.pad_batch_data(
             batch_position_ids, pad_idx=self.tokenizer.vocab['[PAD]'])
         padded_task_ids = np.ones_like(
             padded_token_ids, dtype="int64") * self.tokenizer.vocab['[PAD]']
-        return padded_token_ids, padded_text_type_ids, padded_position_ids, padded_task_ids, input_mask, seq_lens
+        return padded_token_ids, padded_text_type_ids, padded_position_ids, padded_task_ids, input_mask
 
     @staticmethod
     def pad_batch_data(insts,
                        pad_idx=0,
-                       return_input_mask=False,
-                       return_seq_lens=False):
+                       return_input_mask=False):
         return_list = []
         max_len = max(len(inst) for inst in insts)
         inst_data = np.array(
             [inst + list([pad_idx] * (max_len - len(inst))) for inst in insts])
         return_list += [inst_data.astype("int64").reshape([-1, max_len, 1])]
-
         if return_input_mask:
             input_mask_data = np.array([[1] * len(inst) + [0] *
                                         (max_len - len(inst)) for inst in insts])
             input_mask_data = np.expand_dims(input_mask_data, axis=-1)
             return_list += [input_mask_data.astype("float32")]
-
-        if return_seq_lens:
-            seq_lens = np.array([len(inst) for inst in insts])
-            return_list += [seq_lens.astype("int64").reshape([-1])]
-
         return return_list if len(return_list) > 1 else return_list[0]
