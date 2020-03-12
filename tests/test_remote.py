@@ -63,6 +63,34 @@ class MyTestCase(JinaTestCase):
         time.sleep(1)
         SpawnPeaPyClient(c_args, p_args).start()
 
+    def test_remote_two_pea(self):
+        # right now there is no way to spawn two peas
+        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
+
+        def start_frontend():
+            with FrontendPod(f_args):
+                time.sleep(5)
+
+        def start_client(d):
+            print('im running %d' % d)
+            p_args = set_pea_parser().parse_args(['--name', 'testpea%d' % d])
+            SpawnPeaPyClient(c_args, p_args).start()
+
+        t = Process(target=start_frontend)
+        t.daemon = True
+        t.start()
+
+        time.sleep(1)
+        c1 = Process(target=start_client, args=(1,))
+        c2 = Process(target=start_client, args=(2,))
+        c1.daemon = True
+        c2.daemon = True
+
+        c1.start()
+        c2.start()
+        time.sleep(5)
+
     def test_remote_pod(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
         c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])

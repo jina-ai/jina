@@ -2,7 +2,7 @@ import os
 
 import grpc
 
-from ...excepts import BadClient, GRPCFrontendError
+from ...excepts import BadClient, GRPCFrontendError, GRPCServerError
 from ...logging.base import get_logger
 from ...proto import jina_pb2_grpc
 
@@ -33,7 +33,10 @@ class GrpcClient:
             }.items(),
         )
         self.logger.debug('waiting channel to be ready...')
-        grpc.channel_ready_future(self._channel).result()
+        try:
+            grpc.channel_ready_future(self._channel).result()
+        except grpc.FutureTimeoutError:
+            raise GRPCServerError('can not connect to the server at %s:%d' % (self.args.grpc_host, self.args.grpc_port))
 
         # create new stub
         self.logger.debug('create new stub...')
