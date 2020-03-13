@@ -20,7 +20,12 @@ class SpawnPeaPyClient(GrpcClient):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
+        from ...peapods.zmq import Zmqlet
+        self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.args = args
+        # set cli to none if exist
+        if hasattr(self.args, 'cli'):
+            self.args.cli = None
         # set the host back to local, as for the remote, it is running "locally"
         self.args.host = __default_host__
         self.callback_on_first = True
@@ -42,6 +47,12 @@ class SpawnPeaPyClient(GrpcClient):
                 set_ready()
                 self.callback_on_first = False
             logger.info(resp.log_record)
+
+    def close(self):
+        from ...peapods.zmq import send_ctrl_message
+        send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                          timeout=self.args.timeout_ctrl)
+        super().close()
 
 
 class SpawnPodPyClient(SpawnPeaPyClient):

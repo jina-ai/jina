@@ -99,10 +99,11 @@ class FrontendPea:
                 _req_type = type(_req)
                 if _req_type == jina_pb2.SpawnRequest.PeaSpawnRequest:
                     _args = set_pea_parser().parse_args(_req.args)
-                    print(_args)
+                    self.logger.info('starting a Pea from a remote request')
                     p = Pea(_args)
                 elif _req_type == jina_pb2.SpawnRequest.PodSpawnRequest:
                     _args = set_pod_parser().parse_args(_req.args)
+                    self.logger.info('starting a Pod from a remote request')
                     p = Pod(_args)
                 elif _req_type == jina_pb2.SpawnRequest.PodDictSpawnRequest:
                     peas_args = {

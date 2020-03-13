@@ -1,7 +1,7 @@
 def pod(args):
     """Start a Pod"""
-    from ..peapods.pod import Pod
-    with Pod(args) as p:
+    from ..peapods.pod import get_pod
+    with get_pod(args) as p:
         p.join()
 
 

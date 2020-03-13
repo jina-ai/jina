@@ -176,6 +176,12 @@ class Pea(metaclass=PeaMeta):
             yield self.log_event.record
             self.log_event.clear()
 
+    def join(self):
+        try:
+            super().join()
+        except KeyboardInterrupt:
+            pass
+
     def load_executor(self):
         """Load the executor to this Pea, specified by ``exec_yaml_path`` CLI argument.
 
