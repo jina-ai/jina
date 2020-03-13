@@ -9,7 +9,7 @@ from jina.executors import BaseExecutor
 
 
 class MyTestCase(JinaTestCase):
-    @unittest.skip("skip tests depending on pretraining models")
+    @unittest.skip("skip tests depending on pretrained models")
     def test_encoding_results(self):
         encoder = ErnieTextEncoder(max_length=10, workspace=os.environ['TEST_WORKDIR'])
         test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])

@@ -7,6 +7,8 @@ class OneHotTextEncoder(BaseTextEncoder):
     """
 
     One-hot Encoder encodes the characters into one-hot vectors. ONLY FOR TESTING USAGES.
+    :param on_value: the default value for the locations represented by characters
+    :param off_value: the default value for the locations not represented by characters
     """
     def __init__(self,
                  on_value: float = 1,

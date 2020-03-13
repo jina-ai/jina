@@ -23,7 +23,7 @@ class MyTestCase(JinaTestCase):
         'max', 'min', 'mean'
     ]
 
-    @unittest.skip("skip tests depending on pretraining models")
+    @unittest.skip("skip tests depending on pretrained models")
     def test_encoding_results(self):
         encoder = FlairTextEncoder()
         test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
@@ -31,7 +31,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoded_data.shape[0], 2)
         self.assertIs(type(encoded_data), np.ndarray)
 
-    @unittest.skip("skip tests depending on pretraining models")
+    @unittest.skip("skip tests depending on pretrained models")
     def test_all_encoders(self):
         for model_name in MyTestCase.model_list:
             for pooling_strategy in MyTestCase.pooling_list:
@@ -40,6 +40,7 @@ class MyTestCase(JinaTestCase):
                 encoded_data = encoder.encode(test_data)
                 self.assertEqual(encoded_data.shape[0], 2, '{} failed'.format(model_name))
 
+    @unittest.skip("skip tests depending on pretrained models")
     def test_save_and_load(self):
         encoder = FlairTextEncoder(
             embeddings=('word:glove', ), pooling_strategy='mean', workspace=os.environ['TEST_WORKDIR'])
@@ -61,6 +62,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
+    @unittest.skip("skip tests depending on pretrained models")
     def test_save_and_load_config(self):
         encoder = FlairTextEncoder(
             embeddings=('word:glove',), pooling_strategy='mean', workspace=os.environ['TEST_WORKDIR'])
