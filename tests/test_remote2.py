@@ -1,3 +1,4 @@
+import os
 import threading
 import time
 import unittest
@@ -103,6 +104,7 @@ class MyTestCase(JinaTestCase):
         SpawnDictPodHelper(p.peas_args).start()
         t.join()
 
+    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_remote_pea2(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
         p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
