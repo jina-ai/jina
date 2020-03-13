@@ -20,7 +20,6 @@ class ErnieTextEncoder(BaseTextEncoder):
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
             strategies include ``mean``, ``cls``, ``max``, and ``min``.
         :param max_length: the max length to truncate the tokenized sequences to.
-        :param device: the device where the graph computation is done. Supported devices including ``cpu``, ``gpu``.
         """
         super().__init__(*args, **kwargs)
         self.tokenizer = None
