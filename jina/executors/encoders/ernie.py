@@ -13,7 +13,6 @@ class ErnieTextEncoder(BaseTextEncoder):
     def __init__(self,
                  pooling_strategy: str = 'cls',
                  max_length: int = 128,
-                 device: str = 'cpu',
                  *args,
                  **kwargs):
         """
@@ -27,7 +26,6 @@ class ErnieTextEncoder(BaseTextEncoder):
         self.tokenizer = None
         self.pooling_strategy = pooling_strategy
         self.max_seq_length = max_length
-        self.device = device
         self.vocab_filename = ''
 
     def post_init(self):
@@ -45,13 +43,10 @@ class ErnieTextEncoder(BaseTextEncoder):
         self.tokenizer = bert_tokenization.FullTokenizer(
             vocab_file=self.vocab_filename, do_lower_case=True)
         place = None
-        if self.device == 'cpu':
+        if not self.on_gpu:
             place = fluid.CPUPlace()
-        elif self.device == 'gpu':
-            place = fluid.CUDAPlace(int(os.getenv('FLAGS_selected_gpus', '0')))
         else:
-            self.logger.error('unknown device: {}'.format(self.device))
-            raise ValueError
+            place = fluid.CUDAPlace(int(os.getenv('FLAGS_selected_gpus', '0')))
         self.exe = fluid.Executor(place)
         self.convert_to_unicode = bert_tokenization.convert_to_unicode
 
@@ -66,14 +61,14 @@ class ErnieTextEncoder(BaseTextEncoder):
         cls_emb, unpad_top_layer_emb = self.exe.run(
             program=self.model,
             fetch_list=[
-                self.outputs["pooled_output"].name,
-                self.outputs["sequence_output"].name
+                self.outputs['pooled_output'].name,
+                self.outputs['sequence_output'].name
             ],
             feed={
-                self.inputs["input_ids"].name: padded_token_ids,
-                self.inputs["segment_ids"].name: padded_text_type_ids,
-                self.inputs["position_ids"].name: padded_position_ids,
-                self.inputs["input_mask"].name: input_mask
+                self.inputs['input_ids'].name: padded_token_ids,
+                self.inputs['segment_ids'].name: padded_text_type_ids,
+                self.inputs['position_ids'].name: padded_position_ids,
+                self.inputs['input_mask'].name: input_mask
             },
             return_numpy=False
         )
@@ -86,13 +81,12 @@ class ErnieTextEncoder(BaseTextEncoder):
         elif self.pooling_strategy == 'min':
             output = reduce_min(np.array(unpad_top_layer_emb), input_mask.squeeze())
         else:
-            self.logger.error("pooling strategy not found: {}".format(self.pooling_strategy))
+            self.logger.error('pooling strategy not found: {}'.format(self.pooling_strategy))
             raise NotImplementedError
         return output
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def close(self):
         self.exe.close()
-        super().__exit__(exc_type, exc_val, exc_tb)
 
     def _data2inputs(self, data):
         batch_token_ids = []
@@ -100,7 +94,7 @@ class ErnieTextEncoder(BaseTextEncoder):
         batch_position_ids = []
         for r in data:
             text = self.convert_to_unicode(r)
-            tokens = ["[CLS]"] + self.tokenizer.tokenize(text)[:self.max_seq_length] + ["[SEP]"]
+            tokens = ['[CLS]'] + self.tokenizer.tokenize(text)[:self.max_seq_length] + ['[SEP]']
             token_ids = self.tokenizer.convert_tokens_to_ids(tokens)
             text_type_ids = [0] * len(token_ids)
             position_ids = list(range(len(token_ids)))
@@ -116,29 +110,29 @@ class ErnieTextEncoder(BaseTextEncoder):
         padded_position_ids = self._pad_batch_data(
             batch_position_ids, pad_idx=self.tokenizer.vocab['[PAD]'])
         padded_task_ids = np.ones_like(
-            padded_token_ids, dtype="int64") * self.tokenizer.vocab['[PAD]']
+            padded_token_ids, dtype='int64') * self.tokenizer.vocab['[PAD]']
         return padded_token_ids, padded_text_type_ids, padded_position_ids, padded_task_ids, input_mask
 
     @staticmethod
     def _convert_vocab(input_fn, output_fn):
         vocab = []
-        with open(input_fn, "r") as in_fh:
+        with open(input_fn, 'r') as in_fh:
             for l in in_fh:
-                tmp = l.split("\t")
+                tmp = l.split('\t')
                 if len(tmp) == 2:
                     vocab.append(tmp[0])
-        with open(output_fn, "w") as out_fh:
-            out_fh.write("\n".join(vocab))
-            out_fh.write("\n")
+        with open(output_fn, 'w') as out_fh:
+            out_fh.write('\n'.join(vocab))
+            out_fh.write('\n')
 
     @staticmethod
     def _pad_batch_data(inputs, pad_idx=0, return_input_mask=False):
         result = []
         max_len = max(len(t) for t in inputs)
         inst_data = np.array([t + list([pad_idx] * (max_len - len(t))) for t in inputs])
-        result += [inst_data.astype("int64").reshape([-1, max_len, 1])]
+        result += [inst_data.astype('int64').reshape([-1, max_len, 1])]
         if return_input_mask:
             input_mask_data = np.array([[1] * len(t) + [0] * (max_len - len(t)) for t in inputs])
             input_mask_data = np.expand_dims(input_mask_data, axis=-1)
-            result += [input_mask_data.astype("float32")]
+            result += [input_mask_data.astype('float32')]
         return result if len(result) > 1 else result[0]
