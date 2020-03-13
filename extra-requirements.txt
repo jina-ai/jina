@@ -21,6 +21,6 @@ docker:                     flow
 torch:                      framework
 transformers:               nlp, encode
 flair:                      nlp, encode
-paddlepaddle:               framework
-paddlehub:                  framework
-bert-for-tf2:               nlp, encode
+# paddlepaddle:               framework
+# paddlehub:                  framework
+# bert-for-tf2:               nlp, encode
