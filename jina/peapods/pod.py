@@ -46,7 +46,7 @@ class Pod:
         }
 
         if self._args:
-            if self._args.replicas > 1:
+            if getattr(self._args, 'replicas', 1) > 1:
                 # reasons to separate head and tail from peas is that they
                 # can be deducted based on the previous and next pods
                 peas_args['head'] = _copy_to_head_args(self._args, self._args.replica_type.is_push)
@@ -138,7 +138,7 @@ class Pod:
 
         Remember to close the Pod with :meth:`close`.
 
-        Note that this method has a timeout of ``ready_timeout`` set in CLI,
+        Note that this method has a timeout of ``timeout_ready`` set in CLI,
         which is inherited from :class:`jina.peapods.peas.Pea`
         """
         self.stack = ExitStack()
@@ -409,14 +409,14 @@ class FrontendPod(Pod):
             self.stack.enter_context(p)
 
     @property
-    def grpc_port(self) -> int:
+    def port_grpc(self) -> int:
         """Get the grpc port number """
-        return self._args.grpc_port
+        return self._args.port_grpc
 
     @property
-    def grpc_host(self) -> str:
+    def host(self) -> str:
         """Get the grpc host name """
-        return self._args.grpc_host
+        return self._args.host
 
 
 class FrontendFlowPod(FrontendPod, FlowPod):

@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
-from .. import __ready_signal__
+from .. import __ready_signal__, __default_host__
+from ..clients.python import SpawnPeaPyClient
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
@@ -316,18 +317,40 @@ class Pea(metaclass=PeaMeta):
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
         return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                 timeout=self.args.ctrl_timeout)
+                                 timeout=self.args.timeout_ctrl)
 
     def __enter__(self):
         self.start()
-        if self.is_ready.wait(self.args.ready_timeout / 1000):
+        if self.is_ready.wait(self.args.timeout_ready / 1000):
             return self
         else:
             raise TimeoutError('this Pea (name=%s) can not be initialized after %dms' % (self.name,
-                                                                                         self.args.ready_timeout))
+                                                                                         self.args.timeout_ready))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+
+class RemotePea(Pea):
+    """A Pea that spawns another pea remotely """
+
+    def __init__(self, args: 'argparse.Namespace'):
+        if hasattr(args, 'host'):  # and args.host != __default_host__:
+            super().__init__(args)
+        else:
+            raise ValueError(
+                '%r requires "args.host" to be set, and it should not be %s' % (self.__class__, __default_host__))
+
+    def post_init(self):
+        pass
+
+    def event_loop_start(self):
+        self.remote_pea = SpawnPeaPyClient(self.args)
+        self.remote_pea.start(self.set_ready)
+
+    def event_loop_stop(self):
+        if getattr(self, 'remote_pea', None):
+            self.remote_pea.close()
 
 
 class ContainerPea(Pea):
@@ -337,9 +360,12 @@ class ContainerPea(Pea):
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        super().__init__(args)
-        import docker
+        if hasattr(args, 'image') and args.image:
+            super().__init__(args)
+        else:
+            raise ValueError('%s requires "args.image" to be set' % self.__class__)
         self._container = None
+        import docker
         self._client = docker.from_env()
 
     def post_init(self):
@@ -398,11 +424,6 @@ class ContainerPea(Pea):
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
         self.is_event_loop.set()
-        # if self.status:
-        #     self.set_ready()
-        # else:
-        #     self.logger.warning(
-        #         'the container did not send ready signal after %d ms, something is wrong' % self.args.ctrl_timeout)
 
     def event_loop_start(self):
         """Direct the log from the container to local console """

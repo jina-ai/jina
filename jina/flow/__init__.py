@@ -392,7 +392,7 @@ class Flow:
 
         Remember to close the Flow with :meth:`close`.
 
-        Note that this method has a timeout of ``ready_timeout`` set in CLI,
+        Note that this method has a timeout of ``timeout_ready`` set in CLI,
         which is inherited all the way from :class:`jina.peapods.peas.Pea`
         """
         if self.with_sse_logger:
@@ -455,8 +455,8 @@ class Flow:
         from ..clients.python import PyClient
 
         _, p_args, _ = self._get_parsed_args(self, PyClient.__name__, kwargs, parser=set_client_cli_parser)
-        p_args.grpc_port = self._pod_nodes['frontend'].grpc_port
-        p_args.grpc_host = self._pod_nodes['frontend'].grpc_host
+        p_args.port_grpc = self._pod_nodes['frontend'].port_grpc
+        p_args.host = self._pod_nodes['frontend'].host
         c = PyClient(p_args)
         if bytes_gen:
             c.raw_bytes = bytes_gen

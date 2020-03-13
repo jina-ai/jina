@@ -1,4 +1,4 @@
-from typing import Iterator, Callable, Union, Any
+from typing import Iterator, Callable, Union, Dict
 
 from .grpc import GrpcClient
 from .helper import ProgressBar
@@ -17,18 +17,27 @@ if False:
 class SpawnPeaPyClient(GrpcClient):
     body_tag = 'pea'
 
-    def __init__(self, args: 'argparse.Namespace', peas_args: Any):
+    def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
-        self.peas_args = peas_args
+        self.args = args
+        self.callback_on_first = True
 
-    def call(self):
+    def call(self, set_ready: Callable = None):
+        """
+
+        :param set_ready: :func:`set_ready` signal from :meth:`jina.peapods.peas.Pea.set_ready`
+        :return:
+        """
         req = jina_pb2.SpawnRequest()
-        getattr(req, self.body_tag).args.extend(kwargs2list(vars(self.peas_args)))
-        self.remote_logging(req)
+        getattr(req, self.body_tag).args.extend(kwargs2list(vars(self.args)))
+        self.remote_logging(req, set_ready)
 
-    def remote_logging(self, req):
+    def remote_logging(self, req, set_ready):
         logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
         for resp in self._stub.Spawn(req):
+            if set_ready and self.callback_on_first:
+                set_ready()
+                self.callback_on_first = False
             logger.info(resp.log_record)
 
 
@@ -38,11 +47,19 @@ class SpawnPodPyClient(SpawnPeaPyClient):
 
 class SpawnDictPodPyClient(SpawnPeaPyClient):
 
+    def __init__(self, peas_args: Dict):
+        for k in peas_args.values():
+            if k:
+                super().__init__(k)
+                break
+        self.peas_args = peas_args
+        self.callback_on_first = True
+
     @staticmethod
     def convert2pea_args(args: 'argparse.Namespace'):
         return kwargs2list(vars(set_pea_parser().parse_known_args(kwargs2list(vars(args)))[0]))
 
-    def call(self):
+    def call(self, set_ready: Callable = None):
         req = jina_pb2.SpawnRequest()
         if self.peas_args['head']:
             req.cust_pod.head.args.extend(self.convert2pea_args(self.peas_args['head']))
@@ -53,7 +70,7 @@ class SpawnDictPodPyClient(SpawnPeaPyClient):
                 _a = req.cust_pod.peas.add()
                 _a.args.extend(self.convert2pea_args(q))
 
-        self.remote_logging(req)
+        self.remote_logging(req, set_ready)
 
 
 class PyClient(GrpcClient):
