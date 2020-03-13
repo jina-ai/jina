@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from . import BaseTextEncoder
+from .helper import reduce_mean, reduce_max, reduce_cls
 
 
 class TransformerTextEncoder(BaseTextEncoder):
@@ -43,7 +44,6 @@ class TransformerTextEncoder(BaseTextEncoder):
             XLNetModel, XLNetTokenizer, XLMModel, \
             XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
             RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer
-        # TransfoXLModel, TransfoXLTokenizer, \
         if self.encoder_abspath:
             if not os.path.exists(self.encoder_abspath):
                 self.logger.error("encoder path not found: {}".format(self.encoder_abspath))
@@ -61,7 +61,6 @@ class TransformerTextEncoder(BaseTextEncoder):
             'distilbert-base-cased': (DistilBertModel, DistilBertTokenizer),
             'roberta-base': (RobertaModel, RobertaTokenizer),
             'xlm-roberta-base': (XLMRobertaModel, XLMRobertaTokenizer)
-            # 'transfo-xl-wt103': (TransfoXLModel, TransfoXLTokenizer),
         }
 
         model_class, tokenizer_class = model_dict[self.model_name]
@@ -105,11 +104,11 @@ class TransformerTextEncoder(BaseTextEncoder):
                 if self.cls_pos is None:
                     self.logger.error("cls is not supported: {}".format(self.model_name))
                     raise NotImplementedError
-                output = self._reduce_cls(self, seq_output.numpy(), mask_ids_batch.numpy(), cls_pos=self.cls_pos)
+                output = reduce_cls(self, seq_output.numpy(), mask_ids_batch.numpy(), cls_pos=self.cls_pos)
             elif self.pooling_strategy == 'reduce-mean':
-                output = self._reduce_mean(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_mean(seq_output.numpy(), mask_ids_batch.numpy())
             elif self.pooling_strategy == 'reduce-max':
-                output = self._reduce_max(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_max(seq_output.numpy(), mask_ids_batch.numpy())
             else:
                 self.logger.error("pooling strategy not found: {}".format(self.pooling_strategy))
                 raise NotImplementedError
