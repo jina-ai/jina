@@ -1,6 +1,17 @@
+import sys
 from os import path
 
 from setuptools import setup, find_packages
+
+PY37 = 'py37'
+PY38 = 'py38'
+
+if sys.version_info >= (3, 8, 0):
+    py_tag = PY38
+elif sys.version_info >= (3, 7, 0):
+    py_tag = PY37
+else:
+    raise OSError('Jina requires python 3.7 and above, but yours is %s' % sys.version_info)
 
 try:
     pkg_name = 'jina'
@@ -41,10 +52,15 @@ def get_extra_requires(path, add_all=True):
                     tags.add(re.split('[<=>]', k)[0])
                     for t in tags:
                         extra_deps[t].add(k)
+                    if PY37 not in tags and PY38 not in tags:
+                        # no specific python version required
+                        extra_deps[PY37].add(k)
+                        extra_deps[PY38].add(k)
 
             # add tag `all` at the end
             if add_all:
                 extra_deps['all'] = set(vv for v in extra_deps.values() for vv in v)
+                extra_deps['match-py-ver'] = extra_deps[py_tag]
 
         return extra_deps
     except FileNotFoundError:
