@@ -11,7 +11,7 @@ from jina.executors import BaseExecutor
 class MyTestCase(JinaTestCase):
     @unittest.skip("skip tests depending on pretraining models")
     def test_encoding_results(self):
-        encoder = ErnieTextEncoder(max_length=10)
+        encoder = ErnieTextEncoder(max_length=10, workspace=os.environ['TEST_WORKDIR'])
         test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape[0], 2)

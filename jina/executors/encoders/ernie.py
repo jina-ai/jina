@@ -11,34 +11,40 @@ class ErnieTextEncoder(BaseTextEncoder):
     https://github.com/PaddlePaddle/PaddleHub
     """
     def __init__(self,
+                 model_name: str = 'ernie_tiny',
                  pooling_strategy: str = 'cls',
                  max_length: int = 128,
                  *args,
                  **kwargs):
         """
 
+        :param model_name: the name of the model. Supported models include ``ernie``, ``ernie_tiny``,
+            ``ernie_v2_eng_base``, and ``ernie_v2_eng_large``. Fo models' details refer to
+            https://aistudio.baidu.com/aistudio/projectdetail/186443
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
             strategies include ``mean``, ``cls``, ``max``, and ``min``.
         :param max_length: the max length to truncate the tokenized sequences to.
-        :param device: the device where the graph computation is done. Supported devices including ``cpu``, ``gpu``.
         """
         super().__init__(*args, **kwargs)
-        self.tokenizer = None
+        self.model_name = model_name
         self.pooling_strategy = pooling_strategy
         self.max_seq_length = max_length
         self.vocab_filename = ''
+        self.tokenizer = None
 
     def post_init(self):
         import paddlehub as hub
         import paddle.fluid as fluid
         from bert.tokenization import bert_tokenization
-        module = hub.Module(name='ernie')
+        module = hub.Module(name=self.model_name)
         self.inputs, self.outputs, self.model = module.context(
             trainable=False, max_seq_len=self.max_seq_length)
         # convert the ernie vocab file into the bert vocab format
-        self.vocab_filename = os.path.join(
-            self.current_workspace, 'ernie.vocab.txt')
-        self._convert_vocab(module.get_vocab_path(), self.vocab_filename)
+        self.vocab_filename = os.path.join(self.current_workspace, 'ernie.vocab.txt')
+        num_cols = 1
+        if self.model_name == 'ernie':
+            num_cols = 2
+        self._convert_vocab(module.get_vocab_path(), self.vocab_filename, num_cols)
         self.logger.info('vocab file saved path: {}'.format(self.vocab_filename))
         self.tokenizer = bert_tokenization.FullTokenizer(
             vocab_file=self.vocab_filename, do_lower_case=True)
@@ -114,13 +120,13 @@ class ErnieTextEncoder(BaseTextEncoder):
         return padded_token_ids, padded_text_type_ids, padded_position_ids, padded_task_ids, input_mask
 
     @staticmethod
-    def _convert_vocab(input_fn, output_fn):
+    def _convert_vocab(input_fn, output_fn, num_cols=1):
         vocab = []
         with open(input_fn, 'r') as in_fh:
             for l in in_fh:
                 tmp = l.split('\t')
-                if len(tmp) == 2:
-                    vocab.append(tmp[0])
+                if len(tmp) == num_cols:
+                    vocab.append(tmp[0].strip("\n"))
         with open(output_fn, 'w') as out_fh:
             out_fh.write('\n'.join(vocab))
             out_fh.write('\n')
