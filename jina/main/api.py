@@ -7,8 +7,8 @@ def pod(args):
 
 def pea(args):
     """Start a Pea"""
-    from ..peapods.pea import Pea
-    with Pea(args) as p:
+    from ..peapods.pea import get_pea
+    with get_pea(args) as p:
         p.join()
 
 

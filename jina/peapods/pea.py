@@ -19,7 +19,7 @@ from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
-__all__ = ['PeaMeta', 'Pea', 'ContainerPea']
+__all__ = ['PeaMeta', 'Pea', 'ContainerPea', 'get_pea']
 
 # temporary fix for python 3.8 on macos where the default start is set to "spawn"
 # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
@@ -461,3 +461,13 @@ class ContainerPea(Pea):
                     'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()
+
+
+def get_pea(args: 'argparse.Namespace'):
+    """Initialize a :class:`Pea`, :class:`RemotePea` or :class:`ContainerPea`"""
+    if args.host != __default_host__:
+        return RemotePea(args)
+    elif args.image:
+        return ContainerPea(args)
+    else:
+        return Pea(args)
