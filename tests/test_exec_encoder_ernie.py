@@ -9,7 +9,7 @@ from jina.executors import BaseExecutor
 
 
 class MyTestCase(JinaTestCase):
-    @unittest.skip("skip tests depending on pretraining models")
+    # @unittest.skip("skip tests depending on pretraining models")
     def test_encoding_results(self):
         encoder = ErnieTextEncoder(max_length=10)
         test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
@@ -18,7 +18,7 @@ class MyTestCase(JinaTestCase):
         self.assertIs(type(encoded_data), np.ndarray)
         self.add_tmpfile(encoder.vocab_filename)
 
-    @unittest.skipIf(sys.version_info >= (3, 8, 0))
+    @unittest.skipIf(sys.version_info >= (3, 8, 0), "paddlepaddle doesn't support python >= 3.8.0")
     def test_save_and_load(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])
@@ -34,12 +34,11 @@ class MyTestCase(JinaTestCase):
         encoded_data_test = encoder_loaded.encode(test_data)
 
         self.assertEqual(encoder_loaded.vocab_filename, encoder.vocab_filename)
-        # np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_filename)
 
-    @unittest.skipIf(sys.version_info >= (3, 8, 0))
+    @unittest.skipIf(sys.version_info >= (3, 8, 0), "paddlepaddle doesn't support python >= 3.8.0")
     def test_save_and_load_config(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])

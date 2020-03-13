@@ -21,6 +21,18 @@ def reduce_max(data, mask_2d):
     return np.max(output, axis=1)
 
 
+def reduce_min(data, mask_2d):
+    emb_dim = data.shape[2]
+    mask = np.tile(mask_2d, (emb_dim, 1, 1))
+    mask = np.rollaxis(mask, 0, 3)
+    output = mask * data
+    neg_mask = (mask_2d - 1) * (-1e10)
+    neg_mask = np.tile(neg_mask, (emb_dim, 1, 1))
+    neg_mask = np.rollaxis(neg_mask, 0, 3)
+    output += neg_mask
+    return np.min(output, axis=1)
+
+
 def reduce_cls(data, mask_2d, cls_pos='head'):
     mask_pruned = prune_mask(mask_2d, cls_pos)
     return reduce_mean(data, mask_pruned)
