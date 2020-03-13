@@ -1,7 +1,9 @@
+import multiprocessing
 import os
 import time
 import unittest
-from multiprocessing import Process
+
+_mp = multiprocessing.get_context('fork')
 
 import numpy as np
 
@@ -38,6 +40,9 @@ def get_result(resp):
 
 class MyTestCase(JinaTestCase):
 
+    def tearDown(self) -> None:
+        time.sleep(2)
+
     def test_doc_iters(self):
         a = random_docs(3, 5)
         for d in a:
@@ -58,9 +63,9 @@ class MyTestCase(JinaTestCase):
 
         with f1.build() as fl1:
             self.assertEqual(fl1.num_peas, 6)
-            t1 = Process(target=start_client, args=(fl1,))
+            t1 = _mp.Process(target=start_client, args=(fl1,))
             t1.daemon = True
-            t2 = Process(target=start_client, args=(fl1,))
+            t2 = _mp.Process(target=start_client, args=(fl1,))
             t2.daemon = True
 
             t1.start()
@@ -69,9 +74,9 @@ class MyTestCase(JinaTestCase):
 
         with f2.build() as fl2:
             self.assertEqual(fl2.num_peas, 6)
-            t1 = Process(target=start_client, args=(fl2,))
+            t1 = _mp.Process(target=start_client, args=(fl2,))
             t1.daemon = True
-            t2 = Process(target=start_client, args=(fl2,))
+            t2 = _mp.Process(target=start_client, args=(fl2,))
             t2.daemon = True
 
             t1.start()
@@ -88,9 +93,9 @@ class MyTestCase(JinaTestCase):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
         with f.build() as fl:
-            t1 = Process(target=start_client, args=(fl,))
+            t1 = _mp.Process(target=start_client, args=(fl,))
             t1.daemon = True
-            t2 = Process(target=start_client, args=(fl,))
+            t2 = _mp.Process(target=start_client, args=(fl,))
             t2.daemon = True
 
             t1.start()
