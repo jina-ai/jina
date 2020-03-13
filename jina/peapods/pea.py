@@ -463,9 +463,13 @@ class ContainerPea(Pea):
             self._client.close()
 
 
-def get_pea(args: 'argparse.Namespace'):
-    """Initialize a :class:`Pea`, :class:`RemotePea` or :class:`ContainerPea`"""
-    if args.host != __default_host__:
+def get_pea(args: 'argparse.Namespace', allow_remote: bool = True):
+    """Initialize a :class:`Pea`, :class:`RemotePea` or :class:`ContainerPea`
+
+    :param args: arguments from CLI
+    :param allow_remote: allow start a :class:`RemotePea`
+    """
+    if allow_remote and args.host != __default_host__:
         return RemotePea(args)
     elif args.image:
         return ContainerPea(args)

@@ -1,9 +1,7 @@
-import multiprocessing
+import multiprocessing as mp
 import os
 import time
 import unittest
-
-_mp = multiprocessing.get_context('fork')
 
 import numpy as np
 
@@ -63,9 +61,9 @@ class MyTestCase(JinaTestCase):
 
         with f1.build() as fl1:
             self.assertEqual(fl1.num_peas, 6)
-            t1 = _mp.Process(target=start_client, args=(fl1,))
+            t1 = mp.Process(target=start_client, args=(fl1,))
             t1.daemon = True
-            t2 = _mp.Process(target=start_client, args=(fl1,))
+            t2 = mp.Process(target=start_client, args=(fl1,))
             t2.daemon = True
 
             t1.start()
@@ -74,9 +72,9 @@ class MyTestCase(JinaTestCase):
 
         with f2.build() as fl2:
             self.assertEqual(fl2.num_peas, 6)
-            t1 = _mp.Process(target=start_client, args=(fl2,))
+            t1 = mp.Process(target=start_client, args=(fl2,))
             t1.daemon = True
-            t2 = _mp.Process(target=start_client, args=(fl2,))
+            t2 = mp.Process(target=start_client, args=(fl2,))
             t2.daemon = True
 
             t1.start()
@@ -93,9 +91,9 @@ class MyTestCase(JinaTestCase):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
         with f.build() as fl:
-            t1 = _mp.Process(target=start_client, args=(fl,))
+            t1 = mp.Process(target=start_client, args=(fl,))
             t1.daemon = True
-            t2 = _mp.Process(target=start_client, args=(fl,))
+            t2 = mp.Process(target=start_client, args=(fl,))
             t2.daemon = True
 
             t1.start()

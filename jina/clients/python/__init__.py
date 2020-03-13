@@ -2,6 +2,7 @@ from typing import Iterator, Callable, Union, Dict
 
 from .grpc import GrpcClient
 from .helper import ProgressBar
+from ... import __default_host__
 from ...excepts import BadClient
 from ...helper import kwargs2list
 from ...logging import get_logger
@@ -20,6 +21,8 @@ class SpawnPeaPyClient(GrpcClient):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.args = args
+        # set the host back to local, as for the remote, it is running "locally"
+        self.args.host = __default_host__
         self.callback_on_first = True
 
     def call(self, set_ready: Callable = None):
@@ -48,10 +51,14 @@ class SpawnPodPyClient(SpawnPeaPyClient):
 class SpawnDictPodPyClient(SpawnPeaPyClient):
 
     def __init__(self, peas_args: Dict):
+        inited = False
         for k in peas_args.values():
             if k:
-                super().__init__(k)
-                break
+                if not inited:
+                    # any pea will do, we just need its host and port_grpc
+                    super().__init__(k)
+                    inited = True
+                k.host = __default_host__
         self.peas_args = peas_args
         self.callback_on_first = True
 

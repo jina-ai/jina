@@ -3,7 +3,7 @@ from contextlib import ExitStack
 from typing import Set, Dict, List, Callable, Optional, Union
 
 from .frontend import FrontendPea
-from .pea import Pea, ContainerPea
+from .pea import Pea, get_pea
 from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, random_identity, kwargs2list
@@ -156,7 +156,7 @@ class Pod:
         # start real peas and accumulate the storage id
         for idx, s in enumerate(self.peas_args['peas']):
             s.replica_id = idx
-            p = ContainerPea(s) if s.image else Pea(s)
+            p = get_pea(s, allow_remote=False)
             self.peas.append(p)
             self.stack.enter_context(p)
 
