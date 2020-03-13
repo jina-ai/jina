@@ -98,11 +98,8 @@ class RemotePea(Pea):
     """A Pea that spawns another pea remotely """
 
     def __init__(self, args: 'argparse.Namespace'):
-        if hasattr(args, 'host'):
+        if hasattr(args, 'host') and args.host != __default_host__:
             super().__init__(args)
-            if args.host == __default_host__:
-                self.logger.warning(f'you are using {self.__class__} locally by setting host to {args.host}, '
-                                    f'are you sure about this?')
         else:
             raise ValueError(
                 '%r requires "args.host" to be set, and it should not be %s' % (self.__class__, __default_host__))
@@ -123,7 +120,7 @@ class RemotePod(Pod):
     """A Pea that spawns another pea remotely """
 
     def __init__(self, args: 'argparse.Namespace'):
-        if hasattr(args, 'host'):
+        if hasattr(args, 'host') and args.host != __default_host__:
             super().__init__(args)
         else:
             raise ValueError(

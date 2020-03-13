@@ -38,7 +38,8 @@ class MyTestCase(JinaTestCase):
 
     def test_remote_pod(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
-        p_args = set_pod_parser().parse_args(['--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
+        p_args = set_pod_parser().parse_args(
+            ['--host', 'localhost', '--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
 
         def start_frontend():
             with FrontendPod(f_args):
@@ -61,7 +62,8 @@ class MyTestCase(JinaTestCase):
 
         def start_client(d):
             print('im running %d' % d)
-            p_args = set_pea_parser().parse_args(['--name', 'testpea%d' % d, '--port_grpc', str(f_args.port_grpc)])
+            p_args = set_pea_parser().parse_args(
+                ['--host', 'localhost', '--name', 'testpea%d' % d, '--port_grpc', str(f_args.port_grpc)])
             SpawnPeaHelper(p_args).start()
 
         t = Process(target=start_frontend)
@@ -86,7 +88,8 @@ class MyTestCase(JinaTestCase):
 
     def test_customized_pod(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
-        p_args = set_pod_parser().parse_args(['--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
+        p_args = set_pod_parser().parse_args(
+            ['--host', 'localhost', '--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
         p = Pod(p_args)
 
         def start_frontend():
@@ -102,7 +105,7 @@ class MyTestCase(JinaTestCase):
 
     def test_remote_pea2(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
-        p_args = set_pea_parser().parse_args(['--host', '0.0.0.0', '--port_grpc', str(f_args.port_grpc)])
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
 
         def start_frontend():
             with FrontendPod(f_args):
@@ -119,7 +122,7 @@ class MyTestCase(JinaTestCase):
     def test_remote_pea(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
 
-        p_args = set_pea_parser().parse_args(['--port_grpc', str(f_args.port_grpc)])
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
 
         def start_frontend():
             with FrontendPod(f_args):
