@@ -31,7 +31,7 @@ class FrontendPea:
 
         self.p_servicer = self._Pea(args, self.logger)
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.p_servicer, self.server)
-        self.bind_address = '{0}:{1}'.format(args.grpc_host, args.grpc_port)
+        self.bind_address = '{0}:{1}'.format(args.host, args.port_grpc)
         self.server.add_insecure_port(self.bind_address)
         self._stop_event = threading.Event()
         self.is_ready = threading.Event()
@@ -50,6 +50,7 @@ class FrontendPea:
         self.p_servicer.close()
         self.server.stop(None)
         self._stop_event.set()
+        self.logger.critical('terminated')
 
     def join(self):
         self._stop_event.wait()
@@ -98,9 +99,11 @@ class FrontendPea:
                 _req_type = type(_req)
                 if _req_type == jina_pb2.SpawnRequest.PeaSpawnRequest:
                     _args = set_pea_parser().parse_args(_req.args)
+                    self.logger.info('starting a Pea from a remote request')
                     p = Pea(_args)
                 elif _req_type == jina_pb2.SpawnRequest.PodSpawnRequest:
                     _args = set_pod_parser().parse_args(_req.args)
+                    self.logger.info('starting a Pod from a remote request')
                     p = Pod(_args)
                 elif _req_type == jina_pb2.SpawnRequest.PodDictSpawnRequest:
                     peas_args = {
@@ -117,7 +120,7 @@ class FrontendPea:
                     request.log_record = l
                     yield request
             else:
-                warn_msg = f'the frontend at {self.args.grpc_host}:{self.args.grpc_port} does not support remote spawn, please restart it with --allow_spawn'
+                warn_msg = f'the frontend at {self.args.host}:{self.args.port_grpc} does not support remote spawn, please restart it with --allow_spawn'
                 request.log_record = warn_msg
                 request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED
                 self.logger.warning(warn_msg)

@@ -1,10 +1,11 @@
-import unittest
-import numpy as np
 import os
+import unittest
 
-from tests import JinaTestCase
-from jina.executors.encoders.flair import FlairTextEncoder
+import numpy as np
+
 from jina.executors import BaseExecutor
+from jina.executors.encoders.flair import FlairTextEncoder
+from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
@@ -42,7 +43,7 @@ class MyTestCase(JinaTestCase):
 
     def test_save_and_load(self):
         encoder = FlairTextEncoder(
-            embeddings=('word:glove', ), pooling_strategy='mean', workspace=os.environ['TEST_WORKDIR'])
+            embeddings=('word:glove',), pooling_strategy='mean', workspace=os.environ['TEST_WORKDIR'])
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])

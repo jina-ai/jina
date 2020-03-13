@@ -83,3 +83,7 @@ class BadRequestType(Exception):
 
 class GRPCFrontendError(Exception):
     """Some bad thing happens in the grpc frontend side"""
+
+
+class GRPCServerError(Exception):
+    """Can not connect to the grpc frontend"""

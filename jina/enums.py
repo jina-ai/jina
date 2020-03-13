@@ -45,6 +45,13 @@ class ReplicaType(BetterEnum):
         return self.value == 2
 
 
+class FlowOptimizeLevel(BetterEnum):
+    """The level of flow optimization """
+    NONE = 0
+    IGNORE_FRONTEND = 1
+    FULL = 2
+
+
 class LogVerbosity(BetterEnum):
     """Verbosity level of the logger """
     DEBUG = 10

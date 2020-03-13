@@ -175,6 +175,12 @@ class Pea(metaclass=PeaMeta):
             yield self.log_event.record
             self.log_event.clear()
 
+    def join(self):
+        try:
+            super().join()
+        except KeyboardInterrupt:
+            pass
+
     def load_executor(self):
         """Load the executor to this Pea, specified by ``exec_yaml_path`` CLI argument.
 
@@ -316,15 +322,15 @@ class Pea(metaclass=PeaMeta):
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
         return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                 timeout=self.args.ctrl_timeout)
+                                 timeout=self.args.timeout_ctrl)
 
     def __enter__(self):
         self.start()
-        if self.is_ready.wait(self.args.ready_timeout / 1000):
+        if self.is_ready.wait(self.args.timeout_ready / 1000):
             return self
         else:
             raise TimeoutError('this Pea (name=%s) can not be initialized after %dms' % (self.name,
-                                                                                         self.args.ready_timeout))
+                                                                                         self.args.timeout_ready))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
@@ -337,9 +343,12 @@ class ContainerPea(Pea):
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        super().__init__(args)
-        import docker
+        if hasattr(args, 'image') and args.image:
+            super().__init__(args)
+        else:
+            raise ValueError('%s requires "args.image" to be set' % self.__class__)
         self._container = None
+        import docker
         self._client = docker.from_env()
 
     def post_init(self):
@@ -398,11 +407,6 @@ class ContainerPea(Pea):
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
         self.is_event_loop.set()
-        # if self.status:
-        #     self.set_ready()
-        # else:
-        #     self.logger.warning(
-        #         'the container did not send ready signal after %d ms, something is wrong' % self.args.ctrl_timeout)
 
     def event_loop_start(self):
         """Direct the log from the container to local console """
@@ -437,3 +441,6 @@ class ContainerPea(Pea):
                     'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()
+
+
+
