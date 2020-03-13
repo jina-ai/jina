@@ -1,94 +1,14 @@
-from typing import Iterator, Callable, Union, Dict
+from typing import Iterator, Callable, Union
 
 from .grpc import GrpcClient
 from .helper import ProgressBar
-from ... import __default_host__
 from ...excepts import BadClient
-from ...helper import kwargs2list
-from ...logging import get_logger
 from ...logging.profile import TimeContext
-from ...main.parser import set_pea_parser
 from ...proto import jina_pb2
 
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
-
-
-class SpawnPeaPyClient(GrpcClient):
-    body_tag = 'pea'
-
-    def __init__(self, args: 'argparse.Namespace'):
-        super().__init__(args)
-        from ...peapods.zmq import Zmqlet
-        self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
-        self.args = args
-        # set cli to none if exist
-        if hasattr(self.args, 'cli'):
-            self.args.cli = None
-        # set the host back to local, as for the remote, it is running "locally"
-        self.args.host = __default_host__
-        self.callback_on_first = True
-
-    def call(self, set_ready: Callable = None):
-        """
-
-        :param set_ready: :func:`set_ready` signal from :meth:`jina.peapods.peas.Pea.set_ready`
-        :return:
-        """
-        req = jina_pb2.SpawnRequest()
-        getattr(req, self.body_tag).args.extend(kwargs2list(vars(self.args)))
-        self.remote_logging(req, set_ready)
-
-    def remote_logging(self, req, set_ready):
-        logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
-        for resp in self._stub.Spawn(req):
-            if set_ready and self.callback_on_first:
-                set_ready()
-                self.callback_on_first = False
-            logger.info(resp.log_record)
-
-    def close(self):
-        from ...peapods.zmq import send_ctrl_message
-        send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                          timeout=self.args.timeout_ctrl)
-        super().close()
-
-
-class SpawnPodPyClient(SpawnPeaPyClient):
-    body_tag = 'pod'
-
-
-class SpawnDictPodPyClient(SpawnPeaPyClient):
-
-    def __init__(self, peas_args: Dict):
-        inited = False
-        for k in peas_args.values():
-            if k:
-                if not inited:
-                    # any pea will do, we just need its host and port_grpc
-                    super().__init__(k)
-                    inited = True
-                k.host = __default_host__
-        self.peas_args = peas_args
-        self.callback_on_first = True
-
-    @staticmethod
-    def convert2pea_args(args: 'argparse.Namespace'):
-        return kwargs2list(vars(set_pea_parser().parse_known_args(kwargs2list(vars(args)))[0]))
-
-    def call(self, set_ready: Callable = None):
-        req = jina_pb2.SpawnRequest()
-        if self.peas_args['head']:
-            req.cust_pod.head.args.extend(self.convert2pea_args(self.peas_args['head']))
-        if self.peas_args['tail']:
-            req.cust_pod.tail.args.extend(self.convert2pea_args(self.peas_args['tail']))
-        if self.peas_args['peas']:
-            for q in self.peas_args['peas']:
-                _a = req.cust_pod.peas.add()
-                _a.args.extend(self.convert2pea_args(q))
-
-        self.remote_logging(req, set_ready)
 
 
 class PyClient(GrpcClient):

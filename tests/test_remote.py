@@ -2,10 +2,10 @@ import threading
 import time
 import unittest
 
-from jina.clients.python import SpawnPeaPyClient
 from jina.logging import get_logger
 from jina.main.parser import set_frontend_parser, set_pea_parser
 from jina.peapods.pod import FrontendPod
+from jina.peapods.remote import SpawnPeaHelper
 from tests import JinaTestCase
 
 
@@ -44,7 +44,7 @@ class MyTestCase(JinaTestCase):
 
         p_args = set_pea_parser().parse_args(['--port_grpc', str(f_args.port_grpc)])
         with FrontendPod(f_args):
-            SpawnPeaPyClient(p_args).start()
+            SpawnPeaHelper(p_args).start()
 
     def test_cont_frontend(self):
         f1_args = set_frontend_parser().parse_args(['--allow_spawn'])

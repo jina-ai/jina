@@ -3,11 +3,10 @@ import time
 import unittest
 from multiprocessing import Process
 
-from jina.clients.python import SpawnPeaPyClient, SpawnPodPyClient, SpawnDictPodPyClient
 from jina.logging import get_logger
 from jina.main.parser import set_frontend_parser, set_pea_parser, set_pod_parser
-from jina.peapods.pea import RemotePea
 from jina.peapods.pod import FrontendPod, Pod
+from jina.peapods.remote import RemotePea, SpawnPodHelper, SpawnPeaHelper, SpawnDictPodHelper
 from tests import JinaTestCase
 
 
@@ -49,7 +48,7 @@ class MyTestCase(JinaTestCase):
         t.daemon = True
         t.start()
 
-        SpawnPodPyClient(p_args).start()
+        SpawnPodHelper(p_args).start()
         t.join()
 
     def test_remote_two_pea(self):
@@ -63,7 +62,7 @@ class MyTestCase(JinaTestCase):
         def start_client(d):
             print('im running %d' % d)
             p_args = set_pea_parser().parse_args(['--name', 'testpea%d' % d, '--port_grpc', str(f_args.port_grpc)])
-            SpawnPeaPyClient(p_args).start()
+            SpawnPeaHelper(p_args).start()
 
         t = Process(target=start_frontend)
         t.daemon = True
@@ -98,7 +97,7 @@ class MyTestCase(JinaTestCase):
         t.daemon = True
         t.start()
 
-        SpawnDictPodPyClient(p.peas_args).start()
+        SpawnDictPodHelper(p.peas_args).start()
         t.join()
 
     def test_remote_pea2(self):
@@ -131,7 +130,7 @@ class MyTestCase(JinaTestCase):
         t.start()
 
         time.sleep(1)
-        SpawnPeaPyClient(p_args).start()
+        SpawnPeaHelper(p_args).start()
         t.join()
 
 

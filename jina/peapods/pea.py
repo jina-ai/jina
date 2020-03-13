@@ -7,8 +7,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
-from .. import __ready_signal__, __default_host__
-from ..clients.python import SpawnPeaPyClient
+from .. import __ready_signal__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
@@ -19,7 +18,7 @@ from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
-__all__ = ['PeaMeta', 'Pea', 'ContainerPea', 'get_pea']
+__all__ = ['PeaMeta', 'Pea', 'ContainerPea']
 
 # temporary fix for python 3.8 on macos where the default start is set to "spawn"
 # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
@@ -337,31 +336,6 @@ class Pea(metaclass=PeaMeta):
         self.close()
 
 
-class RemotePea(Pea):
-    """A Pea that spawns another pea remotely """
-
-    def __init__(self, args: 'argparse.Namespace'):
-        if hasattr(args, 'host'):
-            super().__init__(args)
-            if args.host == __default_host__:
-                self.logger.warning(f'you are using {self.__class__} locally by setting host to {args.host}, '
-                                    f'are you sure about this?')
-        else:
-            raise ValueError(
-                '%r requires "args.host" to be set, and it should not be %s' % (self.__class__, __default_host__))
-
-    def post_init(self):
-        pass
-
-    def event_loop_start(self):
-        self.remote_pea = SpawnPeaPyClient(self.args)
-        self.remote_pea.start(self.set_ready)
-
-    def event_loop_stop(self):
-        if getattr(self, 'remote_pea', None):
-            self.remote_pea.close()
-
-
 class ContainerPea(Pea):
     """A Pea that wraps another "dockerized" Pea
 
@@ -469,15 +443,4 @@ class ContainerPea(Pea):
             self._client.close()
 
 
-def get_pea(args: 'argparse.Namespace', allow_remote: bool = True):
-    """Initialize a :class:`Pea`, :class:`RemotePea` or :class:`ContainerPea`
 
-    :param args: arguments from CLI
-    :param allow_remote: allow start a :class:`RemotePea`
-    """
-    if allow_remote and args.host != __default_host__:
-        return RemotePea(args)
-    elif args.image:
-        return ContainerPea(args)
-    else:
-        return Pea(args)

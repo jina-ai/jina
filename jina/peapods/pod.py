@@ -2,10 +2,10 @@ import copy
 from contextlib import ExitStack
 from typing import Set, Dict, List, Callable, Optional, Union
 
+from . import get_pea
 from .frontend import FrontendPea
-from .pea import Pea, get_pea
+from .pea import Pea
 from .. import __default_host__
-from ..clients.python import SpawnPodPyClient
 from ..enums import *
 from ..helper import random_port, random_identity, kwargs2list
 from ..main.parser import set_pod_parser, set_frontend_parser
@@ -421,31 +421,3 @@ class FrontendFlowPod(FrontendPod, FlowPod):
 
     def __init__(self, kwargs: Dict = None):
         FlowPod.__init__(self, kwargs, parser=set_frontend_parser)
-
-
-class RemotePod(Pod):
-    """A Pea that spawns another pea remotely """
-
-    def __init__(self, args: 'argparse.Namespace'):
-        if hasattr(args, 'host'):
-            super().__init__(args)
-        else:
-            raise ValueError(
-                '%r requires "args.host" to be set, and it should not be %s' % (self.__class__, __default_host__))
-        self._pod_args = args
-
-    def start(self):
-        self.stack = ExitStack()
-        self.stack.enter_context(SpawnPodPyClient(self._pod_args))
-
-
-def get_pod(args: 'argparse.Namespace', allow_remote: bool = True):
-    """Initialize a :class:`Pod`, :class:`RemotePod`
-
-    :param args: arguments from CLI
-    :param allow_remote: allow start a :class:`RemotePod`
-    """
-    if allow_remote and args.host != __default_host__:
-        return RemotePod(args)
-    else:
-        return Pod(args)
