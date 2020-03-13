@@ -11,6 +11,9 @@ from ..logging import get_logger
 from ..main.parser import set_pea_parser
 from ..proto import jina_pb2
 
+if False:
+    import argparse
+
 
 class SpawnPeaHelper(GrpcClient):
     body_tag = 'pea'
