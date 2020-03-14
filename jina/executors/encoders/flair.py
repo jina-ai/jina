@@ -1,6 +1,6 @@
 from typing import Union, Tuple, List
+
 import numpy as np
-import torch
 
 from . import BaseTextEncoder
 
@@ -10,6 +10,7 @@ class FlairTextEncoder(BaseTextEncoder):
     :class:`FlairTextEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
     """
+
     def __init__(self,
                  embeddings: Union[Tuple[str], List[str]] = ('word:glove', 'flair:news-forward', 'flair:news-backward'),
                  pooling_strategy: str = 'mean',
@@ -31,7 +32,8 @@ class FlairTextEncoder(BaseTextEncoder):
         self.model = None
 
     def post_init(self):
-        from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, DocumentPoolEmbeddings
+        from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, \
+            DocumentPoolEmbeddings
 
         if self.model is not None:
             return
@@ -63,6 +65,7 @@ class FlairTextEncoder(BaseTextEncoder):
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
+        import torch
         from flair.embeddings import Sentence
         c_batch = [Sentence(row) for row in data]
         self.model.embed(c_batch)

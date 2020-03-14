@@ -3,14 +3,10 @@
 set -e
 
 DOC_DIR=docs
+HTML_DIR=${DOC_DIR}/_build/html
 
-if [[ -z "${1}" ]]; then
-    VER_TAG="latest"
-else
-    VER_TAG=${DRONE_TAG}
-fi
 
-cd ${DOC_DIR} && rm -rf api && make clean && pip install -r requirements.txt && cd -
+cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
 docker run --rm \
@@ -20,8 +16,15 @@ docker run --rm \
 
 cd ${DOC_DIR} && make html && cd -
 
-
-if [ -n "$1" ]; then
-    python -m http.server ${1} -d ${DOC_DIR}/_build/html
+if [ $1 = "commit" ]; then
+  cd ${HTML_DIR}
+  git config --local user.email "dev-team@jina.ai"
+  git config --local user.name "Jina Doc Bot"
+  git add .
+  git commit -m "Docs regular update for ${GITHUB_SHA}" -a
+  git status
+  cd -
+elif [ $1 = "serve" ]; then
+    python -m http.server ${1} -d ${HTML_DIR}
 fi
 

@@ -2,8 +2,9 @@ import copy
 from contextlib import ExitStack
 from typing import Set, Dict, List, Callable, Optional, Union
 
+from . import get_pea
 from .frontend import FrontendPea
-from .pea import Pea, ContainerPea
+from .pea import Pea
 from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, random_identity, kwargs2list
@@ -46,7 +47,7 @@ class Pod:
         }
 
         if self._args:
-            if self._args.replicas > 1:
+            if getattr(self._args, 'replicas', 1) > 1:
                 # reasons to separate head and tail from peas is that they
                 # can be deducted based on the previous and next pods
                 peas_args['head'] = _copy_to_head_args(self._args, self._args.replica_type.is_push)
@@ -138,7 +139,7 @@ class Pod:
 
         Remember to close the Pod with :meth:`close`.
 
-        Note that this method has a timeout of ``ready_timeout`` set in CLI,
+        Note that this method has a timeout of ``timeout_ready`` set in CLI,
         which is inherited from :class:`jina.peapods.peas.Pea`
         """
         self.stack = ExitStack()
@@ -156,7 +157,7 @@ class Pod:
         # start real peas and accumulate the storage id
         for idx, s in enumerate(self.peas_args['peas']):
             s.replica_id = idx
-            p = ContainerPea(s) if s.image else Pea(s)
+            p = get_pea(s, allow_remote=False)
             self.peas.append(p)
             self.stack.enter_context(p)
 
@@ -205,13 +206,9 @@ class Pod:
 
     def join(self):
         """Wait until all peas exit"""
-        try:
-            for s in self.peas:
-                s.join()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            self.peas.clear()
+        for s in self.peas:
+            s.join()
+        self.peas.clear()
 
 
 class FlowPod(Pod):
@@ -274,7 +271,7 @@ class FlowPod(Pod):
         else:
             raise NotImplementedError('%r is not supported here' % first_socket_type)
 
-    def connect_to_last(self, pod: 'Pod'):
+    def connect_to_tail_of(self, pod: 'Pod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
         if self._args.replicas > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
@@ -290,7 +287,7 @@ class FlowPod(Pod):
         else:
             raise ValueError('the current pod has no head router, deduct the head is confusing')
 
-    def connect_to_next(self, pod: 'Pod'):
+    def connect_to_head_of(self, pod: 'Pod'):
         """Eliminate the tail node by connecting next_args node directly to peas """
         if self._args.replicas > 1 and self.is_tail_router:
             # keep the port_out and socket_out of next_arts
@@ -409,14 +406,14 @@ class FrontendPod(Pod):
             self.stack.enter_context(p)
 
     @property
-    def grpc_port(self) -> int:
+    def port_grpc(self) -> int:
         """Get the grpc port number """
-        return self._args.grpc_port
+        return self._args.port_grpc
 
     @property
-    def grpc_host(self) -> str:
+    def host(self) -> str:
         """Get the grpc host name """
-        return self._args.grpc_host
+        return self._args.host
 
 
 class FrontendFlowPod(FrontendPod, FlowPod):

@@ -8,7 +8,7 @@ from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, Text
 
 import ruamel.yaml
 
-from ..enums import FlowBuildLevel
+from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
 from ..helper import yaml, expand_env_var, kwargs2list
 from ..logging import get_logger
@@ -56,18 +56,38 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 class Flow:
     def __init__(self, sse_logger: bool = False,
-                 image_name: str = 'jina:master-debian', repository: str = 'docker.pkg.github.com/jina-ai/jina', *args,
+                 image_name: str = 'jina:master-debian',
+                 repository: str = 'docker.pkg.github.com/jina-ai/jina',
+                 optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.FULL,
+                 *args,
                  **kwargs):
         """Initialize a flow object
 
         :param driver_yaml_path: the file path of the driver map
         :param sse_logger: to enable the server-side event logger or not
+        :param optimize_level: removing redundant routers from the flow. Note, this may change the frontend zmq socket to BIND
+                            and hence not allow multiple clients connected to the frontend at the same time.
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
+
+
+        More explain on ``optimize_level``:
+
+        As an example, the following flow will generates a 6 Peas,
+
+        .. highlight:: python
+        .. code-block:: python
+
+            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='route', replicas=3)
+
+        The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
+        will generate 4 Peas, but it will force the :class:`FrontendPea` to take BIND role,
+        as the head and tail routers are removed.
         """
         self.logger = get_logger(self.__class__.__name__)
         self.with_sse_logger = sse_logger
         self.image_name = image_name
         self.repository = repository
+        self.optimize_level = optimize_level
         self._common_kwargs = kwargs
 
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -319,31 +339,32 @@ class Flow:
 
             if len(edges_with_same_start) > 1 and len(edges_with_same_end) == 1:
                 FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUB_BIND)
-            elif len(edges_with_same_end) > 1 and len(edges_with_same_start) == 1:
+            elif len(edges_with_same_start) == 1 and len(edges_with_same_end) > 1:
                 FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             elif len(edges_with_same_start) == 1 and len(edges_with_same_end) == 1:
                 # in this case, either side can be BIND
-                # we prefer frontend to be always BIND
+                # we prefer frontend to be always CONNECT so that multiple clients can connect to it
                 # check if either node is frontend
+                # this is the only place where frontend appears
                 if s_name == 'frontend':
-                    if e_pod.is_head_router:
+                    if self.optimize_level > FlowOptimizeLevel.IGNORE_FRONTEND and e_pod.is_head_router:
                         # connect frontend directly to peas
-                        e_pod.connect_to_last(s_pod)
-                    else:
-                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
-                elif e_name == 'frontend':
-                    if s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
-                        # connect frontend directly to peas only if this is unblock router
-                        # as frontend can not block & reduce message
-                        s_pod.connect_to_next(e_pod)
+                        e_pod.connect_to_tail_of(s_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
+                elif e_name == 'frontend':
+                    if self.optimize_level > FlowOptimizeLevel.IGNORE_FRONTEND and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                        # connect frontend directly to peas only if this is unblock router
+                        # as frontend can not block & reduce message
+                        s_pod.connect_to_head_of(e_pod)
+                    else:
+                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
                 else:
                     e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
-                    if e_pod.is_head_router and not s_pod.is_tail_router:
-                        e_pod.connect_to_last(s_pod)
-                    elif s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
-                        s_pod.connect_to_next(e_pod)
+                    if self.optimize_level > FlowOptimizeLevel.NONE and e_pod.is_head_router and not s_pod.is_tail_router:
+                        e_pod.connect_to_tail_of(s_pod)
+                    elif self.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                        s_pod.connect_to_head_of(e_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             else:
@@ -371,7 +392,7 @@ class Flow:
 
         Remember to close the Flow with :meth:`close`.
 
-        Note that this method has a timeout of ``ready_timeout`` set in CLI,
+        Note that this method has a timeout of ``timeout_ready`` set in CLI,
         which is inherited all the way from :class:`jina.peapods.peas.Pea`
         """
         if self.with_sse_logger:
@@ -384,10 +405,20 @@ class Flow:
             self._pod_stack.enter_context(v)
 
         self.logger.info('%d Pods (i.e. %d Peas) are running in this Flow' % (
-            len(self._pod_nodes),
-            sum(v.num_peas for v in self._pod_nodes.values())))
+            self.num_pods,
+            self.num_peas))
 
         self.logger.critical('flow is now ready for use, current build_level is %s' % self._build_level)
+
+    @property
+    def num_pods(self) -> int:
+        """Get the number of pods in this flow"""
+        return len(self._pod_nodes)
+
+    @property
+    def num_peas(self) -> int:
+        """Get the number of peas (replicas count) in this flow"""
+        return sum(v.num_peas for v in self._pod_nodes.values())
 
     def close(self):
         """Close the flow and release all resources associated to it. """
@@ -424,8 +455,8 @@ class Flow:
         from ..clients.python import PyClient
 
         _, p_args, _ = self._get_parsed_args(self, PyClient.__name__, kwargs, parser=set_client_cli_parser)
-        p_args.grpc_port = self._pod_nodes['frontend'].grpc_port
-        p_args.grpc_host = self._pod_nodes['frontend'].grpc_host
+        p_args.port_grpc = self._pod_nodes['frontend'].port_grpc
+        p_args.host = self._pod_nodes['frontend'].host
         c = PyClient(p_args)
         if bytes_gen:
             c.raw_bytes = bytes_gen

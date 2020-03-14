@@ -41,7 +41,7 @@ class NetworkChecker:
         from ..logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time
-        ctrl_addr = 'tcp://%s:%d' % (args.address, args.port)
+        ctrl_addr = 'tcp://%s:%d' % (args.host, args.port)
         try:
             total_time = 0
             total_success = 0

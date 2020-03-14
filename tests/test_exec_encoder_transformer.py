@@ -1,9 +1,11 @@
-import unittest
 import os
+import unittest
+
 import numpy as np
-from tests import JinaTestCase
-from jina.executors.encoders.transformer import TransformerTextEncoder
+
 from jina.executors import BaseExecutor
+from jina.executors.encoders.transformer import TransformerTextEncoder
+from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):

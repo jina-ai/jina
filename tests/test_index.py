@@ -1,3 +1,4 @@
+import multiprocessing as mp
 import os
 import time
 import unittest
@@ -5,6 +6,7 @@ import unittest
 import numpy as np
 
 from jina.drivers.helper import array2blob
+from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
@@ -36,6 +38,10 @@ def get_result(resp):
 
 class MyTestCase(JinaTestCase):
 
+    def tearDown(self) -> None:
+        time.sleep(2)
+        super().tearDown()
+
     def test_doc_iters(self):
         a = random_docs(3, 5)
         for d in a:
@@ -45,6 +51,57 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(yaml_path='route')
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    def test_two_client_route_replicas(self):
+        f1 = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='route', replicas=3)
+        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_FRONTEND).add(yaml_path='route', replicas=3)
+        f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='route', replicas=3)
+
+        def start_client(fl):
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+        with f1.build() as fl1:
+            self.assertEqual(fl1.num_peas, 6)
+            t1 = mp.Process(target=start_client, args=(fl1,))
+            t1.daemon = True
+            t2 = mp.Process(target=start_client, args=(fl1,))
+            t2.daemon = True
+
+            t1.start()
+            t2.start()
+            time.sleep(5)
+
+        with f2.build() as fl2:
+            self.assertEqual(fl2.num_peas, 6)
+            t1 = mp.Process(target=start_client, args=(fl2,))
+            t1.daemon = True
+            t2 = mp.Process(target=start_client, args=(fl2,))
+            t2.daemon = True
+
+            t1.start()
+            t2.start()
+            time.sleep(5)
+
+        with f3.build() as fl3:
+            self.assertEqual(fl3.num_peas, 4)
+
+    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    def test_two_client_route(self):
+        f = Flow().add(yaml_path='route')
+
+        def start_client(fl):
+            fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+        with f.build() as fl:
+            t1 = mp.Process(target=start_client, args=(fl,))
+            t1.daemon = True
+            t2 = mp.Process(target=start_client, args=(fl,))
+            t2.daemon = True
+
+            t1.start()
+            t2.start()
+            time.sleep(5)
 
     def test_index(self):
         f = Flow().add(yaml_path='yaml/test-index.yml', replicas=3, separated_workspace=True)

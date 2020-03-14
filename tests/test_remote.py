@@ -1,12 +1,11 @@
 import threading
 import time
 import unittest
-from multiprocessing import Process
 
-from jina.clients.python import SpawnPeaPyClient, SpawnPodPyClient, SpawnDictPodPyClient
 from jina.logging import get_logger
-from jina.main.parser import set_frontend_parser, _set_grpc_parser, set_pea_parser, set_pod_parser
-from jina.peapods.pod import FrontendPod, Pod
+from jina.main.parser import set_frontend_parser, set_pea_parser
+from jina.peapods.pod import FrontendPod
+from jina.peapods.remote import SpawnPeaHelper
 from tests import JinaTestCase
 
 
@@ -42,57 +41,19 @@ class MyTestCase(JinaTestCase):
 
     def test_remote_not_allowed(self):
         f_args = set_frontend_parser().parse_args([])
-        c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
-        p_args = set_pea_parser().parse_args([])
+
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
         with FrontendPod(f_args):
-            SpawnPeaPyClient(c_args, p_args).start()
+            SpawnPeaHelper(p_args).start()
 
-    def test_remote_pea(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
-        c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
-        p_args = set_pea_parser().parse_args([])
+    def test_cont_frontend(self):
+        f1_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        f2_args = set_frontend_parser().parse_args([])
+        with FrontendPod(f1_args):
+            pass
 
-        def start_frontend():
-            with FrontendPod(f_args):
-                time.sleep(5)
-
-        t = Process(target=start_frontend)
-        t.daemon = True
-        t.start()
-
-        time.sleep(1)
-        SpawnPeaPyClient(c_args, p_args).start()
-
-    def test_remote_pod(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
-        c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
-        p_args = set_pod_parser().parse_args(['--replicas', '3'])
-
-        def start_frontend():
-            with FrontendPod(f_args):
-                time.sleep(5)
-
-        t = Process(target=start_frontend)
-        t.daemon = True
-        t.start()
-
-        SpawnPodPyClient(c_args, p_args).start()
-
-    def test_customized_pod(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
-        c_args = _set_grpc_parser().parse_args(['--grpc_port', str(f_args.grpc_port)])
-        p_args = set_pod_parser().parse_args(['--replicas', '3'])
-        p = Pod(p_args)
-
-        def start_frontend():
-            with FrontendPod(f_args):
-                time.sleep(5)
-
-        t = Process(target=start_frontend)
-        t.daemon = True
-        t.start()
-
-        SpawnDictPodPyClient(c_args, p.peas_args).start()
+        with FrontendPod(f2_args):
+            pass
 
 
 if __name__ == '__main__':
