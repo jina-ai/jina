@@ -90,3 +90,9 @@ Here is the list of environment variables that ``jina`` respects during runtime.
     The default host address of Jina.
 
     :default: `0.0.0.0`
+
+.. confval:: JINA_TEST_CONTAINER
+
+    If set, then all container-related tests will be conducted in the unit test.
+
+    :default: unset
