@@ -1,11 +1,11 @@
-import unittest
-import numpy as np
 import os
-import sys
+import unittest
 
-from tests import JinaTestCase
-from jina.executors.encoders.ernie import ErnieTextEncoder
+import numpy as np
+
 from jina.executors import BaseExecutor
+from jina.executors.encoders.nlp.ernie import ErnieTextEncoder
+from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):

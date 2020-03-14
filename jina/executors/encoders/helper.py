@@ -50,4 +50,3 @@ def prune_mask(mask, cls_pos='head'):
     else:
         raise NotImplementedError
     return result
-

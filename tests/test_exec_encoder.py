@@ -1,10 +1,11 @@
-import unittest
-import numpy as np
 import os
+import unittest
 
-from tests import JinaTestCase
-from jina.executors.encoders.char import OneHotTextEncoder
+import numpy as np
+
 from jina.executors import BaseExecutor
+from jina.executors.encoders.nlp.char import OneHotTextEncoder
+from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):

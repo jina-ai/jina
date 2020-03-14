@@ -2,7 +2,7 @@ from typing import Union, Tuple, List
 
 import numpy as np
 
-from . import BaseTextEncoder
+from .. import BaseTextEncoder
 
 
 class FlairTextEncoder(BaseTextEncoder):
