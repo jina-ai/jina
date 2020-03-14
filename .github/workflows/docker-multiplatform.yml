@@ -16,7 +16,7 @@ jobs:
           python-version: 3.7
       - name: Build the docs
         run: |
-          ./make-doc.sh
+          ./make-doc.sh commit
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:

@@ -16,7 +16,7 @@ docker run --rm \
 
 cd ${DOC_DIR} && make html && cd -
 
-if [ $1 = "commit" ]; then
+if [[ $1 == "commit" ]]; then
   cd ${HTML_DIR}
   git config --local user.email "dev-team@jina.ai"
   git config --local user.name "Jina Doc Bot"
@@ -24,7 +24,7 @@ if [ $1 = "commit" ]; then
   git commit -m "Docs regular update for ${GITHUB_SHA}" -a
   git status
   cd -
-elif [ $1 = "serve" ]; then
-    python -m http.server ${1} -d ${HTML_DIR}
+elif [[ $1 == "serve" ]]; then
+    python -m http.server $2 -d ${HTML_DIR}
 fi
 
