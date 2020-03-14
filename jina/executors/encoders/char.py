@@ -21,6 +21,7 @@ class OneHotTextEncoder(BaseTextEncoder):
         self.unk = self.dim
         self.on_value = on_value
         self.off_value = off_value
+        self.embeddings = None
 
     def post_init(self):
         self.embeddings = np.eye(self.dim) * self.on_value + \

@@ -90,3 +90,9 @@ Here is the list of environment variables that ``jina`` respects during runtime.
     The default host address of Jina.
 
     :default: `0.0.0.0`
+
+.. confval:: JINA_SKIP_TEST_PRETRAINED
+
+    Set to `True` to skip the unit tests that depend on the pretrained models.
+
+    :default: `True`
