@@ -6,7 +6,7 @@ DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
 
 
-cd ${DOC_DIR} && rm -rf api && make clean && pip install -r requirements.txt && cd -
+cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
 docker run --rm \
