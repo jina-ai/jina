@@ -12,7 +12,7 @@ class MyTestCase(JinaTestCase):
         encoder = OneHotTextEncoder(workspace=os.environ['TEST_WORKDIR'])
         test_data = np.array(['a', 'b', 'c', 'x', '!'])
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (5, 96))
+        self.assertEqual(encoded_data.shape, (5, 97))
         self.assertIs(type(encoded_data), np.ndarray)
 
     def test_save_and_load(self):
