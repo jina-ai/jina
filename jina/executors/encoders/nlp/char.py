@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import BaseTextEncoder
+from .. import BaseTextEncoder
 
 
 class OneHotTextEncoder(BaseTextEncoder):
@@ -10,6 +10,7 @@ class OneHotTextEncoder(BaseTextEncoder):
     :param on_value: the default value for the locations represented by characters
     :param off_value: the default value for the locations not represented by characters
     """
+
     def __init__(self,
                  on_value: float = 1,
                  off_value: float = 0,
@@ -38,4 +39,3 @@ class OneHotTextEncoder(BaseTextEncoder):
             r_emb = [ord(c) - self.offset if self.offset <= ord(c) <= 127 else self.unk for c in r]
             output.append(self.embeddings[r_emb, :].sum(axis=0))
         return np.array(output)
-

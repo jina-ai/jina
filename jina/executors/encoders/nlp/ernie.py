@@ -1,7 +1,9 @@
 import os
+
 import numpy as np
-from . import BaseTextEncoder
-from .helper import reduce_mean, reduce_max, reduce_min
+
+from .. import BaseTextEncoder
+from ..helper import reduce_mean, reduce_max, reduce_min
 
 
 class ErnieTextEncoder(BaseTextEncoder):
@@ -10,6 +12,7 @@ class ErnieTextEncoder(BaseTextEncoder):
     Internally, :class:`ErnieTextEncoder` wraps the Ernie module from paddlehub.
     https://github.com/PaddlePaddle/PaddleHub
     """
+
     def __init__(self,
                  model_name: str = 'ernie_tiny',
                  pooling_strategy: str = 'cls',

@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.flair import FlairTextEncoder
+from jina.executors.encoders.nlp.flair import FlairTextEncoder
 from tests import JinaTestCase
 
 

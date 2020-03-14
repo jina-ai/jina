@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.transformer import TransformerTextEncoder
+from jina.executors.encoders.nlp.transformer import TransformerTextEncoder
 from tests import JinaTestCase
 
 
