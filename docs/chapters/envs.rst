@@ -91,8 +91,14 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: `0.0.0.0`
 
+.. confval:: JINA_TEST_CONTAINER
+
+    If set, then all container-related tests will be conducted in the unit test.
+
+    :default: unset
+
 .. confval:: JINA_SKIP_TEST_PRETRAINED
 
     Set to `True` to skip the unit tests that depend on the pretrained models.
 
-    :default: `True`
+    :default: unset

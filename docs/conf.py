@@ -67,7 +67,6 @@ extensions = [
     'sphinxarg.ext',
     'sphinx_rtd_theme',
     'recommonmark',
-    'sphinxcontrib.autoyaml',
     'sphinx_markdown_tables',
     'sphinx_copybutton'
 ]
@@ -81,7 +80,6 @@ autodoc_member_order = 'bysource'
 autodoc_mock_imports = ['argparse', 'numpy', 'np']
 autoclass_content = 'both'
 set_type_checking_flag = False
-autoyaml_root = './chapters/yaml/'
 
 
 def setup(app):

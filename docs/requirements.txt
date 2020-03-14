@@ -4,6 +4,5 @@ sphinxcontrib-apidoc
 sphinx-autodoc-typehints
 sphinx_rtd_theme
 recommonmark
-sphinxcontrib.autoyaml
 sphinx_markdown_tables
 sphinx_copybutton
