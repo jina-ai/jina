@@ -9,7 +9,7 @@ from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
-    @unittest.skip("skip tests depending on pretraining models")
+    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
     def test_encoding_results(self):
         encoder = TransformerTextEncoder()
         test_data = np.array(['a', 'b', 'xy'])
@@ -17,7 +17,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoded_data.shape[0], 3)
         self.assertIs(type(encoded_data), np.ndarray)
 
-    @unittest.skip("skip tests depending on pretraining models")
+    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
     def test_all_encoders(self):
         from transformers import BertModel, BertTokenizer, OpenAIGPTModel, \
             OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
@@ -34,7 +34,6 @@ class MyTestCase(JinaTestCase):
             'distilbert-base-cased': (DistilBertModel, DistilBertTokenizer),
             'roberta-base': (RobertaModel, RobertaTokenizer),
             'xlm-roberta-base': (XLMRobertaModel, XLMRobertaTokenizer)
-            # 'transfo-xl-wt103': (TransfoXLModel, TransfoXLTokenizer),
         }
 
         for model_name in MODELS:
@@ -43,6 +42,7 @@ class MyTestCase(JinaTestCase):
             encoded_data = encoder.encode(test_data)
             self.assertEqual(encoded_data.shape[0], 3, '{} failed'.format(model_name))
 
+    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
     def test_save_and_load(self):
         encoder = TransformerTextEncoder(
             max_length=10, pooling_strategy='cls', workspace=os.environ['TEST_WORKDIR'])
@@ -63,6 +63,7 @@ class MyTestCase(JinaTestCase):
         self.tmp_files.append(encoder_loaded.save_abspath)
         self.tmp_files.append(encoder.encoder_abspath)
 
+    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
         encoder = TransformerTextEncoder(max_length=10, pooling_strategy='cls')
         encoder.save_config()
