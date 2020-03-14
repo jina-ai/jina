@@ -16,11 +16,11 @@ jobs:
           python-version: 3.7
       - name: Build the docs
         run: |
-          ./make-doc.sh commit
+          ./make-doc.sh commit "${{github.event_name}} ${{github.sha}}"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.JINA_AI }}
+          github_token: ${{ github.token }}
           repository: jina-ai/jina-docs
           force: true
           directory: docs/_build/html

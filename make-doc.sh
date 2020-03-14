@@ -23,7 +23,7 @@ if [[ $1 == "commit" ]]; then
   git config --local user.email "dev-team@jina.ai"
   git config --local user.name "Jina Doc Bot"
   git add .
-  git commit -m "Docs regular update for ${GITHUB_SHA}" -a
+  git commit -m $2 -a
   git status
   cd -
 elif [[ $1 == "serve" ]]; then
