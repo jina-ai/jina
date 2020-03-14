@@ -18,6 +18,7 @@ docker run --rm \
 cd ${DOC_DIR} && make html && cd -
 
 if [[ $1 == "commit" ]]; then
+  cp ${DOC_DIR}/README.md ${HTML_DIR}/
   cd ${HTML_DIR}
   git init
   git config --local user.email "dev-team@jina.ai"
