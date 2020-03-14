@@ -18,7 +18,7 @@ class MyTestCase(JinaTestCase):
         self.assertIs(type(encoded_data), np.ndarray)
         self.add_tmpfile(encoder.vocab_filename)
 
-    @unittest.skipIf(sys.version_info >= (3, 8, 0), "paddlepaddle doesn't support python >= 3.8.0")
+    @unittest.skip("skip tests depending on pretrained models")
     def test_save_and_load(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])
@@ -38,7 +38,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_filename)
 
-    @unittest.skipIf(sys.version_info >= (3, 8, 0), "paddlepaddle doesn't support python >= 3.8.0")
+    @unittest.skip("skip tests depending on pretrained models")
     def test_save_and_load_config(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])
