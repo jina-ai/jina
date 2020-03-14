@@ -21,7 +21,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.DOCKER_PASSWORD }}
-          repository: https://github.com/jina-ai/jina-docs
+          repository: jina-ai/jina-docs
           force: true
           directory: docs/_build/html
       - name: Set up Docker Buildx
