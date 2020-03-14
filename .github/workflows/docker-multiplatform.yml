@@ -20,7 +20,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ github.token }}
+          github_token: ${{ secrets.JINA_AI }}
           repository: jina-ai/jina-docs
           force: true
           directory: docs/_build/html
