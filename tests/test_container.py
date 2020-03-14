@@ -36,7 +36,7 @@ def build_image():
         client.close()
 
 
-@unittest.skipIf(os.getenv('JINA_SKIP_CONTAINER_TESTS', False), 'skip the container test')
+@unittest.skipIf(os.getenv('JINA_TEST_CONTAINER', False), 'skip the container test if not set')
 class MyTestCase(JinaTestCase):
 
     def tearDown(self) -> None:

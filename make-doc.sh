@@ -6,6 +6,7 @@ DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
 
 
+
 cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
@@ -16,15 +17,17 @@ docker run --rm \
 
 cd ${DOC_DIR} && make html && cd -
 
-if [ $1 = "commit" ]; then
+if [[ $1 == "commit" ]]; then
+  cp ${DOC_DIR}/README.md ${HTML_DIR}/
   cd ${HTML_DIR}
+  git init
   git config --local user.email "dev-team@jina.ai"
   git config --local user.name "Jina Doc Bot"
   git add .
-  git commit -m "Docs regular update for ${GITHUB_SHA}" -a
+  git commit -m "$2" -a
   git status
   cd -
-elif [ $1 = "serve" ]; then
-    python -m http.server ${1} -d ${HTML_DIR}
+elif [[ $1 == "serve" ]]; then
+    python -m http.server $2 -d ${HTML_DIR}
 fi
 

@@ -1,7 +1,8 @@
 # Jina
 
 ![Unit Test Status Badge](https://github.com/jina-ai/jina/workflows/Unit%20Test/badge.svg)
-![Docker Build](https://github.com/jina-ai/jina/workflows/Docker%20Build/badge.svg?branch=master)
+![Docker Build](https://github.com/jina-ai/jina/workflows/Docker%20BuildX/badge.svg?branch=master)
+![Docs Build](https://github.com/jina-ai/jina/workflows/Docs%20Build/badge.svg?branch=master)
 
 
 Jina is *the* cloud-native semantic search solution powered by SOTA AI technology.
