@@ -123,12 +123,8 @@ class RemotePod(BasePod):
                 '%r requires "args.host" to be set, and it should not be %s' % (self.__class__, __default_host__))
         self._pod_args = args
 
-    def set_ready(self):
-        self.is_ready.set()
-
     def start(self):
-        self.remote_pod = SpawnPodHelper(self._pod_args)
-        self.remote_pod.start(self.set_ready)
+        self.stack.enter_context(SpawnPodHelper(self._pod_args))
 
     def close(self):
         if hasattr(self, 'remote_pod'):
