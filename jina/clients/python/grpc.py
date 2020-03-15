@@ -2,6 +2,7 @@ import os
 
 import grpc
 
+from ... import __stop_msg__
 from ...excepts import BadClient, GRPCServerError
 from ...logging.base import get_logger
 from ...proto import jina_pb2_grpc
@@ -72,14 +73,13 @@ class GrpcClient:
             my_code = rpc_error_call.code()
             my_details = rpc_error_call.details()
             if my_code == grpc.StatusCode.UNAVAILABLE:
-                self.logger.error('the server is not available or is closed already')
+                self.logger.error('the ongoing request is terminated as the server is not available or closed already')
             elif my_code == grpc.StatusCode.INTERNAL:
                 self.logger.error('internal error on the server side')
             else:
                 raise BadClient('%s error in grpc: %s '
                                 'often the case is that you define/send a bad input iterator to jina, '
                                 'please double check your input iterator' % (my_code, my_details))
-            raise rpc_error_call
         finally:
             self.close()
 
@@ -90,4 +90,4 @@ class GrpcClient:
         if self._stub:
             self._channel.close()
             self._stub = None
-            self.logger.critical('terminated')
+            self.logger.critical(__stop_msg__)

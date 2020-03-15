@@ -1,8 +1,8 @@
 from contextlib import ExitStack
 from typing import Callable, Dict
 
-from .pea import Pea
-from .pod import Pod
+from .pea import BasePea
+from .pod import BasePod
 from .zmq import Zmqlet, send_ctrl_message
 from .. import __default_host__
 from ..clients.python import GrpcClient
@@ -32,7 +32,7 @@ class SpawnPeaHelper(GrpcClient):
     def call(self, set_ready: Callable = None):
         """
 
-        :param set_ready: :func:`set_ready` signal from :meth:`jina.peapods.peas.Pea.set_ready`
+        :param set_ready: :func:`set_ready` signal from :meth:`jina.peapods.peas.BasePea.set_ready`
         :return:
         """
         req = jina_pb2.SpawnRequest()
@@ -94,8 +94,8 @@ class SpawnDictPodHelper(SpawnPeaHelper):
         self.remote_logging(req, set_ready)
 
 
-class RemotePea(Pea):
-    """A Pea that spawns another pea remotely """
+class RemotePea(BasePea):
+    """A BasePea that spawns another pea remotely """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:
@@ -116,8 +116,8 @@ class RemotePea(Pea):
     #         self.remote_pea.close()
 
 
-class RemotePod(Pod):
-    """A Pea that spawns another pea remotely """
+class RemotePod(BasePod):
+    """A BasePea that spawns another pea remotely """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:

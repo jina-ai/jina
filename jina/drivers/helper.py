@@ -108,7 +108,7 @@ def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
     """Get the string representation of the routes in a message.
 
     :param msg: a protobuf message
-    :param flag_current: flag the current :class:`Pod` as ``⚐``
+    :param flag_current: flag the current :class:`BasePod` as ``⚐``
     """
     route_str = [r.pod for r in msg.envelope.routes]
     if flag_current:

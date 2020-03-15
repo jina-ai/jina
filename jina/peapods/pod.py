@@ -1,68 +1,74 @@
+import argparse
 import copy
 from contextlib import ExitStack
-from typing import Set, Dict, List, Callable, Optional, Union
+from typing import Set, Dict, List, Callable, Union
 
-from . import get_pea
+from . import Pea
 from .frontend import FrontendPea
-from .pea import Pea
+from .pea import BasePea
 from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, random_identity, kwargs2list
 from ..main.parser import set_pod_parser, set_frontend_parser
 
-if False:
-    import argparse
 
-
-class Pod:
-    """A Pod is a set of peas, which run in parallel. They share the same input and output socket.
+class BasePod:
+    """A BasePod is a set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
-    def __init__(self, args: Optional['argparse.Namespace'],
-                 peas_args: Dict[str, Union['argparse.Namespace', List['argparse.Namespace']]] = None):
+    def __init__(self, args: Union['argparse.Namespace', Dict]):
         """
 
         :param args: arguments parsed from the CLI
-        :param peas_args: head, tail, peas argument dict, when given then ``args`` is ignored
         """
         self.peas = []
-        self._args = args
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self.peas_args = peas_args or self._parse_args()
+        self.peas_args = self._parse_args(args)
 
     @property
     def name(self) -> str:
-        """The name of this :class:`Pod`. """
-        return self._args.name
+        """The name of this :class:`BasePod`. """
+        return self.peas_args['peas'][0].name
 
-    def _parse_args(self):
+    @property
+    def port_grpc(self) -> int:
+        """Get the grpc port number """
+        return self.peas_args['peas'][0].port_grpc
+
+    @property
+    def host(self) -> str:
+        """Get the grpc host name """
+        return self.peas_args['peas'][0].host
+
+    def _parse_args(self, args):
         peas_args = {
             'head': None,
             'tail': None,
             'peas': []
         }
 
-        if self._args:
-            if getattr(self._args, 'replicas', 1) > 1:
-                # reasons to separate head and tail from peas is that they
-                # can be deducted based on the previous and next pods
-                peas_args['head'] = _copy_to_head_args(self._args, self._args.replica_type.is_push)
-                peas_args['tail'] = _copy_to_tail_args(self._args,
-                                                       self._args.num_part if self._args.replica_type.is_block else 1)
-                peas_args['peas'] = _set_peas_args(self._args, peas_args['head'], peas_args['tail'])
-                self.is_head_router = True
-                self.is_tail_router = True
-            else:
-                peas_args['peas'] = [self._args]
+        if getattr(args, 'replicas', 1) > 1:
+            # reasons to separate head and tail from peas is that they
+            # can be deducted based on the previous and next pods
+            peas_args['head'] = _copy_to_head_args(args, args.replica_type.is_push)
+            peas_args['tail'] = _copy_to_tail_args(args,
+                                                   args.num_part if args.replica_type.is_block else 1)
+            peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
+            self.is_head_router = True
+            self.is_tail_router = True
+        else:
+            peas_args['peas'] = [args]
+
+        # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
 
     @property
     def head_args(self):
-        """Get the arguments for the `head` of this Pod. """
+        """Get the arguments for the `head` of this BasePod. """
         if self.is_head_router and self.peas_args['head']:
             return self.peas_args['head']
         elif not self.is_head_router and len(self.peas_args['peas']) == 1:
@@ -74,7 +80,7 @@ class Pod:
 
     @head_args.setter
     def head_args(self, args):
-        """Set the arguments for the `head` of this Pod. """
+        """Set the arguments for the `head` of this BasePod. """
         if self.is_head_router and self.peas_args['head']:
             self.peas_args['head'] = args
         elif not self.is_head_router and len(self.peas_args['peas']) == 1:
@@ -86,7 +92,7 @@ class Pod:
 
     @property
     def tail_args(self):
-        """Get the arguments for the `tail` of this Pod. """
+        """Get the arguments for the `tail` of this BasePod. """
         if self.is_tail_router and self.peas_args['tail']:
             return self.peas_args['tail']
         elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
@@ -98,7 +104,7 @@ class Pod:
 
     @tail_args.setter
     def tail_args(self, args):
-        """Get the arguments for the `tail` of this Pod. """
+        """Get the arguments for the `tail` of this BasePod. """
         if self.is_tail_router and self.peas_args['tail']:
             self.peas_args['tail'] = args
         elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
@@ -110,21 +116,21 @@ class Pod:
 
     @property
     def all_args(self):
-        """Get all arguments of all Peas in this Pod. """
+        """Get all arguments of all Peas in this BasePod. """
         return self.peas_args['peas'] + (
             [self.peas_args['head']] if self.peas_args['head'] else []) + (
                    [self.peas_args['tail']] if self.peas_args['tail'] else [])
 
     @property
     def num_peas(self) -> int:
-        """Get the number of running :class:`Pea`"""
+        """Get the number of running :class:`BasePea`"""
         return len(self.peas)
 
-    def __eq__(self, other: 'Pod'):
+    def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
     def set_runtime(self, runtime: str):
-        """Set the parallel runtime of this Pod.
+        """Set the parallel runtime of this BasePod.
 
         :param runtime: possible values: process, thread
         """
@@ -135,29 +141,29 @@ class Pod:
             # s.host_out = __default_host__
 
     def start(self):
-        """Start to run all Peas in this Pod.
+        """Start to run all Peas in this BasePod.
 
-        Remember to close the Pod with :meth:`close`.
+        Remember to close the BasePod with :meth:`close`.
 
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
-        which is inherited from :class:`jina.peapods.peas.Pea`
+        which is inherited from :class:`jina.peapods.peas.BasePea`
         """
         self.stack = ExitStack()
         # start head and tail
         if self.peas_args['head']:
-            p = Pea(self.peas_args['head'])
+            p = BasePea(self.peas_args['head'])
             self.peas.append(p)
             self.stack.enter_context(p)
 
         if self.peas_args['tail']:
-            p = Pea(self.peas_args['tail'])
+            p = BasePea(self.peas_args['tail'])
             self.peas.append(p)
             self.stack.enter_context(p)
 
         # start real peas and accumulate the storage id
         for idx, s in enumerate(self.peas_args['peas']):
             s.replica_id = idx
-            p = get_pea(s, allow_remote=False)
+            p = Pea(s, allow_remote=False)
             self.peas.append(p)
             self.stack.enter_context(p)
 
@@ -165,7 +171,7 @@ class Pod:
     def log_iterator(self):
         """Get the last log using iterator
 
-        The :class:`Pod` log iterator goes through all peas :attr:`log_iterator` and
+        The :class:`BasePod` log iterator goes through all peas :attr:`log_iterator` and
         poll them sequentially. If non all them is active anymore, aka :attr:`is_event_loop`
         is False, then the iterator ends.
 
@@ -175,14 +181,12 @@ class Pod:
             from all peas in the sequential manner.
         """
         while True:
-            if all(not p.is_event_loop.is_set() for p in self.peas):
+            if all(p.is_shutdown.is_set() for p in self.peas):
                 break
 
             for p in self.peas:
-                if p.is_event_loop.is_set():
+                if not p.is_shutdown.is_set():
                     yield from p.last_log_record
-                else:
-                    yield '%r has just been terminated, won\'t be able to track its log anymore' % p
 
     def __enter__(self):
         self.start()
@@ -190,11 +194,11 @@ class Pod:
 
     @property
     def status(self) -> List:
-        """The status of a Pod is the list of status of all its Peas """
+        """The status of a BasePod is the list of status of all its Peas """
         return [p.status for p in self.peas]
 
     def wait_ready(self) -> None:
-        """Wait till the ready signal of this Pod.
+        """Wait till the ready signal of this BasePod.
 
         The pod is ready only when all the contained Peas returns is_ready
         """
@@ -202,7 +206,7 @@ class Pod:
             p.is_ready.wait()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.stack.close()
+        self.close()
 
     def join(self):
         """Wait until all peas exit"""
@@ -210,9 +214,19 @@ class Pod:
             s.join()
         self.peas.clear()
 
+    def close(self):
+        self.stack.close()
 
-class FlowPod(Pod):
-    """A :class:`FlowPod` is like a :class:`Pod`, but it exposes more interfaces for tweaking its connections with
+
+class ParsedPod(BasePod):
+    """A :class:`ParsedPod` is a pod where all peas and their connections are given"""
+
+    def _parse_args(self, args):
+        return args
+
+
+class FlowPod(BasePod):
+    """A :class:`FlowPod` is like a :class:`BasePod`, but it exposes more interfaces for tweaking its connections with
     other Pods, which comes in handy when used in the Flow API """
 
     def __init__(self, kwargs: Dict, send_to: Set[str] = None,
@@ -220,8 +234,8 @@ class FlowPod(Pod):
         """
 
         :param kwargs: unparsed argument in dict, if given the
-        :param send_to: a list of names this Pod send message to
-        :param recv_from: a list of names this Pod receive message from
+        :param send_to: a list of names this BasePod send message to
+        :param recv_from: a list of names this BasePod receive message from
         """
         self.cli_args, self._args, self.unk_args = _get_parsed_args(kwargs, parser)
         super().__init__(self._args)
@@ -237,12 +251,12 @@ class FlowPod(Pod):
         return '%s %s' % (cmd, ' '.join(self.cli_args))
 
     @staticmethod
-    def connect(first: 'Pod', second: 'Pod', first_socket_type: 'SocketType'):
+    def connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'):
         """Connect two Pods
 
-        :param first: the first Pod
-        :param second: the second Pod
-        :param first_socket_type: socket type of the first Pod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
+        :param first: the first BasePod
+        :param second: the second BasePod
+        :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
         """
         if first_socket_type == SocketType.PUSH_BIND:
             first.tail_args.socket_out = SocketType.PUSH_BIND
@@ -271,7 +285,7 @@ class FlowPod(Pod):
         else:
             raise NotImplementedError('%r is not supported here' % first_socket_type)
 
-    def connect_to_tail_of(self, pod: 'Pod'):
+    def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
         if self._args.replicas > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
@@ -287,7 +301,7 @@ class FlowPod(Pod):
         else:
             raise ValueError('the current pod has no head router, deduct the head is confusing')
 
-    def connect_to_head_of(self, pod: 'Pod'):
+    def connect_to_head_of(self, pod: 'BasePod'):
         """Eliminate the tail node by connecting next_args node directly to peas """
         if self._args.replicas > 1 and self.is_tail_router:
             # keep the port_out and socket_out of next_arts
@@ -395,8 +409,8 @@ def _fill_in_host(bind_args, connect_args):
         return bind_args.host
 
 
-class FrontendPod(Pod):
-    """A :class:`Pod` that holds a Frontend """
+class FrontendPod(BasePod):
+    """A :class:`BasePod` that holds a Frontend """
 
     def start(self):
         self.stack = ExitStack()
@@ -404,16 +418,6 @@ class FrontendPod(Pod):
             p = FrontendPea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
-
-    @property
-    def port_grpc(self) -> int:
-        """Get the grpc port number """
-        return self._args.port_grpc
-
-    @property
-    def host(self) -> str:
-        """Get the grpc host name """
-        return self._args.host
 
 
 class FrontendFlowPod(FrontendPod, FlowPod):

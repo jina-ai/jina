@@ -1,11 +1,13 @@
+from typing import Dict, Union
+
 from .. import __default_host__
 
 if False:
     import argparse
 
 
-def get_pea(args: 'argparse.Namespace', allow_remote: bool = True):
-    """Initialize a :class:`Pea`, :class:`RemotePea` or :class:`ContainerPea`
+def Pea(args: 'argparse.Namespace', allow_remote: bool = True):
+    """Initialize a :class:`BasePea`, :class:`RemotePea` or :class:`ContainerPea`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemotePea`
@@ -17,19 +19,22 @@ def get_pea(args: 'argparse.Namespace', allow_remote: bool = True):
         from .pea import ContainerPea
         return ContainerPea(args)
     else:
-        from .pea import Pea
-        return Pea(args)
+        from .pea import BasePea
+        return BasePea(args)
 
 
-def get_pod(args: 'argparse.Namespace', allow_remote: bool = True):
-    """Initialize a :class:`Pod`, :class:`RemotePod`
+def Pod(args: Union['argparse.Namespace', Dict], allow_remote: bool = True):
+    """Initialize a :class:`BasePod`, :class:`RemotePod`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemotePod`
     """
+    if isinstance(args, dict):
+        from .pod import ParsedPod
+        return ParsedPod(args)
     if allow_remote and args.host != __default_host__:
         from .remote import RemotePod
         return RemotePod(args)
     else:
-        from .pod import Pod
-        return Pod(args)
+        from .pod import BasePod
+        return BasePod(args)

@@ -1,10 +1,10 @@
 import grpc
 
-from .pea import Pea
+from .pea import BasePea
 from ..helper import PathImporter
 
 
-class GRPCService(Pea):
+class GRPCService(BasePea):
 
     def load_executor(self):
         super().load_executor()

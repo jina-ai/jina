@@ -4,8 +4,8 @@ from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
 from jina.main.parser import set_pod_parser
-from jina.peapods.pea import Pea
-from jina.peapods.pod import Pod
+from jina.peapods.pea import BasePea
+from jina.peapods.pod import BasePod
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
@@ -31,14 +31,14 @@ class MyTestCase(JinaTestCase):
         a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
 
         with self.assertRaises(SystemExit) as cm:
-            with Pea(a1):
+            with BasePea(a1):
                 NetworkChecker(a2)
 
         self.assertEqual(cm.exception.code, 0)
 
         # test with bad addresss
         with self.assertRaises(SystemExit) as cm:
-            with Pea(a1):
+            with BasePea(a1):
                 NetworkChecker(a3)
 
         self.assertEqual(cm.exception.code, 1)
@@ -78,7 +78,7 @@ class MyTestCase(JinaTestCase):
 
     def test_pod_status(self):
         args = set_pod_parser().parse_args(['--replicas', '3'])
-        with Pod(args) as p:
+        with BasePod(args) as p:
             self.assertEqual(len(p.status), p.num_peas)
             for v in p.status:
                 self.assertIsNotNone(v)

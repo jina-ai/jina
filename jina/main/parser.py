@@ -152,7 +152,7 @@ def set_pea_parser(parser=None):
                           'dump_interval will be ignored')
     gp3.add_argument('--separated_workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
-                          'only effective when Pod\'s `replicas` > 1')
+                          'only effective when BasePod\'s `replicas` > 1')
     gp3.add_argument('--replica_id', type=int, default=-1,
                      help='the id of the storage of this replica, only effective when `separated_workspace=True`')
 

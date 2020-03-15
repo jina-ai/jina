@@ -22,7 +22,7 @@ We describe why and how we add remote control to Jina
 Motivation
 ----------
 
-As a new feature for making Jina more easy to use, we allow one to start a Pod remotely via Flow API. This greatly expands the application scenarios of Jina. Users with multiple old laptops, raspberry pi can easily build a inhouse Jina-cluster, without knowing anything about Docker Swarm and Kubernetes.
+As a new feature for making Jina more easy to use, we allow one to start a BasePod remotely via Flow API. This greatly expands the application scenarios of Jina. Users with multiple old laptops, raspberry pi can easily build a inhouse Jina-cluster, without knowing anything about Docker Swarm and Kubernetes.
 
 Rationale
 ---------
@@ -30,12 +30,12 @@ Rationale
 The new ``SPAWN`` request
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We need a new control request which tells the **remote** Jina to spawn a :class:`jina.peapods.pod.Pod` **locally**.
+We need a new control request which tells the **remote** Jina to spawn a :class:`jina.peapods.pod.BasePod` **locally**.
 
 The ``SPAWN`` request should be sent via gRPC not ZeroMQ for the sake of compatibility, so that all languages can use Jina.
 
 
-The ``SPAWN`` request should carry a map of arguments that :class:`jina.peapods.pod.Pod` accepted.
+The ``SPAWN`` request should carry a map of arguments that :class:`jina.peapods.pod.BasePod` accepted.
 
 When
 
@@ -43,7 +43,7 @@ When
 Who should be returned
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The log of opened Pod should be returned back to the client.
+The log of opened BasePod should be returned back to the client.
 
 
 

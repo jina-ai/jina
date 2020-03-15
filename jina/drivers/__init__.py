@@ -10,7 +10,7 @@ from ..proto import jina_pb2
 
 if False:
     # fix type-hint complain for sphinx and flake
-    from ..peapods.pea import Pea
+    from ..peapods.pea import BasePea
     from ..executors import AnyExecutor
     import logging
 
@@ -68,22 +68,22 @@ class DriverType(type):
 
 
 class BaseDriver(metaclass=DriverType):
-    """A :class:`BaseDriver` is a logic unit above the :class:`jina.peapods.pea.Pea`.
+    """A :class:`BaseDriver` is a logic unit above the :class:`jina.peapods.pea.BasePea`.
     It reads the protobuf message, extracts/modifies the required information and then return
-    the message back to :class:`jina.peapods.pea.Pea`.
+    the message back to :class:`jina.peapods.pea.BasePea`.
 
-    A :class:`BaseDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.Pea` before using. This is done by
+    A :class:`BaseDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.BasePea` before using. This is done by
     :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, *args, **kwargs):
-        self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.Pea` (& :class:`jina.executors.BaseExecutor`)
+        self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
         self.pea = None
 
-    def attach(self, pea: 'Pea', *args, **kwargs):
-        """Attach this driver to a :class:`jina.peapods.pea.Pea`
+    def attach(self, pea: 'BasePea', *args, **kwargs):
+        """Attach this driver to a :class:`jina.peapods.pea.BasePea`
 
         :param pea: the pea to be attached.
         """
@@ -156,7 +156,7 @@ class BaseDriver(metaclass=DriverType):
         return self.__class__ == other.__class__
 
     def __getstate__(self):
-        """Do not save the Pea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
+        """Do not save the BasePea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
         file is always unattached. """
         d = dict(self.__dict__)
         if 'pea' in d:
@@ -166,11 +166,11 @@ class BaseDriver(metaclass=DriverType):
 
 
 class BaseExecutableDriver(BaseDriver):
-    """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.pea.Pea` and :class:`jina.executors.BaseExecutor`
+    """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.pea.BasePea` and :class:`jina.executors.BaseExecutor`
         It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
-        finally it returns the message back to :class:`jina.peapods.pea.Pea`.
+        finally it returns the message back to :class:`jina.peapods.pea.BasePea`.
 
-        A :class:`BaseExecutableDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.Pea` and :class:`jina.executors.BaseExecutor` before using.
+        A :class:`BaseExecutableDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.BasePea` and :class:`jina.executors.BaseExecutor` before using.
         This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 

@@ -1,6 +1,5 @@
 import copy
 import threading
-import time
 from collections import OrderedDict
 from contextlib import ExitStack
 from functools import wraps
@@ -393,7 +392,7 @@ class Flow:
         Remember to close the Flow with :meth:`close`.
 
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
-        which is inherited all the way from :class:`jina.peapods.peas.Pea`
+        which is inherited all the way from :class:`jina.peapods.peas.BasePea`
         """
         if self.with_sse_logger:
             sse_logger = threading.Thread(name='sse-logger', target=start_sse_logger)
@@ -425,7 +424,7 @@ class Flow:
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
         self._build_level = FlowBuildLevel.EMPTY
-        time.sleep(1)  # sleep for a while until all resources are safely closed
+        # time.sleep(1)  # sleep for a while until all resources are safely closed
         self.logger.critical(
             'flow is closed and all resources should be released already, current build level is %s' % self._build_level)
 

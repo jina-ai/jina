@@ -5,7 +5,7 @@ import unittest
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
-from jina.peapods.pea import ContainerPea, Pea
+from jina.peapods.pea import ContainerPea, BasePea
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
@@ -141,7 +141,7 @@ class MyTestCase(JinaTestCase):
 
         # test with container
         with self.assertRaises(SystemExit) as cm:
-            with Pea(a4):
+            with BasePea(a4):
                 NetworkChecker(a5)
 
         self.assertEqual(cm.exception.code, 0)

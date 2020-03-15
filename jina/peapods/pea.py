@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
-from .. import __ready_signal__
+from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     EventLoopEnd, \
@@ -18,7 +18,7 @@ from ..logging import profile_logger, get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
-__all__ = ['PeaMeta', 'Pea', 'ContainerPea']
+__all__ = ['PeaMeta', 'BasePea', 'ContainerPea']
 
 # temporary fix for python 3.8 on macos where the default start is set to "spawn"
 # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
@@ -30,7 +30,7 @@ if False:
 
 
 class PeaMeta(type):
-    """Meta class of :class:`Pea` to enable switching between ``thread`` and ``process`` backend. """
+    """Meta class of :class:`BasePea` to enable switching between ``thread`` and ``process`` backend. """
     _dct = {}
 
     def __new__(cls, name, bases, dct):
@@ -67,13 +67,13 @@ def _get_event(obj):
         raise NotImplementedError
 
 
-class Pea(metaclass=PeaMeta):
-    """Pea is an unary service unit which provides network interface and
+class BasePea(metaclass=PeaMeta):
+    """BasePea is an unary service unit which provides network interface and
     communicates with others via protobuf and ZeroMQ
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        """ Create a new :class:`Pea` object
+        """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
         :param replica_id: the id used to separate the storage of each pea, only used when ``args.separate_storage=True``
@@ -86,6 +86,7 @@ class Pea(metaclass=PeaMeta):
         self.log_event = _get_event(self)
         self.is_ready = _get_event(self)
         self.is_event_loop = _get_event(self)
+        self.is_shutdown = _get_event(self)
         self.logger = get_logger(self.name, **vars(args), event_trigger=self.log_event)
 
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
@@ -99,7 +100,7 @@ class Pea(metaclass=PeaMeta):
         self._prev_messages = None
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
 
-    def handle(self, msg: 'jina_pb2.Message') -> 'Pea':
+    def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message.
@@ -164,9 +165,8 @@ class Pea(metaclass=PeaMeta):
     @property
     def log_iterator(self):
         """Get the last log using iterator """
-        while self.is_event_loop.is_set():
+        while not self.is_shutdown.is_set():
             yield from self.last_log_record
-        yield '%r has just been terminated, won\'t be able to track its log anymore' % self
 
     @property
     def last_log_record(self):
@@ -182,7 +182,7 @@ class Pea(metaclass=PeaMeta):
             pass
 
     def load_executor(self):
-        """Load the executor to this Pea, specified by ``exec_yaml_path`` CLI argument.
+        """Load the executor to this BasePea, specified by ``exec_yaml_path`` CLI argument.
 
         """
         if self.args.yaml_path:
@@ -194,8 +194,8 @@ class Pea(metaclass=PeaMeta):
             except FileNotFoundError:
                 raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)
         else:
-            self.logger.warning('this Pea has no executor attached, you may want to double-check '
-                                'if it is a mistake or on purpose (using this Pea as router/map-reduce)')
+            self.logger.warning('this BasePea has no executor attached, you may want to double-check '
+                                'if it is a mistake or on purpose (using this BasePea as router/map-reduce)')
 
     def save_executor(self, dump_interval: int = 0):
         """Save the contained executor
@@ -203,9 +203,9 @@ class Pea(metaclass=PeaMeta):
         :param dump_interval: the time interval for saving
         """
         if self.args.read_only:
-            self.logger.info('executor is not saved as "read_only" is set to true for this Pea')
+            self.logger.info('executor is not saved as "read_only" is set to true for this BasePea')
         elif not hasattr(self, 'executor'):
-            self.logger.debug('this Pea contains no executor, no need to save')
+            self.logger.debug('this BasePea contains no executor, no need to save')
         elif ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
             if self.executor.save():
                 self.logger.info('dumped changes to the executor, %3.0fs since last the save'
@@ -221,14 +221,14 @@ class Pea(metaclass=PeaMeta):
 
             self._timer.reset()
 
-    def pre_hook(self, msg: 'jina_pb2.Message') -> 'Pea':
+    def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
         msg_type = msg.request.WhichOneof('body')
         self.logger.info('received "%s" from %s' % (msg_type, routes2str(msg, flag_current=True)))
         add_route(msg.envelope, self.name, self.args.identity)
         return self
 
-    def post_hook(self, msg: 'jina_pb2.Message') -> 'Pea':
+    def post_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
         msg.envelope.routes[-1].end_time.GetCurrentTime()
         return self
@@ -237,7 +237,7 @@ class Pea(metaclass=PeaMeta):
         """Set the status of the pea to ready """
         self.is_ready.set()
         self.is_event_loop.set()
-        self.logger.critical(__ready_signal__)
+        self.logger.critical(__ready_msg__)
 
     def event_loop_start(self):
         """Start the event loop """
@@ -272,7 +272,7 @@ class Pea(metaclass=PeaMeta):
             self.executor.close()
 
     def run(self):
-        """Start the eventloop of this Pea. It will listen to the network protobuf message via ZeroMQ. """
+        """Start the eventloop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             self.post_init()
             self.event_loop_start()
@@ -298,7 +298,8 @@ class Pea(metaclass=PeaMeta):
             self.event_loop_stop()
             self.is_event_loop.clear()
 
-        self.logger.critical('terminated')
+        self.logger.critical(__stop_msg__)
+        self.is_shutdown.set()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -315,8 +316,10 @@ class Pea(metaclass=PeaMeta):
     def close(self):
         """Gracefully close this pea and release all resources """
         if self.is_event_loop.is_set():
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                     timeout=self.args.timeout)
+            r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                                  timeout=self.args.timeout)
+            self.is_shutdown.wait()
+            return r
 
     @property
     def status(self):
@@ -329,15 +332,15 @@ class Pea(metaclass=PeaMeta):
         if self.is_ready.wait(self.args.timeout_ready / 1000):
             return self
         else:
-            raise TimeoutError('this Pea (name=%s) can not be initialized after %dms' % (self.name,
-                                                                                         self.args.timeout_ready))
+            raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name,
+                                                                                             self.args.timeout_ready))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
 
-class ContainerPea(Pea):
-    """A Pea that wraps another "dockerized" Pea
+class ContainerPea(BasePea):
+    """A BasePea that wraps another "dockerized" BasePea
 
     It requires a non-empty valid ``args.image``.
     """
@@ -356,7 +359,7 @@ class ContainerPea(Pea):
         from ..main.parser import set_pea_parser
         _defaults = vars(set_pea_parser().parse_args([]))
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
-        # basically all args in Pea-docker arg group should be ignored.
+        # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
         taboo = {'image', 'entrypoint', 'volumes', 'pull_latest'}
         for k, v in vars(self.args).items():
@@ -419,9 +422,9 @@ class ContainerPea(Pea):
                     msg = line.strip().decode()
                     # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
                     # print all error message when fails
-                    if __ready_signal__ in msg:
+                    if __ready_msg__ in msg:
                         self.is_ready.set()
-                        self.logger.critical(__ready_signal__)
+                        self.logger.critical(__ready_msg__)
                     logger.info(line.strip().decode())
                 else:
                     raise EventLoopEnd
@@ -441,6 +444,3 @@ class ContainerPea(Pea):
                     'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()
-
-
-
