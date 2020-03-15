@@ -1,5 +1,6 @@
 import argparse
 import copy
+import threading
 from contextlib import ExitStack
 from typing import Set, Dict, List, Callable, Union
 
@@ -28,6 +29,7 @@ class BasePod:
         self.deducted_head = None
         self.deducted_tail = None
         self.peas_args = self._parse_args(args)
+        self.is_ready = threading.Event()
 
     @property
     def name(self) -> str:
@@ -197,13 +199,14 @@ class BasePod:
         """The status of a BasePod is the list of status of all its Peas """
         return [p.status for p in self.peas]
 
-    def wait_ready(self) -> None:
+    def set_ready(self) -> None:
         """Wait till the ready signal of this BasePod.
 
         The pod is ready only when all the contained Peas returns is_ready
         """
         for p in self.peas:
             p.is_ready.wait()
+        self.is_ready.set()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()

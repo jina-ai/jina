@@ -48,6 +48,7 @@ class GrpcClient:
 
         # attache response handler
         self.logger.critical('client is ready at %s:%d!' % (self.args.host, self.args.port_grpc))
+        self.is_closed = False
 
     def call(self, *args, **kwargs):
         """Calling the grpc server """
@@ -87,7 +88,7 @@ class GrpcClient:
 
     def close(self):
         """Gracefully shutdown the client and release all grpc-related resources """
-        if self._stub:
+        if not self.is_closed:
             self._channel.close()
-            self._stub = None
             self.logger.critical(__stop_msg__)
+            self.is_closed = True
