@@ -2,7 +2,7 @@ import os
 
 import grpc
 
-from ...excepts import BadClient, GRPCFrontendError, GRPCServerError
+from ...excepts import BadClient, GRPCServerError
 from ...logging.base import get_logger
 from ...proto import jina_pb2_grpc
 
@@ -36,10 +36,12 @@ class GrpcClient:
         try:
             grpc.channel_ready_future(self._channel).result(timeout=args.timeout_ready / 1000)
         except grpc.FutureTimeoutError:
-            raise GRPCServerError('can not connect to the server at %s:%d after %d ms'
-                                  % (args.host, args.port_grpc, args.timeout_ready))
+            self.logger.error('can not connect to the server at %s:%d after %d ms, please double check the '
+                              'ip and grpc port number of the server'
+                              % (args.host, args.port_grpc, args.timeout_ready))
+            raise GRPCServerError('can not connect to the server at %s:%d' % (args.host, args.port_grpc))
 
-        # create new stub
+            # create new stub
         self.logger.debug('create new stub...')
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
 
@@ -70,13 +72,14 @@ class GrpcClient:
             my_code = rpc_error_call.code()
             my_details = rpc_error_call.details()
             if my_code == grpc.StatusCode.UNAVAILABLE:
-                self.logger.warning('the server is not available or is closed already')
+                self.logger.error('the server is not available or is closed already')
             elif my_code == grpc.StatusCode.INTERNAL:
-                raise GRPCFrontendError('internal error on the server side')
+                self.logger.error('internal error on the server side')
             else:
                 raise BadClient('%s error in grpc: %s '
                                 'often the case is that you define/send a bad input iterator to jina, '
                                 'please double check your input iterator' % (my_code, my_details))
+            raise rpc_error_call
         finally:
             self.close()
 
@@ -87,3 +90,4 @@ class GrpcClient:
         if self._stub:
             self._channel.close()
             self._stub = None
+            self.logger.critical('terminated')

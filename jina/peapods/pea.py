@@ -86,7 +86,7 @@ class Pea(metaclass=PeaMeta):
         self.log_event = _get_event(self)
         self.is_ready = _get_event(self)
         self.is_event_loop = _get_event(self)
-        self.logger = get_logger(self.name, **vars(args), log_event=self.log_event)
+        self.logger = get_logger(self.name, **vars(args), event_trigger=self.log_event)
 
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.last_dump_time = time.perf_counter()

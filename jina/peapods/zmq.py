@@ -66,7 +66,7 @@ class Zmqlet:
         if ctrl_with_ipc:
             return _get_random_ipc(), ctrl_with_ipc
         else:
-            return 'tcp://%s:%d' % (__default_host__, args.port_ctrl), ctrl_with_ipc
+            return 'tcp://%s:%d' % (args.host, args.port_ctrl), ctrl_with_ipc
 
     def _pull(self, interval: int = 1):
         socks = dict(self.poller.poll(interval))

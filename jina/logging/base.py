@@ -128,8 +128,10 @@ class NTLogger:
             sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
 
 
-def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse: bool = False, fmt_str: str = None,
-               log_event=None,
+def get_logger(context: str, context_len: int = 10,
+               profiling: bool = False, sse: bool = False,
+               fmt_str: str = None,
+               event_trigger=None,
                **kwargs) -> Union['logging.Logger', 'NTLogger']:
     """Get a logger with configurations
 
@@ -162,46 +164,44 @@ def get_logger(context: str, context_len: int = 10, profiling: bool = False, sse
 
     logger = logging.getLogger(context)
     logger.propagate = False
+    logger.handlers = []
+    logger.setLevel(verbose_level.value)
 
-    if not logger.handlers:
-        logger.setLevel(verbose_level.value)
+    if event_trigger is not None:
+        event_handler = EventHandler(event_trigger)
+        event_handler.setLevel(verbose_level.value)
+        event_handler.setFormatter(ColorFormatter(fmt_str))
+        logger.addHandler(event_handler)
 
-        logger.handlers = []
-        if log_event is not None:
-            event_handler = EventHandler(log_event)
-            event_handler.setLevel(verbose_level.value)
-            event_handler.setFormatter(ColorFormatter(fmt_str))
-            logger.addHandler(event_handler)
+    if sse:
+        queue_handler = QueueHandler(__log_queue__)
+        queue_handler.setLevel(verbose_level.value)
+        queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
+        logger.addHandler(queue_handler)
 
-        if profiling:
-            file_handler = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
-            file_handler.setFormatter(ProfileFormatter(timed_fmt_str))
-            logger.addHandler(file_handler)
+    if profiling:
+        file_handler = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
+        file_handler.setFormatter(ProfileFormatter(timed_fmt_str))
+        logger.addHandler(file_handler)
 
-            if sse:
-                queue_handler = QueueHandler(__profile_queue__)
-                queue_handler.setLevel(verbose_level.value)
-                queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
-                logger.addHandler(queue_handler)
-        else:
-            if sse:
-                queue_handler = QueueHandler(__log_queue__)
-                queue_handler.setLevel(verbose_level.value)
-                queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
-                logger.addHandler(queue_handler)
+        if sse:
+            queue_handler = QueueHandler(__profile_queue__)
+            queue_handler.setLevel(verbose_level.value)
+            queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
+            logger.addHandler(queue_handler)
 
-            console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setLevel(verbose_level.value)
-            console_handler.setFormatter(ColorFormatter(fmt_str))
-            logger.addHandler(console_handler)
+    if os.environ.get('JINA_LOG_FORMAT') == 'TXT':
+        file_handler = logging.FileHandler('jina-%s.log' % __uptime__, delay=True)
+        file_handler.setFormatter(PlainFormatter(timed_fmt_str))
+        logger.addHandler(file_handler)
+    elif os.environ.get('JINA_LOG_FORMAT') == 'JSON':
+        file_handler = logging.FileHandler('jina-%s.json' % __uptime__, delay=True)
+        file_handler.setFormatter(JsonFormatter(timed_fmt_str))
+        logger.addHandler(file_handler)
 
-            if os.environ.get('JINA_LOG_FORMAT') == 'TXT':
-                file_handler = logging.FileHandler('jina-%s.log' % __uptime__, delay=True)
-                file_handler.setFormatter(PlainFormatter(timed_fmt_str))
-                logger.addHandler(file_handler)
-            elif os.environ.get('JINA_LOG_FORMAT') == 'JSON':
-                file_handler = logging.FileHandler('jina-%s.json' % __uptime__, delay=True)
-                file_handler.setFormatter(JsonFormatter(timed_fmt_str))
-                logger.addHandler(file_handler)
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(verbose_level.value)
+    console_handler.setFormatter(ColorFormatter(fmt_str))
+    logger.addHandler(console_handler)
 
     return logger

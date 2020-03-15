@@ -53,7 +53,10 @@ class FrontendPea:
         self.logger.critical('terminated')
 
     def join(self):
-        self._stop_event.wait()
+        try:
+            self._stop_event.wait()
+        except KeyboardInterrupt:
+            pass
 
     class _Pea(jina_pb2_grpc.JinaRPCServicer):
 
@@ -115,12 +118,13 @@ class FrontendPea:
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)
 
-                self.stack.enter_context(p)
-                for l in p.log_iterator:
-                    request.log_record = l
-                    yield request
+                with p:
+                    for l in p.log_iterator:
+                        request.log_record = l
+                        yield request
             else:
-                warn_msg = f'the frontend at {self.args.host}:{self.args.port_grpc} does not support remote spawn, please restart it with --allow_spawn'
+                warn_msg = f'the frontend at {self.args.host}:{self.args.port_grpc} ' \
+                           f'does not support remote spawn, please restart it with --allow_spawn'
                 request.log_record = warn_msg
                 request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED
                 self.logger.warning(warn_msg)

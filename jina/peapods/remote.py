@@ -40,7 +40,7 @@ class SpawnPeaHelper(GrpcClient):
         self.remote_logging(req, set_ready)
 
     def remote_logging(self, req, set_ready):
-        logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
+        logger = get_logger('🌏', **vars(self.args), fmt_str='🌏 %(message)s')
         for resp in self._stub.Spawn(req):
             if set_ready and self.callback_on_first:
                 set_ready()
@@ -111,9 +111,9 @@ class RemotePea(Pea):
         self.remote_pea = SpawnPeaHelper(self.args)
         self.remote_pea.start(self.set_ready)
 
-    def event_loop_stop(self):
-        if getattr(self, 'remote_pea', None):
-            self.remote_pea.close()
+    # def event_loop_stop(self):
+    #     if getattr(self, 'remote_pea', None):
+    #         self.remote_pea.close()
 
 
 class RemotePod(Pod):

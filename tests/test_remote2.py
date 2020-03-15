@@ -14,7 +14,7 @@ from tests import JinaTestCase
 class MyTestCase(JinaTestCase):
     def test_logging_thread(self):
         _event = threading.Event()
-        logger = get_logger('mytest', log_event=_event)
+        logger = get_logger('mytest', event_trigger=_event)
 
         def _print_messages():
             while True:
