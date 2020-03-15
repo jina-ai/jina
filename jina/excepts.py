@@ -22,11 +22,11 @@ class UnknownControlCommand(Exception):
 
 
 class EventLoopEnd(Exception):
-    """The event loop of Pea ends"""
+    """The event loop of BasePea ends"""
 
 
 class DriverNotInstalled(Exception):
-    """Driver is not installed in the Pea"""
+    """Driver is not installed in the BasePea"""
 
 
 class BadDriverGroup(Exception):
@@ -42,7 +42,7 @@ class NoDriverForRequest(Exception):
 
 
 class UnattachedDriver(Exception):
-    """Driver is not attached to any Pea or executor"""
+    """Driver is not attached to any BasePea or executor"""
 
 
 class FlowTopologyError(Exception):

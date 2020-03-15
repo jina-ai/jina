@@ -33,7 +33,7 @@ class ImportChecker:
 
 
 class NetworkChecker:
-    """Check if a Pod is running or not """
+    """Check if a BasePod is running or not """
 
     def __init__(self, args: 'argparse.Namespace'):
         from ..peapods.pea import send_ctrl_message

@@ -36,7 +36,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     Control port of all pods.
 
-    :default: unset. A random port will be used for each :func:`Pod`.
+    :default: unset. A random port will be used for each :func:`BasePod`.
 
 
 .. confval:: JINA_CONTRIB_MODULE

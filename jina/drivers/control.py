@@ -6,7 +6,7 @@ from ..proto import jina_pb2
 
 
 class ControlReqDriver(BaseDriver):
-    """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.Pea`"""
+    """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
 
     def __call__(self, *args, **kwargs):
         if self.req.command == jina_pb2.Request.ControlRequest.TERMINATE:

@@ -6,7 +6,7 @@ from multiprocessing import Process
 
 from jina.logging import get_logger
 from jina.main.parser import set_frontend_parser, set_pea_parser, set_pod_parser
-from jina.peapods.pod import FrontendPod, Pod
+from jina.peapods.pod import FrontendPod, BasePod
 from jina.peapods.remote import RemotePea, SpawnPodHelper, SpawnPeaHelper, SpawnDictPodHelper
 from tests import JinaTestCase
 
@@ -14,7 +14,7 @@ from tests import JinaTestCase
 class MyTestCase(JinaTestCase):
     def test_logging_thread(self):
         _event = threading.Event()
-        logger = get_logger('mytest', log_event=_event)
+        logger = get_logger('mytest', event_trigger=_event)
 
         def _print_messages():
             while True:
@@ -91,7 +91,7 @@ class MyTestCase(JinaTestCase):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
         p_args = set_pod_parser().parse_args(
             ['--host', 'localhost', '--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
-        p = Pod(p_args)
+        p = BasePod(p_args)
 
         def start_frontend():
             with FrontendPod(f_args):

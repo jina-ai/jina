@@ -26,7 +26,7 @@ if False:
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
-    has three sockets for input, output and control. `Zmqlet` is one of the key components in :class:`jina.peapods.pea.Pea`.
+    has three sockets for input, output and control. `Zmqlet` is one of the key components in :class:`jina.peapods.pea.BasePea`.
     """
 
     def __init__(self, args: 'argparse.Namespace', logger: 'logging.Logger' = None):
@@ -66,7 +66,7 @@ class Zmqlet:
         if ctrl_with_ipc:
             return _get_random_ipc(), ctrl_with_ipc
         else:
-            return 'tcp://%s:%d' % (__default_host__, args.port_ctrl), ctrl_with_ipc
+            return 'tcp://%s:%d' % (args.host, args.port_ctrl), ctrl_with_ipc
 
     def _pull(self, interval: int = 1):
         socks = dict(self.poller.poll(interval))

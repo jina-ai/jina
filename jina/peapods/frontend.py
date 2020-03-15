@@ -1,13 +1,12 @@
 import asyncio
 import os
 import threading
-from contextlib import ExitStack
 
 import grpc
 
 from .grpc_asyncio import AsyncioExecutor
-from .pea import Pea
 from .zmq import AsyncZmqlet, add_envelope
+from .. import __stop_msg__
 from ..excepts import WaitPendingMessage, EventLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
@@ -50,10 +49,13 @@ class FrontendPea:
         self.p_servicer.close()
         self.server.stop(None)
         self._stop_event.set()
-        self.logger.critical('terminated')
+        self.logger.critical(__stop_msg__)
 
     def join(self):
-        self._stop_event.wait()
+        try:
+            self._stop_event.wait()
+        except KeyboardInterrupt:
+            pass
 
     class _Pea(jina_pb2_grpc.JinaRPCServicer):
 
@@ -64,7 +66,7 @@ class FrontendPea:
             self.logger = logger or get_logger(self.name, **vars(args))
             self.executor = BaseExecutor()
             self.executor.attach(pea=self)
-            self.stack = ExitStack()
+            self.peapods = []
 
         def recv_callback(self, msg):
             try:
@@ -93,17 +95,17 @@ class FrontendPea:
                     yield await r
 
         async def Spawn(self, request, context):
-            from .pod import Pod
             _req = getattr(request, request.WhichOneof('body'))
             if self.args.allow_spawn:
+                from ..peapods import Pea, Pod
                 _req_type = type(_req)
                 if _req_type == jina_pb2.SpawnRequest.PeaSpawnRequest:
                     _args = set_pea_parser().parse_args(_req.args)
-                    self.logger.info('starting a Pea from a remote request')
+                    self.logger.info('starting a BasePea from a remote request')
                     p = Pea(_args)
                 elif _req_type == jina_pb2.SpawnRequest.PodSpawnRequest:
                     _args = set_pod_parser().parse_args(_req.args)
-                    self.logger.info('starting a Pod from a remote request')
+                    self.logger.info('starting a BasePod from a remote request')
                     p = Pod(_args)
                 elif _req_type == jina_pb2.SpawnRequest.PodDictSpawnRequest:
                     peas_args = {
@@ -111,16 +113,19 @@ class FrontendPea:
                         'tail': set_pea_parser().parse_args(_req.tail.args) if _req.tail.args else None,
                         'peas': [set_pea_parser().parse_args(q.args) for q in _req.peas] if _req.peas else []
                     }
-                    p = Pod(None, peas_args=peas_args)
+                    p = Pod(peas_args)
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)
 
-                self.stack.enter_context(p)
-                for l in p.log_iterator:
-                    request.log_record = l
-                    yield request
+                with p:
+                    self.peapods.append(p)
+                    for l in p.log_iterator:
+                        request.log_record = l
+                        yield request
+                self.peapods.remove(p)
             else:
-                warn_msg = f'the frontend at {self.args.host}:{self.args.port_grpc} does not support remote spawn, please restart it with --allow_spawn'
+                warn_msg = f'the frontend at {self.args.host}:{self.args.port_grpc} ' \
+                           f'does not support remote spawn, please restart it with --allow_spawn'
                 request.log_record = warn_msg
                 request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED
                 self.logger.warning(warn_msg)
@@ -128,4 +133,5 @@ class FrontendPea:
                     yield request
 
         def close(self):
-            self.stack.close()
+            for p in self.peapods:
+                p.close()

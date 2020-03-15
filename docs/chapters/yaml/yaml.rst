@@ -155,7 +155,7 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
 :class:`Driver` YAML Sytanx
 ---------------------------
 
-:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.Pod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the Pod via CLI (``jina pod --driver_yaml_path --driver_group``).
+:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.BasePod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the BasePod via CLI (``jina pod --driver_yaml_path --driver_group``).
 
 .. highlight:: yaml
 .. code-block:: yaml
@@ -245,7 +245,7 @@ A valid Flow specification starts with ``!Flow`` as the first line.
 
 .. confval:: pods
 
-     A map of :class:`jina.peapods.pod.Pod` contained in the flow. The key is the name of this pod and the value is a map of arguments accepted by :command:`jina pod`. One can refer in ``send_to`` and ``recv_from`` to a pod by its name.
+     A map of :class:`jina.peapods.pod.BasePod` contained in the flow. The key is the name of this pod and the value is a map of arguments accepted by :command:`jina pod`. One can refer in ``send_to`` and ``recv_from`` to a pod by its name.
 
 The flows given by the following Python code and the YAML config are identical.
 

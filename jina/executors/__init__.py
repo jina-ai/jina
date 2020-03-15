@@ -102,7 +102,7 @@ class BaseExecutor(metaclass=ExecutorType):
         with:
             awesomeness: 5
 
-    To use an executor in a :class:`jina.peapods.pea.Pea` or :class:`jina.peapods.pod.Pod`,
+    To use an executor in a :class:`jina.peapods.pea.BasePea` or :class:`jina.peapods.pod.BasePod`,
     a proper :class:`jina.drivers.Driver` is required. This is because the
     executor is *NOT* protobuf-aware and has no access to the key-values in the protobuf message.
 
@@ -519,9 +519,9 @@ class BaseExecutor(metaclass=ExecutorType):
         return r
 
     def attach(self, *args, **kwargs):
-        """Attach this executor to a :class:`jina.peapods.pea.Pea`.
+        """Attach this executor to a :class:`jina.peapods.pea.BasePea`.
 
-        This is called inside the initializing of a :class:`jina.peapods.pea.Pea`.
+        This is called inside the initializing of a :class:`jina.peapods.pea.BasePea`.
         """
         for v in self._drivers.values():
             for d in v:

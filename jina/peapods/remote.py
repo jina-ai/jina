@@ -1,8 +1,7 @@
-from contextlib import ExitStack
 from typing import Callable, Dict
 
-from .pea import Pea
-from .pod import Pod
+from .pea import BasePea
+from .pod import BasePod
 from .zmq import Zmqlet, send_ctrl_message
 from .. import __default_host__
 from ..clients.python import GrpcClient
@@ -32,7 +31,7 @@ class SpawnPeaHelper(GrpcClient):
     def call(self, set_ready: Callable = None):
         """
 
-        :param set_ready: :func:`set_ready` signal from :meth:`jina.peapods.peas.Pea.set_ready`
+        :param set_ready: :func:`set_ready` signal from :meth:`jina.peapods.peas.BasePea.set_ready`
         :return:
         """
         req = jina_pb2.SpawnRequest()
@@ -40,7 +39,7 @@ class SpawnPeaHelper(GrpcClient):
         self.remote_logging(req, set_ready)
 
     def remote_logging(self, req, set_ready):
-        logger = get_logger('🌐', **vars(self.args), fmt_str='🌐 %(message)s')
+        logger = get_logger('🌏', **vars(self.args), fmt_str='🌏 %(message)s')
         for resp in self._stub.Spawn(req):
             if set_ready and self.callback_on_first:
                 set_ready()
@@ -48,9 +47,10 @@ class SpawnPeaHelper(GrpcClient):
             logger.info(resp.log_record)
 
     def close(self):
-        send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                          timeout=self.args.timeout_ctrl)
-        super().close()
+        if not self.is_closed:
+            send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                              timeout=self.args.timeout_ctrl)
+            super().close()
 
 
 class SpawnPodHelper(SpawnPeaHelper):
@@ -94,8 +94,8 @@ class SpawnDictPodHelper(SpawnPeaHelper):
         self.remote_logging(req, set_ready)
 
 
-class RemotePea(Pea):
-    """A Pea that spawns another pea remotely """
+class RemotePea(BasePea):
+    """A BasePea that spawns another pea remotely """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:
@@ -109,15 +109,11 @@ class RemotePea(Pea):
 
     def event_loop_start(self):
         self.remote_pea = SpawnPeaHelper(self.args)
-        self.remote_pea.start(self.set_ready)
-
-    def event_loop_stop(self):
-        if getattr(self, 'remote_pea', None):
-            self.remote_pea.close()
+        self.remote_pea.start(self.set_ready)  # auto-close after
 
 
-class RemotePod(Pod):
-    """A Pea that spawns another pea remotely """
+class RemotePod(BasePod):
+    """A BasePea that spawns another pea remotely """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:
@@ -128,5 +124,8 @@ class RemotePod(Pod):
         self._pod_args = args
 
     def start(self):
-        self.stack = ExitStack()
         self.stack.enter_context(SpawnPodHelper(self._pod_args))
+
+    def close(self):
+        if hasattr(self, 'remote_pod'):
+            self.remote_pod.close()

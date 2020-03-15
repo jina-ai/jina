@@ -5,7 +5,7 @@ from pkg_resources import resource_filename
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import yaml, expand_dict
 from jina.main.parser import set_pea_parser
-from jina.peapods.pea import Pea
+from jina.peapods.pea import BasePea
 from tests import JinaTestCase
 
 
@@ -68,7 +68,7 @@ class MyTestCase(JinaTestCase):
 
         args = set_pea_parser().parse_args([])
 
-        with Pea(args) as p:
+        with BasePea(args) as p:
             pass
 
         from jina.executors.requests import _defaults

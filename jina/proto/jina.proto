@@ -133,8 +133,8 @@ message Envelope {
      * Represents a the route paths of this message
      */
     message Route {
-        string pod = 1; // the name of the Pod
-        string pod_id = 2; // the id of the Pod
+        string pod = 1; // the name of the BasePod
+        string pod_id = 2; // the id of the BasePod
         google.protobuf.Timestamp start_time = 3; // receiving time
         google.protobuf.Timestamp end_time = 4; // sending (out) time
     }
@@ -207,12 +207,12 @@ message Request {
     }
 
     /**
-     * Represents a control request used to control the Pod
+     * Represents a control request used to control the BasePod
      */
     message ControlRequest {
         enum Command {
-            TERMINATE = 0; // shutdown the Pod
-            STATUS = 1; // check the status of the Pod
+            TERMINATE = 0; // shutdown the BasePod
+            STATUS = 1; // check the status of the BasePod
             DRYRUN = 2; // passing this pod without take any action, and send the request to the next pod
         }
         Command command = 1; // the control command
@@ -225,18 +225,18 @@ message SpawnRequest {
 
     // Spawn a pea remotely, requires args of a pea
     message PeaSpawnRequest {
-        repeated string args = 1; // a list of args string for Pea
+        repeated string args = 1; // a list of args string for BasePea
     }
 
     // Spawn a pod remotely, requires args of a pea
     message PodSpawnRequest {
-        repeated string args = 1; // a list of args string for Pod
+        repeated string args = 1; // a list of args string for BasePod
     }
 
     // Spawn a parsed pod remotely, requires parsed pod structure
     message PodDictSpawnRequest {
-        PeaSpawnRequest head = 1; // a list of args string for the head Pea
-        PeaSpawnRequest tail = 2; // a list of args string for the tail Pea
+        PeaSpawnRequest head = 1; // a list of args string for the head BasePea
+        PeaSpawnRequest tail = 2; // a list of args string for the tail BasePea
         repeated PeaSpawnRequest peas = 3; // a list of args string for the Peas
     }
 
