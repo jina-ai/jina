@@ -12,6 +12,8 @@ from typing import Iterator, Any, Union, List, Dict
 import numpy as np
 from ruamel.yaml import YAML, nodes
 
+from . import JINA_GLOBAL
+
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
@@ -182,13 +184,67 @@ def random_name() -> str:
     return '-'.join(random.choice(_random_names[j]) for j in range(2))
 
 
-def random_port(port: int = None) -> int:
-    if not port or int(port) <= 0:
-        import random
-        min_port, max_port = 49152, 65536
-        return random.randrange(min_port, max_port)
-    else:
-        return int(port)
+def random_port() -> int:
+    from contextlib import closing
+    import socket
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
+
+
+def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
+    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
+    _all = {}
+    _ports = set()
+    if os.path.exists(config_path):
+        with open(config_path) as fp:
+            _all = yaml.load(fp)
+        if _all and 'stacks' in _all:
+            for s in _all['stacks']:
+                if (stack_id is not None and s['id'] == stack_id) or stack_id is None:
+                    _ports.update(s['ports'])
+    return list(_ports)
+
+
+def deregister_all_ports(stack_id: int = JINA_GLOBAL.stack.id):
+    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
+    _all = {'stacks': []}
+    if os.path.exists(config_path):
+        with open(config_path) as fp:
+            _all = yaml.load(fp)
+    if 'stacks' in _all:
+        for s in _all['stacks']:
+            if s['id'] == stack_id:
+                _all['stacks'].remove(s)
+                break
+    with open(config_path, 'w') as fp:
+        yaml.dump(_all, fp)
+
+
+def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id):
+    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
+    if os.path.exists(config_path):
+        with open(config_path) as fp:
+            _all = yaml.load(fp)
+    if not _all or 'stacks' not in _all:
+        _all = {'stacks': []}
+    already_in = False
+    from jina import JINA_GLOBAL
+    stack_id = stack_id or JINA_GLOBAL.stack.id
+    for s in _all['stacks']:
+        if s['id'] == stack_id:
+            s['ports'] = list(set(s['ports'] + [port]))
+            already_in = True
+            break
+    if not already_in:
+        r = {
+            'id': stack_id,
+            'ports': [port]
+        }
+        _all['stacks'].append(r)
+    with open(config_path, 'w') as fp:
+        yaml.dump(_all, fp)
 
 
 def random_identity() -> str:
@@ -359,5 +415,3 @@ def valid_yaml_path(path: str, to_stream: bool = False):
     else:
         raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
                                 ' or a valid file path, or a supported class name.' % path)
-
-

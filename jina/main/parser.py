@@ -65,7 +65,6 @@ def set_logger_parser(parser=None):
                         help='refresh time interval in seconds, set to -1 to persist all grouped logs')
     return parser
 
-
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -117,9 +116,9 @@ def set_pea_parser(parser=None):
 
     gp2 = add_arg_group(parser, 'pea network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),
-                     help='port for input data, default a random port between [49152, 65536]')
+                     help='port for input data, default a random port between [49152, 65535]')
     gp2.add_argument('--port_out', type=int, default=random_port(),
-                     help='port for output data, default a random port between [49152, 65536]')
+                     help='port for output data, default a random port between [49152, 65535]')
     gp2.add_argument('--host_in', type=str, default=__default_host__,
                      help='host address for input, by default it is %s' % __default_host__)
     gp2.add_argument('--host_out', type=str, default=__default_host__,
@@ -131,7 +130,7 @@ def set_pea_parser(parser=None):
                      default=SocketType.PUSH_BIND,
                      help='socket type for output port')
     gp2.add_argument('--port_ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', random_port()),
-                     help='port for controlling the pod, default a random port between [49152, 65536]')
+                     help='port for controlling the pod, default a random port between [49152, 65535]')
     gp2.add_argument('--ctrl_with_ipc', action='store_true', default=False,
                      help='use ipc protocol for control socket')
     gp2.add_argument('--timeout', type=int, default=-1,

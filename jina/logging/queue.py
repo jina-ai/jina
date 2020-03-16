@@ -10,6 +10,8 @@ def clear_queue():
 
     This is only used when server-side event (SSE) logging is turned on.
     """
+    from . import default_logger
+    default_logger.info('releasing the log queue')
     while not __log_queue__.empty():
         __log_queue__.get_nowait()
 

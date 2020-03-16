@@ -20,6 +20,7 @@ __jina_env__ = ('JINA_PROFILING',
                 'JINA_SOCKET_HWM',
                 'JINA_ARRAY_QUANT')
 
+import random
 from types import SimpleNamespace
 import os
 
@@ -31,6 +32,8 @@ JINA_GLOBAL = SimpleNamespace()
 JINA_GLOBAL.imported = SimpleNamespace()
 JINA_GLOBAL.imported.executors = False
 JINA_GLOBAL.imported.drivers = False
+JINA_GLOBAL.stack = SimpleNamespace()
+JINA_GLOBAL.stack.id = random.randint(0, 10000)
 
 
 def import_classes(namespace: str, targets=None,
@@ -138,6 +141,7 @@ def import_classes(namespace: str, targets=None,
         JINA_GLOBAL.imported.executors = True
     elif namespace == 'jina.drivers':
         JINA_GLOBAL.imported.drivers = True
+
 
 # driver first, as executor may contain driver
 import_classes('jina.drivers', show_import_table=False, import_once=True)
