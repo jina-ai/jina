@@ -5,8 +5,8 @@ import unittest
 from multiprocessing import Process
 
 from jina.logging import get_logger
-from jina.main.parser import set_frontend_parser, set_pea_parser, set_pod_parser
-from jina.peapods.pod import FrontendPod, BasePod
+from jina.main.parser import set_gateway_parser, set_pea_parser, set_pod_parser
+from jina.peapods.pod import GatewayPod, BasePod
 from jina.peapods.remote import RemotePea, SpawnPodHelper, SpawnPeaHelper, SpawnDictPodHelper
 from tests import JinaTestCase
 
@@ -38,16 +38,16 @@ class MyTestCase(JinaTestCase):
         time.sleep(.1)
 
     def test_remote_pod(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pod_parser().parse_args(
             ['--host', 'localhost', '--replicas', '3',
              '--port_grpc', str(f_args.port_grpc)])
 
-        def start_frontend():
-            with FrontendPod(f_args):
+        def start_gateway():
+            with GatewayPod(f_args):
                 time.sleep(5)
 
-        t = Process(target=start_frontend)
+        t = Process(target=start_gateway)
         t.daemon = True
         t.start()
 
@@ -55,7 +55,7 @@ class MyTestCase(JinaTestCase):
         t.join()
 
     def test_remote_pod_process(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pod_parser().parse_args(
             ['--host', 'localhost', '--replicas', '3',
              '--port_grpc', str(f_args.port_grpc), '--runtime', 'process'])
@@ -63,7 +63,7 @@ class MyTestCase(JinaTestCase):
         def start_spawn():
             SpawnPodHelper(p_args).start()
 
-        with FrontendPod(f_args):
+        with GatewayPod(f_args):
             t = Process(target=start_spawn)
             t.daemon = True
             t.start()
@@ -71,11 +71,11 @@ class MyTestCase(JinaTestCase):
             time.sleep(5)
 
     def test_remote_two_pea(self):
-        # NOTE: right now there is no way to spawn two peas with one frontend!!!
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        # NOTE: right now there is no way to spawn two peas with one gateway!!!
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
 
-        def start_frontend():
-            with FrontendPod(f_args):
+        def start_gateway():
+            with GatewayPod(f_args):
                 time.sleep(5)
 
         def start_client(d):
@@ -84,7 +84,7 @@ class MyTestCase(JinaTestCase):
                 ['--host', 'localhost', '--name', 'testpea%d' % d, '--port_grpc', str(f_args.port_grpc)])
             SpawnPeaHelper(p_args).start()
 
-        t = Process(target=start_frontend)
+        t = Process(target=start_gateway)
         t.daemon = True
         t.start()
 
@@ -105,16 +105,16 @@ class MyTestCase(JinaTestCase):
         super().tearDown()
 
     def test_customized_pod(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pod_parser().parse_args(
             ['--host', 'localhost', '--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
         p = BasePod(p_args)
 
-        def start_frontend():
-            with FrontendPod(f_args):
+        def start_gateway():
+            with GatewayPod(f_args):
                 time.sleep(5)
 
-        t = Process(target=start_frontend)
+        t = Process(target=start_gateway)
         t.daemon = True
         t.start()
 
@@ -123,14 +123,14 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_remote_pea2(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
 
-        def start_frontend():
-            with FrontendPod(f_args):
+        def start_gateway():
+            with GatewayPod(f_args):
                 time.sleep(5)
 
-        t = Process(target=start_frontend)
+        t = Process(target=start_gateway)
         t.daemon = True
         t.start()
 
@@ -139,15 +139,15 @@ class MyTestCase(JinaTestCase):
         t.join()
 
     def test_remote_pea(self):
-        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
 
         p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
 
-        def start_frontend():
-            with FrontendPod(f_args):
+        def start_gateway():
+            with GatewayPod(f_args):
                 time.sleep(5)
 
-        t = Process(target=start_frontend)
+        t = Process(target=start_gateway)
         t.daemon = True
         t.start()
 

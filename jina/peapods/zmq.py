@@ -466,7 +466,7 @@ def _check_msg_version(msg: 'jina_pb2.Message'):
             # only happen in unittest
             default_logger.warning('incoming message contains empty "version.jina", '
                                    'you may ignore it in debug/unittest mode. '
-                                   'otherwise please check if frontend service set correct version')
+                                   'otherwise please check if gateway service set correct version')
         elif __version__ != msg.envelope.version.jina:
             raise MismatchedVersion('mismatched JINA version! '
                                     'incoming message has JINA version %s, whereas local JINA version %s' % (
@@ -476,7 +476,7 @@ def _check_msg_version(msg: 'jina_pb2.Message'):
             # only happen in unittest
             default_logger.warning('incoming message contains empty "version.proto", '
                                    'you may ignore it in debug/unittest mode. '
-                                   'otherwise please check if frontend service set correct version')
+                                   'otherwise please check if gateway service set correct version')
         elif __proto_version__ != msg.envelope.version.proto:
             raise MismatchedVersion('mismatched protobuf version! '
                                     'incoming message has protobuf version %s, whereas local protobuf version %s' % (
@@ -486,7 +486,7 @@ def _check_msg_version(msg: 'jina_pb2.Message'):
             default_logger.warning('incoming message contains empty "version.vcs", '
                                    'you may ignore it in debug/unittest mode, '
                                    'or if you run jina OUTSIDE docker container where JINA_VCS_VERSION is unset'
-                                   'otherwise please check if frontend service set correct version')
+                                   'otherwise please check if gateway service set correct version')
         elif os.environ.get('JINA_VCS_VERSION') != msg.envelope.version.vcs:
             raise MismatchedVersion('mismatched vcs version! '
                                     'incoming message has vcs_version %s, whereas local environment vcs_version is %s' % (
@@ -575,7 +575,7 @@ def remove_envelope(m: 'jina_pb2.Message') -> 'jina_pb2.Request':
     m.envelope.routes[0].end_time.GetCurrentTime()
     # if self.args.route_table:
     #     self.logger.info('route: %s' % router2str(m))
-    #     self.logger.info('route table: \n%s' % make_route_table(m.envelope.routes, include_frontend=True))
+    #     self.logger.info('route table: \n%s' % make_route_table(m.envelope.routes, include_gateway=True))
     # if self.args.dump_route:
     #     self.args.dump_route.write(MessageToJson(m.envelope, indent=0).replace('\n', '') + '\n')
     #     self.args.dump_route.flush()

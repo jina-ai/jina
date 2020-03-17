@@ -5,12 +5,12 @@ from queue import Empty
 from typing import Set, Dict, List, Callable, Union
 
 from . import Pea
-from .frontend import FrontendPea
+from .gateway import GatewayPea
 from .pea import BasePea
 from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, random_identity, kwargs2list
-from ..main.parser import set_pod_parser, set_frontend_parser
+from ..main.parser import set_pod_parser, set_gateway_parser
 
 
 class BasePod:
@@ -248,8 +248,8 @@ class FlowPod(BasePod):
         self.recv_from = recv_from if recv_from else set()  #: used in the :class:`jina.flow.Flow` to build the graph
 
     def to_cli_command(self):
-        if isinstance(self, FrontendPod):
-            cmd = 'jina frontend'
+        if isinstance(self, GatewayPod):
+            cmd = 'jina gateway'
         else:
             cmd = 'jina pod'
 
@@ -414,19 +414,19 @@ def _fill_in_host(bind_args, connect_args):
         return bind_args.host
 
 
-class FrontendPod(BasePod):
-    """A :class:`BasePod` that holds a Frontend """
+class GatewayPod(BasePod):
+    """A :class:`BasePod` that holds a Gateway """
 
     def start(self):
         self.stack = ExitStack()
         for s in self.all_args:
-            p = FrontendPea(s)
+            p = GatewayPea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
 
 
-class FrontendFlowPod(FrontendPod, FlowPod):
-    """A :class:`FlowPod` that holds a Frontend """
+class GatewayFlowPod(GatewayPod, FlowPod):
+    """A :class:`FlowPod` that holds a Gateway """
 
     def __init__(self, kwargs: Dict = None):
-        FlowPod.__init__(self, kwargs, parser=set_frontend_parser)
+        FlowPod.__init__(self, kwargs, parser=set_gateway_parser)

@@ -9,7 +9,7 @@ Command-Line Interface
    jina-pea
    jina-flow
    jina-client
-   jina-frontend
+   jina-gateway
 
 
 .. toctree::

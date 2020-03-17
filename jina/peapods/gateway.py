@@ -14,7 +14,7 @@ from ..main.parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
 
 
-class FrontendPea:
+class GatewayPea:
 
     def __init__(self, args):
         if not args.proxy and os.name != 'nt':
@@ -26,7 +26,7 @@ class FrontendPea:
             options=[('grpc.max_send_message_length', args.max_message_size),
                      ('grpc.max_receive_message_length', args.max_message_size)])
         if args.allow_spawn:
-            self.logger.warning('SECURITY ALERT! this frontend allows SpawnRequest from remote Jina')
+            self.logger.warning('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')
 
         self.p_servicer = self._Pea(args, self.logger)
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.p_servicer, self.server)
@@ -72,21 +72,21 @@ class FrontendPea:
             try:
                 return self.executor(msg.__class__.__name__)
             except WaitPendingMessage:
-                self.logger.error('frontend should not receive partial message, it can not do reduce')
+                self.logger.error('gateway should not receive partial message, it can not do reduce')
             except EventLoopEnd:
-                self.logger.error('event loop end signal should not be raised in the frontend')
+                self.logger.error('event loop end signal should not be raised in the gateway')
             except NoDriverForRequest:
                 # remove envelope and send back the request
                 return msg.request
 
         async def Call(self, request_iterator, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
-                # this restricts the frontend can not be the joiner to wait
+                # this restricts the gateway can not be the joiner to wait
                 # as every request corresponds to one message, #send_message = #recv_message
                 send_tasks, recv_tasks = zip(
                     *[(asyncio.create_task(
                         zmqlet.send_message(
-                            add_envelope(request, 'frontend', zmqlet.args.identity),
+                            add_envelope(request, 'gateway', zmqlet.args.identity),
                             sleep=(self.args.sleep_ms / 1000) * idx, )),
                        zmqlet.recv_message(callback=self.recv_callback))
                         for idx, request in enumerate(request_iterator)])
@@ -125,7 +125,7 @@ class FrontendPea:
                         yield request
                 self.peapods.remove(p)
             else:
-                warn_msg = f'the frontend at {self.args.host}:{self.args.port_grpc} ' \
+                warn_msg = f'the gateway at {self.args.host}:{self.args.port_grpc} ' \
                            f'does not support remote spawn, please restart it with --allow_spawn'
                 request.log_record = warn_msg
                 request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED

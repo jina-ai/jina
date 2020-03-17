@@ -3,8 +3,8 @@ import time
 import unittest
 
 from jina.logging import get_logger
-from jina.main.parser import set_frontend_parser, set_pea_parser
-from jina.peapods.pod import FrontendPod
+from jina.main.parser import set_gateway_parser, set_pea_parser
+from jina.peapods.pod import GatewayPod
 from jina.peapods.remote import SpawnPeaHelper
 from tests import JinaTestCase
 
@@ -40,19 +40,19 @@ class MyTestCase(JinaTestCase):
         super().tearDown()
 
     def test_remote_not_allowed(self):
-        f_args = set_frontend_parser().parse_args([])
+        f_args = set_gateway_parser().parse_args([])
 
         p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
-        with FrontendPod(f_args):
+        with GatewayPod(f_args):
             SpawnPeaHelper(p_args).start()
 
-    def test_cont_frontend(self):
-        f1_args = set_frontend_parser().parse_args(['--allow_spawn'])
-        f2_args = set_frontend_parser().parse_args([])
-        with FrontendPod(f1_args):
+    def test_cont_gateway(self):
+        f1_args = set_gateway_parser().parse_args(['--allow_spawn'])
+        f2_args = set_gateway_parser().parse_args([])
+        with GatewayPod(f1_args):
             pass
 
-        with FrontendPod(f2_args):
+        with GatewayPod(f2_args):
             pass
 
 

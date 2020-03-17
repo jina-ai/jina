@@ -55,7 +55,7 @@ class MyTestCase(JinaTestCase):
     @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_two_client_route_replicas(self):
         f1 = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='route', replicas=3)
-        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_FRONTEND).add(yaml_path='route', replicas=3)
+        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='route', replicas=3)
         f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='route', replicas=3)
 
         def start_client(fl):
