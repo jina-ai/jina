@@ -47,9 +47,11 @@ def set_base_parser():
                                  ruamel.yaml.__version__),
                         help='show version and crucial dependants, environment variables')
     gp1 = add_arg_group(parser, 'logging arguments')
-    gp1.add_argument('--sse', action='store_true', default=False,
+    gp1.add_argument('--log_sse', action='store_true', default=False,
                      help='turn on server-side event logging')
-    gp1.add_argument('--profiling', action='store_true', default=False,
+    gp1.add_argument('--log_remote', action='store_true', default=False,
+                     help='turn on remote logging')
+    gp1.add_argument('--log_profile', action='store_true', default=False,
                      help='turn on the profiling logger')
     return parser
 

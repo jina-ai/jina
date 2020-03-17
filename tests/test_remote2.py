@@ -40,7 +40,8 @@ class MyTestCase(JinaTestCase):
     def test_remote_pod(self):
         f_args = set_frontend_parser().parse_args(['--allow_spawn'])
         p_args = set_pod_parser().parse_args(
-            ['--host', 'localhost', '--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
+            ['--host', 'localhost', '--replicas', '3',
+             '--port_grpc', str(f_args.port_grpc)])
 
         def start_frontend():
             with FrontendPod(f_args):
@@ -52,6 +53,22 @@ class MyTestCase(JinaTestCase):
 
         SpawnPodHelper(p_args).start()
         t.join()
+
+    def test_remote_pod_process(self):
+        f_args = set_frontend_parser().parse_args(['--allow_spawn'])
+        p_args = set_pod_parser().parse_args(
+            ['--host', 'localhost', '--replicas', '3',
+             '--port_grpc', str(f_args.port_grpc), '--runtime', 'process'])
+
+        def start_spawn():
+            SpawnPodHelper(p_args).start()
+
+        with FrontendPod(f_args):
+            t = Process(target=start_spawn)
+            t.daemon = True
+            t.start()
+
+            time.sleep(5)
 
     def test_remote_two_pea(self):
         # NOTE: right now there is no way to spawn two peas with one frontend!!!

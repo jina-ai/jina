@@ -23,6 +23,15 @@ __jina_env__ = ('JINA_PROFILING',
 import random
 from types import SimpleNamespace
 import os
+import sys
+import platform
+
+if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
+    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
+    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+    import multiprocessing
+
+    mp = multiprocessing.get_context('fork')
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'

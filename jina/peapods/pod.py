@@ -1,6 +1,7 @@
 import argparse
 import copy
 from contextlib import ExitStack
+from queue import Empty
 from typing import Set, Dict, List, Callable, Union
 
 from . import Pea
@@ -180,13 +181,16 @@ class BasePod:
             The log may not strictly follow the time order given that we are polling the log
             from all peas in the sequential manner.
         """
-        while True:
-            if all(p.is_shutdown.is_set() for p in self.peas):
-                break
+        from ..logging.queue import __log_queue__
+        while not self.is_shutdown:
+            try:
+                yield __log_queue__.get_nowait()
+            except Empty:
+                pass
 
-            for p in self.peas:
-                if not p.is_shutdown.is_set():
-                    yield from p.last_log_record
+    @property
+    def is_shutdown(self) -> bool:
+        return all(p.is_shutdown.is_set() for p in self.peas)
 
     def __enter__(self):
         self.start()

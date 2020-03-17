@@ -129,7 +129,9 @@ class NTLogger:
 
 
 def get_logger(context: str, context_len: int = 10,
-               profiling: bool = False, sse: bool = False,
+               log_profile: bool = False,
+               log_sse: bool = False,
+               log_remote: bool = False,
                fmt_str: str = None,
                event_trigger=None,
                **kwargs) -> Union['logging.Logger', 'NTLogger']:
@@ -137,8 +139,8 @@ def get_logger(context: str, context_len: int = 10,
 
     :param context: the name prefix of the log
     :param context_len: length of the context, i.e. module, function, line number
-    :param profiling: is this logger for profiling
-    :param sse: is this logger used for server-side event
+    :param log_profile: is this logger for profiling
+    :param log_sse: is this logger used for server-side event
     :return: the configured logger
 
     .. note::
@@ -146,7 +148,7 @@ def get_logger(context: str, context_len: int = 10,
 
     """
     from .. import __uptime__
-    from .queue import __log_queue__, __profile_queue__
+    from .queue import __sse_queue__, __profile_queue__, __log_queue__
     if not fmt_str:
         fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
                   f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
@@ -173,18 +175,24 @@ def get_logger(context: str, context_len: int = 10,
         event_handler.setFormatter(ColorFormatter(fmt_str))
         logger.addHandler(event_handler)
 
-    if sse:
+    if log_remote:
         queue_handler = QueueHandler(__log_queue__)
+        queue_handler.setLevel(verbose_level.value)
+        queue_handler.setFormatter(ColorFormatter(fmt_str))
+        logger.addHandler(queue_handler)
+
+    if log_sse:
+        queue_handler = QueueHandler(__sse_queue__)
         queue_handler.setLevel(verbose_level.value)
         queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
         logger.addHandler(queue_handler)
 
-    if profiling:
+    if log_profile:
         file_handler = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
         file_handler.setFormatter(ProfileFormatter(timed_fmt_str))
         logger.addHandler(file_handler)
 
-        if sse:
+        if log_sse:
             queue_handler = QueueHandler(__profile_queue__)
             queue_handler.setLevel(verbose_level.value)
             queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
