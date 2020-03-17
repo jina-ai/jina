@@ -224,6 +224,7 @@ def deregister_all_ports(stack_id: int = JINA_GLOBAL.stack.id):
 
 def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id):
     config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
+    _all = None
     if os.path.exists(config_path):
         with open(config_path) as fp:
             _all = yaml.load(fp)
