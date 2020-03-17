@@ -119,7 +119,6 @@ class MyTestCase(JinaTestCase):
         t.start()
 
         SpawnDictPodHelper(p.peas_args).start()
-        t.join()
 
     @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_remote_pea2(self):

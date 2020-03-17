@@ -19,7 +19,7 @@ class SpawnPeaHelper(GrpcClient):
         super().__init__(args)
         self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.args = args
-        self.timeout_shutdown = args.timeout_ctrl
+        self.timeout_shutdown = 10
         self.callback_on_first = True
         self.args.log_remote = False
         self._remote_logger = get_logger('🌏', **vars(self.args), fmt_str='🌏 %(message)s')
@@ -79,7 +79,7 @@ class SpawnDictPodHelper(SpawnPodHelper):
                     inited = True
                 for kk in k:
                     kk.log_remote = True
-                    self.all_ctrl_addr.append(Zmqlet.get_ctrl_address(kk))
+                    self.all_ctrl_addr.append(Zmqlet.get_ctrl_address(kk)[0])
         self.args = peas_args
 
     def call(self, set_ready: Callable = None):
