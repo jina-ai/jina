@@ -12,14 +12,14 @@ class MyTestCase(JinaTestCase):
     @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
     def test_encoding_results(self):
         encoder = XCeptionPaddleImageEncoder()
-        test_data = np.random.randint(0, 255, size=(2, 224, 224, 3))
+        test_data = np.random.rand(2, 3, 224, 224)
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape, (2, 2048))
 
     @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
     def test_save_and_load(self):
         encoder = XCeptionPaddleImageEncoder()
-        test_data = np.random.randint(0, 255, size=(2, 224, 224, 3))
+        test_data = np.random.rand(2, 3, 224, 224)
         encoded_data_control = encoder.encode(test_data)
         encoder.touch()
         encoder.save()
