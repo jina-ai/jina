@@ -16,7 +16,7 @@ __jina_env__ = ('JINA_PROFILING',
                 'JINA_CONTROL_PORT',
                 'JINA_CONTRIB_MODULE',
                 'JINA_IPC_SOCK_TMP',
-                'JINA_LOG_FORMAT',
+                'JINA_LOG_FILE',
                 'JINA_SOCKET_HWM',
                 'JINA_ARRAY_QUANT')
 

@@ -1,6 +1,5 @@
 import os
 import time
-import unittest
 
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
@@ -36,7 +35,7 @@ def build_image():
         client.close()
 
 
-@unittest.skipIf(os.getenv('JINA_TEST_CONTAINER', False), 'skip the container test if not set')
+# @unittest.skipUnless(os.getenv('JINA_TEST_CONTAINER', False), 'skip the container test if not set')
 class MyTestCase(JinaTestCase):
 
     def tearDown(self) -> None:

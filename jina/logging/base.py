@@ -144,18 +144,22 @@ def get_logger(context: str, context_len: int = 10,
     :return: the configured logger
 
     .. note::
-        One can change the verbosity of jina logger via the environment variable ``JINA_VERBOSITY``
+        One can change the verbosity of jina logger via the environment variable ``JINA_LOG_VERBOSITY``
 
     """
     from .. import __uptime__
     from .queue import __sse_queue__, __profile_queue__, __log_queue__
     if not fmt_str:
-        fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
-                  f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
+        if os.environ.get('JINA_LOG_FORMAT', 'SHORT') == 'LONG':
+            fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
+                      f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
+        else:
+            fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
+                      f'[%(levelname).1s]:%(message)s'
 
     timed_fmt_str = f'%(asctime)s:' + fmt_str
 
-    verbose_level = LogVerbosity.from_string(os.environ.get('JINA_VERBOSITY', 'INFO'))
+    verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
 
     if os.name == 'nt':  # for Windows
         return NTLogger(context, verbose_level)
@@ -198,11 +202,11 @@ def get_logger(context: str, context_len: int = 10,
             queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
             logger.addHandler(queue_handler)
 
-    if os.environ.get('JINA_LOG_FORMAT') == 'TXT':
+    if os.environ.get('JINA_LOG_FILE') == 'TXT':
         file_handler = logging.FileHandler('jina-%s.log' % __uptime__, delay=True)
         file_handler.setFormatter(PlainFormatter(timed_fmt_str))
         logger.addHandler(file_handler)
-    elif os.environ.get('JINA_LOG_FORMAT') == 'JSON':
+    elif os.environ.get('JINA_LOG_FILE') == 'JSON':
         file_handler = logging.FileHandler('jina-%s.json' % __uptime__, delay=True)
         file_handler.setFormatter(JsonFormatter(timed_fmt_str))
         logger.addHandler(file_handler)

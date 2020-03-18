@@ -10,9 +10,9 @@ Jina is *the* cloud-native semantic search solution powered by the state-of-the-
 
 ## Getting Started
 
-The simplest way to run Jina is via the docker container.  
+The simplest way to run Jina is via the Docker container.  
 
-### Run with docker image
+### Run within a Docker Container
 
 ```bash
 docker run jinaai/jina:master-debian
@@ -22,6 +22,8 @@ This command downloads the latest Jina image from [Docker Hub](https://hub.docke
 
 <details>
  <summary>Other Jina docker image mirrors: (click to expand...)</summary>
+
+🚨 We have stopped updating these two registries. They are just listed here for reference and they will be deleted anytime soon.
 
 #### Github Package (Do not support multiarch)
 
@@ -36,29 +38,29 @@ docker run docker.pkg.github.com/jina-ai/jina/jina:[tag]
 docker login -u USERNAME -p TOKEN ccr.ccs.tencentyun.com
 docker run ccr.ccs.tencentyun.com/jina/jina:[tag]
 ```
-
-
 </details>
 
+### Run without Docker
 
-If you want to run Jina without Docker, please make sure you have Python 3.7 installed. 
+If you prefer the classic way to run Jina without Docker, please make sure you have Python 3.7 installed on the host. 
+
 If you are using `pyenv` for controlling the Python virtual environment, make sure the Jina codebase is covered by `pyenv local 3.7.x`
 
-### Install from PyPi
+#### Install from PyPi
  
 ```bash
 pip install jina
 jina --help
 ```
 
-### Install from this Git repository
+#### Install from This Git Repository
 
 ```bash
 pip install git+https://github.com/jina-ai/jina.git
 jina --help
 ```
 
-### (Dev mode) Install from your local folk/clone 
+#### (Dev mode) Install from Your Local Folk/Clone 
 
 For developers who want to edit the project’s code and test the changes on-the-fly, 
 
@@ -84,7 +86,7 @@ To build the documentation locally, you need to have Docker installed. Clone thi
 bash ./make-doc.sh serve 8080
 ```
 
-The documentation is now available via browser at `http://0.0.0.0:8080/`.
+The documentation is then available via browser at `http://0.0.0.0:8080/`.
 
 ## License
 
