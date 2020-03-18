@@ -47,9 +47,11 @@ def set_base_parser():
                                  ruamel.yaml.__version__),
                         help='show version and crucial dependants, environment variables')
     gp1 = add_arg_group(parser, 'logging arguments')
-    gp1.add_argument('--sse', action='store_true', default=False,
+    gp1.add_argument('--log_sse', action='store_true', default=False,
                      help='turn on server-side event logging')
-    gp1.add_argument('--profiling', action='store_true', default=False,
+    gp1.add_argument('--log_remote', action='store_true', default=False,
+                     help='turn on remote logging')
+    gp1.add_argument('--log_profile', action='store_true', default=False,
                      help='turn on the profiling logger')
     return parser
 
@@ -64,7 +66,6 @@ def set_logger_parser(parser=None):
                         default=5,
                         help='refresh time interval in seconds, set to -1 to persist all grouped logs')
     return parser
-
 
 def set_flow_parser(parser=None):
     if not parser:
@@ -117,9 +118,9 @@ def set_pea_parser(parser=None):
 
     gp2 = add_arg_group(parser, 'pea network arguments')
     gp2.add_argument('--port_in', type=int, default=random_port(),
-                     help='port for input data, default a random port between [49152, 65536]')
+                     help='port for input data, default a random port between [49152, 65535]')
     gp2.add_argument('--port_out', type=int, default=random_port(),
-                     help='port for output data, default a random port between [49152, 65536]')
+                     help='port for output data, default a random port between [49152, 65535]')
     gp2.add_argument('--host_in', type=str, default=__default_host__,
                      help='host address for input, by default it is %s' % __default_host__)
     gp2.add_argument('--host_out', type=str, default=__default_host__,
@@ -131,7 +132,7 @@ def set_pea_parser(parser=None):
                      default=SocketType.PUSH_BIND,
                      help='socket type for output port')
     gp2.add_argument('--port_ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', random_port()),
-                     help='port for controlling the pod, default a random port between [49152, 65536]')
+                     help='port for controlling the pod, default a random port between [49152, 65535]')
     gp2.add_argument('--ctrl_with_ipc', action='store_true', default=False,
                      help='use ipc protocol for control socket')
     gp2.add_argument('--timeout', type=int, default=-1,
@@ -218,11 +219,11 @@ def _set_grpc_parser(parser=None):
     from .. import __default_host__
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
-                     help='host address of the pea/frontend, by default it is %s.' % __default_host__)
+                     help='host address of the pea/gateway, by default it is %s.' % __default_host__)
     gp1.add_argument('--port_grpc',
                      type=int,
                      default=random_port(),
-                     help='host port of the grpc frontend')
+                     help='host port of the grpc gateway')
     gp1.add_argument('--max_message_size', type=int, default=-1,
                      help='maximum send and receive size for grpc server in bytes, -1 means unlimited')
     gp1.add_argument('--proxy', action='store_true', default=False,
@@ -257,20 +258,20 @@ def _set_grpc_parser(parser=None):
 #     return parser
 
 
-def set_frontend_parser(parser=None):
+def set_gateway_parser(parser=None):
     from ..enums import SocketType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
 
-    gp1 = add_arg_group(parser, 'frontend arguments')
-    gp1.set_defaults(name='frontend',
+    gp1 = add_arg_group(parser, 'gateway arguments')
+    gp1.set_defaults(name='gateway',
                      socket_in=SocketType.PULL_CONNECT,  # otherwise there can be only one client at a time
                      socket_out=SocketType.PUSH_CONNECT,
                      ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                      read_only=True)
     gp1.add_argument('--sleep_ms', type=int, default=50,
-                     help='the sleep interval (ms) to control the frontend sending speed. '
+                     help='the sleep interval (ms) to control the gateway sending speed. '
                           'Note, sleep_ms=0 may result in bad load-balancing as all workload are pushed to one worker')
     gp1.add_argument('--allow_spawn', action='store_true', default=False,
                      help='accept the spawn requests sent from other remote Jina')
@@ -320,9 +321,9 @@ def get_main_parser():
     # cli
     set_pod_parser(sp.add_parser('pod', help='start a pod', formatter_class=_chf))
     set_pea_parser(sp.add_parser('pea', help='start a pea', formatter_class=_chf))
-    set_frontend_parser(sp.add_parser('frontend', help='start a frontend pod', formatter_class=_chf))
+    set_gateway_parser(sp.add_parser('gateway', help='start a gateway pod', formatter_class=_chf))
     set_client_cli_parser(
-        sp.add_parser('client', help='start a client and connect it to a frontend', formatter_class=_chf))
+        sp.add_parser('client', help='start a client and connect it to a gateway', formatter_class=_chf))
     set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 

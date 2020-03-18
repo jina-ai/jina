@@ -81,9 +81,9 @@ class BadRequestType(Exception):
     """Bad request type and the pod does not know how to handle """
 
 
-class GRPCFrontendError(Exception):
-    """Some bad thing happens in the grpc frontend side"""
+class GRPCGatewayError(Exception):
+    """Some bad thing happens in the grpc gateway side"""
 
 
 class GRPCServerError(Exception):
-    """Can not connect to the grpc frontend"""
+    """Can not connect to the grpc gateway"""

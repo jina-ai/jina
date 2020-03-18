@@ -12,7 +12,7 @@ if False:
 
 
 class PyClient(GrpcClient):
-    """A simple Python client for connecting to the frontend """
+    """A simple Python client for connecting to the gateway """
 
     def __init__(self, args: 'argparse.Namespace'):
         """

@@ -12,10 +12,10 @@ def pea(args):
         p.join()
 
 
-def frontend(args):
-    """Start a frontend"""
-    from ..peapods.pod import FrontendPod
-    with FrontendPod(args) as fs:
+def gateway(args):
+    """Start a gateway"""
+    from ..peapods.pod import GatewayPod
+    with GatewayPod(args) as fs:
         fs.join()
 
 
@@ -37,7 +37,7 @@ def ping(args):
 
 
 def client(args):
-    """Start a client connects to the frontend"""
+    """Start a client connects to the gateway"""
     from ..clients.python import PyClient
     PyClient(args)
 

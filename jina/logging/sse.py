@@ -1,7 +1,7 @@
 import logging
 import os
 
-from .queue import __log_queue__, __profile_queue__
+from .queue import __sse_queue__, __profile_queue__
 
 
 def start_sse_logger(host: str = '127.0.0.1', port: int = 5000):
@@ -57,7 +57,7 @@ def start_sse_logger(host: str = '127.0.0.1', port: int = 5000):
 def _log_stream():
     while True:
         try:
-            message = __log_queue__.get()
+            message = __sse_queue__.get()
             yield 'data: {}\n\n'.format(message.msg)
         except EOFError:
             yield 'LOG ENDS\n\n'

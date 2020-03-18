@@ -4,6 +4,7 @@ import threading
 import time
 from collections import defaultdict
 from pathlib import Path
+from queue import Empty
 from typing import Dict, List
 
 from .zmq import send_ctrl_message, Zmqlet
@@ -19,10 +20,6 @@ from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea', 'ContainerPea']
-
-# temporary fix for python 3.8 on macos where the default start is set to "spawn"
-# https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
-_mp = multiprocessing.get_context('fork')
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -45,7 +42,7 @@ class PeaMeta(type):
         # switch to the new backend
         _cls = {
             'thread': threading.Thread,
-            'process': _mp.Process
+            'process': multiprocessing.Process
         }[args[0].runtime]
 
         # rebuild the class according to mro
@@ -61,8 +58,8 @@ class PeaMeta(type):
 def _get_event(obj):
     if isinstance(obj, threading.Thread):
         return threading.Event()
-    elif isinstance(obj, _mp.Process):
-        return _mp.Event()
+    elif isinstance(obj, multiprocessing.Process):
+        return multiprocessing.Event()
     else:
         raise NotImplementedError
 
@@ -165,15 +162,12 @@ class BasePea(metaclass=PeaMeta):
     @property
     def log_iterator(self):
         """Get the last log using iterator """
+        from ..logging.queue import __log_queue__
         while not self.is_shutdown.is_set():
-            yield from self.last_log_record
-
-    @property
-    def last_log_record(self):
-        """Yield the last log record if exist """
-        if self.log_event.wait(.0001):
-            yield self.log_event.record
-            self.log_event.clear()
+            try:
+                yield __log_queue__.get_nowait()
+            except Empty:
+                pass
 
     def join(self):
         try:
@@ -233,7 +227,7 @@ class BasePea(metaclass=PeaMeta):
         msg.envelope.routes[-1].end_time.GetCurrentTime()
         return self
 
-    def set_ready(self):
+    def set_ready(self, *args, **kwargs):
         """Set the status of the pea to ready """
         self.is_ready.set()
         self.is_event_loop.set()
@@ -317,7 +311,7 @@ class BasePea(metaclass=PeaMeta):
         """Gracefully close this pea and release all resources """
         if self.is_event_loop.is_set():
             r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                  timeout=self.args.timeout)
+                                  timeout=self.args.timeout_ctrl)
             self.is_shutdown.wait()
             return r
 

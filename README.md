@@ -5,7 +5,7 @@
 ![Docs Build](https://github.com/jina-ai/jina/workflows/Docs%20Build/badge.svg?branch=master)
 
 
-Jina is *the* cloud-native semantic search solution powered by SOTA AI technology.
+Jina is *the* cloud-native semantic search solution powered by the state-of-the-art AI technology.
 
 
 ## Getting Started
@@ -77,12 +77,14 @@ pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
   
 ## Documentation 
 
+Documentation is built by Sphinx triggered by the push, merge, and release event on the master branch. The generated docs are available at https://github.com/jina-ai/jina-docs
+ 
 To build the documentation locally, you need to have Docker installed. Clone this repository and run the following command: 
 ```bash
-bash ./make-doc.sh 8080
+bash ./make-doc.sh serve 8080
 ```
 
-The documentation is now available at `http://0.0.0.0:8080/`.  Removing `8080` from the arguments if you do not want to view generated docs in the browser. 
+The documentation is now available via browser at `http://0.0.0.0:8080/`.
 
 ## License
 

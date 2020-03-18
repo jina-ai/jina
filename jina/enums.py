@@ -48,7 +48,7 @@ class ReplicaType(BetterEnum):
 class FlowOptimizeLevel(BetterEnum):
     """The level of flow optimization """
     NONE = 0
-    IGNORE_FRONTEND = 1
+    IGNORE_GATEWAY = 1
     FULL = 2
 
 

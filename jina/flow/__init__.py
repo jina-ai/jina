@@ -13,7 +13,7 @@ from ..helper import yaml, expand_env_var, kwargs2list
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..main.parser import set_pod_parser
-from ..peapods.pod import SocketType, FlowPod, FrontendFlowPod
+from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
 
 if False:
     from ..proto import jina_pb2
@@ -64,8 +64,8 @@ class Flow:
 
         :param driver_yaml_path: the file path of the driver map
         :param sse_logger: to enable the server-side event logger or not
-        :param optimize_level: removing redundant routers from the flow. Note, this may change the frontend zmq socket to BIND
-                            and hence not allow multiple clients connected to the frontend at the same time.
+        :param optimize_level: removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND
+                            and hence not allow multiple clients connected to the gateway at the same time.
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
 
 
@@ -79,7 +79,7 @@ class Flow:
             f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='route', replicas=3)
 
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
-        will generate 4 Peas, but it will force the :class:`FrontendPea` to take BIND role,
+        will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
         as the head and tail routers are removed.
         """
         self.logger = get_logger(self.__class__.__name__)
@@ -93,7 +93,7 @@ class Flow:
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = []
-        self._add_frontend()
+        self._add_gateway()
 
     @classmethod
     def to_yaml(cls, representer, data):
@@ -205,12 +205,12 @@ class Flow:
 
         return op_flow
 
-    def _add_frontend(self, **kwargs):
-        pod_name = 'frontend'
+    def _add_gateway(self, **kwargs):
+        pod_name = 'gateway'
 
         kwargs.update(self._common_kwargs)
-        kwargs['name'] = 'frontend'
-        self._pod_nodes[pod_name] = FrontendFlowPod(kwargs)
+        kwargs['name'] = 'gateway'
+        self._pod_nodes[pod_name] = GatewayFlowPod(kwargs)
 
         self.set_last_pod(pod_name, False)
 
@@ -239,9 +239,9 @@ class Flow:
         :py:meth:`add_router`, :py:meth:`add_indexer` whenever possible.
 
         :param recv_from: the name of the pod(s) that this pod receives data from.
-                           One can also use 'pod.Frontend' to indicate the connection with the frontend.
+                           One can also use 'pod.Gateway' to indicate the connection with the gateway.
         :param send_to:  the name of the pod(s) that this pod sends data to.
-                           One can also use 'pod.Frontend' to indicate the connection wisth the frontend.
+                           One can also use 'pod.Gateway' to indicate the connection wisth the gateway.
         :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the pod CLI supports
         :return: a (new) flow object with modification
@@ -304,7 +304,7 @@ class Flow:
             raise FlowTopologyError('flow is empty?')
 
         # close the loop
-        op_flow._pod_nodes['frontend'].recv_from = {op_flow._last_changed_pod[-1]}
+        op_flow._pod_nodes['gateway'].recv_from = {op_flow._last_changed_pod[-1]}
 
         # direct all income peas' output to the current service
         for k, p in op_flow._pod_nodes.items():
@@ -342,19 +342,19 @@ class Flow:
                 FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
             elif len(edges_with_same_start) == 1 and len(edges_with_same_end) == 1:
                 # in this case, either side can be BIND
-                # we prefer frontend to be always CONNECT so that multiple clients can connect to it
-                # check if either node is frontend
-                # this is the only place where frontend appears
-                if s_name == 'frontend':
-                    if self.optimize_level > FlowOptimizeLevel.IGNORE_FRONTEND and e_pod.is_head_router:
-                        # connect frontend directly to peas
+                # we prefer gateway to be always CONNECT so that multiple clients can connect to it
+                # check if either node is gateway
+                # this is the only place where gateway appears
+                if s_name == 'gateway':
+                    if self.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and e_pod.is_head_router:
+                        # connect gateway directly to peas
                         e_pod.connect_to_tail_of(s_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
-                elif e_name == 'frontend':
-                    if self.optimize_level > FlowOptimizeLevel.IGNORE_FRONTEND and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
-                        # connect frontend directly to peas only if this is unblock router
-                        # as frontend can not block & reduce message
+                elif e_name == 'gateway':
+                    if self.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                        # connect gateway directly to peas only if this is unblock router
+                        # as gateway can not block & reduce message
                         s_pod.connect_to_head_of(e_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
@@ -454,8 +454,8 @@ class Flow:
         from ..clients.python import PyClient
 
         _, p_args, _ = self._get_parsed_args(self, PyClient.__name__, kwargs, parser=set_client_cli_parser)
-        p_args.port_grpc = self._pod_nodes['frontend'].port_grpc
-        p_args.host = self._pod_nodes['frontend'].host
+        p_args.port_grpc = self._pod_nodes['gateway'].port_grpc
+        p_args.host = self._pod_nodes['gateway'].host
         c = PyClient(p_args)
         if bytes_gen:
             c.raw_bytes = bytes_gen
