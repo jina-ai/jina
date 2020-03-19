@@ -55,8 +55,6 @@ class XCeptionPaddleImageEncoder(BaseImageEncoder):
         """
         super().__init__(*args, **kwargs)
         self.model_name = model_name
-        self.inputs_name = ''
-        self.outputs_name = ''
 
     def post_init(self):
         import paddlehub as hub
@@ -65,10 +63,8 @@ class XCeptionPaddleImageEncoder(BaseImageEncoder):
         inputs, outputs, self.model = module.context(trainable=False)
         self.inputs_name = inputs['image'].name
         self.outputs_name = outputs['feature_map'].name
-        if self.model_name.startswith('vgg'):
-            self.outputs_name = '@HUB_vgg11_imagenet@fc_1.tmp_2'
-        elif self.model_name.startswith('alexnet'):
-            self.outputs_name = '@HUB_alexnet_imagenet@fc_1.tmp_2'
+        if self.model_name.startswith('vgg') or self.model_name.startswith('alexnet'):
+            self.outputs_name = '@HUB_{}@fc_1.tmp_2'.format(self.model_name)
         place = fluid.CUDAPlace(int(os.getenv('FLAGS_selected_gpus', '0'))) if self.on_gpu else fluid.CPUPlace()
         self.exe = fluid.Executor(place)
 
