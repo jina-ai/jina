@@ -8,7 +8,7 @@ class PaddlehubImageEncoder(BaseImageEncoder):
     """
     :class:`PaddlehubImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
-    Internally, :class:`PaddlehubImageEncoder` wraps the XCeption module from paddlehub.
+    Internally, :class:`PaddlehubImageEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
     def __init__(self, model_name='xception71_imagenet', *args, **kwargs):
