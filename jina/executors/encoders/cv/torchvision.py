@@ -36,9 +36,8 @@ class TorchImageEncoder(BaseImageEncoder):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.pool_strategy = pool_strategy
-        if pool_strategy not in ("mean", "max", None):
-            self.logger.error("unknown pool_strategy: {}".format(self.pool_strategy))
-            raise NotImplementedError
+        if pool_strategy not in ('mean', 'max', None):
+            raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
 
     def post_init(self):
         import torchvision.models as models
