@@ -141,6 +141,9 @@ def get_logger(context: str, context_len: int = 10,
     :param context_len: length of the context, i.e. module, function, line number
     :param log_profile: is this logger for profiling
     :param log_sse: is this logger used for server-side event
+    :param log_remote: is this logger for remote logging
+    :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_FORMAT`` environment variable
+    :param event_trigger: a ``threading.Event`` or ``multiprocessing.Event`` for event-based logger
     :return: the configured logger
 
     .. note::

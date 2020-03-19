@@ -6,7 +6,24 @@ __version__ = '0.0.1'
 # this is managed by proto/build-proto.sh and updated on every execution
 __proto_version__ = '0.0.13'
 
+import platform
+import sys
+
+# do some os-wise patches
+if sys.version_info < (3, 7, 0):
+    raise OSError('Jina requires Python 3.7 and above, but yours is %s' % sys.version_info)
+
+if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
+    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
+    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+    import multiprocessing
+
+    mp = multiprocessing.get_context('fork')
+
 from datetime import datetime
+import random
+from types import SimpleNamespace
+import os
 
 __uptime__ = datetime.now().strftime('%Y%m%d%H%M%S')
 
@@ -19,19 +36,6 @@ __jina_env__ = ('JINA_PROFILING',
                 'JINA_LOG_FILE',
                 'JINA_SOCKET_HWM',
                 'JINA_ARRAY_QUANT')
-
-import random
-from types import SimpleNamespace
-import os
-import sys
-import platform
-
-if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
-    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
-    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
-    import multiprocessing
-
-    mp = multiprocessing.get_context('fork')
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'

@@ -174,9 +174,11 @@ class CompoundExecutor(BaseExecutor):
 
         It uses ``pickle`` for dumping.
         """
+
         for c in self.components:
             c.save()
         super().save()
+        return True
 
     @property
     def components(self) -> List[AnyExecutor]:
