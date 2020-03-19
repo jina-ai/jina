@@ -26,6 +26,7 @@ class ImageNormalizer(BaseSegmenter):
         :param resize_dim: the size of images' height and width to resized to. The images are resized before cropping to
             the output size
         """
+        super().__init__()
         self.output_dim = output_dim
         self.img_mean = np.array(img_mean).reshape((3, 1, 1))
         self.img_std = np.array(img_std).reshape((3, 1, 1))
