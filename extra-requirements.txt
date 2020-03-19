@@ -25,4 +25,4 @@ paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 bert-for-tf2:               nlp, py37
 Pillow:                     cv
-tensorflow:                 framework
+tensorflow>=2.0:            framework, py37
