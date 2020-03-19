@@ -4,11 +4,11 @@ import numpy as np
 from .. import BaseImageEncoder
 
 
-class XCeptionPaddleImageEncoder(BaseImageEncoder):
+class PaddlehubImageEncoder(BaseImageEncoder):
     """
-    :class:`XCeptionPaddleImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
+    :class:`PaddlehubImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
-    Internally, :class:`XCeptionPaddleImageEncoder` wraps the XCeption module from paddlehub.
+    Internally, :class:`PaddlehubImageEncoder` wraps the XCeption module from paddlehub.
     https://github.com/PaddlePaddle/PaddleHub
     """
     def __init__(self, model_name='xception71_imagenet', *args, **kwargs):
