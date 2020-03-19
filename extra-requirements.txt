@@ -24,3 +24,4 @@ flair:                      nlp, encode
 paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 bert-for-tf2:               nlp, py37
+Pillow:                     cv
