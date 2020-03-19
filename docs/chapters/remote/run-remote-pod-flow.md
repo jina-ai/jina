@@ -1,12 +1,13 @@
-# Using a Remote Jina Pod via Console
+# Using a Remote Jina Pod via Flow API
 
-This tutorial guides you to run a Jina Pod remotely and communicate with it via console.
+This tutorial guides you to run a Jina Pod remotely via Flow API.
 
-Before the start, make sure to read ["Understanding Pea and Pod in Jina"](/tba). 
+Before the start, make sure to read ["Understanding Pea and Pod in Jina"](/tba) and ["Jina Flow API"](/tba). 
 
 ## Terminologies
 
-- *Workflow*: a set of connected pods for accomplishing certain task, e.g. indexing, searching, extracting. 
+- *Workflow*: a set of connected pods for accomplishing certain task, e.g. indexing, searching, extracting.
+- *Flow API*: a pythonic way for users to construct workflows in Jina with clean, readable idioms. 
 - *Remote*, *local instance*, *local machine*: the place where you want to run the pod, the place offers better computational capability or larger storage. For example, one may want to run an encode pod on the remote GPU instance.  
 - *Local*, *local instance*, *local machine*: the place of your entrypoint and the rest parts of your workflow.
 
@@ -18,23 +19,21 @@ Before the start, make sure to read ["Understanding Pea and Pod in Jina"](/tba).
 
 ## Steps
 
-### 1. Start a Pod on the Remote
-To make the example as simple as possible, we do not equip any executor to the pod. In the remote console, type:
+### 1. Let the Remote Jina Listen 
+We start a Jina gateway to listen on the spawning request. By default, this feature is not enabled, one can simply type the following in the remote console:
  
 ```bash
-jina pod
+jina gateway --allow_spawn
 ```
   
 ```text
-BaseExecut@8042[C]:initialize BaseExecutor from a yaml config
-BasePea-0@8042[I]:setting up sockets...
-BasePea-0@8042[I]:input tcp://0.0.0.0:55141 (PULL_BIND) 	 output tcp://0.0.0.0:34733 (PUSH_BIND)	 control over tcp://0.0.0.0:40093 (PAIR_BIND)
-BasePea-0@8042[C]:ready and listening
+GatewayPea@8233[W]:SECURITY ALERT! this gateway allows SpawnRequest from remote Jina
+GatewayPea@8233[C]:gateway is listening at: 0.0.0.0:41851
 ```
 
-After it reaches to `ready and listening`, the remote pod is ready to use. The port numbers are important for the local to connect to it. In this example we write down `55141`, `34733` and `40093` for future reference. If you want to have fixed port numbers everytime, please use `--port_in`, `--port_out`, `--port_ctrl` to specify them. More information can be found [in the documentation](/tba).
+After it reaches to `gateway is listening`, the remote Jina is ready. The port number is important for the local to connect to it. In this example we write down `41851`. If you want to have fixed port number everytime, please use `--port_grpc` to specify it. More information can be found [in the documentation](/tba).
 
-### 2. Test the Network Connectivity
+### 2. Build a Simple Index Flow 
 
 Here we assume the remote is in the intranet and its IP address is `192.168.31.76`.
 
@@ -62,8 +61,6 @@ Congratulations! You now have a remote Pod that can be connected.
 - [ ] Is the remote address an internal IP address and not publicly accessible?
 - [ ] Is the local connected to internet?
 - [ ] Is remote Pod successfully started? You shall see a green highlighted `ready and listening` if it is successful.
-
-If you have double checked the list and the problem is still not resolved, then consider to [create an issue in our Github project page](https://github.com/jina-ai/jina/issues/new).
 
 ## What's next?
 

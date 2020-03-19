@@ -8,6 +8,7 @@ Jina Documentation
    :caption: Getting Started
 
    chapters/cli/main
+   chapters/remote/main
    chapters/cli/exit
 
 .. toctree::

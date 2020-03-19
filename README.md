@@ -23,7 +23,7 @@ This command downloads the latest Jina image from [Docker Hub](https://hub.docke
 <details>
  <summary>Other Jina docker image mirrors: (click to expand...)</summary>
 
-🚨 We have stopped updating these two registries. They are just listed here for reference and they will be deleted anytime soon.
+> 🚨 We have stopped updating these two registries. They are just listed here for reference and they will be deleted anytime soon.
 
 #### Github Package (Do not support multiarch)
 

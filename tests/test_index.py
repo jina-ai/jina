@@ -117,6 +117,12 @@ class MyTestCase(JinaTestCase):
         with f.build(copy_flow=True) as fl:
             fl.search(raw_bytes=random_docs(1), in_proto=True, callback=get_result, top_k=100)
 
+    def test_index_remote(self):
+        f = Flow().add(yaml_path='yaml/test-index.yml',
+                       replicas=3, separated_workspace=True,
+                       host='localhost', port_grpc=63080)
+        with f.build(copy_flow=True) as fl:
+            fl.index(raw_bytes=random_docs(1000), in_proto=True)
 
 if __name__ == '__main__':
     unittest.main()
