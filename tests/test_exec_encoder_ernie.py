@@ -9,7 +9,7 @@ from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless(os.getenv('JINA_TEST_PRETRAINED', False), 'skip the pretrained test if not set')
     def test_encoding_results(self):
         encoder = ErnieTextEncoder(max_length=10, workspace=os.environ['TEST_WORKDIR'])
         test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
@@ -18,7 +18,7 @@ class MyTestCase(JinaTestCase):
         self.assertIs(type(encoded_data), np.ndarray)
         self.add_tmpfile(encoder.vocab_filename)
 
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless(os.getenv('JINA_TEST_PRETRAINED', False), 'skip the pretrained test if not set')
     def test_save_and_load(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])
@@ -38,7 +38,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_filename)
 
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless(os.getenv('JINA_TEST_PRETRAINED', False), 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
         encoder = ErnieTextEncoder(
             max_length=10, workspace=os.environ['TEST_WORKDIR'])

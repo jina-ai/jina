@@ -49,7 +49,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     Temp directory when using IPC sockets for the control port, not used on Windows system or when the control port is over TCP sockets.
 
-.. confval:: JINA_LOG_FORMAT
+.. confval:: JINA_LOG_FILE
 
     Control where the logs output to. Possible values: ``TXT`` for plain text format, which is the uncolored version of the screen output. ```JSON`` for structured log output.
 
@@ -79,11 +79,18 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: unset
 
-.. confval:: JINA_VERBOSITY
+.. confval:: JINA_LOG_VERBOSITY
 
     The log verbosity of the Jina logger. Possible values are ``DEBUG``, ``WARNING``, ``INFO``, ``ERROR``, ``CRITICAL``.
 
     :default: ``INFO``
+
+
+.. confval:: JINA_LOG_FORMAT
+
+    When set to ``LONG`` the filename, function name and line number will be displayed as well.
+
+    :default: ``SHORT``
 
 .. confval:: JINA_DEFAULT_HOST
 
@@ -97,8 +104,8 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: unset
 
-.. confval:: JINA_SKIP_TEST_PRETRAINED
+.. confval:: JINA_TEST_PRETRAINED
 
-    Set to `True` to skip the unit tests that depend on the pretrained models.
+    If set, then all pretrained model-related tests will be conducted in the unit test.
 
     :default: unset
