@@ -11,7 +11,7 @@ class PaddlehubImageEncoder(BaseImageEncoder):
     Internally, :class:`PaddlehubImageEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
-    def __init__(self, model_name='xception71_imagenet', *args, **kwargs):
+    def __init__(self, model_name: str = 'xception71_imagenet', *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include

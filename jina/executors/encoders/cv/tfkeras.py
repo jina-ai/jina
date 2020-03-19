@@ -1,4 +1,3 @@
-import os
 import numpy as np
 
 from .. import BaseImageEncoder
@@ -11,7 +10,8 @@ class KerasImageEncoder(BaseImageEncoder):
     Internally, :class:`KerasImageEncoder` wraps the models from `tensorflow.keras.applications`.
     https://github.com/PaddlePaddle/PaddleHub
     """
-    def __init__(self, model_name='MobileNetV2', pool_strategy='avg', *args, **kwargs):
+
+    def __init__(self, model_name: str = 'MobileNetV2', pool_strategy: str = 'avg', *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include
