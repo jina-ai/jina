@@ -27,5 +27,5 @@ bert-for-tf2:               nlp, py37
 Pillow:                     cv
 tensorflow>=2.0:            framework, py37
 torchvision:                framework
-onnx:                       framework
-onnxruntime:                framework
+onnx:                       framework, py37
+onnxruntime:                framework, py37
