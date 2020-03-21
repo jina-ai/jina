@@ -5,7 +5,7 @@ import unittest
 from jina.logging import get_logger
 from jina.main.parser import set_gateway_parser, set_pea_parser
 from jina.peapods.pod import GatewayPod
-from jina.peapods.remote import SpawnPeaHelper
+from jina.peapods.remote import PeaSpawnHelper
 from tests import JinaTestCase
 
 
@@ -44,7 +44,7 @@ class MyTestCase(JinaTestCase):
 
         p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
         with GatewayPod(f_args):
-            SpawnPeaHelper(p_args).start()
+            PeaSpawnHelper(p_args).start()
 
     def test_cont_gateway(self):
         f1_args = set_gateway_parser().parse_args(['--allow_spawn'])

@@ -12,7 +12,7 @@ from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
-    EventLoopEnd, \
+    RequestLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..helper import kwargs2list, valid_yaml_path
@@ -234,44 +234,50 @@ class BasePea(metaclass=PeaMeta):
         self.is_shutdown.set()
         self.logger.critical(__stop_msg__)
 
-    def request_loop_body(self):
-        """The body pf the event loop """
-        with Zmqlet(self.args, logger=self.logger) as zmqlet:
-            def _callback(msg):
-                try:
-                    self.pre_hook(msg).handle(msg).post_hook(msg)
-                    return msg
-                except WaitPendingMessage:
-                    pass
-                except EventLoopEnd:
-                    zmqlet.send_message(msg)
-                    raise EventLoopEnd
+    def loop_body(self):
+        """The body pf the request loop """
 
-            self.set_ready()
+        def _callback(msg):
+            try:
+                self.pre_hook(msg).handle(msg).post_hook(msg)
+                return msg
+            except WaitPendingMessage:
+                pass
 
-            while True:
-                msg = zmqlet.recv_message(callback=_callback)
-                if msg is not None:
-                    zmqlet.send_message(msg)
-                else:
-                    continue
+        self.load_executor()
+        self.zmqlet = Zmqlet(self.args, logger=self.logger)
+        self.set_ready()
 
-                self.save_executor(self.args.dump_interval)
-                self.check_memory_watermark()
+        while True:
+            msg = self.zmqlet.recv_message(callback=_callback)
+            if msg is not None:
+                self.zmqlet.send_message(msg)
+            else:
+                continue
 
-    def request_loop_stop(self):
-        """Stop the event loop """
+            self.save_executor(self.args.dump_interval)
+            self.check_memory_watermark()
+
+    def loop_teardown(self):
+        """Stop the request loop """
         if hasattr(self, 'executor'):
             if not self.args.exit_no_dump:
                 self.save_executor(dump_interval=0)
             self.executor.close()
+        if hasattr(self, 'zmqlet'):
+            if self.request_type == 'ControlRequest' and \
+                    self.request.command == jina_pb2.Request.ControlRequest.TERMINATE:
+                # the last message is a terminate request
+                # return it and tells the client everything is now closed.
+                self.zmqlet.send_message(self.message)
+            self.zmqlet.close()
 
     def run(self):
-        """Start the eventloop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             self.post_init()
-            self.request_loop_body()
-        except EventLoopEnd:
+            self.loop_body()
+        except RequestLoopEnd:
             self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
             self.logger.error('can not executor from %s' % self.args.yaml_path)
@@ -289,7 +295,7 @@ class BasePea(metaclass=PeaMeta):
         except Exception as ex:
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
-            self.request_loop_stop()
+            self.loop_teardown()
             self.set_shutdown()
 
     def check_memory_watermark(self):
@@ -298,11 +304,11 @@ class BasePea(metaclass=PeaMeta):
             raise MemoryOverHighWatermark
 
     def post_init(self):
-        """Post initializer after the start of the eventloop via :func:`run`, so that they can be kept in the same
-        process/thread as the eventloop.
+        """Post initializer after the start of the request loop via :func:`run`, so that they can be kept in the same
+        process/thread as the request loop.
 
         """
-        self.load_executor()
+        pass
 
     def close(self):
         """Gracefully close this pea and release all resources """
@@ -311,7 +317,6 @@ class BasePea(metaclass=PeaMeta):
             if hasattr(self, 'ctrl_addr'):
                 r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
                                       timeout=self.args.timeout_ctrl)
-            self.is_shutdown.wait()
         return r
 
     @property
@@ -331,6 +336,7 @@ class BasePea(metaclass=PeaMeta):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+        self.is_shutdown.wait()
 
 
 class ContainerPea(BasePea):
@@ -404,7 +410,7 @@ class ContainerPea(BasePea):
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
 
-    def request_loop_body(self):
+    def loop_body(self):
         """Direct the log from the container to local console """
         import docker
 
@@ -421,7 +427,7 @@ class ContainerPea(BasePea):
         except docker.errors.NotFound:
             self.logger.error('the container can not be started, check your arguments, entrypoint')
 
-    def request_loop_stop(self):
+    def loop_teardown(self):
         """Stop the container """
         if getattr(self, '_container', None):
             import docker

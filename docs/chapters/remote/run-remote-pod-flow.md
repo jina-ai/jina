@@ -1,4 +1,4 @@
-# Using a Remote Jina Pod via Flow API
+# Creating a Remote Jina Pod via Flow API
 
 This tutorial guides you to run a Jina Pod remotely via Flow API.
 

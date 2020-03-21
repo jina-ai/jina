@@ -1,4 +1,4 @@
-# Using a Remote Jina Pod via Jina CLI
+# Creating a Remote Jina Pod via Jina Gateway 
 
 This tutorial guides you to run a customized Jina Pod on the remote via a local Jina command line interface.
 

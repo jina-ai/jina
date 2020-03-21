@@ -138,6 +138,7 @@ class MyTestCase(JinaTestCase):
         with f.build(copy_flow=True) as fl:
             fl.index(raw_bytes=random_docs(1000), in_proto=True)
 
+        time.sleep(3)
         for j in range(3):
             self.assertTrue(os.path.exists('test2-%d/test2.bin' % j))
             self.assertTrue(os.path.exists('test2-%d/tmp2' % j))

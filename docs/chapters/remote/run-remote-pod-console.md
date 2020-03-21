@@ -1,4 +1,4 @@
-# Using a Remote Jina Pod via Console
+# Creating a Remote Jina Pod from Console
 
 This tutorial guides you to run a Jina Pod remotely and communicate with it via console.
 

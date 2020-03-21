@@ -122,13 +122,13 @@ class Zmqlet:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.logger.info('bytes_sent: %.0f KB bytes_recv:%.0f KB' % (self.bytes_sent / 1024, self.bytes_recv / 1024))
         self.close()
 
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
         self.close_sockets()
         self.ctx.term()
+        self.logger.info('bytes_sent: %.0f KB bytes_recv:%.0f KB' % (self.bytes_sent / 1024, self.bytes_recv / 1024))
 
     def send_message(self, msg: 'jina_pb2.Message'):
         """Send a message via the output socket
