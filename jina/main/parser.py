@@ -334,7 +334,7 @@ def get_main_parser():
     #                                     'to get detailed information about each sub-command', required=True)
 
     set_ping_parser(
-        sp.add_parser('ping', help='ping a pod for a network health check', formatter_class=_chf))
+        sp.add_parser('ping', help='ping a pod for a network connectivity check', formatter_class=_chf))
     sp.add_parser('check', help='check the import status all executors and drivers', formatter_class=_chf)
     set_logger_parser(sp.add_parser('log', help='receive piped log output and beautify the log', formatter_class=_chf))
     return parser

@@ -7,7 +7,7 @@ import grpc
 from .grpc_asyncio import AsyncioExecutor
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
-from ..excepts import WaitPendingMessage, EventLoopEnd, NoDriverForRequest, BadRequestType
+from ..excepts import WaitPendingMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..main.parser import set_pea_parser, set_pod_parser
@@ -37,7 +37,7 @@ class GatewayPea:
 
     def __enter__(self):
         self.server.start()
-        self.logger.critical('gateway is listening at: %s' % self.bind_address)
+        self.logger.success('gateway is listening at: %s' % self.bind_address)
         self._stop_event.clear()
         self.is_ready.set()
         return self
@@ -49,7 +49,7 @@ class GatewayPea:
         self.p_servicer.close()
         self.server.stop(None)
         self._stop_event.set()
-        self.logger.critical(__stop_msg__)
+        self.logger.success(__stop_msg__)
 
     def join(self):
         try:
@@ -73,7 +73,7 @@ class GatewayPea:
                 return self.executor(msg.__class__.__name__)
             except WaitPendingMessage:
                 self.logger.error('gateway should not receive partial message, it can not do reduce')
-            except EventLoopEnd:
+            except RequestLoopEnd:
                 self.logger.error('event loop end signal should not be raised in the gateway')
             except NoDriverForRequest:
                 # remove envelope and send back the request
@@ -110,11 +110,11 @@ class GatewayPea:
                     # need to return the new port and host ip number back
                     # we do not allow remote spawn request to spawn a "remote-remote" pea/pod
                     p = Pod(_args, allow_remote=False)
-                    from .remote import peas_args2cust_pod_req
-                    request = peas_args2cust_pod_req(p.peas_args)
-                elif _req_type == jina_pb2.SpawnRequest.PodDictSpawnRequest:
-                    from .remote import cust_pod_req2peas_args
-                    p = Pod(cust_pod_req2peas_args(_req), allow_remote=False)
+                    from .remote import peas_args2parsed_pod_req
+                    request = peas_args2parsed_pod_req(p.peas_args)
+                elif _req_type == jina_pb2.SpawnRequest.ParsedPodSpawnRequest:
+                    from .remote import parsed_pod_req2peas_args
+                    p = Pod(parsed_pod_req2peas_args(_req), allow_remote=False)
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)
 

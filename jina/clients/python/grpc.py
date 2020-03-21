@@ -37,9 +37,9 @@ class GrpcClient:
         try:
             grpc.channel_ready_future(self._channel).result(timeout=args.timeout_ready / 1000)
         except grpc.FutureTimeoutError:
-            self.logger.error('can not connect to the server at %s:%d after %d ms, please double check the '
-                              'ip and grpc port number of the server'
-                              % (args.host, args.port_grpc, args.timeout_ready))
+            self.logger.critical('can not connect to the server at %s:%d after %d ms, please double check the '
+                                 'ip and grpc port number of the server'
+                                 % (args.host, args.port_grpc, args.timeout_ready))
             raise GRPCServerError('can not connect to the server at %s:%d' % (args.host, args.port_grpc))
 
             # create new stub
@@ -47,7 +47,7 @@ class GrpcClient:
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
 
         # attache response handler
-        self.logger.critical('connected to the gateway at %s:%d!' % (self.args.host, self.args.port_grpc))
+        self.logger.success('connected to the gateway at %s:%d!' % (self.args.host, self.args.port_grpc))
         self.is_closed = False
 
     def call(self, *args, **kwargs):
@@ -90,5 +90,5 @@ class GrpcClient:
         """Gracefully shutdown the client and release all grpc-related resources """
         if not self.is_closed:
             self._channel.close()
-            self.logger.critical(__stop_msg__)
+            self.logger.success(__stop_msg__)
             self.is_closed = True

@@ -3,6 +3,7 @@ import unittest
 import ruamel.yaml
 
 from jina.helper import expand_env_var
+from jina.logging import default_logger
 from tests import JinaTestCase
 
 
@@ -34,6 +35,8 @@ class MyTestCase(JinaTestCase):
 
     def test_expand_env(self):
         print(expand_env_var('${PATH}-${AA}'))
+        default_logger.info('aa')
+        default_logger.success('aa')
 
 
 if __name__ == '__main__':

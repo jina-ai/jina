@@ -14,7 +14,7 @@ from ..main.parser import set_pod_parser, set_gateway_parser
 
 
 class BasePod:
-    """A BasePod is a set of peas, which run in parallel. They share the same input and output socket.
+    """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
@@ -190,7 +190,7 @@ class BasePod:
 
     @property
     def is_shutdown(self) -> bool:
-        return all(p.is_shutdown.is_set() for p in self.peas)
+        return all(not p.is_ready.is_set() for p in self.peas)
 
     def __enter__(self):
         self.start()
@@ -215,9 +215,13 @@ class BasePod:
 
     def join(self):
         """Wait until all peas exit"""
-        for s in self.peas:
-            s.join()
-        self.peas.clear()
+        try:
+            for s in self.peas:
+                s.join()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.peas.clear()
 
     def close(self):
         self.stack.close()
@@ -324,6 +328,15 @@ class FlowPod(BasePod):
         else:
             raise ValueError('the current pod has no tail router, deduct the tail is confusing')
 
+    def start(self):
+        if self._args.host == __default_host__:
+            return super().start()
+        else:
+            from .remote import RemoteParsedPod
+            _remote_pod = RemoteParsedPod(self.peas_args)
+            self.stack = ExitStack()
+            self.stack.enter_context(_remote_pod)
+
 
 def _set_peas_args(args, head_args, tail_args):
     result = []
@@ -345,8 +358,7 @@ def _set_peas_args(args, head_args, tail_args):
 
 
 def _set_router_args(args):
-    from pkg_resources import resource_filename
-    args.yaml_path = resource_filename('jina', '/'.join(('resources', 'executors.route.yml')))
+    args.yaml_path = 'route'
     args.name = 'router'
 
 

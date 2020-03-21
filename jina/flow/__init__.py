@@ -142,7 +142,7 @@ class Flow:
             p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pod_attr.items()}
             obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
 
-        obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
+        obj.logger.success('initialize %s from a yaml config' % cls.__name__)
 
         # if node.tag in {'!CompoundExecutor'}:
         #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
@@ -407,7 +407,7 @@ class Flow:
             self.num_pods,
             self.num_peas))
 
-        self.logger.critical('flow is now ready for use, current build_level is %s' % self._build_level)
+        self.logger.success('flow is now ready for use, current build_level is %s' % self._build_level)
 
     @property
     def num_pods(self) -> int:
@@ -425,7 +425,7 @@ class Flow:
             self._pod_stack.close()
         self._build_level = FlowBuildLevel.EMPTY
         # time.sleep(1)  # sleep for a while until all resources are safely closed
-        self.logger.critical(
+        self.logger.success(
             'flow is closed and all resources should be released already, current build level is %s' % self._build_level)
 
     def __eq__(self, other: 'Flow'):

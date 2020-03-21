@@ -1,5 +1,7 @@
 from typing import Callable, Dict
 
+import grpc
+
 from .pea import BasePea
 from .zmq import Zmqlet, send_ctrl_message
 from .. import __default_host__
@@ -12,7 +14,7 @@ if False:
     import argparse
 
 
-class SpawnPeaHelper(GrpcClient):
+class PeaSpawnHelper(GrpcClient):
     body_tag = 'pea'
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -36,11 +38,14 @@ class SpawnPeaHelper(GrpcClient):
         self.remote_logging(req, set_ready)
 
     def remote_logging(self, req, set_ready):
-        for resp in self._stub.Spawn(req):
-            if set_ready and self.callback_on_first:
-                set_ready(resp)
-                self.callback_on_first = False
-            self._remote_logger.info(resp.log_record)
+        try:
+            for resp in self._stub.Spawn(req):
+                if set_ready and self.callback_on_first:
+                    set_ready(resp)
+                    self.callback_on_first = False
+                self._remote_logger.info(resp.log_record)
+        except grpc.RpcError:
+            pass
 
     def close(self):
         if not self.is_closed:
@@ -50,12 +55,12 @@ class SpawnPeaHelper(GrpcClient):
             super().close()
 
 
-class SpawnPodHelper(SpawnPeaHelper):
+class PodSpawnHelper(PeaSpawnHelper):
     body_tag = 'pod'
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
-        self.all_ctrl_addr = []
+        self.all_ctrl_addr = []  #: all peas control address and ports of this pod, need to be set in set_ready()
 
     def close(self):
         if not self.is_closed:
@@ -65,7 +70,7 @@ class SpawnPodHelper(SpawnPeaHelper):
             GrpcClient.close(self)
 
 
-class SpawnDictPodHelper(SpawnPodHelper):
+class ParsedPodSpawnHelper(PodSpawnHelper):
 
     def __init__(self, peas_args: Dict):
         inited = False
@@ -83,28 +88,26 @@ class SpawnDictPodHelper(SpawnPodHelper):
         self.args = peas_args
 
     def call(self, set_ready: Callable = None):
-        self.remote_logging(peas_args2cust_pod_req(self.args), set_ready)
+        self.remote_logging(peas_args2parsed_pod_req(self.args), set_ready)
 
 
-def peas_args2cust_pod_req(peas_args: Dict):
-    from ..main.parser import set_pea_parser
-
+def peas_args2parsed_pod_req(peas_args: Dict):
     def pod2pea_args_list(args):
-        return kwargs2list(vars(set_pea_parser().parse_known_args(kwargs2list(vars(args)))[0]))
+        return kwargs2list(vars(args))
 
     req = jina_pb2.SpawnRequest()
     if peas_args['head']:
-        req.cust_pod.head.args.extend(pod2pea_args_list(peas_args['head']))
+        req.parsed_pod.head.args.extend(pod2pea_args_list(peas_args['head']))
     if peas_args['tail']:
-        req.cust_pod.tail.args.extend(pod2pea_args_list(peas_args['tail']))
+        req.parsed_pod.tail.args.extend(pod2pea_args_list(peas_args['tail']))
     if peas_args['peas']:
         for q in peas_args['peas']:
-            _a = req.cust_pod.peas.add()
+            _a = req.parsed_pod.peas.add()
             _a.args.extend(pod2pea_args_list(q))
     return req
 
 
-def cust_pod_req2peas_args(req):
+def parsed_pod_req2peas_args(req):
     from ..main.parser import set_pea_parser
     return {
         'head': set_pea_parser().parse_known_args(req.head.args)[0] if req.head.args else None,
@@ -114,7 +117,10 @@ def cust_pod_req2peas_args(req):
 
 
 class RemotePea(BasePea):
-    """A BasePea that spawns another :class:`BasePea` remotely """
+    """A RemotePea that spawns a remote :class:`BasePea`
+
+    Useful in Jina CLI
+    """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:
@@ -126,12 +132,19 @@ class RemotePea(BasePea):
     def post_init(self):
         pass
 
-    def event_loop_start(self):
-        SpawnPeaHelper(self.args).start(self.set_ready)  # auto-close after
+    def loop_body(self):
+        self._remote = PeaSpawnHelper(self.args)
+        self._remote.start(self.set_ready)  # auto-close after
+
+    def close(self):
+        self._remote.close()
 
 
 class RemotePod(RemotePea):
-    """A BasePea that spawns another :class:`BasePod` remotely """
+    """A RemotePod that spawns a remote :class:`BasePod`
+
+    Useful in Jina CLI
+    """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:
@@ -139,22 +152,41 @@ class RemotePod(RemotePea):
         else:
             raise ValueError(
                 '%r requires "args.host" to be set, and it should not be %s' % (self.__class__, __default_host__))
-        self._pod_args = args
 
     def set_ready(self, resp):
         _rep = getattr(resp, resp.WhichOneof('body'))
-        peas_args = cust_pod_req2peas_args(_rep)
+        peas_args = parsed_pod_req2peas_args(_rep)
         for s in self.all_args(peas_args):
             s.host = self.args.host
             self._remote.all_ctrl_addr.append(Zmqlet.get_ctrl_address(s)[0])
         super().set_ready()
 
-    def all_args(self, peas_args):
+    @staticmethod
+    def all_args(peas_args):
         """Get all arguments of all Peas in this BasePod. """
         return peas_args['peas'] + (
             [peas_args['head']] if peas_args['head'] else []) + (
                    [peas_args['tail']] if peas_args['tail'] else [])
 
-    def event_loop_start(self):
-        self._remote = SpawnPodHelper(self.args)
+    def loop_body(self):
+        self._remote = PodSpawnHelper(self.args)
         self._remote.start(self.set_ready)  # auto-close after
+
+    def close(self):
+        self._remote.close()
+
+class RemoteParsedPod(BasePea):
+    """A RemoteParsedPod that spawns a remote :class:`ParsedPod`.
+
+    Useful in Flow API
+    """
+
+    def post_init(self):
+        pass
+
+    def loop_body(self):
+        self._remote = ParsedPodSpawnHelper(self.args)
+        self._remote.start(self.set_ready)  # auto-close after
+
+    def close(self):
+        self._remote.close()

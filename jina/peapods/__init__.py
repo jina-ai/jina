@@ -31,26 +31,34 @@ def Pea(args: 'argparse.Namespace', allow_remote: bool = True):
 
 
 def Pod(args: Union['argparse.Namespace', Dict], allow_remote: bool = True):
-    """Initialize a :class:`BasePod`, :class:`RemotePod`
+    """Initialize a :class:`BasePod`, :class:`RemotePod`, :class:`ParsedPod` or :class:`RemoteParsedPod`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemotePod`
     """
     if isinstance(args, dict):
-        if not allow_remote:
-            for k in args.values():
-                if k:
-                    if not isinstance(k, list):
-                        k = [k]
+        hosts = set()
+        for k in args.values():
+            if k:
+                if not isinstance(k, list):
+                    k = [k]
                 for kk in k:
-                    kk.host = __default_host__
-        from .pod import ParsedPod
-        return ParsedPod(args)
+                    if not allow_remote and kk.host != __default_host__:
+                        kk.host = __default_host__
+                        default_logger.warning(f'host is reset to {__default_host__} as allow_remote=False')
+                    hosts.add(kk.host)
 
-    if not allow_remote:
-        if args.host != __default_host__:
-            args.host = __default_host__
-            default_logger.warning(f'setting host to {__default_host__} as allow_remote set to False')
+        if len(hosts) == 1:
+            if __default_host__ in hosts:
+                from .pod import ParsedPod
+                return ParsedPod(args)
+            else:
+                from .remote import RemoteParsedPod
+                return RemoteParsedPod(args)
+
+    if not allow_remote and args.host != __default_host__:
+        args.host = __default_host__
+        default_logger.warning(f'host is reset to {__default_host__} as allow_remote=False')
 
     if args.host != __default_host__:
         from .remote import RemotePod

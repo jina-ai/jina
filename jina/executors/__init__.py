@@ -329,7 +329,7 @@ class BaseExecutor(metaclass=ExecutorType):
             pickle.dump(self, fp)
             self._last_snapshot_ts = datetime.now()
 
-        self.logger.critical('artifacts of this executor (%s) is persisted to %s' % (self.name, f))
+        self.logger.success('artifacts of this executor (%s) is persisted to %s' % (self.name, f))
         return True
 
     @profiling
@@ -455,7 +455,7 @@ class BaseExecutor(metaclass=ExecutorType):
         load_from_dump = False
         if dump_path:
             obj = cls.load(dump_path)
-            obj.logger.critical('restore %s from %s' % (cls.__name__, dump_path))
+            obj.logger.success('restore %s from %s' % (cls.__name__, dump_path))
             load_from_dump = True
         else:
             cls.init_from_yaml = True
@@ -474,7 +474,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
 
-            obj.logger.critical('initialize %s from a yaml config' % cls.__name__)
+            obj.logger.success('initialize %s from a yaml config' % cls.__name__)
             cls.init_from_yaml = False
 
         # if node.tag in {'!CompoundExecutor'}:

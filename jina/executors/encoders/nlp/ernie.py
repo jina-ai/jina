@@ -90,8 +90,7 @@ class ErnieTextEncoder(BaseTextEncoder):
         elif self.pooling_strategy == 'min':
             output = reduce_min(np.array(unpad_top_layer_emb), input_mask.squeeze())
         else:
-            self.logger.error('pooling strategy not found: {}'.format(self.pooling_strategy))
-            raise NotImplementedError
+            raise NotImplementedError('pooling strategy not found: {}'.format(self.pooling_strategy))
         return output
 
     def close(self):

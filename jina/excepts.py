@@ -21,7 +21,7 @@ class UnknownControlCommand(Exception):
     """The control command received can not be recognized"""
 
 
-class EventLoopEnd(Exception):
+class RequestLoopEnd(Exception):
     """The event loop of BasePea ends"""
 
 

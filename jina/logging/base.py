@@ -20,8 +20,9 @@ class ColorFormatter(Formatter):
         'DEBUG': dict(color='white', on_color=None),  # white
         'INFO': dict(color='white', on_color=None),  # cyan
         'WARNING': dict(color='yellow', on_color='on_grey'),  # yellow
-        'ERROR': dict(color='white', on_color='on_red'),  # 31 for red
-        'CRITICAL': dict(color='white', on_color='on_green'),  # white on red bg
+        'ERROR': dict(color='red', on_color=None),  # 31 for red
+        'CRITICAL': dict(color='white', on_color='on_red'),  # white on red bg
+        'SUCCESS': dict(color='green', on_color=None),  # white on red bg
     }  #: log-level to color mapping
 
     def format(self, record):
@@ -109,7 +110,7 @@ class NTLogger:
 
     def critical(self, msg: str, **kwargs):
         """log info-level message"""
-        if self.log_level <= LogVerbosity.CRITICAL:
+        if self.log_level <= LogVerbosity.success:
             sys.stdout.write('C:%s:%s' % (self.context, self._planify(msg)))
 
     def debug(self, msg: str, **kwargs):
@@ -127,6 +128,11 @@ class NTLogger:
         if self.log_level <= LogVerbosity.WARNING:
             sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
 
+    def success(self, msg: str, **kwargs):
+        """log warn-level message"""
+        if self.log_level <= LogVerbosity.SUCCESS:
+            sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
+
 
 def get_logger(context: str, context_len: int = 10,
                log_profile: bool = False,
@@ -141,6 +147,9 @@ def get_logger(context: str, context_len: int = 10,
     :param context_len: length of the context, i.e. module, function, line number
     :param log_profile: is this logger for profiling
     :param log_sse: is this logger used for server-side event
+    :param log_remote: is this logger for remote logging
+    :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_FORMAT`` environment variable
+    :param event_trigger: a ``threading.Event`` or ``multiprocessing.Event`` for event-based logger
     :return: the configured logger
 
     .. note::
@@ -215,5 +224,9 @@ def get_logger(context: str, context_len: int = 10,
     console_handler.setLevel(verbose_level.value)
     console_handler.setFormatter(ColorFormatter(fmt_str))
     logger.addHandler(console_handler)
+
+    logging.SUCCESS = 25  # between WARNING and INFO
+    logging.addLevelName(logging.SUCCESS, 'SUCCESS')
+    setattr(logger, 'success', lambda message, *args: logger._log(logging.SUCCESS, message, args))
 
     return logger

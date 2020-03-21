@@ -1,3 +1,4 @@
+import argparse
 import multiprocessing
 import os
 import threading
@@ -11,7 +12,7 @@ from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
-    EventLoopEnd, \
+    RequestLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..helper import kwargs2list, valid_yaml_path
@@ -20,10 +21,6 @@ from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea', 'ContainerPea']
-
-if False:
-    # fix type-hint complain for sphinx and flake
-    import argparse
 
 
 class PeaMeta(type):
@@ -43,7 +40,7 @@ class PeaMeta(type):
         _cls = {
             'thread': threading.Thread,
             'process': multiprocessing.Process
-        }[args[0].runtime]
+        }.get(getattr(args[0], 'runtime', 'thread'))
 
         # rebuild the class according to mro
         for c in cls.mro()[-2::-1]:
@@ -77,16 +74,10 @@ class BasePea(metaclass=PeaMeta):
         """
         super().__init__()
         self.args = args
-        self.name = args.name or self.__class__.__name__
-        if args.replica_id >= 0:
-            self.name = '%s-%d' % (self.name, args.replica_id)
-        self.log_event = _get_event(self)
-        self.is_ready = _get_event(self)
-        self.is_event_loop = _get_event(self)
-        self.is_shutdown = _get_event(self)
-        self.logger = get_logger(self.name, **vars(args), event_trigger=self.log_event)
+        self.name = self.__class__.__name__
 
-        self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
+        self.is_ready = _get_event(self)
+
         self.last_dump_time = time.perf_counter()
 
         self._timer = TimeDict()
@@ -96,6 +87,16 @@ class BasePea(metaclass=PeaMeta):
         self._prev_requests = None
         self._prev_messages = None
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
+
+        if isinstance(args, argparse.Namespace):
+            if args.name:
+                self.name = args.name
+            if args.replica_id >= 0:
+                self.name = '%s-%d' % (self.name, args.replica_id)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
+            self.logger = get_logger(self.name, **vars(args))
+        else:
+            self.logger = get_logger(self.name)
 
     def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
@@ -163,17 +164,11 @@ class BasePea(metaclass=PeaMeta):
     def log_iterator(self):
         """Get the last log using iterator """
         from ..logging.queue import __log_queue__
-        while not self.is_shutdown.is_set():
+        while self.is_ready.is_set():
             try:
                 yield __log_queue__.get_nowait()
             except Empty:
                 pass
-
-    def join(self):
-        try:
-            super().join()
-        except KeyboardInterrupt:
-            pass
 
     def load_executor(self):
         """Load the executor to this BasePea, specified by ``exec_yaml_path`` CLI argument.
@@ -186,7 +181,7 @@ class BasePea(metaclass=PeaMeta):
                 self.executor.attach(pea=self)
                 # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:
-                raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)
+                raise ExecutorFailToLoad
         else:
             self.logger.warning('this BasePea has no executor attached, you may want to double-check '
                                 'if it is a mistake or on purpose (using this BasePea as router/map-reduce)')
@@ -230,50 +225,60 @@ class BasePea(metaclass=PeaMeta):
     def set_ready(self, *args, **kwargs):
         """Set the status of the pea to ready """
         self.is_ready.set()
-        self.is_event_loop.set()
-        self.logger.critical(__ready_msg__)
+        self.logger.success(__ready_msg__)
 
-    def event_loop_start(self):
-        """Start the event loop """
-        with Zmqlet(self.args, logger=self.logger) as zmqlet:
-            def _callback(msg):
-                try:
-                    self.pre_hook(msg).handle(msg).post_hook(msg)
-                    return msg
-                except WaitPendingMessage:
-                    pass
-                except EventLoopEnd:
-                    zmqlet.send_message(msg)
-                    raise EventLoopEnd
+    def unset_ready(self, *args, **kwargs):
+        """Set the status of the pea to shutdown """
+        self.is_ready.clear()
+        self.logger.success(__stop_msg__)
 
-            self.set_ready()
+    def loop_body(self):
+        """The body pf the request loop """
 
-            while self.is_event_loop.is_set():
-                msg = zmqlet.recv_message(callback=_callback)
-                if msg is not None:
-                    zmqlet.send_message(msg)
-                else:
-                    continue
+        def _callback(msg):
+            try:
+                self.pre_hook(msg).handle(msg).post_hook(msg)
+                return msg
+            except WaitPendingMessage:
+                pass
 
-                self.save_executor(self.args.dump_interval)
-                self.check_memory_watermark()
+        self.load_executor()
+        self.zmqlet = Zmqlet(self.args, logger=self.logger)
+        self.set_ready()
 
-    def event_loop_stop(self):
-        """Stop the event loop """
+        while True:
+            msg = self.zmqlet.recv_message(callback=_callback)
+            if msg is not None:
+                self.zmqlet.send_message(msg)
+            else:
+                continue
+
+            self.save_executor(self.args.dump_interval)
+            self.check_memory_watermark()
+
+    def loop_teardown(self):
+        """Stop the request loop """
         if hasattr(self, 'executor'):
             if not self.args.exit_no_dump:
                 self.save_executor(dump_interval=0)
             self.executor.close()
+        if hasattr(self, 'zmqlet'):
+            if self.request_type == 'ControlRequest' and \
+                    self.request.command == jina_pb2.Request.ControlRequest.TERMINATE:
+                # the last message is a terminate request
+                # return it and tells the client everything is now closed.
+                self.zmqlet.send_message(self.message)
+            self.zmqlet.close()
 
     def run(self):
-        """Start the eventloop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             self.post_init()
-            self.event_loop_start()
-        except EventLoopEnd:
+            self.loop_body()
+        except RequestLoopEnd:
             self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
-            self.logger.error('component can not be correctly loaded, terminated')
+            self.logger.error('can not executor from %s' % self.args.yaml_path)
         except MemoryOverHighWatermark:
             self.logger.error(
                 'memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
@@ -288,12 +293,8 @@ class BasePea(metaclass=PeaMeta):
         except Exception as ex:
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
-            # self.is_ready.set()
-            self.event_loop_stop()
-            self.is_event_loop.clear()
-
-        self.logger.critical(__stop_msg__)
-        self.is_shutdown.set()
+            self.loop_teardown()
+            self.unset_ready()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -301,33 +302,32 @@ class BasePea(metaclass=PeaMeta):
             raise MemoryOverHighWatermark
 
     def post_init(self):
-        """Post initializer after the start of the eventloop via :func:`run`, so that they can be kept in the same
-        process/thread as the eventloop.
+        """Post initializer after the start of the request loop via :func:`run`, so that they can be kept in the same
+        process/thread as the request loop.
 
         """
-        self.load_executor()
+        pass
 
     def close(self):
         """Gracefully close this pea and release all resources """
-        if self.is_event_loop.is_set():
-            r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                  timeout=self.args.timeout_ctrl)
-            self.is_shutdown.wait()
-            return r
+        if self.is_ready.is_set() and hasattr(self, 'ctrl_addr'):
+            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                                     timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
-        return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                 timeout=self.args.timeout_ctrl)
+        if getattr(self, 'ctrl_addr'):
+            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
+                                     timeout=self.args.timeout_ctrl)
 
     def __enter__(self):
         self.start()
-        if self.is_ready.wait(self.args.timeout_ready / 1000):
+        _timeout = getattr(self.args, 'timeout_ready', 5e3) / 1e3
+        if self.is_ready.wait(_timeout):
             return self
         else:
-            raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name,
-                                                                                             self.args.timeout_ready))
+            raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name, _timeout * 1e3))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
@@ -403,34 +403,28 @@ class ContainerPea(BasePea):
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
-        self.is_event_loop.set()
 
-    def event_loop_start(self):
+    def loop_body(self):
         """Direct the log from the container to local console """
         import docker
 
         logger = get_logger('🐳', **vars(self.args), fmt_str='🐳 %(message)s')
         try:
             for line in self._container.logs(stream=True):
-                if self.is_event_loop.is_set():
-                    msg = line.strip().decode()
-                    # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
-                    # print all error message when fails
-                    if __ready_msg__ in msg:
-                        self.is_ready.set()
-                        self.logger.critical(__ready_msg__)
-                    logger.info(line.strip().decode())
-                else:
-                    raise EventLoopEnd
+                msg = line.strip().decode()
+                # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
+                # print all error message when fails
+                if __ready_msg__ in msg:
+                    self.is_ready.set()
+                    self.logger.success(__ready_msg__)
+                logger.info(line.strip().decode())
         except docker.errors.NotFound:
             self.logger.error('the container can not be started, check your arguments, entrypoint')
 
-    def event_loop_stop(self):
+    def loop_teardown(self):
         """Stop the container """
-
-        import docker
-
         if getattr(self, '_container', None):
+            import docker
             try:
                 self._container.stop()
             except docker.errors.NotFound:

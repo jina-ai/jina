@@ -1,19 +1,22 @@
 def pod(args):
-    """Start a BasePod"""
+    """Start a Pod"""
     from ..peapods import Pod
     with Pod(args) as p:
         p.join()
 
 
 def pea(args):
-    """Start a BasePea"""
+    """Start a Pea"""
     from ..peapods import Pea
-    with Pea(args) as p:
-        p.join()
+    try:
+        with Pea(args) as p:
+            p.join()
+    except KeyboardInterrupt:
+        pass
 
 
 def gateway(args):
-    """Start a gateway"""
+    """Start a Gateway Pod"""
     from ..peapods.pod import GatewayPod
     with GatewayPod(args) as fs:
         fs.join()
