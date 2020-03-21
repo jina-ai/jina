@@ -16,9 +16,9 @@ if sys.version_info < (3, 7, 0):
 if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
     # temporary fix for python 3.8 on macos where the default start is set to "spawn"
     # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
-    import multiprocessing
+    from multiprocessing import set_start_method
 
-    mp = multiprocessing.get_context('fork')
+    set_start_method('fork')
 
 from datetime import datetime
 import random

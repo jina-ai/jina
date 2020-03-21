@@ -1,8 +1,10 @@
 from typing import Callable, Dict
 
+import grpc
+
 from .pea import BasePea
 from .zmq import Zmqlet, send_ctrl_message
-from .. import __default_host__
+from .. import __default_host__, __stop_msg__
 from ..clients.python import GrpcClient
 from ..helper import kwargs2list
 from ..logging import get_logger
@@ -36,11 +38,14 @@ class SpawnPeaHelper(GrpcClient):
         self.remote_logging(req, set_ready)
 
     def remote_logging(self, req, set_ready):
-        for resp in self._stub.Spawn(req):
-            if set_ready and self.callback_on_first:
-                set_ready(resp)
-                self.callback_on_first = False
-            self._remote_logger.info(resp.log_record)
+        try:
+            for resp in self._stub.Spawn(req):
+                if set_ready and self.callback_on_first:
+                    set_ready(resp)
+                    self.callback_on_first = False
+                self._remote_logger.info(resp.log_record)
+        except grpc.RpcError:
+            pass
 
     def close(self):
         if not self.is_closed:
@@ -55,7 +60,7 @@ class SpawnPodHelper(SpawnPeaHelper):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
-        self.all_ctrl_addr = []
+        self.all_ctrl_addr = []  #: all peas control address and ports of this pod, need to be set in set_ready()
 
     def close(self):
         if not self.is_closed:
@@ -114,7 +119,10 @@ def cust_pod_req2peas_args(req):
 
 
 class RemotePea(BasePea):
-    """A BasePea that spawns another :class:`BasePea` remotely """
+    """A RemotePea that spawns a remote :class:`BasePea`
+
+    Useful in Jina CLI
+    """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:
@@ -127,11 +135,21 @@ class RemotePea(BasePea):
         pass
 
     def event_loop_start(self):
-        SpawnPeaHelper(self.args).start(self.set_ready)  # auto-close after
+        self._remote = SpawnPeaHelper(self.args)
+        self._remote.start(self.set_ready)  # auto-close after
+
+    def close(self):
+        self._remote.close()
+        self.event_loop_stop()
+        self.is_shutdown.set()
+        self.logger.critical(__stop_msg__)
 
 
 class RemotePod(RemotePea):
-    """A BasePea that spawns another :class:`BasePod` remotely """
+    """A RemotePod that spawns a remote :class:`BasePod`
+
+    Useful in Jina CLI
+    """
 
     def __init__(self, args: 'argparse.Namespace'):
         if hasattr(args, 'host') and args.host != __default_host__:
@@ -139,7 +157,6 @@ class RemotePod(RemotePea):
         else:
             raise ValueError(
                 '%r requires "args.host" to be set, and it should not be %s' % (self.__class__, __default_host__))
-        self._pod_args = args
 
     def set_ready(self, resp):
         _rep = getattr(resp, resp.WhichOneof('body'))
@@ -149,7 +166,8 @@ class RemotePod(RemotePea):
             self._remote.all_ctrl_addr.append(Zmqlet.get_ctrl_address(s)[0])
         super().set_ready()
 
-    def all_args(self, peas_args):
+    @staticmethod
+    def all_args(peas_args):
         """Get all arguments of all Peas in this BasePod. """
         return peas_args['peas'] + (
             [peas_args['head']] if peas_args['head'] else []) + (
@@ -158,3 +176,29 @@ class RemotePod(RemotePea):
     def event_loop_start(self):
         self._remote = SpawnPodHelper(self.args)
         self._remote.start(self.set_ready)  # auto-close after
+
+    def close(self):
+        self._remote.close()
+        self.event_loop_stop()
+        self.is_shutdown.set()
+        self.logger.critical(__stop_msg__)
+
+
+class RemoteParsedPod(BasePea):
+    """A RemoteParsedPod that spawns a remote :class:`ParsedPod`.
+
+    Useful in Flow API
+    """
+
+    def post_init(self):
+        pass
+
+    def event_loop_start(self):
+        self._remote = SpawnDictPodHelper(self.args)
+        self._remote.start(self.set_ready)  # auto-close after
+
+    def close(self):
+        self._remote.close()
+        self.event_loop_stop()
+        self.is_shutdown.set()
+        self.logger.critical(__stop_msg__)

@@ -324,6 +324,15 @@ class FlowPod(BasePod):
         else:
             raise ValueError('the current pod has no tail router, deduct the tail is confusing')
 
+    def start(self):
+        if self._args.host == __default_host__:
+            return super().start()
+        else:
+            from .remote import RemoteParsedPod
+            _remote_pod = RemoteParsedPod(self.peas_args)
+            self.stack = ExitStack()
+            self.stack.enter_context(_remote_pod)
+
 
 def _set_peas_args(args, head_args, tail_args):
     result = []

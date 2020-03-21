@@ -7,7 +7,8 @@ from multiprocessing import Process
 from jina.logging import get_logger
 from jina.main.parser import set_gateway_parser, set_pea_parser, set_pod_parser
 from jina.peapods.pod import GatewayPod, BasePod
-from jina.peapods.remote import RemotePea, SpawnPodHelper, SpawnPeaHelper, SpawnDictPodHelper
+from jina.peapods.remote import RemotePea, SpawnPodHelper, SpawnPeaHelper, SpawnDictPodHelper, RemotePod, \
+    RemoteParsedPod
 from tests import JinaTestCase
 
 
@@ -120,6 +121,24 @@ class MyTestCase(JinaTestCase):
 
         SpawnDictPodHelper(p.peas_args).start()
 
+    def test_customized_pod2(self):
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
+        p_args = set_pod_parser().parse_args(
+            ['--host', 'localhost', '--replicas', '3', '--port_grpc', str(f_args.port_grpc)])
+        p = BasePod(p_args)
+
+        def start_gateway():
+            with GatewayPod(f_args):
+                time.sleep(5)
+
+        t = Process(target=start_gateway)
+        t.daemon = True
+        t.start()
+
+        with RemoteParsedPod(p.peas_args):
+            pass
+        t.join()
+
     @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_remote_pea2(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
@@ -134,6 +153,23 @@ class MyTestCase(JinaTestCase):
         t.start()
 
         with RemotePea(p_args):
+            pass
+        t.join()
+
+    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    def test_remote_pod2(self):
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
+
+        def start_gateway():
+            with GatewayPod(f_args):
+                time.sleep(5)
+
+        t = Process(target=start_gateway)
+        t.daemon = True
+        t.start()
+
+        with RemotePod(p_args):
             pass
         t.join()
 

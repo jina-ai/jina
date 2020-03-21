@@ -1,3 +1,4 @@
+import argparse
 import multiprocessing
 import os
 import threading
@@ -21,10 +22,6 @@ from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea', 'ContainerPea']
 
-if False:
-    # fix type-hint complain for sphinx and flake
-    import argparse
-
 
 class PeaMeta(type):
     """Meta class of :class:`BasePea` to enable switching between ``thread`` and ``process`` backend. """
@@ -43,7 +40,7 @@ class PeaMeta(type):
         _cls = {
             'thread': threading.Thread,
             'process': multiprocessing.Process
-        }[args[0].runtime]
+        }.get(getattr(args[0], 'runtime', 'thread'))
 
         # rebuild the class according to mro
         for c in cls.mro()[-2::-1]:
@@ -77,16 +74,12 @@ class BasePea(metaclass=PeaMeta):
         """
         super().__init__()
         self.args = args
-        self.name = args.name or self.__class__.__name__
-        if args.replica_id >= 0:
-            self.name = '%s-%d' % (self.name, args.replica_id)
-        self.log_event = _get_event(self)
+        self.name = self.__class__.__name__
+
         self.is_ready = _get_event(self)
         self.is_event_loop = _get_event(self)
         self.is_shutdown = _get_event(self)
-        self.logger = get_logger(self.name, **vars(args), event_trigger=self.log_event)
 
-        self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
         self.last_dump_time = time.perf_counter()
 
         self._timer = TimeDict()
@@ -96,6 +89,16 @@ class BasePea(metaclass=PeaMeta):
         self._prev_requests = None
         self._prev_messages = None
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
+
+        if isinstance(args, argparse.Namespace):
+            if args.name:
+                self.name = args.name
+            if args.replica_id >= 0:
+                self.name = '%s-%d' % (self.name, args.replica_id)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
+            self.logger = get_logger(self.name, **vars(args))
+        else:
+            self.logger = get_logger(self.name)
 
     def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
@@ -309,25 +312,27 @@ class BasePea(metaclass=PeaMeta):
 
     def close(self):
         """Gracefully close this pea and release all resources """
-        if self.is_event_loop.is_set():
+        r = None
+        if self.is_event_loop.is_set() and hasattr(self, 'ctrl_addr'):
             r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
                                   timeout=self.args.timeout_ctrl)
-            self.is_shutdown.wait()
-            return r
+        self.is_shutdown.wait()
+        return r
 
     @property
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
-        return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                 timeout=self.args.timeout_ctrl)
+        if getattr(self, 'ctrl_addr'):
+            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
+                                     timeout=self.args.timeout_ctrl)
 
     def __enter__(self):
         self.start()
-        if self.is_ready.wait(self.args.timeout_ready / 1000):
+        _timeout = getattr(self.args, 'timeout_ready', 5e3) / 1e3
+        if self.is_ready.wait(_timeout):
             return self
         else:
-            raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name,
-                                                                                             self.args.timeout_ready))
+            raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name, _timeout * 1e3))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
