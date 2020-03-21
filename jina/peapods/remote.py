@@ -132,13 +132,13 @@ class RemotePea(BasePea):
     def post_init(self):
         pass
 
-    def event_loop_start(self):
+    def request_loop_body(self):
         self._remote = SpawnPeaHelper(self.args)
         self._remote.start(self.set_ready)  # auto-close after
 
     def close(self):
         self._remote.close()
-        self.event_loop_stop()
+        self.request_loop_stop()
         self.is_shutdown.set()
         self.logger.critical(__stop_msg__)
 
@@ -171,13 +171,13 @@ class RemotePod(RemotePea):
             [peas_args['head']] if peas_args['head'] else []) + (
                    [peas_args['tail']] if peas_args['tail'] else [])
 
-    def event_loop_start(self):
+    def request_loop_body(self):
         self._remote = SpawnPodHelper(self.args)
         self._remote.start(self.set_ready)  # auto-close after
 
     def close(self):
         self._remote.close()
-        self.event_loop_stop()
+        self.request_loop_stop()
         self.is_shutdown.set()
         self.logger.critical(__stop_msg__)
 
@@ -191,12 +191,12 @@ class RemoteParsedPod(BasePea):
     def post_init(self):
         pass
 
-    def event_loop_start(self):
+    def request_loop_body(self):
         self._remote = SpawnDictPodHelper(self.args)
         self._remote.start(self.set_ready)  # auto-close after
 
     def close(self):
         self._remote.close()
-        self.event_loop_stop()
+        self.request_loop_stop()
         self.is_shutdown.set()
         self.logger.critical(__stop_msg__)

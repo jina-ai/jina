@@ -77,7 +77,6 @@ class BasePea(metaclass=PeaMeta):
         self.name = self.__class__.__name__
 
         self.is_ready = _get_event(self)
-        self.is_event_loop = _get_event(self)
         self.is_shutdown = _get_event(self)
 
         self.last_dump_time = time.perf_counter()
@@ -227,11 +226,16 @@ class BasePea(metaclass=PeaMeta):
     def set_ready(self, *args, **kwargs):
         """Set the status of the pea to ready """
         self.is_ready.set()
-        self.is_event_loop.set()
         self.logger.critical(__ready_msg__)
 
-    def event_loop_start(self):
-        """Start the event loop """
+    def set_shutdown(self, *args, **kwargs):
+        """Set the status of the pea to shutdown """
+        self.is_ready.clear()
+        self.is_shutdown.set()
+        self.logger.critical(__stop_msg__)
+
+    def request_loop_body(self):
+        """The body pf the event loop """
         with Zmqlet(self.args, logger=self.logger) as zmqlet:
             def _callback(msg):
                 try:
@@ -245,7 +249,7 @@ class BasePea(metaclass=PeaMeta):
 
             self.set_ready()
 
-            while self.is_event_loop.is_set():
+            while True:
                 msg = zmqlet.recv_message(callback=_callback)
                 if msg is not None:
                     zmqlet.send_message(msg)
@@ -255,7 +259,7 @@ class BasePea(metaclass=PeaMeta):
                 self.save_executor(self.args.dump_interval)
                 self.check_memory_watermark()
 
-    def event_loop_stop(self):
+    def request_loop_stop(self):
         """Stop the event loop """
         if hasattr(self, 'executor'):
             if not self.args.exit_no_dump:
@@ -266,7 +270,7 @@ class BasePea(metaclass=PeaMeta):
         """Start the eventloop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             self.post_init()
-            self.event_loop_start()
+            self.request_loop_body()
         except EventLoopEnd:
             self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
@@ -285,12 +289,8 @@ class BasePea(metaclass=PeaMeta):
         except Exception as ex:
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
-            # self.is_ready.set()
-            self.event_loop_stop()
-            self.is_event_loop.clear()
-
-        self.logger.critical(__stop_msg__)
-        self.is_shutdown.set()
+            self.request_loop_stop()
+            self.set_shutdown()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -307,10 +307,11 @@ class BasePea(metaclass=PeaMeta):
     def close(self):
         """Gracefully close this pea and release all resources """
         r = None
-        if self.is_event_loop.is_set() and hasattr(self, 'ctrl_addr'):
-            r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                  timeout=self.args.timeout_ctrl)
-        self.is_shutdown.wait()
+        if not self.is_shutdown.is_set():
+            if hasattr(self, 'ctrl_addr'):
+                r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                                      timeout=self.args.timeout_ctrl)
+            self.is_shutdown.wait()
         return r
 
     @property
@@ -402,34 +403,28 @@ class ContainerPea(BasePea):
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
-        self.is_event_loop.set()
 
-    def event_loop_start(self):
+    def request_loop_body(self):
         """Direct the log from the container to local console """
         import docker
 
         logger = get_logger('🐳', **vars(self.args), fmt_str='🐳 %(message)s')
         try:
             for line in self._container.logs(stream=True):
-                if self.is_event_loop.is_set():
-                    msg = line.strip().decode()
-                    # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
-                    # print all error message when fails
-                    if __ready_msg__ in msg:
-                        self.is_ready.set()
-                        self.logger.critical(__ready_msg__)
-                    logger.info(line.strip().decode())
-                else:
-                    raise EventLoopEnd
+                msg = line.strip().decode()
+                # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
+                # print all error message when fails
+                if __ready_msg__ in msg:
+                    self.is_ready.set()
+                    self.logger.critical(__ready_msg__)
+                logger.info(line.strip().decode())
         except docker.errors.NotFound:
             self.logger.error('the container can not be started, check your arguments, entrypoint')
 
-    def event_loop_stop(self):
+    def request_loop_stop(self):
         """Stop the container """
-
-        import docker
-
         if getattr(self, '_container', None):
+            import docker
             try:
                 self._container.stop()
             except docker.errors.NotFound:
