@@ -333,7 +333,6 @@ class FlowPod(BasePod):
             return super().start()
         else:
             from .remote import RemoteParsedPod
-            print(self.peas_args)
             _remote_pod = RemoteParsedPod(self.peas_args)
             self.stack = ExitStack()
             self.stack.enter_context(_remote_pod)
@@ -359,8 +358,7 @@ def _set_peas_args(args, head_args, tail_args):
 
 
 def _set_router_args(args):
-    from pkg_resources import resource_filename
-    args.yaml_path = resource_filename('jina', '/'.join(('resources', 'executors.route.yml')))
+    args.yaml_path = 'route'
     args.name = 'router'
 
 

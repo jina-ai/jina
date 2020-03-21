@@ -92,10 +92,8 @@ class SpawnDictPodHelper(SpawnPodHelper):
 
 
 def peas_args2cust_pod_req(peas_args: Dict):
-    from ..main.parser import set_pea_parser
-
     def pod2pea_args_list(args):
-        return kwargs2list(vars(set_pea_parser().parse_known_args(kwargs2list(vars(args)))[0]))
+        return kwargs2list(vars(args))
 
     req = jina_pb2.SpawnRequest()
     if peas_args['head']:
