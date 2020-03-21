@@ -128,6 +128,11 @@ class NTLogger:
         if self.log_level <= LogVerbosity.WARNING:
             sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
 
+    def success(self, msg: str, **kwargs):
+        """log warn-level message"""
+        if self.log_level <= LogVerbosity.SUCCESS:
+            sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
+
 
 def get_logger(context: str, context_len: int = 10,
                log_profile: bool = False,

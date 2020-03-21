@@ -37,9 +37,9 @@ class GrpcClient:
         try:
             grpc.channel_ready_future(self._channel).result(timeout=args.timeout_ready / 1000)
         except grpc.FutureTimeoutError:
-            self.logger.error('can not connect to the server at %s:%d after %d ms, please double check the '
-                              'ip and grpc port number of the server'
-                              % (args.host, args.port_grpc, args.timeout_ready))
+            self.logger.critical('can not connect to the server at %s:%d after %d ms, please double check the '
+                                 'ip and grpc port number of the server'
+                                 % (args.host, args.port_grpc, args.timeout_ready))
             raise GRPCServerError('can not connect to the server at %s:%d' % (args.host, args.port_grpc))
 
             # create new stub
