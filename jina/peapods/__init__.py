@@ -31,7 +31,7 @@ def Pea(args: 'argparse.Namespace', allow_remote: bool = True):
 
 
 def Pod(args: Union['argparse.Namespace', Dict], allow_remote: bool = True):
-    """Initialize a :class:`BasePod`, :class:`RemotePod` and :class:`ParsedPod`
+    """Initialize a :class:`BasePod`, :class:`RemotePod`, :class:`ParsedPod` or :class:`RemoteParsedPod`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemotePod`

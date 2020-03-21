@@ -14,7 +14,7 @@ from ..main.parser import set_pod_parser, set_gateway_parser
 
 
 class BasePod:
-    """A BasePod is a set of peas, which run in parallel. They share the same input and output socket.
+    """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
@@ -215,9 +215,13 @@ class BasePod:
 
     def join(self):
         """Wait until all peas exit"""
-        for s in self.peas:
-            s.join()
-        self.peas.clear()
+        try:
+            for s in self.peas:
+                s.join()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.peas.clear()
 
     def close(self):
         self.stack.close()
@@ -329,6 +333,7 @@ class FlowPod(BasePod):
             return super().start()
         else:
             from .remote import RemoteParsedPod
+            print(self.peas_args)
             _remote_pod = RemoteParsedPod(self.peas_args)
             self.stack = ExitStack()
             self.stack.enter_context(_remote_pod)

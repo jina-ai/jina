@@ -119,6 +119,7 @@ class MyTestCase(JinaTestCase):
         with f.build(copy_flow=True) as fl:
             fl.search(raw_bytes=random_docs(1), in_proto=True, callback=get_result, top_k=100)
 
+    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_index_remote(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
 
@@ -133,6 +134,31 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(yaml_path='yaml/test-index.yml',
                        replicas=3, separated_workspace=True,
                        host='localhost', port_grpc=f_args.port_grpc)
+        with f.build(copy_flow=True) as fl:
+            fl.index(raw_bytes=random_docs(1000), in_proto=True)
+
+        for j in range(3):
+            self.assertTrue(os.path.exists('test2-%d/test2.bin' % j))
+            self.assertTrue(os.path.exists('test2-%d/tmp2' % j))
+            self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d' % j)
+
+    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    def test_index_remote_rpi(self):
+        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
+
+        def start_gateway():
+            with GatewayPod(f_args):
+                time.sleep(20)
+
+        t = mp.Process(target=start_gateway)
+        t.daemon = True
+        t.start()
+
+        f = (Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY)
+             .add(yaml_path='yaml/test-index.yml',
+                  replicas=3, separated_workspace=True,
+                  host='192.168.31.76', port_grpc=44444))
+
         with f.build(copy_flow=True) as fl:
             fl.index(raw_bytes=random_docs(1000), in_proto=True)
 

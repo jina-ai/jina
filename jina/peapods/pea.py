@@ -172,12 +172,6 @@ class BasePea(metaclass=PeaMeta):
             except Empty:
                 pass
 
-    def join(self):
-        try:
-            super().join()
-        except KeyboardInterrupt:
-            pass
-
     def load_executor(self):
         """Load the executor to this BasePea, specified by ``exec_yaml_path`` CLI argument.
 
@@ -189,7 +183,7 @@ class BasePea(metaclass=PeaMeta):
                 self.executor.attach(pea=self)
                 # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:
-                raise ExecutorFailToLoad('can not executor from %s' % self.args.yaml_path)
+                raise ExecutorFailToLoad
         else:
             self.logger.warning('this BasePea has no executor attached, you may want to double-check '
                                 'if it is a mistake or on purpose (using this BasePea as router/map-reduce)')
@@ -276,7 +270,7 @@ class BasePea(metaclass=PeaMeta):
         except EventLoopEnd:
             self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
-            self.logger.error('component can not be correctly loaded, terminated')
+            self.logger.error('can not executor from %s' % self.args.yaml_path)
         except MemoryOverHighWatermark:
             self.logger.error(
                 'memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
