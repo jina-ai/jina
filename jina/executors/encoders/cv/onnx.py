@@ -12,59 +12,51 @@ class OnnxImageEncoder(BaseImageEncoder):
     Internally, :class:`OnnxImageEncoder` wraps the models from `onnxruntime`.
     """
     def __init__(self,
-                 model_name: str = 'mobilenetv2-1.0',
                  output_feature: str = 'mobilenetv20_features_relu1_fwd',
-                 model_fn: str = 'https://s3.amazonaws.com/onnx-model-zoo/mobilenet/mobilenetv2-1.0/mobilenetv2-1.0.onnx',
+                 model_path: str = 'https://s3.amazonaws.com/onnx-model-zoo/mobilenet/mobilenetv2-1.0/mobilenetv2-1.0.onnx',
                  pool_strategy: str = 'mean',
                  *args, **kwargs):
         """
 
-        :param model_name: the name of the model. Supported models are listed at
-            https://github.com/onnx/models#image_classification
         :param output_feature: the name of the layer for feature extraction.
-        :param model_fn: the path/URL of the model in the format of `.onnx`.
+        :param model_path: the path/URL of the model in the format of `.onnx`. Check a list of available pretrained
+            models at https://github.com/onnx/models#image_classification
         :param pool_strategy: the pooling strategy
             - `None` means that the output of the model will be the 4D tensor output of the last convolutional block.
-            - `mean` means that global average pooling will be applied to the output of the last convolutional block, and
-                thus the output of the model will be a 2D tensor.
+            - `mean` means that global average pooling will be applied to the output of the last convolutional block,
+            and thus the output of the model will be a 2D tensor.
             - `max` means that global max pooling will be applied.
         """
         super().__init__(*args, **kwargs)
-        self.model_name = model_name
         self.pool_strategy = pool_strategy
-        self.model_folder = 'onnx'
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
         self.outputs_name = output_feature
-        self.model_url = None
-        self.raw_model_fn = None
-        if self._is_url(model_fn):
-            self.model_url = model_fn
-        elif os.path.exists(model_fn):
-            self.raw_model_fn = model_fn
-        else:
-            raise ValueError('invalid model_fn: {}'.format(model_fn))
+        self.raw_model_path = model_path
 
     def post_init(self):
-        import onnx
         import onnxruntime
-        import urllib.request
-        tmp_folder = os.path.join(self.current_workspace, self.model_folder)
-        if not os.path.exists(tmp_folder):
-            os.mkdir(tmp_folder)
-        if self.raw_model_fn is None:
-            self.raw_model_fn = os.path.join(tmp_folder, '{}.raw'.format(self.model_name))
-        self.model_fn = os.path.join(tmp_folder, '{}.onnx'.format(self.model_name))
-        if not os.path.exists(self.model_fn):
-            if self.model_url is not None and not os.path.exists(self.raw_model_fn):
-                urllib.request.urlretrieve(self.model_url, filename=self.raw_model_fn)
-            model = onnx.load(self.raw_model_fn)
-            feature_map = onnx.helper.ValueInfoProto()
-            feature_map.name = self.outputs_name
-            model.graph.output.append(feature_map)
-            onnx.save(model, self.model_fn)
-        self.model = onnxruntime.InferenceSession(self.model_fn, None)
+        model_name = self.raw_model_path.split('/')[-1]
+        self.tmp_model_path = os.path.join(self.current_workspace, '{}.tmp'.format(model_name))
+        if self._is_url(self.raw_model_path):
+            import urllib.request
+            download_path, *_ = urllib.request.urlretrieve(self.raw_model_path)
+            self.raw_model_path = download_path
+            self.logger.info('download the model at {}'.format(self.raw_model_path))
+        if not os.path.exists(self.tmp_model_path):
+            self._append_outputs(self.raw_model_path, self.outputs_name, self.tmp_model_path)
+            self.logger.info('save the model with outputs [{}] at {}'.format(self.outputs_name, self.tmp_model_path))
+        self.model = onnxruntime.InferenceSession(self.tmp_model_path, None)
         self.inputs_name = self.model.get_inputs()[0].name
+
+    @staticmethod
+    def _append_outputs(input_fn, outputs_name_to_append, output_fn):
+        import onnx
+        model = onnx.load(input_fn)
+        feature_map = onnx.helper.ValueInfoProto()
+        feature_map.name = outputs_name_to_append
+        model.graph.output.append(feature_map)
+        onnx.save(model, output_fn)
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
@@ -92,4 +84,3 @@ class OnnxImageEncoder(BaseImageEncoder):
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         return url_pat.match(text) is not None
-
