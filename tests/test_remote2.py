@@ -121,6 +121,7 @@ class MyTestCase(JinaTestCase):
 
         SpawnDictPodHelper(p.peas_args).start()
 
+    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_customized_pod2(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pod_parser().parse_args(

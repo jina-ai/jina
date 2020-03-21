@@ -21,7 +21,7 @@ class ColorFormatter(Formatter):
         'INFO': dict(color='white', on_color=None),  # cyan
         'WARNING': dict(color='yellow', on_color='on_grey'),  # yellow
         'ERROR': dict(color='white', on_color='on_red'),  # 31 for red
-        'CRITICAL': dict(color='white', on_color='on_green'),  # white on red bg
+        'CRITICAL': dict(color='green', on_color=None),  # white on red bg
     }  #: log-level to color mapping
 
     def format(self, record):
