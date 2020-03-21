@@ -37,7 +37,7 @@ class GatewayPea:
 
     def __enter__(self):
         self.server.start()
-        self.logger.critical('gateway is listening at: %s' % self.bind_address)
+        self.logger.success('gateway is listening at: %s' % self.bind_address)
         self._stop_event.clear()
         self.is_ready.set()
         return self
@@ -49,7 +49,7 @@ class GatewayPea:
         self.p_servicer.close()
         self.server.stop(None)
         self._stop_event.set()
-        self.logger.critical(__stop_msg__)
+        self.logger.success(__stop_msg__)
 
     def join(self):
         try:
@@ -112,7 +112,7 @@ class GatewayPea:
                     p = Pod(_args, allow_remote=False)
                     from .remote import peas_args2parsed_pod_req
                     request = peas_args2parsed_pod_req(p.peas_args)
-                elif _req_type == jina_pb2.SpawnRequest.PodDictSpawnRequest:
+                elif _req_type == jina_pb2.SpawnRequest.ParsedPodSpawnRequest:
                     from .remote import parsed_pod_req2peas_args
                     p = Pod(parsed_pod_req2peas_args(_req), allow_remote=False)
                 else:

@@ -47,7 +47,7 @@ class GrpcClient:
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
 
         # attache response handler
-        self.logger.critical('connected to the gateway at %s:%d!' % (self.args.host, self.args.port_grpc))
+        self.logger.success('connected to the gateway at %s:%d!' % (self.args.host, self.args.port_grpc))
         self.is_closed = False
 
     def call(self, *args, **kwargs):
@@ -90,5 +90,5 @@ class GrpcClient:
         """Gracefully shutdown the client and release all grpc-related resources """
         if not self.is_closed:
             self._channel.close()
-            self.logger.critical(__stop_msg__)
+            self.logger.success(__stop_msg__)
             self.is_closed = True

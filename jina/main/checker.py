@@ -60,7 +60,7 @@ class NetworkChecker:
                 default_logger.warning('message lost %.0f%% (%d/%d) ' % (
                     (1 - total_success / args.retries) * 100, args.retries - total_success, args.retries))
             if total_success > 0:
-                default_logger.critical('avg. latency: %.0f ms' % (total_time / total_success * 1000))
+                default_logger.success('avg. latency: %.0f ms' % (total_time / total_success * 1000))
                 exit(0)
         except KeyboardInterrupt:
             pass

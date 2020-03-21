@@ -77,7 +77,6 @@ class BasePea(metaclass=PeaMeta):
         self.name = self.__class__.__name__
 
         self.is_ready = _get_event(self)
-        self.is_shutdown = _get_event(self)
 
         self.last_dump_time = time.perf_counter()
 
@@ -165,7 +164,7 @@ class BasePea(metaclass=PeaMeta):
     def log_iterator(self):
         """Get the last log using iterator """
         from ..logging.queue import __log_queue__
-        while not self.is_shutdown.is_set():
+        while self.is_ready.is_set():
             try:
                 yield __log_queue__.get_nowait()
             except Empty:
@@ -226,13 +225,12 @@ class BasePea(metaclass=PeaMeta):
     def set_ready(self, *args, **kwargs):
         """Set the status of the pea to ready """
         self.is_ready.set()
-        self.logger.critical(__ready_msg__)
+        self.logger.success(__ready_msg__)
 
-    def set_shutdown(self, *args, **kwargs):
+    def unset_ready(self, *args, **kwargs):
         """Set the status of the pea to shutdown """
         self.is_ready.clear()
-        self.is_shutdown.set()
-        self.logger.critical(__stop_msg__)
+        self.logger.success(__stop_msg__)
 
     def loop_body(self):
         """The body pf the request loop """
@@ -296,7 +294,7 @@ class BasePea(metaclass=PeaMeta):
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
             self.loop_teardown()
-            self.set_shutdown()
+            self.unset_ready()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -312,12 +310,9 @@ class BasePea(metaclass=PeaMeta):
 
     def close(self):
         """Gracefully close this pea and release all resources """
-        r = None
-        if not self.is_shutdown.is_set():
-            if hasattr(self, 'ctrl_addr'):
-                r = send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                      timeout=self.args.timeout_ctrl)
-        return r
+        if self.is_ready.is_set() and hasattr(self, 'ctrl_addr'):
+            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                                     timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
@@ -336,7 +331,6 @@ class BasePea(metaclass=PeaMeta):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
-        self.is_shutdown.wait()
 
 
 class ContainerPea(BasePea):
@@ -422,7 +416,7 @@ class ContainerPea(BasePea):
                 # print all error message when fails
                 if __ready_msg__ in msg:
                     self.is_ready.set()
-                    self.logger.critical(__ready_msg__)
+                    self.logger.success(__ready_msg__)
                 logger.info(line.strip().decode())
         except docker.errors.NotFound:
             self.logger.error('the container can not be started, check your arguments, entrypoint')

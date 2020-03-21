@@ -32,7 +32,7 @@ class MyTestCase(JinaTestCase):
         time.sleep(.1)
         logger.debug('warn, warn, warn')
         time.sleep(.1)
-        logger.critical('crit')
+        logger.success('crit')
         time.sleep(.1)
 
     def tearDown(self) -> None:

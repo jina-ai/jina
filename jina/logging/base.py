@@ -20,8 +20,9 @@ class ColorFormatter(Formatter):
         'DEBUG': dict(color='white', on_color=None),  # white
         'INFO': dict(color='white', on_color=None),  # cyan
         'WARNING': dict(color='yellow', on_color='on_grey'),  # yellow
-        'ERROR': dict(color='white', on_color='on_red'),  # 31 for red
-        'CRITICAL': dict(color='green', on_color=None),  # white on red bg
+        'ERROR': dict(color='red', on_color=None),  # 31 for red
+        'CRITICAL': dict(color='white', on_color='on_red'),  # white on red bg
+        'SUCCESS': dict(color='green', on_color=None),  # white on red bg
     }  #: log-level to color mapping
 
     def format(self, record):
@@ -109,7 +110,7 @@ class NTLogger:
 
     def critical(self, msg: str, **kwargs):
         """log info-level message"""
-        if self.log_level <= LogVerbosity.CRITICAL:
+        if self.log_level <= LogVerbosity.success:
             sys.stdout.write('C:%s:%s' % (self.context, self._planify(msg)))
 
     def debug(self, msg: str, **kwargs):
@@ -218,5 +219,9 @@ def get_logger(context: str, context_len: int = 10,
     console_handler.setLevel(verbose_level.value)
     console_handler.setFormatter(ColorFormatter(fmt_str))
     logger.addHandler(console_handler)
+
+    logging.SUCCESS = 25  # between WARNING and INFO
+    logging.addLevelName(logging.SUCCESS, 'SUCCESS')
+    setattr(logger, 'success', lambda message, *args: logger._log(logging.SUCCESS, message, args))
 
     return logger

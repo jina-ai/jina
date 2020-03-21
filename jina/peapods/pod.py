@@ -190,7 +190,7 @@ class BasePod:
 
     @property
     def is_shutdown(self) -> bool:
-        return all(p.is_shutdown.is_set() for p in self.peas)
+        return all(not p.is_ready.is_set() for p in self.peas)
 
     def __enter__(self):
         self.start()
