@@ -1,7 +1,9 @@
 import argparse
 import copy
+import time
 from contextlib import ExitStack
 from queue import Empty
+from threading import Thread
 from typing import Set, Dict, List, Callable, Union
 
 from . import Pea
@@ -29,6 +31,25 @@ class BasePod:
         self.deducted_head = None
         self.deducted_tail = None
         self.peas_args = self._parse_args(args)
+        self.sentinel_threads = []
+        if isinstance(args, argparse.Namespace) and getattr(args, 'shutdown_idle', False):
+            self.sentinel_threads.append(Thread(target=self.close_if_idle,
+                                                name='sentinel-shutdown-idle',
+                                                daemon=True))
+
+    @property
+    def is_idle(self) -> bool:
+        """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
+        """
+        return all(p.is_idle for p in self.peas if p.is_ready.is_set())
+
+    def close_if_idle(self):
+        """Check every second if the pod is in idle, if yes, then close the pod"""
+        while True:
+            if self.is_idle:
+                self.close()
+                break  # only run once
+            time.sleep(1)
 
     @property
     def name(self) -> str:
@@ -141,6 +162,10 @@ class BasePod:
             # s.host_in = __default_host__
             # s.host_out = __default_host__
 
+    def start_sentinels(self):
+        for t in self.sentinel_threads:
+            t.start()
+
     def start(self):
         """Start to run all Peas in this BasePod.
 
@@ -168,6 +193,7 @@ class BasePod:
             self.peas.append(p)
             self.stack.enter_context(p)
 
+        self.start_sentinels()
         return self
 
     @property
@@ -338,6 +364,8 @@ class FlowPod(BasePod):
             _remote_pod = RemoteMutablePod(self.peas_args)
             self.stack = ExitStack()
             self.stack.enter_context(_remote_pod)
+            self.start_sentinels()
+            return self
 
 
 def _set_peas_args(args, head_args, tail_args):
@@ -437,6 +465,8 @@ class GatewayPod(BasePod):
             p = GatewayPea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
+
+        self.start_sentinels()
         return self
 
 

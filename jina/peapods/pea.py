@@ -74,6 +74,7 @@ class BasePea(metaclass=PeaMeta):
         self.name = self.__class__.__name__
 
         self.is_ready = _get_event(self)
+        self.last_active_time = time.perf_counter()
 
         self.last_dump_time = time.perf_counter()
 
@@ -126,6 +127,11 @@ class BasePea(metaclass=PeaMeta):
 
         self.executor(self.request_type)
         return self
+
+    @property
+    def is_idle(self) -> bool:
+        """Return ``True`` when current time is ``max_idle_time`` seconds late than the last active time"""
+        return (time.perf_counter() - self.last_active_time) > self.args.max_idle_time
 
     @property
     def request(self) -> 'jina_pb2.Request':
@@ -252,6 +258,7 @@ class BasePea(metaclass=PeaMeta):
 
             self.save_executor(self.args.dump_interval)
             self.check_memory_watermark()
+            self.last_active_time = time.perf_counter()
 
     def loop_teardown(self):
         """Stop the request loop """
