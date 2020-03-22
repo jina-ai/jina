@@ -93,6 +93,21 @@ class MyTestCase(JinaTestCase):
             with self.subTest(runtime=j):
                 _test_flow_pod(j)
 
+    def test_pod_context_autoshutdown(self):
+        def _test_pod_context(runtime):
+            args = set_pod_parser().parse_args(['--runtime', runtime,
+                                                '--replicas', '2',
+                                                '--max_idle_time', '5',
+                                                '--shutdown_idle'])
+            with BasePod(args) as bp:
+                bp.join()
+
+            BasePod(args).start().close()
+
+        for j in ('process', 'thread'):
+            with self.subTest(runtime=j):
+                _test_pod_context(j)
+
 
 if __name__ == '__main__':
     unittest.main()

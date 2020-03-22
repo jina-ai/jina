@@ -67,6 +67,7 @@ def set_logger_parser(parser=None):
                         help='refresh time interval in seconds, set to -1 to persist all grouped logs')
     return parser
 
+
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -173,6 +174,9 @@ def set_pea_parser(parser=None):
                           '-1 means no restriction')
     gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='thread',
                      help='the parallel runtime of the pod')
+    gp5.add_argument('--max_idle_time', type=int,
+                     help='label this pea as inactive when it does not '
+                          'process any request after certain time (in second)')
 
     _set_grpc_parser(parser)
     return parser
@@ -192,6 +196,8 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--replica_type', type=ReplicaType.from_string, choices=list(ReplicaType),
                      default=ReplicaType.PUSH_NONBLOCK,
                      help='replica type of the concurrent peas')
+    gp4.add_argument('--shutdown_idle', action='store_true', default=False,
+                     help='shutdown this pod when all peas are idle')
     return parser
 
 
