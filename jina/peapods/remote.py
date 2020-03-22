@@ -68,6 +68,7 @@ class PodSpawnHelper(PeaSpawnHelper):
                 send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
                                   timeout=self.timeout_shutdown)
             GrpcClient.close(self)
+            self.is_closed = True
 
 
 class MutablePodSpawnHelper(PodSpawnHelper):
