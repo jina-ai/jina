@@ -168,6 +168,8 @@ class BasePod:
             self.peas.append(p)
             self.stack.enter_context(p)
 
+        return self
+
     @property
     def log_iterator(self):
         """Get the last log using iterator
@@ -193,8 +195,7 @@ class BasePod:
         return all(not p.is_ready.is_set() for p in self.peas)
 
     def __enter__(self):
-        self.start()
-        return self
+        return self.start()
 
     @property
     def status(self) -> List:
@@ -227,8 +228,8 @@ class BasePod:
         self.stack.close()
 
 
-class ParsedPod(BasePod):
-    """A :class:`ParsedPod` is a pod where all peas and their connections are given"""
+class MutablePod(BasePod):
+    """A :class:`MutablePod` is a pod where all peas and their connections are given"""
 
     def _parse_args(self, args):
         return args
@@ -236,7 +237,8 @@ class ParsedPod(BasePod):
 
 class FlowPod(BasePod):
     """A :class:`FlowPod` is like a :class:`BasePod`, but it exposes more interfaces for tweaking its connections with
-    other Pods, which comes in handy when used in the Flow API """
+    other Pods, which comes in handy when used in the Flow API
+    """
 
     def __init__(self, kwargs: Dict, send_to: Set[str] = None,
                  recv_from: Set[str] = None, parser: Callable = set_pod_parser):
@@ -332,8 +334,8 @@ class FlowPod(BasePod):
         if self._args.host == __default_host__:
             return super().start()
         else:
-            from .remote import RemoteParsedPod
-            _remote_pod = RemoteParsedPod(self.peas_args)
+            from .remote import RemoteMutablePod
+            _remote_pod = RemoteMutablePod(self.peas_args)
             self.stack = ExitStack()
             self.stack.enter_context(_remote_pod)
 
@@ -435,6 +437,7 @@ class GatewayPod(BasePod):
             p = GatewayPea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
+        return self
 
 
 class GatewayFlowPod(GatewayPod, FlowPod):

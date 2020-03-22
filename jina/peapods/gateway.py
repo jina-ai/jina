@@ -15,39 +15,52 @@ from ..proto import jina_pb2_grpc, jina_pb2
 
 
 class GatewayPea:
+    """A :class:`BasePea`-like class for holding Gateway.
+
+    It has similar :meth:`start` and context interface as :class:`BasePea`,
+    but it is not built on thread or process. It works directly in the main thread main process.
+
+    This is because (1) asyncio does not
+    work properly on multi-thread (2) spawn another process in a daemon process
+    is not allowed.
+    """
 
     def __init__(self, args):
         if not args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
+
         self.logger = get_logger(self.__class__.__name__, **vars(args))
-        self.server = grpc.server(
+        if args.allow_spawn:
+            self.logger.critical('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')
+        self._server = grpc.server(
             AsyncioExecutor(),
             options=[('grpc.max_send_message_length', args.max_message_size),
                      ('grpc.max_receive_message_length', args.max_message_size)])
-        if args.allow_spawn:
-            self.logger.warning('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')
 
-        self.p_servicer = self._Pea(args, self.logger)
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.p_servicer, self.server)
-        self.bind_address = '{0}:{1}'.format(args.host, args.port_grpc)
-        self.server.add_insecure_port(self.bind_address)
+        self._p_servicer = self._Pea(args)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
+        self._bind_address = '{0}:{1}'.format(args.host, args.port_grpc)
+        self._server.add_insecure_port(self._bind_address)
         self._stop_event = threading.Event()
         self.is_ready = threading.Event()
 
     def __enter__(self):
-        self.server.start()
-        self.logger.success('gateway is listening at: %s' % self.bind_address)
+        return self.start()
+
+    def start(self):
+        self._server.start()
+        self.logger.success('gateway is listening at: %s' % self._bind_address)
         self._stop_event.clear()
         self.is_ready.set()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.stop()
+        self.close()
 
-    def stop(self):
-        self.p_servicer.close()
-        self.server.stop(None)
+    def close(self):
+        self._p_servicer.close()
+        self._server.stop(None)
         self._stop_event.set()
         self.logger.success(__stop_msg__)
 
@@ -59,11 +72,11 @@ class GatewayPea:
 
     class _Pea(jina_pb2_grpc.JinaRPCServicer):
 
-        def __init__(self, args, logger):
+        def __init__(self, args):
             super().__init__()
             self.args = args
             self.name = args.name or self.__class__.__name__
-            self.logger = logger or get_logger(self.name, **vars(args))
+            self.logger = get_logger(self.name, **vars(args))
             self.executor = BaseExecutor()
             self.executor.attach(pea=self)
             self.peapods = []
@@ -110,11 +123,11 @@ class GatewayPea:
                     # need to return the new port and host ip number back
                     # we do not allow remote spawn request to spawn a "remote-remote" pea/pod
                     p = Pod(_args, allow_remote=False)
-                    from .remote import peas_args2parsed_pod_req
-                    request = peas_args2parsed_pod_req(p.peas_args)
-                elif _req_type == jina_pb2.SpawnRequest.ParsedPodSpawnRequest:
-                    from .remote import parsed_pod_req2peas_args
-                    p = Pod(parsed_pod_req2peas_args(_req), allow_remote=False)
+                    from .remote import peas_args2mutable_pod_req
+                    request = peas_args2mutable_pod_req(p.peas_args)
+                elif _req_type == jina_pb2.SpawnRequest.MutablepodSpawnRequest:
+                    from .remote import mutable_pod_req2peas_args
+                    p = Pod(mutable_pod_req2peas_args(_req), allow_remote=False)
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)
 
