@@ -55,8 +55,7 @@ class GrpcClient:
         raise NotImplementedError
 
     def __enter__(self):
-        self.start()
-        return self
+        return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
@@ -65,9 +64,8 @@ class GrpcClient:
         """Wrapping :meth:`call` and provide exception captures
         """
 
-        r = None
         try:
-            r = self.call(*args, **kwargs)
+            self.call(*args, **kwargs)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.RpcError as rpc_error_call:  # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
@@ -84,7 +82,7 @@ class GrpcClient:
         finally:
             self.close()
 
-        return r
+        return self
 
     def close(self):
         """Gracefully shutdown the client and release all grpc-related resources """

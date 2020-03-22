@@ -2,7 +2,6 @@ import asyncio
 import os
 import sys
 import tempfile
-import time
 import uuid
 from typing import List, Callable
 from typing import Tuple
@@ -118,7 +117,7 @@ class Zmqlet:
         return zmq.Context()
 
     def __enter__(self):
-        time.sleep(.1)  # sleep a bit until everything is ready
+        # time.sleep(.1)  # sleep a bit until everything is ready
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

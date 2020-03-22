@@ -29,7 +29,10 @@ class AsyncioExecutor(futures.Executor):
 
         super().__init__()
         self._shutdown = False
-        self._loop = loop or asyncio.get_event_loop()
+        try:
+            self._loop = loop or asyncio.get_event_loop()
+        except RuntimeError:
+            self._loop = asyncio.new_event_loop()
         self._thread = threading.Thread(target=_loop_mgr, args=(self._loop,),
                                         daemon=True)
         self._thread.start()

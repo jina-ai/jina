@@ -51,7 +51,10 @@ class MyTestCase(JinaTestCase):
         print(args)
 
         with ContainerPea(args):
-            time.sleep(2)
+            pass
+
+        time.sleep(2)
+        ContainerPea(args).start().close()
 
     def test_simple_container_with_ext_yaml(self):
         args = set_pea_parser().parse_args(['--image', img_name,

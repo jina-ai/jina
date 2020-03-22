@@ -39,7 +39,7 @@ class PeaMeta(type):
         # switch to the new backend
         _cls = {
             'thread': threading.Thread,
-            'process': multiprocessing.Process
+            'process': multiprocessing.Process,
         }.get(getattr(args[0], 'runtime', 'thread'))
 
         # rebuild the class according to mro
@@ -317,17 +317,20 @@ class BasePea(metaclass=PeaMeta):
     @property
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
-        if getattr(self, 'ctrl_addr'):
+        if self.is_ready.is_set() and getattr(self, 'ctrl_addr'):
             return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
                                      timeout=self.args.timeout_ctrl)
 
-    def __enter__(self):
-        self.start()
+    def start(self):
+        super().start()
         _timeout = getattr(self.args, 'timeout_ready', 5e3) / 1e3
         if self.is_ready.wait(_timeout):
             return self
         else:
             raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name, _timeout * 1e3))
+
+    def __enter__(self):
+        return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()

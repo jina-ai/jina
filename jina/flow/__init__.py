@@ -379,8 +379,7 @@ class Flow:
         return self.build(*args, **kwargs)
 
     def __enter__(self):
-        self.start()
-        return self
+        return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
@@ -408,6 +407,8 @@ class Flow:
             self.num_peas))
 
         self.logger.success('flow is now ready for use, current build_level is %s' % self._build_level)
+
+        return self
 
     @property
     def num_pods(self) -> int:
