@@ -4,7 +4,8 @@ import time
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
-from jina.peapods.pea import ContainerPea, BasePea
+from jina.peapods.container import ContainerPea
+from jina.peapods.pea import BasePea
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 

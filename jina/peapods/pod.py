@@ -228,8 +228,8 @@ class BasePod:
         self.stack.close()
 
 
-class ParsedPod(BasePod):
-    """A :class:`ParsedPod` is a pod where all peas and their connections are given"""
+class MutablePod(BasePod):
+    """A :class:`MutablePod` is a pod where all peas and their connections are given"""
 
     def _parse_args(self, args):
         return args
@@ -334,8 +334,8 @@ class FlowPod(BasePod):
         if self._args.host == __default_host__:
             return super().start()
         else:
-            from .remote import RemoteParsedPod
-            _remote_pod = RemoteParsedPod(self.peas_args)
+            from .remote import RemoteMutablePod
+            _remote_pod = RemoteMutablePod(self.peas_args)
             self.stack = ExitStack()
             self.stack.enter_context(_remote_pod)
 

@@ -23,7 +23,7 @@ def Pea(args: 'argparse.Namespace', allow_remote: bool = True):
         from .remote import RemotePea
         return RemotePea(args)
     elif args.image:
-        from .pea import ContainerPea
+        from .container import ContainerPea
         return ContainerPea(args)
     else:
         from .pea import BasePea
@@ -31,7 +31,7 @@ def Pea(args: 'argparse.Namespace', allow_remote: bool = True):
 
 
 def Pod(args: Union['argparse.Namespace', Dict], allow_remote: bool = True):
-    """Initialize a :class:`BasePod`, :class:`RemotePod`, :class:`ParsedPod` or :class:`RemoteParsedPod`
+    """Initialize a :class:`BasePod`, :class:`RemotePod`, :class:`MutablePod` or :class:`RemoteMutablePod`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemotePod`
@@ -50,11 +50,11 @@ def Pod(args: Union['argparse.Namespace', Dict], allow_remote: bool = True):
 
         if len(hosts) == 1:
             if __default_host__ in hosts:
-                from .pod import ParsedPod
-                return ParsedPod(args)
+                from .pod import MutablePod
+                return MutablePod(args)
             else:
-                from .remote import RemoteParsedPod
-                return RemoteParsedPod(args)
+                from .remote import RemoteMutablePod
+                return RemoteMutablePod(args)
 
     if not allow_remote and args.host != __default_host__:
         args.host = __default_host__

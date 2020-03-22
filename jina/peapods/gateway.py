@@ -15,6 +15,15 @@ from ..proto import jina_pb2_grpc, jina_pb2
 
 
 class GatewayPea:
+    """A :class:`BasePea`-like class for holding Gateway.
+
+    It has similar :meth:`start` and context interface as :class:`BasePea`,
+    but it is not built on thread or process. It works directly in the main thread main process.
+
+    This is because (1) asyncio does not
+    work properly on multi-thread (2) spawn another process in a daemon process
+    is not allowed.
+    """
 
     def __init__(self, args):
         if not args.proxy and os.name != 'nt':
@@ -114,11 +123,11 @@ class GatewayPea:
                     # need to return the new port and host ip number back
                     # we do not allow remote spawn request to spawn a "remote-remote" pea/pod
                     p = Pod(_args, allow_remote=False)
-                    from .remote import peas_args2parsed_pod_req
-                    request = peas_args2parsed_pod_req(p.peas_args)
-                elif _req_type == jina_pb2.SpawnRequest.ParsedPodSpawnRequest:
-                    from .remote import parsed_pod_req2peas_args
-                    p = Pod(parsed_pod_req2peas_args(_req), allow_remote=False)
+                    from .remote import peas_args2mutable_pod_req
+                    request = peas_args2mutable_pod_req(p.peas_args)
+                elif _req_type == jina_pb2.SpawnRequest.MutablepodSpawnRequest:
+                    from .remote import mutable_pod_req2peas_args
+                    p = Pod(mutable_pod_req2peas_args(_req), allow_remote=False)
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)
 

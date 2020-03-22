@@ -7,8 +7,8 @@ from multiprocessing import Process
 from jina.logging import get_logger
 from jina.main.parser import set_gateway_parser, set_pea_parser, set_pod_parser
 from jina.peapods.pod import GatewayPod, BasePod
-from jina.peapods.remote import RemotePea, PodSpawnHelper, PeaSpawnHelper, ParsedPodSpawnHelper, RemotePod, \
-    RemoteParsedPod
+from jina.peapods.remote import RemotePea, PodSpawnHelper, PeaSpawnHelper, MutablePodSpawnHelper, RemotePod, \
+    RemoteMutablePod
 from tests import JinaTestCase
 
 
@@ -119,7 +119,7 @@ class MyTestCase(JinaTestCase):
         t.daemon = True
         t.start()
 
-        ParsedPodSpawnHelper(p.peas_args).start()
+        MutablePodSpawnHelper(p.peas_args).start()
 
     @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
     def test_customized_pod2(self):
@@ -136,7 +136,7 @@ class MyTestCase(JinaTestCase):
         t.daemon = True
         t.start()
 
-        with RemoteParsedPod(p.peas_args):
+        with RemoteMutablePod(p.peas_args):
             pass
         t.join()
 
