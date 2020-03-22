@@ -13,23 +13,18 @@ class ContainerPea(BasePea):
     It requires a non-empty valid ``args.image``.
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
-        if hasattr(args, 'image') and args.image:
-            super().__init__(args)
-        else:
-            raise ValueError('%s requires "args.image" to be set' % self.__class__)
-        self._container = None
+    def post_init(self):
         import docker
         self._client = docker.from_env()
 
-    def post_init(self):
-        non_defaults = {}
         from ..main.parser import set_pea_parser
         _defaults = vars(set_pea_parser().parse_args([]))
+        non_defaults = {}
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
         # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
         taboo = {'image', 'entrypoint', 'volumes', 'pull_latest'}
+
         for k, v in vars(self.args).items():
             if k in _defaults and k not in taboo and _defaults[k] != v:
                 non_defaults[k] = v
