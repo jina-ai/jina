@@ -72,8 +72,8 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Jina is a cloud-native neural search engine '
-                'powered by deep neural networks.'
+    description='Jina is the cloud-native neural search solution '
+                'powered by AI and deep learning technology.'
                 'It provides a universal solution of large-scale index and query '
                 'for media contents.',
     author='Jina Team and All Contributors',

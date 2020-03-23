@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.vendor="Jina AI Limited" \
       org.opencontainers.image.licenses="Apache 2.0" \
       org.opencontainers.image.title="Jina" \
-      org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI technology"
+      org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology"
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     python3-numpy python3-scipy python3-zmq python3-protobuf python3-grpcio && \
