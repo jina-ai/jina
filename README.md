@@ -7,8 +7,18 @@
 
 Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
 
-<!-- START doctoc -->
-<!-- END doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Getting Started](#getting-started)
+  - [Run the Container Image](#run-the-container-image)
+  - [Run without Container](#run-without-container)
+- [Test Your Installation](#test-your-installation)
+- [Documentation](#documentation)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Getting Started
 
