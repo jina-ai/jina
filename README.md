@@ -5,7 +5,7 @@
 ![Docs Build](https://github.com/jina-ai/jina/workflows/Docs%20Build/badge.svg?branch=master)
 
 
-Jina is *the* cloud-native semantic search solution powered by the state-of-the-art AI technology.
+Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI technology.
 
 
 ## Getting Started

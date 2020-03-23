@@ -9,7 +9,7 @@ LABEL maintainer="dev-team@jina.ai" \
       org.label-schema.url="https://jina.ai" \
       org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="Jina" \
-      org.label-schema.description="Jina is the cloud-native semantic search solution powered by SOTA AI technology"
+      org.label-schema.description="Jina is the cloud-native neural search solution powered by SOTA AI technology"
 
 WORKDIR /jina/
 

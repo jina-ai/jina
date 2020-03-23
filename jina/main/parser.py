@@ -15,7 +15,7 @@ def set_base_parser():
     from grpc import _grpcio_metadata
     # create the top-level parser
     parser = argparse.ArgumentParser(
-        epilog='Jina (v%s) is a cloud-native semantic search engine '
+        epilog='Jina (v%s) is a cloud-native neural search engine '
                'powered by deep neural networks.\n'
                'It provides a universal solution of large-scale index and query '
                'for media contents.\nVisit %s for documentations.' % (
