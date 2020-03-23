@@ -1,0 +1,17 @@
+name: TOC Generator
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  generateTOC:
+    name: TOC Generator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 3
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_AI }}

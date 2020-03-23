@@ -7,6 +7,8 @@
 
 Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
 
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 ## Getting Started
 
