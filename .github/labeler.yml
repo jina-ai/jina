@@ -1,0 +1,73 @@
+# Add 'label1' to any changes within 'example' folder or any subfolders
+area/docs:
+  - docs/**/*
+  - ./*.md
+
+area/testing:
+  - tests/**/*
+
+area/setup:
+  - ./setup.py
+  - extra-requirements.txt
+  - requirements.txt
+  - MANIFEST.in
+
+area/core:
+  - jina/**/*
+
+area/helper:
+  - jina/*.py
+
+area/network:
+  - jina/peapods/**/*
+  - jina/proto/**/*
+
+area/housekeeping:
+  - .github/**/*
+  - ./.gitignore
+
+area/docker:
+  - Dockerfiles/**/*
+  - ./.dockerignore
+
+component/client:
+  - jina/clients/**/*
+
+component/driver:
+  - jina/drivers/**/*
+
+component/executor:
+  - jina/executors/**/*
+
+executor/meta:
+  - jina/executors/*.py
+
+executor/encoder:
+  - jina/executors/encoders/**/*
+
+executor/indexer:
+  - jina/executors/indexers/**/*
+
+executor/ranker:
+  - jina/executors/rankers/**/*
+
+executor/transformer:
+  - jina/executors/transformers/**/*
+
+component/flow:
+  - jina/flow/**/*
+
+component/logging:
+  - jina/logging/**/*
+
+component/entrypoint:
+  - jina/main/**/*
+
+component/peapod:
+  - jina/peapods/**/*
+
+component/proto:
+  - jina/proto/**/*
+
+component/resource:
+  - jina/resources/**/*
