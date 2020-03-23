@@ -15,6 +15,9 @@ area/setup:
 area/core:
   - jina/**/*
 
+area/helper:
+  - jina/*.py
+
 area/network:
   - jina/peapods/**/*
   - jina/proto/**/*
