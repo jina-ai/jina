@@ -63,7 +63,7 @@ class PyClient(GrpcClient):
 
     def dry_run(self) -> bool:
         """Send a DRYRUN request to the server, passing through all pods on the server
-        useful for testing connectivity and debuging
+        useful for testing connectivity and debugging
 
         :return: if dry run is successful or not
         """
