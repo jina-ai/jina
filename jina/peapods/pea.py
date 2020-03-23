@@ -236,7 +236,7 @@ class BasePea(metaclass=PeaMeta):
         self.logger.success(__stop_msg__)
 
     def loop_body(self):
-        """The body pf the request loop """
+        """The body of the request loop """
 
         def _callback(msg):
             try:
