@@ -20,8 +20,7 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo ::set-env name=JINA_VERSION::$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)
-          sed '3q;d' ./jina/__init__.py | cut -d \' -f2
+          echo ::set-env name=JINA_VERSION::"$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)"
       - name: Run Buildx and Upload to Docker Cloud
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
