@@ -50,14 +50,14 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        # make sure docker exist
-        docker ps
-        cd tests && python -m unittest *.py -v
-      #      run: |
-      #        pip install pytest
-      #        pip install pytest-cov
-      #        cd tests && pytest *.py --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov=com --cov-report=xml --cov-report=html
-      #      shell: bash
-      timeout-minutes: 10
+      - name: Test with pytest
+        run: |
+          # make sure docker exist
+          docker ps
+          cd tests && python -m unittest *.py -v
+        #      run: |
+        #        pip install pytest
+        #        pip install pytest-cov
+        #        cd tests && pytest *.py --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov=com --cov-report=xml --cov-report=html
+        #      shell: bash
+        timeout-minutes: 10
