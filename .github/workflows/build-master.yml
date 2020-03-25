@@ -30,6 +30,7 @@ jobs:
           directory: docs/_build/html
 
   update-docker:
+    needs: update-doc
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

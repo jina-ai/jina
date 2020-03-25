@@ -22,8 +22,9 @@ def set_base_parser():
                    colored(__version__, 'green'),
                    colored('https://docs.jina.ai', 'cyan', attrs=['underline'])),
         formatter_class=_chf)
-
-    parser.add_argument('-v', '--version', action='version',
+    parser.add_argument('-v', '--version', action='version', version=__version__,
+                        help='show Jina version')
+    parser.add_argument('--version-full', action='version',
                         version='jina: %s\n'
                                 'jina-proto: %s\n'
                                 'jina-vcs-tag: %s\n'
@@ -45,7 +46,7 @@ def set_base_parser():
                                  api_implementation._default_implementation_type,
                                  getattr(grpc, '__version__', _grpcio_metadata.__version__),
                                  ruamel.yaml.__version__),
-                        help='show version and crucial dependants, environment variables')
+                        help='show Jina version and crucial dependants, environment variables')
     return parser
 
 

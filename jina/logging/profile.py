@@ -38,7 +38,7 @@ def profiling(func):
             print(1)
 
     """
-    from . import profile_logger
+    from . import default_logger
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
@@ -52,7 +52,7 @@ def profiling(func):
             level_prefix = ''
             mem_status = 'memory: %4.3fMB -> %4.3fMB' % (start_mem, end_mem)
 
-            profile_logger.info('%s%s time: %3.3fs %s' % (level_prefix, func.__qualname__, elapsed, mem_status))
+            default_logger.info('%s%s time: %3.3fs %s' % (level_prefix, func.__qualname__, elapsed, mem_status))
         else:
             r = func(*args, **kwargs)
         return r
