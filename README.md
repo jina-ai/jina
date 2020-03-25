@@ -12,8 +12,8 @@ Jina is *the* cloud-native neural search solution powered by the state-of-the-ar
 
 
 - [Getting Started](#getting-started)
-  - [Running Jina Image](#running-an-jina-image)
-  - [Running Jina Natively on the Host](#running-jina-natively-on-the-host)
+  - [Running Jina Image](#running-jina-image)
+  - [Running Jina Natively](#running-jina-natively)
 - [Testing](#testing)
 - [Documentation](#documentation)
 - [Roadmap](#roadmap)
