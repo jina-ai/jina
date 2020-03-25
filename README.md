@@ -59,41 +59,37 @@ docker run ccr.ccs.tencentyun.com/jina/jina:[tag]
 If you prefer the classic way to run Jina natively on the host, please make sure you have Python >= 3.7 installed on the host. 
 
 #### Install from PyPi
-
-To install the latest stable release:
  
 ```bash
 pip install jina
 ```
 
-#### Or, Install from This Git Repository
-
-To install the latest master:
+#### Or, Install from the Master Branch
 
 ```bash
 pip install git+https://github.com/jina-ai/jina.git
 ```
 
-#### Or, (Dev mode) Install from Your Local Folk/Clone 
-
-For developers who want to edit the project’s code and test the changes on-the-fly, 
+#### Or, (Dev/Editable mode) Install from Your Local Folk/Clone 
 
 ```bash
 git clone https://github.com/jina-ai/jina
 cd jina && pip install -e .
 ``` 
 
-Note, if you later want to switch to the other ways of Jina installation, remember to first uninstall your editable version from the system:
-
-```bash
-pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
-```
+> Note, if you later want to switch to the other ways of Jina installation, remember to first uninstall your editable version from the system:
+  ```bash
+  pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
+  ```
 
 ## Testing
 
-If you installed Jina locally, you can verify the installation via:
+To verify the installation:
 
 ```bash
+docker run jinaai/jina:master-debian check
+
+# or if you installed Jina locally
 jina check
 ```
 
@@ -107,7 +103,7 @@ cd tests && python -m unittest *.py -v
   
 ## Documentation 
 
-The generated HTML files are hosted in a separate repository [`jina-ai/jina-docs`](https://github.com/jina-ai/jina-docs).
+The generated HTML files are hosted in [`jina-ai/jina-docs`](https://github.com/jina-ai/jina-docs).
 
 Documentation is built on every push, merge, and release event of the master branch. 
  
