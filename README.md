@@ -24,7 +24,7 @@ Jina is *the* cloud-native neural search solution powered by the state-of-the-ar
 
 The simplest way to use Jina is via Docker. We provide a universal container image as small as 100MB that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6). Of course, you need to have [Docker installed](https://docs.docker.com/install/) first. 
 
-### Run the Container Image
+### Running an Jina Image
 
 ```bash
 docker run jinaai/jina:master-debian
@@ -52,9 +52,9 @@ docker run ccr.ccs.tencentyun.com/jina/jina:[tag]
 ```
 </details>
 
-### Run without Container
+### Running Jina Natively on the Host
 
-If you prefer the classic way to run Jina directly on the host, please make sure you have Python >= 3.7 installed on the host. 
+If you prefer the classic way to run Jina natively on the host, please make sure you have Python >= 3.7 installed on the host. 
 
 #### Install from PyPi
 
@@ -87,7 +87,7 @@ Note, if you later want to switch to the other ways of Jina installation, rememb
 pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
 ```
 
-## Test Your Installation
+## Testing
 
 If you installed Jina locally, you can verify the installation via:
 
@@ -105,7 +105,9 @@ cd tests && python -m unittest *.py -v
   
 ## Documentation 
 
-Documentation is built on every push, merge, and release event of the master branch. The generated HTML files are hosted in a separate repository: [`jina-ai/jina-docs`](https://github.com/jina-ai/jina-docs)
+The generated HTML files are hosted in a separate repository [`jina-ai/jina-docs`](https://github.com/jina-ai/jina-docs).
+
+Documentation is built on every push, merge, and release event of the master branch. 
  
 To build the documentation locally, you need to have Docker installed. Clone this repository and run the following command: 
 
@@ -114,6 +116,16 @@ bash ./make-doc.sh serve 8080
 ```
 
 The documentation is then available via browser at `http://0.0.0.0:8080/`.
+
+## Roadmap
+
+The [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to the future improvements.
+
+## Contributing
+
+We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
+
+Please first read [the contributing guidelines](CONTRIBUTING.md) before the submission. 
 
 ## License
 

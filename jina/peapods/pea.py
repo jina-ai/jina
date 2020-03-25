@@ -13,7 +13,7 @@ from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWate
     RequestLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
-from ..logging import profile_logger, get_logger
+from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
@@ -206,10 +206,10 @@ class BasePea(metaclass=PeaMeta):
             else:
                 self.logger.info('executor says there is nothing to save')
 
-            profile_logger.info({'service': self.name,
-                                 'profile': self._timer.accum_time,
-                                 'timestamp_start': self._timer.start_time,
-                                 'timestamp_end': self._timer.end_time})
+            self.logger.info({'service': self.name,
+                              'profile': self._timer.accum_time,
+                              'timestamp_start': self._timer.start_time,
+                              'timestamp_end': self._timer.end_time})
 
             self._timer.reset()
 
@@ -338,5 +338,3 @@ class BasePea(metaclass=PeaMeta):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
-
-
