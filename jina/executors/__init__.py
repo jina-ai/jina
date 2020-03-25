@@ -66,7 +66,7 @@ class ExecutorType(type):
         if cls.__name__ not in reg_cls_set:
             # print('reg class: %s' % cls.__name__)
             cls.__init__ = store_init_kwargs(cls.__init__)
-            if os.environ.get('JINA_PROFILING', False):
+            if 'JINA_PROFILING' in os.environ:
                 wrap_func(prof_funcs, profiling)
 
             wrap_func(train_funcs, as_train_method)

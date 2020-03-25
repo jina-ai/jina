@@ -42,7 +42,7 @@ def profiling(func):
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
-        if os.environ.get('JINA_PROFILING', False):
+        if 'JINA_PROFILING' in os.environ:
             start_t = time.perf_counter()
             start_mem = used_memory(unit=1024 * 1024)
             r = func(*args, **kwargs)

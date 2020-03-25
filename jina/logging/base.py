@@ -158,7 +158,7 @@ def get_logger(context: str, context_len: int = 10,
     from .. import __uptime__
     from .queue import __sse_queue__, __profile_queue__, __log_queue__
     if not fmt_str:
-        if os.environ.get('JINA_LOG_FORMAT', 'SHORT') == 'LONG':
+        if 'JINA_LOG_LONG_FORMAT' in os.environ:
             fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
                       f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
         else:
