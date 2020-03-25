@@ -344,7 +344,7 @@ if os.name == 'nt':
 
 
 def colored(text, color=None, on_color=None, attrs=None):
-    if 'JINA_NO_ANSI_COLOR' not in os.getenv:
+    if 'JINA_LOG_NO_COLOR' not in os.environ:
         fmt_str = '\033[%dm%s'
         if color:
             text = fmt_str % (_COLORS[color], text)

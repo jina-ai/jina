@@ -147,7 +147,7 @@ def get_logger(context: str, context_len: int = 10,
     :param log_profile: is this logger for profiling, profile logger takes dict and output to json
     :param log_sse: is this logger used for server-side event
     :param log_remote: is this logger for remote logging
-    :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_FORMAT`` environment variable
+    :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_LONG`` environment variable
     :param event_trigger: a ``threading.Event`` or ``multiprocessing.Event`` for event-based logger
     :return: the configured logger
 
@@ -158,7 +158,7 @@ def get_logger(context: str, context_len: int = 10,
     from .. import __uptime__
     from .queue import __sse_queue__, __profile_queue__, __log_queue__
     if not fmt_str:
-        if 'JINA_LOG_LONG_FORMAT' in os.environ:
+        if 'JINA_LOG_LONG' in os.environ:
             fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
                       f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
         else:
