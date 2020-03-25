@@ -167,7 +167,7 @@ def set_pea_parser(parser=None):
                           '-1 means no restriction')
     gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='thread',
                      help='the parallel runtime of the pod')
-    gp5.add_argument('--max_idle_time', type=int,
+    gp5.add_argument('--max_idle_time', type=int, default=60,
                      help='label this pea as inactive when it does not '
                           'process any request after certain time (in second)')
 

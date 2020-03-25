@@ -6,7 +6,16 @@ on:
       - master
 
 jobs:
-  buildx:
+  generate-toc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 3
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_AI }}
+
+  docker-buildx:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

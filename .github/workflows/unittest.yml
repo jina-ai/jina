@@ -3,22 +3,7 @@ name: Unit Test
 on: [pull_request]
 
 jobs:
-  size-label:
-    runs-on: ubuntu-latest
-    steps:
-      - name: size-label
-        uses: "pascalgn/size-label-action@v0.2.1"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
-  triage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/labeler@v2
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-  commit_lint:
+  commit-lint:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,8 +14,19 @@ jobs:
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
 
-  unit_test:
-    needs: commit_lint
+  label-pr:
+    needs: commit-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "pascalgn/size-label-action@v0.2.1"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - uses: actions/labeler@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  unit-test:
+    needs: commit-lint
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -38,9 +34,9 @@ jobs:
         python-version: [3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -64,4 +60,4 @@ jobs:
       #        pip install pytest-cov
       #        cd tests && pytest *.py --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov=com --cov-report=xml --cov-report=html
       #      shell: bash
-      timeout-minutes: 5
+      timeout-minutes: 10
