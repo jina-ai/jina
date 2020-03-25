@@ -15,6 +15,7 @@ jobs:
           FOLDING: false
           GITHUB_TOKEN: ${{ secrets.JINA_AI }}
           TOC_TITLE: ''
+          TARGET_PATHS: '*.md'
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:

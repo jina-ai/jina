@@ -12,7 +12,7 @@ Jina is *the* cloud-native neural search solution powered by the state-of-the-ar
 
 
 - [Getting Started](#getting-started)
-  - [Running an Jina Image](#running-an-jina-image)
+  - [Running Jina Image](#running-an-jina-image)
   - [Running Jina Natively on the Host](#running-jina-natively-on-the-host)
 - [Testing](#testing)
 - [Documentation](#documentation)
@@ -26,7 +26,7 @@ Jina is *the* cloud-native neural search solution powered by the state-of-the-ar
 
 The simplest way to use Jina is via Docker. We provide a universal container image as small as 100MB that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6). Of course, you need to have [Docker installed](https://docs.docker.com/install/) first. 
 
-### Running an Jina Image
+### Running Jina Image
 
 ```bash
 docker run jinaai/jina:master-debian
@@ -54,7 +54,7 @@ docker run ccr.ccs.tencentyun.com/jina/jina:[tag]
 ```
 </details>
 
-### Running Jina Natively on the Host
+### Running Jina Natively
 
 If you prefer the classic way to run Jina natively on the host, please make sure you have Python >= 3.7 installed on the host. 
 

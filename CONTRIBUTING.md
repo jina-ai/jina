@@ -12,8 +12,9 @@ We welcome all kinds of contributions from the open-source community, individual
 
 Typos and grammatical errors can go straight to a pull-request.
 
+## Commit Style
 
-## Name of the Branch
+### Branch Name
 
 The branch name should follow the style described below:
 
@@ -56,7 +57,7 @@ mybranch-1
 ``` 
 
 
-## Commit Message Style
+### Commit Message
 
 Good commit message helps us to track the development of Jina. A Pull Request with bad commit message will be *rejected* automatically in the CI pipeline.
 
@@ -104,12 +105,12 @@ test-123 is broken and i fix it
 doc: it should be plural `docs`
 ```
 
-## Name of the Pull Request
+### Pull Request Name
 
 We do not enforce the naming of PR and branch, but we highly recommend you to follow the same style. It can simply be one of your commit messages, just copy paste it, e.g. `fix(readme): improve the readability and move sections`.
 
 
-## Making Your First Commit 
+## Make Your First Submission 
 
 As a summary, here are the steps for contributing Jina.
 
