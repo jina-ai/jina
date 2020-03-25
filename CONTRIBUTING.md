@@ -8,6 +8,12 @@ We welcome all kinds of contributions from the open-source community, individual
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [Commit Style](#commit-style)
+  - [Branch Name](#branch-name)
+  - [Commit Message](#commit-message)
+  - [Pull Request Name](#pull-request-name)
+- [Make Your First Submission](#make-your-first-submission)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 Typos and grammatical errors can go straight to a pull-request.
