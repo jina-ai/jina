@@ -121,7 +121,7 @@ class MyTestCase(JinaTestCase):
 
         MutablePodSpawnHelper(p.peas_args).start()
 
-    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_customized_pod2(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pod_parser().parse_args(
@@ -140,7 +140,7 @@ class MyTestCase(JinaTestCase):
             pass
         t.join()
 
-    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_remote_pea2(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])
@@ -157,7 +157,7 @@ class MyTestCase(JinaTestCase):
             pass
         t.join()
 
-    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_remote_pod2(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
         p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port_grpc', str(f_args.port_grpc)])

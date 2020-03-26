@@ -1,6 +1,6 @@
+import os
 import unittest
 
-import os
 import numpy as np
 
 from jina.executors import BaseExecutor
@@ -9,14 +9,14 @@ from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_encoding_results(self):
         encoder = KerasImageEncoder()
         test_data = np.random.rand(2, 3, 224, 224)
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape, (2, 1280))
 
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load(self):
         encoder = KerasImageEncoder()
         test_data = np.random.rand(2, 3, 224, 224)
@@ -31,7 +31,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
         encoder = KerasImageEncoder()
         encoder.save_config()
