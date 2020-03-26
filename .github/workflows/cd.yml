@@ -55,3 +55,9 @@ jobs:
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
             -t jinaai/jina:master-debian -t jinaai/jina:dev-debian \
             --file ./Dockerfiles/debianx.Dockerfile .
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v2.1.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          DOCKERHUB_REPOSITORY: jinaai/jina
