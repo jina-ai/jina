@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/stale@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.JINA_DEV_BOT }}
           stale-issue-message: 'This issue is stale because it has been open 20 days with no activity. Remove stale label or comment or this will be closed in 4 days'
           days-before-stale: 20
           days-before-close: 4

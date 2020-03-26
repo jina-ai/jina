@@ -13,7 +13,7 @@ jobs:
         with:
           MAX_HEADER_LEVEL: 3
           FOLDING: false
-          GITHUB_TOKEN: ${{ secrets.JINA_AI }}
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TOC_TITLE: ''
           TARGET_PATHS: '*.md'
       - uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
           ./make-doc.sh commit "${{github.event_name}} ${{github.sha}}"
       - uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.JINA_AI }}
+          github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/jina-docs
           force: true
           directory: docs/_build/html

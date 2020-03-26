@@ -21,8 +21,8 @@ if [[ $1 == "commit" ]]; then
   cp ${DOC_DIR}/README.md ${HTML_DIR}/
   cd ${HTML_DIR}
   git init
-  git config --local user.email "dev-team@jina.ai"
-  git config --local user.name "Jina Doc Bot"
+  git config --local user.email "dev-bot@jina.ai"
+  git config --local user.name "Jina Dev Bot"
   git add .
   git commit -m "$2" -a
   git status
