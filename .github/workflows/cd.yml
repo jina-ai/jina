@@ -16,6 +16,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TOC_TITLE: ''
           TARGET_PATHS: '*.md'
+      - uses: peter-evans/dockerhub-description@v2.1.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+          DOCKERHUB_REPOSITORY: jinaai/jina
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
@@ -55,9 +60,3 @@ jobs:
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
             -t jinaai/jina:master-debian -t jinaai/jina:dev-debian \
             --file ./Dockerfiles/debianx.Dockerfile .
-      - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@v2.1.0
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
-          DOCKERHUB_REPOSITORY: jinaai/jina
