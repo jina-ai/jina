@@ -28,12 +28,12 @@ jobs:
       - run: |
           pip install .
           ./make-doc.sh commit "regular update due to ${{github.event_name}} on ${{github.repository}}"
-      - uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/jina-docs
-          force: true
-          directory: docs/_build/html
+  #      - uses: ad-m/github-push-action@master
+  #        with:
+  #          github_token: ${{ secrets.JINA_DEV_BOT }}
+  #          repository: jina-ai/jina-docs
+  #          force: true
+  #          directory: docs/_build/html
 
   update-docker:
     needs: update-doc
