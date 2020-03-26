@@ -1,4 +1,4 @@
-name: Docker BuildX
+name: Jina CD
 
 on:
   push:
@@ -6,7 +6,32 @@ on:
       - master
 
 jobs:
-  buildx:
+  update-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 3
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_AI }}
+          TOC_TITLE: ''
+          TARGET_PATHS: '*.md'
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          pip install .
+          ./make-doc.sh commit "${{github.event_name}} ${{github.sha}}"
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_AI }}
+          repository: jina-ai/jina-docs
+          force: true
+          directory: docs/_build/html
+
+  update-docker:
+    needs: update-doc
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +45,7 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo ::set-env name=JINA_VERSION::$(sed '3q;d' jina/__init__.py | cut -d \' -f2)
+          echo ::set-env name=JINA_VERSION::"$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)"
       - name: Run Buildx and Upload to Docker Cloud
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASSWORD }}

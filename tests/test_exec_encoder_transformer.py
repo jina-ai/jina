@@ -9,6 +9,7 @@ from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
+
     @unittest.skipUnless(os.getenv('JINA_TEST_PRETRAINED', False), 'skip the pretrained test if not set')
     def test_pytorch_encoding_results(self):
         encoder = TransformerTextEncoder(model_name='bert-base-uncased')
@@ -25,7 +26,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoded_data.shape[0], 3)
         self.assertIs(type(encoded_data), np.ndarray)
 
-    @unittest.skipUnless(os.getenv('JINA_TEST_PRETRAINED', False), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_all_encoders(self):
         from transformers import BertModel, BertTokenizer, OpenAIGPTModel, \
             OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
@@ -52,7 +53,7 @@ class MyTestCase(JinaTestCase):
             encoded_data = encoder.encode(test_data)
             self.assertEqual(encoded_data.shape[0], 3, '{} failed'.format(model_name))
 
-    @unittest.skipUnless(os.getenv('JINA_TEST_PRETRAINED', False), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load(self):
         encoder = TransformerTextEncoder(
             max_length=10, pooling_strategy='cls', workspace=os.environ['TEST_WORKDIR'])
@@ -73,7 +74,7 @@ class MyTestCase(JinaTestCase):
         self.tmp_files.append(encoder_loaded.save_abspath)
         self.tmp_files.append(encoder.encoder_abspath)
 
-    @unittest.skipUnless(os.getenv('JINA_TEST_PRETRAINED', False), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
         encoder = TransformerTextEncoder(max_length=10, pooling_strategy='cls')
         encoder.save_config()

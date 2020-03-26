@@ -64,10 +64,9 @@ class ProfileFormatter(Formatter):
         if isinstance(cr.msg, dict):
             cr.msg.update({k: getattr(cr, k) for k in ['created', 'module', 'name', 'pathname', 'process', 'thread']})
             cr.msg['memory'] = used_memory(unit=1)
+            return json.dumps(cr.msg, sort_keys=True)
         else:
-            raise TypeError('profile logger only accepts dict')
-
-        return json.dumps(cr.msg, sort_keys=True)
+            return ''
 
 
 class EventHandler(logging.StreamHandler):
@@ -145,10 +144,10 @@ def get_logger(context: str, context_len: int = 10,
 
     :param context: the name prefix of the log
     :param context_len: length of the context, i.e. module, function, line number
-    :param log_profile: is this logger for profiling
+    :param log_profile: is this logger for profiling, profile logger takes dict and output to json
     :param log_sse: is this logger used for server-side event
     :param log_remote: is this logger for remote logging
-    :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_FORMAT`` environment variable
+    :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_LONG`` environment variable
     :param event_trigger: a ``threading.Event`` or ``multiprocessing.Event`` for event-based logger
     :return: the configured logger
 
@@ -159,7 +158,7 @@ def get_logger(context: str, context_len: int = 10,
     from .. import __uptime__
     from .queue import __sse_queue__, __profile_queue__, __log_queue__
     if not fmt_str:
-        if os.environ.get('JINA_LOG_FORMAT', 'SHORT') == 'LONG':
+        if 'JINA_LOG_LONG' in os.environ:
             fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
                       f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
         else:
@@ -183,42 +182,44 @@ def get_logger(context: str, context_len: int = 10,
     logger.setLevel(verbose_level.value)
 
     if event_trigger is not None:
-        event_handler = EventHandler(event_trigger)
-        event_handler.setLevel(verbose_level.value)
-        event_handler.setFormatter(ColorFormatter(fmt_str))
-        logger.addHandler(event_handler)
+        h = EventHandler(event_trigger)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(ColorFormatter(fmt_str))
+        logger.addHandler(h)
 
     if log_remote:
-        queue_handler = QueueHandler(__log_queue__)
-        queue_handler.setLevel(verbose_level.value)
-        queue_handler.setFormatter(ColorFormatter(fmt_str))
-        logger.addHandler(queue_handler)
-
-    if log_sse:
-        queue_handler = QueueHandler(__sse_queue__)
-        queue_handler.setLevel(verbose_level.value)
-        queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
-        logger.addHandler(queue_handler)
+        h = QueueHandler(__log_queue__)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(ColorFormatter(fmt_str))
+        logger.addHandler(h)
 
     if log_profile:
-        file_handler = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
-        file_handler.setFormatter(ProfileFormatter(timed_fmt_str))
-        logger.addHandler(file_handler)
+        h = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(ProfileFormatter(timed_fmt_str))
+        logger.addHandler(h)
 
-        if log_sse:
-            queue_handler = QueueHandler(__profile_queue__)
-            queue_handler.setLevel(verbose_level.value)
-            queue_handler.setFormatter(JsonFormatter(timed_fmt_str))
-            logger.addHandler(queue_handler)
+        h = QueueHandler(__profile_queue__)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(JsonFormatter(timed_fmt_str))
+        logger.addHandler(h)
+
+    if log_sse:
+        h = QueueHandler(__sse_queue__)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(JsonFormatter(timed_fmt_str))
+        logger.addHandler(h)
 
     if os.environ.get('JINA_LOG_FILE') == 'TXT':
-        file_handler = logging.FileHandler('jina-%s.log' % __uptime__, delay=True)
-        file_handler.setFormatter(PlainFormatter(timed_fmt_str))
-        logger.addHandler(file_handler)
+        h = logging.FileHandler('jina-%s.log' % __uptime__, delay=True)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(PlainFormatter(timed_fmt_str))
+        logger.addHandler(h)
     elif os.environ.get('JINA_LOG_FILE') == 'JSON':
-        file_handler = logging.FileHandler('jina-%s.json' % __uptime__, delay=True)
-        file_handler.setFormatter(JsonFormatter(timed_fmt_str))
-        logger.addHandler(file_handler)
+        h = logging.FileHandler('jina-%s.json' % __uptime__, delay=True)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(JsonFormatter(timed_fmt_str))
+        logger.addHandler(h)
 
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(verbose_level.value)

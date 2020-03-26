@@ -26,6 +26,9 @@ area/housekeeping:
   - .github/**/*
   - ./.gitignore
 
+area/cicd:
+  - .github/workflows/**/*
+
 area/docker:
   - Dockerfiles/**/*
   - ./.dockerignore

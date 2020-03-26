@@ -54,7 +54,7 @@ class MyTestCase(JinaTestCase):
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
-    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route_replicas(self):
         f1 = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='route', replicas=3)
         f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='route', replicas=3)
@@ -88,7 +88,7 @@ class MyTestCase(JinaTestCase):
         with f3.build() as fl3:
             self.assertEqual(fl3.num_peas, 4)
 
-    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):
         f = Flow().add(yaml_path='route')
 
@@ -119,7 +119,7 @@ class MyTestCase(JinaTestCase):
         with f.build(copy_flow=True) as fl:
             fl.search(raw_bytes=random_docs(1), in_proto=True, callback=get_result, top_k=100)
 
-    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_index_remote(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
 
@@ -144,7 +144,7 @@ class MyTestCase(JinaTestCase):
             self.assertTrue(os.path.exists('test2-%d/tmp2' % j))
             self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d' % j)
 
-    @unittest.skipIf(os.getenv('GITHUB_WORKFLOW', False), 'skip the network test on github workflow')
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_index_remote_rpi(self):
         f_args = set_gateway_parser().parse_args(['--allow_spawn'])
 
