@@ -17,6 +17,7 @@ class TransformerTextEncoder(BaseTextEncoder):
                  pooling_strategy: str = 'reduce-mean',
                  max_length: int = 64,
                  encoder_abspath: str = '',
+                 use_tf: bool = False,
                  *args, **kwargs):
         """
 
@@ -27,6 +28,7 @@ class TransformerTextEncoder(BaseTextEncoder):
         :param max_length: the max length to truncate the tokenized sequences to.
         :param encoder_abspath: the absolute saving path of the encoder. If a valid path is given, the encoder will be
             loaded from the given path.
+        :param use_tf: whether use tensorflow to load pretraining model, if True, use tensorflow， else, use pytorch
         """
 
         super().__init__(*args, **kwargs)
@@ -34,6 +36,7 @@ class TransformerTextEncoder(BaseTextEncoder):
         self.pooling_strategy = pooling_strategy
         self.model = None
         self.tokenizer = None
+        self.use_tf = use_tf
         self.max_length = max_length
         self.cls_pos = None
         self.encoder_abspath = encoder_abspath
@@ -43,30 +46,39 @@ class TransformerTextEncoder(BaseTextEncoder):
             OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
             XLNetModel, XLNetTokenizer, XLMModel, \
             XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
-            RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer
+            RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer, TFBertModel, \
+            TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, TFDistilBertModel, \
+            TFRobertaModel, TFXLMRobertaModel
+
+        model_dict = {
+            'bert-base-uncased': (TFBertModel, BertModel, BertTokenizer),
+            'openai-gpt': (TFOpenAIGPTModel, OpenAIGPTModel, OpenAIGPTTokenizer),
+            'gpt2': (TFGPT2Model, GPT2Model, GPT2Tokenizer),
+            'xlnet-base-cased': (TFXLNetModel, XLNetModel, XLNetTokenizer),
+            'xlm-mlm-enfr-1024': (TFXLMModel, XLMModel, XLMTokenizer),
+            'distilbert-base-cased': (TFDistilBertModel, DistilBertModel, DistilBertTokenizer),
+            'roberta-base': (TFRobertaModel, RobertaModel, RobertaTokenizer),
+            'xlm-roberta-base': (TFXLMRobertaModel, XLMRobertaModel, XLMRobertaTokenizer)
+        }
+
+        if self.model_name not in model_dict:
+            self.logger.error('{} not in our supports: {}'.format(self.model_name, ','.join(model_dict.keys())))
+            raise ValueError
+
+        tf_model_class, model_class, tokenizer_class = model_dict[self.model_name]
+
         if self.encoder_abspath:
             if not os.path.exists(self.encoder_abspath):
                 self.logger.error("encoder path not found: {}".format(self.encoder_abspath))
                 raise ValueError
-            self.tokenizer.from_pretrained(self.encoder_abspath)
-            self.model.from_pretrained(self.encoder_abspath)
-            return
 
-        model_dict = {
-            'bert-base-uncased': (BertModel, BertTokenizer),
-            'openai-gpt': (OpenAIGPTModel, OpenAIGPTTokenizer),
-            'gpt2': (GPT2Model, GPT2Tokenizer),
-            'xlnet-base-cased': (XLNetModel, XLNetTokenizer),
-            'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer),
-            'distilbert-base-cased': (DistilBertModel, DistilBertTokenizer),
-            'roberta-base': (RobertaModel, RobertaTokenizer),
-            'xlm-roberta-base': (XLMRobertaModel, XLMRobertaTokenizer)
-        }
+            tmp = self.encoder_abspath
+        else:
+            tmp = self.model_name
 
-        model_class, tokenizer_class = model_dict[self.model_name]
+        self.tokenizer = tokenizer_class.from_pretrained(tmp)
+        self.model = tf_model_class.from_pretrained(tmp) if self.use_tf else model_class.from_pretrained(tmp)
 
-        self.model = model_class.from_pretrained(self.model_name)
-        self.tokenizer = tokenizer_class.from_pretrained(self.model_name)
         self.tokenizer.padding_side = 'right'
 
         if self.model_name in ('bert-base-uncased', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base'):
@@ -87,6 +99,7 @@ class TransformerTextEncoder(BaseTextEncoder):
         """
 
         import torch
+        import tensorflow as tf
 
         token_ids_batch = []
         mask_ids_batch = []
@@ -96,9 +109,10 @@ class TransformerTextEncoder(BaseTextEncoder):
             mask_ids = [0 if t == self.tokenizer.pad_token_id else 1 for t in token_ids]
             token_ids_batch.append(token_ids)
             mask_ids_batch.append(mask_ids)
-        token_ids_batch = torch.tensor(token_ids_batch)
-        mask_ids_batch = torch.tensor(mask_ids_batch)
-        with torch.no_grad():
+        token_ids_batch = tf.constant(token_ids_batch) if self.use_tf else torch.tensor(token_ids_batch)
+        mask_ids_batch = tf.constant(mask_ids_batch) if self.use_tf else torch.tensor(mask_ids_batch)
+
+        with tf.GradientTape() if self.use_tf else torch.no_grad():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             if self.pooling_strategy == 'cls':
                 if self.cls_pos is None:
