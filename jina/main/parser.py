@@ -22,8 +22,9 @@ def set_base_parser():
                    colored(__version__, 'green'),
                    colored('https://docs.jina.ai', 'cyan', attrs=['underline'])),
         formatter_class=_chf)
-
-    parser.add_argument('-v', '--version', action='version',
+    parser.add_argument('-v', '--version', action='version', version=__version__,
+                        help='show Jina version')
+    parser.add_argument('--version-full', action='version',
                         version='jina: %s\n'
                                 'jina-proto: %s\n'
                                 'jina-vcs-tag: %s\n'
@@ -45,14 +46,7 @@ def set_base_parser():
                                  api_implementation._default_implementation_type,
                                  getattr(grpc, '__version__', _grpcio_metadata.__version__),
                                  ruamel.yaml.__version__),
-                        help='show version and crucial dependants, environment variables')
-    gp1 = add_arg_group(parser, 'logging arguments')
-    gp1.add_argument('--log_sse', action='store_true', default=False,
-                     help='turn on server-side event logging')
-    gp1.add_argument('--log_remote', action='store_true', default=False,
-                     help='turn on remote logging')
-    gp1.add_argument('--log_profile', action='store_true', default=False,
-                     help='turn on the profiling logger')
+                        help='show Jina version and crucial dependants, environment variables')
     return parser
 
 
@@ -174,10 +168,17 @@ def set_pea_parser(parser=None):
                           '-1 means no restriction')
     gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='thread',
                      help='the parallel runtime of the pod')
-    gp5.add_argument('--max_idle_time', type=int,
+    gp5.add_argument('--max_idle_time', type=int, default=60,
                      help='label this pea as inactive when it does not '
                           'process any request after certain time (in second)')
 
+    gp7 = add_arg_group(parser, 'logging arguments')
+    gp7.add_argument('--log_sse', action='store_true', default=False,
+                     help='turn on server-side event logging')
+    gp7.add_argument('--log_remote', action='store_true', default=False,
+                     help='turn on remote logging')
+    gp7.add_argument('--log_profile', action='store_true', default=False,
+                     help='turn on the profiling logger')
     _set_grpc_parser(parser)
     return parser
 

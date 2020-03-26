@@ -1,12 +1,12 @@
-import unittest
 import os
+import unittest
 
-from tests import JinaTestCase
 from jina.executors.transformers.cv.image import ImageNormalizer
+from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_transform_results(self):
         transformer = ImageNormalizer(output_dim=224)
         tmp_fn = os.path.join(transformer.current_workspace, "test.jpeg")

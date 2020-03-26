@@ -123,7 +123,7 @@ def countdown(t: int, logger=None, reason: str = 'I am blocking this thread'):
 
 
 def load_contrib_module():
-    if not os.getenv('JINA_CONTRIB_MODULE_IS_LOADING'):
+    if 'JINA_CONTRIB_MODULE_IS_LOADING' not in os.environ:
 
         contrib = os.getenv('JINA_CONTRIB_MODULE')
         os.environ['JINA_CONTRIB_MODULE_IS_LOADING'] = 'true'
@@ -344,7 +344,7 @@ if os.name == 'nt':
 
 
 def colored(text, color=None, on_color=None, attrs=None):
-    if not os.getenv('JINA_NO_ANSI_COLOR', False):
+    if 'JINA_LOG_NO_COLOR' not in os.environ:
         fmt_str = '\033[%dm%s'
         if color:
             text = fmt_str % (_COLORS[color], text)

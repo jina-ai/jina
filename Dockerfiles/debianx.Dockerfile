@@ -2,6 +2,7 @@ FROM python:3.7.6-slim
 
 ARG VCS_REF
 ARG BUILD_DATE
+ARG JINA_VERSION
 
 LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.authors="dev-team@jina.ai" \
