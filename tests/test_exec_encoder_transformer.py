@@ -10,8 +10,24 @@ from tests import JinaTestCase
 
 class MyTestCase(JinaTestCase):
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
-    def test_encoding_results(self):
-        encoder = TransformerTextEncoder()
+    def test_pytorch_encoding_results(self):
+        encoder = TransformerTextEncoder(model_name='bert-base-uncased')
+        test_data = np.array(['a', 'b', 'xy'])
+        encoded_data = encoder.encode(test_data)
+        self.assertEqual(encoded_data.shape[0], 3)
+        self.assertIs(type(encoded_data), np.ndarray)
+
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    def test_tf_encoding_results(self):
+        encoder = TransformerTextEncoder(model_name='bert-base-uncased', backend='tensorflow')
+        test_data = np.array(['a', 'b', 'xy'])
+        encoded_data = encoder.encode(test_data)
+        self.assertEqual(encoded_data.shape[0], 3)
+        self.assertIs(type(encoded_data), np.ndarray)
+
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    def test_cls_encoding_results(self):
+        encoder = TransformerTextEncoder(model_name='bert-base-uncased', pooling_strategy='cls')
         test_data = np.array(['a', 'b', 'xy'])
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape[0], 3)
@@ -23,17 +39,19 @@ class MyTestCase(JinaTestCase):
             OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
             XLNetModel, XLNetTokenizer, XLMModel, \
             XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
-            RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer
+            RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer, TFBertModel, \
+            TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, TFDistilBertModel, \
+            TFRobertaModel, TFXLMRobertaModel
 
         MODELS = {
-            'bert-base-uncased': (BertModel, BertTokenizer),
-            'openai-gpt': (OpenAIGPTModel, OpenAIGPTTokenizer),
-            'gpt2': (GPT2Model, GPT2Tokenizer),
-            'xlnet-base-cased': (XLNetModel, XLNetTokenizer),
-            'xlm-mlm-enfr-1024': (XLMModel, XLMTokenizer),
-            'distilbert-base-cased': (DistilBertModel, DistilBertTokenizer),
-            'roberta-base': (RobertaModel, RobertaTokenizer),
-            'xlm-roberta-base': (XLMRobertaModel, XLMRobertaTokenizer)
+            'bert-base-uncased': (TFBertModel, BertModel, BertTokenizer),
+            'openai-gpt': (TFOpenAIGPTModel, OpenAIGPTModel, OpenAIGPTTokenizer),
+            'gpt2': (TFGPT2Model, GPT2Model, GPT2Tokenizer),
+            'xlnet-base-cased': (TFXLNetModel, XLNetModel, XLNetTokenizer),
+            'xlm-mlm-enfr-1024': (TFXLMModel, XLMModel, XLMTokenizer),
+            'distilbert-base-cased': (TFDistilBertModel, DistilBertModel, DistilBertTokenizer),
+            'roberta-base': (TFRobertaModel, RobertaModel, RobertaTokenizer),
+            'xlm-roberta-base': (TFXLMRobertaModel, XLMRobertaModel, XLMRobertaTokenizer)
         }
 
         for model_name in MODELS:
