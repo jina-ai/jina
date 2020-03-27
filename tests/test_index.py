@@ -7,6 +7,7 @@ import numpy as np
 
 from jina.drivers.helper import array2blob
 from jina.enums import FlowOptimizeLevel
+from jina.executors.indexers.numpy import NumpyIndexer
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
 from jina.peapods.pod import GatewayPod
@@ -38,6 +39,42 @@ def get_result(resp):
     np.testing.assert_equal(n.shape[1], 100)
 
 
+class DummyIndexer(NumpyIndexer):
+    # the add() function is simply copied from NumpyIndexer
+    def add(self, *args, **kwargs):
+        pass
+
+
+class DummyIndexer2(NumpyIndexer):
+    # the add() function is simply copied from NumpyIndexer
+    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+        if len(vectors.shape) != 2:
+            raise ValueError('vectors shape %s is not valid, expecting "vectors" to have rank of 2' % vectors.shape)
+
+        if not self.num_dim:
+            self.num_dim = vectors.shape[1]
+            self.dtype = vectors.dtype.name
+        elif self.num_dim != vectors.shape[1]:
+            raise ValueError(
+                "vectors' shape [%d, %d] does not match with indexers's dim: %d" %
+                (vectors.shape[0], vectors.shape[1], self.num_dim))
+        elif self.dtype != vectors.dtype.name:
+            raise TypeError(
+                "vectors' dtype %s does not match with indexers's dtype: %s" %
+                (vectors.dtype.name, self.dtype))
+        elif keys.shape[0] != vectors.shape[0]:
+            raise ValueError('number of key %d not equal to number of vectors %d' % (keys.shape[0], vectors.shape[0]))
+        elif self.key_dtype != keys.dtype.name:
+            raise TypeError(
+                "keys' dtype %s does not match with indexers keys's dtype: %s" %
+                (keys.dtype.name, self.key_dtype))
+
+        self.write_handler.write(vectors.tobytes())
+        self.key_bytes += keys.tobytes()
+        self.key_dtype = keys.dtype.name
+        self._size += keys.shape[0]
+
+
 class MyTestCase(JinaTestCase):
 
     def tearDown(self) -> None:
@@ -53,6 +90,27 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(yaml_path='route')
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+    def test_update_method(self):
+        a = DummyIndexer(index_filename='test.bin')
+        a.save()
+        self.assertFalse(os.path.exists(a.save_abspath))
+        self.assertFalse(os.path.exists(a.index_abspath))
+        a.add()
+        a.save()
+        self.assertTrue(os.path.exists(a.save_abspath))
+        self.assertTrue(os.path.exists(a.index_abspath))
+        self.add_tmpfile(a.save_abspath, a.index_abspath)
+
+        b = DummyIndexer2(index_filename='testb.bin')
+        b.save()
+        self.assertFalse(os.path.exists(b.save_abspath))
+        self.assertFalse(os.path.exists(b.index_abspath))
+        b.add(np.array([1, 2, 3]), np.array([[1, 1, 1], [2, 2, 2]]))
+        b.save()
+        self.assertTrue(os.path.exists(b.save_abspath))
+        self.assertTrue(os.path.exists(b.index_abspath))
+        self.add_tmpfile(b.save_abspath, b.index_abspath)
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route_replicas(self):
