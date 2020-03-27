@@ -16,11 +16,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TOC_TITLE: ''
           TARGET_PATHS: '*.md'
-      - uses: peter-evans/dockerhub-description@v2.1.0
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
-          DOCKERHUB_REPOSITORY: jinaai/jina
+      #      - uses: peter-evans/dockerhub-description@v2.1.0
+      #        env:
+      #          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+      #          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+      #          DOCKERHUB_REPOSITORY: jinaai/jina
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
@@ -28,12 +28,12 @@ jobs:
       - run: |
           pip install .
           ./make-doc.sh commit "regular update due to ${{github.event_name}} on ${{github.repository}}"
-  #      - uses: ad-m/github-push-action@master
-  #        with:
-  #          github_token: ${{ secrets.JINA_DEV_BOT }}
-  #          repository: jina-ai/jina-docs
-  #          force: true
-  #          directory: docs/_build/html
+          - uses: ad-m/github-push-action@master
+            with:
+              github_token: ${{ secrets.JINA_DEV_BOT }}
+              repository: jina-ai/jina-docs
+              force: true
+              directory: docs/_build/html
 
   update-docker:
     needs: update-doc
