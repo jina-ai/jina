@@ -1,10 +1,13 @@
 # Jina Documentations
 
-![Docs Build](https://github.com/jina-ai/jina/workflows/Docs%20Build/badge.svg?branch=master)
+![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)
 
-This repository gets updated when [Jina](https://github.com/jina-ai/jina/) is updated.
 
-## Read the docs locally
+This repository hosts the documentation of Jina. It gets updated when [jina-ai/jina](https://github.com/jina-ai/jina/) is modified.
+
+All doc-related issues should be [submitted to here](https://github.com/jina-ai/jina/issues/new).
+
+## Read the Docs Locally
 
 You can read the documentations locally via:
 
