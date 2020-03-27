@@ -40,10 +40,7 @@ class TransformerTextEncoder(BaseTextEncoder):
         if backend not in ('tensorflow', 'pytorch'):
             raise ValueError('unknown backend: {}'.format(backend))
         self.backend = backend
-        self._tensor_func = None
-        self._sess_func = None
         self.max_length = max_length
-        self.cls_pos = None
         self.encoder_abspath = encoder_abspath
 
     def post_init(self):
