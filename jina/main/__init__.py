@@ -9,9 +9,20 @@ def _get_run_args(print_args: bool = True):
     parser = get_main_parser()
     if len(sys.argv) > 1:
         args = parser.parse_args()
+        default_args = parser.parse_args([sys.argv[1]])
         if print_args:
-            param_str = '\n'.join(['%30s = %s' % (colored(k, 'yellow'), v) for k, v in sorted(vars(args).items())])
-            default_logger.info('usage: %s\n%s\n%s\n' % (' '.join(sys.argv), '_' * 50, param_str))
+            from pkg_resources import resource_filename
+            with open(resource_filename('jina', '/'.join(('resources', 'jina.logo')))) as fp:
+                logo_str = fp.read()
+            param_str = []
+            for k, v in sorted(vars(args).items()):
+                j = f'{k: >30.30} = {str(v):30.30}'
+                if getattr(default_args, k) == v:
+                    param_str.append('  ' + j)
+                else:
+                    param_str.append('🔧️ ' + colored(j, 'blue', 'on_yellow'))
+            param_str = '\n'.join(param_str)
+            default_logger.info(f'\n{logo_str}\n▶️  {" ".join(sys.argv)}\n{param_str}\n')
         return args
     else:
         parser.print_help()
