@@ -9,7 +9,7 @@ from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
-    # @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_pytorch_encoding_results(self):
         encoder = TransformerTextEncoder(model_name='bert-base-uncased')
         test_data = np.array(['a', 'b', 'xy'])
@@ -17,7 +17,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoded_data.shape[0], 3)
         self.assertIs(type(encoded_data), np.ndarray)
 
-    # @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_tf_encoding_results(self):
         encoder = TransformerTextEncoder(model_name='bert-base-uncased', backend='tensorflow')
         test_data = np.array(['a', 'b', 'xy'])
@@ -25,7 +25,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoded_data.shape[0], 3)
         self.assertIs(type(encoded_data), np.ndarray)
 
-    # @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_cls_encoding_results(self):
         encoder = TransformerTextEncoder(model_name='bert-base-uncased', pooling_strategy='cls')
         test_data = np.array(['a', 'b', 'xy'])
