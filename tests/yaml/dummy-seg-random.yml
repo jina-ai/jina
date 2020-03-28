@@ -1,0 +1,10 @@
+!DummySegment
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    [SearchRequest, TrainRequest, IndexRequest]:
+    - !SegmentDriver
+      with:
+        method: craft
+        random_chunk_id: true

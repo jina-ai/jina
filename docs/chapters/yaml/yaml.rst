@@ -170,7 +170,7 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
       segment:
         handlers:
           /:
-            - handler_segment: transform
+            - handler_segment: craft
 
       index-chunk-and-meta:
         handlers:

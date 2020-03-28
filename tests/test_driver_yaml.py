@@ -69,8 +69,8 @@ class MyTestCase(JinaTestCase):
         from jina.executors.encoders import BaseEncoder
         from jina.executors.indexers import BaseIndexer
         from jina.executors.rankers import BaseRanker
-        from jina.executors.transformers import BaseDocTransformer
-        from jina.executors.transformers import BaseChunkTransformer
+        from jina.executors.crafters import BaseDocCrafter
+        from jina.executors.crafters import BaseChunkCrafter
 
         class D1(BaseEncoder):
             pass
@@ -90,13 +90,13 @@ class MyTestCase(JinaTestCase):
         d3 = D3()
         self.assertEqual(len(d3._drivers), 2)
 
-        class D4(BaseDocTransformer):
+        class D4(BaseDocCrafter):
             pass
 
         d4 = D4()
         self.assertEqual(len(d4._drivers), 4)
 
-        class D5(BaseChunkTransformer):
+        class D5(BaseChunkCrafter):
             pass
 
         d5 = D5()

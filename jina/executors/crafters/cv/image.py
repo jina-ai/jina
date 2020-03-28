@@ -1,6 +1,7 @@
-from PIL import Image
-import numpy as np
 from typing import Tuple, Dict, List
+
+import numpy as np
+from PIL import Image
 
 from .. import BaseSegmenter
 
@@ -8,6 +9,7 @@ from .. import BaseSegmenter
 class ImageNormalizer(BaseSegmenter):
     """:class:`ImageNormalizer` works on doc-level,
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
+
     def __init__(self,
                  output_dim,
                  img_mean: Tuple[float] = (0, 0, 0),
@@ -16,7 +18,7 @@ class ImageNormalizer(BaseSegmenter):
                  *args,
                  **kwargs):
         """
-        :class:`ImageNormalizer` load an image file and transform into image matrix.
+        :class:`ImageNormalizer` load an image file and craft into image matrix.
 
         :param output_dim: the output size. Both height and width are set to `output_dim`
         :param img_mean: the mean of the images in `RGB` channels. Set to `[0.485, 0.456, 0.406]` for the models trained
@@ -32,7 +34,7 @@ class ImageNormalizer(BaseSegmenter):
         self.img_std = np.array(img_std).reshape((3, 1, 1))
         self.resize_dim = resize_dim
 
-    def transform(self, raw_bytes, doc_id, *args, **kwargs) -> List[Dict]:
+    def craft(self, raw_bytes, doc_id, *args, **kwargs) -> List[Dict]:
         """
 
         :param raw_bytes: the file name in bytes
@@ -41,8 +43,7 @@ class ImageNormalizer(BaseSegmenter):
         """
         raw_img = Image.open(raw_bytes.decode())
         processed_img = self._normalize(raw_img)
-        return [
-            dict(doc_id=doc_id, offset=0, chunk_id=0, weight=1., blob=processed_img), ]
+        return [dict(doc_id=doc_id, offset=0, weight=1., blob=processed_img), ]
 
     def _normalize(self, img):
         img = self._resize_short(img, target_size=self.resize_dim)
