@@ -12,6 +12,7 @@ from jina.peapods.remote import RemotePea, PodSpawnHelper, PeaSpawnHelper, Mutab
 from tests import JinaTestCase
 
 
+@unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
 class MyTestCase(JinaTestCase):
     def test_logging_thread(self):
         _event = threading.Event()
