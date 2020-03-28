@@ -4,4 +4,4 @@ on:
   [SearchRequest, TrainRequest, IndexRequest]:
     - !SegmentDriver
       with:
-        method: transform
+        method: craft

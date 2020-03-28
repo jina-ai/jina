@@ -10,7 +10,7 @@ def random_docs(num_docs):
 
 
 class DummySegment(BaseSegmenter):
-    def transform(self):
+    def craft(self):
         return [dict(raw_bytes=b'aa'), dict(raw_bytes=b'bb')]
 
 

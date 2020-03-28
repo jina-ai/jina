@@ -5,22 +5,22 @@ from .. import BaseExecutor
 
 
 class BaseCrafter(BaseExecutor):
-    """A :class:`BaseCrafter` transform the content of `Document` or `Chunk`. It can be used for preprocessing,
+    """A :class:`BaseCrafter` craft the content of `Document` or `Chunk`. It can be used for preprocessing,
     segmenting etc.
 
-    The apply function is :func:`transform`, where the name of the arguments will be used as keys of the content.
+    The apply function is :func:`craft`, where the name of the arguments will be used as keys of the content.
 
     .. seealso::
-        :mod:`jina.drivers.handlers.transform`
+        :mod:`jina.drivers.handlers.craft`
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = {k for k in inspect.getfullargspec(self.transform).args if k != 'self'}
+        self.required_keys = {k for k in inspect.getfullargspec(self.craft).args if k != 'self'}
         if not self.required_keys:
             self.logger.warning(f'{self.__class__} works on keys, but no keys are specified')
 
-    def transform(self, *args, **kwargs) -> Dict:
+    def craft(self, *args, **kwargs) -> Dict:
         """The apply function of this executor.
 
         The name of the arguments are used as keys, which are then used to tell :class:`Driver` what information to extract
@@ -39,7 +39,7 @@ class BaseChunkCrafter(BaseCrafter):
     .. code-block:: python
 
         class DummyTransformer(BaseDocCrafter):
-            def transform(chunk_id, doc_id):
+            def craft(chunk_id, doc_id):
                 return {'chunk_id': doc_id + chunk_id}
 
     """
@@ -55,7 +55,7 @@ class BaseDocCrafter(BaseCrafter):
     .. code-block:: python
 
         class DummyTransformer(BaseDocCrafter):
-            def transform(chunk_id, doc_id):
+            def craft(chunk_id, doc_id):
                 return {'doc_id': doc_id + 1}
 
     """
@@ -66,10 +66,10 @@ class BaseSegmenter(BaseCrafter):
     """:class:`BaseSegmenter` works on doc-level,
         it receives value on the doc-level and returns new value on the chunk-level """
 
-    def transform(self, *args, **kwargs) -> List[Dict]:
+    def craft(self, *args, **kwargs) -> List[Dict]:
         """The apply function of this executor.
 
-        Unlike :class:`BaseCrafter`, the :func:`transform` here works on doc-level info and the output is defined on
+        Unlike :class:`BaseCrafter`, the :func:`craft` here works on doc-level info and the output is defined on
         chunk-level. Therefore the name of the arguments should be always valid keys defined
         in the doc-level protobuf whereas the output dict keys should always be valid keys defined in the chunk-level
         protobuf.

@@ -6,7 +6,7 @@ from .helper import array2blob, pb_obj2dict
 
 
 class ChunkCraftDriver(BaseExecutableDriver):
-    """Transform the chunk-level information on given keys using the executor
+    """Craft the chunk-level information on given keys using the executor
 
     """
 
@@ -27,7 +27,7 @@ class ChunkCraftDriver(BaseExecutableDriver):
 
 
 class DocCraftDriver(BaseExecutableDriver):
-    """Transform the doc-level information on given keys using the executor
+    """Craft the doc-level information on given keys using the executor
 
     """
 

@@ -4,4 +4,4 @@ on:
   [SearchRequest, TrainRequest, IndexRequest]:
     - !DocCraftDriver
       with:
-        method: transform
+        method: craft

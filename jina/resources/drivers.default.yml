@@ -17,22 +17,22 @@ drivers:
         - handler_encode_doc: encode
     help: encode documents into embeddings
 
-  transform-doc:
+  craft-doc:
     handlers:
       /:
-        - handler_doc_transform: transform
-    help: transform the document-level information
+        - handler_doc_transform: craft
+    help: craft the document-level information
 
-  transform-chunk:
+  craft-chunk:
     handlers:
       /:
-        - handler_chunk_transform: transform
-    help: transform the chunk-level information
+        - handler_chunk_transform: craft
+    help: craft the chunk-level information
 
   segment:
     handlers:
       /:
-        - handler_segment: transform
+        - handler_segment: craft
     help: segment documents into chunks
 
   index-chunk:

@@ -11,7 +11,7 @@ class MyTestCase(JinaTestCase):
         crafter = ImageNormalizer(output_dim=224)
         tmp_fn = os.path.join(crafter.current_workspace, "test.jpeg")
         self.create_test_image(tmp_fn)
-        test_chunk, *_ = crafter.transform(tmp_fn.encode("utf8"), doc_id=0)
+        test_chunk, *_ = crafter.craft(tmp_fn.encode("utf8"), doc_id=0)
         self.assertEqual(test_chunk["blob"].shape, (3, 224, 224))
         self.add_tmpfile(tmp_fn)
 

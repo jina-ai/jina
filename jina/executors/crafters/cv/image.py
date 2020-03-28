@@ -18,7 +18,7 @@ class ImageNormalizer(BaseSegmenter):
                  *args,
                  **kwargs):
         """
-        :class:`ImageNormalizer` load an image file and transform into image matrix.
+        :class:`ImageNormalizer` load an image file and craft into image matrix.
 
         :param output_dim: the output size. Both height and width are set to `output_dim`
         :param img_mean: the mean of the images in `RGB` channels. Set to `[0.485, 0.456, 0.406]` for the models trained
@@ -34,7 +34,7 @@ class ImageNormalizer(BaseSegmenter):
         self.img_std = np.array(img_std).reshape((3, 1, 1))
         self.resize_dim = resize_dim
 
-    def transform(self, raw_bytes, doc_id, *args, **kwargs) -> List[Dict]:
+    def craft(self, raw_bytes, doc_id, *args, **kwargs) -> List[Dict]:
         """
 
         :param raw_bytes: the file name in bytes
