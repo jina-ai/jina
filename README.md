@@ -63,20 +63,20 @@ If you prefer the classic way to run Jina natively on the host, please make sure
 pip install jina
 ```
 
-#### Or, Install from the Master Branch
+#### ...or Install from the Master Branch
 
 ```bash
 pip install git+https://github.com/jina-ai/jina.git
 ```
 
-#### Or, (Dev/Editable mode) Install from Your Local Folk/Clone 
+#### ...or (Dev/Editable mode) Install from Your Local Folk/Clone 
 
 ```bash
 git clone https://github.com/jina-ai/jina
 cd jina && pip install -e .
 ``` 
 
-> Note, if you later want to switch to the other ways of Jina installation, remember to first uninstall your editable version from the system:
+> Note, if you later switch to the other ways of Jina installation, remember to first uninstall the editable version from the system:
   ```bash
   pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
   ```
