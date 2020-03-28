@@ -1,10 +1,9 @@
 import logging
-import os
 
 from .queue import __sse_queue__, __profile_queue__
 
 
-def start_sse_logger(host: str = '127.0.0.1', port: int = 5000):
+def start_sse_logger(host: str, port: int):
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
     :param host: host address of the server
@@ -36,18 +35,26 @@ def start_sse_logger(host: str = '127.0.0.1', port: int = 5000):
     app = Flask(__name__)
     CORS(app)
 
-    @app.route('/log/stream')
+    @app.route('/stream/log')
     def get_log():
         """Get the logs, endpoint `/log/stream`  """
         return Response(_log_stream(), mimetype="text/event-stream")
 
-    @app.route('/profile/stream')
+    @app.route('/stream/profile')
     def get_profile():
         """Get the profile logs, endpoint `/profile/stream`  """
         return Response(_profile_stream(), mimetype="text/event-stream")
 
-    os.environ['WERKZEUG_RUN_MAIN'] = 'true'
+    @app.route('/shutdown')
+    def shutdown():
+        from flask import request
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
+        return 'Server shutting down...'
 
+    # os.environ['WERKZEUG_RUN_MAIN'] = 'true'
     log = logging.getLogger('werkzeug')
     log.disabled = True
     app.logger.disabled = True
