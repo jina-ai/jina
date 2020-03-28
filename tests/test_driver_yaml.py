@@ -41,6 +41,14 @@ class MyTestCase(JinaTestCase):
             # will print a cust msg from the driver when terminate
             pass
 
+    def test_pod_new_api_from_kwargs(self):
+        a = BaseExecutor.load_config('mwu-encoder/mwu_encoder_driver.yml')
+        self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
+
+        with Pod(yaml_path='mwu-encoder/mwu_encoder_driver.yml'):
+            # will print a cust msg from the driver when terminate
+            pass
+
     def test_load_yaml2(self):
         a = BaseExecutor.load_config('yaml/test-exec-with-driver.yml')
         a.save_config()
