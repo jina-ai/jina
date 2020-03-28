@@ -1,17 +1,17 @@
 import os
 import unittest
 
-from jina.executors.transformers.cv.image import ImageNormalizer
+from jina.executors.crafters.cv.image import ImageNormalizer
 from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_transform_results(self):
-        transformer = ImageNormalizer(output_dim=224)
-        tmp_fn = os.path.join(transformer.current_workspace, "test.jpeg")
+        crafter = ImageNormalizer(output_dim=224)
+        tmp_fn = os.path.join(crafter.current_workspace, "test.jpeg")
         self.create_test_image(tmp_fn)
-        test_chunk, *_ = transformer.transform(tmp_fn.encode("utf8"), doc_id=0)
+        test_chunk, *_ = crafter.transform(tmp_fn.encode("utf8"), doc_id=0)
         self.assertEqual(test_chunk["blob"].shape, (3, 224, 224))
         self.add_tmpfile(tmp_fn)
 

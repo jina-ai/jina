@@ -1,8 +1,11 @@
+import ctypes
+from random import random
+
 from . import BaseExecutableDriver
 from .helper import array2blob, pb_obj2dict
 
 
-class ChunkTransformDriver(BaseExecutableDriver):
+class ChunkCraftDriver(BaseExecutableDriver):
     """Transform the chunk-level information on given keys using the executor
 
     """
@@ -23,7 +26,7 @@ class ChunkTransformDriver(BaseExecutableDriver):
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
 
 
-class DocTransformDriver(BaseExecutableDriver):
+class DocCraftDriver(BaseExecutableDriver):
     """Transform the doc-level information on given keys using the executor
 
     """
@@ -38,7 +41,15 @@ class DocTransformDriver(BaseExecutableDriver):
 class SegmentDriver(BaseExecutableDriver):
     """Segment document into chunks using the executor
 
+    .. note::
+        ``chunk_id`` is auto-assign incrementally or randomly depends on ``first_chunk_id`` and ``random_chunk_id``.
+        no need to self-assign it in your segmenter
     """
+
+    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.first_chunk_id = first_chunk_id
+        self.random_chunk_id = random_chunk_id
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
@@ -52,6 +63,8 @@ class SegmentDriver(BaseExecutableDriver):
                         else:
                             setattr(c, k, v)
                     c.length = len(ret)
+                    c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
+                        -1).value)
                 d.length = len(ret)
             else:
                 self.logger.warning('doc %d gives no chunk' % d.doc_id)

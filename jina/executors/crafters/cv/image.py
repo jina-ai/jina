@@ -1,6 +1,7 @@
-from PIL import Image
-import numpy as np
 from typing import Tuple, Dict, List
+
+import numpy as np
+from PIL import Image
 
 from .. import BaseSegmenter
 
@@ -8,6 +9,7 @@ from .. import BaseSegmenter
 class ImageNormalizer(BaseSegmenter):
     """:class:`ImageNormalizer` works on doc-level,
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
+
     def __init__(self,
                  output_dim,
                  img_mean: Tuple[float] = (0, 0, 0),

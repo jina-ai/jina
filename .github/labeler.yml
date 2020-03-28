@@ -54,8 +54,8 @@ executor/indexer:
 executor/ranker:
   - jina/executors/rankers/**/*
 
-executor/transformer:
-  - jina/executors/transformers/**/*
+executor/crafter:
+  - jina/executors/crafters/**/*
 
 component/flow:
   - jina/flow/**/*
