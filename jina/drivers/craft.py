@@ -1,5 +1,5 @@
 import ctypes
-from random import random
+import random
 
 from . import BaseExecutableDriver
 from .helper import array2blob, pb_obj2dict
@@ -60,11 +60,15 @@ class SegmentDriver(BaseExecutableDriver):
                     for k, v in r.items():
                         if k == 'blob':
                             c.blob.CopyFrom(array2blob(v))
+                        elif k == 'chunk_id':
+                            self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
+                                                f'is it intentional? chunk_id will be override by {self.__class__} anyway')
                         else:
                             setattr(c, k, v)
                     c.length = len(ret)
                     c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
                         -1).value)
+                    self.first_chunk_id += 1
                 d.length = len(ret)
             else:
                 self.logger.warning('doc %d gives no chunk' % d.doc_id)

@@ -43,8 +43,7 @@ class ImageNormalizer(BaseSegmenter):
         """
         raw_img = Image.open(raw_bytes.decode())
         processed_img = self._normalize(raw_img)
-        return [
-            dict(doc_id=doc_id, offset=0, chunk_id=0, weight=1., blob=processed_img), ]
+        return [dict(doc_id=doc_id, offset=0, weight=1., blob=processed_img), ]
 
     def _normalize(self, img):
         img = self._resize_short(img, target_size=self.resize_dim)
