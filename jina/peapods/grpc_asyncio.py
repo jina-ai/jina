@@ -6,21 +6,20 @@ from concurrent import futures
 
 from grpc import _server
 
-from ..logging import default_logger
-
 
 def _loop_mgr(loop: asyncio.AbstractEventLoop):
     asyncio.set_event_loop(loop)
-    try:
+    if not loop.is_running():
         loop.run_forever()
-    except RuntimeError as ex:
-        default_logger.warning(ex)
 
     # If we reach here, the loop was stopped.
     # We should gather any remaining tasks and finish them.
     pending = asyncio.all_tasks(loop)
     if pending:
         loop.run_until_complete(asyncio.gather(*pending))
+
+    if not loop.is_running():
+        loop.close()
 
 
 class AsyncioExecutor(futures.Executor):
@@ -54,7 +53,8 @@ class AsyncioExecutor(futures.Executor):
             return self._loop.run_in_executor(None, func)
 
     def shutdown(self, wait=True):
-        self._loop.stop()
+        if not self._loop.is_closed():
+            self._loop.close()
 
         self._shutdown = True
         if wait:

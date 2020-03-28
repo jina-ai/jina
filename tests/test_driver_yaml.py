@@ -7,6 +7,8 @@ from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import MetaDocSearchDriver
 from jina.executors import BaseExecutor
 from jina.helper import yaml
+from jina.main.parser import set_pod_parser
+from jina.peapods import Pod
 from tests import JinaTestCase
 
 
@@ -30,6 +32,14 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(b._executor_name, a[0]._executor_name)
 
         self.add_tmpfile('test_driver.yml')
+
+    def test_load_cust_with_driver(self):
+        a = BaseExecutor.load_config('mwu-encoder/mwu_encoder_driver.yml')
+        self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
+        p = set_pod_parser().parse_args(['--yaml_path', 'mwu-encoder/mwu_encoder_driver.yml'])
+        with Pod(p):
+            # will print a cust msg from the driver when terminate
+            pass
 
     def test_load_yaml2(self):
         a = BaseExecutor.load_config('yaml/test-exec-with-driver.yml')
