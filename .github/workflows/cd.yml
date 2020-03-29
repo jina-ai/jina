@@ -30,7 +30,7 @@ jobs:
           ./make-doc.sh commit "regular update due to ${{github.event_name}} on ${{github.repository}}"
       - uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/jina-docs
           force: true
           directory: docs/_build/html
