@@ -3,6 +3,16 @@ Jina Documentation
 
 |
 
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Install
+
+   chapters/install/via-pip
+   chapters/install/via-docker
+   chapters/install/on-rasp-linux
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Getting Started
