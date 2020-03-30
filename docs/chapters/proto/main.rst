@@ -1,5 +1,5 @@
-Protobuf Specification
-======================
+Jina Protobuf Specification
+===========================
 
 
 .. toctree::

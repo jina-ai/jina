@@ -1,5 +1,5 @@
-Using Jina in a Distributed Way
-===============================
+Using Jina Pod Remotely
+=======================
 
 
 .. toctree::

@@ -1,5 +1,5 @@
-Jina Environment Variables
-==========================
+OS Environment Variables used in Jina
+=====================================
 
 Here is the list of environment variables that ``jina`` respects during runtime.
 

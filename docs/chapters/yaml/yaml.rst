@@ -1,5 +1,5 @@
-Jina YAML Reference
-===================
+Jina YAML Syntax Reference
+==========================
 
 Jina configurations use YAML syntax, and must have either a ``.yml`` or ``.yaml`` file extension. If you're new to YAML and want to learn more, see `Learn YAML in five minutes. <https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes>`_
 

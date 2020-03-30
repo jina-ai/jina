@@ -105,3 +105,12 @@ Suggested Sections
 
     [A collection of URLs used as references through the JEP.]
 
+
+Current JEPs
+============
+
+.. toctree::
+   :maxdepth: 1
+
+   jep-1/main
+   jep-2/main

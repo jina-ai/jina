@@ -4,7 +4,6 @@
 [![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)
 [![Docker](.github/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
 
-
 Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
