@@ -20,6 +20,17 @@ class BaseIndexer(BaseExecutor):
     .. note::
         Calling :func:`save` to save a :class:`BaseIndexer` will create
         more than one files. One is the serialized version of the :class:`BaseIndexer` object, often ends with ``.bin``
+
+    .. warning::
+        When using :class:`BaseIndexer` out of the Pod, use it with context manager
+
+        .. highlight:: python
+        .. code-block:: python
+
+            with BaseIndexer() as b:
+                b.add()
+
+        So that it can safely save the data. Or you have to manually call `b.close()` to close the indexer safely.
     """
 
     def __init__(self,

@@ -8,6 +8,7 @@ from jina.executors.indexers.annoy import AnnoyIndexer
 from jina.executors.indexers.numpy import NumpyIndexer
 from tests import JinaTestCase
 
+retr_idx = None
 vec_idx = np.random.randint(0, high=100, size=[1, 10])
 vec = np.random.random([10, 5])
 query = np.array(np.random.random([10, 5]), dtype=np.float32)
@@ -34,6 +35,11 @@ class MyTestCase(JinaTestCase):
         b = BaseIndexer.load(a.save_abspath)
         idx, dist = b.query(query, top_k=4)
         print(idx, dist)
+        global retr_idx
+        if retr_idx is None:
+            retr_idx = idx
+        else:
+            np.testing.assert_equal(retr_idx, idx)
         self.assertEqual(idx.shape, dist.shape)
         self.assertEqual(idx.shape, (10, 4))
         self.add_tmpfile(a.index_abspath, a.save_abspath)
@@ -49,6 +55,11 @@ class MyTestCase(JinaTestCase):
         b = BaseIndexer.load(a.save_abspath)
         idx, dist = b.query(query, top_k=4)
         print(idx, dist)
+        global retr_idx
+        if retr_idx is None:
+            retr_idx = idx
+        else:
+            np.testing.assert_equal(retr_idx, idx)
         self.assertEqual(idx.shape, dist.shape)
         self.assertEqual(idx.shape, (10, 4))
         self.add_tmpfile(a.index_abspath, a.save_abspath)
