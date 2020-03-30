@@ -21,65 +21,29 @@ Jina is *the* cloud-native neural search solution powered by the state-of-the-ar
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Getting Started
+## Install
 
-The simplest way to use Jina is via Docker. We provide a universal container image as small as 100MB that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6). Of course, you need to have [Docker installed](https://docs.docker.com/install/) first. 
+You can install or run Jina via PyPi or Docker container.
 
-### Running Jina Image
+#### Install from PyPi
+ 
+On Linux/Mac with Python >= 3.7 installed, simply do:
+
+```bash
+pip install jina
+```
+
+To install Jina with extra dependencies, or on Raspberry Pi and other Linux system, please refer to the documentations.
+
+### ...or Run with Docker Container 
+
+We provide a universal container image as small as 100MB that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6), simply do: 
 
 ```bash
 docker run jinaai/jina:master-debian
 ```
 
-This command downloads the latest Jina image from [Docker Hub](https://hub.docker.com/r/jinaai/jina/tags) based on your local architecture and then runs it in a container. When the container runs, it prints an help message and exits.
-
-<details>
- <summary>Other Jina docker image mirrors: (click to expand...)</summary>
-
-> 🚨 We have stopped updating these two registries. They are just listed here for reference and they will be deleted anytime soon.
-
-#### Github Package (Do not support multiarch)
-
-```bash
-docker login -u USERNAME -p TOKEN docker.pkg.github.com
-docker run docker.pkg.github.com/jina-ai/jina/jina:[tag]
-```
-
-#### Tencent Cloud (Too slow to upload)
-
-```bash
-docker login -u USERNAME -p TOKEN ccr.ccs.tencentyun.com
-docker run ccr.ccs.tencentyun.com/jina/jina:[tag]
-```
-</details>
-
-### Running Jina Natively
-
-If you prefer the classic way to run Jina natively on the host, please make sure you have Python >= 3.7 installed on the host. 
-
-#### Install from PyPi
- 
-```bash
-pip install jina
-```
-
-#### ...or Install from the Master Branch
-
-```bash
-pip install git+https://github.com/jina-ai/jina.git
-```
-
-#### ...or (Dev/Editable mode) Install from Your Local Folk/Clone 
-
-```bash
-git clone https://github.com/jina-ai/jina
-cd jina && pip install -e .
-``` 
-
-> Note, if you later switch to the other ways of Jina installation, remember to first uninstall the editable version from the system:
-  ```bash
-  pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
-  ```
+A complete guide of using Jina with Docker can be found in our documentation.
 
 ## Testing
 

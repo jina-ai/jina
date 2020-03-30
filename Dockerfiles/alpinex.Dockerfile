@@ -24,7 +24,8 @@ ADD jina ./jina/
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.8/dist-packages:/usr/local/lib/python3.8/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
 
-RUN apk add --no-cache py3-pyzmq py3-numpy py3-scipy grpc && \
+# py3-scipy
+RUN apk add --no-cache py3-pyzmq py3-numpy grpc && \
     ln -s locale.h /usr/include/xlocale.h && \
     pip install . --no-cache-dir --compile && \
     find /usr/lib/python3.8/ -name 'tests' -exec rm -r '{}' + && \
