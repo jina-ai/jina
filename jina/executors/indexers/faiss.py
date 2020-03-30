@@ -33,6 +33,6 @@ class FaissIndexer(NumpyIndexer):
         if keys.dtype != np.float32:
             raise ValueError('vectors should be ndarray of float32')
 
-        score, ids = self.query_handler.search(keys, top_k)
+        dist, ids = self.query_handler.search(keys, top_k)
 
-        return self.int2ext_key[ids], score
+        return self.int2ext_key[ids], dist

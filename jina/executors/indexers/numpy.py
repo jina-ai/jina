@@ -42,17 +42,24 @@ class NumpyIndexer(BaseIndexer):
 
         :return: a numpy ndarray of vectors
         """
-        if self.num_dim and self.dtype:
-            with gzip.open(self.index_abspath, 'rb') as fp:
-                vecs = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
+        try:
+            if self.num_dim and self.dtype:
+                with gzip.open(self.index_abspath, 'rb') as fp:
+                    vecs = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
+        except EOFError:
+            self.logger.error(
+                f'{self.index_abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
+            return None
 
         if self.key_bytes and self.key_dtype:
             self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
 
         if self.int2ext_key is not None and vecs is not None:
             if self.int2ext_key.shape[0] != vecs.shape[0]:
-                raise ValueError('the size of the keys is not as same as the vectors (%d != %d)' % (
-                    self.int2ext_key.shape[0], vecs.shape[0]))
+                self.logger.error(
+                    f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
+                    f'did you write to this index twice?')
+                return None
             return vecs
         else:
             return None

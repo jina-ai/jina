@@ -28,23 +28,13 @@ ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 
 ADD jina ./jina/
 
-
 RUN ln -s locale.h /usr/include/xlocale.h && \
     pip install . --no-cache-dir --compile && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 
-# run unit test
-# this shall be removed once success
-#ADD tests /jina/tests/
-#RUN jina --version
-#WORKDIR /jina/tests
-#ENV PYTHONPATH=$PYTHONPATH:/jina/
-#ENV JINA_SKIP_CONTAINER_TESTS=TRUE
-#RUN python -m unittest *.py -v
-#RUN python -c 'f = open("yaml/test-index.yml"); print(f.read())'
-
 WORKDIR /
+
 ENV JINA_VCS_VERSION=$VCS_REF
 ENV JINA_BUILD_DATE=$BUILD_DATE
 

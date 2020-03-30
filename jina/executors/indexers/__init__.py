@@ -62,15 +62,13 @@ class BaseIndexer(BaseExecutor):
     @property
     def query_handler(self):
         """A readable and indexable object, could be dict, map, list, numpy array etc. """
-
         if self._query_handler is None and os.path.exists(self.index_abspath):
             self._query_handler = self.get_query_handler()
 
         if self._query_handler is None:
-            self.logger.warning('"query_handler" is None, you can not query from it. '
-                                'If you are indexing data, that is fine. '
-                                'It just means you can not do querying-while-indexing, and you later have to '
-                                'switch to query mode to use this index')
+            self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
+                                'If you are indexing data then that is fine, just means you can not do querying-while-indexing.'
+                                'If you are querying data then the index file must be broken.')
         return self._query_handler
 
     @property

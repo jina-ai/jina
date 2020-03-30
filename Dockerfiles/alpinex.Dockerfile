@@ -1,19 +1,25 @@
-FROM python:3.8-alpine
+FROM python:3.7.6-alpine
 
 ARG VCS_REF
 ARG BUILD_DATE
+ARG JINA_VERSION
 
-LABEL maintainer="dev-team@jina.ai" \
-      org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.vcs-url="https://github.com/jina-ai/jina/commit/$VCS_REF" \
-      org.label-schema.url="https://jina.ai" \
-      org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name="Jina" \
-      org.label-schema.description="Jina is the cloud-native neural search solution powered by SOTA AI technology"
+LABEL org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.authors="dev-team@jina.ai" \
+      org.opencontainers.image.url="https://jina.ai" \
+      org.opencontainers.image.documentation="https://docs.jina.ai" \
+      org.opencontainers.image.source="https://github.com/jina-ai/jina/commit/$VCS_REF" \
+      org.opencontainers.image.version=$JINA_VERSION \
+      org.opencontainers.image.revision=$VCS_REF \
+      org.opencontainers.image.vendor="Jina AI Limited" \
+      org.opencontainers.image.licenses="Apache 2.0" \
+      org.opencontainers.image.title="Jina" \
+      org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology"
 
 WORKDIR /jina/
 
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
+
 ADD jina ./jina/
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.8/dist-packages:/usr/local/lib/python3.8/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages

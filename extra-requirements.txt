@@ -29,3 +29,4 @@ tensorflow>=2.0:            framework, py37
 torchvision:                framework
 onnx:                       framework, py37
 onnxruntime:                framework, py37
+annoy:                      index
