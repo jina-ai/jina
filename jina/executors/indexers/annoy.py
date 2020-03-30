@@ -11,10 +11,8 @@ class AnnoyIndexer(NumpyIndexer):
         """
         Initialize an AnnoyIndexer
 
-        :param num_dim: when set to -1, then num_dim is auto decided on first .add()
-        :param data_path: index data file managed by the annoy indexer
-        :param metric:
-        :param n_trees:
+        :param metric: Metric can be "angular", "euclidean", "manhattan", "hamming", or "dot"
+        :param n_trees: builds a forest of n_trees trees. More trees gives higher precision when querying.
         :param args:
         :param kwargs:
         """
