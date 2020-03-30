@@ -7,7 +7,7 @@ Jina Documentation
    :maxdepth: 2
    :caption: Getting Started
 
-   chapters/cli/main
+   chapters/hub/main
    chapters/remote/main
    chapters/cli/exit
 
@@ -15,18 +15,11 @@ Jina Documentation
    :maxdepth: 2
    :caption: Developer Reference
 
+   chapters/cli/main
    api/jina
-   chapters/envs
-   chapters/proto/main
    chapters/yaml/yaml
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-   :caption: Jina Enhancement Proposals (JEPs)
-
-   chapters/jep/main
-   chapters/jep/**/jep-*
+   chapters/proto/main
+   chapters/envs
 
 .. toctree::
    :maxdepth: 2
@@ -34,6 +27,12 @@ Jina Documentation
 
    chapters/CONTRIBUTING.md
 
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Jina Enhancement Proposals
+
+   chapters/jep/main
 
 .. toctree::
    :maxdepth: 1

@@ -15,7 +15,7 @@
 {%- if is_namespace %}
 {{- [pkgname, "namespace"] | join(" ") | e | heading }}
 {%- elif pkgname == "jina" %}
-{{- [pkgname.capitalize(), "API Reference"] | join(" ") | e | heading }}
+{{- [pkgname.capitalize(), "Python API Reference"] | join(" ") | e | heading }}
 {% else %}
 {{- [pkgname, ""] | join(" ") | e | heading }}
 {% endif %}

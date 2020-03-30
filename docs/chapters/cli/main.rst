@@ -1,6 +1,12 @@
-Command-Line Interface
-======================
+Jina Command-Line Interface
+===========================
 
+.. argparse::
+   :nosubcommands:
+   :noepilog:
+   :nodescription:
+   :ref: jina.main.parser.get_main_parser
+   :prog: jina
 
 .. toctree::
    :caption: Starting Jina in the Console
@@ -18,4 +24,3 @@ Command-Line Interface
    jina-ping
    jina-check
    jina-log
-   jina
