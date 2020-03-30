@@ -51,6 +51,7 @@ html_css_files = ['main.css']
 htmlhelp_basename = slug
 html_show_sourcelink = False
 
+
 latex_documents = [(master_doc, '{0}.tex'.format(slug), project, author, 'manual')]
 man_pages = [(master_doc, slug, project, [author], 1)]
 texinfo_documents = [(master_doc, slug, project, author, slug, project, 'Miscellaneous')]

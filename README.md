@@ -3,7 +3,6 @@
 [![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)
 [![Docker](.github/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/jinaai/jina/master-debian?logo=docker)
 
 Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
 
