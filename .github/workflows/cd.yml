@@ -1,14 +1,14 @@
 name: CD
 
-#on:
-#  push:
-#    branches:
-#      - master
-
 on:
   push:
-    branches-ignore:
-      - '**'  # temporally ignore all
+    branches:
+      - master
+
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally ignore all
 
 
 jobs:

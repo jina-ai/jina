@@ -63,7 +63,6 @@ Jina Documentation
    :maxdepth: 1
    :caption: Release Notes
 
-   chapters/release-process.md
    chapters/CHANGELOG.md
 
 
