@@ -134,3 +134,25 @@ Well done! Once a PR gets merged, here are the things happened next:
 - On every Friday when a new release is published, PyPi packages and all Docker images tagged with `-latest` will be updated accordindly. 
 - Your contribution and commits will be included in [our weekly release note](CHANGELOG.md). 🍻
 
+## Test Jina Locally and on CI
+
+Locally you can do unittest via:
+
+```bash
+cd tests && python -m unittest *.py -v
+```
+
+When you add an executor or a driver, you may introduce new dependencies to Jina. You can verify the dependencies via:
+
+```bash
+jina check
+```
+, and via Docker container:
+```bash
+docker run jinaai/jina:my-local-version check
+```
+
+It prints a list of components the current Jina supported and exits. Make sure yours is not in red.
+
+Once you submit the PR, your code will be tested in the environment of Python 3.7 and 3.8 with [full exta dependencies](extra-requirements.txt) (`pip install .[all]`) installed.
+
