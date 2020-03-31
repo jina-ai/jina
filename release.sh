@@ -71,7 +71,6 @@ if [ $LAST_COMMIT != $LAST_UPDATE ]; then
     exit 1;
 fi
 
-#$(grep "$VER_TAG" $CLIENT_CODE | sed -n 's/^.*'\''\([^'\'']*\)'\''.*$/\1/p')
 OLDVER=$(git tag -l | sort -V | tail -n1)
 printf "current version:\t\e[1;33m$OLDVER\e[0m\n"
 
@@ -86,7 +85,6 @@ read -p "release this version? " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    # write back tag to client and server code
     VER_VAL=$VER_TAG"'"${VER#"v"}"'"
     change_line "$VER_TAG" "$VER_VAL" $INIT_FILE
     pub_pypi
