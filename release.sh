@@ -45,7 +45,6 @@ function pub_gittag {
     git add $INIT_FILE
     git commit -m "chore(version): bumping version to $VER"
     git tag $VER -m "$(cat ./CHANGELOG.tmp)"
-    # git remote add $SOURCE_ORIGIN https://hanxiao:${GITHUB_ACCESS_TOKEN}@github.com/gnes-ai/gnes.git
     git push $SOURCE_ORIGIN $VER
     git checkout master
 }
@@ -53,7 +52,8 @@ function pub_gittag {
 
 function make_release_note {
     git-release-notes $1..HEAD .github/release-template.ejs > ./CHANGELOG.tmp
-    printf '\n%s\n%s\n%s\n%s\n' "## Release Note (\`$2\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" "$(cat ./CHANGELOG.md)" > ./CHANGELOG.md
+    head -n10 ./CHANGELOG.md
+    printf '\n%s\n\n%s\n\n%s\n\n%s\n\n' "$(cat ./CHANGELOG.md)" "## Release Note (\`$2\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" > ./CHANGELOG.md
 }
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -78,18 +78,8 @@ VER=$(echo $OLDVER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("%0*
 printf "bump version to:\t\e[1;32m$VER\e[0m\n"
 
 make_release_note $OLDVER $VER
-
-head -n10 ./CHANGELOG.md
-
-read -p "release this version? " -n 1 -r
-echo    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    VER_VAL=$VER_TAG"'"${VER#"v"}"'"
-    change_line "$VER_TAG" "$VER_VAL" $INIT_FILE
-    pub_pypi
-    pub_gittag
-    make_chore_pr $VER
-fi
+VER_VAL=$VER_TAG"'"${VER#"v"}"'"
+change_line "$VER_TAG" "$VER_VAL" $INIT_FILE
+pub_gittag
 
 

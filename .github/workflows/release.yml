@@ -16,3 +16,9 @@ jobs:
       - run: |
           npm install git-release-notes
           pip install twine wheel
+          ./release.sh
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          tags: true
+          force: true
