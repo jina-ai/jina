@@ -5,7 +5,7 @@
 # npm install -g git-release-notes
 # pip install twine wheel
 
-set -e
+set -ex
 
 INIT_FILE='jina/__init__.py'
 TMP_INIT_FILE='./__init__.py.tmp'
@@ -53,7 +53,7 @@ function pub_gittag {
 
 function make_release_note {
     $RELEASENOTE $1..HEAD .github/release-template.ejs > ./CHANGELOG.tmp
-    head -n10 ./CHANGELOG.md
+    head -n10 ./CHANGELOG.tmp
     printf '\n%s\n\n%s\n\n%s\n\n%s\n\n' "$(cat ./CHANGELOG.md)" "## Release Note (\`$2\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" > ./CHANGELOG.md
 }
 
