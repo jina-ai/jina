@@ -6,20 +6,23 @@ on:
       - master
 
 jobs:
-  update-doc:
+  regular-release:
+    if: "!contains(github.event.head_commit.message, 'chore(version)')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
       - run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           npm install git-release-notes
           pip install twine wheel
-          ./release.sh
+      - run: ./release.sh
+      - if: failure()
+        run: echo "nothing to release"
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
