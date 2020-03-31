@@ -28,7 +28,7 @@ No extra steps is required to run on those architectures, simply do `docker run 
 
 ### Github Package
 
-> 🚨 Github Docker Registry does not support multi-architecture Docker image
+> 🚨 Github Docker Registry does not support multi-architecture Docker image, so if you want to run Jina Docker image on non-amd64 architecture, please [use the DockerHub image instead](#running-jina-image).
 
 ```bash
 docker login -u USERNAME -p TOKEN docker.pkg.github.com

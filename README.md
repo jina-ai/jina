@@ -32,11 +32,11 @@ On Linux/Mac with Python >= 3.7 installed, simply do:
 pip install jina
 ```
 
-To install Jina with extra dependencies, or on Raspberry Pi and other Linux system, please refer to the documentations.
+To install Jina with extra dependencies, or install it on Raspberry Pi and other Linux system, please refer to the documentations.
 
-### ...or Run with Docker Container 
+#### ...or Run with Docker Container 
 
-We provide a universal container image as small as 100MB that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6), simply do: 
+We provide a universal container image as small as 80MB that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6), simply do: 
 
 ```bash
 docker run jinaai/jina:master-debian
@@ -49,10 +49,11 @@ A complete guide of using Jina with Docker can be found in our documentation.
 To verify the installation:
 
 ```bash
-docker run jinaai/jina:master-debian check
-
-# or if you installed Jina locally
 jina check
+
+# or 
+
+docker run jinaai/jina:master-debian check
 ```
 
 It prints a list of components the current Jina supported and exits.
@@ -77,15 +78,16 @@ bash ./make-doc.sh serve 8080
 
 The documentation is then available via browser at `http://0.0.0.0:8080/`.
 
-## Roadmap
-
-The [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to the future improvements.
-
 ## Contributing
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
 
 Please first read [the contributing guidelines](CONTRIBUTING.md) before the submission. 
+
+## Roadmap
+
+The [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to the future improvements.
+
 
 ## License
 

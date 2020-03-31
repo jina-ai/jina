@@ -1,9 +1,15 @@
 name: CD
 
+#on:
+#  push:
+#    branches:
+#      - master
+
 on:
   push:
-    branches:
-      - master
+    branches-ignore:
+      - '**'  # temporally ignore all
+
 
 jobs:
   update-doc:
