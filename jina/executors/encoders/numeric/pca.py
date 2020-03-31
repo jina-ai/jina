@@ -35,8 +35,6 @@ class IncrementalPCAEncoder(BaseNumericEncoder):
         self.num_features = num_features
         self.encoder_abspath = save_path
         self.is_trained = False
-        self._args = args
-        self._kwargs = kwargs
 
     def post_init(self):
         from sklearn.decomposition import IncrementalPCA
@@ -48,9 +46,7 @@ class IncrementalPCAEncoder(BaseNumericEncoder):
         else:
             self.model = IncrementalPCA(
                 n_components=self.output_dim,
-                whiten=self.whiten,
-                *self._args,
-                **self._kwargs)
+                whiten=self.whiten)
 
     @batching
     def train(self, data: 'np.ndarray', *args, **kwargs):
@@ -90,3 +86,4 @@ class IncrementalPCAEncoder(BaseNumericEncoder):
         with open(self.encoder_abspath, 'wb') as f:
             pickle.dump(self.model, f)
         return super().__getstate__()
+
