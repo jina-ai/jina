@@ -12,11 +12,10 @@ Jina is *the* cloud-native neural search solution powered by the state-of-the-ar
 
 
 - [Install](#install)
-  - [...or Run with Docker Container](#or-run-with-docker-container)
 - [Testing](#testing)
 - [Documentation](#documentation)
-- [Roadmap](#roadmap)
 - [Contributing](#contributing)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
