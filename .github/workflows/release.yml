@@ -14,5 +14,5 @@ jobs:
         with:
           python-version: 3.7
       - run: |
-          npm install -g git-release-notes
+          npm install git-release-notes
           pip install twine wheel
