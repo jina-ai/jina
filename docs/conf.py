@@ -24,7 +24,7 @@ except FileNotFoundError:
 version = __version__
 release = __version__
 
-templates_path = ['_templates']
+templates_path = ['template']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'tests']
 pygments_style = 'colorful'
 html_theme = 'sphinx_rtd_theme'
@@ -42,7 +42,8 @@ html_theme_options = {
     # 'sticky_navigation': True,
     # 'navigation_depth': 4,
     'includehidden': True,
-    'titles_only': True
+    'titles_only': True,
+    'show_sphinx': False
 }
 
 html_static_path = ['_static']

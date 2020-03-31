@@ -1,6 +1,9 @@
 Update Protocol Specification
 =============================
 
+
+
+
 For developers who want to change the protobuf specification, one needs to first edit :file:`jina/proto/jina.proto` and then use :file:`jina/proto/build-proto.sh` to regenerate the python interfaces (i.e. :file:`jina/proto/jina_pb2.py` and :file:`jina/proto/jina_pb2_grpc.py`).
 
 

@@ -1,6 +1,7 @@
 
 ## Install Jina on Raspberry Pi and other Linux Systems
 
+
 On Raspbian or other Linux systems with Python >= 3.7 installed, you can simply install Jina via:
 
 ```bash

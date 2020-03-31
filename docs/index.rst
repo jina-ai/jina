@@ -4,6 +4,8 @@ Jina Documentation
 |
 
 
+
+
 .. toctree::
    :maxdepth: 1
    :caption: Install
@@ -36,13 +38,8 @@ Jina Documentation
    :caption: Contributing
 
    chapters/CONTRIBUTING.md
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-   :caption: Jina Enhancement Proposals
-
    chapters/jep/main
+
 
 .. toctree::
    :maxdepth: 1
