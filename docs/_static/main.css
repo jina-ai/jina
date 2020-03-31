@@ -8,16 +8,16 @@
 }
 
 
-/*.btn-info {*/
-/*    background-color: #247ba0ff !important*/
-/*}*/
+.btn-info {
+    background-color: #247ba0ff !important
+}
 
-/*.btn-link {*/
-/*    background-color: transparent !important;*/
-/*    color: #247ba0ff;*/
-/*    box-shadow: none;*/
-/*    border-color: transparent !important*/
-/*}*/
+.btn-link {
+    background-color: transparent !important;
+    color: #247ba0ff;
+    box-shadow: none;
+    border-color: transparent !important
+}
 
 
 .wy-nav-content {
@@ -34,112 +34,112 @@
     color: #fff;
 }
 
-/*.reference .internal a {*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*}*/
+.reference .internal a {
+    display: flex;
+    align-items: center;
+}
 
 
 .wy-menu-vertical a {
     font-size: inherit;
     margin: 0;
     line-height: 2.5;
-    display: inline-block;
+
 }
 
 .wy-menu-vertical ul {
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.current {
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.current a {
     border: none;
-    display: inline-block;
+    
 }
 
 
 .wy-menu-vertical li.toctree-l1.current > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.toctree-l2.current > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.toctree-l3.current > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.toctree-l4.current > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.toctree-l5.current > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 
 .wy-menu-vertical li.toctree-l1.current li.toctree-l2 > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 
 .wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a {
     border: none;
     background-color: #dfe0ec;
-    display: inline-block;
+    
 }
 
 .wy-menu-vertical li.toctree-l4.current li.toctree-l5 > a {
     border: none;
     background-color: #f8f4ff;
-    display: inline-block;
+    
 }
 
-/*.wy-side-nav-search input[type=text] {*/
-/*    width: 100%;*/
-/*    margin-bottom: 10px;*/
-/*    background: rgba(0, 0, 0, 0.3);*/
-/*    outline: none;*/
-/*    padding: 10px;*/
-/*    font-size: 13px;*/
-/*    color: #fff;*/
-/*    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);*/
-/*    border: 1px solid rgba(0, 0, 0, 0.3);*/
-/*    border-radius: 4px;*/
-/*    box-shadow: inset 0 -5px 45px rgba(100, 100, 100, 0.2), 0 1px 1px rgba(255, 255, 255, 0.2);*/
-/*    -webkit-transition: box-shadow .5s ease;*/
-/*    -moz-transition: box-shadow .5s ease;*/
-/*    -o-transition: box-shadow .5s ease;*/
-/*    -ms-transition: box-shadow .5s ease;*/
-/*    transition: box-shadow .5s ease;*/
-/*}*/
+.wy-side-nav-search input[type=text] {
+    width: 100%;
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    outline: none;
+    padding: 10px;
+    font-size: 13px;
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    box-shadow: inset 0 -5px 45px rgba(100, 100, 100, 0.2), 0 1px 1px rgba(255, 255, 255, 0.2);
+    -webkit-transition: box-shadow .5s ease;
+    -moz-transition: box-shadow .5s ease;
+    -o-transition: box-shadow .5s ease;
+    -ms-transition: box-shadow .5s ease;
+    transition: box-shadow .5s ease;
+}
 
-/*.wy-side-nav-search input[type=text]:focus {*/
-/*    box-shadow: inset 0 -5px 45px rgba(100, 100, 100, 0.4), 0 1px 1px rgba(255, 255, 255, 0.2);*/
-/*}*/
+.wy-side-nav-search input[type=text]:focus {
+    box-shadow: inset 0 -5px 45px rgba(100, 100, 100, 0.4), 0 1px 1px rgba(255, 255, 255, 0.2);
+}
 
 
 .wy-nav-side {
@@ -168,13 +168,13 @@ input {
 #table-of-contents {
     right: 3%;
     position: fixed;
-    /*background: #fff;*/
+    background: #fff;
     top: 10%;
     z-index: 99;
-    /*padding: 15px;*/
-    /*box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);*/
-    /*transition: 0.3s;*/
-    /*border-radius: 5px;*/
+    padding: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    border-radius: 5px;
 }
 
 /*.wy-dropdown-menu > dd > a:hover {*/
