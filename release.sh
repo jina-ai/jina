@@ -8,7 +8,6 @@
 set -ex
 
 INIT_FILE='jina/__init__.py'
-TMP_INIT_FILE='./__init__.py.tmp'
 VER_TAG='__version__ = '
 SOURCE_ORIGIN='origin'
 RELEASENOTE='./node_modules/.bin/git-release-notes'
@@ -23,8 +22,8 @@ function change_line {
     local FILE=$3
 
     local NEW=$(echo "${NEW_LINE}" | escape_slashes)
-    sed -i .bak '/'"${OLD_LINE_PATTERN}"'/s/.*/'"${NEW}"'/' "${FILE}"
-    mv "${FILE}.bak" ${TMP_INIT_FILE}
+    sed -i '/'"${OLD_LINE_PATTERN}"'/s/.*/'"${NEW}"'/' "${FILE}"
+    head -n10 ${FILE}
 }
 
 
@@ -52,7 +51,7 @@ function pub_gittag {
 
 
 function make_release_note {
-    $RELEASENOTE $1..HEAD .github/release-template.ejs > ./CHANGELOG.tmp
+    ${RELEASENOTE} $1..HEAD .github/release-template.ejs > ./CHANGELOG.tmp
     head -n10 ./CHANGELOG.tmp
     printf '\n%s\n\n%s\n\n%s\n\n%s\n\n' "$(cat ./CHANGELOG.md)" "## Release Note (\`$2\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" > ./CHANGELOG.md
 }
