@@ -1,3 +1,10 @@
+********************************
+Jina Enhancement Proposals (JEP)
+********************************
+
+
+
+
 What is a JEP?
 ==============
 
@@ -5,8 +12,6 @@ JEP stands for Jina Enhancement Proposal. A JEP is a design document providing i
 
 We learn from the `PEP standard <https://www.python.org/dev/peps/pep-0001/#what-is-a-pep>`_ and intend JEPs to be the primary mechanisms for proposing major new features, for collecting community input on an issue, and for documenting the design decisions that have gone into Python. The JEP author is responsible for building consensus within the community and documenting dissenting opinions.
 
-.. contents:: Table of Contents
-   :depth: 2
 
 
 Who should write JEP?
@@ -42,8 +47,6 @@ JEP Header Template
     :Released in Jina version: <version number>
     :Discussions: <Github issue's address>
 
-    .. contents:: Table of Contents
-       :depth: 2
 
 
 Suggested Sections

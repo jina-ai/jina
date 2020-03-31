@@ -1,6 +1,10 @@
 JEP 1 --- Redesigning ``Driver`` and its relation to ``Executor``
 =================================================================
 
+.. contents:: Table of Contents
+   :depth: 3
+
+
 :Author: Han Xiao (han.xiao@jina.ai)
 :Created: Feb. 24, 2020
 :Status: Accepted

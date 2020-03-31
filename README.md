@@ -26,7 +26,7 @@ You can install or run Jina via PyPi or Docker container.
 
 #### Install from PyPi
  
-On Linux/Mac with Python >= 3.7 installed, simply do:
+On Linux/MacOS with Python >= 3.7 installed, simply run this command in your terminal:
 
 ```bash
 pip install jina
@@ -36,33 +36,39 @@ To install Jina with extra dependencies, or install it on Raspberry Pi and other
 
 #### ...or Run with Docker Container 
 
-We provide a universal container image as small as 80MB that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6), simply do: 
+We provide a universal Jina image (only 80MB!) that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6), simply do: 
 
 ```bash
-docker run jinaai/jina:master-debian
+docker run jinaai/jina
+```
+
+#### Upgrade Jina
+
+If you have a previously installed version, you can upgrade it by running:
+
+```bash
+pip install -U jina
+```
+
+or 
+
+```bash
+docker pull jinaai/jina
 ```
 
 A complete guide of using Jina with Docker can be found in our documentation.
 
-## Testing
+## Getting Started
 
-To verify the installation:
-
-```bash
-jina check
-
-# or 
-
-docker run jinaai/jina:master-debian check
-```
-
-It prints a list of components the current Jina supported and exits.
-
-If you cloned this repository to local, then you can perform unittest via:
-
-```bash
-cd tests && python -m unittest *.py -v
-```
+||||
+|---|---|---|
+| Jina 101 | Jina important concepts explained | 🐣 |
+| Jina 101 | Jina important concepts explained | 🐣 |
+| Run Jina in Distributive Way | Learn how to run Jina remotely | 🕊️ |
+| Run Jina with Container | Learn how Jina solve dependencies easily with container | 🕊️ |
+| Run Jina on Raspberry Pi | Get your Raspberry Pi out of the dust box, time to work  | 🕊️ | 
+| Implement Your First Executor | Learn how to extend Jina with your own ideas | 🚀 |
+| Share Your Extension with the World | Share your extensions with the world | 🚀 | 
   
 ## Documentation 
 
@@ -83,6 +89,15 @@ The documentation is then available via browser at `http://0.0.0.0:8080/`.
 We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
 
 Please first read [the contributing guidelines](CONTRIBUTING.md) before the submission. 
+
+## Community
+
+- Slack chanel - a communication platform for developers to discuss Jina
+- Mailing list - subscribe to the latest update, release news of Jina
+- [LinkedIn](https://www.linkedin.com/showcase/31268045/) - get to know Jina AI as a company
+- [Twitter](https://twitter.com/JinaAI_) - interact with us @JinaAI_  
+- [Join Us](mailto:hr@jina.ai) - want to work full-time with us on Jina?
+
 
 ## Roadmap
 
