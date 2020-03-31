@@ -8,11 +8,13 @@ We welcome all kinds of contributions from the open-source community, individual
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [Make Your First Submission](#make-your-first-submission)
 - [Commit Style](#commit-style)
   - [Branch Name](#branch-name)
   - [Commit Message](#commit-message)
   - [Pull Request Name](#pull-request-name)
-- [Make Your First Submission](#make-your-first-submission)
+- [Test Jina Locally and on CI](#test-jina-locally-and-on-ci)
+- [Sign Your Contribution](#sign-your-contribution)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
