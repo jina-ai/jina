@@ -42,11 +42,11 @@ function pub_pypi {
 }
 
 function pub_gittag {
+    git config --local user.email "dev-bot@jina.ai"
+    git config --local user.name "Jina Dev Bot"
     git add $INIT_FILE
     git commit -m "chore(version): bumping version to $VER"
     git tag $VER -m "$(cat ./CHANGELOG.tmp)"
-    git push $SOURCE_ORIGIN $VER
-    git checkout master
 }
 
 
