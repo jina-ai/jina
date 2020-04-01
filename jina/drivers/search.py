@@ -2,8 +2,8 @@ from . import BaseExecutableDriver
 from .helper import extract_chunks
 
 
-class MetaDocSearchDriver(BaseExecutableDriver):
-    """Fill in the doc-level top-k results using the :class:`jina.executors.indexers.meta.MetaProtoIndexer`
+class DocPbSearchDriver(BaseExecutableDriver):
+    """Fill in the doc-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
 
     """
 
@@ -13,8 +13,8 @@ class MetaDocSearchDriver(BaseExecutableDriver):
                 tk.match_doc.CopyFrom(self.exec_fn(tk.match_doc.doc_id))
 
 
-class MetaChunkSearchDriver(BaseExecutableDriver):
-    """Fill in the chunk-level top-k results using the :class:`jina.executors.indexers.meta.MetaProtoIndexer`
+class ChunkPbSearchDriver(BaseExecutableDriver):
+    """Fill in the chunk-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
 
     """
 

@@ -8,7 +8,7 @@ components:
     metas:
       name: my_vec_indexer  # a customized name
       workspace: $TEST_WORKDIR
-  - !MetaProtoIndexer
+  - !ProtobufIndexer
     with:
       index_filename: chunk.gzip
     metas:

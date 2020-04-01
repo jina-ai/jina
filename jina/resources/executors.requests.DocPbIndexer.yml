@@ -1,0 +1,11 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  SearchRequest:
+    - !DocPbIndexDriver
+      with:
+        method: query
+  IndexRequest:
+    - !DocPbSearchDriver
+      with:
+        method: add

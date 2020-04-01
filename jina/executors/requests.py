@@ -22,6 +22,10 @@ def get_default_reqs(cls_mro: List[type]) -> Dict:
                     _defaults[cls.__name__] = \
                         yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
+            if cls.__name__ != cls_mro[0].__name__:
+                from ..logging import default_logger
+                default_logger.warning(f'"requests.on" setting of {cls_mro[0]} fallback to general {cls} setting, '
+                                       f'because you did not specify {cls_mro[0]}')
             return copy.deepcopy(_defaults[cls.__name__])
         except FileNotFoundError:
             pass

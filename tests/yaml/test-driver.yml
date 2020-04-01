@@ -1,4 +1,4 @@
-- !MetaDocSearchDriver
+- !DocPbSearchDriver
   with:
     executor: blah
     method: goto

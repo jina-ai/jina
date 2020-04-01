@@ -3,10 +3,10 @@ from typing import Tuple, Optional
 
 import numpy as np
 
-from . import BaseIndexer
+from . import BaseVecIndexer
 
 
-class NumpyIndexer(BaseIndexer):
+class NumpyIndexer(BaseVecIndexer):
     """An exhaustive vector indexers implemented with numpy and scipy. """
 
     def __init__(self, metric: str = 'euclidean', compress_level: int = 1, *args, **kwargs):
