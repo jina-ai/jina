@@ -21,6 +21,9 @@ class MyTestCase(JinaTestCase):
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape, (test_data.shape[0], self.output_dim))
         self.assertIs(type(encoded_data), np.ndarray)
+        self.add_tmpfile(encoder.config_abspath, encoder.save_abspath)
+        if hasattr(encoder, 'model_abspath'):
+            self.add_tmpfile(encoder.model_abspath)
 
     def test_encoding_results(self):
         for m in self.model_list:
@@ -40,9 +43,9 @@ class MyTestCase(JinaTestCase):
         encoded_data_test = encoder_loaded.encode(test_data)
         np.testing.assert_array_equal(
             encoded_data_test, encoded_data_control)
-        self.add_tmpfile(
-            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath,
-            encoder.encoder_abspath)
+        self.add_tmpfile(encoder.config_abspath, encoder.save_abspath)
+        if hasattr(encoder, 'model_abspath'):
+            self.add_tmpfile(encoder.model_abspath)
 
     def test_save_and_load(self):
         for m in self.model_list:
@@ -57,7 +60,9 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(
             encoder_loaded.output_dim,
             encoder.output_dim)
-        self.add_tmpfile(encoder_loaded.config_abspath, encoder_loaded.save_abspath)
+        self.add_tmpfile(encoder.config_abspath, encoder.save_abspath)
+        if hasattr(encoder, 'model_abspath'):
+            self.add_tmpfile(encoder.model_abspath)
 
     def test_save_and_load_config(self):
         for m in self.model_list:
