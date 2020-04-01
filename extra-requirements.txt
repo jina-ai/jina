@@ -31,5 +31,3 @@ onnx:                       framework, py37
 onnxruntime:                framework, py37
 annoy:                      index
 sklearn:                    framework
-faiss-cpu:                  numeric
-faiss-gpu:                  numeric, gpu

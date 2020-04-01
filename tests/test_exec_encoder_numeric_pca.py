@@ -4,14 +4,13 @@ import numpy as np
 import os
 
 from tests import JinaTestCase
-import jina.executors.encoders.numeric.pca as pca
+from jina.executors.encoders.numeric.pca import IncrementalPCAEncoder
 from jina.executors import BaseExecutor
 
 
 class MyTestCase(JinaTestCase):
     num_features = 28
     output_dim = 2
-    model_list = ('IncrementalPCAEncoder', 'PCAEncoder')
 
     def _test_encoding_results(self, encoder):
         train_data = np.random.rand(1000, self.num_features)
@@ -26,10 +25,9 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(encoder.model_abspath)
 
     def test_encoding_results(self):
-        for m in self.model_list:
-            encoder = getattr(pca, m)(
-                output_dim=self.output_dim, whiten=True, num_features=self.num_features)
-            self._test_encoding_results(encoder)
+        encoder = IncrementalPCAEncoder(
+            output_dim=self.output_dim, whiten=True, num_features=self.num_features)
+        self._test_encoding_results(encoder)
 
     def _test_save_and_load(self, encoder):
         train_data = np.random.rand(1000, self.num_features)
@@ -48,10 +46,9 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(encoder.model_abspath)
 
     def test_save_and_load(self):
-        for m in self.model_list:
-            encoder = getattr(pca, m)(
-                output_dim=self.output_dim, whiten=True, num_features=self.num_features)
-            self._test_save_and_load(encoder)
+        encoder = IncrementalPCAEncoder(
+            output_dim=self.output_dim, whiten=True, num_features=self.num_features)
+        self._test_save_and_load(encoder)
 
     def _test_save_and_load_config(self, encoder):
         encoder.save_config()
@@ -65,10 +62,9 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(encoder.model_abspath)
 
     def test_save_and_load_config(self):
-        for m in self.model_list:
-            encoder = getattr(pca, m)(
-                output_dim=self.output_dim, whiten=True, num_features=self.num_features)
-            self._test_save_and_load_config(encoder)
+        encoder = IncrementalPCAEncoder(
+            output_dim=self.output_dim, whiten=True, num_features=self.num_features)
+        self._test_save_and_load_config(encoder)
 
 
 if __name__ == '__main__':
