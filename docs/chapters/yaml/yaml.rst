@@ -15,7 +15,7 @@ The executor YAML config follows the syntax below.
 .. highlight:: yaml
 .. code-block:: yaml
 
-    !MetaProtoIndexer
+    !BasePbIndexer
     with:
       index_filename: doc.gzip
     metas:  # <- metas defined in :mod``
@@ -73,7 +73,7 @@ A compound executor is a set of executors bundled together, as defined in :mod:`
         index_filename: vec.idx
       metas:
         name: my_vec_indexer
-    - !MetaProtoIndexer
+    - !BasePbIndexer
       with:
         index_filename: chunk.gzip
       metas:

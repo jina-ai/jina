@@ -141,7 +141,7 @@ def set_pea_parser(parser=None):
                      help='timeout (ms) of all requests, -1 for waiting forever')
     gp2.add_argument('--timeout_ctrl', type=int, default=5000,
                      help='timeout (ms) of the control request, -1 for waiting forever')
-    gp2.add_argument('--timeout_ready', type=int, default=5000,
+    gp2.add_argument('--timeout_ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
 
     gp3 = add_arg_group(parser, 'pea IO arguments')
@@ -319,7 +319,7 @@ def set_client_cli_parser(parser=None):
                      help='the starting number of request id, the consequent request_id will increment by one')
     _gp.add_argument('--random_doc_id', action='store_true', default=False,
                      help='randomize the doc_id, if this is set then `first_request_id` is ignored')
-    gp1.add_argument('--timeout_ready', type=int, default=5000,
+    gp1.add_argument('--timeout_ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
     return parser
 

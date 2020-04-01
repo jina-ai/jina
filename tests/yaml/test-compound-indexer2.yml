@@ -1,6 +1,6 @@
 !CompoundExecutor
 components:
-  - !MetaProtoIndexer
+  - !BasePbIndexer
     with:
       index_filename: metaproto
     metas:

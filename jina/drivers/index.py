@@ -22,7 +22,7 @@ class ChunkIndexDriver(BaseExecutableDriver):
             self.exec_fn(np.array([c.chunk_id for c in chunk_pts]), np.stack(embed_vecs))
 
 
-class MetaDocIndexDriver(BaseExecutableDriver):
+class DocPbIndexDriver(BaseExecutableDriver):
     """Serialize the documents in the request to JSON and write it using the executor
 
     """
@@ -34,7 +34,7 @@ class MetaDocIndexDriver(BaseExecutableDriver):
             self.exec_fn(content)
 
 
-class MetaChunkIndexDriver(BaseExecutableDriver):
+class ChunkPbIndexDriver(BaseExecutableDriver):
     """Serialize all chunks in the request to JSON and write it using the executor
 
     """

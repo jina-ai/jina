@@ -56,8 +56,6 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 class Flow:
     def __init__(self,
-                 image_name: str = 'jina:master-debian',
-                 repository: str = 'docker.pkg.github.com/jina-ai/jina',
                  port_sse: int = 5000,
                  optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.FULL,
                  *args,
@@ -85,8 +83,6 @@ class Flow:
         as the head and tail routers are removed.
         """
         self.logger = get_logger(self.__class__.__name__)
-        self.image_name = image_name
-        self.repository = repository
         self.optimize_level = optimize_level
         self._common_kwargs = kwargs
         self.port_sse = port_sse
@@ -611,7 +607,6 @@ class Flow:
 
         for k, v in self._pod_nodes.items():
             swarm_yml['services'][k] = {
-                'image': self.image_name,
                 'command': v.to_cli_command(),
                 'deploy': {'replicas': 1}
             }

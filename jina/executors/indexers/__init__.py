@@ -14,6 +14,8 @@ class BaseIndexer(BaseExecutor):
     One can decorate them with :func:`jina.decorator.require_train`,
     :func:`jina.helper.batching` and :func:`jina.logging.profile.profiling`.
 
+    One should always inherit from either :class:`BaseVecIndexer` or :class:`BaseKVIndexer`.
+
     .. seealso::
         :mod:`jina.drivers.handlers.index`
 
@@ -129,3 +131,21 @@ class BaseIndexer(BaseExecutor):
     def flush(self):
         """Flush all buffered data to ``index_abspath`` """
         call_obj_fn(self.write_handler, 'flush')
+
+
+class BaseVecIndexer(BaseIndexer):
+    """An abstract class for vector indexer. It is equipped with drivers in ``requests.on``
+
+    All vector indexers should inherit from it.
+
+    It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVecIndexer)``
+    """
+
+
+class BaseKVIndexer(BaseIndexer):
+    """An abstract class for key-value indexer.
+
+    All key-value indexers should inherit from it.
+
+    It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
+    """

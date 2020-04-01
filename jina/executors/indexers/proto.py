@@ -4,11 +4,11 @@ from typing import Union
 
 from google.protobuf.json_format import Parse
 
-from . import BaseIndexer
+from . import BaseKVIndexer
 from ...proto import jina_pb2
 
 
-class MetaProtoIndexer(BaseIndexer):
+class BasePbIndexer(BaseKVIndexer):
     """Storing and querying protobuf chunk/document using gzip and Python dict. """
 
     compress_level = 1  #: The compresslevel argument is an integer from 0 to 9 controlling the level of compression
@@ -49,3 +49,13 @@ class MetaProtoIndexer(BaseIndexer):
         :return: protobuf chunk or protobuf document
         """
         return self.query_handler[key]
+
+
+class ChunkPbIndexer(BasePbIndexer):
+    """Shortcut for :class:`BasePbIndexer` equipped with ``requests.on`` for storing chunk-level protobuf info,
+     differ with :class:`DocPbIndexer` in ``requests.on`` """
+
+
+class DocPbIndexer(BasePbIndexer):
+    """Shortcut for :class:`BasePbIndexer` equipped with ``requests.on`` for storing doc-level protobuf info,
+    differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
