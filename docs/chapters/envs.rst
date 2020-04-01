@@ -1,4 +1,4 @@
-OS Environment Variables used in Jina
+OS Environment Variables Used in Jina
 =====================================
 
 
