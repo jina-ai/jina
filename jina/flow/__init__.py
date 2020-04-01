@@ -607,7 +607,6 @@ class Flow:
 
         for k, v in self._pod_nodes.items():
             swarm_yml['services'][k] = {
-                'image': self.image_name,
                 'command': v.to_cli_command(),
                 'deploy': {'replicas': 1}
             }
