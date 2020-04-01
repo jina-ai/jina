@@ -3,9 +3,8 @@ import unittest
 import numpy as np
 import os
 
-from . import JinaTestCase
-import jina.executors.encoders.numeric.pca as pca  #import IncrementalPCAEncoder, PCAEncoder
-from jina.executors.encoders.numeric.pca import IncrementalPCAEncoder, PCAEncoder
+from tests import JinaTestCase
+import jina.executors.encoders.numeric.pca as pca
 from jina.executors import BaseExecutor
 
 

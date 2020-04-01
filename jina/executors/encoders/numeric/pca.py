@@ -133,7 +133,6 @@ class PCAEncoder(BaseNumericEncoder):
     def _calc_std(data, n_samples):
         return np.sqrt(data ** 2 / (n_samples - 1))
 
-
     def post_init(self):
         self.model = None
         import faiss
