@@ -183,12 +183,16 @@
         {% endblock %}
       </nav>
 
-      <div class="card" id="table-of-contents">
-        <div class="card-content">
-          <span class="card-title">On this page...</span>
-          {{ toc }}
-          <span class="card-footer">Visit our Github</span>
-        </div>
+      <div class="card table-of-contents">
+          <span class="card-title">Table of Contents</span>
+            <div class="card-content">
+            {{ toc }}
+            </div>
+        <a href="https://github.com/jina-ai/jina/">
+          <span class="toc-card-footer">
+            <span>Visit us on Github</span>
+          </span>
+        </a>
       </div>
 
       <div class="wy-nav-content">
