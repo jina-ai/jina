@@ -7,6 +7,7 @@ from contextlib import ExitStack
 from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 
+import requests
 import ruamel.yaml
 
 from .. import __default_host__
@@ -429,6 +430,8 @@ class Flow:
                                                target=start_sse_logger, daemon=True,
                                                args=(self.host_sse, self.port_sse))
             self.sse_logger.start()
+            # wait until logger is ready
+            requests.get(f'http://{self.host_sse}:{self.port_sse}/is_ready')
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logger can not start and being disabled because of flask and flask_cors are missing, '
@@ -461,7 +464,6 @@ class Flow:
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
         if hasattr(self, 'sse_logger') and self.sse_logger.is_alive():
-            import requests
             requests.get(f'http://{self.host_sse}:{self.port_sse}/shutdown')
             self.sse_logger.join()
         self._build_level = FlowBuildLevel.EMPTY
