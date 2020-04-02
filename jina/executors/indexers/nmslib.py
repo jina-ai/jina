@@ -6,12 +6,15 @@ from .numpy import NumpyIndexer
 
 
 class NmslibIndexer(NumpyIndexer):
-    """Indexer powered by nmslib
+    """nmslib powered vector indexer
 
-    For documentation and explaination of each parameter, please refer to
+    For documentation and explanation of each parameter, please refer to
 
         - https://nmslib.github.io/nmslib/quickstart.html
         - https://github.com/nmslib/nmslib/blob/master/manual/methods.md
+
+    .. note::
+        Nmslib package dependency is only required at the query time.
     """
 
     def __init__(self, space: str = 'cosinesimil', method: str = 'hnsw', print_progress: bool = False,
@@ -48,6 +51,5 @@ class NmslibIndexer(NumpyIndexer):
         if keys.dtype != np.float32:
             raise ValueError('vectors should be ndarray of float32')
         ret = self.query_handler.knnQueryBatch(keys, k=top_k, num_threads=self.num_threads)
-        idx = np.stack([self.int2ext_key[v[0]] for v in ret])
-        dist = np.stack([v[1] for v in ret])
-        return idx, dist
+        idx, dist = zip(*ret)
+        return self.int2ext_key[np.array(idx)], np.array(dist)

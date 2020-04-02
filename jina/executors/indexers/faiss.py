@@ -6,7 +6,11 @@ from .numpy import NumpyIndexer
 
 
 class FaissIndexer(NumpyIndexer):
-    """A Faiss indexers based on :class:`NumpyIndexer`.
+    """Faiss powered vector indexer
+
+    For more information about the Faiss supported parameters and installation problems, please consult:
+        - https://github.com/spotify/annoy
+        - https://github.com/facebookresearch/faiss
 
     .. note::
         Faiss package dependency is only required at the query time.
@@ -35,4 +39,5 @@ class FaissIndexer(NumpyIndexer):
 
         dist, ids = self.query_handler.search(keys, top_k)
 
+        # ids is already a numpy array
         return self.int2ext_key[ids], dist
