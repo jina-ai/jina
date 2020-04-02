@@ -16,7 +16,6 @@ from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
 from ..logging.base import get_logger
-from ..logging.profile import profiling
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -66,8 +65,8 @@ class ExecutorType(type):
         if cls.__name__ not in reg_cls_set:
             # print('reg class: %s' % cls.__name__)
             cls.__init__ = store_init_kwargs(cls.__init__)
-            if 'JINA_PROFILING' in os.environ:
-                wrap_func(prof_funcs, profiling)
+            # if 'JINA_PROFILING' in os.environ:
+            #     wrap_func(prof_funcs, profiling)
 
             wrap_func(train_funcs, as_train_method)
             wrap_func(update_funcs, as_update_method)
@@ -283,7 +282,6 @@ class BaseExecutor(metaclass=ExecutorType):
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
-    @profiling
     def save(self, filename: str = None) -> bool:
         """
         Persist data of this executor to the :attr:`workspace` (or :attr:`replica_workspace`). The data could be
@@ -332,7 +330,6 @@ class BaseExecutor(metaclass=ExecutorType):
         self.logger.success('artifacts of this executor (%s) is persisted to %s' % (self.name, f))
         return True
 
-    @profiling
     def save_config(self, filename: str = None) -> bool:
         """
         Serialize the object to a yaml file
@@ -400,7 +397,6 @@ class BaseExecutor(metaclass=ExecutorType):
             return yaml.load(tmp_s)
 
     @staticmethod
-    @profiling
     def load(filename: str = None) -> AnyExecutor:
         """Build an executor from a binary file
 

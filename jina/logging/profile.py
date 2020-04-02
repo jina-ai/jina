@@ -1,4 +1,3 @@
-import os
 import time
 from collections import defaultdict
 from functools import wraps
@@ -42,19 +41,15 @@ def profiling(func):
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
-        if 'JINA_PROFILING' in os.environ:
-            start_t = time.perf_counter()
-            start_mem = used_memory(unit=1024 * 1024)
-            r = func(*args, **kwargs)
-            elapsed = time.perf_counter() - start_t
-            end_mem = used_memory(unit=1024 * 1024)
-            # level_prefix = ''.join('-' for v in inspect.stack() if v and v.index is not None and v.index >= 0)
-            level_prefix = ''
-            mem_status = 'memory: %4.3fMB -> %4.3fMB' % (start_mem, end_mem)
-
-            default_logger.info('%s%s time: %3.3fs %s' % (level_prefix, func.__qualname__, elapsed, mem_status))
-        else:
-            r = func(*args, **kwargs)
+        start_t = time.perf_counter()
+        start_mem = used_memory(unit=1024 * 1024)
+        r = func(*args, **kwargs)
+        elapsed = time.perf_counter() - start_t
+        end_mem = used_memory(unit=1024 * 1024)
+        # level_prefix = ''.join('-' for v in inspect.stack() if v and v.index is not None and v.index >= 0)
+        level_prefix = ''
+        mem_status = 'memory Δ %4.2fMB %4.2fMB -> %4.2fMB' % (end_mem - start_mem, start_mem, end_mem)
+        default_logger.info('%s%s time: %3.3fs %s' % (level_prefix, func.__qualname__, elapsed, mem_status))
         return r
 
     return arg_wrapper

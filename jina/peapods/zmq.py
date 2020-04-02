@@ -46,6 +46,8 @@ class Zmqlet:
         self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self.init_sockets()
         self.bytes_sent = 0
         self.bytes_recv = 0
+        self.msg_recv = 0
+        self.msg_sent = 0
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
@@ -127,7 +129,12 @@ class Zmqlet:
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
         self.close_sockets()
         self.ctx.term()
-        self.logger.info('bytes_sent: %.0f KB bytes_recv:%.0f KB' % (self.bytes_sent / 1024, self.bytes_recv / 1024))
+        self.print_stats()
+
+    def print_stats(self):
+        """Print out the network stats of of itself """
+        self.logger.info('msg_sent: %d bytes_sent: %.0f KB msg_recv: %d bytes_recv:%.0f KB' % (
+            self.msg_sent, self.bytes_sent / 1024, self.msg_recv, self.bytes_recv / 1024))
 
     def send_message(self, msg: 'jina_pb2.Message'):
         """Send a message via the output socket
@@ -149,6 +156,7 @@ class Zmqlet:
             o_sock = self.out_sock
 
         self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
+        self.msg_sent += 1
 
     def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
         """Receive a protobuf message from the input socket
@@ -160,13 +168,16 @@ class Zmqlet:
         if i_sock is not None:
             msg, num_bytes = recv_message(i_sock, **self.send_recv_kwargs)
             self.bytes_recv += num_bytes
+            self.msg_recv += 1
             if callback:
                 return callback(msg)
 
-    def reset_bytes(self):
+    def clear_stats(self):
         """Reset the internal counter of send and receive bytes to zero. """
         self.bytes_recv = 0
         self.bytes_sent = 0
+        self.msg_recv = 0
+        self.msg_sent = 0
 
 
 class AsyncZmqlet(Zmqlet):

@@ -203,9 +203,10 @@ class BasePea(metaclass=PeaMeta):
             if self.executor.save():
                 self.logger.info('dumped changes to the executor, %3.0fs since last the save'
                                  % (time.perf_counter() - self.last_dump_time))
-                self.last_dump_time = time.perf_counter()
             else:
                 self.logger.info('executor says there is nothing to save')
+            self.last_dump_time = time.perf_counter()
+            self.zmqlet.print_stats()
 
             # self.logger.info({'service': self.name,
             #                   'profile': self._timer.accum_time,

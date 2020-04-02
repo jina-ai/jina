@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 from .. import BaseTextEncoder
-from ..helper import reduce_mean, reduce_max, reduce_cls
+from ..helper import reduce_mean, reduce_max
 
 
 class TransformerTextEncoder(BaseTextEncoder):

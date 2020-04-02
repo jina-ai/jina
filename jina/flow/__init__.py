@@ -424,12 +424,15 @@ class Flow:
         which is inherited all the way from :class:`jina.peapods.peas.BasePea`
         """
         try:
+            import flask, flask_cors
             self.sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                target=start_sse_logger, daemon=True,
                                                args=(self.host_sse, self.port_sse))
             self.sse_logger.start()
-        except Exception as ex:
-            self.logger.error(f'sse logger can not start and being disabled because of the following error {ex}')
+        except ModuleNotFoundError:
+            self.logger.error(
+                f'sse logger can not start and being disabled because of flask and flask_cors are missing, '
+                f'use "pip install jina[http]" to install the dependencies')
 
         self._pod_stack = ExitStack()
         for v in self._pod_nodes.values():
