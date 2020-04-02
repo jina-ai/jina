@@ -266,18 +266,16 @@ class FlowPod(BasePod):
     other Pods, which comes in handy when used in the Flow API
     """
 
-    def __init__(self, kwargs: Dict, send_to: Set[str] = None,
-                 recv_from: Set[str] = None, parser: Callable = set_pod_parser):
+    def __init__(self, kwargs: Dict,
+                 needs: Set[str] = None, parser: Callable = set_pod_parser):
         """
 
         :param kwargs: unparsed argument in dict, if given the
-        :param send_to: a list of names this BasePod send message to
-        :param recv_from: a list of names this BasePod receive message from
+        :param needs: a list of names this BasePod needs to receive message from
         """
         self.cli_args, self._args, self.unk_args = _get_parsed_args(kwargs, parser)
         super().__init__(self._args)
-        self.send_to = send_to if send_to else set()  #: used in the :class:`jina.flow.Flow` to build the graph
-        self.recv_from = recv_from if recv_from else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+        self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
 
     def to_cli_command(self):
         if isinstance(self, GatewayPod):

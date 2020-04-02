@@ -231,13 +231,13 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
       encode1:
         driver_group: index-meta-doc
         replicas: 2
-        recv_from: chunk_seg
+        needs: chunk_seg
       encode2:
         driver_group: index-meta-doc
         replicas: 2
-        recv_from: chunk_seg
+        needs: chunk_seg
       join_all:
-        recv_from: [encode1, encode2]
+        needs: [encode1, encode2]
 
 A valid Flow specification starts with ``!Flow`` as the first line.
 
@@ -247,7 +247,7 @@ A valid Flow specification starts with ``!Flow`` as the first line.
 
 .. confval:: pods
 
-     A map of :class:`jina.peapods.pod.BasePod` contained in the flow. The key is the name of this pod and the value is a map of arguments accepted by :command:`jina pod`. One can refer in ``send_to`` and ``recv_from`` to a pod by its name.
+     A map of :class:`jina.peapods.pod.BasePod` contained in the flow. The key is the name of this pod and the value is a map of arguments accepted by :command:`jina pod`. One can refer ``needs`` to a pod by its name.
 
 The flows given by the following Python code and the YAML config are identical.
 
@@ -262,7 +262,7 @@ The flows given by the following Python code and the YAML config are identical.
               exec_yaml_path='index/doc.yml')
          .add(name='tf_encode', driver_group='encode',
               exec_yaml_path='encode/encode.yml',
-              replicas=3, recv_from='chunk_seg')
+              replicas=3, needs='chunk_seg')
          .add(name='chunk_idx', driver_group='index-chunk-and-meta',
               exec_yaml_path='index/npvec.yml')
          .join(['doc_idx', 'chunk_idx'])
@@ -285,14 +285,14 @@ The flows given by the following Python code and the YAML config are identical.
       tf_encode:
         driver_group: encode
         exec_yaml_path: encode/encode.yml
-        recv_from: chunk_seg
+        needs: chunk_seg
         replicas: 3
       chunk_idx:
         driver_group: index-chunk-and-meta
         exec_yaml_path: index/npvec.yml
       join_all:
         driver_group: merge
-        recv_from: [doc_idx, chunk_idx]
+        needs: [doc_idx, chunk_idx]
 
 .. highlight:: python
 .. code-block:: python
