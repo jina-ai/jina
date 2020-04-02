@@ -1,4 +1,6 @@
 import copy
+import os
+import tempfile
 import threading
 from collections import OrderedDict
 from contextlib import ExitStack
@@ -10,7 +12,7 @@ import ruamel.yaml
 from .. import __default_host__
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, kwargs2list
+from ..helper import yaml, expand_env_var, kwargs2list, random_port
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..main.parser import set_pod_parser
@@ -56,7 +58,7 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 class Flow:
     def __init__(self,
-                 port_sse: int = 5000,
+                 port_sse: int = None,
                  optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.FULL,
                  *args,
                  **kwargs):
@@ -85,7 +87,7 @@ class Flow:
         self.logger = get_logger(self.__class__.__name__)
         self.optimize_level = optimize_level
         self._common_kwargs = kwargs
-        self.port_sse = port_sse
+        self.port_sse = port_sse if port_sse else random_port()
         self.host_sse = __default_host__
 
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -100,10 +102,39 @@ class Flow:
         tmp = data._dump_instance_to_yaml(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
+    @staticmethod
+    def _dump_instance_to_yaml(data):
+        # note: we only save non-default property for the sake of clarity
+        _defaults = {}
+        p = {k: getattr(data, k) for k, v in _defaults.items() if getattr(data, k) != v}
+        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in _defaults}
+        r = {}
+        if a:
+            r['with'] = a
+        if p:
+            r['metas'] = p
+        return r
+
     @classmethod
     def from_yaml(cls, constructor, node, stop_on_import_error=False):
         """Required by :mod:`ruamel.yaml.constructor` """
         return cls._get_instance_from_yaml(constructor, node, stop_on_import_error)[0]
+
+    def save_config(self, filename: str = None) -> bool:
+        """
+        Serialize the object to a yaml file
+
+        :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used
+        :return: successfully dumped or not
+        """
+        f = filename
+        if not f:
+            f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
+        yaml.register_class(Flow)
+        with open(f, 'w', encoding='utf8') as fp:
+            yaml.dump(self, fp)
+        self.logger.info(f'{self}\'s yaml config is save to %s' % f)
+        return True
 
     @classmethod
     def load_config(cls: Type['Flow'], filename: Union[str, TextIO]) -> 'Flow':

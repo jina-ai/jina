@@ -48,17 +48,20 @@ def start_sse_logger(host: str, port: int):
     @app.route('/shutdown')
     def shutdown():
         from flask import request
-        func = request.environ.get('werkzeug.server.shutdown')
-        if func is None:
-            raise RuntimeError('Not running with the Werkzeug Server')
-        func()
+        if not 'werkzeug.server.shutdown' in request.environ:
+            raise RuntimeError('Not running the development server')
+        request.environ['werkzeug.server.shutdown']()
         return 'Server shutting down...'
+
+    @app.route('/is_ready')
+    def is_ready():
+        return Response(status=200)
 
     # os.environ['WERKZEUG_RUN_MAIN'] = 'true'
     log = logging.getLogger('werkzeug')
     log.disabled = True
     app.logger.disabled = True
-    app.run(port=port, threaded=True, host=host)
+    app.run(port=port, host=host)
 
 
 def _log_stream():

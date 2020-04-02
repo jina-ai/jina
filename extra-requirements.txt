@@ -17,6 +17,8 @@
 
 scipy:                      numeric, index
 flask:                      http, sse
+flask_cors:                 http, sse
+nmslib:                     index
 docker:                     flow
 torch:                      framework
 transformers:               nlp, encode

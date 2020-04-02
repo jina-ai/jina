@@ -6,6 +6,14 @@ from .numpy import NumpyIndexer
 
 
 class AnnoyIndexer(NumpyIndexer):
+    """Annoy powered vector indexer
+
+    For more information about the Annoy supported parameters, please consult:
+        - https://github.com/spotify/annoy
+
+    .. note::
+        Annoy package dependency is only required at the query time.
+    """
 
     def __init__(self, metric: str = 'euclidean', n_trees: int = 10, *args, **kwargs):
         """
@@ -25,6 +33,7 @@ class AnnoyIndexer(NumpyIndexer):
         if vecs is not None:
             from annoy import AnnoyIndex
             _index = AnnoyIndex(self.num_dim, self.metric)
+            vecs = vecs.astype(np.float32)
             for idx, v in enumerate(vecs):
                 _index.add_item(idx, v)
             _index.build(self.n_trees)
@@ -35,10 +44,10 @@ class AnnoyIndexer(NumpyIndexer):
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         if keys.dtype != np.float32:
             raise ValueError('vectors should be ndarray of float32')
-        all_ret = []
+        all_idx = []
         all_dist = []
         for k in keys:
             ret, dist = self.query_handler.get_nns_by_vector(k, top_k, include_distances=True)
-            all_ret.append(self.int2ext_key[ret])
+            all_idx.append(self.int2ext_key[ret])
             all_dist.append(dist)
-        return np.array(all_ret), np.array(all_dist)
+        return np.array(all_idx), np.array(all_dist)

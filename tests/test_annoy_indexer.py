@@ -5,6 +5,7 @@ import numpy as np
 
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.annoy import AnnoyIndexer
+from jina.executors.indexers.nmslib import NmslibIndexer
 from jina.executors.indexers.numpy import NumpyIndexer
 from tests import JinaTestCase
 
@@ -28,6 +29,26 @@ class MyTestCase(JinaTestCase):
 
     def test_np_indexer(self):
         a = NumpyIndexer(index_filename='np.test.gz')
+        a.add(vec_idx, vec)
+        a.save()
+        a.close()
+        self.assertTrue(os.path.exists(a.index_abspath))
+        # a.query(np.array(np.random.random([10, 5]), dtype=np.float32), top_k=4)
+
+        b = BaseIndexer.load(a.save_abspath)
+        idx, dist = b.query(query, top_k=4)
+        print(idx, dist)
+        global retr_idx
+        if retr_idx is None:
+            retr_idx = idx
+        else:
+            np.testing.assert_almost_equal(retr_idx, idx)
+        self.assertEqual(idx.shape, dist.shape)
+        self.assertEqual(idx.shape, (10, 4))
+        self.add_tmpfile(a.index_abspath, a.save_abspath)
+
+    def test_nmslib_indexer(self):
+        a = NmslibIndexer(index_filename='np.test.gz', space='l2')
         a.add(vec_idx, vec)
         a.save()
         a.close()

@@ -43,6 +43,21 @@ class MyTestCase(JinaTestCase):
 
         self.assertEqual(cm.exception.code, 1)
 
+    def test_flow_with_jump(self):
+        f = (Flow().add(name='r1', yaml_path='route')
+             .add(name='r2', yaml_path='route')
+             .add(name='r3', yaml_path='route', recv_from='r1')
+             .add(name='r4', yaml_path='route', recv_from='r2')
+             .add(name='r5', yaml_path='route', recv_from='r3')
+             .add(name='r6', yaml_path='route', recv_from='r4')
+             .add(name='r8', yaml_path='route', recv_from='r6')
+             .add(name='r9', yaml_path='route', recv_from='r5')
+             .add(name='r10', yaml_path='merge', recv_from=['r9', 'r8']))
+
+        with f.build() as fl:
+            fl.dry_run()
+        # fl.save_config('tmp.yml')
+
     def test_simple_flow(self):
         bytes_gen = (b'aaa' for _ in range(10))
         f = (Flow()
@@ -61,7 +76,7 @@ class MyTestCase(JinaTestCase):
         with open('yaml/test-flow.yml') as fp:
             a = Flow.load_config(fp)
 
-        b = (Flow(sse_logger=False)
+        b = (Flow()
              .add(name='chunk_seg', replicas=3)
              .add(name='encode1', replicas=2)
              .add(name='encode2', replicas=2, recv_from='chunk_seg')
