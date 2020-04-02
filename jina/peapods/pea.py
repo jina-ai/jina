@@ -14,7 +14,7 @@ from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWate
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..logging import get_logger
-from ..logging.profile import used_memory, TimeDict
+from ..logging.profile import used_memory
 from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea']
@@ -78,7 +78,7 @@ class BasePea(metaclass=PeaMeta):
 
         self.last_dump_time = time.perf_counter()
 
-        self._timer = TimeDict()
+        # self._timer = TimeDict()
 
         self._request = None
         self._message = None
@@ -195,7 +195,8 @@ class BasePea(metaclass=PeaMeta):
         :param dump_interval: the time interval for saving
         """
         if self.args.read_only:
-            self.logger.info('executor is not saved as "read_only" is set to true for this BasePea')
+            self.logger.debug('executor is not saved as "read_only" is set to true for this BasePea')
+            return
         elif not hasattr(self, 'executor'):
             self.logger.debug('this BasePea contains no executor, no need to save')
         elif ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
@@ -206,12 +207,12 @@ class BasePea(metaclass=PeaMeta):
             else:
                 self.logger.info('executor says there is nothing to save')
 
-            self.logger.info({'service': self.name,
-                              'profile': self._timer.accum_time,
-                              'timestamp_start': self._timer.start_time,
-                              'timestamp_end': self._timer.end_time})
-
-            self._timer.reset()
+            # self.logger.info({'service': self.name,
+            #                   'profile': self._timer.accum_time,
+            #                   'timestamp_start': self._timer.start_time,
+            #                   'timestamp_end': self._timer.end_time})
+            #
+            # self._timer.reset()
 
     def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """

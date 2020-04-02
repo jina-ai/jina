@@ -25,6 +25,7 @@ class AnnoyIndexer(NumpyIndexer):
         if vecs is not None:
             from annoy import AnnoyIndex
             _index = AnnoyIndex(self.num_dim, self.metric)
+            vecs = vecs.astype(np.float32)
             for idx, v in enumerate(vecs):
                 _index.add_item(idx, v)
             _index.build(self.n_trees)
