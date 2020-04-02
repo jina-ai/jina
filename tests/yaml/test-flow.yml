@@ -7,10 +7,10 @@ pods:
     replicas: 3
   encode1:
     replicas: 2
-    recv_from: chunk_seg
+    needs: chunk_seg
   encode2:
     replicas: 2
-    recv_from: chunk_seg
+    needs: chunk_seg
   joiner:
     yaml_path: merge
-    recv_from: [encode1, encode2]
+    needs: [encode1, encode2]

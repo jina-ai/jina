@@ -46,13 +46,13 @@ class MyTestCase(JinaTestCase):
     def test_flow_with_jump(self):
         f = (Flow().add(name='r1', yaml_path='route')
              .add(name='r2', yaml_path='route')
-             .add(name='r3', yaml_path='route', recv_from='r1')
-             .add(name='r4', yaml_path='route', recv_from='r2')
-             .add(name='r5', yaml_path='route', recv_from='r3')
-             .add(name='r6', yaml_path='route', recv_from='r4')
-             .add(name='r8', yaml_path='route', recv_from='r6')
-             .add(name='r9', yaml_path='route', recv_from='r5')
-             .add(name='r10', yaml_path='merge', recv_from=['r9', 'r8']))
+             .add(name='r3', yaml_path='route', needs='r1')
+             .add(name='r4', yaml_path='route', needs='r2')
+             .add(name='r5', yaml_path='route', needs='r3')
+             .add(name='r6', yaml_path='route', needs='r4')
+             .add(name='r8', yaml_path='route', needs='r6')
+             .add(name='r9', yaml_path='route', needs='r5')
+             .add(name='r10', yaml_path='merge', needs=['r9', 'r8']))
 
         with f.build() as fl:
             fl.dry_run()
@@ -79,7 +79,7 @@ class MyTestCase(JinaTestCase):
         b = (Flow()
              .add(name='chunk_seg', replicas=3)
              .add(name='encode1', replicas=2)
-             .add(name='encode2', replicas=2, recv_from='chunk_seg')
+             .add(name='encode2', replicas=2, needs='chunk_seg')
              .join(['encode1', 'encode2']))
 
         self.assertEqual(a, b)

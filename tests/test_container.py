@@ -96,7 +96,7 @@ class MyTestCase(JinaTestCase):
              .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
              .add(name='d2', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
              .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
-                  recv_from='d1', entrypoint='jina pod')
+                  needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2']))
 
         with f.build() as fl:
@@ -107,7 +107,7 @@ class MyTestCase(JinaTestCase):
              .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
              .add(name='d2', yaml_path='logroute')
              .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
-                  recv_from='d1', entrypoint='jina pod')
+                  needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2'])
              )
 
@@ -119,7 +119,7 @@ class MyTestCase(JinaTestCase):
              .add(name='d1', image='jinaai/jina:master-debian', entrypoint='jina pod', yaml_path='route', replicas=3)
              .add(name='d2', yaml_path='route', replicas=3)
              .add(name='d3', image='jinaai/jina:master-debian', entrypoint='jina pod', yaml_path='route',
-                  recv_from='d1')
+                  needs='d1')
              .join(['d3', 'd2'])
              )
 
