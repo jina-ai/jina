@@ -50,7 +50,6 @@ class MyTestCase(JinaTestCase):
              .add(name='r4', yaml_path='route', recv_from='r2')
              .add(name='r5', yaml_path='route', recv_from='r3')
              .add(name='r6', yaml_path='route', recv_from='r4')
-             .add(name='r7', yaml_path='route', recv_from='r5')
              .add(name='r8', yaml_path='route', recv_from='r6')
              .add(name='r9', yaml_path='route', recv_from='r5')
              .add(name='r10', yaml_path='merge', recv_from=['r9', 'r8']))
