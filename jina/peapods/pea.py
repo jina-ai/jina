@@ -206,8 +206,6 @@ class BasePea(metaclass=PeaMeta):
             else:
                 self.logger.info('executor says there is nothing to save')
             self.last_dump_time = time.perf_counter()
-            self.zmqlet.print_stats()
-
             # self.logger.info({'service': self.name,
             #                   'profile': self._timer.accum_time,
             #                   'timestamp_start': self._timer.start_time,
