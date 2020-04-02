@@ -76,7 +76,7 @@ class MyTestCase(JinaTestCase):
         with open('yaml/test-flow.yml') as fp:
             a = Flow.load_config(fp)
 
-        b = (Flow(sse_logger=False)
+        b = (Flow()
              .add(name='chunk_seg', replicas=3)
              .add(name='encode1', replicas=2)
              .add(name='encode2', replicas=2, recv_from='chunk_seg')

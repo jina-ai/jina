@@ -12,7 +12,7 @@ import ruamel.yaml
 from .. import __default_host__
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, kwargs2list
+from ..helper import yaml, expand_env_var, kwargs2list, random_port
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..main.parser import set_pod_parser
@@ -58,7 +58,7 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 class Flow:
     def __init__(self,
-                 port_sse: int = 5000,
+                 port_sse: int = None,
                  optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.FULL,
                  *args,
                  **kwargs):
@@ -87,7 +87,7 @@ class Flow:
         self.logger = get_logger(self.__class__.__name__)
         self.optimize_level = optimize_level
         self._common_kwargs = kwargs
-        self.port_sse = port_sse
+        self.port_sse = port_sse if port_sse else random_port()
         self.host_sse = __default_host__
 
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
