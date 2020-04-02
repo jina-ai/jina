@@ -183,7 +183,7 @@ class Flow:
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
-        # parsing recv_from
+        # parsing needs
         if isinstance(endpoint, str):
             endpoint = [endpoint]
         elif not endpoint:
@@ -246,20 +246,19 @@ class Flow:
 
         self.set_last_pod(pod_name, False)
 
-    def join(self, recv_from: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
+    def join(self, needs: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
         """
-        Add a blocker to the flow, wait until all peas defined in `recv_from` completed.
+        Add a blocker to the flow, wait until all peas defined in `needs` completed.
 
-        :param recv_from: list of service names to wait
+        :param needs: list of service names to wait
         :return: the modified flow
         """
-        if len(recv_from) <= 1:
-            raise FlowTopologyError('no need to wait for a single service, need len(recv_from) > 1')
-        return self.add(name='joiner', yaml_path='merge', recv_from=recv_from, *args, **kwargs)
+        if len(needs) <= 1:
+            raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
+        return self.add(name='joiner', yaml_path='merge', needs=needs, *args, **kwargs)
 
     def add(self,
-            recv_from: Union[str, Tuple[str], List[str]] = None,
-            send_to: Union[str, Tuple[str], List[str]] = None,
+            needs: Union[str, Tuple[str], List[str]] = None,
             copy_flow: bool = True,
             **kwargs) -> 'Flow':
         """
@@ -270,10 +269,8 @@ class Flow:
         Recommend to use :py:meth:`add_encoder`, :py:meth:`add_preprocessor`,
         :py:meth:`add_router`, :py:meth:`add_indexer` whenever possible.
 
-        :param recv_from: the name of the pod(s) that this pod receives data from.
+        :param needs: the name of the pod(s) that this pod receives data from.
                            One can also use 'pod.Gateway' to indicate the connection with the gateway.
-        :param send_to:  the name of the pod(s) that this pod sends data to.
-                           One can also use 'pod.Gateway' to indicate the connection wisth the gateway.
         :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the pod CLI supports
         :return: a (new) flow object with modification
@@ -294,13 +291,12 @@ class Flow:
             # hyphen - can not be used in the name
             raise ValueError('name: %s is invalid, please follow the python variable name conventions' % pod_name)
 
-        recv_from = op_flow._parse_endpoints(op_flow, pod_name, recv_from, connect_to_last_pod=True)
-        send_to = op_flow._parse_endpoints(op_flow, pod_name, send_to, connect_to_last_pod=False)
+        needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
-        kwargs['num_part'] = len(recv_from)
-        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, send_to=send_to, recv_from=recv_from)
+        kwargs['num_part'] = len(needs)
+        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
 
         op_flow.set_last_pod(pod_name, False)
 
@@ -336,20 +332,14 @@ class Flow:
             raise FlowTopologyError('flow is empty?')
 
         # close the loop
-        op_flow._pod_nodes['gateway'].recv_from = {op_flow._last_changed_pod[-1]}
+        op_flow._pod_nodes['gateway'].needs = {op_flow._last_changed_pod[-1]}
 
         # direct all income peas' output to the current service
         for k, p in op_flow._pod_nodes.items():
-            for s in p.recv_from:
+            for s in p.needs:
                 if s not in op_flow._pod_nodes:
                     raise FlowMissingPodError('%s is not in this flow, misspelled name?' % s)
-                op_flow._pod_nodes[s].send_to.add(k)
                 _pod_edges.add('%s-%s' % (s, k))
-            for s in p.send_to:
-                if s not in op_flow._pod_nodes:
-                    raise FlowMissingPodError('%s is not in this flow, misspelled name?' % s)
-                op_flow._pod_nodes[s].recv_from.add(k)
-                _pod_edges.add('%s-%s' % (k, s))
 
         for k in _pod_edges:
             s_name, e_name = k.split('-')
