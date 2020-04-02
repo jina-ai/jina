@@ -2,11 +2,13 @@ import copy
 import os
 import tempfile
 import threading
+import time
 from collections import OrderedDict
 from contextlib import ExitStack
 from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 
+import requests
 import ruamel.yaml
 
 from .. import __default_host__
@@ -424,12 +426,17 @@ class Flow:
         which is inherited all the way from :class:`jina.peapods.peas.BasePea`
         """
         try:
+            import flask, flask_cors
             self.sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                target=start_sse_logger, daemon=True,
                                                args=(self.host_sse, self.port_sse))
             self.sse_logger.start()
-        except Exception as ex:
-            self.logger.error(f'sse logger can not start and being disabled because of the following error {ex}')
+            time.sleep(1)
+
+        except ModuleNotFoundError:
+            self.logger.error(
+                f'sse logger can not start and being disabled because of flask and flask_cors are missing, '
+                f'use "pip install jina[http]" to install the dependencies')
 
         self._pod_stack = ExitStack()
         for v in self._pod_nodes.values():
@@ -458,7 +465,6 @@ class Flow:
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
         if hasattr(self, 'sse_logger') and self.sse_logger.is_alive():
-            import requests
             requests.get(f'http://{self.host_sse}:{self.port_sse}/shutdown')
             self.sse_logger.join()
         self._build_level = FlowBuildLevel.EMPTY
