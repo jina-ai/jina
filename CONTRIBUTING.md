@@ -10,9 +10,6 @@ We welcome all kinds of contributions from the open-source community, individual
 
 - [Make Your First Submission](#make-your-first-submission)
 - [Commit Style](#commit-style)
-  - [Branch Name](#branch-name)
-  - [Commit Message](#commit-message)
-  - [Pull Request Name](#pull-request-name)
 - [Test Jina Locally and on CI](#test-jina-locally-and-on-ci)
 - [Sign Your Contribution](#sign-your-contribution)
 
