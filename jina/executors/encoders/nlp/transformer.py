@@ -17,7 +17,6 @@ class TransformerTextEncoder(BaseTextEncoder):
                  pooling_strategy: str = 'reduce-mean',
                  max_length: int = 64,
                  encoder_abspath: str = '',
-                 backend: str = 'pytorch',
                  *args, **kwargs):
         """
 
@@ -28,8 +27,6 @@ class TransformerTextEncoder(BaseTextEncoder):
         :param max_length: the max length to truncate the tokenized sequences to.
         :param encoder_abspath: the absolute saving path of the encoder. If a valid path is given, the encoder will be
             loaded from the given path.
-        :param backend: whether use tensorflow to load pretraining model, just support tensorflow or pytorch to load
-            model
         """
 
         super().__init__(*args, **kwargs)
@@ -37,37 +34,67 @@ class TransformerTextEncoder(BaseTextEncoder):
         self.pooling_strategy = pooling_strategy
         self.model = None
         self.tokenizer = None
-        if backend not in ('tensorflow', 'pytorch'):
-            raise ValueError('unknown backend: {}'.format(backend))
-        self.backend = backend
         self.max_length = max_length
         self.encoder_abspath = encoder_abspath
 
     def post_init(self):
-        from transformers import BertModel, BertTokenizer, OpenAIGPTModel, \
-            OpenAIGPTTokenizer, GPT2Model, GPT2Tokenizer, \
-            XLNetModel, XLNetTokenizer, XLMModel, \
-            XLMTokenizer, DistilBertModel, DistilBertTokenizer, RobertaModel, \
-            RobertaTokenizer, XLMRobertaModel, XLMRobertaTokenizer, TFBertModel, \
-            TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, TFDistilBertModel, \
-            TFRobertaModel, TFXLMRobertaModel
+        from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
+            XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer
 
-        model_dict = {
-            'bert-base-uncased': (TFBertModel, BertModel, BertTokenizer),
-            'openai-gpt': (TFOpenAIGPTModel, OpenAIGPTModel, OpenAIGPTTokenizer),
-            'gpt2': (TFGPT2Model, GPT2Model, GPT2Tokenizer),
-            'xlnet-base-cased': (TFXLNetModel, XLNetModel, XLNetTokenizer),
-            'xlm-mlm-enfr-1024': (TFXLMModel, XLMModel, XLMTokenizer),
-            'distilbert-base-cased': (TFDistilBertModel, DistilBertModel, DistilBertTokenizer),
-            'roberta-base': (TFRobertaModel, RobertaModel, RobertaTokenizer),
-            'xlm-roberta-base': (TFXLMRobertaModel, XLMRobertaModel, XLMRobertaTokenizer)
+        tokenizer_dict = {
+            'bert-base-uncased':  BertTokenizer,
+            'openai-gpt': OpenAIGPTTokenizer,
+            'gpt2': GPT2Tokenizer,
+            'xlnet-base-cased': XLNetTokenizer,
+            'xlm-mlm-enfr-1024': XLMTokenizer,
+            'distilbert-base-cased': DistilBertTokenizer,
+            'roberta-base': RobertaTokenizer,
+            'xlm-roberta-base': XLMRobertaTokenizer
         }
 
-        if self.model_name not in model_dict:
-            self.logger.error('{} not in our supports: {}'.format(self.model_name, ','.join(model_dict.keys())))
+        if self.model_name not in tokenizer_dict:
+            self.logger.error('{} not in our supports: {}'.format(self.model_name, ','.join(tokenizer_dict.keys())))
             raise ValueError
 
-        tf_model_class, model_class, tokenizer_class = model_dict[self.model_name]
+        try:
+            import tensorflow as tf
+            from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
+                TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel
+            tf_model_dict = {
+                'bert-base-uncased': TFBertModel,
+                'openai-gpt': TFOpenAIGPTModel,
+                'gpt2': TFGPT2Model,
+                'xlnet-base-cased': TFXLNetModel,
+                'xlm-mlm-enfr-1024': TFXLMModel,
+                'distilbert-base-cased': TFDistilBertModel,
+                'roberta-base': TFRobertaModel,
+                'xlm-roberta-base': TFXLMRobertaModel,
+            }
+            model_class = tf_model_dict[self.model_name]
+            self._tensor_func = tf.constant
+            self._sess_func = tf.GradientTape
+
+        except:
+            try:
+                import torch
+                from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
+                    RobertaModel, XLMRobertaModel
+
+                model_dict = {
+                    'bert-base-uncased': BertModel,
+                    'openai-gpt': OpenAIGPTModel,
+                    'gpt2': GPT2Model,
+                    'xlnet-base-cased': XLNetModel,
+                    'xlm-mlm-enfr-1024': XLMModel,
+                    'distilbert-base-cased': DistilBertModel,
+                    'roberta-base': RobertaModel,
+                    'xlm-roberta-base': XLMRobertaModel,
+                }
+                model_class = model_dict[self.model_name]
+                self._tensor_func = torch.tensor
+                self._sess_func = torch.no_grad
+            except:
+                raise ModuleNotFoundError('Tensorflow or Pytorch is required!')
 
         if self.encoder_abspath:
             if not os.path.exists(self.encoder_abspath):
@@ -78,18 +105,9 @@ class TransformerTextEncoder(BaseTextEncoder):
         else:
             tmp = self.model_name
 
+        self.model = model_class.from_pretrained(tmp)
+        tokenizer_class = tokenizer_dict[self.model_name]
         self.tokenizer = tokenizer_class.from_pretrained(tmp)
-        if self.backend == 'tensorflow':
-            import tensorflow as tf
-            self.model = tf_model_class.from_pretrained(tmp)
-            self._tensor_func = tf.constant
-            self._sess_func = tf.GradientTape
-
-        else:
-            import torch
-            self.model = model_class.from_pretrained(tmp)
-            self._tensor_func = torch.tensor
-            self._sess_func = torch.no_grad
 
         self.tokenizer.padding_side = 'right'
 
