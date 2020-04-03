@@ -29,11 +29,6 @@ jobs:
       #          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
       #          DOCKERHUB_REPOSITORY: jinaai/jina
       - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/jina-docs
-          token: ${{ secrets.JINA_DEV_BOT }}
-          path: docs/_build/html
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
@@ -41,12 +36,12 @@ jobs:
           pip install .
           echo ::set-env name=JINA_VERSION::"$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
           JINA_VERSION=${{env.JINA_VERSION}} ./make-doc.sh commit "regular update due to ${{github.event_name}} on ${{github.repository}}"
-  #      - uses: ad-m/github-push-action@master
-  #        with:
-  #          github_token: ${{ secrets.JINA_DEV_BOT }}
-  #          repository: jina-ai/jina-docs
-  #          directory: docs/_build/html
-  #          force: true
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/jina-docs
+          directory: docs/_build/html
+          force: true
 
   update-docker:
     needs: update-doc
