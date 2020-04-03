@@ -30,12 +30,7 @@ Here are the steps for contributing Jina.
 6. Request reviews from one of [the code owners](CODEOWNERS).
 7. Get a LGTM 👍 and PR gets merged.
 
-Well done! Once a PR gets merged, here are the things happened next:
-
-- Jina Docker images tagged with `master-debian` and `dev-debian` will be automatically updated in an hour.
-- On every Friday when a new release is published, PyPi packages and all Docker images tagged with `-latest` will be updated accordindly. 
-- Your contribution and commits will be included in [our weekly release note](CHANGELOG.md). 🍻
-
+[What happened after merge?](RELEASE.md)
 
 ## Commit Style
 

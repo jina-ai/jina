@@ -90,11 +90,11 @@ The documentation is then available via browser at `http://0.0.0.0:8080/`.
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
 
-Please first read [the contributing guidelines](CONTRIBUTING.md) before the submission. 
+Please first read [the contributing guidelines](CONTRIBUTING.md) and [the release cycle](RELEASE.md) before the submission. 
 
 ## Community
 
-- Slack chanel - a communication platform for developers to discuss Jina
+- [Slack chanel](https://jinaai.slack.com/) - a communication platform for developers to discuss Jina
 - Mailing list - subscribe to the latest update, release news of Jina
 - [LinkedIn](https://www.linkedin.com/showcase/31268045/) - get to know Jina AI as a company
 - [Twitter](https://twitter.com/JinaAI_) - interact with us @JinaAI_  
