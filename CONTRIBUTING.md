@@ -71,7 +71,7 @@ where `type` is one of the following:
 > Good examples:
 > 
 ```text
-fix-exectutor-loader-113
+fix-executor-loader-113
 chore-update-version
 docs-add-cloud-section-33
 ```
