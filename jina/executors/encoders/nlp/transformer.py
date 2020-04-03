@@ -6,10 +6,9 @@ from .. import BaseTextEncoder
 from ..helper import reduce_mean, reduce_max
 
 
-class TransformerTextEncoder(BaseTextEncoder):
+class TransformerEncoder(BaseTextEncoder):
     """
     TransformerTextEncoder encodes data from an array of string in size `B` into a ndarray in size `B x D`.
-    Internally, TransformerTextEncoder wraps the pytorch-version of transformers from huggingface.
     """
 
     def __init__(self,
@@ -56,70 +55,25 @@ class TransformerTextEncoder(BaseTextEncoder):
             self.logger.error('{} not in our supports: {}'.format(self.model_name, ','.join(tokenizer_dict.keys())))
             raise ValueError
 
-        try:
-            import torch
-            from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
-                RobertaModel, XLMRobertaModel
-
-            model_dict = {
-                'bert-base-uncased': BertModel,
-                'openai-gpt': OpenAIGPTModel,
-                'gpt2': GPT2Model,
-                'xlnet-base-cased': XLNetModel,
-                'xlm-mlm-enfr-1024': XLMModel,
-                'distilbert-base-cased': DistilBertModel,
-                'roberta-base': RobertaModel,
-                'xlm-roberta-base': XLMRobertaModel,
-            }
-            model_class = model_dict[self.model_name]
-            self._tensor_func = torch.tensor
-            self._sess_func = torch.no_grad
-
-        except:
-            try:
-                import tensorflow as tf
-                from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
-                    TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel
-                tf_model_dict = {
-                    'bert-base-uncased': TFBertModel,
-                    'openai-gpt': TFOpenAIGPTModel,
-                    'gpt2': TFGPT2Model,
-                    'xlnet-base-cased': TFXLNetModel,
-                    'xlm-mlm-enfr-1024': TFXLMModel,
-                    'distilbert-base-cased': TFDistilBertModel,
-                    'roberta-base': TFRobertaModel,
-                    'xlm-roberta-base': TFXLMRobertaModel,
-                }
-                model_class = tf_model_dict[self.model_name]
-                self._tensor_func = tf.constant
-                self._sess_func = tf.GradientTape
-            except:
-                raise ModuleNotFoundError('Tensorflow or Pytorch is required!')
-
         if self.encoder_abspath:
             if not os.path.exists(self.encoder_abspath):
                 self.logger.error("encoder path not found: {}".format(self.encoder_abspath))
                 raise ValueError
 
-            tmp = self.encoder_abspath
+            self._tmp_path = self.encoder_abspath
         else:
-            tmp = self.model_name
+            self._tmp_path = self.model_name
 
-        self.model = model_class.from_pretrained(tmp)
-        tokenizer_class = tokenizer_dict[self.model_name]
-        self.tokenizer = tokenizer_class.from_pretrained(tmp)
-
+        self.tokenizer = tokenizer_dict[self.model_name].from_pretrained(self._tmp_path)
         self.tokenizer.padding_side = 'right'
 
         if self.model_name in ('bert-base-uncased', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base'):
             self.cls_pos = 'head'
         elif self.model_name in ('xlnet-base-cased'):
             self.tokenizer.pad_token = '<PAD>'
-            self.model.resize_token_embeddings(len(self.tokenizer))
             self.cls_pos = 'tail'
         elif self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.tokenizer.pad_token = '<PAD>'
-            self.model.resize_token_embeddings(len(self.tokenizer))
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
@@ -204,3 +158,62 @@ class TransformerTextEncoder(BaseTextEncoder):
         else:
             raise NotImplementedError
         return result
+
+class TransformerTFEncoder(TransformerEncoder):
+    """
+    Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
+    """
+    def post_init(self):
+        super().post_init()
+
+        import tensorflow as tf
+        from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
+            TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel
+        tf_model_dict = {
+            'bert-base-uncased': TFBertModel,
+            'openai-gpt': TFOpenAIGPTModel,
+            'gpt2': TFGPT2Model,
+            'xlnet-base-cased': TFXLNetModel,
+            'xlm-mlm-enfr-1024': TFXLMModel,
+            'distilbert-base-cased': TFDistilBertModel,
+            'roberta-base': TFRobertaModel,
+            'xlm-roberta-base': TFXLMRobertaModel,
+        }
+        self.model = tf_model_dict[self.model_name].from_pretrained(self._tmp_path)
+        self._tensor_func = tf.constant
+        self._sess_func = tf.GradientTape
+
+        if self.model_name in ('xlnet-base-cased'):
+            self.model.resize_token_embeddings(len(self.tokenizer))
+        elif self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
+            self.model.resize_token_embeddings(len(self.tokenizer))
+
+class TransformerTorchEncoder(TransformerEncoder):
+    """
+    Internally, TransformerTFEncoder wraps the pytorch-version of transformers from huggingface.
+    """
+    def post_init(self):
+        super().post_init()
+
+        import torch
+        from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
+            RobertaModel, XLMRobertaModel
+
+        model_dict = {
+            'bert-base-uncased': BertModel,
+            'openai-gpt': OpenAIGPTModel,
+            'gpt2': GPT2Model,
+            'xlnet-base-cased': XLNetModel,
+            'xlm-mlm-enfr-1024': XLMModel,
+            'distilbert-base-cased': DistilBertModel,
+            'roberta-base': RobertaModel,
+            'xlm-roberta-base': XLMRobertaModel,
+        }
+        self.model = model_dict[self.model_name].from_pretrained(self._tmp_path)
+        self._tensor_func = torch.tensor
+        self._sess_func = torch.no_grad
+
+        if self.model_name in ('xlnet-base-cased'):
+            self.model.resize_token_embeddings(len(self.tokenizer))
+        elif self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
+            self.model.resize_token_embeddings(len(self.tokenizer))
