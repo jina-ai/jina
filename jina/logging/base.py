@@ -109,7 +109,7 @@ class NTLogger:
 
     def critical(self, msg: str, **kwargs):
         """log info-level message"""
-        if self.log_level <= LogVerbosity.success:
+        if self.log_level <= LogVerbosity.CRITICAL:
             sys.stdout.write('C:%s:%s' % (self.context, self._planify(msg)))
 
     def debug(self, msg: str, **kwargs):

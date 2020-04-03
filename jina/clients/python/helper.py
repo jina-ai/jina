@@ -34,23 +34,20 @@ class ProgressBar:
         self.num_bars += 1
         sys.stdout.write('\r')
         elapsed = time.perf_counter() - self.start_time
-        elapsed_str = colored('elapsed', 'yellow')
-        speed_str = colored('batch', 'yellow')
         num_bars = self.num_bars % self.bar_len
         num_bars = self.bar_len if not num_bars and self.num_bars else max(num_bars, 1)
         if progress:
             self.proc_doc += progress
 
         sys.stdout.write(
-            '{:>10} [{:<{}}]  {:>8}: {:3.1f}s  {:>8}: {:>8} @ {:3.1f}/s '.format(
+            '{:>10} [{:<{}}] 📃 {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f}/s {:6d} batch'.format(
                 colored(self.task_name, 'cyan'),
                 colored('=' * num_bars, 'green'),
                 self.bar_len + 9,
-                elapsed_str,
+                self.proc_doc,
                 elapsed,
-                speed_str,
-                self.num_bars,
-                self.num_bars / elapsed,
+                self.proc_doc / elapsed,
+                self.num_bars
             ))
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
@@ -64,4 +61,6 @@ class ProgressBar:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout.write('\t%s\n' % colored('done!', 'green'))
+        elapsed = time.perf_counter() - self.start_time
+        speed = self.num_bars / elapsed
+        sys.stdout.write('\t%s\n' % colored(f'done in {elapsed:3.1f}s @ {speed:3.1f}/s', 'green'))

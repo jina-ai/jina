@@ -6,6 +6,8 @@ from collections import defaultdict
 from queue import Empty
 from typing import Dict, List
 
+import zmq
+
 from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
@@ -14,7 +16,7 @@ from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWate
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..logging import get_logger
-from ..logging.profile import used_memory
+from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea']
@@ -78,7 +80,7 @@ class BasePea(metaclass=PeaMeta):
 
         self.last_dump_time = time.perf_counter()
 
-        # self._timer = TimeDict()
+        self._timer = TimeDict()
 
         self._request = None
         self._message = None
@@ -189,6 +191,10 @@ class BasePea(metaclass=PeaMeta):
             self.logger.warning('this BasePea has no executor attached, you may want to double-check '
                                 'if it is a mistake or on purpose (using this BasePea as router/map-reduce)')
 
+    def print_stats(self):
+        self.logger.info(
+            ' '.join('%s: %.2f' % (k, v / self._timer.accum_time['loop']) for k, v in self._timer.accum_time.items()))
+
     def save_executor(self, dump_interval: int = 0):
         """Save the contained executor
 
@@ -206,12 +212,9 @@ class BasePea(metaclass=PeaMeta):
             else:
                 self.logger.info('executor says there is nothing to save')
             self.last_dump_time = time.perf_counter()
-            # self.logger.info({'service': self.name,
-            #                   'profile': self._timer.accum_time,
-            #                   'timestamp_start': self._timer.start_time,
-            #                   'timestamp_end': self._timer.end_time})
+
             #
-            # self._timer.reset()
+            self._timer.reset()
 
     def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
@@ -250,7 +253,10 @@ class BasePea(metaclass=PeaMeta):
         self.set_ready()
 
         while True:
+            # t_loop_start = time.perf_counter()
             msg = self.zmqlet.recv_message(callback=_callback)
+            # t_callback = time.perf_counter()
+
             if msg is not None:
                 self.zmqlet.send_message(msg)
             else:
@@ -259,6 +265,8 @@ class BasePea(metaclass=PeaMeta):
             self.save_executor(self.args.dump_interval)
             self.check_memory_watermark()
             self.last_active_time = time.perf_counter()
+            # t_loop_end = time.perf_counter()
+            # self.logger.info(f'handle {(t_callback - t_loop_start) / (t_loop_end - t_loop_start):2.2f}')
 
     def loop_teardown(self):
         """Stop the request loop """
@@ -294,6 +302,8 @@ class BasePea(metaclass=PeaMeta):
             self.logger.error('no matched handler for the request, this service is badly configured')
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
+        except zmq.error.ZMQError:
+            self.logger.error('zmqlet can not be initiated')
         except Exception as ex:
             self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
         finally:
