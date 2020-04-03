@@ -43,7 +43,7 @@ class PyClient(GrpcClient):
                         callback(resp)
                     except Exception as ex:
                         raise BadClient('error in client\'s callback: %s' % ex)
-                p_bar.update()
+                p_bar.update(self.args.batch_size)
 
     @property
     def raw_bytes(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes]]:

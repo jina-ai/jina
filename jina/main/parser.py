@@ -173,7 +173,7 @@ def set_pea_parser(parser=None):
     gp6.add_argument('--memory_hwm', type=int, default=-1,
                      help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
                           '-1 means no restriction')
-    gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='thread',
+    gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='process',
                      help='the parallel runtime of the pod')
     gp5.add_argument('--max_idle_time', type=int, default=60,
                      help='label this pea as inactive when it does not '

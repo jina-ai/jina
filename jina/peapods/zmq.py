@@ -43,6 +43,7 @@ class Zmqlet:
             array_in_pb=self.args.array_in_pb)
 
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
+        self.opened_socks = []
         self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self.init_sockets()
         self.bytes_sent = 0
         self.bytes_recv = 0
@@ -78,9 +79,8 @@ class Zmqlet:
 
     def close_sockets(self):
         """Close input, output and control sockets of this `Zmqlet`. """
-        self.in_sock.close()
-        self.out_sock.close()
-        self.ctrl_sock.close()
+        for k in self.opened_socks:
+            k.close()
 
     def init_sockets(self) -> Tuple:
         """Initialize all sockets and the ZMQ context.
@@ -94,26 +94,36 @@ class Zmqlet:
         """
         ctx = self._get_zmq_ctx()
         ctx.setsockopt(zmq.LINGER, 0)
-        self.logger.info('setting up sockets...')
-        if self.ctrl_with_ipc:
-            ctrl_sock, ctrl_addr = _init_socket(ctx, self.ctrl_addr, None, SocketType.PAIR_BIND,
-                                                use_ipc=self.ctrl_with_ipc)
-        else:
-            ctrl_sock, ctrl_addr = _init_socket(ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND)
-        self.logger.debug('control over %s' % (colored(ctrl_addr, 'yellow')))
 
-        in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                        self.args.identity)
-        self.logger.debug('input %s:%s' % (self.args.host_in, colored(self.args.port_in, 'yellow')))
-        out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                          self.args.identity)
-        self.logger.debug('output %s:%s' % (self.args.host_out, colored(self.args.port_out, 'yellow')))
-        self.logger.info(
-            'input %s (%s) \t output %s (%s)\t control over %s (%s)' %
-            (colored(in_addr, 'yellow'), self.args.socket_in,
-             colored(out_addr, 'yellow'), self.args.socket_out,
-             colored(ctrl_addr, 'yellow'), SocketType.PAIR_BIND))
-        return ctx, in_sock, out_sock, ctrl_sock
+        self.logger.info('setting up sockets...')
+        try:
+            if self.ctrl_with_ipc:
+                ctrl_sock, ctrl_addr = _init_socket(ctx, self.ctrl_addr, None, SocketType.PAIR_BIND,
+                                                    use_ipc=self.ctrl_with_ipc)
+            else:
+                ctrl_sock, ctrl_addr = _init_socket(ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND)
+            self.logger.debug('control over %s' % (colored(ctrl_addr, 'yellow')))
+            self.opened_socks.append(ctrl_sock)
+
+            in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
+                                            self.args.identity)
+            self.logger.debug('input %s:%s' % (self.args.host_in, colored(self.args.port_in, 'yellow')))
+            self.opened_socks.append(in_sock)
+
+            out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
+                                              self.args.identity)
+            self.logger.debug('output %s:%s' % (self.args.host_out, colored(self.args.port_out, 'yellow')))
+            self.opened_socks.append(out_sock)
+
+            self.logger.info(
+                'input %s (%s) \t output %s (%s)\t control over %s (%s)' %
+                (colored(in_addr, 'yellow'), self.args.socket_in,
+                 colored(out_addr, 'yellow'), self.args.socket_out,
+                 colored(ctrl_addr, 'yellow'), SocketType.PAIR_BIND))
+            return ctx, in_sock, out_sock, ctrl_sock
+        except zmq.error.ZMQError as ex:
+            self.close()
+            raise ex
 
     def _get_zmq_ctx(self):
         return zmq.Context()
@@ -435,8 +445,8 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
     }[socket_type]()
     sock.setsockopt(zmq.LINGER, 0)
 
-    if not socket_type.is_pubsub:
-        sock.hwm = int(os.environ.get('JINA_SOCKET_HWM', 4))
+    # if not socket_type.is_pubsub:
+    #     sock.hwm = int(os.environ.get('JINA_SOCKET_HWM', 1))
 
     if socket_type.is_bind:
         if use_ipc:
