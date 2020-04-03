@@ -1,19 +1,13 @@
-name: CD
+name: Release CD
 
 on:
   push:
-    branches:
-      - master
-
-#on:
-#  push:
-#    branches-ignore:
-#      - '**'  # temporally ignore all
+    tags:
+      - "v*"  # push to version tags trigger the build
 
 
 jobs:
   update-doc:
-    if: "!contains(github.event.head_commit.message, 'chore(version)')"
     runs-on: ubuntu-latest
     steps:
       - uses: technote-space/toc-generator@v2
@@ -32,16 +26,20 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
-      - run: |
+      - name: install the release version
+        run: |
           pip install .
-          echo ::set-env name=JINA_VERSION::"$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
-          ./make-doc.sh commit "regular update due to ${{github.event_name}} on ${{github.repository}}"
+          echo ::set-env name=JINA_VERSION::${TAG_VER#"v"}
+          ./make-doc.sh release "release ${{github.ref}} of ${{github.repository}}"
+        env:
+          TAG_VER: ${{ github.ref }}
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/jina-docs
           force: true
           directory: docs/_build/html
+          tags: true
 
   update-docker:
     needs: update-doc
@@ -58,7 +56,9 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo ::set-env name=JINA_VERSION::"$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)"
+          echo ::set-env name=JINA_VERSION::${TAG_VER#"v"}
+        env:
+          TAG_VER: ${{ github.ref }}
       - name: Run Buildx and Upload to Docker Cloud
         run: |
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
             --output "type=registry" \
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
-            -t jinaai/jina:devel -t jinaai/jina:devel-${{env.JINA_VERSION}} \
+            -t jinaai/jina:$JINA_VERSION -t jinaai/jina:latest \
             --file ./Dockerfiles/debianx.Dockerfile .
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
@@ -77,4 +77,4 @@ jobs:
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
-          tags: "devel, devel-${{env.JINA_VERSION}}"
+          tags: "latest, ${{env.JINA_VERSION}}"

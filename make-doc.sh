@@ -28,14 +28,13 @@ if [[ $1 == "commit" ]]; then
   git status
   cd -
 elif [[ $1 == "release" ]]; then
-  VER="$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)"
   cp ${DOC_DIR}/README.md ${HTML_DIR}/
   cd ${HTML_DIR}
   git init
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
   git add .
-  git tag $(VER)
+  git tag ${TAG_VER}
   git commit -m "$2" -a
   git status
   cd -

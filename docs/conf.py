@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 from os import path
@@ -13,11 +14,14 @@ master_doc = 'index'
 language = 'en'
 
 try:
-    pkg_name = 'jina'
-    libinfo_py = path.join('..', pkg_name, '__init__.py')
-    libinfo_content = open(libinfo_py, 'r').readlines()
-    version_line = [l.strip() for l in libinfo_content if l.startswith('__version__')][0]
-    exec(version_line)
+    if 'JINA_VERSION' not in os.environ:
+        pkg_name = 'jina'
+        libinfo_py = path.join('..', pkg_name, '__init__.py')
+        libinfo_content = open(libinfo_py, 'r').readlines()
+        version_line = [l.strip() for l in libinfo_content if l.startswith('__version__')][0]
+        exec(version_line)
+    else:
+        __version__ = os.environ['JINA_VERSION']
 except FileNotFoundError:
     __version__ = '0.0.0'
 
