@@ -41,7 +41,7 @@ class TransformerEncoder(BaseTextEncoder):
             XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer
 
         tokenizer_dict = {
-            'bert-base-uncased':  BertTokenizer,
+            'bert-base-uncased': BertTokenizer,
             'openai-gpt': OpenAIGPTTokenizer,
             'gpt2': GPT2Tokenizer,
             'xlnet-base-cased': XLNetTokenizer,
@@ -159,10 +159,12 @@ class TransformerEncoder(BaseTextEncoder):
             raise NotImplementedError
         return result
 
+
 class TransformerTFEncoder(TransformerEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
+
     def post_init(self):
         super().post_init()
 
@@ -186,10 +188,12 @@ class TransformerTFEncoder(TransformerEncoder):
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))
 
+
 class TransformerTorchEncoder(TransformerEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
+
     def post_init(self):
         super().post_init()
 

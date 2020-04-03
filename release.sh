@@ -16,7 +16,7 @@ function escape_slashes {
     sed 's/\//\\\//g'
 }
 
-function change_line {
+function update_ver_line {
     local OLD_LINE_PATTERN=$1
     local NEW_LINE=$2
     local FILE=$3
@@ -41,19 +41,19 @@ function pub_pypi {
     clean_build
 }
 
-function pub_gittag {
+function git_commit {
     git config --local user.email "dev-bot@jina.ai"
     git config --local user.name "Jina Dev Bot"
+    git tag "v$RELEASE_VER" -m "$(cat ./CHANGELOG.tmp)"
     git add $INIT_FILE ./CHANGELOG.md
-    git commit -m "chore(version): bumping version to $VER"
-    git tag $VER -m "$(cat ./CHANGELOG.tmp)"
+    git commit -m "chore(version): bumping version to $NEXT_VER"
 }
 
 
 function make_release_note {
-    ${RELEASENOTE} $1..HEAD .github/release-template.ejs > ./CHANGELOG.tmp
+    ${RELEASENOTE} ${LAST_VER}..HEAD .github/release-template.ejs > ./CHANGELOG.tmp
     head -n10 ./CHANGELOG.tmp
-    printf '\n%s\n\n%s\n\n%s\n\n%s\n\n' "$(cat ./CHANGELOG.md)" "## Release Note (\`$2\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" > ./CHANGELOG.md
+    printf '\n%s\n\n%s\n\n%s\n\n%s\n\n' "$(cat ./CHANGELOG.md)" "## Release Note (\`${RELEASE_VER}\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" > ./CHANGELOG.md
 }
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -71,15 +71,18 @@ if [ $LAST_COMMIT != $LAST_UPDATE ]; then
     exit 1;
 fi
 
-OLDVER=$(git tag -l | sort -V | tail -n1)
-printf "current version:\t\e[1;33m$OLDVER\e[0m\n"
+RELEASE_VER=$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)
+printf "current version: \e[1;33m$RELEASE_VER\e[0m\n"
 
-VER=$(echo $OLDVER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("%0*d", length($NF), ($NF+1)); print}')
-printf "bump version to:\t\e[1;32m$VER\e[0m\n"
+LAST_VER=$(git tag -l | sort -V | tail -n1)
+printf "last version: \e[1;32m$LAST_VER\e[0m\n"
 
-make_release_note $OLDVER $VER
-VER_VAL=$VER_TAG"'"${VER#"v"}"'"
-change_line "$VER_TAG" "$VER_VAL" $INIT_FILE
-pub_gittag
+NEXT_VER=$(echo $RELEASE_VER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("%0*d", length($NF), ($NF+1)); print}')
+printf "bump master version: \e[1;32m$NEXT_VER\e[0m\n"
+
+make_release_note
+VER_TAG_NEXT=$VER_TAG"'"${NEXT_VER#"v"}"'"
+update_ver_line "$VER_TAG" "$VER_TAG_NEXT" $INIT_FILE
+git_commit
 
 
