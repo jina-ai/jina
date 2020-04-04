@@ -30,7 +30,7 @@ Here are the steps for contributing Jina.
 6. Request reviews from one of [the code owners](CODEOWNERS).
 7. Get a LGTM 👍 and PR gets merged.
 
-[What happened after merge?](RELEASE.md)
+[What happens after the merge?](RELEASE.md)
 
 ## Commit Style
 

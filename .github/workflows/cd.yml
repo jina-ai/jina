@@ -13,7 +13,7 @@ on:
 
 jobs:
   update-doc:
-    if: "!contains(github.event.head_commit.message, 'chore(version)')"
+    if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
     steps:
       - uses: technote-space/toc-generator@v2
@@ -22,7 +22,8 @@ jobs:
           FOLDING: false
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TOC_TITLE: ''
-          TARGET_PATHS: '*.md'
+          TARGET_PATHS: 'README.md, CHANGELOG.md, CONTRIBUTING.md'
+          COMMIT_MESSAGE: 'chore(docs): update TOC'
       #      - uses: peter-evans/dockerhub-description@v2.1.0
       #        env:
       #          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
