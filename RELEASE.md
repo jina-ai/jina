@@ -9,12 +9,19 @@ We follow the [semantic versioning](https://semver.org/). Say current master ver
 - `x.y.z`: Friday release.
 - `latest`: the last Friday release. 
 
-## Release Triggered Events 
+## Master Update
 
 Every successful merge into the master triggers a development release. It will: 
 
 - update the Docker image with tag `devel`;
 - update [jina-ai/docs](https://github.com/jina-ai/docs) tag `devel`
+
+Note, commits started with `chore` are exceptions and will not trigger the events above. Right now these commits are:
+
+- `chore(docs): update TOC`
+- `chore(version): bumping master version`
+
+# Friday Release
 
 On Friday release, it will:
 
