@@ -47,7 +47,7 @@ class ImagePaddlehubEncoder(PaddlehubEncoder):
             kwargs.pop('pool_strategy')
         if 'output_feature' in kwargs:
             kwargs.pop('output_feature')
-        super().__init__(model_name, None, 'mean', *args, **kwargs)
+        super().__init__(model_name, output_feature=None, pool_strategy='mean', *args, **kwargs)
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         self.inputs_name = input_dict['image'].name
