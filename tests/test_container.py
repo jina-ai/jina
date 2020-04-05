@@ -93,9 +93,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo1(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
-             .add(name='d2', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
-             .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
+             .add(name='d1', image='jinaai/jina:latest', yaml_path='logroute', entrypoint='jina pod')
+             .add(name='d2', image='jinaai/jina:latest', yaml_path='logroute', entrypoint='jina pod')
+             .add(name='d3', image='jinaai/jina:latest', yaml_path='logroute',
                   needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2']))
 
@@ -104,9 +104,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo_mixed(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:master-debian', yaml_path='logroute', entrypoint='jina pod')
+             .add(name='d1', image='jinaai/jina:latest', yaml_path='logroute', entrypoint='jina pod')
              .add(name='d2', yaml_path='logroute')
-             .add(name='d3', image='jinaai/jina:master-debian', yaml_path='logroute',
+             .add(name='d3', image='jinaai/jina:latest', yaml_path='logroute',
                   needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2'])
              )
@@ -116,9 +116,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo_replicas(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:master-debian', entrypoint='jina pod', yaml_path='route', replicas=3)
+             .add(name='d1', image='jinaai/jina:latest', entrypoint='jina pod', yaml_path='route', replicas=3)
              .add(name='d2', yaml_path='route', replicas=3)
-             .add(name='d3', image='jinaai/jina:master-debian', entrypoint='jina pod', yaml_path='route',
+             .add(name='d3', image='jinaai/jina:latest', entrypoint='jina pod', yaml_path='route',
                   needs='d1')
              .join(['d3', 'd2'])
              )

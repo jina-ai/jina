@@ -16,7 +16,7 @@ class MyTestCase(JinaTestCase):
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape[0], 2)
         self.assertIs(type(encoded_data), np.ndarray)
-        self.add_tmpfile(encoder.vocab_filename)
+        self.add_tmpfile(encoder.vocab_abspath)
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load(self):
@@ -33,10 +33,10 @@ class MyTestCase(JinaTestCase):
         encoder_loaded = BaseExecutor.load(encoder.save_abspath)
         encoded_data_test = encoder_loaded.encode(test_data)
 
-        self.assertEqual(encoder_loaded.vocab_filename, encoder.vocab_filename)
+        self.assertEqual(encoder_loaded.vocab_abspath, encoder.vocab_abspath)
 
         self.add_tmpfile(
-            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_filename)
+            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_abspath)
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
@@ -46,9 +46,9 @@ class MyTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(encoder.config_abspath))
 
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-        self.assertEqual(encoder_loaded.vocab_filename, encoder.vocab_filename)
+        self.assertEqual(encoder_loaded.vocab_abspath, encoder.vocab_abspath)
 
-        self.add_tmpfile(encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_filename)
+        self.add_tmpfile(encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.vocab_abspath)
 
 
 if __name__ == '__main__':

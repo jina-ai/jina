@@ -32,7 +32,6 @@ class ErnieTextEncoder(BaseTextEncoder):
         self.model_name = model_name
         self.pooling_strategy = pooling_strategy
         self.max_seq_length = max_length
-        self.vocab_filename = ''
         self.tokenizer = None
 
     def post_init(self):
@@ -43,19 +42,14 @@ class ErnieTextEncoder(BaseTextEncoder):
         self.inputs, self.outputs, self.model = module.context(
             trainable=False, max_seq_len=self.max_seq_length)
         # convert the ernie vocab file into the bert vocab format
-        self.vocab_filename = os.path.join(self.current_workspace, 'ernie.vocab.txt')
         num_cols = 1
         if self.model_name == 'ernie':
             num_cols = 2
-        self._convert_vocab(module.get_vocab_path(), self.vocab_filename, num_cols)
-        self.logger.info('vocab file saved path: {}'.format(self.vocab_filename))
+        self._convert_vocab(module.get_vocab_path(), self.vocab_abspath, num_cols)
+        self.logger.info('vocab file saved path: {}'.format(self.vocab_abspath))
         self.tokenizer = bert_tokenization.FullTokenizer(
-            vocab_file=self.vocab_filename, do_lower_case=True)
-        place = None
-        if not self.on_gpu:
-            place = fluid.CPUPlace()
-        else:
-            place = fluid.CUDAPlace(int(os.getenv('FLAGS_selected_gpus', '0')))
+            vocab_file=self.vocab_abspath, do_lower_case=True)
+        place = fluid.CUDAPlace(int(os.getenv('FLAGS_selected_gpus', '0'))) if self.on_gpu else fluid.CPUPlace()
         self.exe = fluid.Executor(place)
         self.convert_to_unicode = bert_tokenization.convert_to_unicode
 
@@ -144,3 +138,9 @@ class ErnieTextEncoder(BaseTextEncoder):
             input_mask_data = np.expand_dims(input_mask_data, axis=-1)
             result += [input_mask_data.astype('float32')]
         return result if len(result) > 1 else result[0]
+
+    @property
+    def vocab_abspath(self) -> str:
+        """Get the file path of the vocabulary
+        """
+        return self.get_file_from_workspace('ernie.vocab.txt')

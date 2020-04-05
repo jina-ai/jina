@@ -75,11 +75,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoder_loaded.max_length, encoder.max_length)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
-        self.tmp_files.append(encoder.config_abspath)
-        self.tmp_files.append(encoder.save_abspath)
-        self.tmp_files.append(encoder_loaded.config_abspath)
-        self.tmp_files.append(encoder_loaded.save_abspath)
-        self.tmp_files.append(encoder.encoder_abspath)
+        self.add_tmpfile(encoder.config_abspath, encoder.save_abspath, encoder.model_abspath)
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
@@ -91,8 +87,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoder_loaded.max_length, encoder.max_length)
         self.assertEqual(encoder_loaded.pooling_strategy, encoder.pooling_strategy)
 
-        self.tmp_files.append(encoder_loaded.config_abspath)
-        self.tmp_files.append(encoder_loaded.save_abspath)
+        self.add_tmpfile(encoder.config_abspath, encoder.save_abspath)
 
 
 if __name__ == '__main__':
