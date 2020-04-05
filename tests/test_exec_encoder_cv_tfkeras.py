@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.cv.tfkeras import KerasImageEncoder
+from jina.executors.encoders.image.tfkeras import KerasImageEncoder
 from tests import JinaTestCase
 
 

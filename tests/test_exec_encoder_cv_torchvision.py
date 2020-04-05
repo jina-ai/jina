@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.cv.torchvision import TorchImageEncoder
+from jina.executors.encoders.image.torchvision import TorchImageEncoder
 from tests import JinaTestCase
 
 
