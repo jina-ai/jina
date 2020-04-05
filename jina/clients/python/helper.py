@@ -66,4 +66,4 @@ class ProgressBar:
             speed = self.proc_doc / elapsed
         else:
             speed = self.num_bars / elapsed
-        sys.stdout.write('\t%s\n' % colored(f'done in {elapsed:3.1f}s @ {speed:3.1f}/s', 'green'))
+        sys.stdout.write('\t%s\n' % colored(f'✅ done in ⏱ {elapsed:3.1f}s 🐎 {speed:3.1f}/s', 'green'))

@@ -206,7 +206,7 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--replica_type', type=ReplicaType.from_string, choices=list(ReplicaType),
                      default=ReplicaType.ONEOF,
                      help='replica type of the concurrent peas')
-    gp4.add_argument('--scheduling', type=ReplicaType.from_string, choices=list(SchedulerType),
+    gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
     gp4.add_argument('--shutdown_idle', action='store_true', default=False,
