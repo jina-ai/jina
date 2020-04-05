@@ -4,21 +4,21 @@ import os
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.video.torchvision import TorchVideoEncoder
+from jina.executors.encoders.video.torchvision import VideoTorchEncoder
 from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_encoding_results(self):
-        encoder = TorchVideoEncoder()
+        encoder = VideoTorchEncoder()
         test_data = np.random.rand(2, 3, 3, 112, 112)
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape, (2, 512))
 
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load(self):
-        encoder = TorchVideoEncoder()
+        encoder = VideoTorchEncoder()
         test_data = np.random.rand(2, 3, 3, 112, 112)
         encoded_data_control = encoder.encode(test_data)
         encoder.touch()
@@ -31,9 +31,9 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(
             encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
-    @unittest.skipIf(os.getenv('JINA_SKIP_TEST_PRETRAINED', True), 'skip the pretrained test if not set')
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
-        encoder = TorchVideoEncoder()
+        encoder = VideoTorchEncoder()
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)

@@ -76,7 +76,7 @@ class MyTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(a.config_abspath))
 
     def test_compound_from_yaml(self):
-        a = BaseExecutor.load_config('yaml/npvec.yml')
+        a = BaseExecutor.load_config('../yaml/npvec.yml')
         for c in a.components:
             self.add_tmpfile(c.index_abspath)
         self.assertTrue(isinstance(a, CompoundExecutor))
