@@ -1,25 +1,25 @@
-import os
 import unittest
 
+import os
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.cv.torchvision import TorchImageEncoder
+from jina.executors.encoders.video.torchvision import VideoTorchEncoder
 from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_encoding_results(self):
-        encoder = TorchImageEncoder()
-        test_data = np.random.rand(2, 3, 224, 224)
+        encoder = VideoTorchEncoder()
+        test_data = np.random.rand(2, 3, 3, 112, 112)
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (2, 1280))
+        self.assertEqual(encoded_data.shape, (2, 512))
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load(self):
-        encoder = TorchImageEncoder()
-        test_data = np.random.rand(2, 3, 224, 224)
+        encoder = VideoTorchEncoder()
+        test_data = np.random.rand(2, 3, 3, 112, 112)
         encoded_data_control = encoder.encode(test_data)
         encoder.touch()
         encoder.save()
@@ -33,7 +33,7 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
-        encoder = TorchImageEncoder()
+        encoder = VideoTorchEncoder()
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)

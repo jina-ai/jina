@@ -4,22 +4,22 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.cv.paddlehub import PaddlehubImageEncoder
+from jina.executors.encoders.video.paddlehub import VideoPaddlehubEncoder
 from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_encoding_results(self):
-        encoder = PaddlehubImageEncoder()
-        test_data = np.random.rand(2, 3, 224, 224)
+        encoder = VideoPaddlehubEncoder()
+        test_data = np.random.rand(2, 3, 3, 224, 224)
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape, (2, 2048))
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load(self):
-        encoder = PaddlehubImageEncoder()
-        test_data = np.random.rand(2, 3, 224, 224)
+        encoder = VideoPaddlehubEncoder()
+        test_data = np.random.rand(2, 3, 3, 224, 224)
         encoded_data_control = encoder.encode(test_data)
         encoder.touch()
         encoder.save()
@@ -33,7 +33,7 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
-        encoder = PaddlehubImageEncoder()
+        encoder = VideoPaddlehubEncoder()
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
