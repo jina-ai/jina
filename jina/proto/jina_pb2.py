@@ -1330,30 +1330,30 @@ _sym_db.RegisterMessage(Request.ControlRequest.ArgsEntry)
 
 SpawnRequest = _reflection.GeneratedProtocolMessageType('SpawnRequest', (_message.Message,), {
 
-  'PeaSpawnRequest': _reflection.GeneratedProtocolMessageType('PeaSpawnRequest', (_message.Message,), {
-    'DESCRIPTOR': _SPAWNREQUEST_PEASPAWNREQUEST,
-    '__module__': 'jina_pb2'
+  'PeaSpawnRequest' : _reflection.GeneratedProtocolMessageType('PeaSpawnRequest', (_message.Message,), {
+    'DESCRIPTOR' : _SPAWNREQUEST_PEASPAWNREQUEST,
+    '__module__' : 'jina_pb2'
     # @@protoc_insertion_point(class_scope:jina.SpawnRequest.PeaSpawnRequest)
-  })
+    })
   ,
 
-  'PodSpawnRequest': _reflection.GeneratedProtocolMessageType('PodSpawnRequest', (_message.Message,), {
-    'DESCRIPTOR': _SPAWNREQUEST_PODSPAWNREQUEST,
-    '__module__': 'jina_pb2'
+  'PodSpawnRequest' : _reflection.GeneratedProtocolMessageType('PodSpawnRequest', (_message.Message,), {
+    'DESCRIPTOR' : _SPAWNREQUEST_PODSPAWNREQUEST,
+    '__module__' : 'jina_pb2'
     # @@protoc_insertion_point(class_scope:jina.SpawnRequest.PodSpawnRequest)
-  })
+    })
   ,
 
-  'MutablepodSpawnRequest': _reflection.GeneratedProtocolMessageType('MutablepodSpawnRequest', (_message.Message,), {
-    'DESCRIPTOR': _SPAWNREQUEST_MUTABLEPODSPAWNREQUEST,
-    '__module__': 'jina_pb2'
+  'MutablepodSpawnRequest' : _reflection.GeneratedProtocolMessageType('MutablepodSpawnRequest', (_message.Message,), {
+    'DESCRIPTOR' : _SPAWNREQUEST_MUTABLEPODSPAWNREQUEST,
+    '__module__' : 'jina_pb2'
     # @@protoc_insertion_point(class_scope:jina.SpawnRequest.MutablepodSpawnRequest)
-  })
+    })
   ,
-  'DESCRIPTOR': _SPAWNREQUEST,
-  '__module__': 'jina_pb2'
+  'DESCRIPTOR' : _SPAWNREQUEST,
+  '__module__' : 'jina_pb2'
   # @@protoc_insertion_point(class_scope:jina.SpawnRequest)
-})
+  })
 _sym_db.RegisterMessage(SpawnRequest)
 _sym_db.RegisterMessage(SpawnRequest.PeaSpawnRequest)
 _sym_db.RegisterMessage(SpawnRequest.PodSpawnRequest)
@@ -1371,25 +1371,25 @@ _JINARPC = _descriptor.ServiceDescriptor(
   serialized_start=2751,
   serialized_end=2857,
   methods=[
-    _descriptor.MethodDescriptor(
-      name='Call',
-      full_name='jina.JinaRPC.Call',
-      index=0,
-      containing_service=None,
-      input_type=_REQUEST,
-      output_type=_REQUEST,
-      serialized_options=None,
-    ),
-    _descriptor.MethodDescriptor(
-      name='Spawn',
-      full_name='jina.JinaRPC.Spawn',
-      index=1,
-      containing_service=None,
-      input_type=_SPAWNREQUEST,
-      output_type=_SPAWNREQUEST,
-      serialized_options=None,
-    ),
-  ])
+  _descriptor.MethodDescriptor(
+    name='Call',
+    full_name='jina.JinaRPC.Call',
+    index=0,
+    containing_service=None,
+    input_type=_REQUEST,
+    output_type=_REQUEST,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Spawn',
+    full_name='jina.JinaRPC.Spawn',
+    index=1,
+    containing_service=None,
+    input_type=_SPAWNREQUEST,
+    output_type=_SPAWNREQUEST,
+    serialized_options=None,
+  ),
+])
 _sym_db.RegisterServiceDescriptor(_JINARPC)
 
 DESCRIPTOR.services_by_name['JinaRPC'] = _JINARPC

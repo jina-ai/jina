@@ -40,11 +40,11 @@ class JinaRPCServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def Spawn(self, request, context):
-      """Pass in a Request and a filled Request will be returned.
-      """
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
+    """Pass in a Request and a filled Request will be returned.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
 
 
 def add_JinaRPCServicer_to_server(servicer, server):
