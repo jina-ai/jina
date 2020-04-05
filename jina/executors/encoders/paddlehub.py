@@ -1,6 +1,7 @@
 import numpy as np
 
 from . import BaseNumericEncoder
+from ..decorators import batching, as_ndarray
 
 
 class PaddlehubEncoder(BaseNumericEncoder):
@@ -31,6 +32,8 @@ class PaddlehubEncoder(BaseNumericEncoder):
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         raise NotImplementedError
 
+    @batching
+    @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
