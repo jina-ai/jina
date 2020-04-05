@@ -3,7 +3,8 @@ import os
 import numpy as np
 
 from .. import BaseTextEncoder
-from ..helper import reduce_mean, reduce_max, reduce_cls
+from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
+from ...decorators import batching, as_ndarray
 
 
 class TransformerEncoder(BaseTextEncoder):
@@ -13,16 +14,17 @@ class TransformerEncoder(BaseTextEncoder):
 
     def __init__(self,
                  model_name: str = 'bert-base-uncased',
-                 pooling_strategy: str = 'reduce-mean',
+                 pooling_strategy: str = 'mean',
                  max_length: int = 64,
                  model_path: str = 'transformer',
                  *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include 'bert-base-uncased', 'openai-gpt', 'gpt2',
-            'xlm-mlm-enfr-1024', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base' .
+            'xlm-mlm-enfr-1024', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base', 'flaubert-base-cased',
+            'camembert-base', 'ctrl'.
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
-            strategies include 'cls', 'reduce-mean', 'reduce-max'.
+            strategies include 'cls', 'mean', 'max', 'min'.
         :param max_length: the max length to truncate the tokenized sequences to.
         :param model_path: the path of the encoder model. If a valid path is given, the encoder will be loaded from the
             given path.
@@ -38,7 +40,8 @@ class TransformerEncoder(BaseTextEncoder):
 
     def post_init(self):
         from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
-            XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer
+            XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer, \
+            FlaubertTokenizer, CamembertTokenizer, CTRLTokenizer
 
         tokenizer_dict = {
             'bert-base-uncased': BertTokenizer,
@@ -48,7 +51,10 @@ class TransformerEncoder(BaseTextEncoder):
             'xlm-mlm-enfr-1024': XLMTokenizer,
             'distilbert-base-cased': DistilBertTokenizer,
             'roberta-base': RobertaTokenizer,
-            'xlm-roberta-base': XLMRobertaTokenizer
+            'xlm-roberta-base': XLMRobertaTokenizer,
+            'flaubert-base-cased': FlaubertTokenizer,
+            'camembert-base': CamembertTokenizer,
+            'ctrl': CTRLTokenizer
         }
 
         if self.model_name not in tokenizer_dict:
@@ -62,7 +68,9 @@ class TransformerEncoder(BaseTextEncoder):
         self.tokenizer = tokenizer_dict[self.model_name].from_pretrained(self._tmp_model_path)
         self.tokenizer.padding_side = 'right'
 
-        if self.model_name in ('bert-base-uncased', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base'):
+        if self.model_name in (
+                'bert-base-uncased', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base', 'flaubert-base-cased',
+                'camembert-base'):
             self.cls_pos = 'head'
         elif self.model_name in ('xlnet-base-cased'):
             self.cls_pos = 'tail'
@@ -70,6 +78,8 @@ class TransformerEncoder(BaseTextEncoder):
         if self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024', 'xlnet-base-cased'):
             self.tokenizer.pad_token = '<PAD>'
 
+    @batching
+    @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
@@ -86,17 +96,16 @@ class TransformerEncoder(BaseTextEncoder):
             mask_ids_batch.append(mask_ids)
         token_ids_batch = self._tensor_func(token_ids_batch)
         mask_ids_batch = self._tensor_func(mask_ids_batch)
-
         with self._sess_func():
-            # seq_output, cls_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             if self.pooling_strategy == 'cls':
                 output = reduce_cls(seq_output.numpy(), mask_ids_batch.numpy(), self.cls_pos)
-
-            elif self.pooling_strategy == 'reduce-mean':
+            elif self.pooling_strategy == 'mean':
                 output = reduce_mean(seq_output.numpy(), mask_ids_batch.numpy())
-            elif self.pooling_strategy == 'reduce-max':
+            elif self.pooling_strategy == 'max':
                 output = reduce_max(seq_output.numpy(), mask_ids_batch.numpy())
+            elif self.pooling_strategy == 'min':
+                output = reduce_min(seq_output.numpy(), mask_ids_batch.numpy())
             else:
                 self.logger.error("pooling strategy not found: {}".format(self.pooling_strategy))
                 raise NotImplementedError
@@ -128,7 +137,7 @@ class TransformerTFEncoder(TransformerEncoder):
 
         import tensorflow as tf
         from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
-            TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel
+            TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
         model_dict = {
             'bert-base-uncased': TFBertModel,
             'openai-gpt': TFOpenAIGPTModel,
@@ -138,6 +147,8 @@ class TransformerTFEncoder(TransformerEncoder):
             'distilbert-base-cased': TFDistilBertModel,
             'roberta-base': TFRobertaModel,
             'xlm-roberta-base': TFXLMRobertaModel,
+            'camembert-base': TFCamembertModel,
+            'ctrl': TFCTRLModel
         }
         self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
         self._tensor_func = tf.constant
@@ -157,7 +168,7 @@ class TransformerTorchEncoder(TransformerEncoder):
 
         import torch
         from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
-            RobertaModel, XLMRobertaModel
+            RobertaModel, XLMRobertaModel, FlaubertModel, CamembertModel, CTRLModel
 
         model_dict = {
             'bert-base-uncased': BertModel,
@@ -168,6 +179,9 @@ class TransformerTorchEncoder(TransformerEncoder):
             'distilbert-base-cased': DistilBertModel,
             'roberta-base': RobertaModel,
             'xlm-roberta-base': XLMRobertaModel,
+            'flaubert-base-cased': FlaubertModel,
+            'camembert-base': CamembertModel,
+            'ctrl': CTRLModel
         }
         self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
         self._tensor_func = torch.tensor
