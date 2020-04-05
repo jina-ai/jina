@@ -64,7 +64,7 @@ class RouteDriver(ControlReqDriver):
 
     def __call__(self, *args, **kwargs):
         if not isinstance(self.req, jina_pb2.Request.ControlRequest):
-            self.logger.info(self.idle_dealer_ids)
+            self.logger.debug(self.idle_dealer_ids)
             if self.idle_dealer_ids:
                 dealer_id = self.idle_dealer_ids.pop()
                 self.envelope.receiver_id = dealer_id
@@ -76,7 +76,7 @@ class RouteDriver(ControlReqDriver):
                                    'then this error should never be raised')
         elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
             self.idle_dealer_ids.add(self.envelope.receiver_id)
-            self.logger.info(f'{self.envelope.receiver_id} is idle')
+            self.logger.debug(f'{self.envelope.receiver_id} is idle')
             if self.is_pollin_paused:
                 self.pea.zmqlet.resume_pollin()
                 self.is_pollin_paused = False

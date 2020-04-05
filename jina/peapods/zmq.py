@@ -195,7 +195,7 @@ class Zmqlet:
             msg = add_envelope(req, self.name, self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
-        self.logger.info('idle and i told the router')
+        self.logger.debug('idle and i told the router')
 
     def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
         """Receive a protobuf message from the input socket
