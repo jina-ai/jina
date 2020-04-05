@@ -38,8 +38,6 @@ class ImagePaddlehubEncoder(PaddlehubEncoder):
         ``densenet264_imagenet``, ``densenet201_imagenet``, ``densenet169_imagenet``, ``densenet161_imagenet``,
             ``densenet121_imagenet``, ``darknet53_imagenet``,
         ``alexnet_imagenet``,
-        # ``pnasnet_imagenet``,
-        # ``nasnet_imagenet``
 
 
         """
