@@ -1,4 +1,4 @@
-FROM jinaai/jina:master-debian
+FROM jinaai/jina:devel
 
 ADD *.py mwu_encoder.yml ./
 

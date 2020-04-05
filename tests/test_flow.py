@@ -44,15 +44,15 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(cm.exception.code, 1)
 
     def test_flow_with_jump(self):
-        f = (Flow().add(name='r1', yaml_path='route')
-             .add(name='r2', yaml_path='route')
-             .add(name='r3', yaml_path='route', needs='r1')
-             .add(name='r4', yaml_path='route', needs='r2')
-             .add(name='r5', yaml_path='route', needs='r3')
-             .add(name='r6', yaml_path='route', needs='r4')
-             .add(name='r8', yaml_path='route', needs='r6')
-             .add(name='r9', yaml_path='route', needs='r5')
-             .add(name='r10', yaml_path='merge', needs=['r9', 'r8']))
+        f = (Flow().add(name='r1', yaml_path='_forward')
+             .add(name='r2', yaml_path='_forward')
+             .add(name='r3', yaml_path='_forward', needs='r1')
+             .add(name='r4', yaml_path='_forward', needs='r2')
+             .add(name='r5', yaml_path='_forward', needs='r3')
+             .add(name='r6', yaml_path='_forward', needs='r4')
+             .add(name='r8', yaml_path='_forward', needs='r6')
+             .add(name='r9', yaml_path='_forward', needs='r5')
+             .add(name='r10', yaml_path='_merge', needs=['r9', 'r8']))
 
         with f.build() as fl:
             fl.dry_run()
@@ -61,7 +61,7 @@ class MyTestCase(JinaTestCase):
     def test_simple_flow(self):
         bytes_gen = (b'aaa' for _ in range(10))
         f = (Flow()
-             .add(yaml_path='route'))
+             .add(yaml_path='_forward'))
         with f.build() as fl:
             fl.index(raw_bytes=bytes_gen)
 

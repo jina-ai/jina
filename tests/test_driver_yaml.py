@@ -63,13 +63,13 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(a.save_abspath)
 
     def test_resource_executor(self):
-        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors.route.yml'))))
-        self.assertEqual(a.name, 'route')
+        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._route.yml'))))
+        self.assertEqual(a.name, 'forward')
         self.assertEqual(len(a._drivers), 4)
-        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors.merge.yml'))))
+        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._merge.yml'))))
         self.assertEqual(a.name, 'merge')
         self.assertEqual(len(a._drivers), 4)
-        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors.clear.yml'))))
+        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._clear.yml'))))
         self.assertEqual(a.name, 'clear')
         self.assertEqual(len(a._drivers), 4)
 
