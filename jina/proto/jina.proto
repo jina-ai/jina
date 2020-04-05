@@ -159,8 +159,6 @@ message Envelope {
         ERROR = 1; // error
         PENDING = 2; // there are pending messages, more messages are followed
         READY = 3; // ready to use
-        PAUSE_POLLING = 4; // used in router to suspend polling from sock_in
-        RESUME_POLLING = 5; // used in router to resume polling from sock_in
     }
 
     Status status = 7; // status info
