@@ -61,7 +61,7 @@ def build_required(required_level: 'FlowBuildLevel'):
 class Flow:
     def __init__(self,
                  port_sse: int = None,
-                 optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.FULL,
+                 optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.NONE,
                  *args,
                  **kwargs):
         """Initialize a flow object
