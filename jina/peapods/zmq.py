@@ -2,8 +2,7 @@ import asyncio
 import os
 import sys
 import tempfile
-import uuid
-from typing import List, Callable
+from typing import List, Callable, Optional
 from typing import Tuple
 
 import zmq
@@ -12,7 +11,7 @@ import zmq.asyncio
 from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
-from ..helper import colored
+from ..helper import colored, get_random_identity
 from ..logging import default_logger
 from ..logging.base import get_logger
 from ..proto import jina_pb2
@@ -52,6 +51,18 @@ class Zmqlet:
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
+        if self.out_sock.type == zmq.ROUTER:
+            self.poller.register(self.out_sock, zmq.POLLIN)
+        if self.in_sock.type == zmq.DEALER:
+            self.send_idle()
+
+    def pause_pollin(self):
+        """Remove :attr:`in_sock` from the poller """
+        self.poller.unregister(self.in_sock)
+
+    def resume_pollin(self):
+        """Put :attr:`in_sock` back to the poller """
+        self.poller.register(self.in_sock)
 
     @staticmethod
     def get_ctrl_address(args: 'argparse.Namespace') -> Tuple[str, bool]:
@@ -72,10 +83,13 @@ class Zmqlet:
 
     def _pull(self, interval: int = 1):
         socks = dict(self.poller.poll(interval))
-        if socks.get(self.in_sock) == zmq.POLLIN:
-            return self.in_sock
-        elif socks.get(self.ctrl_sock) == zmq.POLLIN:
+        # the priority ctrl_sock > in_sock
+        if socks.get(self.ctrl_sock) == zmq.POLLIN:
             return self.ctrl_sock
+        elif socks.get(self.out_sock) == zmq.POLLIN:
+            return self.out_sock  # for dealer return idle status to router
+        elif socks.get(self.in_sock) == zmq.POLLIN:
+            return self.in_sock
 
     def close_sockets(self):
         """Close input, output and control sockets of this `Zmqlet`. """
@@ -168,6 +182,21 @@ class Zmqlet:
         self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
+        if o_sock == self.out_sock and self.in_sock.type == zmq.DEALER:
+            self.send_idle(msg)
+
+    def send_idle(self, msg: Optional['jina_pb2.Message'] = None):
+        """Tell the upstream router this dealer is idle """
+        if msg:
+            msg.request.control.command = jina_pb2.Request.ControlRequest.IDLE
+        else:
+            req = jina_pb2.Request()
+            req.control.command = jina_pb2.Request.ControlRequest.IDLE
+            msg = add_envelope(req, self.name, self.args.identity)
+        self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
+        self.msg_sent += 1
+        self.logger.info('idle and i told the router')
+
     def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
         """Receive a protobuf message from the input socket
 
@@ -258,7 +287,7 @@ def send_message(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
         else:
             sock.setsockopt(zmq.SNDTIMEO, -1)
 
-        c_id = msg.envelope.client_id.encode()
+        c_id = msg.envelope.receiver_id.encode()
 
         if array_in_pb:
             _msg = [c_id, msg.SerializeToString()]
@@ -305,14 +334,16 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
         else:
             sock.setsockopt(zmq.SNDTIMEO, -1)
 
+        c_id = msg.envelope.receiver_id.encode()
+
         if array_in_pb:
-            _msg = [msg.envelope.client_id.encode(), msg.SerializeToString()]
+            _msg = [c_id, msg.SerializeToString()]
             await sock.send_multipart(_msg)
             num_bytes = sys.getsizeof(_msg)
         else:
             doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
             # now raw_bytes are removed from message, hoping for faster de/serialization
-            _msg = [msg.envelope.client_id.encode(),  # 0
+            _msg = [c_id,  # 0
                     msg.SerializeToString(),  # 1
                     chunk_byte_type,  # 2
                     b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 3, 4
@@ -353,8 +384,17 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
         msg_data = sock.recv_multipart()
         num_bytes = sys.getsizeof(msg_data)
 
+        if sock.type == zmq.DEALER:
+            # dealer consumes the first part of the message as id, we need to prepend it back
+            msg_data = [' '] + msg_data
+        elif sock.type == zmq.ROUTER:
+            # the router appends dealer id when receive it, we need to remove it
+            msg_data.pop(0)
+
         msg = jina_pb2.Message()
+
         msg.ParseFromString(msg_data[1])
+
         if check_version:
             _check_msg_version(msg)
 
@@ -423,7 +463,7 @@ def _get_random_ipc() -> str:
         tmp = os.environ['JINA_IPC_SOCK_TMP']
         if not os.path.exists(tmp):
             raise ValueError('This directory for sockets ({}) does not seems to exist.'.format(tmp))
-        tmp = os.path.join(tmp, str(uuid.uuid1())[:8])
+        tmp = os.path.join(tmp, get_random_identity())
     except KeyError:
         tmp = tempfile.NamedTemporaryFile().name
     return 'ipc://%s' % tmp
@@ -441,9 +481,14 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
         SocketType.PUSH_BIND: lambda: ctx.socket(zmq.PUSH),
         SocketType.PUSH_CONNECT: lambda: ctx.socket(zmq.PUSH),
         SocketType.PAIR_BIND: lambda: ctx.socket(zmq.PAIR),
-        SocketType.PAIR_CONNECT: lambda: ctx.socket(zmq.PAIR)
+        SocketType.PAIR_CONNECT: lambda: ctx.socket(zmq.PAIR),
+        SocketType.ROUTER_BIND: lambda: ctx.socket(zmq.ROUTER),
+        SocketType.DEALER_CONNECT: lambda: ctx.socket(zmq.DEALER),
     }[socket_type]()
     sock.setsockopt(zmq.LINGER, 0)
+
+    if socket_type == SocketType.DEALER_CONNECT:
+        sock.set_string(zmq.IDENTITY, identity)
 
     # if not socket_type.is_pubsub:
     #     sock.hwm = int(os.environ.get('JINA_SOCKET_HWM', 1))
@@ -473,7 +518,7 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
 
     if socket_type in {SocketType.SUB_CONNECT, SocketType.SUB_BIND}:
         # sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')
-        sock.setsockopt(zmq.SUBSCRIBE, b'')
+        sock.subscribe('')  # An empty shall subscribe to all incoming messages
 
     return sock, sock.getsockopt_string(zmq.LAST_ENDPOINT)
 
@@ -618,7 +663,7 @@ def add_envelope(req, pod_name, identity) -> 'jina_pb2.Message':
     :return: the resulted protobuf message
     """
     msg = jina_pb2.Message()
-    msg.envelope.client_id = identity
+    msg.envelope.receiver_id = identity
     if req.request_id is not None:
         msg.envelope.request_id = req.request_id
     else:

@@ -1,9 +1,7 @@
 import os
 import random
 import re
-import string
 import sys
-import threading
 import time
 from itertools import islice
 from types import SimpleNamespace
@@ -17,7 +15,7 @@ from . import JINA_GLOBAL
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
-           'PathImporter', 'random_port', 'random_identity', 'expand_env_var',
+           'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'valid_yaml_path']
 
 
@@ -250,8 +248,8 @@ def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id):
         yaml.dump(_all, fp)
 
 
-def random_identity() -> str:
-    return '%s-%s-%s' % (os.getpid(), threading.get_ident(), ''.join(random.choices(string.ascii_lowercase, k=5)))
+def get_random_identity() -> str:
+    return '%010x' % random.getrandbits(40)
 
 
 yaml = _get_yaml()
@@ -406,7 +404,7 @@ def valid_yaml_path(path: str, to_stream: bool = False):
             return open(path, encoding='utf8')
         else:
             return path
-    elif path.lower() in {'route', 'merge', 'clear', 'logroute'}:
+    elif path.lower() in {'route', 'merge', 'clear', 'logroute', 'forward'}:
         from pkg_resources import resource_filename
         return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
     elif path.startswith('!'):
@@ -414,7 +412,7 @@ def valid_yaml_path(path: str, to_stream: bool = False):
         return io.StringIO(path)
     elif path.isidentifier():
         # possible class name
-        return io.StringIO('!%s' % path)
+        return io.StringIO(f'!{path}')
     else:
         raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
                                 ' or a valid file path, or a supported class name.' % path)

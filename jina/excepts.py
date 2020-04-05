@@ -5,7 +5,7 @@ class MismatchedVersion(Exception):
     """When the jina version info of the incoming message does not match the local jina version"""
 
 
-class WaitPendingMessage(Exception):
+class NoExplicitMessage(Exception):
     """Waiting until all partial messages are received"""
 
 
@@ -87,3 +87,7 @@ class GRPCGatewayError(Exception):
 
 class GRPCServerError(Exception):
     """Can not connect to the grpc gateway"""
+
+
+class NoIdleDealer(Exception):
+    """All dealers are exhausted no more idle dealer"""

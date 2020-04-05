@@ -18,15 +18,20 @@ class BetterEnum(IntEnum):
             raise ValueError('%s is not a valid enum for %s' % (s.upper(), cls))
 
 
+class SchedulerType(BetterEnum):
+    LOAD_BALANCE = 0  #: balance the workload between Peas, faster peas get more work
+    ROUND_ROBIN = 1  #: workload are scheduled round-robin manner to the peas, assuming all peas have uniform processing speed.
+
+
 class ReplicaType(BetterEnum):
     """The enum for representing the parallel type of peas in a pod
 
     .. note::
         ``PUSH_BLOCK`` does not exist as push message has different request ids, they can not be blocked
     """
-    PUSH_NONBLOCK = 1  #: push without blocking
-    PUB_BLOCK = 2  #: publish message with blocking (in this case, blocking means collecting all published messages until next)
-    PUB_NONBLOCK = 3  #: publish message but no blocking
+    ONEOF = 1  #: one of the replica will receive the message
+    ALL_SYNC = 2  #: all replica will receive the message, blocked until all done with the message
+    ALL = 3  #: all replica will receive the message
 
     @property
     def is_push(self) -> bool:
@@ -74,6 +79,8 @@ class SocketType(BetterEnum):
     PUB_CONNECT = 7
     PAIR_BIND = 8
     PAIR_CONNECT = 9
+    ROUTER_BIND = 10
+    DEALER_CONNECT = 11
 
     @property
     def is_bind(self) -> bool:

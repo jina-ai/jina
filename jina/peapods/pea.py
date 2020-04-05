@@ -4,14 +4,14 @@ import threading
 import time
 from collections import defaultdict
 from queue import Empty
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import zmq
 
 from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
-from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
+from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     RequestLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
@@ -76,8 +76,11 @@ class BasePea(metaclass=PeaMeta):
         self.name = self.__class__.__name__
 
         self.is_ready = _get_event(self)
-        self.last_active_time = time.perf_counter()
+        # self.is_busy = _get_event(self)
+        # # label the pea as busy until the loop body start
+        # self.is_busy.set()
 
+        self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
 
         self._timer = TimeDict()
@@ -112,7 +115,7 @@ class BasePea(metaclass=PeaMeta):
         if self.args.num_part > 1 and (req_type != jina_pb2.Request.ControlRequest
                                        or (req_type == jina_pb2.Request.ControlRequest
                                            and self._request.command == jina_pb2.Request.ControlRequest.DRYRUN)):
-            # do not wait for control request
+            # do gathering, not for control request, unless it is dryrun
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
             num_req = len(self._pending_msgs[req_id])
@@ -121,7 +124,7 @@ class BasePea(metaclass=PeaMeta):
                 self._prev_messages = self._pending_msgs.pop(req_id)
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
             else:
-                raise WaitPendingMessage
+                raise NoExplicitMessage
             self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, req_type))
         else:
             self._prev_requests = None
@@ -238,33 +241,41 @@ class BasePea(metaclass=PeaMeta):
         self.is_ready.clear()
         self.logger.success(__stop_msg__)
 
+    def _callback(self, msg):
+        # self.is_busy.set()
+        self.pre_hook(msg).handle(msg).post_hook(msg)
+        self.last_active_time = time.perf_counter()
+        return msg
+
+    def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
+        """Callback function after receiving the message
+
+        When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.
+        """
+        try:
+            return self._callback(msg)
+        except NoExplicitMessage:
+            # silent and do not propagade message anymore
+            # 1. wait partial message to be finished
+            # 2. dealer send a control message and no need to go on
+            pass
+
     def loop_body(self):
         """The body of the request loop """
-
-        def _callback(msg):
-            try:
-                self.pre_hook(msg).handle(msg).post_hook(msg)
-                return msg
-            except WaitPendingMessage:
-                pass
-
         self.load_executor()
         self.zmqlet = Zmqlet(self.args, logger=self.logger)
         self.set_ready()
 
         while True:
             # t_loop_start = time.perf_counter()
-            msg = self.zmqlet.recv_message(callback=_callback)
+            msg = self.zmqlet.recv_message(callback=self.msg_callback)
             # t_callback = time.perf_counter()
 
-            if msg is not None:
+            if msg:
                 self.zmqlet.send_message(msg)
-            else:
-                continue
-
-            self.save_executor(self.args.dump_interval)
-            self.check_memory_watermark()
-            self.last_active_time = time.perf_counter()
+                self.save_executor(self.args.dump_interval)
+                self.check_memory_watermark()
+                # self.is_busy.clear()
             # t_loop_end = time.perf_counter()
             # self.logger.info(f'handle {(t_callback - t_loop_start) / (t_loop_end - t_loop_start):2.2f}')
 

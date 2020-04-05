@@ -80,7 +80,7 @@ class BaseDriver(metaclass=DriverType):
 
     def __init__(self, *args, **kwargs):
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
-        self.pea = None
+        self.pea = None  # type: 'BasePea'
 
     def attach(self, pea: 'BasePea', *args, **kwargs):
         """Attach this driver to a :class:`jina.peapods.pea.BasePea`
@@ -107,6 +107,11 @@ class BaseDriver(metaclass=DriverType):
     def msg(self) -> 'jina_pb2.Message':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message
+
+    @property
+    def envelope(self) -> 'jina_pb2.Envelope':
+        """Get the current request, shortcut to ``self.pea.message``"""
+        return self.pea.message.envelope
 
     @property
     def prev_msgs(self) -> List['jina_pb2.Message']:

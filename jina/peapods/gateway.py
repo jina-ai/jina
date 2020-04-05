@@ -7,7 +7,7 @@ import grpc
 from .grpc_asyncio import AsyncioExecutor
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
-from ..excepts import WaitPendingMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
+from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..main.parser import set_pea_parser, set_pod_parser
@@ -84,7 +84,7 @@ class GatewayPea:
         def recv_callback(self, msg):
             try:
                 return self.executor(msg.__class__.__name__)
-            except WaitPendingMessage:
+            except NoExplicitMessage:
                 self.logger.error('gateway should not receive partial message, it can not do reduce')
             except RequestLoopEnd:
                 self.logger.error('event loop end signal should not be raised in the gateway')
@@ -149,3 +149,4 @@ class GatewayPea:
         def close(self):
             for p in self.peapods:
                 p.close()
+

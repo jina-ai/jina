@@ -1,7 +1,7 @@
 import time
 
 from . import BaseDriver
-from ..excepts import UnknownControlCommand, RequestLoopEnd
+from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
 from ..proto import jina_pb2
 
 
@@ -10,14 +10,14 @@ class ControlReqDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         if self.req.command == jina_pb2.Request.ControlRequest.TERMINATE:
-            self.msg.envelope.status = jina_pb2.Envelope.SUCCESS
+            self.envelope.status = jina_pb2.Envelope.SUCCESS
             raise RequestLoopEnd
         elif self.req.command == jina_pb2.Request.ControlRequest.STATUS:
-            self.msg.envelope.status = jina_pb2.Envelope.READY
+            self.envelope.status = jina_pb2.Envelope.READY
             for k, v in vars(self.pea.args).items():
                 self.req.args[k] = str(v)
         elif self.req.command == jina_pb2.Request.ControlRequest.DRYRUN:
-            self.msg.envelope.status = jina_pb2.Envelope.READY
+            self.envelope.status = jina_pb2.Envelope.READY
         else:
             raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
 
@@ -37,7 +37,49 @@ class WaitDriver(BaseDriver):
 
 
 class ForwardDriver(BaseDriver):
-    """Route the message to next pod"""
+    """Forward the message to next pod"""
 
     def __call__(self, *args, **kwargs):
         pass
+
+
+class RouteDriver(ControlReqDriver):
+    """A simple load balancer forward message to the next available pea
+
+    - The dealer never receives a control request from the router,
+      everytime it finishes a job and send via out_sock, it returns the envelope with control
+      request idle back to the router. The dealer also sends control request idle to the router
+      when it first starts.
+
+    - The router receives request from both dealer and upstream pusher.
+      if it is a upstream request, use LB to schedule the receiver, mark it in the envelope
+      if it is a control request in
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.idle_dealer_ids = set()
+        self.is_pollin_paused = False
+
+    def __call__(self, *args, **kwargs):
+        if not isinstance(self.req, jina_pb2.Request.ControlRequest):
+            self.logger.info(self.idle_dealer_ids)
+            if self.idle_dealer_ids:
+                dealer_id = self.idle_dealer_ids.pop()
+                self.envelope.receiver_id = dealer_id
+                if not self.idle_dealer_ids:
+                    self.pea.zmqlet.pause_pollin()
+                    self.is_pollin_paused = True
+            else:
+                raise RuntimeError('if this router connects more than one dealer, '
+                                   'then this error should never be raised')
+        elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
+            self.idle_dealer_ids.add(self.envelope.receiver_id)
+            self.logger.info(f'{self.envelope.receiver_id} is idle')
+            if self.is_pollin_paused:
+                self.pea.zmqlet.resume_pollin()
+                self.is_pollin_paused = False
+            raise NoExplicitMessage
+        else:
+            super().__call__(*args, **kwargs)

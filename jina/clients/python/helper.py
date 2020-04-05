@@ -62,5 +62,8 @@ class ProgressBar:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         elapsed = time.perf_counter() - self.start_time
-        speed = self.num_bars / elapsed
+        if self.proc_doc > 0:
+            speed = self.proc_doc / elapsed
+        else:
+            speed = self.num_bars / elapsed
         sys.stdout.write('\t%s\n' % colored(f'done in {elapsed:3.1f}s @ {speed:3.1f}/s', 'green'))

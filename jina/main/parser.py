@@ -87,7 +87,7 @@ def set_flow_parser(parser=None):
 
 def set_pea_parser(parser=None):
     from ..enums import SocketType
-    from ..helper import random_port, random_identity
+    from ..helper import random_port, get_random_identity
     from .. import __default_host__
     import os
     if not parser:
@@ -95,12 +95,14 @@ def set_pea_parser(parser=None):
 
     gp0 = add_arg_group(parser, 'pea basic arguments')
     gp0.add_argument('--name', type=str,
-                     help='the name of this pod, used to identify the pod and its logs.')
-    gp0.add_argument('--identity', type=str, default=random_identity(),
-                     help='the identity of the pod, default a random string')
+                     help='the name of this pea, used to identify the pod and its logs.')
+    gp0.add_argument('--identity', type=str, default=get_random_identity(),
+                     help='the identity of the sockets, default a random string')
     gp0.add_argument('--yaml_path', type=str, default='BaseExecutor',
-                     help='the yaml config of the executor, it should be a readable stream,'
-                          ' or a valid file path, or a supported class name.')  # pod(no use) -> pea
+                     help='the yaml config of the executor, it could be '
+                          'a) a YAML file path, '
+                          'b) a supported executor\'s class name, '
+                          'c) the content of YAML config (must starts with "!")')  # pod(no use) -> pea
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--image', type=str,
@@ -191,7 +193,7 @@ def set_pea_parser(parser=None):
 
 
 def set_pod_parser(parser=None):
-    from ..enums import ReplicaType
+    from ..enums import ReplicaType, SchedulerType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
@@ -202,8 +204,11 @@ def set_pod_parser(parser=None):
                           '`port_in` and `port_out` will be set to random, '
                           'and routers will be added automatically when necessary')
     gp4.add_argument('--replica_type', type=ReplicaType.from_string, choices=list(ReplicaType),
-                     default=ReplicaType.PUSH_NONBLOCK,
+                     default=ReplicaType.ONEOF,
                      help='replica type of the concurrent peas')
+    gp4.add_argument('--scheduling', type=ReplicaType.from_string, choices=list(SchedulerType),
+                     default=SchedulerType.LOAD_BALANCE,
+                     help='the strategy of scheduling workload among peas')
     gp4.add_argument('--shutdown_idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
     return parser
