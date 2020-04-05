@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.cv.onnx import OnnxImageEncoder
+from jina.executors.encoders.image.onnx import OnnxImageEncoder
 from tests import JinaTestCase
 
 

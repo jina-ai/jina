@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from jina.executors.encoders.cv.paddlehub import ImagePaddlehubEncoder
+from jina.executors.encoders.image.paddlehub import ImagePaddlehubEncoder
 from tests import JinaTestCase
 
 
