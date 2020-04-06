@@ -18,7 +18,7 @@ def _get_run_args(print_args: bool = True):
             for k, v in sorted(vars(args).items()):
                 j = f'{k: >30.30} = {str(v):30.30}'
                 if getattr(default_args, k) == v:
-                    param_str.append('  ' + j)
+                    param_str.append('   ' + j)
                 else:
                     param_str.append('🔧️ ' + colored(j, 'blue', 'on_yellow'))
             param_str = '\n'.join(param_str)

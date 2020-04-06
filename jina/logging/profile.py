@@ -122,7 +122,9 @@ class TimeContext:
 
     def __enter__(self):
         self.start = time.perf_counter()
-        if not self._logger:
+        if self._logger:
+            self._logger.info(self._msg + '...')
+        else:
             print(self._msg, end=' ...\t', flush=True)
         return self
 

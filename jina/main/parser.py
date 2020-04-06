@@ -19,7 +19,7 @@ def set_base_parser():
         'Code': ('🧑‍💻', 'https://github.com/jina-ai/jina/'),
         'Jina Hub': ('📦', 'https://github.com/jina-ai/jina-hub/'),
         'Home': ('🌐', 'https://jina.ai'),
-        'Join Us': ('🙌', 'teams@jina.ai')
+        'Join Us': ('🙌', 'hr@jina.ai')
     }
     url_str = '\n'.join(f'{v[0]} {k:10.10} {colored(v[1], "cyan", attrs=["underline"])}' for k, v in urls.items())
 
@@ -341,7 +341,7 @@ def get_main_parser():
     # cli
     set_pod_parser(sp.add_parser('pod', help='start a pod', formatter_class=_chf))
     set_pea_parser(sp.add_parser('pea', help='start a pea', formatter_class=_chf))
-    set_gateway_parser(sp.add_parser('gateway', help='start a gateway pod', formatter_class=_chf))
+    set_gateway_parser(sp.add_parser('gateway', help='start a gateway', formatter_class=_chf))
     set_client_cli_parser(
         sp.add_parser('client', help='start a client and connect it to a gateway', formatter_class=_chf))
     set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
@@ -354,7 +354,7 @@ def get_main_parser():
     #                                     'to get detailed information about each sub-command', required=True)
 
     set_ping_parser(
-        sp.add_parser('ping', help='ping a pod for a network connectivity check', formatter_class=_chf))
+        sp.add_parser('ping', help='ping a pod and check the network connectivity', formatter_class=_chf))
     sp.add_parser('check', help='check the import status all executors and drivers', formatter_class=_chf)
     set_logger_parser(sp.add_parser('log', help='receive piped log output and beautify the log', formatter_class=_chf))
     return parser

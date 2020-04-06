@@ -16,6 +16,7 @@ from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
 from ..logging.base import get_logger
+from ..logging.profile import TimeContext
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -126,21 +127,21 @@ class BaseExecutor(metaclass=ExecutorType):
         self._attached_pea = None
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
+        with TimeContext('post initiating, this may take some time', self.logger):
+            if fill_in_metas:
+                if not _metas:
+                    _metas = get_default_metas()
 
-        if fill_in_metas:
-            if not _metas:
-                _metas = get_default_metas()
+                if not _requests:
+                    from ..executors.requests import get_default_reqs
+                    _requests = get_default_reqs(type.mro(self.__class__))
 
-            if not _requests:
-                from ..executors.requests import get_default_reqs
-                _requests = get_default_reqs(type.mro(self.__class__))
+                self._fill_metas(_metas)
+                self._fill_requests(_requests)
 
-            self._fill_metas(_metas)
-            self._fill_requests(_requests)
-
-        _before = set(list(vars(self).keys()))
-        self.post_init()
-        self._post_init_vars = {k for k in vars(self) if k not in _before}
+            _before = set(list(vars(self).keys()))
+            self.post_init()
+            self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def _fill_requests(self, _requests):
         if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
