@@ -60,6 +60,37 @@ def _get_event(obj):
         raise NotImplementedError
 
 
+def _make_or_event(obj, *events):
+    or_event = _get_event(obj)
+
+    def or_set(self):
+        self._set()
+        self.changed()
+
+    def or_clear(self):
+        self._clear()
+        self.changed()
+
+    def orify(e, changed_callback):
+        e._set = e.set
+        e._clear = e.clear
+        e.changed = changed_callback
+        e.set = lambda: or_set(e)
+        e.clear = lambda: or_clear(e)
+
+    def changed():
+        bools = [e.is_set() for e in events]
+        if any(bools):
+            or_event.set()
+        else:
+            or_event.clear()
+
+    for e in events:
+        orify(e, changed)
+    changed()
+    return or_event
+
+
 class BasePea(metaclass=PeaMeta):
     """BasePea is an unary service unit which provides network interface and
     communicates with others via protobuf and ZeroMQ
@@ -74,8 +105,13 @@ class BasePea(metaclass=PeaMeta):
         super().__init__()
         self.args = args
         self.name = self.__class__.__name__
+        self.daemon = True
 
         self.is_ready = _get_event(self)
+        self.is_shutdown = _get_event(self)
+        self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
+        self.is_shutdown.clear()
+
         # self.is_busy = _get_event(self)
         # # label the pea as busy until the loop body start
         # self.is_busy.set()
@@ -318,6 +354,7 @@ class BasePea(metaclass=PeaMeta):
         finally:
             self.loop_teardown()
             self.unset_ready()
+            self.is_shutdown.set()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -347,10 +384,13 @@ class BasePea(metaclass=PeaMeta):
     def start(self):
         super().start()
         _timeout = getattr(self.args, 'timeout_ready', 5e3) / 1e3
-        if self.is_ready.wait(_timeout):
+        if self.ready_or_shutdown.wait(_timeout):
+            if self.is_shutdown.is_set():
+                self.logger.critical(f'fail to start {self.__class__} with name {self.name}')
             return self
         else:
-            raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name, _timeout * 1e3))
+            raise TimeoutError(
+                f'{self.__class__} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
 
     def __enter__(self):
         return self.start()

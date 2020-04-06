@@ -43,11 +43,11 @@ class Zmqlet:
 
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
         self.opened_socks = []
-        self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self.init_sockets()
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0
         self.msg_sent = 0
+        self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self.init_sockets()
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
@@ -152,7 +152,8 @@ class Zmqlet:
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
         self.close_sockets()
-        self.ctx.term()
+        if hasattr(self, 'ctx'):
+            self.ctx.term()
         self.print_stats()
 
     def print_stats(self):
