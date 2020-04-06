@@ -3,6 +3,7 @@ import numpy as np
 
 import re
 from .. import BaseImageEncoder
+from ...decorators import batching, as_ndarray
 
 
 class OnnxImageEncoder(BaseImageEncoder):
@@ -58,6 +59,8 @@ class OnnxImageEncoder(BaseImageEncoder):
         model.graph.output.append(feature_map)
         onnx.save(model, output_fn)
 
+    @batching
+    @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 

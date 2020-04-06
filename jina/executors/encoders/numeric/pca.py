@@ -1,5 +1,4 @@
 import numpy as np
-import os
 from ...decorators import batching, require_train
 
 from .. import BaseNumericEncoder
