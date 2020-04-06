@@ -64,6 +64,9 @@ class MyTestCase(JinaTestCase):
 
     def test_resource_executor(self):
         a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._route.yml'))))
+        self.assertEqual(a.name, 'route')
+        self.assertEqual(len(a._drivers), 4)
+        a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._forward.yml'))))
         self.assertEqual(a.name, 'forward')
         self.assertEqual(len(a._drivers), 4)
         a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._merge.yml'))))
