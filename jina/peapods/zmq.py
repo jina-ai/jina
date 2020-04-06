@@ -14,7 +14,7 @@ from ..excepts import MismatchedVersion
 from ..helper import colored, get_random_identity
 from ..logging import default_logger
 from ..logging.base import get_logger
-from ..proto import jina_pb2
+from ..proto import jina_pb2, is_data_request
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -170,14 +170,10 @@ class Zmqlet:
         _req = getattr(msg.request, msg.request.WhichOneof('body'))
         _req_type = type(_req)
 
-        if _req_type == jina_pb2.Request.ControlRequest:
-            if _req.command == jina_pb2.Request.ControlRequest.DRYRUN:
-                # pass this control message to the next
-                o_sock = self.out_sock
-            else:
-                o_sock = self.ctrl_sock
-        else:
+        if is_data_request(_req):
             o_sock = self.out_sock
+        else:
+            o_sock = self.ctrl_sock
 
         self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1

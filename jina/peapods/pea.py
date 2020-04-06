@@ -17,7 +17,7 @@ from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWater
 from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2
+from ..proto import jina_pb2, is_data_request
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -112,9 +112,7 @@ class BasePea(metaclass=PeaMeta):
         self._message = msg
         req_type = type(self._request)
 
-        if self.args.num_part > 1 and (req_type != jina_pb2.Request.ControlRequest
-                                       or (req_type == jina_pb2.Request.ControlRequest
-                                           and self._request.command == jina_pb2.Request.ControlRequest.DRYRUN)):
+        if self.args.num_part > 1 and is_data_request(self._request):
             # do gathering, not for control request, unless it is dryrun
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)

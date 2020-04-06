@@ -403,7 +403,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
             _head_args.yaml_path = '_route'
         else:
             raise NotImplementedError
-        _head_args.name = '_head'
+        _head_args.name = (args.name or '') + '-head'
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
@@ -423,7 +423,7 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
     _tail_args.socket_in = SocketType.PULL_BIND
     if as_router:
         _tail_args.yaml_path = '_forward'
-        _tail_args.name = '_tail'
+        _tail_args.name = (args.name or '') + '-tail'
     _tail_args.num_part = num_part
     return _tail_args
 

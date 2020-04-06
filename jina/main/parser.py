@@ -100,9 +100,10 @@ def set_pea_parser(parser=None):
                      help='the identity of the sockets, default a random string')
     gp0.add_argument('--yaml_path', type=str, default='BaseExecutor',
                      help='the yaml config of the executor, it could be '
-                          'a) a YAML file path, '
-                          'b) a supported executor\'s class name, '
-                          'c) the content of YAML config (must starts with "!")')  # pod(no use) -> pea
+                          '> a YAML file path, '
+                          '> a supported executor\'s class name, '
+                          '> one of "_clear", "_route", "_forward", "_logroute", "_merge" '
+                          '> the content of YAML config (must starts with "!")')  # pod(no use) -> pea
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--image', type=str,
