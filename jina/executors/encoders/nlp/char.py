@@ -1,6 +1,7 @@
 import numpy as np
 
 from .. import BaseTextEncoder
+from ...decorators import batching, as_ndarray
 
 
 class OneHotTextEncoder(BaseTextEncoder):
@@ -28,6 +29,8 @@ class OneHotTextEncoder(BaseTextEncoder):
         self.embeddings = np.eye(self.dim) * self.on_value + \
                           (np.ones((self.dim, self.dim)) - np.eye(self.dim)) * self.off_value
 
+    @batching
+    @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 

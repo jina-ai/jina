@@ -1,7 +1,6 @@
 from typing import Tuple, Dict, List
 
 import numpy as np
-from PIL import Image
 
 from .. import BaseSegmenter
 
@@ -41,6 +40,7 @@ class ImageNormalizer(BaseSegmenter):
         :param doc_id: the doc id
         :return: a list of chunks-level info represented by a dict
         """
+        from PIL import Image
         raw_img = Image.open(raw_bytes.decode())
         processed_img = self._normalize(raw_img)
         return [dict(doc_id=doc_id, offset=0, weight=1., blob=processed_img), ]
@@ -57,10 +57,11 @@ class ImageNormalizer(BaseSegmenter):
 
     @staticmethod
     def _resize_short(img, target_size):
+        from PIL.Image import LANCZOS
         percent = float(target_size) / min(img.size[0], img.size[1])
         resized_width = int(round(img.size[0] * percent))
         resized_height = int(round(img.size[1] * percent))
-        img = img.resize((resized_width, resized_height), Image.LANCZOS)
+        img = img.resize((resized_width, resized_height), LANCZOS)
         return img
 
     @staticmethod

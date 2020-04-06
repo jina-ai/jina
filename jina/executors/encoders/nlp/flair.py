@@ -3,6 +3,7 @@ from typing import Union, Tuple, List
 import numpy as np
 
 from .. import BaseTextEncoder
+from ...decorators import batching, as_ndarray
 
 
 class FlairTextEncoder(BaseTextEncoder):
@@ -59,6 +60,8 @@ class FlairTextEncoder(BaseTextEncoder):
             self.model = DocumentPoolEmbeddings(embeddings_list, pooling=self.pooling_strategy)
             self.logger.info('initialize flair encoder with embeddings: {}'.format(self.embeddings))
 
+    @batching
+    @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
