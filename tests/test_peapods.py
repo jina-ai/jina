@@ -21,6 +21,19 @@ class MyTestCase(JinaTestCase):
             with self.subTest(runtime=j):
                 _test_pea_context(j)
 
+    def test_address_in_use(self):
+        args1 = set_pea_parser().parse_args(['--port_ctrl', '55555'])
+        args2 = set_pea_parser().parse_args(['--port_ctrl', '55555'])
+        with BasePea(args1), BasePea(args2):
+            pass
+
+        args1 = set_pea_parser().parse_args(['--port_ctrl', '55555', '--runtime', 'thread'])
+        args2 = set_pea_parser().parse_args(['--port_ctrl', '55555', '--runtime', 'thread'])
+        with BasePea(args1), BasePea(args2):
+            pass
+
+        print('everything should quit gracefully')
+
     def test_pod_context(self):
         def _test_pod_context(runtime):
             args = set_pod_parser().parse_args(['--runtime', runtime, '--replicas', '2'])

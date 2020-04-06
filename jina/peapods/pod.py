@@ -11,7 +11,7 @@ from .gateway import GatewayPea
 from .pea import BasePea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, random_identity, kwargs2list
+from ..helper import random_port, get_random_identity, kwargs2list
 from ..main.parser import set_pod_parser, set_gateway_parser
 
 
@@ -187,9 +187,9 @@ class BasePod:
             self.stack.enter_context(p)
 
         # start real peas and accumulate the storage id
-        for idx, s in enumerate(self.peas_args['peas']):
-            s.replica_id = idx
-            p = Pea(s, allow_remote=False)
+        for idx, _args in enumerate(self.peas_args['peas']):
+            _args.replica_id = idx
+            p = Pea(_args, allow_remote=False)
             self.peas.append(p)
             self.stack.enter_context(p)
 
@@ -373,21 +373,21 @@ def _set_peas_args(args, head_args, tail_args):
         _args.port_in = head_args.port_out
         _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
-        _args.identity = random_identity()
+        _args.identity = get_random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.replica_type.is_push:
-            _args.socket_in = SocketType.PULL_CONNECT
+            if args.scheduling == SchedulerType.ROUND_ROBIN:
+                _args.socket_in = SocketType.PULL_CONNECT
+            elif args.scheduling == SchedulerType.LOAD_BALANCE:
+                _args.socket_in = SocketType.DEALER_CONNECT
+            else:
+                raise NotImplementedError
         else:
             _args.socket_in = SocketType.SUB_CONNECT
         _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
         _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
         result.append(_args)
     return result
-
-
-def _set_router_args(args):
-    args.yaml_path = 'route'
-    args.name = 'router'
 
 
 def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
@@ -397,9 +397,18 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     _head_args.port_ctrl = random_port()
     _head_args.port_out = random_port()
     if as_router:
-        _set_router_args(_head_args)
+        if args.scheduling == SchedulerType.ROUND_ROBIN:
+            _head_args.yaml_path = '_forward'
+        elif args.scheduling == SchedulerType.LOAD_BALANCE:
+            _head_args.yaml_path = '_route'
+        else:
+            raise NotImplementedError
+        _head_args.name = (args.name or '') + '-head'
     if is_push:
-        _head_args.socket_out = SocketType.PUSH_BIND
+        if args.scheduling == SchedulerType.ROUND_ROBIN:
+            _head_args.socket_out = SocketType.PUSH_BIND
+        elif args.scheduling == SchedulerType.LOAD_BALANCE:
+            _head_args.socket_out = SocketType.ROUTER_BIND
     else:
         _head_args.socket_out = SocketType.PUB_BIND
     return _head_args
@@ -413,7 +422,8 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
     _tail_args.port_ctrl = random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
     if as_router:
-        _set_router_args(_tail_args)
+        _tail_args.yaml_path = '_forward'
+        _tail_args.name = (args.name or '') + '-tail'
     _tail_args.num_part = num_part
     return _tail_args
 

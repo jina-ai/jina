@@ -1,7 +1,7 @@
 !BaseExecutor
 with: {}
 metas:
-  name: route
+  name: forward
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:

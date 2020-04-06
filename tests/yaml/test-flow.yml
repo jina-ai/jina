@@ -12,5 +12,5 @@ pods:
     replicas: 2
     needs: chunk_seg
   joiner:
-    yaml_path: merge
+    yaml_path: _merge
     needs: [encode1, encode2]

@@ -4,20 +4,20 @@ import threading
 import time
 from collections import defaultdict
 from queue import Empty
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import zmq
 
 from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
-from ..excepts import WaitPendingMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
+from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     RequestLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
 from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2
+from ..proto import jina_pb2, is_data_request
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -60,6 +60,37 @@ def _get_event(obj):
         raise NotImplementedError
 
 
+def _make_or_event(obj, *events):
+    or_event = _get_event(obj)
+
+    def or_set(self):
+        self._set()
+        self.changed()
+
+    def or_clear(self):
+        self._clear()
+        self.changed()
+
+    def orify(e, changed_callback):
+        e._set = e.set
+        e._clear = e.clear
+        e.changed = changed_callback
+        e.set = lambda: or_set(e)
+        e.clear = lambda: or_clear(e)
+
+    def changed():
+        bools = [e.is_set() for e in events]
+        if any(bools):
+            or_event.set()
+        else:
+            or_event.clear()
+
+    for e in events:
+        orify(e, changed)
+    changed()
+    return or_event
+
+
 class BasePea(metaclass=PeaMeta):
     """BasePea is an unary service unit which provides network interface and
     communicates with others via protobuf and ZeroMQ
@@ -74,10 +105,18 @@ class BasePea(metaclass=PeaMeta):
         super().__init__()
         self.args = args
         self.name = self.__class__.__name__
+        self.daemon = True
 
         self.is_ready = _get_event(self)
-        self.last_active_time = time.perf_counter()
+        self.is_shutdown = _get_event(self)
+        self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
+        self.is_shutdown.clear()
 
+        # self.is_busy = _get_event(self)
+        # # label the pea as busy until the loop body start
+        # self.is_busy.set()
+
+        self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
 
         self._timer = TimeDict()
@@ -109,10 +148,8 @@ class BasePea(metaclass=PeaMeta):
         self._message = msg
         req_type = type(self._request)
 
-        if self.args.num_part > 1 and (req_type != jina_pb2.Request.ControlRequest
-                                       or (req_type == jina_pb2.Request.ControlRequest
-                                           and self._request.command == jina_pb2.Request.ControlRequest.DRYRUN)):
-            # do not wait for control request
+        if self.args.num_part > 1 and is_data_request(self._request):
+            # do gathering, not for control request, unless it is dryrun
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
             num_req = len(self._pending_msgs[req_id])
@@ -121,7 +158,7 @@ class BasePea(metaclass=PeaMeta):
                 self._prev_messages = self._pending_msgs.pop(req_id)
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
             else:
-                raise WaitPendingMessage
+                raise NoExplicitMessage
             self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, req_type))
         else:
             self._prev_requests = None
@@ -238,33 +275,41 @@ class BasePea(metaclass=PeaMeta):
         self.is_ready.clear()
         self.logger.success(__stop_msg__)
 
+    def _callback(self, msg):
+        # self.is_busy.set()
+        self.pre_hook(msg).handle(msg).post_hook(msg)
+        self.last_active_time = time.perf_counter()
+        return msg
+
+    def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
+        """Callback function after receiving the message
+
+        When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.
+        """
+        try:
+            return self._callback(msg)
+        except NoExplicitMessage:
+            # silent and do not propagade message anymore
+            # 1. wait partial message to be finished
+            # 2. dealer send a control message and no need to go on
+            pass
+
     def loop_body(self):
         """The body of the request loop """
-
-        def _callback(msg):
-            try:
-                self.pre_hook(msg).handle(msg).post_hook(msg)
-                return msg
-            except WaitPendingMessage:
-                pass
-
         self.load_executor()
         self.zmqlet = Zmqlet(self.args, logger=self.logger)
         self.set_ready()
 
         while True:
             # t_loop_start = time.perf_counter()
-            msg = self.zmqlet.recv_message(callback=_callback)
+            msg = self.zmqlet.recv_message(callback=self.msg_callback)
             # t_callback = time.perf_counter()
 
-            if msg is not None:
+            if msg:
                 self.zmqlet.send_message(msg)
-            else:
-                continue
-
-            self.save_executor(self.args.dump_interval)
-            self.check_memory_watermark()
-            self.last_active_time = time.perf_counter()
+                self.save_executor(self.args.dump_interval)
+                self.check_memory_watermark()
+                # self.is_busy.clear()
             # t_loop_end = time.perf_counter()
             # self.logger.info(f'handle {(t_callback - t_loop_start) / (t_loop_end - t_loop_start):2.2f}')
 
@@ -309,6 +354,7 @@ class BasePea(metaclass=PeaMeta):
         finally:
             self.loop_teardown()
             self.unset_ready()
+            self.is_shutdown.set()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -338,10 +384,13 @@ class BasePea(metaclass=PeaMeta):
     def start(self):
         super().start()
         _timeout = getattr(self.args, 'timeout_ready', 5e3) / 1e3
-        if self.is_ready.wait(_timeout):
+        if self.ready_or_shutdown.wait(_timeout):
+            if self.is_shutdown.is_set():
+                self.logger.critical(f'fail to start {self.__class__} with name {self.name}')
             return self
         else:
-            raise TimeoutError('this BasePea (name=%s) can not be initialized after %dms' % (self.name, _timeout * 1e3))
+            raise TimeoutError(
+                f'{self.__class__} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
 
     def __enter__(self):
         return self.start()

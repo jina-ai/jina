@@ -85,7 +85,7 @@ class MyTestCase(JinaTestCase):
             print(d)
 
     def test_simple_route(self):
-        f = Flow().add(yaml_path='route')
+        f = Flow().add(yaml_path='_forward')
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
@@ -112,9 +112,9 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route_replicas(self):
-        f1 = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='route', replicas=3)
-        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='route', replicas=3)
-        f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='route', replicas=3)
+        f1 = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='_forward', replicas=3)
+        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='_forward', replicas=3)
+        f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='_forward', replicas=3)
 
         def start_client(fl):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
@@ -146,7 +146,7 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):
-        f = Flow().add(yaml_path='route')
+        f = Flow().add(yaml_path='_forward')
 
         def start_client(fl):
             fl.index(raw_bytes=random_docs(10), in_proto=True)

@@ -133,7 +133,7 @@ class NTLogger:
             sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
 
 
-def get_logger(context: str, context_len: int = 10,
+def get_logger(context: str, context_len: int = 15,
                log_profile: bool = False,
                log_sse: bool = False,
                log_remote: bool = False,

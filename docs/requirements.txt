@@ -1,8 +1,8 @@
-sphinx
-sphinx-argparse
-sphinxcontrib-apidoc
-sphinx-autodoc-typehints
-sphinx_rtd_theme
-recommonmark
-sphinx_markdown_tables
-sphinx_copybutton
+sphinx==2.4.4
+sphinx-argparse==0.2.5
+sphinxcontrib-apidoc==0.3.0
+sphinx-autodoc-typehints==1.10.3
+sphinx_rtd_theme==0.4.3
+recommonmark==0.6.0
+sphinx_markdown_tables==0.0.12
+sphinx_copybutton==0.2.10

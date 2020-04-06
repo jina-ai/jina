@@ -121,13 +121,16 @@ message Document {
  */
 message Envelope {
     // unique id of the sender of the message
-    string client_id = 1;
+    string sender_id = 1;
+
+    // unique id of the receiver of the message, only used in router-dealer pattern
+    string receiver_id = 2;
 
     // unique id of the request
-    uint32 request_id = 2;
+    uint32 request_id = 3;
 
     // timeout in second until this message is droped
-    uint32 timeout = 3;
+    uint32 timeout = 4;
 
     /**
      * Represents a the route paths of this message
@@ -138,7 +141,7 @@ message Envelope {
         google.protobuf.Timestamp start_time = 3; // receiving time
         google.protobuf.Timestamp end_time = 4; // sending (out) time
     }
-    repeated Route routes = 4; // a list of routes this message goes through
+    repeated Route routes = 5; // a list of routes this message goes through
 
     /**
      * Represents a the version information
@@ -149,7 +152,7 @@ message Envelope {
         string vcs = 3; // vcs's version
     }
 
-    Version version = 5; // version info
+    Version version = 6; // version info
 
     enum Status {
         SUCCESS = 0; // success
@@ -158,7 +161,7 @@ message Envelope {
         READY = 3; // ready to use
     }
 
-    Status status = 6; // status info
+    Status status = 7; // status info
 }
 
 /**
@@ -214,6 +217,7 @@ message Request {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
             DRYRUN = 2; // passing this pod without take any action, and send the request to the next pod
+            IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
         }
         Command command = 1; // the control command
 

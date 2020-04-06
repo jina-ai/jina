@@ -61,7 +61,7 @@ def build_required(required_level: 'FlowBuildLevel'):
 class Flow:
     def __init__(self,
                  port_sse: int = None,
-                 optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.FULL,
+                 optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.NONE,
                  *args,
                  **kwargs):
         """Initialize a flow object
@@ -80,7 +80,7 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='route', replicas=3)
+            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='forward', replicas=3)
 
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
@@ -255,7 +255,7 @@ class Flow:
         """
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return self.add(name='joiner', yaml_path='merge', needs=needs, *args, **kwargs)
+        return self.add(name='joiner', yaml_path='_merge', needs=needs, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
