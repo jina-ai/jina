@@ -22,6 +22,7 @@ from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
 
 if False:
     from ..proto import jina_pb2
+    import argparse
 
 
 def build_required(required_level: 'FlowBuildLevel'):
