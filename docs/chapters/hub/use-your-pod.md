@@ -5,7 +5,7 @@
 The most powerful way to use this Pod image is via Docker CLI directly:
 
 ```bash
-docker run --rm -p 55555:55555 -p 55556:55556 jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+docker run --rm -p 55555:55555 -p 55556:55556 jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
 Note, the exposure of ports `-p 55555:55555 -p 55556:55556` is required for other Pods (local/remote) to communicate this Pod. One may also want to use `--network host` and let the Pod share the network layer of the host.
@@ -16,7 +16,7 @@ One can mount a host path to the container via `--volumes` or `-v`. For example,
 
 ```bash
 # assuming $pwd is the root dir of this repo 
-docker run --rm -v $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml_path /ext.yml
+docker run --rm -v $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml-path /ext.yml
 ```
 
 ```text

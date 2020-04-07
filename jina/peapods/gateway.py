@@ -100,7 +100,7 @@ class GatewayPea:
                     *[(asyncio.create_task(
                         zmqlet.send_message(
                             add_envelope(request, 'gateway', zmqlet.args.identity),
-                            sleep=(self.args.sleep_ms / 1000) * idx, )),
+                            sleep=(self.args.sleep / 1000) * idx, )),
                        zmqlet.recv_message(callback=self.recv_callback))
                         for idx, request in enumerate(request_iterator)])
 
@@ -139,7 +139,7 @@ class GatewayPea:
                 self.peapods.remove(p)
             else:
                 warn_msg = f'the gateway at {self.args.host}:{self.args.port_grpc} ' \
-                           f'does not support remote spawn, please restart it with --allow_spawn'
+                           f'does not support remote spawn, please restart it with --allow-spawn'
                 request.log_record = warn_msg
                 request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED
                 self.logger.warning(warn_msg)

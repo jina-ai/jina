@@ -22,13 +22,13 @@ class MyTestCase(JinaTestCase):
                 _test_pea_context(j)
 
     def test_address_in_use(self):
-        args1 = set_pea_parser().parse_args(['--port_ctrl', '55555'])
-        args2 = set_pea_parser().parse_args(['--port_ctrl', '55555'])
+        args1 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
+        args2 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
         with BasePea(args1), BasePea(args2):
             pass
 
-        args1 = set_pea_parser().parse_args(['--port_ctrl', '55555', '--runtime', 'thread'])
-        args2 = set_pea_parser().parse_args(['--port_ctrl', '55555', '--runtime', 'thread'])
+        args1 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
+        args2 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
         with BasePea(args1), BasePea(args2):
             pass
 
@@ -110,8 +110,8 @@ class MyTestCase(JinaTestCase):
         def _test_pod_context(runtime):
             args = set_pod_parser().parse_args(['--runtime', runtime,
                                                 '--replicas', '2',
-                                                '--max_idle_time', '5',
-                                                '--shutdown_idle'])
+                                                '--max-idle-time', '5',
+                                                '--shutdown-idle'])
             with BasePod(args) as bp:
                 bp.join()
 

@@ -4,7 +4,6 @@ import time
 import unittest
 
 import numpy as np
-
 from jina.drivers.helper import array2blob
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.numpy import NumpyIndexer
@@ -83,7 +82,7 @@ class MyTestCase(JinaTestCase):
         time.sleep(2)
 
     def test_index_remote(self):
-        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
+        f_args = set_gateway_parser().parse_args(['--allow-spawn'])
 
         def start_gateway():
             with GatewayPod(f_args):
@@ -107,7 +106,7 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d' % j)
 
     def test_index_remote_rpi(self):
-        f_args = set_gateway_parser().parse_args(['--allow_spawn'])
+        f_args = set_gateway_parser().parse_args(['--allow-spawn'])
 
         def start_gateway():
             with GatewayPod(f_args):

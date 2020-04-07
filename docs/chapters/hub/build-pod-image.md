@@ -4,12 +4,12 @@
 
 Instead of 
 ```bash
-jina pod --yaml_path hub/example/mwu_encoder.yml --port_in 55555 --port_out 55556
+jina pod --yaml-path hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
 ```
 
 After this tutorial, you can use the Pod image via:
 ```bash
-docker run jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+docker run jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
 ...or use the Pod image in the Flow API:
@@ -23,7 +23,7 @@ f = (Flow()
 
 ... or use the Pod image via Jina CLI
 ```bash
-jina pod --image jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+jina pod --image jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
 More information about [the usage can be found here](#use-your-pod-image).
@@ -90,7 +90,7 @@ FROM jinaai/jina:devel
 
 ADD *.py mwu_encoder.yml ./
 
-ENTRYPOINT ["jina", "pod", "--yaml_path", "mwu_encoder.yml"]
+ENTRYPOINT ["jina", "pod", "--yaml-path", "mwu_encoder.yml"]
 ```
 
 Let's now look at these three lines one by one.
@@ -125,7 +125,7 @@ In this example, our dummy `MWUEncoder` does not require extra data files.
 
 > 
 ```Dockerfile
-ENTRYPOINT ["jina", "pod", "--yaml_path", "mwu_encoder.yml"]
+ENTRYPOINT ["jina", "pod", "--yaml-path", "mwu_encoder.yml"]
 ``` 
 
 The last step is to specify the entrypoint of this image, usually via `jina pod`.
@@ -138,24 +138,24 @@ docker run jinaai/hub.examples.mwu_encoder
  
 It is equal to:
 ```bash
-jina pod --yaml_path hub/example/mwu_encoder.yml
+jina pod --yaml-path hub/example/mwu_encoder.yml
 ```
 
 Any followed key-value arguments after `docker run jinaai/hub.examples.mwu_encoder` will be passed to `jina pod`. For example,
 
 ```bash
-docker run jinaai/hub.examples.mwu_encoder --port_in 55555 --port_out 55556
+docker run jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
  
 It is equal to:
 ```bash
-jina pod --yaml_path hub/example/mwu_encoder.yml --port_in 55555 --port_out 55556
+jina pod --yaml-path hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
 ```
 
 One can also override the internal YAML config by giving an out-of-docker external YAML config via:
 
 ```bash
-docker run $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml_path /ext.yml
+docker run $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml-path /ext.yml
 ```
 
 

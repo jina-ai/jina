@@ -24,7 +24,7 @@ Before the start, make sure to read ["Understanding Pea and Pod in Jina"](/tba) 
 We start a Jina gateway to listen on the spawning request. By default, this feature is not enabled, one can simply type the following in the remote console:
  
 ```bash
-jina gateway --allow_spawn
+jina gateway --allow-spawn
 ```
   
 ```text
@@ -32,7 +32,7 @@ GatewayPea@8233[W]:SECURITY ALERT! this gateway allows SpawnRequest from remote 
 GatewayPea@8233[C]:gateway is listening at: 0.0.0.0:41851
 ```
 
-After it reaches to `gateway is listening`, the remote Jina is ready. The port number is important for the local to connect to it. In this example we write down `41851`. If you want to have fixed port number everytime, please use `--port_grpc` to specify it. More information can be found [in the documentation](/tba).
+After it reaches to `gateway is listening`, the remote Jina is ready. The port number is important for the local to connect to it. In this example we write down `41851`. If you want to have fixed port number everytime, please use `--port-grpc` to specify it. More information can be found [in the documentation](/tba).
 
 ### 2. Build a Simple Index Flow 
 

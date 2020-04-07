@@ -382,6 +382,7 @@ def get_tags_from_node(node) -> List[str]:
 def kwargs2list(kwargs: Dict):
     args = []
     for k, v in kwargs.items():
+        k = k.replace('_', '-')
         if v is not None:
             if isinstance(v, bool):
                 if v:

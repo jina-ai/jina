@@ -16,7 +16,7 @@ def _get_run_args(print_args: bool = True):
                 logo_str = fp.read()
             param_str = []
             for k, v in sorted(vars(args).items()):
-                j = f'{k: >30.30} = {str(v):30.30}'
+                j = f'{k.replace("_", "-"): >30.30} = {str(v):30.30}'
                 if getattr(default_args, k) == v:
                     param_str.append('   ' + j)
                 else:

@@ -1,7 +1,5 @@
 import unittest
 
-from pkg_resources import resource_filename
-
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import DocPbSearchDriver
@@ -9,6 +7,7 @@ from jina.executors import BaseExecutor
 from jina.helper import yaml
 from jina.main.parser import set_pod_parser
 from jina.peapods import Pod
+from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
@@ -36,7 +35,7 @@ class MyTestCase(JinaTestCase):
     def test_load_cust_with_driver(self):
         a = BaseExecutor.load_config('mwu-encoder/mwu_encoder_driver.yml')
         self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
-        p = set_pod_parser().parse_args(['--yaml_path', 'mwu-encoder/mwu_encoder_driver.yml'])
+        p = set_pod_parser().parse_args(['--yaml-path', 'mwu-encoder/mwu_encoder_driver.yml'])
         with Pod(p):
             # will print a cust msg from the driver when terminate
             pass

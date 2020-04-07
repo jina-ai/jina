@@ -33,7 +33,7 @@ BasePea-0@8042[I]:input tcp://0.0.0.0:55141 (PULL_BIND) 	 output tcp://0.0.0.0:3
 BasePea-0@8042[C]:ready and listening
 ```
 
-After it reaches to `ready and listening`, the remote pod is ready to use. The port numbers are important for the local to connect to it. In this example we write down `55141`, `34733` and `40093` for future reference. If you want to have fixed port numbers everytime, please use `--port_in`, `--port_out`, `--port_ctrl` to specify them. More information can be found [in the documentation](/tba).
+After it reaches to `ready and listening`, the remote pod is ready to use. The port numbers are important for the local to connect to it. In this example we write down `55141`, `34733` and `40093` for future reference. If you want to have fixed port numbers everytime, please use `--port-in`, `--port-out`, `--port-ctrl` to specify them. More information can be found [in the documentation](/tba).
 
 ### 2. Test the Network Connectivity
 
