@@ -434,12 +434,12 @@ class BaseExecutor(metaclass=ExecutorType):
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
-    def from_yaml(cls, constructor, node, stop_on_import_error=False):
+    def from_yaml(cls, constructor, node):
         """Required by :mod:`ruamel.yaml.constructor` """
-        return cls._get_instance_from_yaml(constructor, node, stop_on_import_error)[0]
+        return cls._get_instance_from_yaml(constructor, node)[0]
 
     @classmethod
-    def _get_instance_from_yaml(cls, constructor, node, stop_on_import_error=False):
+    def _get_instance_from_yaml(cls, constructor, node):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 

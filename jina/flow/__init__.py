@@ -14,7 +14,7 @@ import ruamel.yaml
 from .. import __default_host__
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, kwargs2list, random_port
+from ..helper import yaml, expand_env_var, kwargs2list, get_non_defaults_args
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..main.parser import set_pod_parser
@@ -59,17 +59,9 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 
 class Flow:
-    def __init__(self,
-                 port_sse: int = None,
-                 optimize_level: FlowOptimizeLevel = FlowOptimizeLevel.NONE,
-                 *args,
-                 **kwargs):
+    def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
         """Initialize a flow object
 
-        :param driver_yaml_path: the file path of the driver map
-        :param port_sse: the port number for sse logging
-        :param optimize_level: removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND
-                            and hence not allow multiple clients connected to the gateway at the same time.
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
 
 
@@ -87,40 +79,59 @@ class Flow:
         as the head and tail routers are removed.
         """
         self.logger = get_logger(self.__class__.__name__)
-        self.optimize_level = optimize_level
+        from ..main.parser import set_flow_parser
+        _flow_parser = set_flow_parser()
+        if args is None:
+            from ..helper import get_parsed_args
+            _, args, _ = get_parsed_args(kwargs, _flow_parser)
+
+        self.args = args
         self._common_kwargs = kwargs
-        self.port_sse = port_sse if port_sse else random_port()
         self.host_sse = __default_host__
 
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = []
-        self._add_gateway()
+        if not self.args.no_gateway:
+            self._add_gateway()
+        self._kwargs = get_non_defaults_args(args, _flow_parser)
 
     @classmethod
     def to_yaml(cls, representer, data):
         """Required by :mod:`ruamel.yaml.constructor` """
         tmp = data._dump_instance_to_yaml(data)
+        representer.sort_base_mapping_type_on_output = False
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        _defaults = {}
-        p = {k: getattr(data, k) for k, v in _defaults.items() if getattr(data, k) != v}
-        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in _defaults}
         r = {}
-        if a:
-            r['with'] = a
-        if p:
-            r['metas'] = p
+        if data._kwargs:
+            r['with'] = data._kwargs
+        if data._pod_nodes:
+            r['pods'] = {}
+        for k, v in data._pod_nodes.items():
+            if not data.args.no_gateway and k == 'gateway':
+                continue
+            if not data.args.no_gateway and 'gateway' in v.needs:
+                _needs = list(v.needs).remove('gateway')
+            else:
+                _needs = list(v.needs)
+            if _needs:
+                kwargs = {'needs': _needs}
+            else:
+                kwargs = {}
+            kwargs.update(v._kwargs)
+            kwargs.pop('name')
+            r['pods'][k] = kwargs
         return r
 
     @classmethod
-    def from_yaml(cls, constructor, node, stop_on_import_error=False):
+    def from_yaml(cls, constructor, node):
         """Required by :mod:`ruamel.yaml.constructor` """
-        return cls._get_instance_from_yaml(constructor, node, stop_on_import_error)[0]
+        return cls._get_instance_from_yaml(constructor, node)[0]
 
     def save_config(self, filename: str = None) -> bool:
         """
@@ -133,6 +144,9 @@ class Flow:
         if not f:
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
         yaml.register_class(Flow)
+        # yaml.sort_base_mapping_type_on_output = False
+        # yaml.representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
+
         with open(f, 'w', encoding='utf8') as fp:
             yaml.dump(self, fp)
         self.logger.info(f'{self}\'s yaml config is save to %s' % f)
@@ -156,7 +170,7 @@ class Flow:
                 return yaml.load(filename)
 
     @classmethod
-    def _get_instance_from_yaml(cls, constructor, node, stop_on_import_error=False):
+    def _get_instance_from_yaml(cls, constructor, node):
 
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
@@ -368,13 +382,13 @@ class Flow:
                 # check if either node is gateway
                 # this is the only place where gateway appears
                 if s_name == 'gateway':
-                    if self.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and e_pod.is_head_router:
+                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and e_pod.is_head_router:
                         # connect gateway directly to peas
                         e_pod.connect_to_tail_of(s_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
                 elif e_name == 'gateway':
-                    if self.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
                         # connect gateway directly to peas only if this is unblock router
                         # as gateway can not block & reduce message
                         s_pod.connect_to_head_of(e_pod)
@@ -382,9 +396,9 @@ class Flow:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
                 else:
                     e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
-                    if self.optimize_level > FlowOptimizeLevel.NONE and e_pod.is_head_router and not s_pod.is_tail_router:
+                    if self.args.optimize_level > FlowOptimizeLevel.NONE and e_pod.is_head_router and not s_pod.is_tail_router:
                         e_pod.connect_to_tail_of(s_pod)
-                    elif self.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
                         s_pod.connect_to_head_of(e_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
@@ -419,7 +433,7 @@ class Flow:
             import flask, flask_cors
             self.sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                target=start_sse_logger, daemon=True,
-                                               args=(self.host_sse, self.port_sse))
+                                               args=(self.host_sse, self.args.port_sse))
             self.sse_logger.start()
             time.sleep(1)
 
@@ -455,7 +469,7 @@ class Flow:
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
         if hasattr(self, 'sse_logger') and self.sse_logger.is_alive():
-            requests.get(f'http://{self.host_sse}:{self.port_sse}/shutdown')
+            requests.get(f'http://{self.host_sse}:{self.args.port_sse}/shutdown')
             self.sse_logger.join()
         self._build_level = FlowBuildLevel.EMPTY
         # time.sleep(1)  # sleep for a while until all resources are safely closed

@@ -1,6 +1,6 @@
 import argparse
 
-from ..helper import colored
+from ..helper import colored, random_port
 
 
 def add_arg_group(parser, title):
@@ -72,10 +72,17 @@ def set_logger_parser(parser=None):
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..enums import FlowOutputType
+    from ..enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
     gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--port-sse', type=int, default=random_port(),
+                    help='the port number for sse logging, default a random port between [49152, 65535]')
+    gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
+                    help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
+                            and hence not allow multiple clients connected to the gateway at the same time.')
+    gp.add_argument('--no-gateway', action='store_true', default=False,
+                    help='do not add gateway to the flow')
     gp.add_argument('--output-type', type=FlowOutputType.from_string,
                     choices=list(FlowOutputType), default=FlowOutputType.SHELL_PROC,
                     help='type of the output')
