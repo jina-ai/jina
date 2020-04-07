@@ -341,10 +341,10 @@ def get_main_parser():
     # cli
     set_pod_parser(sp.add_parser('pod', help='start a pod', formatter_class=_chf))
     set_pea_parser(sp.add_parser('pea', help='start a pea', formatter_class=_chf))
+    set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
     set_gateway_parser(sp.add_parser('gateway', help='start a gateway', formatter_class=_chf))
     set_client_cli_parser(
         sp.add_parser('client', help='start a client and connect it to a gateway', formatter_class=_chf))
-    set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 
     # # check
