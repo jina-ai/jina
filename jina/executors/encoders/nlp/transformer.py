@@ -99,7 +99,10 @@ class TransformerEncoder(BaseTextEncoder):
         with self._sess_func():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             if self.pooling_strategy == 'cls':
-                output = reduce_cls(seq_output.numpy(), mask_ids_batch.numpy(), self.cls_pos)
+                if self.model_name in ('bert-base-uncased', 'roberta-base'):
+                    output = extra_output[0].numpy()
+                else:
+                    output = reduce_cls(seq_output.numpy(), mask_ids_batch.numpy(), self.cls_pos)
             elif self.pooling_strategy == 'mean':
                 output = reduce_mean(seq_output.numpy(), mask_ids_batch.numpy())
             elif self.pooling_strategy == 'max':
