@@ -1,11 +1,10 @@
 !Flow
 with:
-  driver_yaml_path:
   sse_logger: false
 pods:
   chunk_seg:
     replicas: 3
-  encode1:
+  wqncode1:
     replicas: 2
     needs: chunk_seg
   encode2:
@@ -13,4 +12,4 @@ pods:
     needs: chunk_seg
   joiner:
     yaml_path: _merge
-    needs: [encode1, encode2]
+    needs: [wqncode1, encode2]

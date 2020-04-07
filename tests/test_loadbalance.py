@@ -2,9 +2,8 @@ import os
 import time
 
 import numpy as np
-
 from jina.drivers.helper import array2blob
-from jina.enums import FlowOptimizeLevel, SchedulerType
+from jina.enums import SchedulerType
 from jina.executors.crafters import BaseDocCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -41,8 +40,7 @@ class SlowWorker(BaseDocCrafter):
 
 class MyTestCase(JinaTestCase):
     def test_lb(self):
-        f = Flow(runtime='process',
-                 optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(
+        f = Flow(runtime='process').add(
             name='sw',
             yaml_path='SlowWorker',
             replicas=10).build()
@@ -50,7 +48,7 @@ class MyTestCase(JinaTestCase):
             f.index(raw_bytes=random_docs(100), in_proto=True, batch_size=10)
 
     def test_roundrobin(self):
-        f = Flow(runtime='process', optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(
+        f = Flow(runtime='process').add(
             name='sw',
             yaml_path='SlowWorker',
             replicas=10, scheduling=SchedulerType.ROUND_ROBIN).build()

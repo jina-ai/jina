@@ -78,11 +78,17 @@ class MyTestCase(JinaTestCase):
 
         b = (Flow()
              .add(name='chunk_seg', replicas=3)
-             .add(name='encode1', replicas=2)
+             .add(name='wqncode1', replicas=2)
              .add(name='encode2', replicas=2, needs='chunk_seg')
-             .join(['encode1', 'encode2']))
+             .join(['wqncode1', 'encode2']))
+
+        a.save_config('test2.yml')
+
+        c = Flow.load_config('test2.yml')
 
         self.assertEqual(a, b)
+        self.assertEqual(a, c)
+        self.add_tmpfile('test2.yml')
 
     def test_dryrun(self):
         f = (Flow()

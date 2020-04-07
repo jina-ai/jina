@@ -417,3 +417,18 @@ def valid_yaml_path(path: str, to_stream: bool = False):
     else:
         raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
                                 ' or a valid file path, or a supported class name.' % path)
+
+
+def get_parsed_args(kwargs, parser):
+    args = kwargs2list(kwargs)
+    try:
+        p_args, unknown_args = parser.parse_known_args(args)
+    except SystemExit:
+        raise ValueError('bad arguments "%s" with parser %r, '
+                         'you may want to double check your args ' % (args, parser))
+    return args, p_args, unknown_args
+
+
+def get_non_defaults_args(args, parser) -> Dict:
+    _defaults = parser.parse_args([])
+    return {k: v for k, v in vars(args).items() if getattr(_defaults, k) != v}

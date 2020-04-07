@@ -8,6 +8,7 @@ from jina.drivers.helper import array2blob
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.numpy import NumpyIndexer
 from jina.flow import Flow
+from jina.main.parser import set_flow_parser
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
@@ -111,8 +112,10 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route_replicas(self):
-        f1 = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='_forward', replicas=3)
+        fa1 = set_flow_parser().parse_args(['--optimize-level', str(FlowOptimizeLevel.NONE)])
+        f1 = Flow(fa1).add(yaml_path='_forward', replicas=3)
         f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='_forward', replicas=3)
+
         # f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='_forward', replicas=3)
 
         def start_client(fl):

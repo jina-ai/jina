@@ -11,7 +11,7 @@ from .gateway import GatewayPea
 from .pea import BasePea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, get_random_identity, kwargs2list
+from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args
 from ..main.parser import set_pod_parser, set_gateway_parser
 
 
@@ -273,9 +273,11 @@ class FlowPod(BasePod):
         :param kwargs: unparsed argument in dict, if given the
         :param needs: a list of names this BasePod needs to receive message from
         """
-        self.cli_args, self._args, self.unk_args = _get_parsed_args(kwargs, parser)
+        _parser = parser()
+        self.cli_args, self._args, self.unk_args = get_parsed_args(kwargs, _parser)
         super().__init__(self._args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+        self._kwargs = get_non_defaults_args(self._args, _parser)
 
     def to_cli_command(self):
         if isinstance(self, GatewayPod):
@@ -426,16 +428,6 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
         _tail_args.name = (args.name or '') + '-tail'
     _tail_args.num_part = num_part
     return _tail_args
-
-
-def _get_parsed_args(kwargs, parser):
-    args = kwargs2list(kwargs)
-    try:
-        p_args, unknown_args = parser().parse_known_args(args)
-    except SystemExit:
-        raise ValueError('bad arguments "%s" with parser %r, '
-                         'you may want to double check your args ' % (args, parser))
-    return args, p_args, unknown_args
 
 
 def _fill_in_host(bind_args, connect_args):
