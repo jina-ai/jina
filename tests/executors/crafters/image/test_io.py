@@ -2,7 +2,7 @@ import os
 import unittest
 
 from jina.executors.crafters.image.io import ImageReader
-from . import JinaImageTestCase
+from tests.executors.crafters.image import JinaImageTestCase
 
 
 class MyTestCase(JinaImageTestCase):

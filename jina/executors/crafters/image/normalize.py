@@ -2,10 +2,10 @@ from typing import Tuple, Dict, List
 
 import numpy as np
 
-from .. import BaseChunkCrafter
+from . import ImageChunkCrafter
 
 
-class ImageNormalizer(BaseChunkCrafter):
+class ImageNormalizer(ImageChunkCrafter):
     """:class:`ImageNormalizer` works on doc-level,
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
 
@@ -29,7 +29,7 @@ class ImageNormalizer(BaseChunkCrafter):
             the output size
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
-        super().__init__()
+        super().__init__(*args, **kwargs)
         self.output_dim = output_dim
         self.resize_dim = resize_dim
         self.channel_axis = channel_axis
@@ -44,47 +44,16 @@ class ImageNormalizer(BaseChunkCrafter):
         :param doc_id: the doc id
         :return: a chunk dict with the normalized image
         """
-        from PIL import Image
-        if self.channel_axis != -1:
-            blob = np.moveaxis(blob, self.channel_axis, -1)
-        raw_img = Image.fromarray(blob.astype('uint8'))
+        raw_img = self._load_image(blob)
         processed_img = self._normalize(raw_img)
         return dict(doc_id=doc_id, offset=0, weight=1., blob=processed_img)
 
     def _normalize(self, img):
         img = self._resize_short(img, target_size=self.resize_dim)
-        img = self._crop_image(img, target_size=self.output_dim, center=True)
-        if img.mode != 'RGB':
-            img = img.convert('RGB')
+        img = self._crop_image(img, target_size=(self.output_dim, self.output_dim), how='center')
         img = np.array(img).astype('float32') / 255
         img -= self.img_mean
         img /= self.img_std
         if self.channel_axis != -1:
             img = np.moveaxis(img, -1, self.channel_axis)
         return img
-
-    @staticmethod
-    def _resize_short(img, target_size):
-        from PIL.Image import LANCZOS
-        percent = float(target_size) / min(img.size[0], img.size[1])
-        resized_width = int(round(img.size[0] * percent))
-        resized_height = int(round(img.size[1] * percent))
-        img = img.resize((resized_width, resized_height), LANCZOS)
-        return img
-
-    @staticmethod
-    def _crop_image(img, target_size, center):
-        width, height = img.size
-        size = target_size
-        if center:
-            w_start = (width - size) / 2
-            h_start = (height - size) / 2
-        else:
-            w_start = np.random.randint(0, width - size + 1)
-            h_start = np.random.randint(0, height - size + 1)
-        w_end = w_start + size
-        h_end = h_start + size
-        img = img.crop((w_start, h_start, w_end, h_end))
-        return img
-
-

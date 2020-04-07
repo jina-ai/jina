@@ -1,8 +1,7 @@
-import os
 import unittest
 
 from jina.executors.crafters.image.normalize import ImageNormalizer
-from . import JinaImageTestCase
+from tests.executors.crafters.image import JinaImageTestCase
 
 
 class MyTestCase(JinaImageTestCase):
