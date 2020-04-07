@@ -59,7 +59,7 @@ class MyTestCase(JinaTestCase):
 
     def test_simple_container_with_ext_yaml(self):
         args = set_pea_parser().parse_args(['--image', img_name,
-                                            '--yaml_path', './mwu-encoder/mwu_encoder_ext.yml'])
+                                            '--yaml-path', './mwu-encoder/mwu_encoder_ext.yml'])
         print(args)
 
         with ContainerPea(args):
@@ -140,7 +140,7 @@ class MyTestCase(JinaTestCase):
 
     def test_container_ping(self):
         a4 = set_pea_parser().parse_args(['--image', img_name])
-        a5 = set_ping_parser().parse_args(['0.0.0.0', str(a4.port_ctrl), '--print_response'])
+        a5 = set_ping_parser().parse_args(['0.0.0.0', str(a4.port_ctrl), '--print-response'])
 
         # test with container
         with self.assertRaises(SystemExit) as cm:

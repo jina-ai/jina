@@ -60,10 +60,10 @@ def set_base_parser():
 def set_logger_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    parser.add_argument('--groupby_regex', type=str,
+    parser.add_argument('--groupby-regex', type=str,
                         default=r'(.*@\d+)\[',
                         help='the regular expression for grouping logs')
-    parser.add_argument('--refresh_time', type=int,
+    parser.add_argument('--refresh-time', type=int,
                         default=5,
                         help='refresh time interval in seconds, set to -1 to persist all grouped logs')
     return parser
@@ -75,11 +75,11 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('flow_yaml_path', type=str, help='a yaml file represents a flow')
-    gp.add_argument('--output_type', type=FlowOutputType.from_string,
+    gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--output-type', type=FlowOutputType.from_string,
                     choices=list(FlowOutputType), default=FlowOutputType.SHELL_PROC,
                     help='type of the output')
-    gp.add_argument('--output_path', type=argparse.FileType('w', encoding='utf8'),
+    gp.add_argument('--output-path', type=argparse.FileType('w', encoding='utf8'),
                     help='output path of the flow')
 
     return parser
@@ -98,7 +98,7 @@ def set_pea_parser(parser=None):
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string')
-    gp0.add_argument('--yaml_path', type=str, default='BaseExecutor',
+    gp0.add_argument('--yaml-path', type=str, default='BaseExecutor',
                      help='the yaml config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '
@@ -109,12 +109,12 @@ def set_pea_parser(parser=None):
     gp1.add_argument('--image', type=str,
                      help='the name of the docker image that this pea runs with. it is also served as an indicator '
                           'of containerization. '
-                          'when this and --yaml_path are both given then the docker image '
-                          'is used and its original yaml configuration is replaced by the given yaml_path')
+                          'when this and --yaml-path are both given then the docker image '
+                          'is used and its original yaml configuration is replaced by the given --yaml-path')
     gp1.add_argument('--entrypoint', type=str,
                      help='the entrypoint command overrides the ENTRYPOINT in docker image. '
                           'when not set then the docker image ENTRYPOINT takes effective.')
-    gp1.add_argument('--pull_latest', action='store_true', default=False,
+    gp1.add_argument('--pull-latest', action='store_true', default=False,
                      help='pull the latest image before running')
     gp1.add_argument('--volumes', type=str, nargs='*',
                      help='the path on the host to be mounted inside the container. '
@@ -122,72 +122,72 @@ def set_pea_parser(parser=None):
                           '/my-workspace inside the container. all volumes are mounted with read-write mode.')
 
     gp2 = add_arg_group(parser, 'pea network arguments')
-    gp2.add_argument('--port_in', type=int, default=random_port(),
+    gp2.add_argument('--port-in', type=int, default=random_port(),
                      help='port for input data, default a random port between [49152, 65535]')
-    gp2.add_argument('--port_out', type=int, default=random_port(),
+    gp2.add_argument('--port-out', type=int, default=random_port(),
                      help='port for output data, default a random port between [49152, 65535]')
-    gp2.add_argument('--host_in', type=str, default=__default_host__,
+    gp2.add_argument('--host-in', type=str, default=__default_host__,
                      help='host address for input, by default it is %s' % __default_host__)
-    gp2.add_argument('--host_out', type=str, default=__default_host__,
+    gp2.add_argument('--host-out', type=str, default=__default_host__,
                      help='host address for output, by default it is %s' % __default_host__)
-    gp2.add_argument('--socket_in', type=SocketType.from_string, choices=list(SocketType),
+    gp2.add_argument('--socket-in', type=SocketType.from_string, choices=list(SocketType),
                      default=SocketType.PULL_BIND,
                      help='socket type for input port')
-    gp2.add_argument('--socket_out', type=SocketType.from_string, choices=list(SocketType),
+    gp2.add_argument('--socket-out', type=SocketType.from_string, choices=list(SocketType),
                      default=SocketType.PUSH_BIND,
                      help='socket type for output port')
-    gp2.add_argument('--port_ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', random_port()),
+    gp2.add_argument('--port-ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', random_port()),
                      help='port for controlling the pod, default a random port between [49152, 65535]')
-    gp2.add_argument('--ctrl_with_ipc', action='store_true', default=False,
+    gp2.add_argument('--ctrl-with-ipc', action='store_true', default=False,
                      help='use ipc protocol for control socket')
     gp2.add_argument('--timeout', type=int, default=-1,
                      help='timeout (ms) of all requests, -1 for waiting forever')
-    gp2.add_argument('--timeout_ctrl', type=int, default=5000,
+    gp2.add_argument('--timeout-ctrl', type=int, default=5000,
                      help='timeout (ms) of the control request, -1 for waiting forever')
-    gp2.add_argument('--timeout_ready', type=int, default=10000,
+    gp2.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
 
     gp3 = add_arg_group(parser, 'pea IO arguments')
-    gp3.add_argument('--dump_interval', type=int, default=240,
+    gp3.add_argument('--dump-interval', type=int, default=240,
                      help='serialize the model in the pod every n seconds if model changes. '
-                          '-1 means --read_only. ')
-    gp3.add_argument('--exit_no_dump', action='store_true', default=False,
+                          '-1 means --read-only. ')
+    gp3.add_argument('--exit-no-dump', action='store_true', default=False,
                      help='do not serialize the model when the pod exits')
-    gp3.add_argument('--read_only', action='store_true', default=False,
+    gp3.add_argument('--read-only', action='store_true', default=False,
                      help='do not allow the pod to modify the model, '
                           'dump_interval will be ignored')
-    gp3.add_argument('--separated_workspace', action='store_true', default=False,
+    gp3.add_argument('--separated-workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
                           'only effective when BasePod\'s `replicas` > 1')
-    gp3.add_argument('--replica_id', type=int, default=-1,
+    gp3.add_argument('--replica-id', type=int, default=-1,
                      help='the id of the storage of this replica, only effective when `separated_workspace=True`')
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
-    gp5.add_argument('--check_version', action='store_true', default=False,
+    gp5.add_argument('--check-version', action='store_true', default=False,
                      help='comparing the jina and proto version of incoming message with local setup, '
                           'mismatch raise an exception')
-    gp5.add_argument('--array_in_pb', action='store_true', default=False,
+    gp5.add_argument('--array-in-pb', action='store_true', default=False,
                      help='sending raw_bytes and numpy ndarray together within or separately from the protobuf message, '
                           'the latter often yields a better network efficiency')
-    gp5.add_argument('--num_part', type=int, default=1,
+    gp5.add_argument('--num-part', type=int, default=1,
                      help='wait until the number of parts of message are all received')
 
     gp6 = add_arg_group(parser, 'pea EXPERIMENTAL arguments')
-    gp6.add_argument('--memory_hwm', type=int, default=-1,
+    gp6.add_argument('--memory-hwm', type=int, default=-1,
                      help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
                           '-1 means no restriction')
     gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='process',
                      help='the parallel runtime of the pod')
-    gp5.add_argument('--max_idle_time', type=int, default=60,
+    gp5.add_argument('--max-idle-time', type=int, default=60,
                      help='label this pea as inactive when it does not '
                           'process any request after certain time (in second)')
 
     gp7 = add_arg_group(parser, 'logging arguments')
-    gp7.add_argument('--log_sse', action='store_true', default=False,
+    gp7.add_argument('--log-sse', action='store_true', default=False,
                      help='turn on server-side event logging')
-    gp7.add_argument('--log_remote', action='store_true', default=False,
+    gp7.add_argument('--log-remote', action='store_true', default=False,
                      help='turn on remote logging')
-    gp7.add_argument('--log_profile', action='store_true', default=False,
+    gp7.add_argument('--log-profile', action='store_true', default=False,
                      help='turn on the profiling logger')
     _set_grpc_parser(parser)
     return parser
@@ -204,13 +204,13 @@ def set_pod_parser(parser=None):
                      help='number of parallel peas in the pod running at the same time (i.e. replicas), '
                           '`port_in` and `port_out` will be set to random, '
                           'and routers will be added automatically when necessary')
-    gp4.add_argument('--replica_type', type=ReplicaType.from_string, choices=list(ReplicaType),
+    gp4.add_argument('--replica-type', type=ReplicaType.from_string, choices=list(ReplicaType),
                      default=ReplicaType.ONEOF,
                      help='replica type of the concurrent peas')
     gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
-    gp4.add_argument('--shutdown_idle', action='store_true', default=False,
+    gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
     return parser
 
@@ -227,7 +227,7 @@ def set_ping_parser(parser=None):
                         help='timeout (ms) of one check, -1 for waiting forever')
     parser.add_argument('--retries', type=int, default=3,
                         help='max number of tried health checks before exit 1')
-    parser.add_argument('--print_response', action='store_true', default=False,
+    parser.add_argument('--print-response', action='store_true', default=False,
                         help='print the response when received')
     return parser
 
@@ -240,16 +240,16 @@ def _set_grpc_parser(parser=None):
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
                      help='host address of the pea/gateway, by default it is %s.' % __default_host__)
-    gp1.add_argument('--port_grpc',
+    gp1.add_argument('--port-grpc',
                      type=int,
                      default=random_port(),
                      help='host port of the grpc gateway')
-    gp1.add_argument('--max_message_size', type=int, default=-1,
+    gp1.add_argument('--max-message-size', type=int, default=-1,
                      help='maximum send and receive size for grpc server in bytes, -1 means unlimited')
     gp1.add_argument('--proxy', action='store_true', default=False,
                      help='respect the http_proxy and https_proxy environment variables. '
                           'otherwise, it will unset these proxy variables before start. '
-                          'gRPC seems to prefer --no_proxy')
+                          'gRPC seems to prefer --no-proxy')
     return parser
 
 
@@ -259,19 +259,19 @@ def _set_grpc_parser(parser=None):
 #     set_pod_parser(parser)
 #     _set_grpc_parser(parser)
 #
-#     parser.add_argument('--pb2_path',
+#     parser.add_argument('--pb2-path',
 #                         type=str,
 #                         required=True,
 #                         help='the path of the python file protocol buffer compiler')
-#     parser.add_argument('--pb2_grpc_path',
+#     parser.add_argument('--pb2-grpc-path',
 #                         type=str,
 #                         required=True,
 #                         help='the path of the python file generated by the gRPC Python protocol compiler plugin')
-#     parser.add_argument('--stub_name',
+#     parser.add_argument('--stub-name',
 #                         type=str,
 #                         required=True,
 #                         help='the name of the gRPC Stub')
-#     parser.add_argument('--api_name',
+#     parser.add_argument('--api-name',
 #                         type=str,
 #                         required=True,
 #                         help='the api name for calling the stub')
@@ -290,10 +290,10 @@ def set_gateway_parser(parser=None):
                      socket_out=SocketType.PUSH_CONNECT,
                      ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                      read_only=True)
-    gp1.add_argument('--sleep_ms', type=int, default=50,
+    gp1.add_argument('--sleep', type=int, default=50,
                      help='the sleep interval (ms) to control the gateway sending speed. '
-                          'Note, sleep_ms=0 may result in bad load-balancing as all workload are pushed to one worker')
-    gp1.add_argument('--allow_spawn', action='store_true', default=False,
+                          'Note, sleep=0 may result in bad load-balancing as all workload are pushed to one worker')
+    gp1.add_argument('--allow-spawn', action='store_true', default=False,
                      help='accept the spawn requests sent from other remote Jina')
     return parser
 
@@ -307,25 +307,25 @@ def set_client_cli_parser(parser=None):
     gp1 = add_arg_group(parser, 'client-specific arguments')
     _gp = gp1.add_mutually_exclusive_group()
 
-    gp1.add_argument('--batch_size', type=int, default=100,
+    gp1.add_argument('--batch-size', type=int, default=100,
                      help='the size of the request to split')
     gp1.add_argument('--mode', choices=['index', 'search', 'train'], type=str,
                      required=True,
                      help='the mode of the client and the server')
-    gp1.add_argument('--top_k', type=int,
+    gp1.add_argument('--top-k', type=int,
                      default=10,
                      help='top_k results returned in the search mode')
-    gp1.add_argument('--first_doc_id', type=int,
+    gp1.add_argument('--first-doc-id', type=int,
                      default=0,
                      help='the starting number of doc id, the consequent doc_id will increment by one')
-    gp1.add_argument('--in_proto', action='store_true', default=False,
+    gp1.add_argument('--in-proto', action='store_true', default=False,
                      help='if the input data is already in protobuf Document format, or in raw bytes')
-    _gp.add_argument('--first_request_id', type=int,
+    _gp.add_argument('--first-request-id', type=int,
                      default=0,
                      help='the starting number of request id, the consequent request_id will increment by one')
-    _gp.add_argument('--random_doc_id', action='store_true', default=False,
+    _gp.add_argument('--random-doc-id', action='store_true', default=False,
                      help='randomize the doc_id, if this is set then `first_request_id` is ignored')
-    gp1.add_argument('--timeout_ready', type=int, default=10000,
+    gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
     return parser
 

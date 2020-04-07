@@ -23,7 +23,7 @@ Before the start, make sure to read ["Understanding Pea and Pod in Jina"](/tba).
 We start a Jina gateway to listen on the spawning request. By default, this feature is not enabled, one can simply type the following in the remote console:
  
 ```bash
-jina gateway --allow_spawn
+jina gateway --allow-spawn
 ```
   
 ```text
@@ -31,14 +31,14 @@ GatewayPea@8233[W]:SECURITY ALERT! this gateway allows SpawnRequest from remote 
 GatewayPea@8233[C]:gateway is listening at: 0.0.0.0:41851
 ```
 
-After it reaches to `gateway is listening`, the remote Jina is ready. The port number is important for the local to connect to it. In this example we write down `41851`. If you want to have fixed port number everytime, please use `--port_grpc` to specify it. More information can be found [in the documentation](/tba).
+After it reaches to `gateway is listening`, the remote Jina is ready. The port number is important for the local to connect to it. In this example we write down `41851`. If you want to have fixed port number everytime, please use `--port-grpc` to specify it. More information can be found [in the documentation](/tba).
 
 ### 2. Spawn a Remote Pod from the Local Jina
 
 Here we assume the remote is in the intranet and its IP address is `192.168.31.76`. In the local console, type:
 
 ```bash
-jina pod --host 192.168.31.76 --port_grpc 41851
+jina pod --host 192.168.31.76 --port-grpc 41851
 ```
 
 If everything goes well, then you should be able to see following logs in the local console:
@@ -79,14 +79,14 @@ Congratulations! You now have a remote Pod that can be connected.
 ## Troubleshooting Checklist
 
 - [ ] Is the remote address correct?
-- [ ] Do you add `--allow_spawn` when starting the remote gateway?
-- [ ] Is the `--port_grpc` in your local command matching with the `--port_grpc` of the remote gateway?
+- [ ] Do you add `--allow-spawn` when starting the remote gateway?
+- [ ] Is the `--port-grpc` in your local command matching with the `--port-grpc` of the remote gateway?
 - [ ] Are the remote ports public accessible (e.g. Security Group on AWS, firewall blacklist)?
 - [ ] Is the remote address an internal IP address and not publicly accessible? 
 - [ ] Is the local connected to internet?
 - [ ] Is the gateway already occupied by a spawned pod?
 
-    Currently there is a limitation that a gateway allows **no more than one** spawned pod running. If you now open another local session and do `jina pod --host 192.168.31.76 --port_grpc 41851` again, it will fail and throws a timeout error. To solve it, you have to go to the first local session and end it with <kbd>Ctrl</kbd>+<kbd>C</kbd>. The remote pod will be terminated automatically and you can restart a new local session.
+    Currently there is a limitation that a gateway allows **no more than one** spawned pod running. If you now open another local session and do `jina pod --host 192.168.31.76 --port-grpc 41851` again, it will fail and throws a timeout error. To solve it, you have to go to the first local session and end it with <kbd>Ctrl</kbd>+<kbd>C</kbd>. The remote pod will be terminated automatically and you can restart a new local session.
 
 If you have double checked the list and the problem is still not resolved, then consider to [create an issue in our Github project page](https://github.com/jina-ai/jina/issues/new).
 

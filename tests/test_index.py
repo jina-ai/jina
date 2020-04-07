@@ -4,7 +4,6 @@ import time
 import unittest
 
 import numpy as np
-
 from jina.drivers.helper import array2blob
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.numpy import NumpyIndexer
@@ -114,7 +113,7 @@ class MyTestCase(JinaTestCase):
     def test_two_client_route_replicas(self):
         f1 = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='_forward', replicas=3)
         f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='_forward', replicas=3)
-        f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='_forward', replicas=3)
+        # f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='_forward', replicas=3)
 
         def start_client(fl):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
@@ -141,8 +140,8 @@ class MyTestCase(JinaTestCase):
             t2.start()
             time.sleep(5)
 
-        with f3.build() as fl3:
-            self.assertEqual(fl3.num_peas, 4)
+        # with f3.build() as fl3:
+        #     self.assertEqual(fl3.num_peas, 4)
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):

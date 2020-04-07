@@ -24,7 +24,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
 .. confval:: JINA_VCS_VERSION
 
-    Git version of ``jina``. This is used when ``--check_version`` is turned on. For official docker image of ``jina``, ``JINA_VCS_VERSION`` is automatically set to the git version during the building procedure.
+    Git version of ``jina``. This is used when ``--check-version`` is turned on. For official docker image of ``jina``, ``JINA_VCS_VERSION`` is automatically set to the git version during the building procedure.
 
     :default: the git head version for ``jina`` image. If you are using ``jina`` locally outside docker container then this is unset.
 

@@ -27,7 +27,7 @@ class MyTestCase(JinaTestCase):
 
     def test_ping(self):
         a1 = set_pea_parser().parse_args([])
-        a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print_response'])
+        a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print-response'])
         a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
 
         with self.assertRaises(SystemExit) as cm:

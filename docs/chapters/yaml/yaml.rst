@@ -8,7 +8,7 @@ Jina configurations use YAML syntax, and must have either a ``.yml`` or ``.yaml`
 :class:`Executor` YAML Syntax
 -----------------------------
 
-All executors defined in :mod:`jina.executors` can be loaded from a YAML config via :func:`jina.executors.BaseExecutor.load_config` or via the CLI :command:`jina pod --exec_yaml_path`.
+All executors defined in :mod:`jina.executors` can be loaded from a YAML config via :func:`jina.executors.BaseExecutor.load_config` or via the CLI :command:`jina pod --exec_yaml-path`.
 
 The executor YAML config follows the syntax below.
 
@@ -157,7 +157,7 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
 :class:`Driver` YAML Sytanx
 ---------------------------
 
-:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.BasePod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the BasePod via CLI (``jina pod --driver_yaml_path --driver_group``).
+:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.BasePod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the BasePod via CLI (``jina pod --driver_yaml-path --driver-group``).
 
 .. highlight:: yaml
 .. code-block:: yaml
@@ -187,7 +187,7 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
 
 .. confval:: drivers
 
-    A map of the driver group to the handlers, the name can be referred in ``jina pod --driver_group``
+    A map of the driver group to the handlers, the name can be referred in ``jina pod --driver-group``
 
 .. confval:: handlers
 
@@ -222,7 +222,6 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
 
     !Flow
     with:
-      driver_yaml_path:
       sse_logger: true
     pods:
       chunk_seg:

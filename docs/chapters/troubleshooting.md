@@ -84,11 +84,11 @@ docker service logs jina-swarm-4254_income-proxy
 ``` 
 
 ```bash
-jina-swarm-4254_income-proxy.1.yj5v8n4dhfgv@VM-0-3-ubuntu    |                   [--proxy_type {BS,Dict,MapProxyService,Message,MessageHandler,ProxyService,ReduceProxyService,defaultdict}]
-jina-swarm-4254_income-proxy.1.yj5v8n4dhfgv@VM-0-3-ubuntu    |                   [--batch_size BATCH_SIZE] [--num_part NUM_PART]
-jina-swarm-4254_income-proxy.1.kmgk21qo6m0n@VM-0-3-ubuntu    |                   [--proxy_type {BS,Dict,MapProxyService,Message,MessageHandler,ProxyService,ReduceProxyService,defaultdict}]
-jina-swarm-4254_income-proxy.1.w04d552cuj93@VM-0-3-ubuntu    | jina proxy: error: argument --batch_size: invalid int value: ''
-jina-swarm-4254_income-proxy.1.kmgk21qo6m0n@VM-0-3-ubuntu    |                   [--batch_size BATCH_SIZE] [--num_part NUM_PART]
+jina-swarm-4254_income-proxy.1.yj5v8n4dhfgv@VM-0-3-ubuntu    |                   [--proxy-type {BS,Dict,MapProxyService,Message,MessageHandler,ProxyService,ReduceProxyService,defaultdict}]
+jina-swarm-4254_income-proxy.1.yj5v8n4dhfgv@VM-0-3-ubuntu    |                   [--batch-size BATCH_SIZE] [--num-part NUM_PART]
+jina-swarm-4254_income-proxy.1.kmgk21qo6m0n@VM-0-3-ubuntu    |                   [--proxy-type {BS,Dict,MapProxyService,Message,MessageHandler,ProxyService,ReduceProxyService,defaultdict}]
+jina-swarm-4254_income-proxy.1.w04d552cuj93@VM-0-3-ubuntu    | jina proxy: error: argument --batch-size: invalid int value: ''
+jina-swarm-4254_income-proxy.1.kmgk21qo6m0n@VM-0-3-ubuntu    |                   [--batch-size BATCH_SIZE] [--num-part NUM_PART]
 ```
 
-One can now clearly see that the error comes from an incorrectly given `--batch_size`, which throws from JINA CLI. 
+One can now clearly see that the error comes from an incorrectly given `--batch-size`, which throws from JINA CLI. 
