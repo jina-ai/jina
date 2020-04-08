@@ -1,4 +1,3 @@
-import asyncio
 import os
 import sys
 import tempfile
@@ -231,13 +230,15 @@ class AsyncZmqlet(Zmqlet):
         :param sleep: the sleep time of every two sends in millisecond.
                 A near-zero value could result in bad load balancing in the proceeding pods.
         """
-        await asyncio.sleep(sleep)  # preventing over-speed sending
+        # await asyncio.sleep(sleep)  # preventing over-speed sending
         num_bytes = await send_message_async(self.out_sock, msg, **self.send_recv_kwargs)
         self.bytes_sent += num_bytes
+        self.msg_sent += 1
 
     async def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
         msg, num_bytes = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
         self.bytes_recv += num_bytes
+        self.msg_recv += 1
         if callback:
             return callback(msg)
 

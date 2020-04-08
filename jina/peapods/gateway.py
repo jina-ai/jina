@@ -96,16 +96,32 @@ class GatewayPea:
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
                 # this restricts the gateway can not be the joiner to wait
                 # as every request corresponds to one message, #send_message = #recv_message
-                send_tasks, recv_tasks = zip(
-                    *[(asyncio.create_task(
-                        zmqlet.send_message(
-                            add_envelope(request, 'gateway', zmqlet.args.identity),
-                            sleep=(self.args.sleep / 1000) * idx, )),
-                       zmqlet.recv_message(callback=self.recv_callback))
-                        for idx, request in enumerate(request_iterator)])
+                prefetch_task = []
+                onrecv_task = []
 
-                for r in asyncio.as_completed(recv_tasks):
-                    yield await r
+                def prefetch_req(num_req, fetch_to):
+                    for _ in range(num_req):
+                        try:
+                            asyncio.create_task(
+                                zmqlet.send_message(
+                                    add_envelope(next(request_iterator), 'gateway', zmqlet.args.identity)))
+                            fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.recv_callback)))
+                        except StopIteration:
+                            return True
+                    return False
+
+                is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
+
+                while not (zmqlet.msg_sent == zmqlet.msg_recv and is_req_empty):
+                    self.logger.info(f'prefetch: {zmqlet.msg_sent}/{zmqlet.msg_recv}, '
+                                     f'pending: {zmqlet.msg_sent - zmqlet.msg_recv}'
+                                     f'prefetch_task: {len(prefetch_task)}')
+                    onrecv_task.clear()
+                    for r in asyncio.as_completed(prefetch_task):
+                        yield await r
+                        is_req_empty = prefetch_req(self.args.prefetch_on_recv, onrecv_task)
+                    prefetch_task.clear()
+                    prefetch_task = [j for j in onrecv_task]
 
         async def Spawn(self, request, context):
             _req = getattr(request, request.WhichOneof('body'))
@@ -149,4 +165,3 @@ class GatewayPea:
         def close(self):
             for p in self.peapods:
                 p.close()
-

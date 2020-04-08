@@ -297,9 +297,10 @@ def set_gateway_parser(parser=None):
                      socket_out=SocketType.PUSH_CONNECT,
                      ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                      read_only=True)
-    gp1.add_argument('--sleep', type=int, default=50,
-                     help='the sleep interval (ms) to control the gateway sending speed. '
-                          'Note, sleep=0 may result in bad load-balancing as all workload are pushed to one worker')
+    gp1.add_argument('--prefetch', type=int, default=50,
+                     help='the number of pre-fetched requests from the client')
+    gp1.add_argument('--prefetch-on-recv', type=int, default=2,
+                     help='the number of additional requests to fetch on every receive')
     gp1.add_argument('--allow-spawn', action='store_true', default=False,
                      help='accept the spawn requests sent from other remote Jina')
     return parser
