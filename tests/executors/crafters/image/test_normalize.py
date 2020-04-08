@@ -6,7 +6,7 @@ from tests.executors.crafters.image import JinaImageTestCase
 
 class MyTestCase(JinaImageTestCase):
     def test_transform_results(self):
-        img_size = 224
+        img_size = 217
         crafter = ImageNormalizer(output_dim=img_size)
         img_array = self.create_test_img_array(img_size, img_size)
         crafted_chunk = crafter.craft(img_array, chunk_id=0, doc_id=0)

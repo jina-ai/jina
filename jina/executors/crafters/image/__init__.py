@@ -17,12 +17,12 @@ class ImageChunkCrafter(BaseChunkCrafter):
         return Image.fromarray(blob.astype('uint8'))
 
     @staticmethod
-    def _resize_short(img, target_size):
-        from PIL.Image import LANCZOS
+    def _resize_short(img, target_size, how='LANCZOS'):
+        import PIL.Image as Image
         percent = float(target_size) / min(img.size[0], img.size[1])
         resized_width = int(round(img.size[0] * percent))
         resized_height = int(round(img.size[1] * percent))
-        img = img.resize((resized_width, resized_height), LANCZOS)
+        img = img.resize((resized_width, resized_height), getattr(Image, how))
         return img
 
     @staticmethod

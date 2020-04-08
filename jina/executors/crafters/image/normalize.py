@@ -36,7 +36,7 @@ class ImageNormalizer(ImageChunkCrafter):
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
 
-    def craft(self, blob, chunk_id, doc_id, *args, **kwargs) -> Dict:
+    def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> Dict:
         """
 
         :param blob: the ndarray of the image with the color channel at the last axis
