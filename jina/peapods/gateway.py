@@ -110,6 +110,7 @@ class GatewayPea:
                             return True
                     return False
 
+
                 is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
 
                 while not (zmqlet.msg_sent == zmqlet.msg_recv != 0 and is_req_empty):
