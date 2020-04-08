@@ -135,7 +135,7 @@ class Flow:
         """Required by :mod:`ruamel.yaml.constructor` """
         return cls._get_instance_from_yaml(constructor, node)[0]
 
-    def save_config(self, filename: str = None) -> str:
+    def save_config(self, filename: str = None) -> bool:
         """
         Serialize the object to a yaml file
 
@@ -152,6 +152,10 @@ class Flow:
         with open(f, 'w', encoding='utf8') as fp:
             yaml.dump(self, fp)
         self.logger.info(f'{self}\'s yaml config is save to %s' % f)
+        return True
+
+    def _get_yaml_config(self):
+        yaml.register_class(Flow)
         stream = StringIO()
         yaml.dump(self, stream)
         return stream.getvalue().strip()
@@ -441,7 +445,7 @@ class Flow:
                                                      self.args.port_sse,
                                                      self.args.log_endpoint,
                                                      self.args.yaml_endpoint,
-                                                     self.save_config()))
+                                                     ''))
             self.sse_logger.start()
             time.sleep(1)
 
