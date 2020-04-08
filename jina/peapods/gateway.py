@@ -112,10 +112,10 @@ class GatewayPea:
 
                 is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
 
-                while not (zmqlet.msg_sent == zmqlet.msg_recv and is_req_empty):
-                    self.logger.info(f'prefetch: {zmqlet.msg_sent}/{zmqlet.msg_recv}, '
-                                     f'pending: {zmqlet.msg_sent - zmqlet.msg_recv}'
-                                     f'prefetch_task: {len(prefetch_task)}')
+                while not (zmqlet.msg_sent == zmqlet.msg_recv != 0 and is_req_empty):
+                    self.logger.info(f'send: {zmqlet.msg_sent} '
+                                     f'recv: {zmqlet.msg_recv} '
+                                     f'pending: {zmqlet.msg_sent - zmqlet.msg_recv}')
                     onrecv_task.clear()
                     for r in asyncio.as_completed(prefetch_task):
                         yield await r

@@ -299,7 +299,7 @@ def set_gateway_parser(parser=None):
                      read_only=True)
     gp1.add_argument('--prefetch', type=int, default=50,
                      help='the number of pre-fetched requests from the client')
-    gp1.add_argument('--prefetch-on-recv', type=int, default=2,
+    gp1.add_argument('--prefetch-on-recv', type=int, default=1,
                      help='the number of additional requests to fetch on every receive')
     gp1.add_argument('--allow-spawn', action='store_true', default=False,
                      help='accept the spawn requests sent from other remote Jina')
