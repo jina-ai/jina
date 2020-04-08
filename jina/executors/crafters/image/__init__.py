@@ -12,9 +12,14 @@ class ImageChunkCrafter(BaseChunkCrafter):
 
     def _load_image(self, blob: 'np.ndarray'):
         from PIL import Image
+        img = self.check_channel_axis(blob)
+        return Image.fromarray(img.astype('uint8'))
+
+    def check_channel_axis(self, img: 'np.ndarray'):
         if self.channel_axis != -1:
-            blob = np.moveaxis(blob, self.channel_axis, -1)
-        return Image.fromarray(blob.astype('uint8'))
+            img = np.moveaxis(img, self.channel_axis, -1)
+        return img
+
 
     @staticmethod
     def _resize_short(img, target_size, how='LANCZOS'):

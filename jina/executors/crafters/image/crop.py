@@ -121,4 +121,54 @@ class FiveImageCropper(ImageChunkCrafter):
             dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(bl).astype('float32')),
             dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(br).astype('float32')),
             dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(center).astype('float32')),
-            ]
+        ]
+
+
+class SlidingWindowCropper(ImageChunkCrafter):
+    def __init__(self,
+                 output_dim: int,
+                 strides: Tuple[int],
+                 padding='VALID',
+                 channel_axis: int = -1,
+                 *args,
+                 **kwargs):
+        super().__init__(channel_axis, *args, **kwargs)
+        self.output_dim = output_dim
+        if len(strides) != 2:
+            raise ValueError('strides should be a tuple of two integers: {}'.format(strides))
+        self.stride_height, self.stride_width = strides
+        self.padding = padding
+
+    def craft(self, blob: 'np.ndarray', chunk_id, doc_id, *args, **kwargs) -> List[Dict]:
+        raw_img = np.copy(blob)
+        raw_img = self.check_channel_axis(raw_img)
+        if self.padding == 'SAME':
+            raw_img = self._expand_img(blob)
+        h, w, c = raw_img.shape
+        row_step = raw_img.strides[0]
+        col_step = raw_img.strides[1]
+        expanded_img = np.lib.stride_tricks.as_strided(
+            raw_img,
+            (
+                1 + int((h - self.output_dim) / self.stride_height),
+                1 + int((w - self.output_dim) / self.stride_width),
+                self.output_dim,
+                self.output_dim,
+                c
+            ), (
+                row_step * self.stride_height,
+                col_step * self.stride_width,
+                row_step,
+                col_step,
+                1))
+        expanded_img = expanded_img.reshape((-1, self.output_dim, self.output_dim, c))
+        return [dict(doc_id=doc_id, offset=0, weight=1.0, blob=blob.astype('float32')) for blob in expanded_img]
+
+    def _expand_img(self, img: 'np.ndarray') -> 'np.ndarray':
+        h, w, c = img.shape
+        ext_h = self.output_dim - h % self.stride_height
+        ext_w = self.output_dim - w % self.stride_width
+        return np.pad(img,
+                      ((0, ext_h), (0, ext_w), (0, 0)),
+                      mode='constant',
+                      constant_values=0)
