@@ -10,6 +10,7 @@ from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, Text
 
 import requests
 import ruamel.yaml
+from ruamel.yaml import StringIO
 
 from .. import __default_host__
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
@@ -152,6 +153,12 @@ class Flow:
             yaml.dump(self, fp)
         self.logger.info(f'{self}\'s yaml config is save to %s' % f)
         return True
+
+    def _get_yaml_config(self):
+        yaml.register_class(Flow)
+        stream = StringIO()
+        yaml.dump(self, stream)
+        return stream.getvalue().strip()
 
     @classmethod
     def load_config(cls: Type['Flow'], filename: Union[str, TextIO]) -> 'Flow':
@@ -434,7 +441,11 @@ class Flow:
             import flask, flask_cors
             self.sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                target=start_sse_logger, daemon=True,
-                                               args=(self.host_sse, self.args.port_sse))
+                                               args=(self.host_sse,
+                                                     self.args.port_sse,
+                                                     self.args.log_endpoint,
+                                                     self.args.yaml_endpoint,
+                                                     ''))
             self.sse_logger.start()
             time.sleep(1)
 

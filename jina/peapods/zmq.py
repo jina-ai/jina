@@ -231,16 +231,23 @@ class AsyncZmqlet(Zmqlet):
         :param sleep: the sleep time of every two sends in millisecond.
                 A near-zero value could result in bad load balancing in the proceeding pods.
         """
-        await asyncio.sleep(sleep)  # preventing over-speed sending
-        num_bytes = await send_message_async(self.out_sock, msg, **self.send_recv_kwargs)
-        self.bytes_sent += num_bytes
+        # await asyncio.sleep(sleep)  # preventing over-speed sending
+        try:
+            num_bytes = await send_message_async(self.out_sock, msg, **self.send_recv_kwargs)
+            self.bytes_sent += num_bytes
+            self.msg_sent += 1
+        except (asyncio.CancelledError, TypeError) as ex:
+            self.logger.error(f'{ex}, gateway cancelled?')
 
     async def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
-        msg, num_bytes = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
-        self.bytes_recv += num_bytes
-        if callback:
-            return callback(msg)
-
+        try:
+            msg, num_bytes = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
+            self.bytes_recv += num_bytes
+            self.msg_recv += 1
+            if callback:
+                return callback(msg)
+        except (asyncio.CancelledError, TypeError) as ex:
+            self.logger.error(f'{ex}, gateway cancelled?')
 
 def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int):
     """Send a control message to a specific address and wait for the response
@@ -335,6 +342,7 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
 
         if array_in_pb:
             _msg = [c_id, msg.SerializeToString()]
+
             await sock.send_multipart(_msg)
             num_bytes = sys.getsizeof(_msg)
         else:
@@ -353,10 +361,18 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
             'cannot send message to sock %s after timeout=%dms, please check the following:'
             'is the server still online? is the network broken? are "port" correct? ' % (
                 sock, timeout))
+    except zmq.error.ZMQError as ex:
+        default_logger.critical(ex)
+    except asyncio.CancelledError:
+        default_logger.error('all gateway tasks are cancelled')
     except Exception as ex:
         raise ex
     finally:
-        sock.setsockopt(zmq.SNDTIMEO, -1)
+        try:
+            sock.setsockopt(zmq.SNDTIMEO, -1)
+        except zmq.error.ZMQError:
+            pass
+
     return num_bytes
 
 
@@ -448,10 +464,17 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
             'no response from sock %s after timeout=%dms, please check the following:'
             'is the server still online? is the network broken? are "port" correct? ' % (
                 sock, timeout))
+    except zmq.error.ZMQError as ex:
+        default_logger.critical(ex)
+    except asyncio.CancelledError:
+        default_logger.error('all gateway tasks are cancelled')
     except Exception as ex:
         raise ex
     finally:
-        sock.setsockopt(zmq.RCVTIMEO, -1)
+        try:
+            sock.setsockopt(zmq.RCVTIMEO, -1)
+        except zmq.error.ZMQError:
+            pass
 
 
 def _get_random_ipc() -> str:

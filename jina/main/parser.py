@@ -78,6 +78,10 @@ def set_flow_parser(parser=None):
     gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
     gp.add_argument('--port-sse', type=int, default=random_port(),
                     help='the port number for sse logging, default a random port between [49152, 65535]')
+    gp.add_argument('--log-endpoint', type=str, default='/log/stream',
+                    help='endpoint for real-time logging')
+    gp.add_argument('--yaml-endpoint', type=str, default='/yaml',
+                    help='endpoint for real-time logging')
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
                             and hence not allow multiple clients connected to the gateway at the same time.')
@@ -297,9 +301,10 @@ def set_gateway_parser(parser=None):
                      socket_out=SocketType.PUSH_CONNECT,
                      ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                      read_only=True)
-    gp1.add_argument('--sleep', type=int, default=50,
-                     help='the sleep interval (ms) to control the gateway sending speed. '
-                          'Note, sleep=0 may result in bad load-balancing as all workload are pushed to one worker')
+    gp1.add_argument('--prefetch', type=int, default=50,
+                     help='the number of pre-fetched requests from the client')
+    gp1.add_argument('--prefetch-on-recv', type=int, default=1,
+                     help='the number of additional requests to fetch on every receive')
     gp1.add_argument('--allow-spawn', action='store_true', default=False,
                      help='accept the spawn requests sent from other remote Jina')
     return parser
