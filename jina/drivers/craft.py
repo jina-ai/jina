@@ -17,10 +17,31 @@ class ChunkCraftDriver(BaseExecutableDriver):
             if not d.chunks:
                 no_chunk_docs.append(d.doc_id)
                 continue
+            _chunks_to_add = []
             for c in d.chunks:
                 ret = self.exec_fn(**pb_obj2dict(c, self.exec.required_keys))
-                for k, v in ret.items():
-                    setattr(c, k, v)
+                if isinstance(ret, dict):
+                    for k, v in ret.items():
+                        setattr(c, k, v)
+                    continue
+                if isinstance(ret, list):
+                    for chunk_dict in ret:
+                        _chunks_to_add.append(chunk_dict)
+            if len(_chunks_to_add) > 0:
+                for c_dict in _chunks_to_add:
+                    c = d.chunks.add()
+                    for k, v in c_dict.items():
+                        if k == 'blob':
+                            c.blob.CopyFrom(array2blob(v))
+                        elif k == 'chunk_id':
+                            self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
+                                                f'is it intentional? chunk_id will be override by {self.__class__} '
+                                                f'anyway')
+                        else:
+                            setattr(c, k, v)
+                    c.length = len(_chunks_to_add) + len(d.chunks)
+                    c.chunk_id = random.randint(0, ctypes.c_uint(-1).value)
+            d.length = len(_chunks_to_add) + len(d.chunks)
 
         if no_chunk_docs:
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
@@ -46,7 +67,7 @@ class SegmentDriver(BaseExecutableDriver):
         no need to self-assign it in your segmenter
     """
 
-    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = False, *args, **kwargs):
+    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.first_chunk_id = first_chunk_id
         self.random_chunk_id = random_chunk_id
@@ -62,7 +83,8 @@ class SegmentDriver(BaseExecutableDriver):
                             c.blob.CopyFrom(array2blob(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
-                                                f'is it intentional? chunk_id will be override by {self.__class__} anyway')
+                                                f'is it intentional? chunk_id will be override by {self.__class__} '
+                                                f'anyway')
                         else:
                             setattr(c, k, v)
                     c.length = len(ret)
