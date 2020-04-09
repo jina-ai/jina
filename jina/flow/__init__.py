@@ -12,7 +12,7 @@ import requests
 import ruamel.yaml
 from ruamel.yaml import StringIO
 
-from .. import __default_host__
+from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
 from ..helper import yaml, expand_env_var, kwargs2list, get_non_defaults_args
@@ -89,8 +89,6 @@ class Flow:
 
         self.args = args
         self._common_kwargs = kwargs
-        self.host_sse = __default_host__
-
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
@@ -154,7 +152,8 @@ class Flow:
         self.logger.info(f'{self}\'s yaml config is save to %s' % f)
         return True
 
-    def _get_yaml_config(self):
+    @property
+    def yaml_spec(self):
         yaml.register_class(Flow)
         stream = StringIO()
         yaml.dump(self, stream)
@@ -428,6 +427,21 @@ class Flow:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
+    def start_log_server(self):
+        try:
+            import flask, flask_cors
+            self.sse_logger = threading.Thread(name='sentinel-sse-logger',
+                                               target=start_sse_logger, daemon=True,
+                                               args=(self.args.logserver_config,
+                                                     self.yaml_spec))
+            self.sse_logger.start()
+            time.sleep(1)
+
+        except ModuleNotFoundError:
+            self.logger.error(
+                f'sse log-server can not start because of "flask" and "flask_cors" are missing, '
+                f'use "pip install jina[http]" to install the dependencies')
+
     @build_required(FlowBuildLevel.GRAPH)
     def start(self):
         """Start to run all Pods in this Flow.
@@ -437,22 +451,8 @@ class Flow:
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
         which is inherited all the way from :class:`jina.peapods.peas.BasePea`
         """
-        try:
-            import flask, flask_cors
-            self.sse_logger = threading.Thread(name='sentinel-sse-logger',
-                                               target=start_sse_logger, daemon=True,
-                                               args=(self.host_sse,
-                                                     self.args.port_sse,
-                                                     self.args.log_endpoint,
-                                                     self.args.yaml_endpoint,
-                                                     ''))
-            self.sse_logger.start()
-            time.sleep(1)
-
-        except ModuleNotFoundError:
-            self.logger.error(
-                f'sse logger can not start and being disabled because of flask and flask_cors are missing, '
-                f'use "pip install jina[http]" to install the dependencies')
+        if self.args.logserver:
+            self.start_log_server()
 
         self._pod_stack = ExitStack()
         for v in self._pod_nodes.values():
@@ -481,7 +481,7 @@ class Flow:
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
         if hasattr(self, 'sse_logger') and self.sse_logger.is_alive():
-            requests.get(f'http://{self.host_sse}:{self.args.port_sse}/shutdown')
+            requests.get(JINA_GLOBAL.logserver.shutdown)
             self.sse_logger.join()
         self._build_level = FlowBuildLevel.EMPTY
         # time.sleep(1)  # sleep for a while until all resources are safely closed

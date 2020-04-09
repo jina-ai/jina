@@ -1,6 +1,6 @@
 import argparse
 
-from ..helper import colored, random_port
+from ..helper import colored
 
 
 def add_arg_group(parser, title):
@@ -76,12 +76,13 @@ def set_flow_parser(parser=None):
 
     gp = add_arg_group(parser, 'flow arguments')
     gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
-    gp.add_argument('--port-sse', type=int, default=random_port(),
-                    help='the port number for sse logging, default a random port between [49152, 65535]')
-    gp.add_argument('--log-endpoint', type=str, default='/log/stream',
-                    help='endpoint for real-time logging')
-    gp.add_argument('--yaml-endpoint', type=str, default='/yaml',
-                    help='endpoint for real-time logging')
+    gp.add_argument('--logserver', action='store_true', default=False,
+                    help='start a log server for the dashboard')
+    from pkg_resources import resource_filename
+    gp.add_argument('--logserver-config', type=str,
+                    default=resource_filename('jina',
+                                              '/'.join(('resources', 'logserver.default.yml'))),
+                    help='the yaml config of the log server')
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
                             and hence not allow multiple clients connected to the gateway at the same time.')
