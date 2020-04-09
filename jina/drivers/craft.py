@@ -35,7 +35,8 @@ class ChunkCraftDriver(BaseExecutableDriver):
                             c.blob.CopyFrom(array2blob(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
-                                                f'is it intentional? chunk_id will be override by {self.__class__} anyway')
+                                                f'is it intentional? chunk_id will be override by {self.__class__} '
+                                                f'anyway')
                         else:
                             setattr(c, k, v)
                     c.length = len(_chunks_to_add) + len(d.chunks)
@@ -82,7 +83,8 @@ class SegmentDriver(BaseExecutableDriver):
                             c.blob.CopyFrom(array2blob(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
-                                                f'is it intentional? chunk_id will be override by {self.__class__} anyway')
+                                                f'is it intentional? chunk_id will be override by {self.__class__} '
+                                                f'anyway')
                         else:
                             setattr(c, k, v)
                     c.length = len(ret)
