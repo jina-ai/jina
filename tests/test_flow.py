@@ -113,13 +113,13 @@ class MyTestCase(JinaTestCase):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_yaml_dump(self):
-        f = Flow(port_sse=12345,
+        f = Flow(logserver_config='yaml/test-server-config.yml',
                  optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
                  no_gateway=True)
         f.save_config('test1.yml')
 
         fl = Flow.load_config('test1.yml')
-        self.assertEqual(f.args.port_sse, fl.args.port_sse)
+        self.assertEqual(f.args.logserver_config, fl.args.logserver_config)
         self.assertEqual(f.args.no_gateway, fl.args.no_gateway)
         self.assertEqual(f.args.optimize_level, fl.args.optimize_level)
         self.add_tmpfile('test1.yml')
