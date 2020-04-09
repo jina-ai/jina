@@ -144,6 +144,8 @@ class FiveImageCropper(ImageChunkCrafter):
             target_h = target_w = self.target_size
         elif isinstance(self.target_size, Tuple) and len(self.target_size) == 2:
             target_h, target_w = self.target_size
+        else:
+            raise ValueError('target_size should be an integer or a tuple of two integers: {}'.format(self.target_size))
         tl = self._crop_image(raw_img, self.target_size, 0, 0)
         tr = self._crop_image(raw_img, self.target_size, image_width - target_w, 0)
         bl = self._crop_image(raw_img, self.target_size, 0, image_height - target_h)

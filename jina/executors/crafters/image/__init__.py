@@ -89,8 +89,8 @@ class ImageChunkCrafter(BaseChunkCrafter):
         w_beg = left
         h_beg = top
         if how == 'center':
-            w_beg = (img_w - target_w) / 2
-            h_beg = (img_h - target_h) / 2
+            w_beg = int((img_w - target_w) / 2)
+            h_beg = int((img_h - target_h) / 2)
         elif how == 'random':
             w_beg = np.random.randint(0, img_w - target_w + 1)
             h_beg = np.random.randint(0, img_h - target_h + 1)
