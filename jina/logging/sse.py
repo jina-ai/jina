@@ -1,13 +1,19 @@
 import logging
 
+from jina.logging import default_logger
+
 from .queue import __sse_queue__, __profile_queue__
 
 
-def start_sse_logger(host: str, port: int):
+def start_sse_logger(host: str, port: int,
+                     log_endpoint: str, yaml_endpoint: str,
+                     yaml_flow: str):
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
     :param host: host address of the server
     :param port: port of the server
+    :param log_endpoint: endpoint for the log
+    :param yaml_endpoint: endpoint for the yaml
 
     Example:
 
@@ -35,10 +41,15 @@ def start_sse_logger(host: str, port: int):
     app = Flask(__name__)
     CORS(app)
 
-    @app.route('/stream/log')
+    @app.route(log_endpoint)
     def get_log():
         """Get the logs, endpoint `/log/stream`  """
         return Response(_log_stream(), mimetype="text/event-stream")
+
+    @app.route(yaml_endpoint)
+    def get_yaml():
+        """Get the yaml of the flow  """
+        return yaml_flow
 
     @app.route('/stream/profile')
     def get_profile():
@@ -60,8 +71,11 @@ def start_sse_logger(host: str, port: int):
     # os.environ['WERKZEUG_RUN_MAIN'] = 'true'
     log = logging.getLogger('werkzeug')
     log.disabled = True
-    app.logger.disabled = True
-    app.run(port=port, host=host)
+    try:
+        app.logger.disabled = True
+        app.run(port=port, host=host)
+    except Exception as ex:
+        default_logger.error(ex)
 
 
 def _log_stream():
