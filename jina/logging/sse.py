@@ -1,4 +1,5 @@
 import logging
+import os
 
 from . import default_logger
 from .queue import __sse_queue__, __profile_queue__
@@ -41,8 +42,8 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
         _config = yaml.load(fp)
     JINA_GLOBAL.logserver.address = f'http://{_config["host"]}:{_config["port"]}'
 
-    JINA_GLOBAL.logserver.ready = '/'.join([JINA_GLOBAL.logserver.address, _config['endpoints']['ready']])
-    JINA_GLOBAL.logserver.shutdown = '/'.join([JINA_GLOBAL.logserver.address, _config['endpoints']['shutdown']])
+    JINA_GLOBAL.logserver.ready = JINA_GLOBAL.logserver.address + _config['endpoints']['ready']
+    JINA_GLOBAL.logserver.shutdown = JINA_GLOBAL.logserver.address + _config['endpoints']['shutdown']
 
     app = Flask(__name__)
     CORS(app)
@@ -74,7 +75,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     def is_ready():
         return Response(status=200)
 
-    # os.environ['WERKZEUG_RUN_MAIN'] = 'true'
+    os.environ['WERKZEUG_RUN_MAIN'] = 'true'
     log = logging.getLogger('werkzeug')
     log.disabled = True
 

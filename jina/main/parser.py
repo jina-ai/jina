@@ -76,9 +76,9 @@ def set_flow_parser(parser=None):
 
     gp = add_arg_group(parser, 'flow arguments')
     gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    from pkg_resources import resource_filename
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
-    from pkg_resources import resource_filename
     gp.add_argument('--logserver-config', type=str,
                     default=resource_filename('jina',
                                               '/'.join(('resources', 'logserver.default.yml'))),
@@ -224,6 +224,16 @@ def set_pod_parser(parser=None):
                      help='the strategy of scheduling workload among peas')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
+
+    gp5 = add_arg_group(parser, 'pod log-server arguments')
+
+    from pkg_resources import resource_filename
+    gp5.add_argument('--logserver', action='store_true', default=False,
+                     help='start a log server for the dashboard')
+    gp5.add_argument('--logserver-config', type=str,
+                     default=resource_filename('jina',
+                                               '/'.join(('resources', 'logserver.default.yml'))),
+                     help='the yaml config of the log server')
     return parser
 
 

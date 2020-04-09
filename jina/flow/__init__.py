@@ -88,6 +88,8 @@ class Flow:
             _, args, _ = get_parsed_args(kwargs, _flow_parser)
 
         self.args = args
+        if self.args.logserver and 'log_sse' not in kwargs:
+            kwargs['log_sse'] = True
         self._common_kwargs = kwargs
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
