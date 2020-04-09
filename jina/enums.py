@@ -2,10 +2,29 @@
 Miscellaneous enums used in jina
 """
 
-from enum import IntEnum
+from enum import IntEnum, EnumMeta
 
 
-class BetterEnum(IntEnum):
+class EnumType(EnumMeta):
+
+    def __new__(cls, *args, **kwargs):
+        _cls = super().__new__(cls, *args, **kwargs)
+        return cls.register_class(_cls)
+
+    @staticmethod
+    def register_class(cls):
+        reg_cls_set = getattr(cls, '_registered_class', set())
+        if cls.__name__ not in reg_cls_set:
+            # print('reg class: %s' % cls.__name__)
+
+            reg_cls_set.add(cls.__name__)
+            setattr(cls, '_registered_class', reg_cls_set)
+        from .helper import yaml
+        yaml.register_class(cls)
+        return cls
+
+
+class BetterEnum(IntEnum, metaclass=EnumType):
     def __str__(self):
         return self.name
 
@@ -16,6 +35,16 @@ class BetterEnum(IntEnum):
             return cls[s.upper()]
         except KeyError:
             raise ValueError('%s is not a valid enum for %s' % (s.upper(), cls))
+
+    @classmethod
+    def to_yaml(cls, representer, data):
+        """Required by :mod:`ruamel.yaml.constructor` """
+        return representer.represent_scalar('!' + cls.__name__, str(data))
+
+    @classmethod
+    def from_yaml(cls, constructor, node):
+        """Required by :mod:`ruamel.yaml.constructor` """
+        return cls.from_string(node.value)
 
 
 class SchedulerType(BetterEnum):

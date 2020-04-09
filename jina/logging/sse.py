@@ -1,19 +1,19 @@
 import logging
+import os
 
-from jina.logging import default_logger
-
+from . import default_logger
 from .queue import __sse_queue__, __profile_queue__
+from .. import JINA_GLOBAL
+from ..helper import yaml
 
 
-def start_sse_logger(host: str, port: int,
-                     log_endpoint: str, yaml_endpoint: str,
-                     yaml_flow: str):
+def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
     :param host: host address of the server
     :param port: port of the server
-    :param log_endpoint: endpoint for the log
-    :param yaml_endpoint: endpoint for the yaml
+    :param endpoint_log: endpoint for the log
+    :param endpoint_yaml: endpoint for the yaml
 
     Example:
 
@@ -38,25 +38,32 @@ def start_sse_logger(host: str, port: int,
                           'they are required for serving HTTP requests.'
                           'Please use "pip install jina[flask]" to install it.')
 
+    with open(server_config_path) as fp:
+        _config = yaml.load(fp)
+    JINA_GLOBAL.logserver.address = f'http://{_config["host"]}:{_config["port"]}'
+
+    JINA_GLOBAL.logserver.ready = JINA_GLOBAL.logserver.address + _config['endpoints']['ready']
+    JINA_GLOBAL.logserver.shutdown = JINA_GLOBAL.logserver.address + _config['endpoints']['shutdown']
+
     app = Flask(__name__)
     CORS(app)
 
-    @app.route(log_endpoint)
+    @app.route(_config['endpoints']['log'])
     def get_log():
         """Get the logs, endpoint `/log/stream`  """
         return Response(_log_stream(), mimetype="text/event-stream")
 
-    @app.route(yaml_endpoint)
+    @app.route(_config['endpoints']['yaml'])
     def get_yaml():
         """Get the yaml of the flow  """
-        return yaml_flow
+        return flow_yaml
 
-    @app.route('/stream/profile')
+    @app.route(_config['endpoints']['profile'])
     def get_profile():
         """Get the profile logs, endpoint `/profile/stream`  """
-        return Response(_profile_stream(), mimetype="text/event-stream")
+        return Response(_profile_stream(), mimetype='text/event-stream')
 
-    @app.route('/shutdown')
+    @app.route(_config['endpoints']['shutdown'])
     def shutdown():
         from flask import request
         if not 'werkzeug.server.shutdown' in request.environ:
@@ -64,16 +71,17 @@ def start_sse_logger(host: str, port: int,
         request.environ['werkzeug.server.shutdown']()
         return 'Server shutting down...'
 
-    @app.route('/is_ready')
+    @app.route(_config['endpoints']['ready'])
     def is_ready():
         return Response(status=200)
 
-    # os.environ['WERKZEUG_RUN_MAIN'] = 'true'
+    os.environ['WERKZEUG_RUN_MAIN'] = 'true'
     log = logging.getLogger('werkzeug')
     log.disabled = True
+
     try:
         app.logger.disabled = True
-        app.run(port=port, host=host)
+        app.run(port=_config['port'], host=_config['host'])
     except Exception as ex:
         default_logger.error(ex)
 

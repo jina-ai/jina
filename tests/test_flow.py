@@ -1,5 +1,6 @@
 import unittest
 
+from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
@@ -110,6 +111,18 @@ class MyTestCase(JinaTestCase):
 
         with f.build() as fl:
             fl.index(raw_bytes=random_docs(10), in_proto=True)
+
+    def test_flow_yaml_dump(self):
+        f = Flow(logserver_config='yaml/test-server-config.yml',
+                 optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
+                 no_gateway=True)
+        f.save_config('test1.yml')
+
+        fl = Flow.load_config('test1.yml')
+        self.assertEqual(f.args.logserver_config, fl.args.logserver_config)
+        self.assertEqual(f.args.no_gateway, fl.args.no_gateway)
+        self.assertEqual(f.args.optimize_level, fl.args.optimize_level)
+        self.add_tmpfile('test1.yml')
 
 
 if __name__ == '__main__':

@@ -47,6 +47,7 @@ JINA_GLOBAL.imported.executors = False
 JINA_GLOBAL.imported.drivers = False
 JINA_GLOBAL.stack = SimpleNamespace()
 JINA_GLOBAL.stack.id = random.randint(0, 10000)
+JINA_GLOBAL.logserver = SimpleNamespace()
 
 
 def import_classes(namespace: str, targets=None,
