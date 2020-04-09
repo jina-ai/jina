@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .pea import BasePea
 from .. import __ready_msg__
-from ..helper import valid_yaml_path, kwargs2list
+from ..helper import valid_yaml_path, kwargs2list, get_non_defaults_args
 from ..logging import get_logger
 
 
@@ -17,17 +17,12 @@ class ContainerPea(BasePea):
         import docker
         self._client = docker.from_env()
 
-        from ..main.parser import set_pea_parser
-        _defaults = vars(set_pea_parser().parse_args([]))
-        non_defaults = {}
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
         # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
-        taboo = {'image', 'entrypoint', 'volumes', 'pull_latest'}
-
-        for k, v in vars(self.args).items():
-            if k in _defaults and k not in taboo and _defaults[k] != v:
-                non_defaults[k] = v
+        from ..main.parser import set_pea_parser
+        non_defaults = get_non_defaults_args(self.args, set_pea_parser(),
+                                             taboo={'image', 'entrypoint', 'volumes', 'pull_latest'})
 
         if self.args.pull_latest:
             self._client.images.pull(self.args.image)

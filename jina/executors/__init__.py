@@ -305,9 +305,8 @@ class BaseExecutor(metaclass=ExecutorType):
         :return: successfully persisted or not
         """
         if not self.is_updated:
-            self.logger.info('no update since %s, will not save. '
-                             'If you really want to save it, call "touch()" before "save()" to force saving'
-                             % self._last_snapshot_ts)
+            self.logger.info(f'no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. '
+                             'If you really want to save it, call "touch()" before "save()" to force saving')
             return False
 
         self.is_updated = False
@@ -376,10 +375,9 @@ class BaseExecutor(metaclass=ExecutorType):
                     mod = tmp['metas']['py_modules']
 
                     if isinstance(mod, str):
-                        if not os.path.isabs(mod):
-                            mod = os.path.join(os.path.dirname(filename), mod)
-                        PathImporter.add_modules(mod)
-                    elif isinstance(mod, list):
+                        mod = [mod]
+
+                    if isinstance(mod, list):
                         mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(filename), m) for m in mod]
                         PathImporter.add_modules(*mod)
                     else:

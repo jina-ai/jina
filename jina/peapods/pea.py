@@ -220,6 +220,8 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.args.replica_id)
+                if self.args.override_exec_log:
+                    self.executor.logger = self.logger
                 self.executor.attach(pea=self)
                 # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:
@@ -296,6 +298,7 @@ class BasePea(metaclass=PeaMeta):
 
     def loop_body(self):
         """The body of the request loop """
+        self.load_plugins()
         self.load_executor()
         self.zmqlet = Zmqlet(self.args, logger=self.logger)
         self.set_ready()
@@ -312,6 +315,11 @@ class BasePea(metaclass=PeaMeta):
                 # self.is_busy.clear()
             # t_loop_end = time.perf_counter()
             # self.logger.info(f'handle {(t_callback - t_loop_start) / (t_loop_end - t_loop_start):2.2f}')
+
+    def load_plugins(self):
+        if self.args.py_modules:
+            from ..helper import PathImporter
+            PathImporter.add_modules(*self.args.py_modules)
 
     def loop_teardown(self):
         """Stop the request loop """

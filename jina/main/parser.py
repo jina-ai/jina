@@ -19,7 +19,7 @@ def set_base_parser():
         'Code': ('🧑‍💻', 'https://github.com/jina-ai/jina/'),
         'Jina Hub': ('📦', 'https://github.com/jina-ai/jina-hub/'),
         'Home': ('🌐', 'https://jina.ai'),
-        'Join Us': ('🙌', 'hr@jina.ai')
+        'Hiring': ('🙌', 'hr@jina.ai')
     }
     url_str = '\n'.join(f'{v[0]} {k:10.10} {colored(v[1], "cyan", attrs=["underline"])}' for k, v in urls.items())
 
@@ -116,6 +116,9 @@ def set_pea_parser(parser=None):
                           '> a supported executor\'s class name, '
                           '> one of "_clear", "_route", "_forward", "_logroute", "_merge" '
                           '> the content of YAML config (must starts with "!")')  # pod(no use) -> pea
+    gp0.add_argument('--py-modules', type=str, nargs='*',
+                     help='the customized python modules need to be imported before loading the'
+                          ' executor')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--image', type=str,
@@ -201,6 +204,8 @@ def set_pea_parser(parser=None):
                      help='turn on remote logging')
     gp7.add_argument('--log-profile', action='store_true', default=False,
                      help='turn on the profiling logger')
+    gp7.add_argument('--override-exec-log', action='store_true', default=False,
+                     help='turn on to allow the override of the executor logger by the pea logger')
     _set_grpc_parser(parser)
     return parser
 

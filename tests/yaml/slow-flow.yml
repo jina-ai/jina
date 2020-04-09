@@ -1,0 +1,12 @@
+!Flow
+with:
+  runtime: process
+  logserver: True
+  logserver_config: test-server-config.yml
+  max_idle_time: 5
+  shutdown_idle: true
+pods:
+  sw:
+    yaml_path: SlowWorker
+    replicas: 5
+    py_modules: ./yaml/slow-worker.py

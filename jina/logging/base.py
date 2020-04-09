@@ -193,7 +193,7 @@ def get_logger(context: str, context_len: int = 15,
         h.setFormatter(ColorFormatter(fmt_str))
         logger.addHandler(h)
 
-    if log_profile:
+    if ('JINA_LOG_PROFILING' in os.environ) or log_profile:
         h = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
         h.setLevel(verbose_level.value)
         h.setFormatter(ProfileFormatter(timed_fmt_str))
@@ -204,7 +204,7 @@ def get_logger(context: str, context_len: int = 15,
         h.setFormatter(JsonFormatter(timed_fmt_str))
         logger.addHandler(h)
 
-    if log_sse:
+    if ('JINA_LOG_SSE' in os.environ) or log_sse:
         h = QueueHandler(__sse_queue__)
         h.setLevel(verbose_level.value)
         h.setFormatter(JsonFormatter(timed_fmt_str))

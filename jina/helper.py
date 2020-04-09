@@ -429,6 +429,10 @@ def get_parsed_args(kwargs, parser):
     return args, p_args, unknown_args
 
 
-def get_non_defaults_args(args, parser) -> Dict:
-    _defaults = parser.parse_args([])
-    return {k: v for k, v in vars(args).items() if getattr(_defaults, k) != v}
+def get_non_defaults_args(args, parser, taboo=(None,)) -> Dict:
+    non_defaults = {}
+    _defaults = vars(parser.parse_args([]))
+    for k, v in vars(args).items():
+        if k in _defaults and k not in taboo and _defaults[k] != v:
+            non_defaults[k] = v
+    return non_defaults

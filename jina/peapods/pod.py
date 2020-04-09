@@ -30,12 +30,8 @@ class BasePod:
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
+        self._args = args
         self.peas_args = self._parse_args(args)
-        self.sentinel_threads = []
-        if isinstance(args, argparse.Namespace) and getattr(args, 'shutdown_idle', False):
-            self.sentinel_threads.append(Thread(target=self.close_if_idle,
-                                                name='sentinel-shutdown-idle',
-                                                daemon=True))
 
     @property
     def is_idle(self) -> bool:
@@ -163,6 +159,11 @@ class BasePod:
             # s.host_out = __default_host__
 
     def start_sentinels(self):
+        self.sentinel_threads = []
+        if isinstance(self._args, argparse.Namespace) and getattr(self._args, 'shutdown_idle', False):
+            self.sentinel_threads.append(Thread(target=self.close_if_idle,
+                                                name='sentinel-shutdown-idle',
+                                                daemon=True))
         for t in self.sentinel_threads:
             t.start()
 
