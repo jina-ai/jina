@@ -4,7 +4,7 @@ import threading
 import time
 from collections import defaultdict
 from queue import Empty
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import zmq
 
@@ -96,7 +96,7 @@ class BasePea(metaclass=PeaMeta):
     communicates with others via protobuf and ZeroMQ
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: Union['argparse.Namespace', Dict]):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
