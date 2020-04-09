@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from jina.executors.crafters.image.crop import ImageCropper, CenterImageCropper, RandomImageCropper, FiveImageCropper, \
-    SlidingWindowCropper
+    SlidingWindowImageCropper
 from tests.executors.crafters.image import JinaImageTestCase
 
 
@@ -53,11 +53,11 @@ class MyTestCase(JinaImageTestCase):
         img_array = self.create_random_img_array(img_size, img_size)
         output_dim = 4
         strides = (6, 6)
-        crafter = SlidingWindowCropper(output_dim, strides, 'VALID')
+        crafter = SlidingWindowImageCropper(output_dim, strides, 'VALID')
         crafted_chunk_list = crafter.craft(img_array, 0, 0)
         self.assertEqual(len(crafted_chunk_list), 4)
 
-        crafter = SlidingWindowCropper(output_dim, strides, 'SAME')
+        crafter = SlidingWindowImageCropper(output_dim, strides, 'SAME')
         crafted_chunk_list = crafter.craft(img_array, 0, 0)
         self.assertEqual(len(crafted_chunk_list), 9)
 

@@ -1,22 +1,41 @@
 import numbers
 import numpy as np
 from . import ImageChunkCrafter
-from typing import Union, Tuple, List, Dict
+from typing import Union, Tuple, Dict
 
 
 class ImageResizer(ImageChunkCrafter):
+    """
+    :class:`ImageResizer` resize the image to the given size.
+    """
     def __init__(self,
-                 output_dim: int,
+                 target_size: Union[Tuple[int], int],
                  how='BILINEAR',
                  *args, **kwargs):
+        """
+
+        :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
+            this. If size is an int, the smaller edge of the image will be matched to this number maintain the aspect
+            ratio.
+        :param how: the interpolation method. Valid values include `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`.
+            Default is `BILINEAR`. Please refer to `PIL.Image` for detaisl.
+        """
         super().__init__(*args, **kwargs)
-        if isinstance(output_dim, numbers.Number):
-            self.output_dim = output_dim
+        if isinstance(target_size, numbers.Number):
+            self.output_dim = target_size
         else:
-            raise ValueError('output_dim {} should be an integer'.format(output_dim))
+            raise ValueError('output_dim {} should be an integer'.format(target_size))
         self.how = how
 
     def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> Dict:
+        """
+        Resize the image array to the given size.
+
+        :param blob: the ndarray of the image
+        :param chunk_id: the chunk id
+        :param doc_id: the doc id
+        :return: a chunk dict with the cropped image
+        """
         raw_img = self._load_image(blob)
         processed_img = self._resize_short(raw_img, self.output_dim, self.how)
         return dict(

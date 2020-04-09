@@ -46,7 +46,7 @@ class SegmentDriver(BaseExecutableDriver):
         no need to self-assign it in your segmenter
     """
 
-    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = False, *args, **kwargs):
+    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.first_chunk_id = first_chunk_id
         self.random_chunk_id = random_chunk_id

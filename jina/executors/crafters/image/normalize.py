@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, Union
 
 import numpy as np
 
@@ -10,17 +10,18 @@ class ImageNormalizer(ImageChunkCrafter):
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
 
     def __init__(self,
-                 output_dim,
+                 target_size: Union[Tuple[int], int],
                  img_mean: Tuple[float] = (0, 0, 0),
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,
-                 channel_axis: int = -1,
                  *args,
                  **kwargs):
         """
         :class:`ImageNormalizer` normalize the image.
 
-        :param output_dim: the output size. Both height and width are set to `output_dim`
+        :param target_size: desired output size. If size is a sequence like (h, w), the output size will be matched to
+            this. If size is an int, the smaller edge of the image will be matched to this number maintain the aspect
+            ratio.
         :param img_mean: the mean of the images in `RGB` channels. Set to `[0.485, 0.456, 0.406]` for the models trained
             on `imagenet` with pytorch backbone.
         :param img_std: the std of the images in `RGB` channels. Set to `[0.229, 0.224, 0.225]` for the models trained
@@ -30,9 +31,8 @@ class ImageNormalizer(ImageChunkCrafter):
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
         super().__init__(*args, **kwargs)
-        self.output_dim = output_dim
+        self.target_size = target_size
         self.resize_dim = resize_dim
-        self.channel_axis = channel_axis
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
 
@@ -50,7 +50,7 @@ class ImageNormalizer(ImageChunkCrafter):
 
     def _normalize(self, img):
         img = self._resize_short(img, target_size=self.resize_dim)
-        img = self._crop_image(img, target_size=(self.output_dim, self.output_dim), how='center')
+        img = self._crop_image(img, target_size=self.target_size, how='center')
         img = np.array(img).astype('float32') / 255
         img -= self.img_mean
         img /= self.img_std
