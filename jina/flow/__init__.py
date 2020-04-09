@@ -81,6 +81,17 @@ class Flow:
         as the head and tail routers are removed.
         """
         self.logger = get_logger(self.__class__.__name__)
+        self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
+        self._build_level = FlowBuildLevel.EMPTY
+        self._pod_name_counter = 0
+        self._last_changed_pod = []
+
+        self.update_args(args, **kwargs)
+
+        if not self.args.no_gateway:
+            self._add_gateway()
+
+    def update_args(self, args, **kwargs):
         from ..main.parser import set_flow_parser
         _flow_parser = set_flow_parser()
         if args is None:
@@ -88,16 +99,10 @@ class Flow:
             _, args, _ = get_parsed_args(kwargs, _flow_parser)
 
         self.args = args
-        if self.args.logserver and 'log_sse' not in kwargs:
+        if kwargs and self.args.logserver and 'log_sse' not in kwargs:
             kwargs['log_sse'] = True
         self._common_kwargs = kwargs
-        self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
-        self._build_level = FlowBuildLevel.EMPTY
-        self._pod_name_counter = 0
-        self._last_changed_pod = []
-        if not self.args.no_gateway:
-            self._add_gateway()
-        self._kwargs = get_non_defaults_args(args, _flow_parser)
+        self._kwargs = get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 
     @classmethod
     def to_yaml(cls, representer, data):
