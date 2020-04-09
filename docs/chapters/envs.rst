@@ -81,6 +81,17 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: ``INFO``
 
+.. confval:: JINA_LOG_SSE
+
+    Turn on the server side event logging for all pea, pods, executors running in the context.
+
+    :default: unset
+
+.. confval:: JINA_LOG_PROFILING
+
+    Turn on the server side event logging for profiling
+
+    :default: unset
 
 .. confval:: JINA_LOG_LONG
 
