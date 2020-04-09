@@ -204,6 +204,8 @@ def set_pea_parser(parser=None):
                      help='turn on remote logging')
     gp7.add_argument('--log-profile', action='store_true', default=False,
                      help='turn on the profiling logger')
+    gp7.add_argument('--override-exec-log', action='store_true', default=False,
+                     help='turn on to allow the override of the executor logger by the pea logger')
     _set_grpc_parser(parser)
     return parser
 

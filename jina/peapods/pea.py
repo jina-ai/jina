@@ -220,7 +220,8 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.args.replica_id)
-                self.executor.logger = self.logger
+                if self.args.override_exec_log:
+                    self.executor.logger = self.logger
                 self.executor.attach(pea=self)
                 # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:
