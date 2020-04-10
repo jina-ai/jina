@@ -10,7 +10,7 @@ from tests import JinaTestCase
 class MyTestCase(JinaTestCase):
 
     def test_load_yaml1(self):
-        from jina.executors.indexers.numpy import NumpyIndexer
+        from jina.executors.indexers.vector.numpy import NumpyIndexer
         NumpyIndexer.load_config('yaml/dummy_exec1.yml')
         self.add_tmpfile('test.gzip')
 

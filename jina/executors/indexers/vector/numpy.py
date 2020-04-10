@@ -3,7 +3,7 @@ from typing import Tuple, Optional
 
 import numpy as np
 
-from . import BaseVecIndexer
+from jina.executors.indexers import BaseVecIndexer
 
 
 class NumpyIndexer(BaseVecIndexer):

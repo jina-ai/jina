@@ -4,8 +4,8 @@ from typing import Union
 
 from google.protobuf.json_format import Parse
 
-from . import BaseKVIndexer
-from ...proto import jina_pb2
+from jina.executors.indexers import BaseKVIndexer
+from jina.proto import jina_pb2
 
 
 class BasePbIndexer(BaseKVIndexer):
