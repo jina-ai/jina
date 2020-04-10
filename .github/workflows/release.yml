@@ -2,7 +2,7 @@ name: Release Cycle
 
 on:
   schedule:
-    - cron: "55 15 * * 5"
+    - cron: "55 15 * * 6"
 
 #on:
 #  push:
