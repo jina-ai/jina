@@ -17,10 +17,9 @@ jobs:
       - name: install the release version
         run: |
           pip install .
-          echo ::set-env name=JINA_VERSION::${TAG_VER#"v"}
-          JINA_VERSION=${{env.JINA_VERSION}} ./make-doc.sh release "release ${{github.ref}} of ${{github.repository}}"
-        env:
-          TAG_VER: ${{ github.ref }}
+          echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=JINA_VERSION::${JINA_VERSION#"v"}
+          JINA_VERSION=${{env.JINA_VERSION}} ./make-doc.sh release "release ${{env.JINA_VERSION}} of ${{github.repository}}"
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
@@ -44,9 +43,8 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo ::set-env name=JINA_VERSION::${TAG_VER#"v"}
-        env:
-          TAG_VER: ${{ github.ref }}
+          echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=JINA_VERSION::${JINA_VERSION#"v"}
       - name: Run Buildx and Upload to Docker Cloud
         run: |
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
@@ -54,7 +52,7 @@ jobs:
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
             --output "type=registry" \
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
-            -t jinaai/jina:$JINA_VERSION -t jinaai/jina:latest \
+            -t jinaai/jina:devel-${{env.JINA_VERSION}} -t jinaai/jina:latest \
             --file ./Dockerfiles/debianx.Dockerfile .
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
