@@ -4,9 +4,9 @@ import unittest
 import numpy as np
 
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.annoy import AnnoyIndexer
-from jina.executors.indexers.nmslib import NmslibIndexer
-from jina.executors.indexers.numpy import NumpyIndexer
+from jina.executors.indexers.vector.annoy import AnnoyIndexer
+from jina.executors.indexers.vector.nmslib import NmslibIndexer
+from jina.executors.indexers.vector.numpy import NumpyIndexer
 from tests import JinaTestCase
 
 # fix the seed here

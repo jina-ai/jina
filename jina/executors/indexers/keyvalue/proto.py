@@ -4,8 +4,8 @@ from typing import Union
 
 from google.protobuf.json_format import Parse
 
-from . import BaseKVIndexer
-from ...proto import jina_pb2
+from jina.executors.indexers import BaseKVIndexer
+from jina.proto import jina_pb2
 
 
 class BasePbIndexer(BaseKVIndexer):
@@ -31,13 +31,13 @@ class BasePbIndexer(BaseKVIndexer):
         return gzip.open(self.index_abspath, 'at', compresslevel=self.compress_level)
 
     def get_create_handler(self):
-        """Creat a new gzip file"""
+        """Create a new gzip file"""
         return self.get_add_handler()
 
     def add(self, obj):
         """Add a JSON-friendly object to the indexer
 
-        :param obj: an object can be jsonify
+        :param obj: an object can be jsonified
         """
         json.dump(obj, self.write_handler)
         self.write_handler.write('\n')
