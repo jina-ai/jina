@@ -3,6 +3,12 @@
 
 
 
+
+
+
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -130,4 +136,88 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```705ee269```](https://github.com/jina-ai/jina/commit/705ee2699c20ec394084e1ff785c93e861e21192)] __-__ __version__: bumping version to 0.0.5 (*Jina Dev Bot*)
  - [[```0e8ca53e```](https://github.com/jina-ai/jina/commit/0e8ca53eea99eaa35dc57c75f33536be0bd091cc)] __-__ __version__: bumping version to 0.0.3 (*Jina Dev Bot*)
+
+## Release Note (`0.0.5`)
+
+> Release time: 2020-04-10 20:08:47
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```60578e56```](https://github.com/jina-ai/jina/commit/60578e56bf6494c64063e25384aa9b83208137f5)] __-__ trigger release again (*Han Xiao*)
+
+## Release Note (`0.0.6`)
+
+> Release time: 2020-04-10 20:09:15
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```fed7429d```](https://github.com/jina-ai/jina/commit/fed7429d9e850517a07f784460adcbfd3747d202)] __-__ __version__: bumping version to 0.0.6 (*Jina Dev Bot*)
+
+## Release Note (`0.0.7`)
+
+> Release time: 2020-04-10 20:09:57
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```fa19a2dd```](https://github.com/jina-ai/jina/commit/fa19a2dd700408c4644d621a1e90dfce441978ed)] __-__ __version__: bumping version to 0.0.7 (*Jina Dev Bot*)
+
+## Release Note (`0.0.8`)
+
+> Release time: 2020-04-10 20:10:37
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```9add94b1```](https://github.com/jina-ai/jina/commit/9add94b1e7af0430d421403dd3f8cd52edd25d5c)] __-__ __version__: bumping version to 0.0.8 (*Jina Dev Bot*)
+
+## Release Note (`0.0.9`)
+
+> Release time: 2020-04-10 20:11:07
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```f1423e68```](https://github.com/jina-ai/jina/commit/f1423e68852c1b97886bbbc8db35c24416350b34)] __-__ __version__: bumping version to 0.0.9 (*Jina Dev Bot*)
+
+## Release Note (`0.0.10`)
+
+> Release time: 2020-04-10 20:11:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```0ef3c0a0```](https://github.com/jina-ai/jina/commit/0ef3c0a0048f7a6bc1a080d8ae7259dee4dd6962)] __-__ __version__: bumping version to 0.0.10 (*Jina Dev Bot*)
 
