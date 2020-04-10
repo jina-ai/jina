@@ -59,7 +59,7 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo ::set-env name=JINA_VERSION::"$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
+          echo ::set-env name=JINA_VERSION::"devel-$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)"
       - name: Run Buildx and Upload to Docker Cloud
         run: |
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
@@ -67,7 +67,7 @@ jobs:
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
             --output "type=registry" \
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
-            -t jinaai/jina:devel -t jinaai/jina:devel-${{env.JINA_VERSION}} \
+            -t jinaai/jina:devel -t jinaai/jina:${{env.JINA_VERSION}} \
             --file ./Dockerfiles/debianx.Dockerfile .
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
@@ -78,4 +78,4 @@ jobs:
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
-          tags: "devel, devel-${{env.JINA_VERSION}}"
+          tags: "devel, ${{env.JINA_VERSION}}"
