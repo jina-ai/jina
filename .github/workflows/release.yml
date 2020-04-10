@@ -1,8 +1,12 @@
 name: Release Cycle
 
 on:
-  schedule:
-    - cron: "00 22 * * 5"  # "55 15 * * 5"
+  push:
+    branches:
+      - master
+#on:
+#  schedule:
+#    - cron: "55 15 * * 5"
 
 #on:
 #  push:
