@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
@@ -30,14 +30,12 @@ if [[ $1 == "commit" ]]; then
 elif [[ $1 == "release" ]]; then
   cp ${DOC_DIR}/README.md ${HTML_DIR}/
   cd ${HTML_DIR}
-  git rm -r --cached .
-  git reset --hard
   git init
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
   git add .
+  git commit -m "$2" -a   # commit before tagging, otherwise throw fatal: Failed to resolve 'HEAD' as a valid ref.
   git tag ${TAG_VER}
-  git commit -m "$2" -a
   git status
   cd -
 elif [[ $1 == "serve" ]]; then
