@@ -30,6 +30,8 @@ if [[ $1 == "commit" ]]; then
 elif [[ $1 == "release" ]]; then
   cp ${DOC_DIR}/README.md ${HTML_DIR}/
   cd ${HTML_DIR}
+  git rm -r --cached .
+  git reset --hard
   git init
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
