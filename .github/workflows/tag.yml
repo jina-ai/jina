@@ -16,13 +16,10 @@ jobs:
           python-version: 3.7
       - name: install the release version
         run: |
-          pip install .
-          echo ::set-env name=JINA_VERSION::${TAG_VER/refs\/tags\//}
-          JINA_VERSION=${{env.JINA_VERSION}} ./make-doc.sh release "release ${{env.JINA_VERSION}} of ${{github.repository}}"
-          echo $JINA_VERSION
-          echo $TAG_VER
-        env:
-          TAG_VER: ${{ github.ref#"v" }}
+               pip install .
+               echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
+          #          JINA_VERSION=${{env.JINA_VERSION}} ./make-doc.sh release "release ${{env.JINA_VERSION}} of ${{github.repository}}"
+               echo $JINA_VERSION
 #      - uses: ad-m/github-push-action@master
 #        with:
 #          github_token: ${{ secrets.JINA_DEV_BOT }}
