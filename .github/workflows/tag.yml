@@ -18,7 +18,6 @@ jobs:
         run: |
                pip install .
                echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
-          #          JINA_VERSION=${{env.JINA_VERSION}} ./make-doc.sh release "release ${{env.JINA_VERSION}} of ${{github.repository}}"
                echo $JINA_VERSION
 #      - uses: ad-m/github-push-action@master
 #        with:
