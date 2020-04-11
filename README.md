@@ -32,7 +32,7 @@ Jina is *the* cloud-native neural search solution powered by the state-of-the-ar
 
 ## Contents
 
-<img align="right" width="400" src="./.github/install.svg" />
+<img align="right" width="350" src="./.github/install.png" />
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
