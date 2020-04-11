@@ -20,50 +20,52 @@ jobs:
           echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
       - name: install the release version
         run: |
-          echo ${{steps.get_version.outputs.JINA_VERSION}}
-          echo ${{steps.get_version.outputs.V_JINA_VERSION}}
-#      - uses: ad-m/github-push-action@master
-#        with:
-#          github_token: ${{ secrets.JINA_DEV_BOT }}
-#          repository: jina-ai/jina-docs
-#          force: true
-#          directory: docs/_build/html
-#          tags: true
-#
-#  update-docker:
-#    needs: update-doc
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Set up Docker Buildx
-#        id: buildx
-#        uses: crazy-max/ghaction-docker-buildx@v1
-#        with:
-#          version: latest
-#      - name: Set envs and versions
-#        run: |
-#          echo ${{ steps.buildx.outputs.platforms }}
-#          echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
-#          echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-#          echo ::set-env name=JINA_VERSION::${TAG_VER#"refs/tags/v"}
-#        env:
-#          TAG_VER: ${{ github.ref }}
-#      - name: Run Buildx and Upload to Docker Cloud
-#        run: |
-#          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-#          docker buildx build \
-#            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
-#            --output "type=registry" \
-#            --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
-#            -t jinaai/jina:${{env.JINA_VERSION}} -t jinaai/jina:latest \
-#            --file ./Dockerfiles/debianx.Dockerfile .
-#      - name: Upload to Github Docker Registry
-#        uses: elgohr/Publish-Docker-Github-Action@master
-#        with:
-#          name: jina-ai/jina/jina
-#          username: ${{ secrets.DOCKER_USERNAME }}
-#          password: ${{ secrets.DOCKER_PASSWORD }}
-#          registry: docker.pkg.github.com
-#          dockerfile: Dockerfiles/debianx.Dockerfile
-#          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
-#          tags: "latest, ${{env.JINA_VERSION}}"
+          ./make-doc.sh release "release $JINA_VERSION of ${{github.repository}}"
+        env:
+          JINA_VERSION: ${{steps.get_version.outputs.JINA_VERSION}}
+          V_JINA_VERSION: ${{steps.get_version.outputs.V_JINA_VERSION}}
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/jina-docs
+          force: true
+          directory: docs/_build/html
+          tags: true
+
+  update-docker:
+    needs: update-doc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: Set envs and versions
+        run: |
+          echo ${{ steps.buildx.outputs.platforms }}
+          echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
+          echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo ::set-env name=JINA_VERSION::${TAG_VER#"refs/tags/v"}
+        env:
+          TAG_VER: ${{ github.ref }}
+      - name: Run Buildx and Upload to Docker Cloud
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
+            --output "type=registry" \
+            --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
+            -t jinaai/jina:${{env.JINA_VERSION}} -t jinaai/jina:latest \
+            --file ./Dockerfiles/debianx.Dockerfile .
+      - name: Upload to Github Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jina-ai/jina/jina
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.pkg.github.com
+          dockerfile: Dockerfiles/debianx.Dockerfile
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
+          tags: "latest, ${{env.JINA_VERSION}}"

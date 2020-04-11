@@ -35,7 +35,7 @@ elif [[ $1 == "release" ]]; then
   git config --local user.name "Jina Dev Bot"
   git add .
   git commit -m "$2" -a   # commit before tagging, otherwise throw fatal: Failed to resolve 'HEAD' as a valid ref.
-  git tag ${JINA_VERSION}
+  git tag ${V_JINA_VERSION}
   git status
   cd -
 elif [[ $1 == "serve" ]]; then
