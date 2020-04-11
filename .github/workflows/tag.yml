@@ -31,41 +31,41 @@ jobs:
           force: true
           directory: docs/_build/html
           tags: true
-
-  update-docker:
-    needs: update-doc
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v1
-        with:
-          version: latest
-      - name: Set envs and versions
-        run: |
-          echo ${{ steps.buildx.outputs.platforms }}
-          echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
-          echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo ::set-env name=JINA_VERSION::${TAG_VER#"refs/tags/v"}
-        env:
-          TAG_VER: ${{ github.ref }}
-      - name: Run Buildx and Upload to Docker Cloud
-        run: |
-          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
-            --output "type=registry" \
-            --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
-            -t jinaai/jina:${{env.JINA_VERSION}} -t jinaai/jina:latest \
-            --file ./Dockerfiles/debianx.Dockerfile .
-      - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: jina-ai/jina/jina
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
-          dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
-          tags: "latest, ${{env.JINA_VERSION}}"
+#
+#  update-docker:
+#    needs: update-doc
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Set up Docker Buildx
+#        id: buildx
+#        uses: crazy-max/ghaction-docker-buildx@v1
+#        with:
+#          version: latest
+#      - name: Set envs and versions
+#        run: |
+#          echo ${{ steps.buildx.outputs.platforms }}
+#          echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
+#          echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+#          echo ::set-env name=JINA_VERSION::${TAG_VER#"refs/tags/v"}
+#        env:
+#          TAG_VER: ${{ github.ref }}
+#      - name: Run Buildx and Upload to Docker Cloud
+#        run: |
+#          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+#          docker buildx build \
+#            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
+#            --output "type=registry" \
+#            --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
+#            -t jinaai/jina:${{env.JINA_VERSION}} -t jinaai/jina:latest \
+#            --file ./Dockerfiles/debianx.Dockerfile .
+#      - name: Upload to Github Docker Registry
+#        uses: elgohr/Publish-Docker-Github-Action@master
+#        with:
+#          name: jina-ai/jina/jina
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_PASSWORD }}
+#          registry: docker.pkg.github.com
+#          dockerfile: Dockerfiles/debianx.Dockerfile
+#          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
+#          tags: "latest, ${{env.JINA_VERSION}}"
