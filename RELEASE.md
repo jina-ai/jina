@@ -31,3 +31,4 @@ On Friday release, it will:
 - upload `x.y.z` package on PyPI;
 - bump the master to `x.y.(z+1)` and commit a `chore(version)` push.
 
+The current master version should always be one version ahead of `git tag -l | sort -V | tail -n1`.

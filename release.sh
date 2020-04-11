@@ -71,6 +71,7 @@ if [ $LAST_COMMIT != $LAST_UPDATE ]; then
     exit 1;
 fi
 
+# release the current version
 RELEASE_VER=$(sed '3q;d' ./jina/__init__.py | cut -d \' -f2)
 printf "current version: \e[1;33m$RELEASE_VER\e[0m\n"
 
