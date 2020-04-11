@@ -1,12 +1,37 @@
 # Jina
 
+[![Jina](./.github/jina-badge.svg)](https://jina.ai)
 [![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)
 [![Release Cycle](https://github.com/jina-ai/jina/workflows/Release%20Cycle/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+Cycle%22)
 [![Release CD](https://github.com/jina-ai/jina/workflows/Release%20CD/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+CD%22)
 [![Docker](.github/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
+<a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
+  <img src=".github/twitter-badge.svg"
+       alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
+</a>
+
+
+<p align="center">
+  <a href="https://jina.ai">Website</a> •
+  <a href="https://docs.jina.ai">Docs</a> •
+  <a href="https://docs.jina.ai">Examples</a> •
+  <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
+  <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
+  <a href="https://board.jina.ai">Dashboard (beta)</a> •
+  <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
+  <a href="https://jina.ai/jobs">We are Hiring</a> •
+  <a href="https://jina.ai/events">Events</a> •
+  <a href="https://blog.jina.ai">Blog</a>
+</p>
+
 
 Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
+
+
+## Contents
+
+<img align="right" width="400" src="https://s3-us-west-2.amazonaws.com/assets.site.serverless.com/email/sls-getting-started.gif" />
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -43,22 +68,6 @@ We provide a universal Jina image (only 80MB!) that can be run on multiple archi
 ```bash
 docker run jinaai/jina
 ```
-
-#### Upgrade Jina
-
-If you have a previously installed version, you can upgrade it by running:
-
-```bash
-pip install -U jina
-```
-
-or 
-
-```bash
-docker pull jinaai/jina
-```
-
-A complete guide of using Jina with Docker can be found in our documentation.
 
 ## Getting Started
 
@@ -97,7 +106,7 @@ Please first read [the contributing guidelines](CONTRIBUTING.md) and [the releas
 - [Slack chanel](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
 - [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest update, release and event news of Jina
 - [LinkedIn](https://www.linkedin.com/showcase/31268045/) - get to know Jina AI as a company
-- [Twitter](https://twitter.com/JinaAI_) - interact with us [@JinaAI_](https://twitter.com/JinaAI_)  
+- ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - follow us and interact using hashtag `#JinaSearch`  
 - [Join Us](mailto:hr@jina.ai) - want to work full-time with us on Jina?
 - [Company](https://jina.ai) - know more about our company, we are fully committed to open-source!
 
