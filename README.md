@@ -97,7 +97,7 @@ Please first read [the contributing guidelines](CONTRIBUTING.md) and [the releas
 - [Slack chanel](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
 - [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest update, release and event news of Jina
 - [LinkedIn](https://www.linkedin.com/showcase/31268045/) - get to know Jina AI as a company
-- [Twitter](https://twitter.com/JinaAI_) - interact with us @JinaAI_  
+- [Twitter](https://twitter.com/JinaAI_) - interact with us [@JinaAI_](https://twitter.com/JinaAI_)  
 - [Join Us](mailto:hr@jina.ai) - want to work full-time with us on Jina?
 - [Company](https://jina.ai) - know more about our company, we are fully committed to open-source!
 
