@@ -29,6 +29,9 @@
 
 Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
 
+Jina is an open-source project, actively maintained by a full-time, [venture-backed team](https://jina.ai). We are hiring AI engineers, full-stack developers, evangelists to make Jina *the* next neural search eco-system. 
+
+
 
 ## Contents
 
@@ -107,7 +110,7 @@ Please first read [the contributing guidelines](CONTRIBUTING.md) and [the releas
 - [Slack chanel](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
 - [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest update, release and event news of Jina
 - [LinkedIn](https://www.linkedin.com/showcase/31268045/) - get to know Jina AI as a company
-- ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - follow us and interact using hashtag `#JinaSearch`  
+- ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - follow us and interact with us using hashtag `#JinaSearch`  
 - [Join Us](mailto:hr@jina.ai) - want to work full-time with us on Jina?
 - [Company](https://jina.ai) - know more about our company, we are fully committed to open-source!
 
