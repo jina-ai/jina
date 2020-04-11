@@ -17,7 +17,7 @@ jobs:
       - id: get_version
         run: echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\//}
       - name: install the release version
-        run: echo ${{steps.get_version.JINA_VERSION}}
+        run: echo ${{steps.get_version.outputs.JINA_VERSION}}
 #      - uses: ad-m/github-push-action@master
 #        with:
 #          github_token: ${{ secrets.JINA_DEV_BOT }}
