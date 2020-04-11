@@ -15,9 +15,13 @@ jobs:
         with:
           python-version: 3.7
       - id: get_version
-        run: echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+        run: |
+          echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
+          echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
       - name: install the release version
-        run: echo ${{steps.get_version.outputs.JINA_VERSION}}
+        run: |
+          echo ${{steps.get_version.outputs.JINA_VERSION}}
+          echo ${{steps.get_version.outputs.V_JINA_VERSION}}
 #      - uses: ad-m/github-push-action@master
 #        with:
 #          github_token: ${{ secrets.JINA_DEV_BOT }}
