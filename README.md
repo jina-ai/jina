@@ -11,6 +11,13 @@
 [![Release CD](https://github.com/jina-ai/jina/workflows/Release%20CD/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+CD%22)
 [![Docker](.github/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
 
+<p align="center">
+  <a href="https://jina.ai">English</a> •
+  <a href="">Русский язык</a> •
+  <a href="">français</a> •
+  <a href="">日本語</a> •
+  <a href="">中文</a> •
+</p>
 
 
 <p align="center">
