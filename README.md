@@ -16,7 +16,7 @@
   <a href="">Русский язык</a> •
   <a href="">français</a> •
   <a href="">日本語</a> •
-  <a href="">中文</a> •
+  <a href="">中文</a>
 </p>
 
 
@@ -40,7 +40,7 @@
 
 **🐣 System Engineering made Easy** - Jina offers an one-stop solution that frees you from handcrafting and gluing packages, libraries and database. With the most intuitive API and dashboard UI, building a cloud-native search system is just a minute thing.
 
-**🧩 Powerful Extensions, Simple Integration** - Want to integrate the latest AI model into Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Checkout Jina Hub (beta) and find more extensions on different use-cases made by the community.
+**🧩 Powerful Extensions, Simple Integration** - New AI model into Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Checkout Jina Hub (beta) and find more extensions on different use-cases made by the community.
 
 Jina is an open-source project, actively maintained by a full-time, [venture-backed team](https://jina.ai). We are hiring AI engineers, full-stack developers, evangelists to make Jina *the* next neural search eco-system. 
 
@@ -114,7 +114,7 @@ The documentation is then available via browser at `http://0.0.0.0:8080/`.
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
 
-Please first read [the contributing guidelines](CONTRIBUTING.md) and [the release cycle](RELEASE.md) before the submission. 
+Please first read [the contributing guidelines](CONTRIBUTING.md) and [our development stages](RELEASE.md) before the submission. 
 
 ## Community
 
