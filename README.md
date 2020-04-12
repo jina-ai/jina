@@ -27,11 +27,15 @@
 </p>
 
 
-Jina is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
+**Jina** is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
+
+![Jina](./.github/universe.svg) **The Universal Solution** Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
+
+**Easy System Engineering** Building a search system has never been easier. Jina offers an one-stop solution that frees you from handcrafting and gluing packages, deep learning libraries and database. With the most intuitive API and dashboard UI, you can build a cloud-native search system ready for production in minutes.
+
+**Powerful Extensions, Simple Integration** Want to integrate the latest AI model or your own component into Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Checkout Jina Hub (beta) and find more extensions on different use-cases.
 
 Jina is an open-source project, actively maintained by a full-time, [venture-backed team](https://jina.ai). We are hiring AI engineers, full-stack developers, evangelists to make Jina *the* next neural search eco-system. 
-
-
 
 ## Contents
 
