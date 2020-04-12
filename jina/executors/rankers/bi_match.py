@@ -11,7 +11,12 @@ class BiMatchRanker(BaseRanker):
     D_MISS = 2000  # cost of a non-match chunk, used for normalization
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
-        # match_idx columns, doc_id, matched_chunk_id, query_chunk_id
+        """
+
+        :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the batch size of the matched chunks for the
+            query doc. The columns correspond to the ``doc_id`` of the matched chunk, ``chunk_id`` of the matched chunk,
+             ``chunk_id`` of the query chunk, and ``score`` of the matched chunk.
+        """
         # sort by doc_id
         a = match_idx[match_idx[:, 0].argsort()]
         # group by doc_id
