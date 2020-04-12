@@ -16,6 +16,16 @@ class BiMatchRanker(BaseRanker):
         :param match_idx: an `ndarray` of the size ``N x 4``. ``N`` is the batch size of the matched chunks for the
             query doc. The columns correspond to the ``doc_id`` of the matched chunk, ``chunk_id`` of the matched chunk,
              ``chunk_id`` of the query chunk, and ``score`` of the matched chunk.
+        :param query_chunk_meta: a dict of meta info for the query chunks with **ONLY** the ``required_keys`` are kept.
+        :param match_chunk_meta: a dict of meta info for the matched chunks with **ONLY** the ``required_keys`` are
+            kept.
+
+        :return: an `ndarray` of the size ``M x 2``. ``M`` is the number of matched docs. The columns correspond to the
+            ``doc_id`` and ``score``.
+
+        .. note::
+            In both `query_chunk_meta` and `match_chunk_meta`, ONLY the fields from the ``required_keys`` are kept.
+
         """
         # sort by doc_id
         a = match_idx[match_idx[:, 0].argsort()]
