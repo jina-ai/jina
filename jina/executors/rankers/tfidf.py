@@ -178,7 +178,7 @@ class BM25Ranker(TfIdfRanker):
         """
         q_df, q_id = TfIdfRanker._get_df(match_idx)
         total_df = np.sum(q_df)
-        return {idx: np.log10((total_df + 1.) / (df + 0.5)) for idx, df in zip(q_id, q_df)}
+        return {idx: np.log10((total_df + 1.) / (df + 0.5)) ** 2 for idx, df in zip(q_id, q_df)}
 
     def get_tf(self, match_idx, match_chunk_meta):
         """Get the tf dictionary for query chunks that matched a given doc.
