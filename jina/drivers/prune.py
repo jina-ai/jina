@@ -7,10 +7,14 @@ class ChunkPruneDriver(BaseDriver):
     Removed fields are ``embedding``, ``raw_bytes``, ``blob``, ``text``.
     """
 
+    def __init__(self, pruned=('embedding', 'raw_bytes', 'blob', 'text'), *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pruned = pruned
+
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
             for c in d.chunks:
-                for k in ('embedding', 'raw_bytes', 'blob', 'text'):
+                for k in self.pruned:
                     c.ClearField(k)
 
 
@@ -20,9 +24,13 @@ class DocPruneDriver(BaseDriver):
     Removed fields are ``chunks``
     """
 
+    def __init__(self, pruned=('chunks',), *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pruned = pruned
+
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
-            for k in ('chunks',):
+            for k in self.pruned:
                 d.ClearField(k)
 
 

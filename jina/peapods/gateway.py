@@ -112,7 +112,8 @@ class GatewayPea:
                     return False
 
                 with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
-                    self.logger.info('if this takes too long, you may want to reduce "--prefetch"')
+                    self.logger.warning('if this takes too long, you may want to take smaller "--prefetch" or '
+                                        'ask client to reduce "--batch-size"')
                     is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
 
                 while not (zmqlet.msg_sent == zmqlet.msg_recv != 0 and is_req_empty):
