@@ -130,7 +130,7 @@ class MyTestCase(JinaTestCase):
         f = Flow().load_config('yaml/test_log_server.yml')
         with f.build() as fl:
             print(JINA_GLOBAL.logserver.ready)
-            a = requests.get(JINA_GLOBAL.logserver.ready, 5)
+            a = requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
             self.assertEqual(a.status_code, 200)
 
 
