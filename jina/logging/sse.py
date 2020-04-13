@@ -38,8 +38,11 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
                           'they are required for serving HTTP requests.'
                           'Please use "pip install jina[flask]" to install it.')
 
-    with open(server_config_path) as fp:
-        _config = yaml.load(fp)
+    try:
+        with open(server_config_path) as fp:
+            _config = yaml.load(fp)
+    except Exception as ex:
+        default_logger.error(ex)
     JINA_GLOBAL.logserver.address = f'http://{_config["host"]}:{_config["port"]}'
 
     JINA_GLOBAL.logserver.ready = JINA_GLOBAL.logserver.address + _config['endpoints']['ready']
