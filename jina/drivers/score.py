@@ -23,7 +23,9 @@ class Chunk2DocScoreDriver(BaseExecutableDriver):
                     query_chunk_meta[c.chunk_id] = pb_obj2dict(c, exec.required_keys)
                     match_chunk_meta[k.match_chunk.chunk_id] = pb_obj2dict(k.match_chunk, exec.required_keys)
 
-            match_idx = np.array(match_idx, dtype=np.float32)
+            # the type range has to be bigger than np.uint32
+            # otherwise the chunk_id will go overflow without even notice
+            match_idx = np.array(match_idx, dtype=np.float64)
 
             doc_idx = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
 
