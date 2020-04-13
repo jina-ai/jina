@@ -3,6 +3,7 @@ import os
 import threading
 
 import grpc
+from jina.logging.profile import TimeContext
 
 from .grpc_asyncio import AsyncioExecutor
 from .zmq import AsyncZmqlet, add_envelope
@@ -110,8 +111,9 @@ class GatewayPea:
                             return True
                     return False
 
-
-                is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
+                with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
+                    self.logger.info('if this takes too long, you may want to reduce "--prefetch"')
+                    is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
 
                 while not (zmqlet.msg_sent == zmqlet.msg_recv != 0 and is_req_empty):
                     self.logger.info(f'send: {zmqlet.msg_sent} '

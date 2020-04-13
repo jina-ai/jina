@@ -10,6 +10,7 @@ from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, Text
 
 import requests
 import ruamel.yaml
+from requests import Timeout
 from ruamel.yaml import StringIO
 
 from .. import JINA_GLOBAL
@@ -443,11 +444,14 @@ class Flow:
                                                      self.yaml_spec))
             self.sse_logger.start()
             time.sleep(1)
-
+            requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
+            self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
         except ModuleNotFoundError:
             self.logger.error(
-                f'sse log-server can not start because of "flask" and "flask_cors" are missing, '
+                f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
                 f'use "pip install jina[http]" to install the dependencies')
+        except Timeout:
+            self.logger.error('logserver fails to start')
 
     @build_required(FlowBuildLevel.GRAPH)
     def start(self):
@@ -459,6 +463,7 @@ class Flow:
         which is inherited all the way from :class:`jina.peapods.peas.BasePea`
         """
         if self.args.logserver:
+            self.logger.info('start logserver...')
             self.start_log_server()
 
         self._pod_stack = ExitStack()
@@ -487,9 +492,8 @@ class Flow:
         """Close the flow and release all resources associated to it. """
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
-        if hasattr(self, 'sse_logger') and self.sse_logger.is_alive():
-            requests.get(JINA_GLOBAL.logserver.shutdown)
-            self.sse_logger.join()
+        # if hasattr(self, 'sse_logger') and self.sse_logger.is_alive():
+        #     self.sse_logger.stop()
         self._build_level = FlowBuildLevel.EMPTY
         # time.sleep(1)  # sleep for a while until all resources are safely closed
         self.logger.success(

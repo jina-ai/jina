@@ -5,6 +5,6 @@ endpoints:
   profile: /stream/profile  # fetching profiling log in SSE stream
   yaml: /data/yaml  # get the YAML spec of a flow
   shutdown: /action/shutdown  # shutdown the log server
-  ready: /action/isready  # tell if the log server is ready, return 200 if yes
+  ready: /status/ready  # tell if the log server is ready, return 200 if yes
 
 
