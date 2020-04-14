@@ -1,3 +1,0 @@
-!LeveldbIndexer
-with:
-  index_filename: 'leveldb.db'
