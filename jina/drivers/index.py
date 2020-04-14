@@ -4,7 +4,14 @@ from . import BaseExecutableDriver
 from .helper import extract_chunks
 
 
-class ChunkIndexDriver(BaseExecutableDriver):
+class BaseIndexDriver(BaseExecutableDriver):
+    """Drivers inherited from this Driver will bind :meth:`craft` by default """
+
+    def __init__(self, executor: str = None, method: str = 'add', *args, **kwargs):
+        super().__init__(executor, method, *args, **kwargs)
+
+
+class ChunkIndexDriver(BaseIndexDriver):
     """Extract chunk-level embeddings and add it to the executor
 
     """
@@ -22,7 +29,7 @@ class ChunkIndexDriver(BaseExecutableDriver):
             self.exec_fn(np.array([c.chunk_id for c in chunk_pts]), np.stack(embed_vecs))
 
 
-class DocPbIndexDriver(BaseExecutableDriver):
+class DocPbIndexDriver(BaseIndexDriver):
     """Serialize the documents in the request to JSON and write it using the executor
 
     """
@@ -34,7 +41,7 @@ class DocPbIndexDriver(BaseExecutableDriver):
             self.exec_fn(content)
 
 
-class ChunkPbIndexDriver(BaseExecutableDriver):
+class ChunkPbIndexDriver(BaseIndexDriver):
     """Serialize all chunks in the request to JSON and write it using the executor
 
     """

@@ -2,7 +2,14 @@ from . import BaseExecutableDriver
 from .helper import extract_chunks
 
 
-class DocPbSearchDriver(BaseExecutableDriver):
+class BaseSearchDriver(BaseExecutableDriver):
+    """Drivers inherited from this Driver will bind :meth:`craft` by default """
+
+    def __init__(self, executor: str = None, method: str = 'query', *args, **kwargs):
+        super().__init__(executor, method, *args, **kwargs)
+
+
+class DocPbSearchDriver(BaseSearchDriver):
     """Fill in the doc-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
 
     """
@@ -13,7 +20,7 @@ class DocPbSearchDriver(BaseExecutableDriver):
                 tk.match_doc.CopyFrom(self.exec_fn(tk.match_doc.doc_id))
 
 
-class ChunkPbSearchDriver(BaseExecutableDriver):
+class ChunkPbSearchDriver(BaseSearchDriver):
     """Fill in the chunk-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
 
     """
@@ -25,7 +32,7 @@ class ChunkPbSearchDriver(BaseExecutableDriver):
                     k.match_chunk.CopyFrom(self.exec_fn(k.match_chunk.chunk_id))
 
 
-class ChunkSearchDriver(BaseExecutableDriver):
+class ChunkSearchDriver(BaseSearchDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
     """

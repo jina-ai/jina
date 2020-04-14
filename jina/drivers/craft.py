@@ -7,11 +7,12 @@ from .helper import array2blob, pb_obj2dict
 
 class BaseCraftDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
+
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
 
-class ChunkCraftDriver(BaseExecutableDriver):
+class ChunkCraftDriver(BaseCraftDriver):
     """Craft the chunk-level information on given keys using the executor
 
     """
@@ -53,7 +54,7 @@ class ChunkCraftDriver(BaseExecutableDriver):
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
 
 
-class DocCraftDriver(BaseExecutableDriver):
+class DocCraftDriver(BaseCraftDriver):
     """Craft the doc-level information on given keys using the executor
 
     """
@@ -65,7 +66,7 @@ class DocCraftDriver(BaseExecutableDriver):
                 setattr(d, k, v)
 
 
-class SegmentDriver(BaseExecutableDriver):
+class SegmentDriver(BaseCraftDriver):
     """Segment document into chunks using the executor
 
     .. note::

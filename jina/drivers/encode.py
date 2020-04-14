@@ -2,7 +2,14 @@ from . import BaseExecutableDriver
 from .helper import extract_chunks, array2blob
 
 
-class EncodeDriver(BaseExecutableDriver):
+class BaseEncodeDriver(BaseExecutableDriver):
+    """Drivers inherited from this Driver will bind :meth:`craft` by default """
+
+    def __init__(self, executor: str = None, method: str = 'encode', *args, **kwargs):
+        super().__init__(executor, method, *args, **kwargs)
+
+
+class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
