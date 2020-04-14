@@ -419,10 +419,14 @@ def valid_yaml_path(path: str, to_stream: bool = False):
                                 ' or a valid file path, or a supported class name.' % path)
 
 
-def get_parsed_args(kwargs, parser):
+def get_parsed_args(kwargs, parser, parser_name: str = None):
     args = kwargs2list(kwargs)
     try:
         p_args, unknown_args = parser.parse_known_args(args)
+        if unknown_args:
+            from .logging import default_logger
+            default_logger.warning(
+                f'parser {parser_name} can not recognize the following args: {unknown_args}, they are ignored')
     except SystemExit:
         raise ValueError('bad arguments "%s" with parser %r, '
                          'you may want to double check your args ' % (args, parser))

@@ -16,10 +16,9 @@ from ruamel.yaml import StringIO
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, kwargs2list, get_non_defaults_args
+from ..helper import yaml, expand_env_var, get_non_defaults_args, get_parsed_args
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
-from ..main.parser import set_pod_parser
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
 
 if False:
@@ -97,7 +96,7 @@ class Flow:
         _flow_parser = set_flow_parser()
         if args is None:
             from ..helper import get_parsed_args
-            _, args, _ = get_parsed_args(kwargs, _flow_parser)
+            _, args, _ = get_parsed_args(kwargs, _flow_parser, 'Flow')
 
         self.args = args
         if kwargs and self.args.logserver and 'log_sse' not in kwargs:
@@ -228,19 +227,6 @@ class Flow:
         else:
             raise ValueError('endpoint=%s is not parsable' % endpoint)
         return set(endpoint)
-
-    @staticmethod
-    def _get_parsed_args(op_flow, name, kwargs, parser=set_pod_parser):
-        kwargs.update(op_flow._common_kwargs)
-        args = kwargs2list(kwargs)
-        try:
-            p_args, unknown_args = parser().parse_known_args(args)
-            if unknown_args:
-                op_flow.logger.warning('not sure what these arguments are: %s' % unknown_args)
-        except SystemExit:
-            raise ValueError('bad arguments for pod "%s", '
-                             'you may want to double check your args "%s"' % (name, args))
-        return args, p_args, unknown_args
 
     def set_last_pod(self, name: str, copy_flow: bool = True) -> 'Flow':
         """
@@ -524,7 +510,8 @@ class Flow:
         from ..main.parser import set_client_cli_parser
         from ..clients.python import PyClient
 
-        _, p_args, _ = self._get_parsed_args(self, PyClient.__name__, kwargs, parser=set_client_cli_parser)
+        kwargs.update(self._common_kwargs)
+        _, p_args, _ = get_parsed_args(kwargs, set_client_cli_parser(), 'Client')
         p_args.port_grpc = self._pod_nodes['gateway'].port_grpc
         p_args.host = self._pod_nodes['gateway'].host
         c = PyClient(p_args)

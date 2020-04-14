@@ -275,7 +275,7 @@ class FlowPod(BasePod):
         :param needs: a list of names this BasePod needs to receive message from
         """
         _parser = parser()
-        self.cli_args, self._args, self.unk_args = get_parsed_args(kwargs, _parser)
+        self.cli_args, self._args, self.unk_args = get_parsed_args(kwargs, _parser, 'FlowPod')
         super().__init__(self._args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
         self._kwargs = get_non_defaults_args(self._args, _parser)

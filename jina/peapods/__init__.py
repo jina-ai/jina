@@ -18,7 +18,7 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
     if args is None:
         from ..main.parser import set_pea_parser
         from ..helper import get_parsed_args
-        _, args, _ = get_parsed_args(kwargs, set_pea_parser())
+        _, args, _ = get_parsed_args(kwargs, set_pea_parser(), 'Pea')
     if not allow_remote:
         # set the host back to local, as for the remote, it is running "locally"
         if args.host != __default_host__:
@@ -46,7 +46,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
     if args is None:
         from ..main.parser import set_pod_parser
         from ..helper import get_parsed_args
-        _, args, _ = get_parsed_args(kwargs, set_pod_parser())
+        _, args, _ = get_parsed_args(kwargs, set_pod_parser(), 'Pod')
     if isinstance(args, dict):
         hosts = set()
         for k in args.values():

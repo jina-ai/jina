@@ -28,7 +28,10 @@ def set_base_parser():
                'powered by AI and deep learning technology.\n'
                'It provides a universal solution for large-scale index and query '
                'of media contents.\n'
-               f'{url_str}', formatter_class=_chf)
+               f'{url_str}',
+        formatter_class=_chf,
+        description='Jina Command Line Interface'
+    )
     parser.add_argument('-v', '--version', action='version', version=__version__,
                         help='show Jina version')
     parser.add_argument('-vf', '--version-full', action='version',
@@ -367,12 +370,23 @@ def get_main_parser():
                                            'to get detailed information about each sub-command', required=True)
 
     # cli
-    set_pod_parser(sp.add_parser('pod', help='start a pod', formatter_class=_chf))
-    set_pea_parser(sp.add_parser('pea', help='start a pea', formatter_class=_chf))
-    set_flow_parser(sp.add_parser('flow', help='start a flow from a YAML file', formatter_class=_chf))
-    set_gateway_parser(sp.add_parser('gateway', help='start a gateway', formatter_class=_chf))
+    set_pod_parser(sp.add_parser('pod', help='start a pod',
+                                 description='Start a Jina pod',
+                                 formatter_class=_chf))
+    set_pea_parser(sp.add_parser('pea',
+                                 description='Start a Jina pea. You should rarely use this directly unless you '
+                                             'are doing low-level orchestration',
+                                 help='start a pea', formatter_class=_chf))
+    set_flow_parser(sp.add_parser('flow',
+                                  description='Start a Jina flow that consists of multiple pods',
+                                  help='start a flow from a YAML file', formatter_class=_chf))
+    set_gateway_parser(sp.add_parser('gateway',
+                                     description='Start a Jina gateway that receives client remote requests via gRPC',
+                                     help='start a gateway', formatter_class=_chf))
     set_client_cli_parser(
-        sp.add_parser('client', help='start a client and connect it to a gateway', formatter_class=_chf))
+        sp.add_parser('client', help='start a client',
+                      description='Start a Python client that connects to a remote Jina gateway',
+                      formatter_class=_chf))
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 
     # # check
@@ -382,10 +396,17 @@ def get_main_parser():
     #                                     'to get detailed information about each sub-command', required=True)
 
     set_ping_parser(
-        sp.add_parser('ping', help='ping a pod and check the network connectivity', formatter_class=_chf))
-    sp.add_parser('check', help='check the import status all executors and drivers', formatter_class=_chf)
-    set_logger_parser(sp.add_parser('log', help='receive piped log output and beautify the log', formatter_class=_chf))
-    return parser
+        sp.add_parser('ping', help='ping a pod and check the network connectivity',
+                      description='Ping a remote pod and check the network connectivity',
+                      formatter_class=_chf))
+    sp.add_parser('check', help='check the import status all executors and drivers',
+                  description='Check the import status all executors and drivers',
+                  formatter_class=_chf)
+    set_logger_parser(sp.add_parser('log',
+                                    help='receive piped log output and beautify the log',
+                                    description='Receive piped log output and beautify the log',
+                                    formatter_class=_chf))
+    return parser.add_argument()
 
 
 class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
