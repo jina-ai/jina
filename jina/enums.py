@@ -81,8 +81,8 @@ class ReplicaType(BetterEnum):
         ``PUSH_BLOCK`` does not exist as push message has different request ids, they can not be blocked
     """
     ANY = 1  #: one of the replica will receive the message
-    ALL_ASYNC = 2  #: all replica will receive the message
     ALL = 2  #: all replica will receive the message, blocked until all done with the message
+    ALL_ASYNC = 3  #: all replica will receive the message
 
     @property
     def is_push(self) -> bool:

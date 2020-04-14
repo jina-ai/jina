@@ -188,7 +188,11 @@ class BasePod:
             self.stack.enter_context(p)
 
         # start real peas and accumulate the storage id
-        for idx, _args in enumerate(self.peas_args['peas']):
+        if len(self.peas_args['peas']) > 1:
+            start_rep_id = 1
+        else:
+            start_rep_id = 0
+        for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
             _args.replica_id = idx
             p = Pea(_args, allow_remote=False)
             self.peas.append(p)
@@ -399,21 +403,20 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = random_port()
     _head_args.port_out = random_port()
-    if as_router:
-        if args.scheduling == SchedulerType.ROUND_ROBIN:
-            _head_args.yaml_path = '_forward'
-        elif args.scheduling == SchedulerType.LOAD_BALANCE:
-            _head_args.yaml_path = '_route'
-        else:
-            raise NotImplementedError
-        _head_args.name = (args.name or '') + '-head'
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
+            if as_router:
+                _head_args.yaml_path = '_forward'
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
+            if as_router:
+                _head_args.yaml_path = '_route'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
+
+    if as_router:
+        _head_args.name = (args.name or '') + '-head'
     return _head_args
 
 

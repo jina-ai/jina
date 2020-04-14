@@ -101,9 +101,9 @@ class MyTestCase(JinaTestCase):
 
         time.sleep(3)
         for j in range(3):
-            self.assertTrue(os.path.exists('test2-%d/test2.bin' % j))
-            self.assertTrue(os.path.exists('test2-%d/tmp2' % j))
-            self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d' % j)
+            self.assertTrue(os.path.exists(f'test2-{j + 1}/test2.bin'))
+            self.assertTrue(os.path.exists(f'test2-{j + 1}/tmp2'))
+            self.add_tmpfile(f'test2-{j + 1}/test2.bin', f'test2-{j + 1}/tmp2', f'test2-{j + 1}')
 
     def test_index_remote_rpi(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
