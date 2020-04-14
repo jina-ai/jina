@@ -249,6 +249,7 @@ class AsyncZmqlet(Zmqlet):
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'{ex}, gateway cancelled?')
 
+
 def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int):
     """Send a control message to a specific address and wait for the response
 
@@ -356,6 +357,8 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
             await sock.send_multipart(_msg)  # 5, 6
 
             num_bytes = sys.getsizeof(_msg)
+
+        return num_bytes
     except zmq.error.Again:
         raise TimeoutError(
             'cannot send message to sock %s after timeout=%dms, please check the following:'
@@ -372,8 +375,6 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
             sock.setsockopt(zmq.SNDTIMEO, -1)
         except zmq.error.ZMQError:
             pass
-
-    return num_bytes
 
 
 def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = False, **kwargs) -> Tuple[

@@ -5,6 +5,12 @@ from . import BaseExecutableDriver
 from .helper import array2blob, pb_obj2dict
 
 
+class BaseCraftDriver(BaseExecutableDriver):
+    """Drivers inherited from this Driver will bind :meth:`craft` by default """
+    def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
+        super().__init__(executor, method, *args, **kwargs)
+
+
 class ChunkCraftDriver(BaseExecutableDriver):
     """Craft the chunk-level information on given keys using the executor
 
