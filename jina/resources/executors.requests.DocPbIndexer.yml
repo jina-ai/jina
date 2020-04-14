@@ -6,9 +6,5 @@ on:
       with:
         method: query
   IndexRequest:
-    - !DocPruneDriver
-      with:
-        pruned: raw_bytes
-    - !DocPbIndexDriver
-      with:
-        method: add
+    - !DocPruneDriver {}
+    - !DocPbIndexDriver {}

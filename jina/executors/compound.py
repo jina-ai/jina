@@ -9,27 +9,84 @@ class CompoundExecutor(BaseExecutor):
     The most common usage is chaining a pipeline of executors, where the
     input of the current is the output of the former.
 
-    A compositional executor can be loaded from a YAML file as well. For example:
+    A common use case of :class:`CompoundExecutor` is to glue multiple :class:`BaseExecutor` together, instead of breaking them into different Pods.
+
+    **Example 1: a compound Chunk Indexer that does vector indexing and key-value index**
 
     .. highlight:: yaml
     .. code-block:: yaml
 
         !CompoundExecutor
         components:
-        - !dummyA
-          metas:
-            name: dummyA-1ef90ea8
-        - !dummyB
-          metas:
-            name: dummyB-e3acc910
+          - !NumpyIndexer
+            with:
+              index_filename: vec.gz
+            metas:
+              name: vecidx_exec  # a customized name
+              workspace: $TEST_WORKDIR
+          - !BasePbIndexer
+            with:
+              index_filename: chunk.gz
+            metas:
+              name: chunkidx_exec
+              workspace: $TEST_WORKDIR
         metas:
-          name: CompoundExecutor-2768c74f
-        with:
-          resolve_all: true
-          routes:
-            say:
-            - dummyB-e3acc910
-            - say
+          name: chunk_compound_indexer
+          workspace: $TEST_WORKDIR
+        requests:
+          on:
+            SearchRequest:
+              - !ChunkSearchDriver
+                with:
+                  executor: vecidx_exec
+              - !ChunkPruneDriver {}
+              - !ChunkPbSearchDriver
+                with:
+                  executor: chunkidx_exec
+            IndexRequest:
+              - !ChunkIndexDriver
+                with:
+                  executor: vecidx_exec
+              - !ChunkPruneDriver {}
+              - !ChunkPbIndexDriver
+                with:
+                  executor: chunkidx_exec
+            ControlRequest:
+              - !ControlReqDriver {}
+
+    **Example 2: a compound crafter that first craft the doc and then segment **
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        !CompoundExecutor
+        components:
+          - !GifNameRawSplit
+            metas:
+              name: name_split  # a customized name
+              workspace: $TEST_WORKDIR
+          - !GifPreprocessor
+            with:
+              every_k_frame: 2
+              from_bytes: true
+            metas:
+              name: gif2chunk_preprocessor  # a customized name
+        metas:
+          name: compound_crafter
+          workspace: $TEST_WORKDIR
+          py_modules: gif2chunk.py
+        requests:
+          on:
+            IndexRequest:
+              - !DocCraftDriver
+                with:
+                  executor: name_split
+              - !SegmentDriver
+                with:
+                  executor: gif2chunk_preprocessor
+            ControlRequest:
+              - !ControlReqDriver {}
+
 
     One can access the component of a :class:`CompoundExecutor` via index, e.g.
 
@@ -40,9 +97,12 @@ class CompoundExecutor(BaseExecutor):
         assertTrue(c[0] == c['dummyA-1ef90ea8'])
         c[0].add(obj)
 
-
     .. note::
         All components ``workspace` and ``replica_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
+
+    .. warning::
+
+        When sub-component is external, ``py_modules`` must be given at root level ``metas`` not at the sub-level.
 
     """
 

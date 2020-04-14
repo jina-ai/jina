@@ -37,10 +37,10 @@ class ChunkPruneDriver(BasePruneDriver):
 class DocPruneDriver(BasePruneDriver):
     """Clean some fields from the doc-level protobuf to reduce the total size of request
 
-    Removed fields are ``chunks``
+    Removed fields are ``chunks``, ``raw_bytes``
     """
 
-    def __init__(self, pruned=('chunks',), *args, **kwargs):
+    def __init__(self, pruned=('chunks', 'raw_bytes'), *args, **kwargs):
         super().__init__(pruned, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
