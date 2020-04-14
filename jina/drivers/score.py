@@ -23,12 +23,13 @@ class Chunk2DocScoreDriver(BaseExecutableDriver):
                     query_chunk_meta[c.chunk_id] = pb_obj2dict(c, exec.required_keys)
                     match_chunk_meta[k.match_chunk.chunk_id] = pb_obj2dict(k.match_chunk, exec.required_keys)
 
-            # np.uint32 uses 32 bits. np.float32 uses 23 bit mantissa, so integer greater than 2^23 will have their least significant bits truncated. For example, 4294967294 will be truncated to 4294967300. np.float64 uses 52 bits mantissa, which avoids the problem.
+            # np.uint32 uses 32 bits. np.float32 uses 23 bit mantissa, so integer greater than 2^23 will have their
+            # least significant bits truncated.
             match_idx = np.array(match_idx, dtype=np.float64)
 
             doc_idx = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
 
-            for _d in doc_idx:
+            for _d in doc_idx[:self.req.top_k, :]:
                 r = d.topk_results.add()
                 r.match_doc.doc_id = int(_d[0])
                 r.score.value = _d[1]
