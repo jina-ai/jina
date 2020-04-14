@@ -2,6 +2,4 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   [SearchRequest, TrainRequest, IndexRequest]:
-    - !EncodeDriver
-      with:
-        method: encode
+    - !EncodeDriver {}

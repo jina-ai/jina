@@ -2,10 +2,6 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    - !ChunkPbIndexDriver
-      with:
-        method: query
+    - !ChunkPbSearchDriver {}
   IndexRequest:
-    - !ChunkPbSearchDriver
-      with:
-        method: add
+    - !ChunkPbIndexDriver {}

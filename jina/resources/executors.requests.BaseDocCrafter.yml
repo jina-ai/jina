@@ -2,6 +2,4 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   [SearchRequest, TrainRequest, IndexRequest]:
-    - !DocCraftDriver
-      with:
-        method: craft
+    - !DocCraftDriver {}

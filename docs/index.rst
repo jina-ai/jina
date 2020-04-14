@@ -13,6 +13,7 @@ Jina Documentation
    chapters/install/via-pip
    chapters/install/via-docker
    chapters/install/on-rasp-linux
+   chapters/install/upgrade
 
 
 .. toctree::
