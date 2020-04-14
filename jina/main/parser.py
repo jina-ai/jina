@@ -225,7 +225,7 @@ def set_pod_parser(parser=None):
                           '`port_in` and `port_out` will be set to random, '
                           'and routers will be added automatically when necessary')
     gp4.add_argument('--replica-type', type=ReplicaType.from_string, choices=list(ReplicaType),
-                     default=ReplicaType.ONEOF,
+                     default=ReplicaType.ANY,
                      help='replica type of the concurrent peas')
     gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,

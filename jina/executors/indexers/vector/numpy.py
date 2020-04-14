@@ -2,29 +2,37 @@ import gzip
 from typing import Tuple, Optional
 
 import numpy as np
-
 from jina.executors.indexers import BaseVecIndexer
 
 
 class NumpyIndexer(BaseVecIndexer):
     """An exhaustive vector indexers implemented with numpy and scipy. """
 
-    def __init__(self, metric: str = 'euclidean', compress_level: int = 1, *args, **kwargs):
+    def __init__(self, metric: str = 'euclidean',
+                 compress_level: int = 1,
+                 backend: str = 'numpy',
+                 *args, **kwargs):
         """
         :param metric: The distance metric to use. `braycurtis`, `canberra`, `chebyshev`, `cityblock`, `correlation`, 
                         `cosine`, `dice`, `euclidean`, `hamming`, `jaccard`, `jensenshannon`, `kulsinski`, 
                         `mahalanobis`, 
                         `matching`, `minkowski`, `rogerstanimoto`, `russellrao`, `seuclidean`, `sokalmichener`, 
                         `sokalsneath`, `sqeuclidean`, `wminkowski`, `yule`.
+        :param backend: `numpy` or `scipy`, `numpy` only supports `euclidean` and `cosine` distance
         :param compress_level: The compresslevel argument is an integer from 0 to 9 controlling the
                         level of compression; 1 is fastest and produces the least compression,
                         and 9 is slowest and produces the most compression. 0 is no compression
                         at all. The default is 9.
+
+        .. note::
+            Metrics other than `cosine` and `euclidean` requires ``scipy`` installed.
+
         """
         super().__init__(*args, **kwargs)
         self.num_dim = None
         self.dtype = None
         self.metric = metric
+        self.backend = backend
         self.compress_level = compress_level
         self.key_bytes = b''
         self.key_dtype = None
@@ -110,10 +118,42 @@ class NumpyIndexer(BaseVecIndexer):
             Distance (the smaller the better) is returned, not the score.
 
         """
-        from scipy.spatial.distance import cdist
-        dist = cdist(keys, self.query_handler, metric=self.metric)
+        if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
+            try:
+                from scipy.spatial.distance import cdist
+                dist = cdist(keys, self.query_handler, metric=self.metric)
+            except ModuleNotFoundError:
+                self.logger.error(f'your metric {self.metric} requires scipy, but scipy is not found')
+        elif self.metric == 'euclidean':
+            dist = _euclidean(keys, self.query_handler)
+        elif self.metric == 'cosine':
+            dist = _cosine(keys, self.query_handler)
 
         idx = dist.argsort(axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
 
         return self.int2ext_key[idx], dist
+
+
+def _ext_arrs(A, B):
+    nA, dim = A.shape
+    A_ext = np.ones((nA, dim * 3))
+    A_ext[:, dim:2 * dim] = A
+    A_ext[:, 2 * dim:] = A ** 2
+
+    nB = B.shape[0]
+    B_ext = np.ones((dim * 3, nB))
+    B_ext[:dim] = (B ** 2).T
+    B_ext[dim:2 * dim] = -2.0 * B.T
+    return A_ext, B_ext
+
+
+def _euclidean(A, B):
+    A_ext, B_ext = _ext_arrs(A, B)
+    return np.sqrt(A_ext.dot(B_ext))
+
+
+def _cosine(A, B):
+    A_ext, B_ext = _ext_arrs(A / np.linalg.norm(A, ord=2, axis=1, keepdims=True),
+                             B / np.linalg.norm(B, ord=2, axis=1, keepdims=True))
+    return A_ext.dot(B_ext) / 2
