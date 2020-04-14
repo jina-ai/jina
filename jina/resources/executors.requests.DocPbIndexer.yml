@@ -2,10 +2,13 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    - !DocPbIndexDriver
+    - !DocPbSearchDriver
       with:
         method: query
   IndexRequest:
-    - !DocPbSearchDriver
+    - !DocPruneDriver
+      with:
+        pruned: raw_bytes
+    - !DocPbIndexDriver
       with:
         method: add
