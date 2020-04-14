@@ -36,7 +36,7 @@ class DocPbIndexDriver(BaseIndexDriver):
 
     def __call__(self, *args, **kwargs):
         from google.protobuf.json_format import MessageToJson
-        content = {'d%d' % d.doc_id: MessageToJson(d) for d in self.req.docs}
+        content = {f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs}
         if content:
             self.exec_fn(content)
 
@@ -48,7 +48,6 @@ class ChunkPbIndexDriver(BaseIndexDriver):
 
     def __call__(self, *args, **kwargs):
         from google.protobuf.json_format import MessageToJson
-        content = {'c%d' % c.chunk_id: MessageToJson(c) for d in self.req.docs for c in d.chunks}
-        print('write {}'.format(','.join([k for k in content.keys()])))
+        content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks}
         if content:
             self.exec_fn(content)

@@ -3,7 +3,6 @@ import json
 from typing import Union
 
 from google.protobuf.json_format import Parse
-
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 
@@ -21,7 +20,7 @@ class BasePbIndexer(BaseKVIndexer):
                     tmp = json.loads(l)
                     for k, v in tmp.items():
                         _parser = jina_pb2.Chunk if k[0] == 'c' else jina_pb2.Document
-                        r[int(k[1:])] = Parse(v, _parser())
+                        r[k] = Parse(v, _parser())
         return r
 
     def get_add_handler(self):

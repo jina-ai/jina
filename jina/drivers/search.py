@@ -12,24 +12,30 @@ class BaseSearchDriver(BaseExecutableDriver):
 class DocPbSearchDriver(BaseSearchDriver):
     """Fill in the doc-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
 
+    .. warning::
+        This driver loops over all doc's top-K results, each step fires a query.
+        This may not be very efficient, as the total number of quires is D x K
     """
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
             for tk in d.topk_results:
-                tk.match_doc.CopyFrom(self.exec_fn('d%d' % tk.match_doc.doc_id))
+                tk.match_doc.CopyFrom(self.exec_fn(f'd{tk.match_doc.doc_id}'))
 
 
 class ChunkPbSearchDriver(BaseSearchDriver):
     """Fill in the chunk-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
 
+    .. warning::
+        This driver loops over all chunk's top-K results, each step fires a query.
+        This may not be very efficient, as the total number of quires is D x C x K
     """
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
             for c in d.chunks:
                 for k in c.topk_results:
-                    k.match_chunk.CopyFrom(self.exec_fn('c%d' % k.match_chunk.chunk_id))
+                    k.match_chunk.CopyFrom(self.exec_fn(f'c{k.match_chunk.chunk_id}'))
 
 
 class ChunkSearchDriver(BaseSearchDriver):
