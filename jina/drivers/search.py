@@ -17,7 +17,7 @@ class DocPbSearchDriver(BaseSearchDriver):
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
             for tk in d.topk_results:
-                tk.match_doc.CopyFrom(self.exec_fn(tk.match_doc.doc_id))
+                tk.match_doc.CopyFrom(self.exec_fn('d%d' % tk.match_doc.doc_id))
 
 
 class ChunkPbSearchDriver(BaseSearchDriver):
@@ -29,7 +29,7 @@ class ChunkPbSearchDriver(BaseSearchDriver):
         for d in self.req.docs:
             for c in d.chunks:
                 for k in c.topk_results:
-                    k.match_chunk.CopyFrom(self.exec_fn(k.match_chunk.chunk_id))
+                    k.match_chunk.CopyFrom(self.exec_fn('c%d' % k.match_chunk.chunk_id))
 
 
 class ChunkSearchDriver(BaseSearchDriver):
