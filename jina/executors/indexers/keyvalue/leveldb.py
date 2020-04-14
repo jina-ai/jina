@@ -9,16 +9,22 @@ class LeveldbIndexer(BasePbIndexer):
     """
     :class:`LeveldbIndexer` use `LevelDB` to save and query protobuf chunk/document.
     """
+    def post_init(self):
+        super().post_init()
+        self._db_handler = None
 
-    def _get_db_handler(self, create_if_missing):
-        import plyvel
-        return plyvel.DB(self.index_abspath, create_if_missing=create_if_missing)
+    @property
+    def db_handler(self):
+        if self._db_handler is None:
+            import plyvel
+            self._db_handler = plyvel.DB(self.index_abspath, create_if_missing=True)
+        return self._db_handler
 
     def get_add_handler(self):
         """Get the database handler
 
         """
-        return self._get_db_handler(create_if_missing=True)
+        return self.db_handler
 
     def add(self, objs):
         """Add a JSON-friendly object to the indexer
@@ -35,7 +41,7 @@ class LeveldbIndexer(BasePbIndexer):
         """Get the database handler
 
         """
-        return self._get_db_handler(create_if_missing=False)
+        return self.db_handler
 
     def query(self, key: str, *args, **kwargs) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
         """Find the protobuf chunk/doc using id
