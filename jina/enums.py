@@ -1,5 +1,27 @@
 """
 Miscellaneous enums used in jina
+
+
+To use these enums in YAML config, following the example below:
+
+.. highlight:: yaml
+.. code-block:: yaml
+
+    !Flow
+    with:
+      logserver_config: yaml/test-server-config.yml
+      optimize_level: !FlowOptimizeLevel IGNORE_GATEWAY
+      no_gateway: true
+
+
+.. highlight:: yaml
+.. code-block:: yaml
+
+      chunk_idx:
+        yaml_path: index/chunk.yml
+        replicas: $REPLICAS
+        separated_workspace: true
+        replicas_type: !ReplicaType ANY
 """
 
 from enum import IntEnum, EnumMeta
@@ -58,9 +80,9 @@ class ReplicaType(BetterEnum):
     .. note::
         ``PUSH_BLOCK`` does not exist as push message has different request ids, they can not be blocked
     """
-    ONEOF = 1  #: one of the replica will receive the message
-    ALL_SYNC = 2  #: all replica will receive the message, blocked until all done with the message
-    ALL = 3  #: all replica will receive the message
+    ANY = 1  #: one of the replica will receive the message
+    ALL_ASYNC = 2  #: all replica will receive the message
+    ALL = 2  #: all replica will receive the message, blocked until all done with the message
 
     @property
     def is_push(self) -> bool:
