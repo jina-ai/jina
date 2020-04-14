@@ -406,7 +406,7 @@ def get_main_parser():
                                     help='receive piped log output and beautify the log',
                                     description='Receive piped log output and beautify the log',
                                     formatter_class=_chf))
-    return parser.add_argument()
+    return parser
 
 
 class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
