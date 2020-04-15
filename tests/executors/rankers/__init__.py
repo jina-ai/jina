@@ -16,7 +16,7 @@ class RankerTestCase(JinaTestCase):
             110: [
                 {'doc_id': 1, 'chunk_id': 10, 'score': 0.3, 'length': 200},
                 {'doc_id': 1, 'chunk_id': 11, 'score': 0.2, 'length': 200},
-                {'doc_id': 2, 'chunk_id': 20, 'score': 0.1, 'length': 300},
+                {'doc_id': 4294967294, 'chunk_id': 20, 'score': 0.1, 'length': 300},
             ]
         }
         query_chunk_meta = {}
@@ -42,6 +42,6 @@ class RankerTestCase(JinaTestCase):
         # check the matched docs are in descending order of the scores
         self.assertGreater(doc_idx[0][1], doc_idx[1][1])
         self.assertEqual(doc_idx[0][0], 1)
-        self.assertEqual(doc_idx[1][0], 2)
+        self.assertEqual(doc_idx[1][0], 4294967294)
         # check the number of matched docs
         self.assertEqual(len(doc_idx), 2)
