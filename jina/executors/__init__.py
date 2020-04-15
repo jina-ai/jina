@@ -469,7 +469,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
 
-            obj.logger.success('initialize %s from a yaml config' % cls.__name__)
+            obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
             cls.init_from_yaml = False
 
         # if node.tag in {'!CompoundExecutor'}:

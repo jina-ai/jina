@@ -36,7 +36,7 @@ class Chunk2DocScoreDriver(BaseScoreDriver):
 
             doc_idx = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
 
-            for _d in doc_idx[:self.req.top_k, :]:
+            for _d in doc_idx:
                 r = d.topk_results.add()
                 r.match_doc.doc_id = int(_d[0])
                 r.score.value = _d[1]

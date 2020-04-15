@@ -150,10 +150,11 @@ def _ext_arrs(A, B):
 
 def _euclidean(A, B):
     A_ext, B_ext = _ext_arrs(A, B)
-    return np.sqrt(A_ext.dot(B_ext))
+    sqdist = A_ext.dot(B_ext).clip(min=0)
+    return np.sqrt(sqdist)
 
 
 def _cosine(A, B):
     A_ext, B_ext = _ext_arrs(A / np.linalg.norm(A, ord=2, axis=1, keepdims=True),
                              B / np.linalg.norm(B, ord=2, axis=1, keepdims=True))
-    return A_ext.dot(B_ext) / 2
+    return A_ext.dot(B_ext).clip(min=0) / 2

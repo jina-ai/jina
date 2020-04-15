@@ -169,9 +169,9 @@ class MyTestCase(JinaTestCase):
             fl.index(raw_bytes=random_docs(1000), in_proto=True)
 
         for j in range(3):
-            self.assertTrue(os.path.exists('test2-%d/test2.bin' % j))
-            self.assertTrue(os.path.exists('test2-%d/tmp2' % j))
-            self.add_tmpfile('test2-%d/test2.bin' % j, 'test2-%d/tmp2' % j, 'test2-%d' % j)
+            self.assertTrue(os.path.exists(f'test2-{j + 1}/test2.bin'))
+            self.assertTrue(os.path.exists(f'test2-{j + 1}/tmp2'))
+            self.add_tmpfile(f'test2-{j + 1}/test2.bin', f'test2-{j + 1}/tmp2', f'test2-{j + 1}')
 
         time.sleep(3)
         with f.build(copy_flow=True) as fl:
