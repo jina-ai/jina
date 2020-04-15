@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Dict
+
+import numpy as np
 
 from . import BaseRanker
 
@@ -34,5 +35,3 @@ class ProbRanker(BaseRanker):
         num_c = prob_d_c.shape[0]
         num_q = prob_q.shape[0]
         return np.random.rand(num_c, num_q)
-
-

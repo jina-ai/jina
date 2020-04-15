@@ -159,7 +159,7 @@ class BasePea(metaclass=PeaMeta):
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
             else:
                 raise NoExplicitMessage
-            self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, req_type))
+            self.logger.info(f'collected {num_req}/{self.args.num_part} parts of {req_type.__name__}')
         else:
             self._prev_requests = None
             self._prev_messages = None

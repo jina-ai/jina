@@ -202,7 +202,7 @@ class Flow:
             p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pod_attr.items()}
             obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
 
-        obj.logger.success('initialize %s from a yaml config' % cls.__name__)
+        obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
 
         # if node.tag in {'!CompoundExecutor'}:
         #     os.environ['JINA_WARN_UNNAMED'] = 'YES'

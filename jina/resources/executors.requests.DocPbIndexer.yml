@@ -5,6 +5,7 @@ on:
     - !DocPbSearchDriver
       with:
         method: query
+    - !TopKFilterDriver {}
   IndexRequest:
     - !DocPruneDriver {}
     - !DocPbIndexDriver {}
