@@ -39,7 +39,7 @@ class BiMatchRanker(BaseRanker):
             r.append((g[0, 0], (s1 + s2) / 2))
 
         # sort descendingly and return
-        r = np.array(r, dtype=np.float32)
+        r = np.array(r, dtype=np.float64)
         r = r[r[:, -1].argsort()[::-1]]
         return r
 
