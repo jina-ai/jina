@@ -1,5 +1,5 @@
 !BaseExecutor
 metas:
   name: test1
-  separted_workspace: true
+  separated_workspace: true
   replica_id: 0

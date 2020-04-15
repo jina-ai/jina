@@ -214,7 +214,7 @@ def set_pea_parser(parser=None):
 
 
 def set_pod_parser(parser=None):
-    from ..enums import ReplicaType, SchedulerType
+    from ..enums import PollingType, SchedulerType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
@@ -224,12 +224,16 @@ def set_pod_parser(parser=None):
                      help='number of parallel peas in the pod running at the same time (i.e. replicas), '
                           '`port_in` and `port_out` will be set to random, '
                           'and routers will be added automatically when necessary')
-    gp4.add_argument('--replica-type', type=ReplicaType.from_string, choices=list(ReplicaType),
-                     default=ReplicaType.ANY,
-                     help='replica type of the concurrent peas')
+    gp4.add_argument('--polling', type=PollingType.from_string, choices=list(PollingType),
+                     default=PollingType.ANY,
+                     help='ANY: only one (whoever is idle) replica polls the message; '
+                          'ALL: all workers poll the message (like a broadcast)')
     gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
+    gp4.add_argument('--reducing-yaml-path', type=str, default='_forward',
+                     help='the executor used for reducing the result from all replicas, '
+                          'accepted type follows "--yaml-path"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
 

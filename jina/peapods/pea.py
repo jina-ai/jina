@@ -130,7 +130,7 @@ class BasePea(metaclass=PeaMeta):
         if isinstance(args, argparse.Namespace):
             if args.name:
                 self.name = args.name
-            if args.replica_id >= 0:
+            if args.replica_id > 0:
                 self.name = '%s-%d' % (self.name, args.replica_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
             self.logger = get_logger(self.name, **vars(args))
@@ -159,7 +159,7 @@ class BasePea(metaclass=PeaMeta):
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
             else:
                 raise NoExplicitMessage
-            self.logger.info('collected %d/%d parts of %r' % (num_req, self.args.num_part, req_type))
+            self.logger.info(f'collected {num_req}/{self.args.num_part} parts of {req_type.__name__}')
         else:
             self._prev_requests = None
             self._prev_messages = None

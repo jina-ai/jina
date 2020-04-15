@@ -72,9 +72,9 @@ class BasePod:
         if getattr(args, 'replicas', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
-            peas_args['head'] = _copy_to_head_args(args, args.replica_type.is_push)
+            peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             peas_args['tail'] = _copy_to_tail_args(args,
-                                                   args.num_part if args.replica_type.is_block else 1)
+                                                   args.replicas if args.polling.is_block else 1)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
             self.is_head_router = True
             self.is_tail_router = True
@@ -188,7 +188,11 @@ class BasePod:
             self.stack.enter_context(p)
 
         # start real peas and accumulate the storage id
-        for idx, _args in enumerate(self.peas_args['peas']):
+        if len(self.peas_args['peas']) > 1:
+            start_rep_id = 1
+        else:
+            start_rep_id = 0
+        for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
             _args.replica_id = idx
             p = Pea(_args, allow_remote=False)
             self.peas.append(p)
@@ -328,7 +332,7 @@ class FlowPod(BasePod):
         if self._args.replicas > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
             # only reset its output
-            pod.tail_args = _copy_to_head_args(pod.tail_args, self._args.replica_type.is_push, as_router=False)
+            pod.tail_args = _copy_to_head_args(pod.tail_args, self._args.polling.is_push, as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, pod.tail_args, self.tail_args)
             # remove the head node
@@ -345,7 +349,7 @@ class FlowPod(BasePod):
             # keep the port_out and socket_out of next_arts
             # only reset its input
             pod.head_args = _copy_to_tail_args(pod.head_args,
-                                               self._args.num_part if self._args.replica_type.is_block else 1,
+                                               self._args.replicas if self._args.polling.is_block else 1,
                                                as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, self.head_args, pod.head_args)
@@ -378,7 +382,7 @@ def _set_peas_args(args, head_args, tail_args):
         _args.port_ctrl = random_port()
         _args.identity = get_random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
-        if args.replica_type.is_push:
+        if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:
                 _args.socket_in = SocketType.PULL_CONNECT
             elif args.scheduling == SchedulerType.LOAD_BALANCE:
@@ -399,21 +403,22 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = random_port()
     _head_args.port_out = random_port()
-    if as_router:
-        if args.scheduling == SchedulerType.ROUND_ROBIN:
-            _head_args.yaml_path = '_forward'
-        elif args.scheduling == SchedulerType.LOAD_BALANCE:
-            _head_args.yaml_path = '_route'
-        else:
-            raise NotImplementedError
-        _head_args.name = (args.name or '') + '-head'
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
+            if as_router:
+                _head_args.yaml_path = '_forward'
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
+            if as_router:
+                _head_args.yaml_path = '_route'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
+        if as_router:
+            _head_args.yaml_path = '_forward'
+
+    if as_router:
+        _head_args.name = (args.name or '') + '-head'
     return _head_args
 
 
@@ -425,7 +430,7 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
     _tail_args.port_ctrl = random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
     if as_router:
-        _tail_args.yaml_path = '_forward'
+        _tail_args.yaml_path = args.reducing_yaml_path
         _tail_args.name = (args.name or '') + '-tail'
     _tail_args.num_part = num_part
     return _tail_args

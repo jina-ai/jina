@@ -11,6 +11,10 @@ To use these enums in YAML config, following the example below:
     with:
       logserver_config: yaml/test-server-config.yml
       optimize_level: !FlowOptimizeLevel IGNORE_GATEWAY
+      # or
+      optimize_level: IGNORE_GATEWAY
+      #or
+      optimize_level: ignore_gateway
       no_gateway: true
 
 
@@ -21,7 +25,11 @@ To use these enums in YAML config, following the example below:
         yaml_path: index/chunk.yml
         replicas: $REPLICAS
         separated_workspace: true
-        replicas_type: !ReplicaType ANY
+        replicas_type: !PollingType ANY
+        # or
+        replicas_type: ANY
+        # or
+        replicas_type: any
 """
 
 from enum import IntEnum, EnumMeta
@@ -74,21 +82,19 @@ class SchedulerType(BetterEnum):
     ROUND_ROBIN = 1  #: workload are scheduled round-robin manner to the peas, assuming all peas have uniform processing speed.
 
 
-class ReplicaType(BetterEnum):
+class PollingType(BetterEnum):
     """The enum for representing the parallel type of peas in a pod
 
-    .. note::
-        ``PUSH_BLOCK`` does not exist as push message has different request ids, they can not be blocked
     """
     ANY = 1  #: one of the replica will receive the message
-    ALL_ASYNC = 2  #: all replica will receive the message
     ALL = 2  #: all replica will receive the message, blocked until all done with the message
+    ALL_ASYNC = 3  #: (reserved) all replica will receive the message, but any one of them can return, useful in backup
 
     @property
     def is_push(self) -> bool:
         """
 
-        :return: if this :class:`ReplicaType` is using `push` protocol
+        :return: if this :class:`PollingType` is using `push` protocol
         """
         return self.value == 1
 
@@ -96,7 +102,7 @@ class ReplicaType(BetterEnum):
     def is_block(self) -> bool:
         """
 
-        :return: if this :class:`ReplicaType` is requiring `block` protocol
+        :return: if this :class:`PollingType` is requiring `block` protocol
         """
         return self.value == 2
 
