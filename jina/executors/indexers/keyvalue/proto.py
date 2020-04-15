@@ -30,8 +30,11 @@ class BasePbIndexer(BaseKVIndexer):
         return gzip.open(self.index_abspath, 'at', compresslevel=self.compress_level)
 
     def get_create_handler(self):
-        """Create a new gzip file"""
-        return self.get_add_handler()
+        """Create a new gzip file
+
+        :return: a gzip file stream
+        """
+        return gzip.open(self.index_abspath, 'wt', compresslevel=self.compress_level)
 
     def add(self, obj):
         """Add a JSON-friendly object to the indexer
@@ -40,6 +43,7 @@ class BasePbIndexer(BaseKVIndexer):
         """
         json.dump(obj, self.write_handler)
         self.write_handler.write('\n')
+        self.flush()
 
     def query(self, key: int) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
         """ Find the protobuf chunk/doc using id
