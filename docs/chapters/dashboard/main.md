@@ -1,6 +1,6 @@
-# Using Dashboard (beta) to Monitor Logs and View Flow
+# Using Dashboard to Monitor Logs and View Flow
 
-**Dashboard** offers the insight of running tasks in Jina. With dashboard, one can analyze logs, design flows and view Jina Hub images.
+**Dashboard** (beta) offers the insight of running tasks in Jina. With dashboard, one can analyze logs, design flows and view Jina Hub images.
 
 ![flow demo](flow-demo.gif)
 
