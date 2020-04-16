@@ -182,11 +182,6 @@ def get_logger(context: str, context_len: int = 15,
     logger.setLevel(verbose_level.value)
 
     if ('JINA_LOG_PROFILING' in os.environ) or log_profile:
-        h = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
-        h.setLevel(verbose_level.value)
-        h.setFormatter(ProfileFormatter(timed_fmt_str))
-        logger.addHandler(h)
-
         h = QueueHandler(__profile_queue__)
         h.setLevel(verbose_level.value)
         h.setFormatter(ProfileFormatter(timed_fmt_str))
