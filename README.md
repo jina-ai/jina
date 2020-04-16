@@ -1,4 +1,8 @@
 ![Jina Banner](.github/banner.gif)
+<p align="center">
+  <img src=".github/banner.gif?raw=true" alt="Jina banner">
+</p>
+
 
 [![Jina](./.github/jina-badge.svg)](https://jina.ai)
 <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
