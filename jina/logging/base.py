@@ -62,7 +62,7 @@ class ProfileFormatter(Formatter):
     def format(self, record):
         cr = copy(record)
         if isinstance(cr.msg, dict):
-            cr.msg.update({k: getattr(cr, k) for k in ['created', 'module', 'name', 'pathname', 'process', 'thread']})
+            cr.msg.update({k: getattr(cr, k) for k in ['created', 'module', 'process', 'thread']})
             cr.msg['memory'] = used_memory(unit=1)
             return json.dumps(cr.msg, sort_keys=True)
         else:
@@ -181,6 +181,20 @@ def get_logger(context: str, context_len: int = 15,
     logger.handlers = []
     logger.setLevel(verbose_level.value)
 
+    if ('JINA_LOG_PROFILING' in os.environ) or log_profile:
+        h = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(ProfileFormatter(timed_fmt_str))
+        logger.addHandler(h)
+
+        h = QueueHandler(__profile_queue__)
+        h.setLevel(verbose_level.value)
+        h.setFormatter(ProfileFormatter(timed_fmt_str))
+        logger.addHandler(h)
+
+        # profile logger do not need other handler
+        return logger
+
     if event_trigger is not None:
         h = EventHandler(event_trigger)
         h.setLevel(verbose_level.value)
@@ -191,17 +205,6 @@ def get_logger(context: str, context_len: int = 15,
         h = QueueHandler(__log_queue__)
         h.setLevel(verbose_level.value)
         h.setFormatter(ColorFormatter(fmt_str))
-        logger.addHandler(h)
-
-    if ('JINA_LOG_PROFILING' in os.environ) or log_profile:
-        h = logging.FileHandler('jina-profile-%s.json' % __uptime__, delay=True)
-        h.setLevel(verbose_level.value)
-        h.setFormatter(ProfileFormatter(timed_fmt_str))
-        logger.addHandler(h)
-
-        h = QueueHandler(__profile_queue__)
-        h.setLevel(verbose_level.value)
-        h.setFormatter(JsonFormatter(timed_fmt_str))
         logger.addHandler(h)
 
     if ('JINA_LOG_SSE' in os.environ) or log_sse:

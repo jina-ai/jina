@@ -239,21 +239,19 @@ class BasePea(metaclass=PeaMeta):
 
         :param dump_interval: the time interval for saving
         """
-        if self.args.read_only:
-            self.logger.debug('executor is not saved as "read_only" is set to true for this BasePea')
-            return
-        elif not hasattr(self, 'executor'):
-            self.logger.debug('this BasePea contains no executor, no need to save')
-        elif ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
-            if self.executor.save():
+
+        if ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
+            if self.args.read_only:
+                self.logger.debug('executor is not saved as "read_only" is set to true for this BasePea')
+            elif not hasattr(self, 'executor'):
+                self.logger.debug('this BasePea contains no executor, no need to save')
+            elif self.executor.save():
                 self.logger.info('dumped changes to the executor, %3.0fs since last the save'
                                  % (time.perf_counter() - self.last_dump_time))
             else:
                 self.logger.info('executor says there is nothing to save')
             self.last_dump_time = time.perf_counter()
-
-            #
-            self._timer.reset()
+            self.zmqlet.print_stats()
 
     def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
@@ -310,6 +308,7 @@ class BasePea(metaclass=PeaMeta):
 
             if msg:
                 self.zmqlet.send_message(msg)
+
                 self.save_executor(self.args.dump_interval)
                 self.check_memory_watermark()
                 # self.is_busy.clear()
