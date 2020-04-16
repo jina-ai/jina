@@ -1,6 +1,5 @@
-![Jina Banner](.github/banner.gif)
 <p align="center">
-  <img src=".github/banner.gif?raw=true" alt="Jina banner">
+  <img src=".github/1500х667.gif?raw=true" alt="Jina banner">
 </p>
 
 
