@@ -73,7 +73,7 @@ setup(
     version=__version__,
     include_package_data=True,
     description='Jina is the cloud-native neural search solution '
-                'powered by AI and deep learning technology.'
+                'powered by AI and deep learning. '
                 'It provides a universal solution of large-scale index and query '
                 'for media contents.',
     author='Jina Team and All Contributors',

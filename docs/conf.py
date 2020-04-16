@@ -7,7 +7,7 @@ sys.path.insert(0, path.abspath('..'))
 
 project = 'Jina Documentation'
 slug = re.sub(r'\W+', '-', project.lower())
-author = 'Jina AI and its lovely contributors'
+author = 'Jina AI Limited'
 copyright = author
 source_suffix = ['.rst', '.md']
 master_doc = 'index'
