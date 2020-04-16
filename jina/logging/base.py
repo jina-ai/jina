@@ -183,7 +183,8 @@ def get_logger(context: str, context_len: int = 15,
 
     if ('JINA_LOG_PROFILING' in os.environ) or log_profile:
         h = QueueHandler(__profile_queue__)
-        h.setLevel(verbose_level.value)
+        # profile logger always use debug level
+        h.setLevel(LogVerbosity.DEBUG.value)
         h.setFormatter(ProfileFormatter(timed_fmt_str))
         logger.addHandler(h)
 

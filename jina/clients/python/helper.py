@@ -54,12 +54,12 @@ class ProgressBar:
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
         sys.stdout.flush()
-        profile_logger.info({'num_bars': num_bars,
-                             'bar_len': self.bar_len,
-                             'task_name': self.task_name,
-                             'speed': (self.proc_doc if self.proc_doc > 0 else self.num_bars) / elapsed,
-                             'speed_unit': ('Documents' if self.proc_doc > 0 else 'Batches'),
-                             'elapsed': elapsed})
+        profile_logger.debug({'num_bars': num_bars,
+                              'bar_len': self.bar_len,
+                              'task_name': self.task_name,
+                              'speed': (self.proc_doc if self.proc_doc > 0 else self.num_bars) / elapsed,
+                              'speed_unit': ('Documents' if self.proc_doc > 0 else 'Batches'),
+                              'elapsed': elapsed})
 
     def __enter__(self):
         self.start_time = time.perf_counter()
