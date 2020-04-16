@@ -251,7 +251,8 @@ class BasePea(metaclass=PeaMeta):
             else:
                 self.logger.info('executor says there is nothing to save')
             self.last_dump_time = time.perf_counter()
-            self.zmqlet.print_stats()
+            if hasattr(self, 'zmqlet'):
+                self.zmqlet.print_stats()
 
     def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
