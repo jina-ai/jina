@@ -23,6 +23,7 @@ if [[ $1 == "commit" ]]; then
   git init
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
+  touch .nojekyll
   git add .
   git commit -m "$2" -a
   git status
@@ -33,6 +34,7 @@ elif [[ $1 == "release" ]]; then
   git init
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
+  touch .nojekyll
   git add .
   git commit -m "$2" -a   # commit before tagging, otherwise throw fatal: Failed to resolve 'HEAD' as a valid ref.
   git tag ${V_JINA_VERSION}
