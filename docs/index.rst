@@ -22,6 +22,7 @@ Jina Documentation
 
    chapters/hub/main
    chapters/remote/main
+   chapters/dashboard/main
    chapters/cli/exit
 
 .. toctree::

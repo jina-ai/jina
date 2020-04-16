@@ -237,15 +237,16 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
 
-    gp5 = add_arg_group(parser, 'pod log-server arguments')
-
-    from pkg_resources import resource_filename
-    gp5.add_argument('--logserver', action='store_true', default=False,
-                     help='start a log server for the dashboard')
-    gp5.add_argument('--logserver-config', type=str,
-                     default=resource_filename('jina',
-                                               '/'.join(('resources', 'logserver.default.yml'))),
-                     help='the yaml config of the log server')
+    # disable the pod level logserver for now
+    # gp5 = add_arg_group(parser, 'pod log-server arguments')
+    #
+    # from pkg_resources import resource_filename
+    # gp5.add_argument('--logserver', action='store_true', default=False,
+    #                  help='start a log server for the dashboard')
+    # gp5.add_argument('--logserver-config', type=str,
+    #                  default=resource_filename('jina',
+    #                                            '/'.join(('resources', 'logserver.default.yml'))),
+    #                  help='the yaml config of the log server')
     return parser
 
 

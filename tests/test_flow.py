@@ -127,7 +127,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile('test1.yml')
 
     def test_flow_log_server(self):
-        f = Flow().load_config('yaml/test_log_server.yml')
+        f = Flow.load_config('yaml/test_log_server.yml')
         with f.build() as fl:
             print(JINA_GLOBAL.logserver.ready)
             a = requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
