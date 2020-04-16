@@ -2,6 +2,7 @@ import sys
 import time
 
 from ...helper import colored
+from ...logging import profile_logger
 
 
 class ProgressBar:
@@ -16,7 +17,7 @@ class ProgressBar:
                 do_busy()
     """
 
-    def __init__(self, bar_len: int = 20, task_name: str = ''):
+    def __init__(self, bar_len: int = 20, task_name: str = '', logger=None):
         """
 
         :param bar_len: total length of the bar
@@ -25,6 +26,7 @@ class ProgressBar:
         self.bar_len = bar_len
         self.task_name = task_name
         self.proc_doc = 0
+        self.logger = logger
 
     def update(self, progress: int = None) -> None:
         """ Increment the progress bar by one unit
@@ -52,6 +54,12 @@ class ProgressBar:
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
         sys.stdout.flush()
+        profile_logger.debug({'num_bars': num_bars,
+                              'bar_len': self.bar_len,
+                              'task_name': self.task_name,
+                              'speed': (self.proc_doc if self.proc_doc > 0 else self.num_bars) / elapsed,
+                              'speed_unit': ('Documents' if self.proc_doc > 0 else 'Batches'),
+                              'elapsed': elapsed})
 
     def __enter__(self):
         self.start_time = time.perf_counter()

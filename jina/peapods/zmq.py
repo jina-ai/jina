@@ -12,7 +12,7 @@ from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
 from ..helper import colored, get_random_identity
-from ..logging import default_logger
+from ..logging import default_logger, profile_logger
 from ..logging.base import get_logger
 from ..proto import jina_pb2, is_data_request
 
@@ -160,6 +160,10 @@ class Zmqlet:
         """Print out the network stats of of itself """
         self.logger.info('msg_sent: %d bytes_sent: %.0f KB msg_recv: %d bytes_recv:%.0f KB' % (
             self.msg_sent, self.bytes_sent / 1024, self.msg_recv, self.bytes_recv / 1024))
+        profile_logger.debug({'msg_sent': self.msg_sent,
+                              'msg_recv': self.msg_recv,
+                              'bytes_sent': self.bytes_sent / 1024,
+                              'bytes_recv': self.bytes_recv / 1024})
 
     def send_message(self, msg: 'jina_pb2.Message'):
         """Send a message via the output socket
