@@ -1,0 +1,17 @@
+!ChunkIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+    metas:
+      name: vecidx  # a customized name
+      workspace: $HW_WORKDIR
+  - !BasePbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: chunkidx
+      workspace: $HW_WORKDIR
+metas:
+  name: chunk_indexer
+  workspace: $HW_WORKDIR

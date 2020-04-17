@@ -1,0 +1,21 @@
+!Flow
+with:
+  read_only: true  # better add this in the query time
+pods:
+  chunk_seg:
+    yaml_path: $RESOURCE_DIR/helloworld.crafter.yml
+    replicas: $REPLICAS
+  encode:
+    yaml_path: $RESOURCE_DIR/helloworld.encoder.yml
+    replicas: $REPLICAS
+  chunk_idx:
+    yaml_path: $RESOURCE_DIR/helloworld.indexer.chunk.yml
+    replicas: $SHARDS
+    separated_workspace: true
+    polling: all
+    reducing_yaml_path: _merge_topk_chunks
+    timeout_ready: 100000 # larger timeout as in query time will read all the data
+  ranker:
+    yaml_path: BiMatchRanker
+  doc_idx:
+    yaml_path: $RESOURCE_DIR/helloworld.indexer.doc.yml

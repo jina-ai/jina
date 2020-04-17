@@ -97,6 +97,7 @@ class SegmentDriver(BaseCraftDriver):
                     c.length = len(ret)
                     c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
                         -1).value)
+                    c.doc_id = d.doc_id
                     self.first_chunk_id += 1
                 d.length = len(ret)
             else:

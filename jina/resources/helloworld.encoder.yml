@@ -1,0 +1,4 @@
+!MyEncoder
+metas:
+  name: myenc  # a customized name
+  workspace: $HW_WORKDIR

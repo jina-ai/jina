@@ -165,3 +165,46 @@ import_classes('jina.executors', show_import_table=False, import_once=True)
 import signal
 
 signal.signal(signal.SIGINT, signal.default_int_handler)
+
+# !/usr/bin/env python
+try:
+    import resource as res
+except ImportError:  # Windows
+    res = None
+
+
+def raise_nofile(nofile_atleast=4096):
+    """
+    sets nofile soft limit to at least 4096, useful for running matlplotlib/seaborn on
+    parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256
+    temporary setting extinguishing with Python session.
+    """
+    from .logging import default_logger
+    if res is None:
+        return (None,) * 2
+
+    soft, ohard = res.getrlimit(res.RLIMIT_NOFILE)
+    hard = ohard
+
+    if soft < nofile_atleast:
+        soft = nofile_atleast
+        if hard < soft:
+            hard = soft
+
+        default_logger.info('setting soft & hard ulimit -n {} {}'.format(soft, hard))
+        try:
+            res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
+        except (ValueError, res.error):
+            try:
+                hard = soft
+                default_logger.warning('trouble with max limit, retrying with soft,hard {},{}'.format(soft, hard))
+                res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
+            except Exception:
+                default_logger.warning('failed to set ulimit, giving up')
+                soft, hard = res.getrlimit(res.RLIMIT_NOFILE)
+
+    default_logger.info('ulimit -n soft,hard: {} {}'.format(soft, hard))
+    return soft, hard
+
+
+raise_nofile()
