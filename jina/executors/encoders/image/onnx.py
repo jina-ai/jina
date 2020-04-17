@@ -34,11 +34,12 @@ class OnnxImageEncoder(BaseImageEncoder):
             raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
         self.outputs_name = output_feature
         self.raw_model_path = model_path
+        self.model_name = ""
 
     def post_init(self):
         import onnxruntime
-        model_name = self.raw_model_path.split('/')[-1]
-        self.tmp_model_path = os.path.join(self.current_workspace, '{}.tmp'.format(model_name))
+        self.model_name = self.raw_model_path.split('/')[-1]
+        self.tmp_model_path = os.path.join(self.current_workspace, '{}.tmp'.format(self.model_name))
         if self._is_url(self.raw_model_path):
             import urllib.request
             download_path, *_ = urllib.request.urlretrieve(self.raw_model_path)
