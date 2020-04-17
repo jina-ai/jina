@@ -66,3 +66,16 @@ class KVIndexDriver(BaseIndexDriver):
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
         if content:
             self.exec_fn(content)
+
+
+class DocKVIndexDriver(KVIndexDriver):
+    """A shortcut of :class:`MergeTopKDriver` with ``level=chunk``"""
+
+    def __init__(self, level: str = 'doc', *args, **kwargs):
+        super().__init__(level, *args, **kwargs)
+
+
+class ChunkKVIndexDriver(KVIndexDriver):
+
+    def __init__(self, level: str = 'chunk', *args, **kwargs):
+        super().__init__(level, *args, **kwargs)

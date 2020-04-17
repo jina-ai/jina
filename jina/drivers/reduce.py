@@ -65,32 +65,15 @@ class MergeTopKDriver(MergeDriver):
         super().__call__(*args, **kwargs)
 
 
-class MergeTopKChunksDriver(MergeTopKDriver):
-    """Merge topk results at chunk level
-
-    Complexity: D x C x K x R
-
-    where:
-        - D is the number of queries
-        - C is the number of chunks per query
-        - K is the top-k
-        - R is the number of shards (i.e. ``--replicas``)
-    """
+class ChunkMergeTopKDriver(MergeTopKDriver):
+    """A shortcut to :class:`MergeTopKDriver` with ``level=chunk``"""
 
     def __init__(self, level: str = 'chunk', *args, **kwargs):
         super().__init__(level, *args, **kwargs)
 
 
-class MergeTopKDocsDriver(MergeTopKDriver):
-    """Merge topk results at doc level
-
-    Complexity: D x K x R
-
-    where:
-        - D is the number of queries
-        - K is the top-k
-        - R is the number of shards (i.e. ``--replicas``)
-    """
+class DocMergeTopKDriver(MergeTopKDriver):
+    """A shortcut to :class:`MergeTopKDriver` with ``level=doc``"""
 
     def __init__(self, level: str = 'doc', *args, **kwargs):
         super().__init__(level, *args, **kwargs)

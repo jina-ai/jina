@@ -57,6 +57,20 @@ class KVSearchDriver(BaseSearchDriver):
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
 
 
+class DocKVSearchDriver(KVSearchDriver):
+    """A shortcut to :class:`KVSearchDriver` with ``level=doc``"""
+
+    def __init__(self, level: str = 'doc', *args, **kwargs):
+        super().__init__(level, *args, **kwargs)
+
+
+class ChunkKVSearchDriver(KVSearchDriver):
+    """A shortcut to :class:`KVSearchDriver` with ``level=chunk``"""
+
+    def __init__(self, level: str = 'chunk', *args, **kwargs):
+        super().__init__(level, *args, **kwargs)
+
+
 class VectorSearchDriver(BaseSearchDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
