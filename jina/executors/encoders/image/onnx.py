@@ -12,9 +12,11 @@ class OnnxImageEncoder(BaseImageEncoder):
         ndarray of `B x D`.
     Internally, :class:`OnnxImageEncoder` wraps the models from `onnxruntime`.
     """
+
     def __init__(self,
                  output_feature: str = 'mobilenetv20_features_relu1_fwd',
-                 model_path: str = 'https://s3.amazonaws.com/onnx-model-zoo/mobilenet/mobilenetv2-1.0/mobilenetv2-1.0.onnx',
+                 model_path: str =
+                 'https://s3.amazonaws.com/onnx-model-zoo/mobilenet/mobilenetv2-1.0/mobilenetv2-1.0.onnx',
                  pool_strategy: str = 'mean',
                  *args, **kwargs):
         """
@@ -39,7 +41,7 @@ class OnnxImageEncoder(BaseImageEncoder):
     def post_init(self):
         import onnxruntime
         self.model_name = self.raw_model_path.split('/')[-1]
-        self.tmp_model_path = os.path.join(self.current_workspace, '{}.tmp'.format(self.model_name))
+        self.tmp_model_path = self.get_file_from_workspace(f'{self.model_name}.tmp')
         if self._is_url(self.raw_model_path):
             import urllib.request
             download_path, *_ = urllib.request.urlretrieve(self.raw_model_path)

@@ -1,11 +1,12 @@
 import unittest
+import os
 
 from jina.executors.encoders.image.onnx import OnnxImageEncoder
 from . import ImageTestCase
 
 
 class MyTestCase(ImageTestCase):
-    def get_encoder(self, model_path=None):
+    def _get_encoder(self):
         self.target_output_dim = 1280
         return OnnxImageEncoder()
 

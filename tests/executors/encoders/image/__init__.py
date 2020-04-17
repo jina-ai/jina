@@ -9,6 +9,10 @@ from tests import JinaTestCase
 
 class ImageTestCase(JinaTestCase):
     @property
+    def workspace(self):
+        return os.path.join(os.environ['TEST_WORKDIR'], 'test_image')
+
+    @property
     def target_output_dim(self):
         return self._target_output_dim
 
@@ -35,8 +39,6 @@ class ImageTestCase(JinaTestCase):
         encoded_data_test = encoder_loaded.encode(test_data)
         self.assertEqual(encoder_loaded.pool_strategy, encoder.pool_strategy)
         np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
-        self.add_tmpfile(
-            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load_config(self):
@@ -45,7 +47,12 @@ class ImageTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
         self.assertEqual(encoder_loaded.pool_strategy, encoder.pool_strategy)
-        self.add_tmpfile(encoder_loaded.config_abspath, encoder_loaded.save_abspath)
 
-    def get_encoder(self, model_path=None):
+    def get_encoder(self):
+        encoder = self._get_encoder()
+        encoder.workspace = self.workspace
+        self.add_tmpfile(encoder.workspace)
+        return encoder
+
+    def _get_encoder(self):
         raise NotImplementedError
