@@ -20,17 +20,34 @@ class ImageTestCase(JinaTestCase):
     def target_output_dim(self, output_dim):
         self._target_output_dim = output_dim
 
+    @property
+    def input_dim(self):
+        return self._input_dim
+
+    @input_dim.setter
+    def input_dim(self, input_dim):
+        self._input_dim = input_dim
+
+    def get_encoder(self):
+        encoder = self._get_encoder()
+        encoder.workspace = self.workspace
+        self.add_tmpfile(encoder.workspace)
+        return encoder
+
+    def _get_encoder(self):
+        raise NotImplementedError
+
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_encoding_results(self):
         encoder = self.get_encoder()
-        test_data = np.random.rand(2, 3, 224, 224)
+        test_data = np.random.rand(2, 3, self.input_dim, self.input_dim)
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (2, self._target_output_dim))
+        self.assertEqual(encoded_data.shape, (2, self.target_output_dim))
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_save_and_load(self):
         encoder = self.get_encoder()
-        test_data = np.random.rand(2, 3, 224, 224)
+        test_data = np.random.rand(2, 3, self.input_dim, self.input_dim)
         encoded_data_control = encoder.encode(test_data)
         encoder.touch()
         encoder.save()
@@ -47,12 +64,3 @@ class ImageTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
         self.assertEqual(encoder_loaded.pool_strategy, encoder.pool_strategy)
-
-    def get_encoder(self):
-        encoder = self._get_encoder()
-        encoder.workspace = self.workspace
-        self.add_tmpfile(encoder.workspace)
-        return encoder
-
-    def _get_encoder(self):
-        raise NotImplementedError
