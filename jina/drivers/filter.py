@@ -2,7 +2,10 @@ from . import BaseDriver
 
 
 class TopKFilterDriver(BaseDriver):
-    """Restrict the size of the ``topk_results`` to ``k`` (given by the request)"""
+    """Restrict the size of the ``topk_results`` to ``k`` (given by the request)
+
+    This driver works on both chunk and doc level
+    """
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
@@ -16,9 +19,16 @@ class TopKFilterDriver(BaseDriver):
 
 
 class TopKSortDriver(BaseDriver):
-    """Sort the ``topk_results`` """
+    """Sort the ``topk_results``
+
+    This driver works on both chunk and doc level
+    """
 
     def __init__(self, descending: bool = False, *args, **kwargs):
+        """
+
+        :param descending: sort the value from big to small
+        """
 
         super().__init__(*args, **kwargs)
         self.descending = descending

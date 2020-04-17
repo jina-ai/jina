@@ -64,11 +64,11 @@ metas:
 requests:
   on:
     SearchRequest:
-      - !ChunkSearchDriver
+      - !VectorSearchDriver
         with:
           method: query
     IndexRequest:
-      - !ChunkIndexDriver
+      - !VectorIndexDriver
         with:
           method: add
     ControlRequest:

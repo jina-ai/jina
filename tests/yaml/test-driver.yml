@@ -1,6 +1,7 @@
-- !DocPbSearchDriver
+- !KVSearchDriver
   with:
     executor: blah
     method: goto
+    level: doc
 - !ControlReqDriver {}
 - !BaseDriver {}

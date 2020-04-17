@@ -144,19 +144,21 @@ class BaseExecutor(metaclass=ExecutorType):
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def _fill_requests(self, _requests):
+
         if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
+            # if control request is forget in YAML, then fill it
+            if 'ControlRequest' not in _requests['on']:
+                from ..drivers.control import ControlReqDriver
+                _requests['on']['ControlRequest'] = [ControlReqDriver()]
+
             for req_type, drivers in _requests['on'].items():
-                if isinstance(req_type, list) or isinstance(req_type, tuple):
-                    for r in req_type:
-                        if r not in self._drivers:
-                            self._drivers[r] = list()
-                        if self._drivers[r] != drivers:
-                            self._drivers[r].extend(drivers)
-                else:
-                    if req_type not in self._drivers:
-                        self._drivers[req_type] = list()
-                    if self._drivers[req_type] != drivers:
-                        self._drivers[req_type].extend(drivers)
+                if isinstance(req_type, str):
+                    req_type = [req_type]
+                for r in req_type:
+                    if r not in self._drivers:
+                        self._drivers[r] = list()
+                    if self._drivers[r] != drivers:
+                        self._drivers[r].extend(drivers)
 
     def _fill_metas(self, _metas):
         unresolved_attr = False

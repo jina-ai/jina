@@ -2,10 +2,17 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    - !DocPbSearchDriver
+    - !KVSearchDriver
       with:
-        method: query
+        level: doc
     - !TopKFilterDriver {}
   IndexRequest:
-    - !DocPruneDriver {}
-    - !DocPbIndexDriver {}
+    - !PruneDriver
+      with:
+        level: doc
+        pruned:
+          - chunks
+          - raw_bytes
+    - !KVIndexDriver
+      with:
+        level: doc
