@@ -36,13 +36,13 @@ class TextPaddlehubEncoder(BaseTextEncoder):
         """
         super().__init__(*args, **kwargs)
         self.model_name = model_name
-        self.max_seq_length = max_length
+        self.max_length = max_length
         self.tokenizer = None
 
     def post_init(self):
         import paddlehub as hub
         self.model = hub.Module(name=self.model_name)
-        self.model.MAX_SEQ_LEN = self.max_seq_length
+        self.model.MAX_SEQ_LEN = self.max_length
 
     @batching
     @as_ndarray
