@@ -15,7 +15,6 @@ class FlairTextEncoder(BaseTextEncoder):
     def __init__(self,
                  embeddings: Union[Tuple[str], List[str]] = ('word:glove', 'flair:news-forward', 'flair:news-backward'),
                  pooling_strategy: str = 'mean',
-                 max_length: int = -1,
                  *args,
                  **kwargs):
         """
@@ -32,7 +31,7 @@ class FlairTextEncoder(BaseTextEncoder):
         self.embeddings = embeddings
         self.pooling_strategy = pooling_strategy
         self.model = None
-        self.max_length = max_length
+        self.max_length = -1  # reserved variable for future usages
 
     def post_init(self):
         from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, \
