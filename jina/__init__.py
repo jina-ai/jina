@@ -1,6 +1,6 @@
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
