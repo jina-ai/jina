@@ -45,6 +45,11 @@ def client(args):
     PyClient(args)
 
 
+def hello_world(args):
+    from ..helloworld import hello_world
+    hello_world(args)
+
+
 def flow(args):
     """Start a Flow from a YAML file"""
     from ..flow import Flow

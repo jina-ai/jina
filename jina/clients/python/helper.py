@@ -28,7 +28,7 @@ class ProgressBar:
         self.proc_doc = 0
         self.logger = logger
 
-    def update(self, progress: int = None) -> None:
+    def update(self, progress: int = None, *args, **kwargs) -> None:
         """ Increment the progress bar by one unit
 
         :param progress: the number of unit to increment

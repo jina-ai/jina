@@ -109,7 +109,7 @@ def countdown(t: int, logger=None, reason: str = 'I am blocking this thread'):
         sys.stdout.flush()
     while t > 0:
         t -= 1
-        msg = '%ss left: %s' % (colored('%3d' % t, 'yellow'), reason)
+        msg = '⏳ %ss left: %s' % (colored('%3d' % t, 'yellow'), reason)
         if logger:
             logger.info(msg)
         else:
@@ -397,6 +397,7 @@ def kwargs2list(kwargs: Dict):
 def valid_yaml_path(path: str, to_stream: bool = False):
     # priority, filepath > classname > default
     import io
+    from pkg_resources import resource_filename
     if hasattr(path, 'read'):
         # already a readable stream
         return path
@@ -405,8 +406,8 @@ def valid_yaml_path(path: str, to_stream: bool = False):
             return open(path, encoding='utf8')
         else:
             return path
-    elif path.startswith('_'):
-        from pkg_resources import resource_filename
+    elif path.startswith('_') and os.path.exists(
+            resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))):
         return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
     elif path.startswith('!'):
         # possible YAML content

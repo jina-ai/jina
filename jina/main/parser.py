@@ -72,6 +72,31 @@ def set_logger_parser(parser=None):
     return parser
 
 
+def set_hw_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+    from ..helper import get_random_identity
+    parser.add_argument('--workdir', type=str, default=get_random_identity(),
+                        help='the workdir for hello-world demo, all indices, output will be there')
+    parser.add_argument('--shards', type=int,
+                        default=4,
+                        help='number of shards when index and query')
+    parser.add_argument('--replicas', type=int,
+                        default=4,
+                        help='number of replicas when index and query')
+    parser.add_argument('--index-data-url', type=str,
+                        default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
+                        help='the url of index data (should be in idx3-ubyte.gz format)')
+    parser.add_argument('--query-data-url', type=str,
+                        default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
+                        help='the url of query data (should be in idx3-ubyte.gz format)')
+    parser.add_argument('--num-query', type=int, default=128,
+                        help='number of queries to visualize')
+    parser.add_argument('--top-k', type=int, default=50,
+                        help='top-k results to retrieve and visualize')
+    return parser
+
+
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -373,6 +398,10 @@ def get_main_parser():
     sp = parser.add_subparsers(dest='cli',
                                description='use "%(prog)-8s [sub-command] --help" '
                                            'to get detailed information about each sub-command', required=True)
+
+    set_hw_parser(sp.add_parser('hello-world', help='👋 Hello World! Hello Jina!',
+                                description='Start the hello-world demo, a simple end2end image search',
+                                formatter_class=_chf))
 
     # cli
     set_pod_parser(sp.add_parser('pod', help='start a pod',

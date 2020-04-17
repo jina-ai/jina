@@ -33,4 +33,4 @@ def main():
     """The main entrypoint of the CLI """
     from . import api
     args = _get_run_args()
-    getattr(api, args.cli)(args)
+    getattr(api, args.cli.replace('-', '_'))(args)

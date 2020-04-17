@@ -343,7 +343,7 @@ class BasePea(metaclass=PeaMeta):
         except RequestLoopEnd:
             self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
-            self.logger.error('can not executor from %s' % self.args.yaml_path)
+            self.logger.error('can not start a executor from %s' % self.args.yaml_path)
         except MemoryOverHighWatermark:
             self.logger.error(
                 'memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
