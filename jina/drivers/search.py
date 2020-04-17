@@ -9,36 +9,55 @@ class BaseSearchDriver(BaseExecutableDriver):
         super().__init__(executor, method, *args, **kwargs)
 
 
-class DocPbSearchDriver(BaseSearchDriver):
-    """Fill in the doc-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
+class KVSearchDriver(BaseSearchDriver):
+    """Fill in the doc/chunk-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
 
     .. warning::
-        This driver loops over all doc's top-K results, each step fires a query.
-        This may not be very efficient, as the total number of quires is D x K
+        This driver loops over all chunk/chunk's top-K results, each step fires a query.
+        This may not be very efficient, as the total number of queries depends on ``level``
+
+             - ``level=chunk``: D x C x K
+             - ``level=doc``: D x K
+             - ``level=all``: D x C x K
+
+        where:
+            - D is the number of queries
+            - C is the number of chunks per query/doc
+            - K is the top-k
     """
 
-    def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
-            for tk in d.topk_results:
-                tk.match_doc.CopyFrom(self.exec_fn(f'd{tk.match_doc.doc_id}'))
+    def __init__(self, level: str, *args, **kwargs):
+        """
 
-
-class ChunkPbSearchDriver(BaseSearchDriver):
-    """Fill in the chunk-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
-
-    .. warning::
-        This driver loops over all chunk's top-K results, each step fires a query.
-        This may not be very efficient, as the total number of quires is D x C x K
-    """
+        :param level: index level "chunk" or "doc", or "all"
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+        self.level = level
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
-            for c in d.chunks:
-                for k in c.topk_results:
-                    k.match_chunk.CopyFrom(self.exec_fn(f'c{k.match_chunk.chunk_id}'))
+        if self.level == 'doc':
+            for d in self.req.docs:
+                for tk in d.topk_results:
+                    tk.match_doc.CopyFrom(self.exec_fn(f'd{tk.match_doc.doc_id}'))
+        elif self.level == 'chunk':
+            for d in self.req.docs:
+                for c in d.chunks:
+                    for k in c.topk_results:
+                        k.match_chunk.CopyFrom(self.exec_fn(f'c{k.match_chunk.chunk_id}'))
+        elif self.level == 'all':
+            for d in self.req.docs:
+                for tk in d.topk_results:
+                    tk.match_doc.CopyFrom(self.exec_fn(f'd{tk.match_doc.doc_id}'))
+                for c in d.chunks:
+                    for k in c.topk_results:
+                        k.match_chunk.CopyFrom(self.exec_fn(f'c{k.match_chunk.chunk_id}'))
+        else:
+            raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
 
 
-class ChunkSearchDriver(BaseSearchDriver):
+class VectorSearchDriver(BaseSearchDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
     """

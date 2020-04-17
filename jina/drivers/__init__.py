@@ -205,7 +205,16 @@ class BaseExecutableDriver(BaseDriver):
         """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
-            self._exec = executor[self._executor_name]
+            if self._executor_name in executor:
+                self._exec = executor[self._executor_name]
+            else:
+                for c in executor.components:
+                    if any(t.__name__ == self._executor_name for t in type.mro(c.__class__)):
+                        self._exec = c
+                        break
+            if self._exec is None:
+                self.logger.critical(f'fail to attach the driver to {executor}, '
+                                     f'no executor is named or typed as {self._executor_name}')
         else:
             self._exec = executor
 

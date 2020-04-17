@@ -4,6 +4,7 @@ from typing import Tuple
 import numpy as np
 
 from .. import BaseExecutor
+from ..compound import CompoundExecutor
 from ...helper import call_obj_fn
 
 
@@ -14,7 +15,7 @@ class BaseIndexer(BaseExecutor):
     One can decorate them with :func:`jina.decorator.require_train`,
     :func:`jina.helper.batching` and :func:`jina.logging.profile.profiling`.
 
-    One should always inherit from either :class:`BaseVecIndexer` or :class:`BaseKVIndexer`.
+    One should always inherit from either :class:`BaseVectorIndexer` or :class:`BaseKVIndexer`.
 
     .. seealso::
         :mod:`jina.drivers.handlers.index`
@@ -133,12 +134,12 @@ class BaseIndexer(BaseExecutor):
         call_obj_fn(self.write_handler, 'flush')
 
 
-class BaseVecIndexer(BaseIndexer):
+class BaseVectorIndexer(BaseIndexer):
     """An abstract class for vector indexer. It is equipped with drivers in ``requests.on``
 
     All vector indexers should inherit from it.
 
-    It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVecIndexer)``
+    It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
 
@@ -149,3 +150,84 @@ class BaseKVIndexer(BaseIndexer):
 
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
+
+
+class ChunkIndexer(CompoundExecutor):
+    """A Frequently used pattern for combining A :class:`BaseVectorIndexer` and :class:`BaseKVIndexer`.
+    It will be equipped with predefined ``requests.on`` behaviors:
+
+        -  In the index time
+            - 1. stores the vector via :class:`BaseVectorIndexer`
+            - 2. remove all vector information (embedding, raw_bytes, blob, text)
+            - 3. store the remained meta information via :class:`BaseKVIndexer`
+        - In the query time
+            - 1. Find the knn using the vector via :class:`BaseVectorIndexer`
+            - 2. remove all vector information (embedding, raw_bytes, blob, text)
+            - 3. Fill in the meta information of the chunk via :class:`BaseKVIndexer`
+
+    One can use the :class:`ChunkIndexer` via
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        !ChunkIndexer
+        components:
+          - !NumpyIndexer
+            with:
+              index_filename: vec.gz
+            metas:
+              name: vecidx  # a customized name
+              workspace: $TEST_WORKDIR
+          - !BasePbIndexer
+            with:
+              index_filename: chunk.gz
+            metas:
+              name: chunkidx  # a customized name
+              workspace: $TEST_WORKDIR
+        metas:
+          name: chunk_compound_indexer
+          workspace: $TEST_WORKDIR
+
+    Without defining any ``requests.on`` logic. When load from this YAML, it will be auto equipped with
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        on:
+          SearchRequest:
+            - !VectorSearchDriver
+              with:
+                executor: BaseVectorIndexer
+            - !PruneDriver
+              with:
+                level: chunk
+                pruned:
+                  - embedding
+                  - raw_bytes
+                  - blob
+                  - text
+            - !KVSearchDriver
+              with:
+                executor: BaseKVIndexer
+                level: chunk
+          IndexRequest:
+            - !VectorIndexDriver
+              with:
+                executor: BaseVectorIndexer
+            - !PruneDriver
+              with:
+                level: chunk
+                pruned:
+                  - embedding
+                  - raw_bytes
+                  - blob
+                  - text
+            - !KVIndexDriver
+              with:
+                level: chunk
+                executor: BaseKVIndexer
+          ControlRequest:
+            - !ControlReqDriver {}
+    """
+
+    pass

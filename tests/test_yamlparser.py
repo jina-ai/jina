@@ -2,6 +2,7 @@ import os
 
 from pkg_resources import resource_filename
 
+from jina.executors import BaseExecutor
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import yaml, expand_dict
 from jina.main.parser import set_pea_parser
@@ -73,3 +74,13 @@ class MyTestCase(JinaTestCase):
 
         from jina.executors.requests import _defaults
         self.assertIsNotNone(_defaults)
+
+    def test_joint_indexer(self):
+        b = BaseExecutor.load_config('yaml/test-joint.yml')
+        print(b[0].name)
+        print(type(b[0]))
+        print(b._drivers['SearchRequest'][0]._executor_name)
+        print(b._drivers['SearchRequest'])
+        b.attach(pea=None)
+        self.assertEqual(b._drivers['SearchRequest'][0]._exec, b[0])
+        self.assertEqual(b._drivers['SearchRequest'][-1]._exec, b[1])

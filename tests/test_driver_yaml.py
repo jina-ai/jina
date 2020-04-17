@@ -1,13 +1,14 @@
 import unittest
 
+from pkg_resources import resource_filename
+
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
-from jina.drivers.search import DocPbSearchDriver
+from jina.drivers.search import KVSearchDriver
 from jina.executors import BaseExecutor
 from jina.helper import yaml
 from jina.main.parser import set_pod_parser
 from jina.peapods import Pod
-from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
@@ -17,7 +18,7 @@ class MyTestCase(JinaTestCase):
         with open('yaml/test-driver.yml', encoding='utf8') as fp:
             a = yaml.load(fp)
 
-        self.assertTrue(isinstance(a[0], DocPbSearchDriver))
+        self.assertTrue(isinstance(a[0], KVSearchDriver))
         self.assertTrue(isinstance(a[1], ControlReqDriver))
         self.assertTrue(isinstance(a[2], BaseDriver))
 
@@ -27,7 +28,7 @@ class MyTestCase(JinaTestCase):
         with open('test_driver.yml', encoding='utf8') as fp:
             b = yaml.load(fp)
 
-        self.assertTrue(isinstance(b, DocPbSearchDriver))
+        self.assertTrue(isinstance(b, KVSearchDriver))
         self.assertEqual(b._executor_name, a[0]._executor_name)
 
         self.add_tmpfile('test_driver.yml')
@@ -50,6 +51,9 @@ class MyTestCase(JinaTestCase):
 
     def test_load_yaml2(self):
         a = BaseExecutor.load_config('yaml/test-exec-with-driver.yml')
+        self.assertEqual(len(a._drivers), 2)
+        # should be able to auto fill in ControlRequest
+        self.assertTrue('ControlRequest' in a._drivers)
         a.save_config()
         p = a.config_abspath
         b = BaseExecutor.load_config(p)

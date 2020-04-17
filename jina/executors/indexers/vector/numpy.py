@@ -2,10 +2,11 @@ import gzip
 from typing import Tuple, Optional
 
 import numpy as np
-from jina.executors.indexers import BaseVecIndexer
+
+from jina.executors.indexers import BaseVectorIndexer
 
 
-class NumpyIndexer(BaseVecIndexer):
+class NumpyIndexer(BaseVectorIndexer):
     """An exhaustive vector indexers implemented with numpy and scipy. """
 
     def __init__(self, metric: str = 'euclidean',

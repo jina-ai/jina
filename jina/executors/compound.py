@@ -36,21 +36,13 @@ class CompoundExecutor(BaseExecutor):
         requests:
           on:
             SearchRequest:
-              - !ChunkSearchDriver
+              - !VectorSearchDriver
                 with:
                   executor: vecidx_exec
-              - !ChunkPruneDriver {}
-              - !ChunkPbSearchDriver
-                with:
-                  executor: chunkidx_exec
             IndexRequest:
-              - !ChunkIndexDriver
+              - !VectorIndexDriver
                 with:
                   executor: vecidx_exec
-              - !ChunkPruneDriver {}
-              - !ChunkPbIndexDriver
-                with:
-                  executor: chunkidx_exec
             ControlRequest:
               - !ControlReqDriver {}
 
@@ -356,6 +348,15 @@ class CompoundExecutor(BaseExecutor):
             obj.components = lambda: data['components']
         return obj
 
+    def __contains__(self, item: str):
+        if isinstance(item, str):
+            for c in self.components:
+                if c.name == item:
+                    return True
+            return False
+        else:
+            raise TypeError('CompoundExecutor only support string type "in"')
+
     def __getitem__(self, item: Union[int, str]):
         if isinstance(item, int):
             return self.components[item]
@@ -364,7 +365,7 @@ class CompoundExecutor(BaseExecutor):
                 if c.name == item:
                     return c
         else:
-            raise AttributeError('CompoundExecutor only supports int or string index')
+            raise TypeError('CompoundExecutor only supports int or string index')
 
     def __iter__(self):
         return self.components.__iter__()
