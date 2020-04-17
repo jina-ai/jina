@@ -1,0 +1,24 @@
+!CompoundExecutor
+components:
+  - !MyDocCrafter
+    metas:
+      name: mycraft  # a customized name
+  - !MySegmenter
+    metas:
+      name: myseg  # a customized name
+metas:
+  name: compound_crafter
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !DocCraftDriver
+        with:
+          executor: mycraft
+      - !SegmentDriver
+        with:
+          executor: myseg
+      - !DocPruneDriver
+        with:
+          pruned: raw_bytes  # we will never use raw_bytes in the remaining pipeline
+    ControlRequest:
+      - !ControlReqDriver {}
