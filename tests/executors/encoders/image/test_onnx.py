@@ -1,44 +1,14 @@
-import os
 import unittest
+import os
 
-import numpy as np
-
-from jina.executors import BaseExecutor
 from jina.executors.encoders.image.onnx import OnnxImageEncoder
-from tests import JinaTestCase
+from . import ImageTestCase
 
 
-class MyTestCase(JinaTestCase):
-    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
-    def test_encoding_results(self):
-        encoder = OnnxImageEncoder()
-        test_data = np.random.rand(2, 3, 224, 224)
-        encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (2, 1280))
-
-    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
-    def test_save_and_load(self):
-        encoder = OnnxImageEncoder(model_path='./mobilenetv2-1.0.onnx')
-        test_data = np.random.rand(2, 3, 224, 224)
-        encoded_data_control = encoder.encode(test_data)
-        encoder.touch()
-        encoder.save()
-        self.assertTrue(os.path.exists(encoder.save_abspath))
-        encoder_loaded = BaseExecutor.load(encoder.save_abspath)
-        encoded_data_test = encoder_loaded.encode(test_data)
-        self.assertEqual(encoder_loaded.outputs_name, encoder.outputs_name)
-        np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
-        self.add_tmpfile(
-            encoder.config_abspath, encoder.save_abspath, encoder_loaded.config_abspath, encoder_loaded.save_abspath)
-
-    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
-    def test_save_and_load_config(self):
-        encoder = OnnxImageEncoder(model_path='./mobilenetv2-1.0.onnx')
-        encoder.save_config()
-        self.assertTrue(os.path.exists(encoder.config_abspath))
-        encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-        self.assertEqual(encoder_loaded.outputs_name, encoder.outputs_name)
-        self.add_tmpfile(encoder_loaded.config_abspath, encoder_loaded.save_abspath, encoder.tmp_model_path)
+class MyTestCase(ImageTestCase):
+    def _get_encoder(self):
+        self.target_output_dim = 1280
+        return OnnxImageEncoder()
 
 
 if __name__ == '__main__':

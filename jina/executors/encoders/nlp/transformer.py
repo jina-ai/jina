@@ -33,8 +33,6 @@ class TransformerEncoder(BaseTextEncoder):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.pooling_strategy = pooling_strategy
-        self.model = None
-        self.tokenizer = None
         self.max_length = max_length
         self.raw_model_path = model_path
 
