@@ -10,7 +10,7 @@ from tests import JinaTestCase
 class ImageTestCase(JinaTestCase):
     @property
     def workspace(self):
-        return os.path.join(os.environ['TEST_WORKDIR'], 'test_image')
+        return os.path.join(os.environ['TEST_WORKDIR'], 'test_tmp')
 
     @property
     def target_output_dim(self):
