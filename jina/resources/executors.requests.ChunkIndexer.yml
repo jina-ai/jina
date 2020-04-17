@@ -1,0 +1,35 @@
+on:
+  SearchRequest:
+    - !VectorSearchDriver
+      with:
+        executor: BaseVectorIndexer
+    - !PruneDriver
+      with:
+        level: chunk
+        pruned:
+          - embedding
+          - raw_bytes
+          - blob
+          - text
+    - !KVSearchDriver
+      with:
+        executor: BaseKVIndexer
+        level: chunk
+  IndexRequest:
+    - !VectorIndexDriver
+      with:
+        executor: BaseVectorIndexer
+    - !PruneDriver
+      with:
+        level: chunk
+        pruned:
+          - embedding
+          - raw_bytes
+          - blob
+          - text
+    - !KVIndexDriver
+      with:
+        level: chunk
+        executor: BaseKVIndexer
+  ControlRequest:
+    - !ControlReqDriver {}

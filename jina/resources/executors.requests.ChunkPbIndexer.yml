@@ -2,6 +2,10 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    - !ChunkPbSearchDriver {}
+    - !KVSearchDriver
+      with:
+        level: chunk
   IndexRequest:
-    - !ChunkPbIndexDriver {}
+    - !KVIndexDriver
+      with:
+        level: chunk
