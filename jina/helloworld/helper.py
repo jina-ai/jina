@@ -1,10 +1,17 @@
 import base64
 import gzip
+import os
 import struct
+import urllib.request
+import webbrowser
 import zlib
 
 import numpy as np
 from pkg_resources import resource_filename
+
+from ..clients.python import ProgressBar
+from ..helper import colored
+from ..logging import default_logger
 
 
 def load_mnist(path):
@@ -71,3 +78,24 @@ def write_html(html_path):
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
         fw.write(t)
+
+    url_html_path = 'file://' + os.path.abspath(html_path)
+
+    try:
+        webbrowser.open(url_html_path, new=2)
+    except:
+        pass
+    finally:
+        default_logger.success(f'You should see a "hello-world.html" opened in your browser, '
+                               f'if not you may open {url_html_path} manually')
+
+    colored_url = colored('https://github.com/jina-ai/jina', color='cyan', attrs='underline')
+    default_logger.success(
+        f'🤩 Intrigued? Play with "jina hello-world --help" and learn more about Jina at {colored_url}')
+
+
+def download_data(targets, urls):
+    with ProgressBar(task_name='download fashion-mnist') as t:
+        for f, u in zip(targets, urls):
+            if not os.path.exists(f):
+                urllib.request.urlretrieve(u, f, reporthook=lambda *x: t.update(1))
