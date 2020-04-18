@@ -1,6 +1,7 @@
 !Flow
 with:
   read_only: true  # better add this in the query time
+  logserver: $WITH_LOGSERVER
 pods:
   chunk_seg:
     yaml_path: $RESOURCE_DIR/helloworld.crafter.yml
