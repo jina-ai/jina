@@ -1,7 +1,9 @@
 ``jina log``
 ============
 
+.. note::
 
+    This command is hidden unless you set ``JINA_FULL_CLI``
 
 .. argparse::
    :noepilog:

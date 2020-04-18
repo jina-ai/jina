@@ -1,9 +1,6 @@
 Jina Command-Line Interface
 ===========================
 
-
-
-
 .. argparse::
    :nosubcommands:
    :noepilog:
@@ -14,10 +11,9 @@ Jina Command-Line Interface
 .. toctree::
    :caption: Starting Jina in the Console
 
+   jina-helloworld
    jina-pod
-   jina-pea
    jina-flow
-   jina-client
    jina-gateway
 
 
@@ -27,3 +23,9 @@ Jina Command-Line Interface
    jina-ping
    jina-check
    jina-log
+
+.. toctree::
+   :caption: Advanced Commands
+
+   jina-pea
+   jina-client

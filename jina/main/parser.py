@@ -76,24 +76,46 @@ def set_hw_parser(parser=None):
     if not parser:
         parser = set_base_parser()
     from ..helper import get_random_identity
-    parser.add_argument('--workdir', type=str, default=get_random_identity(),
-                        help='the workdir for hello-world demo, all indices, output will be there')
-    parser.add_argument('--shards', type=int,
-                        default=4,
-                        help='number of shards when index and query')
-    parser.add_argument('--replicas', type=int,
-                        default=4,
-                        help='number of replicas when index and query')
-    parser.add_argument('--index-data-url', type=str,
-                        default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
-                        help='the url of index data (should be in idx3-ubyte.gz format)')
-    parser.add_argument('--query-data-url', type=str,
-                        default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
-                        help='the url of query data (should be in idx3-ubyte.gz format)')
-    parser.add_argument('--num-query', type=int, default=128,
-                        help='number of queries to visualize')
-    parser.add_argument('--top-k', type=int, default=50,
-                        help='top-k results to retrieve and visualize')
+    from pkg_resources import resource_filename
+
+    gp = add_arg_group(parser, 'general arguments')
+    gp.add_argument('--workdir', type=str, default=get_random_identity(),
+                    help='the workdir for hello-world demo, '
+                         'all data, indices, shards and outputs will be saved there')
+    gp.add_argument('--logserver', action='store_true', default=False,
+                    help='start a log server for the dashboard')
+    gp = add_arg_group(parser, 'scalability arguments')
+    gp.add_argument('--shards', type=int,
+                    default=4,
+                    help='number of shards when index and query')
+    gp.add_argument('--replicas', type=int,
+                    default=4,
+                    help='number of replicas when index and query')
+    gp = add_arg_group(parser, 'index arguments')
+    gp.add_argument('--index-yaml-path', type=str,
+                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
+                    help='the yaml path of the index flow')
+    gp.add_argument('--index-data-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
+                    help='the url of index data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--index-batch-size', type=int,
+                    default=1024,
+                    help='the batch size in indexing')
+    gp = add_arg_group(parser, 'query arguments')
+    gp.add_argument('--query-yaml-path', type=str,
+                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml'))),
+                    help='the yaml path of the query flow')
+    gp.add_argument('--query-data-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
+                    help='the url of query data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--query-batch-size', type=int,
+                    default=32,
+                    help='the batch size in searching')
+    gp.add_argument('--num-query', type=int, default=128,
+                    help='number of queries to visualize')
+    gp.add_argument('--top-k', type=int, default=50,
+                    help='top-k results to retrieve and visualize')
+
     return parser
 
 
@@ -394,33 +416,30 @@ def set_client_cli_parser(parser=None):
 def get_main_parser():
     # create the top-level parser
     parser = set_base_parser()
+    import os
+    show_all = 'JINA_FULL_CLI' in os.environ
 
     sp = parser.add_subparsers(dest='cli',
                                description='use "%(prog)-8s [sub-command] --help" '
                                            'to get detailed information about each sub-command', required=True)
 
     set_hw_parser(sp.add_parser('hello-world', help='👋 Hello World! Hello Jina!',
-                                description='Start the hello-world demo, a simple end2end image search',
+                                description='Start the hello-world demo, a simple end2end image index and search demo '
+                                            'without any extra dependencies.',
                                 formatter_class=_chf))
 
     # cli
     set_pod_parser(sp.add_parser('pod', help='start a pod',
                                  description='Start a Jina pod',
                                  formatter_class=_chf))
-    set_pea_parser(sp.add_parser('pea',
-                                 description='Start a Jina pea. You should rarely use this directly unless you '
-                                             'are doing low-level orchestration',
-                                 help='start a pea', formatter_class=_chf))
+
     set_flow_parser(sp.add_parser('flow',
                                   description='Start a Jina flow that consists of multiple pods',
                                   help='start a flow from a YAML file', formatter_class=_chf))
     set_gateway_parser(sp.add_parser('gateway',
                                      description='Start a Jina gateway that receives client remote requests via gRPC',
                                      help='start a gateway', formatter_class=_chf))
-    set_client_cli_parser(
-        sp.add_parser('client', help='start a client',
-                      description='Start a Python client that connects to a remote Jina gateway',
-                      formatter_class=_chf))
+
     # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
 
     # # check
@@ -436,10 +455,22 @@ def get_main_parser():
     sp.add_parser('check', help='check the import status all executors and drivers',
                   description='Check the import status all executors and drivers',
                   formatter_class=_chf)
+
+    set_pea_parser(sp.add_parser('pea',
+                                 description='Start a Jina pea. '
+                                             'You should rarely use this directly unless you '
+                                             'are doing low-level orchestration',
+                                 formatter_class=_chf, **(dict(help='start a pea')) if show_all else {}))
+
     set_logger_parser(sp.add_parser('log',
-                                    help='receive piped log output and beautify the log',
-                                    description='Receive piped log output and beautify the log',
-                                    formatter_class=_chf))
+                                    description='Receive piped log output and beautify the log. '
+                                                'Depreciated, use Jina Dashboard instead',
+                                    formatter_class=_chf,
+                                    **(dict(help='beautify the log')) if show_all else {}))
+    set_client_cli_parser(
+        sp.add_parser('client',
+                      description='Start a Python client that connects to a remote Jina gateway',
+                      formatter_class=_chf, **(dict(help='start a client')) if show_all else {}))
     return parser
 
 

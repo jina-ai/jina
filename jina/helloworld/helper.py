@@ -94,8 +94,8 @@ def write_html(html_path):
         f'🤩 Intrigued? Play with "jina hello-world --help" and learn more about Jina at {colored_url}')
 
 
-def download_data(targets, urls):
+def download_data(targets):
     with ProgressBar(task_name='download fashion-mnist') as t:
-        for f, u in zip(targets, urls):
-            if not os.path.exists(f):
-                urllib.request.urlretrieve(u, f, reporthook=lambda *x: t.update(1))
+        for v in targets.values():
+            if not os.path.exists(v['filename']):
+                urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update(1))
