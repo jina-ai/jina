@@ -128,6 +128,11 @@ And the implementation behind? As simple as it should be:
 <tr>
 <td> Python API </td>
 <td>
+<pre>index.yml</pre> 
+</td>
+</tr>
+<tr>
+<td> 
 
 ```python
 from jina.flow import Flow
@@ -138,9 +143,6 @@ with f.build() as fl:
 ```
 
 </td>
-</tr>
-<tr>
-<td> <pre>index.yml</pre> </td>
 <td>
 
 ```yaml
