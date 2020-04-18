@@ -27,15 +27,32 @@ import os
 
 __uptime__ = datetime.now().strftime('%Y%m%d%H%M%S')
 
-__jina_env__ = ('JINA_PROFILING',
-                'JINA_WARN_UNNAMED',
-                'JINA_VCS_VERSION',
-                'JINA_CONTROL_PORT',
+# update on MacOS
+# 1. clean this tuple,
+# 2. grep -ohE "\'JINA_.*?\'" **/*.py | sort -u | sed "s/$/,/g"
+# 3. copy all lines EXCEPT the first (which is the grep command in the last line)
+__jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_CONTRIB_MODULE',
+                'JINA_CONTRIB_MODULE_IS_LOADING',
+                'JINA_CONTROL_PORT',
+                'JINA_DEFAULT_HOST',
+                'JINA_EXECUTOR_WORKDIR',
+                'JINA_FULL_CLI',
                 'JINA_IPC_SOCK_TMP',
                 'JINA_LOG_FILE',
+                'JINA_LOG_LONG',
+                'JINA_LOG_NO_COLOR',
+                'JINA_LOG_PROFILING',
+                'JINA_LOG_SSE',
+                'JINA_LOG_VERBOSITY',
+                'JINA_PROFILING',
                 'JINA_SOCKET_HWM',
-                'JINA_ARRAY_QUANT')
+                'JINA_STACK_CONFIG',
+                'JINA_TEST_CONTAINER',
+                'JINA_TEST_PRETRAINED',
+                'JINA_VCS_VERSION',
+                'JINA_VERSION',
+                'JINA_WARN_UNNAMED',)
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
@@ -191,7 +208,7 @@ def raise_nofile(nofile_atleast=4096):
         if hard < soft:
             hard = soft
 
-        default_logger.info('setting soft & hard ulimit -n {} {}'.format(soft, hard))
+        default_logger.debug('setting soft & hard ulimit -n {} {}'.format(soft, hard))
         try:
             res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
         except (ValueError, res.error):
@@ -203,7 +220,7 @@ def raise_nofile(nofile_atleast=4096):
                 default_logger.warning('failed to set ulimit, giving up')
                 soft, hard = res.getrlimit(res.RLIMIT_NOFILE)
 
-    default_logger.info('ulimit -n soft,hard: {} {}'.format(soft, hard))
+    default_logger.debug('ulimit -n soft,hard: {} {}'.format(soft, hard))
     return soft, hard
 
 
