@@ -91,15 +91,15 @@ We provide a universal Jina image (only 80MB!) that supports multiple architectu
 docker run jinaai/jina
 ```
 
-## Jina "Hello, World!"
+## Jina "Hello, World!" 👋🌍
 
-As a starter, we invite you to try Jina's "Hello, World": a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies required, simply do:
+As a starter, we invite you to try Jina's "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply do:
 
 ```bash
 jina hello-world
 ```
 
-For Docker users:
+For Docker users, no any install required, simply:
 
 ```bash
 docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
@@ -114,9 +114,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserv
 
 </details>  
 
-It downloads Fashion-MNIST training and test data and tells Jina *indexes* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
-
-After 1 minute, it will open a webpage and show results like this:
+It downloads Fashion-MNIST training and test data and tells Jina to *index* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. After about 1 minute, it will open a webpage and show results like this:
 
 <p align="center">
   <img src=".github/hello-world.gif?raw=true" alt="Jina banner" width="90%">
@@ -126,8 +124,8 @@ And the implementation behind? As simple as it should be:
 
 <table>
 <tr>
-<td> Python API </td>
-<td> index.yml </td>
+<td width=50%> Python API </td>
+<td width=50%> index.yml</td>
 </tr>
 <tr>
 <td> 
@@ -136,12 +134,14 @@ And the implementation behind? As simple as it should be:
 from jina.flow import Flow
 
 f = Flow().load_config('index.yml')
+
 with f.build() as fl:
     fl.index(raw_bytes=input_fn)
 ```
 
 </td>
 <td>
+  <sub>
 
 ```yaml
 !Flow
@@ -165,13 +165,17 @@ pods:
     needs: [doc_idx, chunk_idx]
     read_only: true
 ```
+</sub>
 
 </td>
 </tr>
 </table>
+</p>
 
 
-Intrigued? Play with different arguments via:
+All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
+
+Intrigued? Play with different options via:
 
 ```bash
 jina hello-world --help
