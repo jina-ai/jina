@@ -30,12 +30,13 @@ ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD jina ./jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
-    pip install . --no-cache-dir --compile && \
+    if [[ $JINA_VERSION = devel* ]]; then pip install .[devel] --no-cache-dir --compile; else pip install . --no-cache-dir --compile; fi && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 
 WORKDIR /
 
+ENV JINA_VERSION=$JINA_VERSION
 ENV JINA_VCS_VERSION=$VCS_REF
 ENV JINA_BUILD_DATE=$BUILD_DATE
 
