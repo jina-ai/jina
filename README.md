@@ -118,7 +118,7 @@ This downloads Fashion-MNIST training and test sets and tells Jina *indexes* 60,
 After 1 minute, it will open a webpage and show results like this:
 
 <p align="center">
-  <img src=".github/hello-world.gif?raw=true" alt="Jina banner">
+  <img src=".github/hello-world.gif?raw=true" alt="Jina banner" width="80%">
 </p>
 
 And the implementation behind? As simple as it should be:
