@@ -52,7 +52,7 @@ Jina is an open-source project, actively maintained by a full-time, [venture-bac
 
 ## Contents
 
-<img align="right" width="300px" src="./.github/install.png" />
+<img align="right" width="350px" src="./.github/install.png" />
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
