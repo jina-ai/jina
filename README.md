@@ -59,6 +59,7 @@ Jina is an open-source project, actively maintained by a full-time, [venture-bac
 
 
 - [Install](#install)
+- [Jina "Hello, World!"](#jina-hello-world)
 - [Getting Started](#getting-started)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
