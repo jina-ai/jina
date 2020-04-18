@@ -90,7 +90,98 @@ We provide a universal Jina image (only 80MB!) that can be run on multiple archi
 docker run jinaai/jina
 ```
 
+## Jina "Hello, World!"
+
+As a starter, we invite you to try Jina's "Hello, World": a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No more extra dependencies, simply do:
+
+```bash
+jina hello-world
+```
+
+For Docker users:
+
+```bash
+docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
+```
+
+<details>
+<summary>Click here to see the console output</summary>
+
+<p align="center">
+  <img src=".github/hello-world-demo.svg?raw=true" alt="hello world console output">
+</p>
+
+</details>  
+
+This downloads Fashion-MNIST training and test sets and tells Jina *indexes* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
+
+After 1 minute, it will open a webpage and show results like this:
+
+<p align="center">
+  <img src=".github/hello-world.gif?raw=true" alt="Jina banner">
+</p>
+
+And the implementation behind? As simple as it should be:
+
+<table>
+<tr>
+<td> Python API </td>
+<td>
+
+```python
+from jina.flow import Flow
+
+f = Flow().load_config('index.yml')
+with f.build() as fl:
+    fl.index(raw_bytes=input_fn)
+```
+
+</td>
+</tr>
+<tr>
+<td> <pre>index.yml</pre> </td>
+<td>
+
+```yaml
+!Flow
+pods:
+  chunk_seg:
+    yaml_path: helloworld.crafter.yml
+    replicas: $REPLICAS
+    read_only: true
+  doc_idx:
+    yaml_path: helloworld.indexer.doc.yml
+  encode:
+    yaml_path: helloworld.encoder.yml
+    needs: chunk_seg
+    replicas: $REPLICAS
+  chunk_idx:
+    yaml_path: helloworld.indexer.chunk.yml
+    replicas: $SHARDS
+    separated_workspace: true
+  join_all:
+    yaml_path: _merge
+    needs: [doc_idx, chunk_idx]
+    read_only: true
+```
+
+</td>
+</tr>
+</table>
+
+
+Intrigued? Play with different arguments via:
+
+```bash
+jina hello-world --help
+```
+
+Make sure to continue on our Jina 101 Guide - understanding all key concepts of Jina in 3 minutes!  
+
+
 ## Getting Started
+
+  
 
 ||||
 |---|---|---|
