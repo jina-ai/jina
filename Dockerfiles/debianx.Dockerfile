@@ -23,6 +23,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
 
+ENV JINA_VERSION=$JINA_VERSION
+ENV JINA_VCS_VERSION=$VCS_REF
+ENV JINA_BUILD_DATE=$BUILD_DATE
+
 WORKDIR /jina/
 
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
@@ -30,14 +34,12 @@ ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD jina ./jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
-    if [[ $JINA_VERSION == "devel*" ]]; then pip install .[devel] --no-cache-dir --compile; else pip install . --no-cache-dir --compile; fi && \
+    if [[ $JINA_VERSION == devel* ]]; then pip install .[devel] --no-cache-dir --compile; else pip install . --no-cache-dir --compile; fi && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 
 WORKDIR /
 
-ENV JINA_VERSION=$JINA_VERSION
-ENV JINA_VCS_VERSION=$VCS_REF
-ENV JINA_BUILD_DATE=$BUILD_DATE
+
 
 ENTRYPOINT ["jina"]
