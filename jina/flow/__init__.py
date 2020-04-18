@@ -8,9 +8,7 @@ from contextlib import ExitStack
 from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 
-import requests
 import ruamel.yaml
-from requests import Timeout
 from ruamel.yaml import StringIO
 
 from .. import JINA_GLOBAL
@@ -423,6 +421,7 @@ class Flow:
 
     def start_log_server(self):
         try:
+            import urllib.request
             import flask, flask_cors
             self.sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                target=start_sse_logger, daemon=True,
@@ -430,13 +429,13 @@ class Flow:
                                                      self.yaml_spec))
             self.sse_logger.start()
             time.sleep(1)
-            requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
+            urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
             self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
                 f'use "pip install jina[http]" to install the dependencies')
-        except Timeout:
+        except:
             self.logger.error('logserver fails to start')
 
     @build_required(FlowBuildLevel.GRAPH)

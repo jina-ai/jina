@@ -1,13 +1,20 @@
 # Release Cycle
 
-We follow the [semantic versioning](https://semver.org/). Say current master version is at `x.y.z`,
+We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`.
 
 ## Version Explained
 
-- `devel`: the development version corresponds to the latest master.
-- `devel-x.y.z`: alias of `devel`, often `x.y.z` is one minor version forward comparing to the last Friday release.
-- `x.y.z`: Friday release.
-- `latest`: the last Friday release. 
+| Tag | Description |
+| --- | --- |
+| `latest` | the last Friday release, contains the bare minimum of to run Jina framework. |
+| `x.y.z` | (previous) Friday release. |
+| `devel` | the development version corresponds to the latest master, it extends `latest` by adding required packages for [Dashboard](https://github.com/jina-ai/dashboard). |
+| `devel-x.y.z` | (previous) `devel` version of `x.y.z` |
+
+### Which Version to Use?
+
+- Use `latest`, if you want to use barebone Jina framework and extend it with your own modules/plugins.
+- Use `devel`, if you want to use [Dashboard](https://github.com/jina-ai/dashboard) to get more insights about the logs and flows.
 
 ## Master Update
 
@@ -21,7 +28,7 @@ Note, commits started with `chore` are exceptions and will not trigger the event
 - `chore(docs): update TOC`
 - `chore(version): bumping master version`
 
-# Friday Release
+## Friday Release
 
 On Friday release, it will:
 
