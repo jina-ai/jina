@@ -81,11 +81,11 @@ On Linux/MacOS with Python >= 3.7 installed, simply run this command in your ter
 pip install jina
 ```
 
-To install Jina with extra dependencies, or install it on Raspberry Pi and other Linux system, please refer to the documentations.
+To install Jina with extra dependencies, or install it on Raspberry Pi please refer to the documentations.
 
 #### ...or Run with Docker Container 
 
-We provide a universal Jina image (only 80MB!) that can be run on multiple architectures (e.g. x64, x86, arm-64/v7/v6), simply do: 
+We provide a universal Jina image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6), simply do: 
 
 ```bash
 docker run jinaai/jina
@@ -93,7 +93,7 @@ docker run jinaai/jina
 
 ## Jina "Hello, World!"
 
-As a starter, we invite you to try Jina's "Hello, World": a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No more extra dependencies, simply do:
+As a starter, we invite you to try Jina's "Hello, World": a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies required, simply do:
 
 ```bash
 jina hello-world
@@ -114,7 +114,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserv
 
 </details>  
 
-This downloads Fashion-MNIST training and test sets and tells Jina *indexes* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
+It downloads Fashion-MNIST training and test data and tells Jina *indexes* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
 
 After 1 minute, it will open a webpage and show results like this:
 
@@ -127,9 +127,7 @@ And the implementation behind? As simple as it should be:
 <table>
 <tr>
 <td> Python API </td>
-<td>
-<pre>index.yml</pre> 
-</td>
+<td> index.yml </td>
 </tr>
 <tr>
 <td> 
