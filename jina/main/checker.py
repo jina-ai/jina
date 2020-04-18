@@ -1,7 +1,7 @@
 import os
 
 from .. import __jina_env__, import_classes
-from ..helper import colored, yaml
+from ..helper import colored
 from ..logging import default_logger
 
 if False:
@@ -21,11 +21,6 @@ class ImportChecker:
         import_classes('jina.drivers', show_import_table=True, import_once=False)
 
         # check available driver group
-
-        default_logger.info('\navailable driver groups\n'.upper())
-        from pkg_resources import resource_stream
-        with resource_stream('jina', '/'.join(('resources', 'drivers.default.yml'))) as fp:
-            default_logger.info(', '.join(v for v in yaml.load(fp)['drivers'].keys()))
 
         default_logger.info('\nenvironment variables\n'.upper())
         default_logger.info('\n'.join('%-20s\t%s' % (k, os.environ.get(k, colored('(unset)', 'yellow'))) for k in
