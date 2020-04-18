@@ -109,7 +109,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserv
 <summary>Click here to see the console output</summary>
 
 <p align="center">
-  <img src=".github/hello-world-demo.svg?raw=true" alt="hello world console output">
+  <img src=".github/hello-world-demo.svg" alt="hello world console output">
 </p>
 
 </details>  
@@ -119,7 +119,7 @@ This downloads Fashion-MNIST training and test sets and tells Jina *indexes* 60,
 After 1 minute, it will open a webpage and show results like this:
 
 <p align="center">
-  <img src=".github/hello-world.gif?raw=true" alt="Jina banner" width="80%">
+  <img src=".github/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
 And the implementation behind? As simple as it should be:
