@@ -9,6 +9,13 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 .. note::
     These enviroment variables must be set **before** starting ``jina`` or before any ``import jina`` in Python. Changing the variables while ``jina`` is running may result in unexpected result and exceptions.
 
+
+.. confval:: JINA_FULL_CLI
+
+    When set, show all Jina subcommands.
+
+    :default: unset
+
 .. confval:: JINA_PROFILING
 
     Set to any non-empty value to turn on service-level time profiling for JINA.
