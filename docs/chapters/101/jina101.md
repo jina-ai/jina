@@ -2,6 +2,11 @@
   <tr>
     <td width="70%"><h1>Jina 101: First Thing to Learn About Jina</h1>      
       [retweet btn] [goto github btn] [read the doc btn] [website btn] [hello-world btn]
+        <a href="https://jina.ai">English</a> •
+  <a href="">日本語</a> •
+  <a href="">français</a> •
+  <a href="">Русский язык</a> •
+  <a href="">中文</a>
 </a>
     </td>
     <td>
@@ -120,6 +125,10 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 </p>
 
 <br/><br/><br/><br/>
+
+<p align="center">
+    ✨<b>Intrigued? Try our "Hello, World!" and build your neural image search in 1 min. </b>
+</p>
 
 <p align="center">
     ✨<b>Unleash your curiosity and happy searching! </b>🔍
