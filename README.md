@@ -47,7 +47,7 @@ Jina is an open-source project, actively maintained by a full-time, [venture-bac
 
 **🐣 System Engineering made Easy** - Jina offers an one-stop solution that frees you from handcrafting and gluing packages, libraries and database. With the most intuitive API and dashboard UI, building a cloud-native search system is just a minute thing.
 
-**🧩 Powerful Extensions, Simple Integration** - New AI model into Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Checkout Jina Hub (beta) and find more extensions on different use-cases made by the community.
+**🧩 Powerful Extensions, Simple Integration** - New AI model into Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Check out Jina Hub (beta) and find more extensions on different use-cases made by the community.
 
 
 ## Contents
@@ -190,7 +190,6 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
 
 ||||
 |---|---|---|
-| Jina 101 | Jina important concepts explained | 🐣 |
 | Jina 101 | Jina important concepts explained | 🐣 |
 | Run Jina in Distributive Way | Learn how to run Jina remotely | 🕊️ |
 | Run Jina with Container | Learn how Jina solve dependencies easily with container | 🕊️ |
