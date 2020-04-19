@@ -12,8 +12,6 @@
   </tr>
 </table>
 
-# Jina 101: First Thing to Learn About Jina
-
 
 <h2 align="center">Document & Chunk</h2>
 
