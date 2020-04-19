@@ -124,8 +124,9 @@ And the implementation behind? As simple as it should be:
 
 <table>
 <tr>
-<td width=50%> Python API </td>
-<td width=50%> index.yml</td>
+<td width=33%> Python API </td>
+<td width=33%> index.yml</td>
+<td width=33%> Flow in Dashboard</td>
 </tr>
 <tr>
 <td> 
@@ -168,9 +169,14 @@ pods:
 </sub>
 
 </td>
+<td>
+
+![](.github/.README_images/54b838c8.png)
+
+</td>
 </tr>
 </table>
-</p>
+
 
 
 All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
