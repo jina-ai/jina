@@ -16,9 +16,9 @@
 
 <p align="center">
   <a href="https://jina.ai">English</a> •
-  <a href="">Русский язык</a> •
-  <a href="">français</a> •
   <a href="">日本語</a> •
+  <a href="">français</a> •
+  <a href="">Русский язык</a> •
   <a href="">中文</a>
 </p>
 
