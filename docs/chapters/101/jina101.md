@@ -1,9 +1,7 @@
 <table>
   <tr>
     <td width="70%"><h1>Jina 101: First Thing to Learn About Jina</h1>      
-      <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
-  <img src=".github/twitter-badge.svg"
-       alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
+      [retweet btn] [goto github btn] [read the doc btn] [website btn] [hello-world btn]
 </a>
     </td>
     <td>
@@ -126,4 +124,7 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
     ✨<b>Unleash your curiosity and happy searching! </b>🔍
 </p>
 
+<p align="center">
+  [retweet btn] [goto github btn] [read the doc btn] [website btn] [hello-world btn]
+</p>
 
