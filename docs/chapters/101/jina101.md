@@ -7,7 +7,6 @@
   <a href="">français</a> •
   <a href="">Русский язык</a> •
   <a href="">中文</a>
-</a>
     </td>
     <td>
       <img src="img/ILLUS%2312.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>

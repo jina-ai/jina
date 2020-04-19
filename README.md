@@ -109,7 +109,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserv
 <summary>Click here to see the console output</summary>
 
 <p align="center">
-  <img src=".github/hello-world-demo.svg" alt="hello world console output">
+  <img src=".github/hello-world-demo.png" alt="hello world console output">
 </p>
 
 </details>  
@@ -192,6 +192,21 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
 
 
 ## Getting Started
+
+<table>
+  <tr>
+    <td width="70%"><h3>Jina 101: First Thing to Learn About Jina</h3>    
+        <a href="">English</a> •
+  <a href="">日本語</a> •
+  <a href="">français</a> •
+  <a href="">Русский язык</a> •
+  <a href="">中文</a>
+    </td>
+    <td>
+      <img src="docs/chapters/101/img/ILLUS%2312.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+    </td>
+  </tr>
+</table>
 
   
 
