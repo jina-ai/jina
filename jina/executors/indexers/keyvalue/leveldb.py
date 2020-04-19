@@ -26,6 +26,12 @@ class LeveldbIndexer(BasePbIndexer):
         """
         return self.db_handler
 
+    def get_create_handler(self):
+        """Get the database handler
+
+        """
+        return self.db_handler
+
     def add(self, objs):
         """Add a JSON-friendly object to the indexer
 
