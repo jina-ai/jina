@@ -447,6 +447,10 @@ class Flow:
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
         which is inherited all the way from :class:`jina.peapods.peas.BasePea`
         """
+
+        if self._build_level.value < FlowBuildLevel.GRAPH.value:
+            self.build(copy_flow=False)
+
         if self.args.logserver:
             self.logger.info('start logserver...')
             self.start_log_server()

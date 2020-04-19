@@ -173,7 +173,7 @@ pods:
 </td>
 <td>
 
-![](.github/.README_images/54b838c8.png)
+![](.github/hello-world-flow.png)
 
 </td>
 </tr>
