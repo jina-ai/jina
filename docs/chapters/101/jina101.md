@@ -19,11 +19,16 @@
 
 <img align="left" src="img/ILLUS%231.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
+
+
 In Jina, a **Document** is anything that you want to search for: a text document, a short tweet, a code snippet an image, a video/audio clip, GPS traces of a day. A Document is also the input query when searching.
 
 A Chunk is a small semantic unit of a Document. It could be a sentence, a 64x64 image patch, a 3 second video shot, a pair of coordinate and address. 
 
 In Jina, a Document is like chocolate bar. Not only because it comes with different kinds and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, you also don’t want to cut it into powder; either way you will miss the flavor (i.e. the semantic).
+
+<br/><br/><br/>
+
 
 <h2 align="center">YAML config</h2>
 
@@ -31,8 +36,7 @@ In Jina, a Document is like chocolate bar. Not only because it comes with differ
 
 A YAML config is widely used in Jina to describe the properties of an object. It offers customization, allowing users to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML config, and save an object into a YAML config.
 
-<br><br><br>
-<br><br><br>
+<br/><br/><br/>
 
 <h2 align="center">Executor</h2>
 
@@ -42,8 +46,7 @@ Executor represents an algorithmic unit in Jina. Algorithms such as encoding ima
 
 The properties of an Executor are stored in a YAML config, they always go hands-in-hands.
 
-<br><br><br>
-<br><br><br>
+<br/><br/><br/>
 
 <h3 align="center">Family of Executors</h3>
 
@@ -67,7 +70,7 @@ Having a new algorithm in mind? No problem, this family always welcome new membe
 
 Driver defines how an Executor behaves on network requests. Driver helps the Executor to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and handle (e.g. Numpy array).
 
-<br><br><br><br><br><br><br><br>
+<br/><br/><br/><br/><br/><br/>
 
 
 
@@ -79,8 +82,7 @@ Pea wraps an Executor and grant it the ability to exchange data over a network. 
 
 <img align="right" src="img/ILLUS%237.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br>
+<br/><br/><br/><br/><br/><br/>
 
 
 
@@ -94,8 +96,7 @@ Pod can be run either on local host or on different computers over a network. 
 
 <img align="right" src="img/ILLUS%239.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-<br><br><br><br><br><br><br><br>
-<br><br><br><br>
+<br/><br/><br/><br/><br/><br/>
 
 <h2 align="center">Flow</h2>
 
@@ -105,23 +106,26 @@ Pod can be run either on local host or on different computers over a network. 
 
 Flow represents a high-level task, e.g. indexing, searching, training. It manages the states and context of a group of Pods, orchestrating them to accomplish one task. Flow embraces diversity, whether a Pod is remote or in the Docker container, one Flow to rule them all!
 
-<br><br><br><br>
+<br/><br/><br/><br/><br/><br/>
 
 
 
-## From Micro to Macro
+<h2 align="center">From Micro to Macro</h2>
+
 
 Jina is a happy family. You can feel the harmony when you use Jina. 
 
 You can design at the micro-level and scale that up to the macro-level. YAMLs becomes algorithms, threads become processes, pods become flows. The patterns and logic always remain the same. This is the beauty of Jina. 
 
-<p align="center">
-    ✨Unleash your curiosity and happy searching 🔍!
-</p>
 
 <p align="center">
   <img src="img/ILLUS%2311.png" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
+<br/><br/><br/><br/><br/><br/>
+
+<p align="center">
+    ✨<b>Unleash your curiosity and happy searching! </b>🔍
+</p>
 
 
