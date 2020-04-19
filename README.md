@@ -100,7 +100,7 @@ As a starter, we invite you to try Jina's "Hello, World" - a simple demo of imag
 jina hello-world
 ```
 
-For Docker users, no any install required, simply:
+...or even easier for Docker users, no any install required, simply:
 
 ```bash
 docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
