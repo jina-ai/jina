@@ -3,6 +3,7 @@ import json
 from typing import Union
 from jina.executors.indexers.keyvalue.proto import jina_pb2
 from google.protobuf.json_format import Parse
+import os
 
 
 class LeveldbIndexer(BasePbIndexer):
@@ -21,6 +22,12 @@ class LeveldbIndexer(BasePbIndexer):
         return self._db_handler
 
     def get_add_handler(self):
+        """Get the database handler
+
+        """
+        return self.db_handler
+
+    def get_create_handler(self):
         """Get the database handler
 
         """
