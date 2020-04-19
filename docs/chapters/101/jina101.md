@@ -59,6 +59,7 @@ Executor is a big family. Each family member focuses on one important aspect of 
 
 Having a new algorithm in mind? No problem, this family always welcome new members!
 
+<br/><br/>
 
 <h2 align="center">Driver</h2>
 
@@ -66,7 +67,7 @@ Having a new algorithm in mind? No problem, this family always welcome new membe
 
 Driver defines how an Executor behaves on network requests. Driver helps the Executor to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and handle (e.g. Numpy array).
 
-<br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 
 
@@ -78,7 +79,7 @@ Pea wraps an Executor and grant it the ability to exchange data over a network. 
 
 <img align="right" src="img/ILLUS%237.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 
 
@@ -92,7 +93,7 @@ Pod can be run either on local host or on different computers over a network. 
 
 <img align="right" src="img/ILLUS%239.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <h2 align="center">Flow</h2>
 
