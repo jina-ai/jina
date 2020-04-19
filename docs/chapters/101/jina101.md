@@ -34,7 +34,7 @@ In Jina, a Document is like chocolate bar. Not only because it comes with differ
 
 A YAML config is widely used in Jina to describe the properties of an object. It offers customization, allowing users to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML config, and save an object into a YAML config.
 
-<br/><br/><br/>
+<br/><br/><br/><br/><br/><br/>
 
 <h2 align="center">Executor</h2>
 
@@ -80,7 +80,7 @@ Pea wraps an Executor and grant it the ability to exchange data over a network. 
 
 <img align="right" src="img/ILLUS%237.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-<br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 
 
@@ -94,7 +94,7 @@ Pod can be run either on local host or on different computers over a network. 
 
 <img align="right" src="img/ILLUS%239.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-<br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <h2 align="center">Flow</h2>
 
