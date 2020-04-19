@@ -124,17 +124,18 @@ And the implementation behind? As simple as it should be:
 
 <table>
 <tr>
-<td width=33%> Python API </td>
-<td width=33%> index.yml</td>
-<td width=33%> Flow in Dashboard</td>
+<td> Python API </td>
+<td> index.yml</td>
+<td> Flow in Dashboard</td>
 </tr>
 <tr>
 <td> 
 
+  
 ```python
 from jina.flow import Flow
 
-f = Flow().load_config('index.yml')
+f = Flow.load_config('index.yml')
 
 with f.build() as fl:
     fl.index(raw_bytes=input_fn)
