@@ -20,6 +20,8 @@ Jina Documentation
    :maxdepth: 2
    :caption: Getting Started
 
+   chapters/helloworld/main
+   chapters/101/jina101
    chapters/hub/main
    chapters/remote/main
    chapters/dashboard/main
