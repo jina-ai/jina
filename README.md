@@ -10,14 +10,11 @@
 [![Jina Docs](.github/badges/docs-badge.svg)](https://docs.jina.ai)
 [![We are hiring](.github/badges/jina-corp-badge-hiring.svg)](https://jina.ai/jobs)
 <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
-  <img src=".github/twitter-badge.svg"
+  <img src=".github/badges/twitter-badge.svg"
        alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
 </a>
-
-
-[![Docker](.github/badges/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
 [![Python 3.7 3.8](.github/badges/python-badge.svg)](#)
-
+[![Docker](.github/badges/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
 [![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)
 [![Release Cycle](https://github.com/jina-ai/jina/workflows/Release%20Cycle/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+Cycle%22)
