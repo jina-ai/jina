@@ -2,18 +2,28 @@
   <img src=".github/1500х667.gif?raw=true" alt="Jina banner">
 </p>
 
-
-[![Jina](./.github/jina-badge.svg)](https://jina.ai)
-[![Jina](./.github/jina-hello-world-badge.svg)](#jina-hello-world-)
+<p align="center">
+ 
+[![Jina](.github/badges/jina-badge.svg)](https://jina.ai)
+[![Jina](.github/badges/jina-hello-world-badge.svg)](#jina-hello-world-)
+[![Jina](.github/badges/license-badge.svg)](#jina-hello-world-)
+[![Jina Docs](.github/badges/docs-badge.svg)](https://docs.jina.ai)
+[![We are hiring](.github/badges/jina-corp-badge-hiring.svg)](https://jina.ai/jobs)
 <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src=".github/twitter-badge.svg"
        alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
 </a>
+
+
+[![Docker](.github/badges/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
+[![Python 3.7 3.8](.github/badges/python-badge.svg)](#)
+
 [![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)
 [![Release Cycle](https://github.com/jina-ai/jina/workflows/Release%20Cycle/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+Cycle%22)
 [![Release CD](https://github.com/jina-ai/jina/workflows/Release%20CD/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+CD%22)
-[![Docker](.github/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
+
+</p>
 
 <p align="center">
   <a href="https://jina.ai">English</a> •
@@ -201,8 +211,9 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
       <img src="docs/chapters/101/img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
     </a>
     </td>
-    <td width="70%">&nbsp;&nbsp;<h3>Jina 101: First Thing to Learn About Jina</h3>    
-        &nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
+    <td width="70%">
+&nbsp;&nbsp;<h3>Jina 101: First Thing to Learn About Jina</h3>
+&nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.jp.md">日本語</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">français</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ru.md">Русский язык</a> •

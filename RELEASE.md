@@ -16,6 +16,14 @@ We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`.
 - Use `latest`, if you want to use barebone Jina framework and extend it with your own modules/plugins.
 - Use `devel`, if you want to use [Dashboard](https://github.com/jina-ai/dashboard) to get more insights about the logs and flows.
 
+### Docker Image Size of Different Versions
+
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/jinaai/jina/latest?label=jinaai%2Fjina%3Alatest&logo=docker)
+
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/jinaai/jina/devel?label=jinaai%2Fjina%3Adevel&logo=docker)
+
+The last update image is ![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?label=last%20update&logo=docker&sort=date)  
+
 ## Master Update
 
 Every successful merge into the master triggers a development release. It will: 
