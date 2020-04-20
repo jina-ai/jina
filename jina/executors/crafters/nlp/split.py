@@ -39,9 +39,9 @@ class Sentencizer(BaseSegmenter):
         :return: a list of chunk dicts with the cropped images
         """
         text = raw_bytes.decode('utf8')
-        sents_str = self._slit_pat.sub(r'\1\n\2', text)
+        sents_str = self._slit_pat.sub(r'\n\2', '{}\n'.format(text))
         sents_str = sents_str.rstrip('\n')
-        sents = [s for s in sents_str.split('\n') if self.min_sent_len <= len(s) <= self.max_sent_len]
+        sents = [s.strip() for s in sents_str.split('\n') if self.min_sent_len <= len(s.strip()) <= self.max_sent_len]
         results = []
         for idx, s in enumerate(sents):
             results.append(
