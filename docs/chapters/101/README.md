@@ -8,17 +8,18 @@
   <img src="../../../.github/badges/twitter-share101.svg"
        alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
 </a>
-<a href="https://github.com/jina-ai/jina/">
-    <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
+  <a href="../../../README.md#jina-hello-world-">
+    <img src="../../../.github/badges/jina-hello-world-badge.svg" alt="Run Jina Hello World">
 </a>
+
 <a href="https://docs.jina.ai">
     <img src="../../../.github/badges/docs-badge.svg" alt="Read full documentations">
 </a>
-<a href="../../../README.md#jina-hello-world-">
-    <img src="../../../.github/badges/jina-corp-badge.svg" alt="Run Jina Hello World">
+<a href="https://github.com/jina-ai/jina/">
+    <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
 </a>
 <a href="https://jina.ai/jobs">
-    <img src="../../../.github/badges/jina-corp-badge.svg" alt="Check out jobs@Jina AI">
+    <img src="../../../.github/badges/jina-corp-badge-hiring.svg" alt="Check out jobs@Jina AI">
 </a>
      <br>
         <a href="https://jina.ai">English</a> •
@@ -174,3 +175,6 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 </a>
 </p>
 
+<sub>
+The look and feel of this Document "Jina 101: First Thing to Learn About Jina" is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
+</sub>
