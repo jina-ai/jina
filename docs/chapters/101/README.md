@@ -145,14 +145,16 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 
 <br/><br/><br/><br/>
 
-<a align="center" href="../../../README.md#jina-hello-world-">
+<p align="center">
+<a href="../../../README.md#jina-hello-world-">
     ✨<b>Intrigued? Try our "Hello, World!" and build your neural image search in 1 min. </b>
 </a>
-
+</p>
+<br><br><br>
 <p align="center">
     ✨<b>Unleash your curiosity and happy searching! </b>🔍
 </p>
-
+<br><br><br>
 <p align="center">
 <a href="#">
     <img src="../../../.github/badges/pdf-badge.svg" alt="Download PDF version of Jina 101">
@@ -174,7 +176,9 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
     <img src="../../../.github/badges/jina-corp-badge.svg" alt="Check out jobs@Jina AI">
 </a>
 </p>
+<br><br><br>
 
-<sub>
+
+
 The look and feel of this Document "Jina 101: First Thing to Learn About Jina" is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
-</sub>
+
