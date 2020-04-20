@@ -196,16 +196,19 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
 
 <table>
   <tr>
-    <td width="70%"><h3>Jina 101: First Thing to Learn About Jina</h3>    
-        <a href="">English</a> •
-  <a href="">日本語</a> •
-  <a href="">français</a> •
-  <a href="">Русский язык</a> •
-  <a href="">中文</a>
-    </td>
-    <td>
+      <td width="30%">
+    <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">
       <img src="docs/chapters/101/img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+    </a>
     </td>
+    <td width="70%">&nbsp;&nbsp;<h3>Jina 101: First Thing to Learn About Jina</h3>    
+        &nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.jp.md">日本語</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.fr.md">français</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.ru.md">Русский язык</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.cn.md">中文</a>
+    </td>
+
   </tr>
 </table>
 

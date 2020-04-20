@@ -4,6 +4,9 @@
 
 |
 
+Jina Documentations
+===================
+
 .. toctree::
    :maxdepth: 1
    :caption: Install
@@ -19,7 +22,7 @@
    :caption: Getting Started
 
    chapters/helloworld/main
-   chapters/101/jina101-sphinx
+   chapters/101/.sphinx
    chapters/hub/main
    chapters/remote/main
    chapters/dashboard/main
