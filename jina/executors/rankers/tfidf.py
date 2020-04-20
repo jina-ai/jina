@@ -76,7 +76,7 @@ class TfIdfRanker(BaseRanker):
         """
         _q_df, _q_id = self._get_df(match_idx)
         _total_df = np.sum(_q_df)
-        return {idx: np.log10(_total_df / df) for idx, df in zip(_q_id, _q_df)}
+        return {idx: np.log10(_total_df / df + 1e-10) for idx, df in zip(_q_id, _q_df)}
 
     def get_tf(self, match_idx, match_chunk_meta):
         """Get the tf dictionary for query chunks that matched a given doc.
@@ -144,7 +144,10 @@ class TfIdfRanker(BaseRanker):
         _weights = match_idx[:, self.col_score]
         _q_tfidf = np.vectorize(tf.get)(match_idx[:, self.col_query_chunk_id], 0) * \
                 np.vectorize(idf.get)(match_idx[:, self.col_query_chunk_id], 0)
-        return np.sum(_weights * _q_tfidf) * 1.0 / np.sum(_weights)
+        _sum = np.sum(_q_tfidf)
+        if _sum == 0:
+            return 0
+        return np.sum(_weights * _q_tfidf) * 1.0 / _sum
 
 
 class BM25Ranker(TfIdfRanker):
