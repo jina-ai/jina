@@ -110,7 +110,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserv
 <summary>Click here to see the console output</summary>
 
 <p align="center">
-  <img src=".github/hello-world-demo.png" alt="hello world console output">
+  <img src="docs/chapters/helloworld/hello-world-demo.png?raw=true" alt="hello world console output">
 </p>
 
 </details>  
@@ -118,7 +118,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserv
 It downloads Fashion-MNIST training and test data and tells Jina to *index* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. After about 1 minute, it will open a webpage and show results like this:
 
 <p align="center">
-  <img src=".github/hello-world.gif?raw=true" alt="Jina banner" width="90%">
+  <img src="docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
 And the implementation behind? As simple as it should be:
@@ -173,7 +173,7 @@ pods:
 </td>
 <td>
 
-![](.github/hello-world-flow.png)
+![Flow in Dashboard](docs/chapters/helloworld/hello-world-flow.png)
 
 </td>
 </tr>
@@ -204,7 +204,7 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
   <a href="">中文</a>
     </td>
     <td>
-      <img src="docs/chapters/101/img/ILLUS%2312.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+      <img src="docs/chapters/101/img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
     </td>
   </tr>
 </table>

@@ -1,10 +1,8 @@
-Jina Documentation
-==================
+.. raw:: html
+   :file: work_logo_BG_80.html
+
 
 |
-
-
-
 
 .. toctree::
    :maxdepth: 1
@@ -21,7 +19,7 @@ Jina Documentation
    :caption: Getting Started
 
    chapters/helloworld/main
-   chapters/101/jina101
+   chapters/101/jina101-sphinx
    chapters/hub/main
    chapters/remote/main
    chapters/dashboard/main

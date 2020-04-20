@@ -206,6 +206,6 @@ You can add the sign off when creating the git commit via `git commit -s`.
 
 Most of the IDE support sign-off with one checkbox, e.g. PyCharm 
 
-![](.github/.CONTRIBUTING_images/82e3f6e1.png)
+![](docs/chapters/signoff.png)
 
 

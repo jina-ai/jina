@@ -19,7 +19,7 @@ As a starter, we invite you to try Jina's "Hello, World" - a simple demo of imag
     docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
 
 
-.. image:: .github/hello-world-demo.png
+.. image:: hello-world-demo.png
    :width: 70%
    :align: center
 
@@ -27,7 +27,7 @@ As a starter, we invite you to try Jina's "Hello, World" - a simple demo of imag
 It downloads Fashion-MNIST training and test data and tells Jina to *index* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. After about 1 minute, it will open a webpage and show results like this:
 
 
-.. image:: .github/hello-world.gif
+.. image:: hello-world.gif
    :width: 70%
    :align: center
 
@@ -73,7 +73,7 @@ And the implementation behind? As simple as it should be:
 
 .. confval:: Flow in Dashboard
 
-    .. image:: .github/hello-world-flow.png
+    .. image:: hello-world-flow.png
        :align: center
 
 All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!

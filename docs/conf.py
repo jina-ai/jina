@@ -35,7 +35,7 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     # 'canonical_url': '',
     # 'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
-    # 'logo_only': False,
+    'logo_only': True,
     # 'display_version': True,
     # 'prev_next_buttons_location': 'bottom',
     'style_external_links': True,
@@ -51,7 +51,7 @@ html_theme_options = {
 }
 
 html_static_path = ['_static']
-html_logo = '../.github/jina-logo-square-blue-on-white-tight.svg'
+html_logo = '../.github/jina-prod-logo.svg'
 html_css_files = ['main.css']
 htmlhelp_basename = slug
 html_show_sourcelink = False
