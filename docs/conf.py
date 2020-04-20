@@ -5,10 +5,10 @@ from os import path
 
 sys.path.insert(0, path.abspath('..'))
 
-project = 'Jina Documentation'
+project = 'Jina'
 slug = re.sub(r'\W+', '-', project.lower())
-author = 'Jina AI Limited'
-copyright = author
+author = 'Jina AI Dev Team and All Contributors'
+copyright = 'Jina AI Limited'
 source_suffix = ['.rst', '.md']
 master_doc = 'index'
 language = 'en'
@@ -36,7 +36,7 @@ html_theme_options = {
     # 'canonical_url': '',
     # 'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
     'logo_only': True,
-    # 'display_version': True,
+    'display_version': True,
     # 'prev_next_buttons_location': 'bottom',
     'style_external_links': True,
     # 'vcs_pageview_mode': '',

@@ -14,6 +14,10 @@ p.caption:before {
     padding-right: 1rem;
 }
 
+::selection {
+    background: #FFCC66;
+}
+
 
 .toctree-wrapper p.caption:before {
     color: #ff6666;
@@ -171,7 +175,6 @@ body {
         display: none;
     }
 }
-
 
 
 @media screen and (min-width: 1100px) {

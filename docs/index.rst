@@ -4,8 +4,8 @@
 
 |
 
-Jina Documentations
-===================
+Welcome to Jina Documentations!
+===============================
 
 .. toctree::
    :maxdepth: 1
