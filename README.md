@@ -220,6 +220,20 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
   </tr>
 </table>
 
+<table>
+<tr>
+<th>Tutorials</th><th>Level</th>
+</tr>
+<tr>
+<td>
+<h4>Implement Your First Executor</h4>
+Learn how to extend Jina with your own ideas
+</td>
+<td>
+<h2>🚀</h2>
+</td>
+</tr>
+</table>
   
 
 ||||
