@@ -221,14 +221,14 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
 </table>
 
 <table>
-<tr><th width="70%">Tutorials</th><th width="30%">Level</th></tr><tr>
+<tr><th width="80%">Tutorials</th><th>Level</th></tr><tr>
 
 <tr>
 <td>
 <h4>Building a Bert-based NLP Semantic Search System in 3 minutes</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
-<td><h2>🚀</h2></td>
+<td><h2>🐣 </h2></td>
 </tr>
 <tr>
 
@@ -237,7 +237,7 @@ Learn how to blah blah blah with blah blah blah
 <h4>Building a Bert-based NLP Semantic Search System in 3 minutes</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
-<td><h2>🚀</h2></td>
+<td><h2>🐣 </h2></td>
 </tr>
 
 <tr>
@@ -245,7 +245,7 @@ Learn how to blah blah blah with blah blah blah
 <h4>Use Jina Dashboard for Monitoring and Design</h4>
 Learn to use Jina Dashboard to interactively design a Flow and monitor the running
 </td>
-<td><h2>🚀</h2></td>
+<td><h2>🕊</h2></td>
 </tr>
 
 <tr>
@@ -253,7 +253,7 @@ Learn to use Jina Dashboard to interactively design a Flow and monitor the runni
 <h4>Use Jina Distributively</h4>
 Learn to run Jina in remote and on multiple instances
 </td>
-<td><h2>🚀</h2></td>
+<td><h2>🕊</h2></td>
 </tr>
 
 <tr>
@@ -284,15 +284,6 @@ Learn to use Jina Hub and share your extension with engineers from the globe
 </table>
   
 
-||||
-|---|---|---|
-| Jina 101 | Jina important concepts explained | 🐣 |
-| Run Jina in Distributive Way | Learn how to run Jina remotely | 🕊️ |
-| Run Jina with Container | Learn how Jina solve dependencies easily with container | 🕊️ |
-| Run Jina on Raspberry Pi | Get your Raspberry Pi out of the dust box, time to work  | 🕊️ | 
-| Implement Your First Executor | Learn how to extend Jina with your own ideas | 🚀 |
-| Share Your Extension with the World | Share your extensions with the world | 🚀 | 
-  
 ## Documentation 
 
 The generated HTML files are hosted in [`jina-ai/jina-docs`](https://github.com/jina-ai/jina-docs).
