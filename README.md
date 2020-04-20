@@ -228,7 +228,7 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
 <h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
-<td><h2>🐣 </h2></td>
+<td><h3>🐣 </h3></td>
 </tr>
 <tr>
 
@@ -237,7 +237,7 @@ Learn how to blah blah blah with blah blah blah
 <h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
-<td><h2>🐣 </h2></td>
+<td><h3>🐣 </h3></td>
 </tr>
 
 <tr>
@@ -245,7 +245,7 @@ Learn how to blah blah blah with blah blah blah
 <h4>Use Jina Dashboard to Get More Insights</h4>
 Learn to use Jina Dashboard to interactively design a Flow and monitor the running
 </td>
-<td><h2>🕊</h2></td>
+<td><h3>🕊</h3></td>
 </tr>
 
 <tr>
@@ -253,7 +253,7 @@ Learn to use Jina Dashboard to interactively design a Flow and monitor the runni
 <h4>Use Jina Distributively</h4>
 Learn to run Jina in remote and on multiple instances
 </td>
-<td><h2>🕊</h2></td>
+<td><h3>🕊</h3></td>
 </tr>
 
 <tr>
@@ -261,7 +261,7 @@ Learn to run Jina in remote and on multiple instances
 <h4>Run Jina Pod via Docker Container</h4>
 Learn how Jina solves complex dependencies easily with Docker container
 </td>
-<td><h2>🚀</h2></td>
+<td><h3>🚀</h3></td>
 </tr>
 
 
@@ -270,7 +270,7 @@ Learn how Jina solves complex dependencies easily with Docker container
 <h4>Implement Your First Executor</h4>
 Learn how to extend Jina with your own ideas
 </td>
-<td><h2>🚀</h2></td>
+<td><h3>🚀</h3></td>
 </tr>
 
 <tr>
@@ -278,7 +278,7 @@ Learn how to extend Jina with your own ideas
 <h4>Share Your Extension with the World</h4>
 Learn to use Jina Hub and share your extension with engineers from the globe 
 </td>
-<td><h2>🚀</h2></td>
+<td><h3>🚀</h3></td>
 </tr>
 
 </table>
