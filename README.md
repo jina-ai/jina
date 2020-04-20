@@ -203,10 +203,10 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
     </td>
     <td width="70%">&nbsp;&nbsp;<h3>Jina 101: First Thing to Learn About Jina</h3>    
         &nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.jp.md">日本語</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.fr.md">français</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.ru.md">Русский язык</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/index.cn.md">中文</a>
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.jp.md">日本語</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">français</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ru.md">Русский язык</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.cn.md">中文</a>
     </td>
 
   </tr>
