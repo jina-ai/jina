@@ -56,25 +56,22 @@ Welcome to Jina Documentations!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Miscs
+   :caption: Release Notes
 
-   chapters/troubleshooting.md
-   chapters/swarm-tutorial.md
+   chapters/RELEASE.md
+   chapters/CHANGELOG.md
+
 
 .. toctree::
    :maxdepth: 1
    :caption: Frequently Asked Questions
 
+   chapters/troubleshooting.md
    chapters/faq/user
    chapters/faq/dev
 
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Release Notes
 
-   chapters/RELEASE.md
-   chapters/CHANGELOG.md
 
 
 Indices and tables

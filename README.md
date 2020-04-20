@@ -225,7 +225,7 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
 
 <tr>
 <td>
-<h4>Building a Bert-based NLP Semantic Search System in 3 minutes</h4>
+<h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
 <td><h2>🐣 </h2></td>
@@ -234,7 +234,7 @@ Learn how to blah blah blah with blah blah blah
 
 <tr>
 <td>
-<h4>Building a Bert-based NLP Semantic Search System in 3 minutes</h4>
+<h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
 <td><h2>🐣 </h2></td>
@@ -242,7 +242,7 @@ Learn how to blah blah blah with blah blah blah
 
 <tr>
 <td>
-<h4>Use Jina Dashboard for Monitoring and Design</h4>
+<h4>Use Jina Dashboard to Get More Insights</h4>
 Learn to use Jina Dashboard to interactively design a Flow and monitor the running
 </td>
 <td><h2>🕊</h2></td>
