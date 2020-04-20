@@ -221,7 +221,7 @@ Make sure to continue on our Jina 101 Guide - understanding all key concepts of 
 </table>
 
 <table>
-<tr><th width="80%">Tutorials</th><th>Level</th></tr><tr>
+<tr><th width="90%">Tutorials</th><th width="10%">Level</th></tr><tr>
 
 <tr>
 <td>
