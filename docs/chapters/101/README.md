@@ -2,6 +2,7 @@
   <tr>
     <td width="70%"><h1>Jina 101: First Thing to Learn About Jina</h1>      
       [pdf btn] [retweet btn] [goto github btn] [read the doc btn] [website btn] [hello-world btn]
+     <br>
         <a href="https://jina.ai">English</a> •
   <a href="">日本語</a> •
   <a href="">français</a> •
