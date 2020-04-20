@@ -9,7 +9,7 @@
   <a href="">中文</a>
     </td>
     <td>
-      <img src="img/ILLUS%2312.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+      <img src="img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
     </td>
   </tr>
 </table>
@@ -17,7 +17,7 @@
 
 <h2 align="center">Document & Chunk</h2>
 
-<img align="left" src="img/ILLUS%231.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="left" src="img/ILLUS1.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 
 
@@ -32,7 +32,7 @@ In Jina, a Document is like chocolate bar. Not only because it comes with differ
 
 <h2 align="center">YAML config</h2>
 
-<img align="right" src="img/ILLUS%232.png" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="right" src="img/ILLUS2.png" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 **A YAML config is widely used in Jina to describe the properties of an object.** It offers customization, allowing users to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML config, and save an object into a YAML config.
 
@@ -40,7 +40,7 @@ In Jina, a Document is like chocolate bar. Not only because it comes with differ
 
 <h2 align="center">Executor</h2>
 
-<img align="left" src="img/ILLUS%233.png" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="left" src="img/ILLUS3.png" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 **Executor represents an algorithmic unit in Jina.** Algorithms such as encoding images into vectors, storing vectors on the disk, ranking results, can all be formulated as Executors. Executor provides useful interfaces, allowing AI developers and engineers to really focus on the algorithm. Features such as persistency, scheduling, chaining, grouping and parallelization come out of the box.
 
@@ -52,7 +52,7 @@ The properties of an Executor are stored in a YAML config, they always go hands-
 
 
 <p align="center">
-  <img src="img/ILLUS%234.png" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
+  <img src="img/ILLUS4.png" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
 **Executor is a big family.** Each family member focuses on one important aspect of the search system. Let’s meet:
@@ -67,7 +67,7 @@ Having a new algorithm in mind? No problem, this family always welcome new membe
 
 <h2 align="center">Driver</h2>
 
-<img align="right" src="img/ILLUS%235.png" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="right" src="img/ILLUS5.png" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 **Driver defines how an Executor behaves on network requests.** Driver helps the Executor to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and handle (e.g. Numpy array).
 
@@ -77,11 +77,11 @@ Having a new algorithm in mind? No problem, this family always welcome new membe
 
 <h2 align="center">Pea</h2>
 
-<img align="left" src="img/ILLUS%236.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="left" src="img/ILLUS6.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 **Pea wraps an Executor and grants it the ability to exchange data over a network.** Pea can send and receive data from other Peas. Pea can also run inside a Docker container, containing all dependencies and the contextual environment in one place.
 
-<img align="right" src="img/ILLUS%237.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="right" src="img/ILLUS7.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
@@ -89,20 +89,20 @@ Having a new algorithm in mind? No problem, this family always welcome new membe
 
 <h2 align="center">Pod</h2>
 
-<img align="left" src="img/ILLUS%238.png" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="left" src="img/ILLUS8.png" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 **Pod is a group of Peas with the same property.** Peas are running in parallel inside a Pod. Pod unifies the network interfaces of those Peas, making them look like one single Pea from outside. Beyond that, a Pod adds more control, scheduling and context management to the Peas.
 
 Pod can be run either on local host or on different computers over a network. 
 
-<img align="right" src="img/ILLUS%239.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="right" src="img/ILLUS9.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <h2 align="center">Flow</h2>
 
 
-<img align="left" src="img/ILLUS%2310.png" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img align="left" src="img/ILLUS10.png" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 
 **Flow represents a high-level task**, e.g. indexing, searching, training. It manages the states and context of a group of Pods, orchestrating them to accomplish one task. Flow embraces diversity, whether a Pod is remote or in the Docker container, one Flow to rule them all!
@@ -120,7 +120,7 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 
 
 <p align="center">
-  <img src="img/ILLUS%2311.png" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
+  <img src="img/ILLUS11.png" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
 <br/><br/><br/><br/>
