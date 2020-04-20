@@ -180,5 +180,5 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 
 
 
-The look and feel of this Document "Jina 101: First Thing to Learn About Jina" is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
+The look and feel of this document ("Jina 101: First Thing to Learn About Jina") is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
 
