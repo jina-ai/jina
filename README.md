@@ -44,19 +44,19 @@
   <a href="https://blog.jina.ai">Blog</a>
 </p>
 
+Want to build a search system backed by deep learning? Then you come to the right place!
 
-**Jina** is *the* cloud-native neural search solution powered by the state-of-the-art AI and deep learning technology.
-
-Jina is an open-source project, actively maintained by a full-time, [venture-backed team](https://jina.ai). We are hiring AI engineers, full-stack developers, evangelists, PMs to build *the* next neural search eco-system in open-source. 
+**Jina** is *the* cloud-native neural search framework powered by the state-of-the-art AI and deep learning.
 
 **🌌 The Universal Search Solution** - Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
 
 **🚀 High Preformat & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data.
 
-**🐣 System Engineering made Easy** - Jina offers an one-stop solution that frees you from handcrafting and gluing packages, libraries and database. With the most intuitive API and dashboard UI, building a cloud-native search system is just a minute thing.
+**🐣 System Engineering Made Easy** - Jina offers an one-stop solution that frees you from handcrafting and gluing packages, libraries and database. With the most intuitive API and [dashboard UI](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
 
-**🧩 Powerful Extensions, Simple Integration** - New AI model into Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Check out Jina Hub (beta) and find more extensions on different use-cases made by the community.
+**🧩 Powerful Extensions, Simple Integration** - New AI model for Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Check out [Jina Hub (beta)](https://github.com/jina-ai/jina-hub) and find more extensions on different use-cases contributed by the community.
 
+Jina is an open-source project, actively maintained by a full-time, [venture-backed team](https://jina.ai). We are hiring AI engineers, full-stack developers, evangelists, PMs to build *the* next neural search eco-system in open-source. 
 
 ## Contents
 
@@ -110,7 +110,7 @@ jina hello-world
 ...or even easier for Docker users, *no any install required*, simply:
 
 ```bash
-docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
+docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
 ```
 
 <details>
@@ -134,7 +134,7 @@ And the implementation behind? As simple as it should be:
 <tr>
 <td> Python API </td>
 <td> index.yml</td>
-<td> Flow in Dashboard</td>
+<td> <a href="https://github.com/jina-ai/dashboard">Flow in Dashboard</a></td>
 </tr>
 <tr>
 <td> 
@@ -196,7 +196,7 @@ Intrigued? Play with different options via:
 jina hello-world --help
 ```
 
-Make sure to continue on our Jina 101 Guide - understanding all key concepts of Jina in 3 minutes!  
+Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - understanding all key concepts of Jina in 3 minutes!  
 
 
 ## Getting Started
