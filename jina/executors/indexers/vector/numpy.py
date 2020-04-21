@@ -132,9 +132,7 @@ class NumpyIndexer(BaseVectorIndexer):
 
         idx = dist.argsort(axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
-        _min = dist.min()
-        _max = dist.max()
-        return self.int2ext_key[idx], dist #(_max - dist) / (_max - _min)
+        return self.int2ext_key[idx], dist
 
 
 def _ext_arrs(A, B):
