@@ -151,6 +151,17 @@ It prints a list of components the current Jina supported and exits. Make sure y
 
 Once you submit the PR, your code will be tested in the environment of Python 3.7 and 3.8 with [full exta dependencies](extra-requirements.txt) (`pip install .[all]`) installed.
 
+## Build Documentation Locally
+
+To build the documentation locally, you need to have Docker installed. Clone this repository and run the following command: 
+
+```bash
+bash ./make-doc.sh serve 8080
+```
+
+The documentation is then available via browser at `http://0.0.0.0:8080/`.
+
+
 ## Sign Your Contribution
 
 The sign-off is a simple line at the end of the explanation for the patch, which certifies that you wrote it or otherwise have the right to pass it on as an open-source patch. The rules are pretty simple: if you can certify the below (from developercertificate.org):
