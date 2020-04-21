@@ -17,6 +17,26 @@
     color: white;
 }
 
+#showhide-navbar-btn {
+    left: 23rem;
+    position: fixed;
+    display: inline;
+    background: #099;
+    top: 0;
+    z-index: 99;
+    padding: 15px;
+    border-radius: 0 10px 10px 0;
+    cursor: context-menu;
+    /* opacity: 0.2; */
+}
+
+
+#showhide-navbar-btn:before {
+    content: "\f0c9";
+    vertical-align: middle;
+    color: white;
+    font-family: FontAwesome;
+}
 
 .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current > a span.toctree-expand {
     /* line-height: 1.6em; */
@@ -193,6 +213,10 @@ body {
     }
 
     .table-of-contents {
+        display: none;
+    }
+
+    #showhide-navbar-btn {
         display: none;
     }
 }
