@@ -9,7 +9,7 @@ We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`.
 | `latest` | the last Friday release, contains the bare minimum of to run Jina framework. |
 | `x.y.z` | (previous) Friday release. |
 | `devel` | the development version corresponds to the latest master, it extends `latest` by adding required packages for [Dashboard](https://github.com/jina-ai/dashboard). |
-| `devel-x.y.z` | (previous) `devel` version of `x.y.z` |
+| `x.y.z-devel` | (previous) `devel` version of `x.y.z` |
 
 ### Which Version to Use?
 

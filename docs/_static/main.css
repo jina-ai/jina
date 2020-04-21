@@ -8,6 +8,27 @@
     src: url(OpenSans-Regular.ttf);
 }
 
+.wy-menu-vertical li.toctree-l2 a, .wy-menu-vertical li.toctree-l3 a, .wy-menu-vertical li.toctree-l4 a {
+    color: white;
+}
+
+.fa-minus-square-o:before, .wy-menu-vertical li.on a span.toctree-expand:before, .wy-menu-vertical li.current > a span.toctree-expand:before {
+    content: "\f055";
+    color: white;
+}
+
+
+.wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current > a span.toctree-expand {
+    /* line-height: 1.6em; */
+    /* color: #333; */
+    /* top: 50%; */
+    /* vertical-align: middle; */
+    /* vertical-align: -50%; */
+    padding-top: .8em;
+    /* padding-right: 1em; */
+    /* margin-left: -1em; */
+}
+
 p.caption:before {
     content: "\f055";
     font-family: FontAwesome;
@@ -422,9 +443,36 @@ input {
     top: 10%;
     z-index: 99;
     padding: 15px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
     border-radius: 5px;
+    opacity: 0.2
+}
+
+.rst-content .note .admonition-title {
+    background: #32C8CD;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.wy-alert.wy-alert-info, .rst-content .note, .rst-content .wy-alert-info.attention, .rst-content .wy-alert-info.caution, .rst-content .wy-alert-info.danger, .rst-content .wy-alert-info.error, .rst-content .wy-alert-info.hint, .rst-content .wy-alert-info.important, .rst-content .wy-alert-info.tip, .rst-content .wy-alert-info.warning, .rst-content .seealso, .rst-content .wy-alert-info.admonition-todo, .rst-content .wy-alert-info.admonition {
+    background: rgba(50, 200, 205, 0.2);
+    border-radius: 10px;
+}
+
+
+.rst-content .warning .admonition-title {
+    background: #ff6666;
+    border-radius: 10px 10px 0px 0px;
+}
+
+
+.wy-alert.wy-alert-warning, .rst-content .wy-alert-warning.note, .rst-content .attention, .rst-content .caution, .rst-content .wy-alert-warning.danger, .rst-content .wy-alert-warning.error, .rst-content .wy-alert-warning.hint, .rst-content .wy-alert-warning.important, .rst-content .wy-alert-warning.tip, .rst-content .warning, .rst-content .wy-alert-warning.seealso, .rst-content .admonition-todo, .rst-content .wy-alert-warning.admonition {
+    background: rgba(255, 102, 102, 0.2);
+    border-radius: 10px;
+}
+
+.table-of-contents:hover {
+    opacity: 1.0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 .table-of-contents li::before {
@@ -462,6 +510,7 @@ input {
     overflow-x: auto;
     margin: 1px 0 24px 0;
     border-radius: 5px;
+    background: rgba(50, 200, 205, 0.01);
 }
 
 /*.wy-dropdown-menu > dd > a:hover {*/
