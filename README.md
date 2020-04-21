@@ -60,7 +60,7 @@ Jina is an open-source project, actively maintained by a full-time, [venture-bac
 
 ## Contents
 
-<img align="right" width="350px" src="./.github/jina-docs.png" />
+<img align="right" width="350px" src="./.github/install.png" />
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -285,7 +285,7 @@ Learn to use Jina Hub and share your extension with engineers from the globe
 
 ## Documentation 
 
-<img align="right" width="350px" src="./.github/install.png" />
+<img align="right" width="350px" src="./.github/jina-docs.png" />
 
 The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release event of the master branch. You can find more details about the following topics in our documentation.
 
