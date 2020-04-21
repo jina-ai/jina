@@ -132,7 +132,6 @@ class NumpyIndexer(BaseVectorIndexer):
 
         idx = dist.argsort(axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
-
         return self.int2ext_key[idx], dist
 
 
