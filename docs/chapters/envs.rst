@@ -9,6 +9,16 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 .. note::
     These enviroment variables must be set **before** starting ``jina`` or before any ``import jina`` in Python. Changing the variables while ``jina`` is running may result in unexpected result and exceptions.
 
+    For example:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            os.environ['JINA_LOG_PROFILING'] = 'true'
+
+            from jina.flow import Flow
+
+
 
 .. confval:: JINA_FULL_CLI
 

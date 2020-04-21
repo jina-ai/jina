@@ -112,21 +112,23 @@ class Flow:
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        r = {}
+        r = {'with': {'no_gateway': True}}
+
         if data._kwargs:
-            r['with'] = data._kwargs
+            r['with'].update(data._kwargs)
             # when dump we save every pod, including gateway, so when we reload it no_gateway has to be turned on
-            r['with']['no_gateway'] = True
         if data._pod_nodes:
             r['pods'] = {}
         for k, v in data._pod_nodes.items():
-            _needs = list(v.needs)
-            if _needs:
-                kwargs = {'needs': _needs}
+            if v.needs and k != 'gateway':
+                # the gateway node do not need any fields/property, it will
+                # be add back as the first node any how
+                kwargs = {'needs': list(v.needs)}
             else:
                 kwargs = {}
             kwargs.update(v._kwargs)
-            kwargs.pop('name')
+            if 'name' in kwargs:
+                kwargs.pop('name')
             r['pods'][k] = kwargs
         return r
 
@@ -195,7 +197,10 @@ class Flow:
         pp = data.get('pods', {})
         for pod_name, pod_attr in pp.items():
             p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pod_attr.items()}
-            obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
+            if pod_name == 'gateway':
+                obj._add_gateway(**p_pod_attr)
+            else:
+                obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
 
         obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
 
@@ -435,7 +440,6 @@ class Flow:
         except:
             self.logger.error('logserver fails to start')
 
-    @build_required(FlowBuildLevel.GRAPH)
     def start(self):
         """Start to run all Pods in this Flow.
 
