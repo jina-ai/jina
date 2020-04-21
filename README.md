@@ -285,7 +285,9 @@ Learn to use Jina Hub and share your extension with engineers from the globe
 
 ## Documentation 
 
+<a href="https://jina-ai.github.io/docs/">
 <img align="right" width="350px" src="./.github/jina-docs.png" />
+</a>
 
 The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release event of the master branch. You can find more details about the following topics in our documentation.
 
