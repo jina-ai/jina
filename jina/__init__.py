@@ -10,6 +10,7 @@ import platform
 import sys
 
 # do some os-wise patches
+
 if sys.version_info < (3, 7, 0):
     raise OSError('Jina requires Python 3.7 and above, but yours is %s' % sys.version_info)
 
@@ -128,7 +129,9 @@ def import_classes(namespace: str, targets=None,
     else:
         raise TypeError('target must be a set, but received %r' % targets)
 
+    depend_tree = {}
     import importlib
+    from .helper import colored
     for m in modules:
         try:
             mod = importlib.import_module(m)
@@ -136,8 +139,15 @@ def import_classes(namespace: str, targets=None,
                 # import the class
                 if (getattr(mod, k).__class__.__name__ == import_type) and (not targets or k in targets):
                     try:
-                        getattr(mod, k)
-                        load_stat[m].append((k, True, ''))
+                        _c = getattr(mod, k)
+                        load_stat[m].append(
+                            (k, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
+                        d = depend_tree
+                        for vvv in _c.mro()[:-1][::-1]:
+                            if vvv.__name__ not in d:
+                                d[vvv.__name__] = {}
+                            d = d[vvv.__name__]
+                        d['module'] = m
                         if k in targets:
                             targets.remove(k)
                             if not targets:
@@ -161,7 +171,7 @@ def import_classes(namespace: str, targets=None,
         raise ImportError('%s can not be found in jina' % targets)
 
     if show_import_table:
-        from .helper import print_load_table
+        from .helper import print_load_table, print_dep_tree_rst
         print_load_table(load_stat)
     else:
         if bad_imports:
@@ -172,6 +182,8 @@ def import_classes(namespace: str, targets=None,
         JINA_GLOBAL.imported.executors = True
     elif namespace == 'jina.drivers':
         JINA_GLOBAL.imported.drivers = True
+
+    return depend_tree
 
 
 # driver first, as executor may contain driver

@@ -314,6 +314,19 @@ def set_ping_parser(parser=None):
     return parser
 
 
+def set_check_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument('--summary-exec', type=str,
+                        default='./docs/chapters/all_exec.md',
+                        help='the markdown file path for all executors summary')
+    parser.add_argument('--summary-driver', type=str,
+                        default='./docs/chapters/all_driver.md',
+                        help='the markdown file path for all drivers summary')
+    return parser
+
+
 def _set_grpc_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -452,9 +465,10 @@ def get_main_parser():
         sp.add_parser('ping', help='ping a pod and check the network connectivity',
                       description='Ping a remote pod and check the network connectivity',
                       formatter_class=_chf))
-    sp.add_parser('check', help='check the import status all executors and drivers',
-                  description='Check the import status all executors and drivers',
-                  formatter_class=_chf)
+    set_check_parser(
+        sp.add_parser('check', help='check the import status all executors and drivers',
+                      description='Check the import status all executors and drivers',
+                      formatter_class=_chf))
 
     set_pea_parser(sp.add_parser('pea',
                                  description='Start a Jina pea. '

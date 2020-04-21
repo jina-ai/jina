@@ -29,9 +29,45 @@ def print_load_table(load_stat):
                 colored('✓', 'green') if import_stat else colored('✗', 'red'),
                 cls_name if cls_name else colored('Module load error', 'red'), k, str(err_reason)))
     if load_table:
-        load_table = ['', '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Reason'),
+        load_table = ['', '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
                       '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10)] + load_table
         default_logger.info('\n'.join(load_table))
+
+
+def print_load_csv_table(load_stat):
+    from .logging import default_logger
+
+    load_table = []
+    for k, v in load_stat.items():
+        for cls_name, import_stat, err_reason in v:
+            load_table.append('%s %s %s %s' % (
+                colored('✓', 'green') if import_stat else colored('✗', 'red'),
+                cls_name if cls_name else colored('Module_load_error', 'red'), k, str(err_reason)))
+    if load_table:
+        default_logger.info('\n'.join(load_table))
+
+
+def print_dep_tree_rst(fp, dep_tree, title='Executor'):
+    tableview = set()
+    treeview = []
+
+    def _iter(d, depth):
+        for k, v in d.items():
+            if k != 'module':
+                treeview.append('   ' * depth + f'- `{k}`')
+                tableview.add(f'| `{k}` | ' + (f'`{d["module"]}`' if 'module' in d else ' ') + ' |')
+                _iter(v, depth + 1)
+
+    _iter(dep_tree, 0)
+
+    fp.write(f'# List of {len(tableview)} {title}s in Jina\n\n'
+             f'This version of Jina includes {len(tableview)} {title}s.\n\n'
+             f'## Inheritances in a Tree View\n')
+    fp.write('\n'.join(treeview))
+
+    fp.write(f'\n\n## Modules in a Table View \n\n| Class | Module |\n')
+    fp.write('| --- | --- |\n')
+    fp.write('\n'.join(sorted(tableview)))
 
 
 def call_obj_fn(obj, fn: str):

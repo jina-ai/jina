@@ -33,6 +33,8 @@ Welcome to Jina Documentations!
    :caption: Developer Reference
 
    chapters/cli/main
+   chapters/all_exec
+   chapters/all_driver
    api/jina
    chapters/yaml/yaml
    chapters/proto/main
