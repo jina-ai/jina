@@ -30,7 +30,7 @@ release = __version__
 
 templates_path = ['template']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'tests']
-pygments_style = 'colorful'
+pygments_style = 'rainbow_dash'
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     # 'canonical_url': '',

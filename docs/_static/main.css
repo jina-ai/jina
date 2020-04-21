@@ -17,6 +17,7 @@
     color: white;
 }
 
+
 .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current > a span.toctree-expand {
     /* line-height: 1.6em; */
     /* color: #333; */
@@ -509,6 +510,7 @@ input {
     overflow-x: auto;
     margin: 1px 0 24px 0;
     border-radius: 5px;
+    background: rgba(50, 200, 205, 0.01);
 }
 
 /*.wy-dropdown-menu > dd > a:hover {*/
