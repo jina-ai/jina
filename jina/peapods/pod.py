@@ -479,5 +479,5 @@ class GatewayPod(BasePod):
 class GatewayFlowPod(GatewayPod, FlowPod):
     """A :class:`FlowPod` that holds a Gateway """
 
-    def __init__(self, kwargs: Dict = None):
-        FlowPod.__init__(self, kwargs, parser=set_gateway_parser)
+    def __init__(self, kwargs: Dict = None, needs: Set[str] = None):
+        FlowPod.__init__(self, kwargs, needs, parser=set_gateway_parser)

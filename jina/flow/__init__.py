@@ -82,12 +82,9 @@ class Flow:
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
-        self._last_changed_pod = []
+        self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
 
         self.update_args(args, **kwargs)
-
-        if not self.args.no_gateway:
-            self._add_gateway()
 
     def update_args(self, args, **kwargs):
         from ..main.parser import set_flow_parser
@@ -112,23 +109,28 @@ class Flow:
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        r = {'with': {'no_gateway': True}}
+        r = {}
 
         if data._kwargs:
-            r['with'].update(data._kwargs)
-            # when dump we save every pod, including gateway, so when we reload it no_gateway has to be turned on
+            r['with'] = data._kwargs
+
         if data._pod_nodes:
             r['pods'] = {}
+
+        if 'gateway' in data._pod_nodes:
+            # always dump gateway as the first pod, if exist
+            r['pods']['gateway'] = {}
+
         for k, v in data._pod_nodes.items():
-            if v.needs and k != 'gateway':
-                # the gateway node do not need any fields/property, it will
-                # be add back as the first node any how
-                kwargs = {'needs': list(v.needs)}
-            else:
-                kwargs = {}
+            if k == 'gateway':
+                continue
+
+            kwargs = {'needs': list(v.needs)} if v.needs else {}
             kwargs.update(v._kwargs)
+
             if 'name' in kwargs:
                 kwargs.pop('name')
+
             r['pods'][k] = kwargs
         return r
 
@@ -197,9 +199,8 @@ class Flow:
         pp = data.get('pods', {})
         for pod_name, pod_attr in pp.items():
             p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pod_attr.items()}
-            if pod_name == 'gateway':
-                obj._add_gateway(**p_pod_attr)
-            else:
+            if pod_name != 'gateway':
+                # ignore gateway when reading, it will be added during build()
                 obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
 
         obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
@@ -252,14 +253,14 @@ class Flow:
 
         return op_flow
 
-    def _add_gateway(self, **kwargs):
+    def _add_gateway(self, needs, **kwargs):
         pod_name = 'gateway'
 
         kwargs.update(self._common_kwargs)
         kwargs['name'] = 'gateway'
-        self._pod_nodes[pod_name] = GatewayFlowPod(kwargs)
+        self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
-        self.set_last_pod(pod_name, False)
+        # self.set_last_pod(pod_name, False)
 
     def join(self, needs: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
         """
@@ -346,8 +347,8 @@ class Flow:
         if not op_flow._last_changed_pod or not op_flow._pod_nodes:
             raise FlowTopologyError('flow is empty?')
 
-        # close the loop
-        op_flow._pod_nodes['gateway'].needs = {op_flow._last_changed_pod[-1]}
+        if 'gateway' not in op_flow._pod_nodes:
+            op_flow._add_gateway(needs={op_flow._last_changed_pod[-1]})
 
         # direct all income peas' output to the current service
         for k, p in op_flow._pod_nodes.items():
