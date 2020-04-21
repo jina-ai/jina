@@ -56,7 +56,7 @@ Want to build a search system backed by deep learning? Then you come to the righ
 
 **🧩 Powerful Extensions, Simple Integration** - New AI model for Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Check out [Jina Hub (beta)](https://github.com/jina-ai/jina-hub) and find more extensions on different use-cases contributed by the community.
 
-Jina is an open-source project. We are hiring AI engineers, full-stack developers, evangelists, PMs to build *the* next neural search eco-system in open-source. 
+Jina is an open-source project. [We are hiring](https://jina.ai/jobs) AI engineers, full-stack developers, evangelists, PMs to build *the* next neural search eco-system in open-source. 
 
 ## Contents
 
