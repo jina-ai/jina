@@ -115,15 +115,12 @@ class Flow:
         r = {}
         if data._kwargs:
             r['with'] = data._kwargs
+            # when dump we save every pod, including gateway, so when we reload it no_gateway has to be turned on
+            r['with']['no_gateway'] = True
         if data._pod_nodes:
             r['pods'] = {}
         for k, v in data._pod_nodes.items():
-            if not data.args.no_gateway and k == 'gateway':
-                continue
-            if not data.args.no_gateway and 'gateway' in v.needs:
-                _needs = list(v.needs).remove('gateway')
-            else:
-                _needs = list(v.needs)
+            _needs = list(v.needs)
             if _needs:
                 kwargs = {'needs': _needs}
             else:
