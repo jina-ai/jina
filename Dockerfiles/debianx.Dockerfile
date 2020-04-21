@@ -34,7 +34,7 @@ ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD jina ./jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
-    if [ "${JINA_VERSION#devel-}" != "${JINA_VERSION}" ]; then pip install .[devel] --no-cache-dir --compile; else pip install . --no-cache-dir --compile; fi && \
+    if [ "${JINA_VERSION%-devel}" != "${JINA_VERSION}" ]; then pip install .[devel] --no-cache-dir --compile; else pip install . --no-cache-dir --compile; fi && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 
