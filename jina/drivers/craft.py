@@ -2,7 +2,7 @@ import ctypes
 import random
 
 from . import BaseExecutableDriver
-from .helper import array2blob, pb_obj2dict
+from .helper import array2blob, pb_obj2dict, blob2array
 
 
 class BaseCraftDriver(BaseExecutableDriver):
@@ -26,10 +26,16 @@ class ChunkCraftDriver(BaseCraftDriver):
                 continue
             _chunks_to_add = []
             for c in d.chunks:
-                ret = self.exec_fn(**pb_obj2dict(c, self.exec.required_keys))
+                _args_dict = pb_obj2dict(c, self.exec.required_keys)
+                if 'blob' in self.exec.required_keys:
+                    _args_dict['blob'] = blob2array(c.blob)
+                ret = self.exec_fn(**_args_dict)
                 if isinstance(ret, dict):
                     for k, v in ret.items():
-                        setattr(c, k, v)
+                        if k == 'blob':
+                            c.blob.CopyFrom(array2blob(v))
+                        else:
+                            setattr(c, k, v)
                     continue
                 if isinstance(ret, list):
                     for chunk_dict in ret:
