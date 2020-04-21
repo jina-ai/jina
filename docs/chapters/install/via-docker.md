@@ -23,21 +23,3 @@ This Docker image is based on `python:3.7.6-slim` and can be run on the followin
 - arm/v6
 
 No extra steps is required to run on those architectures, simply do `docker run jinaai/jina`
-
-## Other Jina Docker Image Mirrors
-
-### Github Package
-
-> 🚨 Github Docker Registry does not support multi-architecture Docker image, so if you want to run Jina Docker image on non-amd64 architecture, please [use the DockerHub image instead](#running-jina-image).
-
-```bash
-docker login -u USERNAME -p TOKEN docker.pkg.github.com
-docker run docker.pkg.github.com/jina-ai/jina/jina:[tag]
-```
-
-### Tencent Cloud (Too slow to upload)
-
-```bash
-docker login -u USERNAME -p TOKEN ccr.ccs.tencentyun.com
-docker run ccr.ccs.tencentyun.com/jina/jina:[tag]
-```

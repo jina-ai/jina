@@ -50,7 +50,7 @@ Want to build a search system backed by deep learning? Then you come to the righ
 
 **🌌 The Universal Search Solution** - Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
 
-**🚀 High Preformat & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data.
+**🚀 High Preformat & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data. Features such as replicas and shards come off-the-shelf.
 
 **🐣 System Engineering Made Easy** - Jina offers an one-stop solution that frees you from handcrafting and gluing packages, libraries and database. With the most intuitive API and [dashboard UI](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
 
@@ -309,7 +309,7 @@ We welcome all kinds of contributions from the open-source community, individual
 The following resources help you to make a good first contribution:
 
 - [Contributing guidelines](CONTRIBUTING.md)
-- [Release cycles and developement stages](RELEASE.md)
+- [Release cycles and development stages](RELEASE.md)
 
 ## Community
 
@@ -317,7 +317,7 @@ The following resources help you to make a good first contribution:
 - [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest update, release and event news of Jina
 - [LinkedIn](https://www.linkedin.com/showcase/31268045/) - get to know Jina AI as a company
 - ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - follow us and interact with us using hashtag `#JinaSearch`  
-- [Join Us](mailto:hr@jina.ai) - want to work full-time with us on Jina?
+- [Join Us](mailto:hr@jina.ai) - want to work full-time with us on Jina? We are hiring!
 - [Company](https://jina.ai) - know more about our company, we are fully committed to open-source!
 
 ## Roadmap
@@ -342,5 +342,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-More legal notice can be found in [jina-ai/legal](https://github.com/jina-ai/legal).
