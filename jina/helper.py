@@ -463,7 +463,10 @@ def get_parsed_args(kwargs, parser, parser_name: str = None):
         if unknown_args:
             from .logging import default_logger
             default_logger.warning(
-                f'parser {parser_name} can not recognize the following args: {unknown_args}, they are ignored')
+                f'parser {parser_name} can not '
+                f'recognize the following args: {unknown_args}, '
+                f'they are ignored. if you are using them from a global args (e.g. Flow), '
+                f'then please ignore this message')
     except SystemExit:
         raise ValueError('bad arguments "%s" with parser %r, '
                          'you may want to double check your args ' % (args, parser))

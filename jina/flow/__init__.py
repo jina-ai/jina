@@ -344,9 +344,6 @@ class Flow:
 
         _pod_edges = set()
 
-        if not op_flow._last_changed_pod or not op_flow._pod_nodes:
-            raise FlowTopologyError('flow is empty?')
-
         if 'gateway' not in op_flow._pod_nodes:
             op_flow._add_gateway(needs={op_flow._last_changed_pod[-1]})
 
