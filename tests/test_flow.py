@@ -129,7 +129,6 @@ class MyTestCase(JinaTestCase):
 
         fl = Flow.load_config('test1.yml')
         self.assertEqual(f.args.logserver_config, fl.args.logserver_config)
-        self.assertEqual(f.args.no_gateway, fl.args.no_gateway)
         self.assertEqual(f.args.optimize_level, fl.args.optimize_level)
         self.add_tmpfile('test1.yml')
 
