@@ -1,6 +1,7 @@
 import unittest
 
 import requests
+
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
@@ -59,7 +60,13 @@ class MyTestCase(JinaTestCase):
 
         with f.build() as fl:
             fl.dry_run()
-        # fl.save_config('tmp.yml')
+        fl.save_config('tmp.yml')
+        Flow.load_config('tmp.yml')
+
+        with Flow.load_config('tmp.yml') as fl:
+            fl.dry_run()
+
+        self.add_tmpfile('tmp.yml')
 
     def test_simple_flow(self):
         bytes_gen = (b'aaa' for _ in range(10))
@@ -122,14 +129,13 @@ class MyTestCase(JinaTestCase):
 
         fl = Flow.load_config('test1.yml')
         self.assertEqual(f.args.logserver_config, fl.args.logserver_config)
-        self.assertEqual(f.args.no_gateway, fl.args.no_gateway)
         self.assertEqual(f.args.optimize_level, fl.args.optimize_level)
         self.add_tmpfile('test1.yml')
 
     def test_flow_log_server(self):
         f = Flow.load_config('yaml/test_log_server.yml')
-        with f.build() as fl:
-            print(JINA_GLOBAL.logserver.ready)
+        with f:
+            self.assertTrue(hasattr(JINA_GLOBAL.logserver, 'ready'))
             a = requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
             self.assertEqual(a.status_code, 200)
 
