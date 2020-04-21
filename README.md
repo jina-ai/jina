@@ -230,7 +230,6 @@ Learn how to blah blah blah with blah blah blah
 </td>
 <td><h3>🐣 </h3></td>
 </tr>
-<tr>
 
 <tr>
 <td>
@@ -286,23 +285,29 @@ Learn to use Jina Hub and share your extension with engineers from the globe
 
 ## Documentation 
 
-The generated HTML files are hosted in [`jina-ai/jina-docs`](https://github.com/jina-ai/jina-docs).
+<img align="right" width="350px" src="./.github/install.png" />
 
-Documentation is built on every push, merge, and release event of the master branch. 
- 
-To build the documentation locally, you need to have Docker installed. Clone this repository and run the following command: 
+The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release event of the master branch. You can find more details about the following topics in our documentation.
 
-```bash
-bash ./make-doc.sh serve 8080
-```
+- [Jina command line interface arguments explained](https://jina-ai.github.io/docs/chapters/cli/main.html)
+- [Jina Python API interface](https://jina-ai.github.io/docs/api/jina.html)
+- [Jina YAML syntax for executor, driver and flow](https://jina-ai.github.io/docs/chapters/yaml/yaml.html)
+- [Jina Protobuf specification](https://jina-ai.github.io/docs/chapters/proto/main.html)
+- [Environment variables used in Jina](https://jina-ai.github.io/docs/chapters/envs.html)
+- ... [and more](https://jina-ai.github.io/docs/index.html)
 
-The documentation is then available via browser at `http://0.0.0.0:8080/`.
+Are you are Doc-star? Then join us! We welcome all kinds of improvements on the documentation. 
+
+Documentation of the older version [is archived in here](https://github.com/jina-ai/docs/releases).
 
 ## Contributing
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. Without your active involvement, Jina can't be successful.
 
-Please first read [the contributing guidelines](CONTRIBUTING.md) and [our development stages](RELEASE.md) before the submission. 
+The following resources help you to make a good first contribution:
+
+- [Contributing guidelines](CONTRIBUTING.md)
+- [Release cycles and developement stages](RELEASE.md)
 
 ## Community
 
@@ -317,7 +322,23 @@ Please first read [the contributing guidelines](CONTRIBUTING.md) and [our develo
 
 The [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to the future improvements.
 
+We are looking for partnerships to build a Open Governance model (e.g. Technical Steering Committee) around Jina, which enables a healthy open source ecosystem and developer friendly culture. If you are interested in participating, feel free to contact us at [hello@jina.ai](mailto:hello@jina.ai)
+
 
 ## License
 
-If you have downloaded a copy of the Jina binary or source code, please note that Jina's binary and source code are both licensed under the [Apache 2.0](LICENSE).
+Copyright (c) 2020 Jina AI Limited
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+More legal notice can be found in [jina-ai/legal](https://github.com/jina-ai/legal).
