@@ -11,6 +11,7 @@ We welcome all kinds of contributions from the open-source community, individual
 - [Make Your First Submission](#make-your-first-submission)
 - [Commit Style](#commit-style)
 - [Test Jina Locally and on CI](#test-jina-locally-and-on-ci)
+- [Build Documentation Locally](#build-documentation-locally)
 - [Sign Your Contribution](#sign-your-contribution)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
