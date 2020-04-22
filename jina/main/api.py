@@ -56,7 +56,7 @@ def flow(args):
     if args.yaml_path:
         from threading import Event
         f = Flow.load_config(args.yaml_path)
-        f.update_args(args)
+        f._update_args(args)
         with f.build():
 
             try:

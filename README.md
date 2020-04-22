@@ -225,10 +225,10 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
 
 <tr>
 <td>
-<h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
-Learn how to blah blah blah with blah blah blah
+<a href="https://jina-ai.github.io/docs/chapters/flow/README.html"><h4>Using Flow API to Compose Your Jina Workflow</h4></a>
+Learn how to orchestrate the Pods to work together: sequentially and in parallel; locally and remotely.  
 </td>
-<td><h3>🐣 </h3></td>
+<td><h3>🐣</h3></td>
 </tr>
 
 <tr>
@@ -236,31 +236,15 @@ Learn how to blah blah blah with blah blah blah
 <h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
-<td><h3>🐣 </h3></td>
+<td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4>Use Jina Dashboard to Get More Insights</h4>
-Learn to use Jina Dashboard to interactively design a Flow and monitor the running
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-<tr>
-<td>
-<h4>Use Jina Distributively</h4>
+<a href="https://jina-ai.github.io/docs/chapters/remote/main.html"><h4>Use Jina Distributively</h4></a>
 Learn to run Jina in remote and on multiple instances
 </td>
 <td><h3>🕊</h3></td>
-</tr>
-
-<tr>
-<td>
-<h4>Run Jina Pod via Docker Container</h4>
-Learn how Jina solves complex dependencies easily with Docker container
-</td>
-<td><h3>🚀</h3></td>
 </tr>
 
 
@@ -269,12 +253,21 @@ Learn how Jina solves complex dependencies easily with Docker container
 <h4>Implement Your First Executor</h4>
 Learn how to extend Jina with your own ideas
 </td>
+<td><h3>🕊</h3></td>
+</tr>
+
+
+<tr>
+<td>
+<a href="https://github.com/jina-ai/jina-hub#build-your-pod-into-a-docker-image"><h4>Run Jina Pod via Docker Container</h4></a>
+Learn how Jina solves complex dependencies easily with Docker container
+</td>
 <td><h3>🚀</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4>Share Your Extension with the World</h4>
+<a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub"><h4>Share Your Extension with the World</h4></a>
 Learn to use Jina Hub and share your extension with engineers from the globe 
 </td>
 <td><h3>🚀</h3></td>
@@ -294,7 +287,7 @@ The best way to learn Jina in depth is to read our documentation. Documentation 
 - [Jina command line interface arguments explained](https://jina-ai.github.io/docs/chapters/cli/main.html)
 - [Jina Python API interface](https://jina-ai.github.io/docs/api/jina.html)
 - [Jina YAML syntax for executor, driver and flow](https://jina-ai.github.io/docs/chapters/yaml/yaml.html)
-- [Jina Protobuf specification](https://jina-ai.github.io/docs/chapters/proto/main.html)
+- [Jina Protobuf schema](https://jina-ai.github.io/docs/chapters/proto/main.html)
 - [Environment variables used in Jina](https://jina-ai.github.io/docs/chapters/envs.html)
 - ... [and more](https://jina-ai.github.io/docs/index.html)
 

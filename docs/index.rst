@@ -23,6 +23,7 @@ Welcome to Jina Documentations!
 
    chapters/helloworld/main
    chapters/101/.sphinx
+   chapters/flow/README
    chapters/hub/main
    chapters/remote/main
    chapters/dashboard/main
@@ -33,8 +34,6 @@ Welcome to Jina Documentations!
    :caption: Developer Reference
 
    chapters/cli/main
-   chapters/all_exec
-   chapters/all_driver
    api/jina
    chapters/yaml/yaml
    chapters/proto/main
@@ -52,7 +51,7 @@ Welcome to Jina Documentations!
    :maxdepth: 2
    :caption: Contributing
 
-   chapters/CONTRIBUTING.md
+   chapters/CONTRIBUTING
    chapters/jep/main
 
 
@@ -60,24 +59,26 @@ Welcome to Jina Documentations!
    :maxdepth: 1
    :caption: Release Notes
 
-   chapters/RELEASE.md
-   chapters/CHANGELOG.md
+   chapters/RELEASE
+   chapters/CHANGELOG
 
 
 .. toctree::
    :maxdepth: 1
    :caption: Frequently Asked Questions
 
-   chapters/troubleshooting.md
+   chapters/troubleshooting
    chapters/faq/user
    chapters/faq/dev
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Indices and Tables
 
+   chapters/all_exec
+   chapters/all_driver
 
-
-Indices and tables
-==================
 
 * :ref:`genindex`
 * :ref:`modindex`
