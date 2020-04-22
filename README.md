@@ -209,7 +209,7 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
     </a>
     </td>
     <td width="70%">
-&nbsp;&nbsp;<h3>Jina 101: First Thing to Learn About Jina</h3>
+&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Thing to Learn About Jina</a></h3>
 &nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.jp.md">日本語</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">français</a> •
@@ -226,15 +226,23 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
 <tr>
 <td>
 <h4><a href="https://jina-ai.github.io/docs/chapters/flow/README.html">Using Flow API to Compose Your Jina Workflow</a></h4>
-Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely.  
+Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely
 </td>
 <td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/urbandict-search">Build Bert-based NLP Semantic Search System in 3 minutes</a></h4>
-Learn how to use Jina and DistilBert to build a slang search system.
+<h4><a href="https://github.com/jina-ai/examples/tree/master/urbandict-search">Build a BERT-based NLP Semantic Search System in 3 minutes</a></h4>
+Learn how to use Jina and DistilBert to build a slang search system
+</td>
+<td><h3>🐣</h3></td>
+</tr>
+
+<tr>
+<td>
+<h4><a href=https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System in 3 minutes</a></h4>
+Learn how to use Jina and Torchvision to build a flower image search system
 </td>
 <td><h3>🐣</h3></td>
 </tr>
@@ -250,8 +258,8 @@ Learn to run Jina on remote instances and distribute your workflow
 
 <tr>
 <td>
-<h4>Implement Your First Executor</h4>
-Learn how to extend Jina with your own ideas
+<h4>Extend Jina and Implement Your Own Executor</h4>
+Learn how to implement your own ideas into Jina's plugin
 </td>
 <td><h3>🕊</h3></td>
 </tr>
@@ -268,7 +276,7 @@ Learn how Jina solves complex dependencies easily with Docker container
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
-Learn to use Jina Hub and share your extension with engineers from the globe 
+Learn to use Jina Hub and share your extension with engineers around the globe
 </td>
 <td><h3>🚀</h3></td>
 </tr>

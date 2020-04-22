@@ -40,11 +40,11 @@ Welcome to Jina Documentations!
    chapters/envs
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Extending Jina
 
    chapters/extend/executor
-   chapters/extend/executor-encoder
+   chapters/extend/driver
    chapters/hub/publish-your-pod-image
 
 .. toctree::
