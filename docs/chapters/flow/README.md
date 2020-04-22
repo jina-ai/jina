@@ -84,6 +84,22 @@ This will start `p2` remotely on `192.168.0.100`, whereas `p1` and `p3` run loca
 To use remote Pod feature, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pod can be found in [our documentations](https://docs.jina.ai).  
 
 
+#### Add a Remote Containerized Pod into the Flow
+
+A very useful pattern is to combine the above two features together:
+
+```python
+
+f = (Flow().add(name='p1')
+           .add(name='p2', host='192.168.0.100', port_grpc=53100,
+                image='jinaai/hub.executors.encoders.bidaf:latest')
+           .add(name='p3'))
+```
+
+This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pod can be found in [our documentations](https://docs.jina.ai). 
+
+
+
 ### Parallelize the Steps
 
 By default, if you keep `.add()` to a `Flow`, it will create a long chain of sequential workflow. You can parallelize some of the steps by using `needs` argument. For example,
