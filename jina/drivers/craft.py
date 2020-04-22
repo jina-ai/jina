@@ -80,10 +80,12 @@ class SegmentDriver(BaseCraftDriver):
         no need to self-assign it in your segmenter
     """
 
-    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
+    def __init__(
+            self, first_chunk_id: int = 0, random_chunk_id: bool = True, save_raw_bytes: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.first_chunk_id = first_chunk_id
         self.random_chunk_id = random_chunk_id
+        self.save_raw_bytes = save_raw_bytes
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
@@ -106,5 +108,7 @@ class SegmentDriver(BaseCraftDriver):
                     c.doc_id = d.doc_id
                     self.first_chunk_id += 1
                 d.length = len(ret)
+                if self.save_raw_bytes:
+                    d.meta_info = d.raw_bytes
             else:
                 self.logger.warning('doc %d gives no chunk' % d.doc_id)
