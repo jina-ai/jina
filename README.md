@@ -4,17 +4,17 @@
 
 <p align="center">
  
-[![Jina](.github/badges/jina-badge.svg)](https://jina.ai)
-[![Jina](.github/badges/jina-hello-world-badge.svg)](#jina-hello-world-)
-[![Jina](.github/badges/license-badge.svg)](#jina-hello-world-)
-[![Jina Docs](.github/badges/docs-badge.svg)](https://docs.jina.ai)
-[![We are hiring](.github/badges/jina-corp-badge-hiring.svg)](https://jina.ai/jobs)
+[![Jina](.github/badges/jina-badge.svg "We fully commit to open-source")](https://jina.ai)
+[![Jina](.github/badges/jina-hello-world-badge.svg "Run Jina 'Hello, World!' without installing anything")](#jina-hello-world-)
+[![Jina](.github/badges/license-badge.svg "Jina is licensed under Apache-2.0")](#license)
+[![Jina Docs](.github/badges/docs-badge.svg "Checkout our docs and learn Jina")](https://docs.jina.ai)
+[![We are hiring](.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jina.ai/jobs)
 <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src=".github/badges/twitter-badge.svg"
-       alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
+       alt="tweet button" title="👍Share Jina with your friends on Twitter"></img>
 </a>
-[![Python 3.7 3.8](.github/badges/python-badge.svg)](#)
-[![Docker](.github/badges/docker-badge.svg)](https://hub.docker.com/r/jinaai/jina/tags)
+[![Python 3.7 3.8](.github/badges/python-badge.svg "Jina supports Python 3.7 and above")](#)
+[![Docker](.github/badges/docker-badge.svg "Jina is multi-arch ready, can run on differnt architectures")](https://hub.docker.com/r/jinaai/jina/tags)
 [![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)
 [![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)
 [![Release Cycle](https://github.com/jina-ai/jina/workflows/Release%20Cycle/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+Cycle%22)
@@ -225,8 +225,16 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
 
 <tr>
 <td>
-<h4><a href="https://jina-ai.github.io/docs/chapters/flow/README.html">Using Flow API to Compose Your Jina Workflow</a></h4>
+<h4><a href="https://jina-ai.github.io/docs/chapters/flow/README.html">Use Flow API to Compose Your Search Workflow</a></h4>
 Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely
+</td>
+<td><h3>🐣</h3></td>
+</tr>
+
+<tr>
+<td>
+<h4><a href="https://jina-ai.github.io/docs/chapters/flow/README.html">Use Dashboard to Get Insight of Jina Workflow</a></h4>
+Learn to use dashboard to monitor and get insight of a running workflow
 </td>
 <td><h3>🐣</h3></td>
 </tr>
@@ -258,7 +266,7 @@ Learn to run Jina on remote instances and distribute your workflow
 
 <tr>
 <td>
-<h4>Extend Jina and Implement Your Own Executor</h4>
+<h4><a href="https://jina-ai.github.io/docs/chapters/extend/executor.html">Extend Jina by Implementing Your Own Executor</a></h4>
 Learn how to implement your own ideas into Jina's plugin
 </td>
 <td><h3>🕊</h3></td>
@@ -267,10 +275,10 @@ Learn how to implement your own ideas into Jina's plugin
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/jina-hub#build-your-pod-into-a-docker-image">Run Jina Pod via Docker Container</a></h4>
+<h4><a href="https://jina-ai.github.io/docs/chapters/hub/main.html">Run Jina Pod via Docker Container</a></h4>
 Learn how Jina solves complex dependencies easily with Docker container
 </td>
-<td><h3>🚀</h3></td>
+<td><h3>🕊</h3></td>
 </tr>
 
 <tr>
@@ -318,7 +326,7 @@ The following resources help you to make a good first contribution:
 - [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest update, release and event news of Jina
 - [LinkedIn](https://www.linkedin.com/showcase/31268045/) - get to know Jina AI as a company
 - ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - follow us and interact with us using hashtag `#JinaSearch`  
-- [Join Us](mailto:hr@jina.ai) - want to work full-time with us on Jina? We are hiring!
+- [Join Us](mailto:hr@jina.ai) - want to work full-time with us at Jina? We are hiring!
 - [Company](https://jina.ai) - know more about our company, we are fully committed to open-source!
 
 ## Roadmap
