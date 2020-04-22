@@ -225,24 +225,24 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
 
 <tr>
 <td>
-<a href="https://jina-ai.github.io/docs/chapters/flow/README.html"><h4>Using Flow API to Compose Your Jina Workflow</h4></a>
-Learn how to orchestrate the Pods to work together: sequentially and in parallel; locally and remotely.  
+<h4><a href="https://jina-ai.github.io/docs/chapters/flow/README.html">Using Flow API to Compose Your Jina Workflow</a></h4>
+Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely.  
 </td>
 <td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
-Learn how to blah blah blah with blah blah blah
+<h4><a href="https://github.com/jina-ai/examples/tree/master/urbandict-search">Build Bert-based NLP Semantic Search System in 3 minutes</a></h4>
+Learn how to use Jina and DistilBert to build a slang search system.
 </td>
 <td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<a href="https://jina-ai.github.io/docs/chapters/remote/main.html"><h4>Use Jina Distributively</h4></a>
-Learn to run Jina in remote and on multiple instances
+<h4><a href="https://jina-ai.github.io/docs/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
+Learn to run Jina on remote instances and distribute your workflow
 </td>
 <td><h3>🕊</h3></td>
 </tr>
@@ -259,7 +259,7 @@ Learn how to extend Jina with your own ideas
 
 <tr>
 <td>
-<a href="https://github.com/jina-ai/jina-hub#build-your-pod-into-a-docker-image"><h4>Run Jina Pod via Docker Container</h4></a>
+<h4><a href="https://github.com/jina-ai/jina-hub#build-your-pod-into-a-docker-image">Run Jina Pod via Docker Container</a></h4>
 Learn how Jina solves complex dependencies easily with Docker container
 </td>
 <td><h3>🚀</h3></td>
@@ -267,7 +267,7 @@ Learn how Jina solves complex dependencies easily with Docker container
 
 <tr>
 <td>
-<a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub"><h4>Share Your Extension with the World</h4></a>
+<h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
 Learn to use Jina Hub and share your extension with engineers from the globe 
 </td>
 <td><h3>🚀</h3></td>
