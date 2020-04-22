@@ -39,9 +39,10 @@ class ImageCropper(ImageChunkCrafter):
         :param doc_id: the doc id
         :returns: a chunk dict with the cropped image
         """
-        raw_img = self._load_image(blob)
-        processe_img = self._crop_image(raw_img, (self.width, self.height), self.left, self.top)
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(processe_img).astype('float32'))
+        raw_img = self.load_image(blob)
+        _img = self._crop_image(raw_img, (self.width, self.height), self.left, self.top)
+        img = self.restore_channel_axis(np.asarray(_img))
+        return dict(doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))
 
 
 class CenterImageCropper(ImageChunkCrafter):
@@ -70,9 +71,10 @@ class CenterImageCropper(ImageChunkCrafter):
         :param doc_id: the doc id
         :return: a chunk dict with the cropped image
         """
-        raw_img = self._load_image(blob)
-        img = self._crop_image(raw_img, self.target_size, how='center')
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(img).astype('float32'))
+        raw_img = self.load_image(blob)
+        _img = self._crop_image(raw_img, self.target_size, how='center')
+        img = self.restore_channel_axis(np.asarray(_img))
+        return dict(doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))
 
 
 class RandomImageCropper(ImageChunkCrafter):
@@ -104,12 +106,13 @@ class RandomImageCropper(ImageChunkCrafter):
         :param doc_id: the doc id
         :return: a list of chunk dicts with the cropped images
         """
-        raw_img = self._load_image(blob)
+        raw_img = self.load_image(blob)
         result = []
         for i in range(self.num_pathes):
-            processe_img = self._crop_image(raw_img, self.target_size, how='random')
+            _img = self._crop_image(raw_img, self.target_size, how='random')
+            img = self.restore_channel_axis(np.asarray(_img))
             result.append(
-                dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(processe_img).astype('float32')))
+                dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(img).astype('float32')))
         return result
 
 
@@ -138,7 +141,7 @@ class FiveImageCropper(ImageChunkCrafter):
         :param doc_id: the doc id
         :return: a list of five chunk dicts with the cropped images
         """
-        raw_img = self._load_image(blob)
+        raw_img = self.load_image(blob)
         image_width, image_height = raw_img.size
         if isinstance(self.target_size, int):
             target_h = target_w = self.target_size
@@ -146,17 +149,22 @@ class FiveImageCropper(ImageChunkCrafter):
             target_h, target_w = self.target_size
         else:
             raise ValueError('target_size should be an integer or a tuple of two integers: {}'.format(self.target_size))
-        tl = self._crop_image(raw_img, self.target_size, 0, 0)
-        tr = self._crop_image(raw_img, self.target_size, image_width - target_w, 0)
-        bl = self._crop_image(raw_img, self.target_size, 0, image_height - target_h)
-        br = self._crop_image(raw_img, self.target_size, image_width - target_w, image_height - target_h)
-        center = self._crop_image(raw_img, self.target_size, how='center')
+        _tl = self._crop_image(raw_img, self.target_size, 0, 0)
+        tl = self.restore_channel_axis(np.asarray(_tl))
+        _tr = self._crop_image(raw_img, self.target_size, image_width - target_w, 0)
+        tr = self.restore_channel_axis(np.asarray(_tr))
+        _bl = self._crop_image(raw_img, self.target_size, 0, image_height - target_h)
+        bl = self.restore_channel_axis(np.asarray(_bl))
+        _br = self._crop_image(raw_img, self.target_size, image_width - target_w, image_height - target_h)
+        br = self.restore_channel_axis(np.asarray(_br))
+        _center = self._crop_image(raw_img, self.target_size, how='center')
+        center = self.restore_channel_axis(np.asarray(_center))
         return [
-            dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(tl).astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(tr).astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(bl).astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(br).astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(center).astype('float32')),
+            dict(doc_id=doc_id, offset=0, weight=1., blob=tl.astype('float32')),
+            dict(doc_id=doc_id, offset=0, weight=1., blob=tr.astype('float32')),
+            dict(doc_id=doc_id, offset=0, weight=1., blob=bl.astype('float32')),
+            dict(doc_id=doc_id, offset=0, weight=1., blob=br.astype('float32')),
+            dict(doc_id=doc_id, offset=0, weight=1., blob=center.astype('float32')),
         ]
 
 
@@ -219,7 +227,11 @@ class SlidingWindowImageCropper(ImageChunkCrafter):
                 col_step,
                 1))
         expanded_img = expanded_img.reshape((-1, self.target_size, self.target_size, c))
-        return [dict(doc_id=doc_id, offset=0, weight=1.0, blob=blob.astype('float32')) for blob in expanded_img]
+        results = []
+        for _blob in expanded_img:
+            blob = self.restore_channel_axis(_blob)
+            results.append(dict(doc_id=doc_id, offset=0, weight=1.0, blob=blob.astype('float32')))
+        return results
 
     def _expand_img(self, img: 'np.ndarray') -> 'np.ndarray':
         h, w, c = img.shape

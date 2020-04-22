@@ -36,8 +36,9 @@ class ImageResizer(ImageChunkCrafter):
         :param doc_id: the doc id
         :return: a chunk dict with the cropped image
         """
-        raw_img = self._load_image(blob)
-        processed_img = self._resize_short(raw_img, self.output_dim, self.how)
+        raw_img = self.load_image(blob)
+        _img = self._resize_short(raw_img, self.output_dim, self.how)
+        img = self.restore_channel_axis(np.asarray(_img))
         return dict(
-            doc_id=doc_id, offset=0, weight=1., blob=np.asarray(processed_img).astype('float32'))
+            doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))
 

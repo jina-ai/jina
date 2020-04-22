@@ -1,8 +1,7 @@
 import numpy as np
-import numbers
 
 from .. import BaseChunkCrafter
-from typing import Tuple, Union, Iterable
+from typing import Tuple, Union
 
 
 class ImageChunkCrafter(BaseChunkCrafter):
@@ -29,7 +28,16 @@ class ImageChunkCrafter(BaseChunkCrafter):
             return img
         return np.moveaxis(img, self.channel_axis, -1)
 
-    def _load_image(self, blob: 'np.ndarray'):
+    def restore_channel_axis(self, img: 'np.ndarray') -> 'np.ndarray':
+        if self.channel_axis == -1:
+            return img
+        return np.moveaxis(img, -1, self.channel_axis)
+
+    def load_image(self, blob: 'np.ndarray'):
+        """
+        Load an image array and return a `PIL.Image` object.
+        """
+
         from PIL import Image
         img = self.check_channel_axis(blob)
         return Image.fromarray(img.astype('uint8'))
