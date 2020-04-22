@@ -118,6 +118,7 @@ body {
     /* width: 100%; */
 }
 
+
 .btn.btn-neutral:hover {
     background: #32C8CD !important;
 }
@@ -474,6 +475,11 @@ input {
 
 .rst-content .note .admonition-title {
     background: #32C8CD;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.rst-content .seealso .admonition-title {
+    background: #1E6E73;
     border-radius: 10px 10px 0px 0px;
 }
 

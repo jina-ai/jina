@@ -84,9 +84,9 @@ class Flow:
         self._pod_name_counter = 0
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
 
-        self.update_args(args, **kwargs)
+        self._update_args(args, **kwargs)
 
-    def update_args(self, args, **kwargs):
+    def _update_args(self, args, **kwargs):
         from ..main.parser import set_flow_parser
         _flow_parser = set_flow_parser()
         if args is None:
@@ -322,6 +322,11 @@ class Flow:
         """
         Build the current flow and make it ready to use
 
+        .. note::
+
+            No need to manually call it since 0.0.8. When using flow with the
+            context manager, or using :meth:`start`, :meth:`build` will be invoked.
+
         :param copy_flow: return the copy of the current flow.
         :return: the current flow (by default)
 
@@ -419,15 +424,15 @@ class Flow:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def start_log_server(self):
+    def _start_log_server(self):
         try:
             import urllib.request
             import flask, flask_cors
-            self.sse_logger = threading.Thread(name='sentinel-sse-logger',
-                                               target=start_sse_logger, daemon=True,
-                                               args=(self.args.logserver_config,
-                                                     self.yaml_spec))
-            self.sse_logger.start()
+            self._sse_logger = threading.Thread(name='sentinel-sse-logger',
+                                                target=start_sse_logger, daemon=True,
+                                                args=(self.args.logserver_config,
+                                                      self.yaml_spec))
+            self._sse_logger.start()
             time.sleep(1)
             urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
             self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
@@ -452,7 +457,7 @@ class Flow:
 
         if self.args.logserver:
             self.logger.info('start logserver...')
-            self.start_log_server()
+            self._start_log_server()
 
         self._pod_stack = ExitStack()
         for v in self._pod_nodes.values():
@@ -508,7 +513,7 @@ class Flow:
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _get_client(self, bytes_gen: Iterator[bytes] = None, **kwargs):
+    def _get_client(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None, **kwargs):
         from ..main.parser import set_client_cli_parser
         from ..clients.python import PyClient
 
@@ -521,7 +526,8 @@ class Flow:
             c.raw_bytes = bytes_gen
         return c
 
-    def train(self, raw_bytes: Iterator[bytes] = None, callback: Callable[['jina_pb2.Message'], None] = None,
+    def train(self, raw_bytes: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+              callback: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
         """Do training on the current flow
 
@@ -561,7 +567,8 @@ class Flow:
         """
         self._get_client(raw_bytes, mode='train', **kwargs).start(callback)
 
-    def index(self, raw_bytes: Iterator[bytes] = None, callback: Callable[['jina_pb2.Message'], None] = None,
+    def index(self, raw_bytes: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+              callback: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
         """Do indexing on the current flow
 
@@ -601,7 +608,8 @@ class Flow:
         """
         self._get_client(raw_bytes, mode='index', **kwargs).start(callback)
 
-    def search(self, raw_bytes: Iterator[bytes] = None, callback: Callable[['jina_pb2.Message'], None] = None,
+    def search(self, raw_bytes: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+               callback: Callable[['jina_pb2.Message'], None] = None,
                **kwargs):
         """Do indexing on the current flow
 

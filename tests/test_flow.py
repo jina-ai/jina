@@ -1,7 +1,6 @@
 import unittest
 
 import requests
-
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
@@ -70,10 +69,23 @@ class MyTestCase(JinaTestCase):
 
     def test_simple_flow(self):
         bytes_gen = (b'aaa' for _ in range(10))
+
+        def bytes_fn():
+            for _ in range(100):
+                yield b'aaa'
+
         f = (Flow()
              .add(yaml_path='_forward'))
+
         with f.build() as fl:
             fl.index(raw_bytes=bytes_gen)
+
+        with f.build() as fl:
+            fl.index(raw_bytes=bytes_fn)
+
+        with f:
+            f.index(raw_bytes=bytes_fn)
+            f.index(raw_bytes=bytes_fn)
 
     def test_load_flow_from_yaml(self):
         with open('yaml/test-flow.yml') as fp:

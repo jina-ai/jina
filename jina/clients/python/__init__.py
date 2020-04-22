@@ -46,7 +46,7 @@ class PyClient(GrpcClient):
                 p_bar.update(self.args.batch_size)
 
     @property
-    def raw_bytes(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes]]:
+    def raw_bytes(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]:
         """ An iterator of bytes, each element represents a document's raw content,
         i.e. ``raw_bytes`` defined int the protobuf
         """
@@ -56,10 +56,13 @@ class PyClient(GrpcClient):
             raise BadClient('raw_bytes is empty or not set')
 
     @raw_bytes.setter
-    def raw_bytes(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes]]):
+    def raw_bytes(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]):
         if self._raw_bytes:
             self.logger.warning('raw_bytes is not empty, overrided')
-        self._raw_bytes = bytes_gen
+        if hasattr(bytes_gen, '__call__'):
+            self._raw_bytes = bytes_gen()
+        else:
+            self._raw_bytes = bytes_gen
 
     def dry_run(self) -> bool:
         """Send a DRYRUN request to the server, passing through all pods on the server

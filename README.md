@@ -225,7 +225,7 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
 
 <tr>
 <td>
-<h4>Build Bert-based NLP Semantic Search System in 3 minutes</h4>
+<h4>Using Flow API to Compose Your Search Workflow</h4>
 Learn how to blah blah blah with blah blah blah
 </td>
 <td><h3>🐣 </h3></td>
@@ -294,7 +294,7 @@ The best way to learn Jina in depth is to read our documentation. Documentation 
 - [Jina command line interface arguments explained](https://jina-ai.github.io/docs/chapters/cli/main.html)
 - [Jina Python API interface](https://jina-ai.github.io/docs/api/jina.html)
 - [Jina YAML syntax for executor, driver and flow](https://jina-ai.github.io/docs/chapters/yaml/yaml.html)
-- [Jina Protobuf specification](https://jina-ai.github.io/docs/chapters/proto/main.html)
+- [Jina Protobuf schema](https://jina-ai.github.io/docs/chapters/proto/main.html)
 - [Environment variables used in Jina](https://jina-ai.github.io/docs/chapters/envs.html)
 - ... [and more](https://jina-ai.github.io/docs/index.html)
 
