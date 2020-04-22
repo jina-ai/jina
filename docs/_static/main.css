@@ -8,6 +8,18 @@
     src: url(OpenSans-Regular.ttf);
 }
 
+.rst-content dl:not(.docutils) {
+    margin-bottom: 3.5em;
+}
+
+.toctree-wrapper .compound {
+    margin-bottom: 3.5em;
+}
+
+.document .section {
+    margin-bottom: 3.5em;
+}
+
 .wy-menu-vertical li.toctree-l2 a, .wy-menu-vertical li.toctree-l3 a, .wy-menu-vertical li.toctree-l4 a {
     color: white;
 }
