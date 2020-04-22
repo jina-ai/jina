@@ -4,6 +4,7 @@ In a search system, task such as indexing is a workflow often involves multiple 
 
 Flow API is a context manager for Pods. Each `Flow` object corresponds to a real-world task, it helps user to manage the states and contexts of all Pods required in that task. Flow API translates a workflow defined in Python code, YAML spec and interactive graph to a runtime backed by multi-thread/process, Kubernetes, Docker Swarm, etc. Users don't need to worry about where the Pod is running and how the Pods are connected.
 
+![Flow is a context manager](flow-api-doc.png)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

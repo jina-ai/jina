@@ -225,8 +225,8 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
 
 <tr>
 <td>
-<h4>Using Flow API to Compose Your Search Workflow</h4>
-Learn how to blah blah blah with blah blah blah
+<h4>Using Flow API to Compose Your Jina Workflow</h4>
+Compose Pods to work together, either sequentially or in parallel; locally or remotely.  
 </td>
 <td><h3>🐣 </h3></td>
 </tr>
