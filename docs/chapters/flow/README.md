@@ -10,6 +10,10 @@ Flow API is a context manager for Pods. Each `Flow` object corresponds to a real
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [Using Flow API in Python](#using-flow-api-in-python)
+- [Use Flow API in YAML](#use-flow-api-in-yaml)
+- [Design a Flow with Dashboard](#design-a-flow-with-dashboard)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
