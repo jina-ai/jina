@@ -241,6 +241,14 @@ Learn to use dashboard to monitor and get insight of a running workflow
 
 <tr>
 <td>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
+Learn how to use Jina to extract feature vector using any deep learning representation
+</td>
+<td><h3>🐣</h3></td>
+</tr>
+
+<tr>
+<td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/urbandict-search">Build a BERT-based NLP Semantic Search System in 3 minutes</a></h4>
 Learn how to use Jina and DistilBert to build a slang search system
 </td>
