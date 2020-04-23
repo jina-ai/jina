@@ -249,7 +249,7 @@ Learn how to use Jina and DistilBert to build a slang search system
 
 <tr>
 <td>
-<h4><a href=https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System in 3 minutes</a></h4>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System in 3 minutes</a></h4>
 Learn how to use Jina and Torchvision to build a flower image search system
 </td>
 <td><h3>🐣</h3></td>
