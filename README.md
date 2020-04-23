@@ -145,8 +145,8 @@ from jina.flow import Flow
 
 f = Flow.load_config('index.yml')
 
-with f.build() as fl:
-    fl.index(raw_bytes=input_fn)
+with f:
+    f.index(raw_bytes=input_fn)
 ```
 
 </td>

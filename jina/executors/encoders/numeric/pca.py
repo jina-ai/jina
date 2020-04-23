@@ -1,7 +1,7 @@
 import numpy as np
-from ...decorators import batching, require_train
 
 from .. import BaseNumericEncoder
+from ...decorators import batching, require_train
 
 
 class IncrementalPCAEncoder(BaseNumericEncoder):

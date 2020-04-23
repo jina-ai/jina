@@ -40,16 +40,16 @@ def hello_world(args):
     os.environ['WITH_LOGSERVER'] = str(args.logserver)
 
     f = Flow().load_config(args.index_yaml_path)
-    with f.build() as fl:
-        fl.index(raw_bytes=input_fn(targets['index']['filename']), batch_size=args.index_batch_size)
+    with f:
+        f.index(raw_bytes=input_fn(targets['index']['filename']), batch_size=args.index_batch_size)
 
     countdown(8, reason=colored('behold! im going to switch to query mode', 'cyan',
                                 attrs=['underline', 'bold', 'reverse']))
 
     f = Flow().load_config(args.query_yaml_path)
-    with f.build() as fl:
-        fl.search(raw_bytes=input_fn(targets['query']['filename'], index=False, num_doc=args.num_query),
-                  callback=print_result, top_k=args.top_k, batch_size=args.query_batch_size)
+    with f:
+        f.search(raw_bytes=input_fn(targets['query']['filename'], index=False, num_doc=args.num_query),
+                 callback=print_result, top_k=args.top_k, batch_size=args.query_batch_size)
 
     html_path = os.path.join(args.workdir, 'hello-world.html')
     write_html(html_path)

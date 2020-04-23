@@ -8,6 +8,7 @@ if False:
     # fix type-hint complain for sphinx and flake
     import argparse
 
+
 class PipeLogger:
     def __init__(self, args: 'argparse.Namespace'):
         """ Start a pipe logger to beautify the log

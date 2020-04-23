@@ -1,6 +1,9 @@
 import argparse
 
 from ..helper import colored
+import argparse
+
+from ..helper import colored
 
 
 def add_arg_group(parser, title):
@@ -411,6 +414,8 @@ def set_client_cli_parser(parser=None):
                      help='top_k results returned in the search mode')
     gp1.add_argument('--in-proto', action='store_true', default=False,
                      help='if the input data is already in protobuf Document format, or in raw bytes')
+    gp1.add_argument('--callback-on-body', action='store_true', default=False,
+                     help='callback function works directly on the request body')
     gp1.add_argument('--first-request-id', type=int,
                      default=0,
                      help='the starting number of request id, the consequent request_id will increment by one')
@@ -419,6 +424,7 @@ def set_client_cli_parser(parser=None):
                      help='the starting number of doc_id, the consequent doc_id will increment by one')
     _gp.add_argument('--random-doc-id', action='store_true', default=False,
                      help='randomize the doc_id, if this is set then `first_request_id` is ignored')
+
     gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
     return parser

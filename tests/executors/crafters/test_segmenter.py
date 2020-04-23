@@ -28,10 +28,10 @@ class MyTestCase(JinaTestCase):
 
     def test_dummy_seg(self):
         f = Flow().add(yaml_path='DummySegment')
-        with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=self.get_chunk_id)
+        with f:
+            f.index(raw_bytes=random_docs(10), in_proto=True, callback=self.get_chunk_id)
 
     def test_dummy_seg_random(self):
         f = Flow().add(yaml_path='../../yaml/dummy-seg-random.yml')
-        with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True, callback=self.collect_chunk_id)
+        with f:
+            f.index(raw_bytes=random_docs(10), in_proto=True, callback=self.collect_chunk_id)

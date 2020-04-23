@@ -65,7 +65,7 @@ Welcome to Jina Documentations!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Frequently Asked Questions
+   :caption: Debugging and FAQ
 
    chapters/troubleshooting
    chapters/faq/user

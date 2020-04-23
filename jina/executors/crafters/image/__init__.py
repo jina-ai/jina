@@ -1,7 +1,8 @@
+from typing import Tuple, Union
+
 import numpy as np
 
 from .. import BaseChunkCrafter
-from typing import Tuple, Union
 
 
 class ImageChunkCrafter(BaseChunkCrafter):
@@ -12,6 +13,7 @@ class ImageChunkCrafter(BaseChunkCrafter):
         :class:'ImageChunkCrafter' is intended to be used internally.
 
     """
+
     def __init__(self, channel_axis: int = -1, *args, **kwargs):
         """
 
