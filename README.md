@@ -315,7 +315,7 @@ The best way to learn Jina in depth is to read our documentation. Documentation 
 - [Environment variables used in Jina](https://jina-ai.github.io/docs/chapters/envs.html)
 - ... [and more](https://jina-ai.github.io/docs/index.html)
 
-Are you are Doc-star? Then join us! We welcome all kinds of improvements on the documentation. 
+Are you a Doc-star? Then join us! We welcome all kinds of improvements on the documentation. 
 
 Documentation of the older version [is archived in here](https://github.com/jina-ai/docs/releases).
 
