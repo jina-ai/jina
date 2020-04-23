@@ -265,6 +265,14 @@ Learn how to use Jina and Torchvision to build a flower image search system
 
 <tr>
 <td>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Video Semantic Search in Scale with Prefetching and Sharding</a></h4>
+Learn how to increase the performance by using prefetching and sharding
+</td>
+<td><h3>🕊</h3></td>
+</tr>
+
+<tr>
+<td>
 <h4><a href="https://jina-ai.github.io/docs/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
 Learn to run Jina on remote instances and distribute your workflow
 </td>
