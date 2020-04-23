@@ -92,3 +92,9 @@ Probably MacOS only.
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
  
+## `docker.errors.APIError: 409 Client Error: Conflict ("Conflict. The container name "/encode-1" is already in use by container "6aa5df721ee4820d47fa96d25d300450178fe92be6e90a4059e5d7d4ac6f7324". You have to remove (or rename) that container to be able to reuse that name.")`
+
+
+```bash
+docker stop $(docker ps -a -q)
+```

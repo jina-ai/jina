@@ -6,10 +6,10 @@ import numpy as np
 from ..proto import jina_pb2
 
 
-def blob2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
+def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
     """Convert a blob protobuf to a numpy ndarray.
 
-    Note if the argument ``quantize`` is specified in :func:`array2blob` then the returned result may be lossy.
+    Note if the argument ``quantize`` is specified in :func:`array2pb` then the returned result may be lossy.
     Nonetheless, it will always in original ``dtype``, i.e. ``float32`` or ``float64``
 
     :param blob: a blob described in protobuf
@@ -24,7 +24,7 @@ def blob2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
     return x.reshape(blob.shape)
 
 
-def array2blob(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
+def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     """Convert a numpy ndarray to blob protobuf.
 
     :param x: the target ndarray
@@ -38,7 +38,7 @@ def array2blob(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
             - ``fp16`` quantization is lossless, can be used widely. Each float is represented by 16 bits.
             - ``uint8`` quantization is lossy. Each float is represented by 8 bits. The algorithm behind is standard scaling.
 
-        There is no need to specify the quantization type in :func:`blob2array`,
+        There is no need to specify the quantization type in :func:`pb2array`,
         as the quantize type is stored and the blob is self-contained to recover the original numpy array
     """
     blob = jina_pb2.NdArray()
@@ -84,9 +84,9 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tupl
     bad_chunk_ids = []
 
     if embedding:
-        _extract_fn = lambda c: c.embedding.raw_bytes and blob2array(c.embedding)
+        _extract_fn = lambda c: c.embedding.raw_bytes and pb2array(c.embedding)
     else:
-        _extract_fn = lambda c: c.text or c.raw_bytes or (c.blob and blob2array(c.blob))
+        _extract_fn = lambda c: c.text or c.raw_bytes or (c.blob and pb2array(c.blob))
 
     for d in docs:
         if not d.chunks:

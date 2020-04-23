@@ -2,7 +2,7 @@ import ctypes
 import random
 
 from . import BaseExecutableDriver
-from .helper import array2blob, pb_obj2dict, blob2array
+from .helper import array2pb, pb_obj2dict, pb2array
 
 
 class BaseCraftDriver(BaseExecutableDriver):
@@ -28,12 +28,12 @@ class ChunkCraftDriver(BaseCraftDriver):
             for c in d.chunks:
                 _args_dict = pb_obj2dict(c, self.exec.required_keys)
                 if 'blob' in self.exec.required_keys:
-                    _args_dict['blob'] = blob2array(c.blob)
+                    _args_dict['blob'] = pb2array(c.blob)
                 ret = self.exec_fn(**_args_dict)
                 if isinstance(ret, dict):
                     for k, v in ret.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2blob(v))
+                            c.blob.CopyFrom(array2pb(v))
                         else:
                             setattr(c, k, v)
                     continue
@@ -45,7 +45,7 @@ class ChunkCraftDriver(BaseCraftDriver):
                     c = d.chunks.add()
                     for k, v in c_dict.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2blob(v))
+                            c.blob.CopyFrom(array2pb(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
                                                 f'is it intentional? chunk_id will be override by {self.__class__} '
@@ -95,7 +95,7 @@ class SegmentDriver(BaseCraftDriver):
                     c = d.chunks.add()
                     for k, v in r.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2blob(v))
+                            c.blob.CopyFrom(array2pb(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
                                                 f'is it intentional? chunk_id will be override by {self.__class__} '
