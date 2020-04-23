@@ -233,7 +233,7 @@ Learn how to orchestrate Pods to work together: sequentially and in parallel; lo
 
 <tr>
 <td>
-<h4><a href="https://jina-ai.github.io/docs/chapters/flow/README.html">Use Dashboard to Get Insight of Jina Workflow</a></h4>
+<h4><a href="https://github.com/jina-ai/dashboard">Use Dashboard to Get Insight of Jina Workflow</a></h4>
 Learn to use dashboard to monitor and get insight of a running workflow
 </td>
 <td><h3>🐣</h3></td>
