@@ -9,6 +9,7 @@ class ImageReader(BaseSegmenter):
     """
     :class:`ImageReader` loads the image from the given file path and save the `ndarray` of the image in the Chunk.
     """
+
     def __init__(self, channel_axis: int = -1, *args, **kwargs):
         """
         :class:`ImageReader` load an image file and craft into image matrix.

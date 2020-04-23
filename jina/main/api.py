@@ -57,7 +57,7 @@ def flow(args):
         from threading import Event
         f = Flow.load_config(args.yaml_path)
         f._update_args(args)
-        with f.build():
+        with f:
 
             try:
                 Event().wait()

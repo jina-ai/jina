@@ -1,6 +1,4 @@
 import re
-import json
-import string
 from typing import List, Dict
 
 from .. import BaseSegmenter
@@ -10,6 +8,7 @@ class Sentencizer(BaseSegmenter):
     """
     :class:`Sentencizer` split the text on the doc-level into sentences on the chunk-level with a rule-base strategy.
     """
+
     def __init__(self,
                  min_sent_len: int = 1,
                  max_sent_len: int = -1,

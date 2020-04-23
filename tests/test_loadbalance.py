@@ -43,7 +43,7 @@ class MyTestCase(JinaTestCase):
         f = Flow(runtime='process').add(
             name='sw',
             yaml_path='SlowWorker',
-            replicas=10).build()
+            replicas=10)
         with f:
             f.index(raw_bytes=random_docs(100), in_proto=True, batch_size=10)
 
@@ -51,6 +51,6 @@ class MyTestCase(JinaTestCase):
         f = Flow(runtime='process').add(
             name='sw',
             yaml_path='SlowWorker',
-            replicas=10, scheduling=SchedulerType.ROUND_ROBIN).build()
+            replicas=10, scheduling=SchedulerType.ROUND_ROBIN)
         with f:
             f.index(raw_bytes=random_docs(100), in_proto=True, batch_size=10)

@@ -1,7 +1,8 @@
 import os
+import re
+
 import numpy as np
 
-import re
 from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
 

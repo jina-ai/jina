@@ -79,8 +79,8 @@ requests:
 
 Locally, we write:
 ```python
-with f.build() as fl:
-    fl.index(raw_bytes=random_docs(1000), in_proto=True)
+with f:
+    f.index(raw_bytes=random_docs(1000), in_proto=True)
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
     import numpy as np

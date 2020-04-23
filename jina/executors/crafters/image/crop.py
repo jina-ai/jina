@@ -10,6 +10,7 @@ class ImageCropper(ImageChunkCrafter):
     :class:`ImageCropper` crops the image with the specific crop box. The coordinate is the same coordinate-system in
         the :py:mode:`PIL.Image`.
     """
+
     def __init__(self,
                  top: int,
                  left: int,
@@ -50,6 +51,7 @@ class CenterImageCropper(ImageChunkCrafter):
     :class:`CenterImageCropper` crops the image with the center crop box. The coordinate is the same coordinate-system
         in the :py:mode:`PIL.Image`.
     """
+
     def __init__(self,
                  target_size: Union[Tuple[int], int],
                  *args,
@@ -82,6 +84,7 @@ class RandomImageCropper(ImageChunkCrafter):
     :class:`RandomImageCropper` crops the image with a random crop box. The coordinate is the same coordinate-system
         in the :py:mode:`PIL.Image`.
     """
+
     def __init__(self,
                  target_size: Union[Tuple[int], int],
                  num_patches: int = 1,
@@ -120,6 +123,7 @@ class FiveImageCropper(ImageChunkCrafter):
     """
     :class:`FiveImageCropper` crops the image into four corners and the central crop.
     """
+
     def __init__(self,
                  target_size: int,
                  *args,
@@ -172,6 +176,7 @@ class SlidingWindowImageCropper(ImageChunkCrafter):
     """
     :class:`SlidingWindowImageCropper` crops the image with a sliding window.
     """
+
     def __init__(self,
                  target_size: int,
                  strides: Tuple[int],

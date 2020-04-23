@@ -96,8 +96,8 @@ class MyTestCase(JinaTestCase):
                        replicas=3, separated_workspace=True,
                        host='localhost', port_grpc=f_args.port_grpc)
 
-        with f.build(copy_flow=True) as fl:
-            fl.index(raw_bytes=random_docs(1000), in_proto=True)
+        with f:
+            f.index(raw_bytes=random_docs(1000), in_proto=True)
 
         time.sleep(3)
         for j in range(3):
@@ -121,8 +121,8 @@ class MyTestCase(JinaTestCase):
                   replicas=3, separated_workspace=True,
                   host='192.168.31.76', port_grpc=44444))
 
-        with f.build(copy_flow=True) as fl:
-            fl.index(raw_bytes=random_docs(1000), in_proto=True)
+        with f:
+            f.index(raw_bytes=random_docs(1000), in_proto=True)
 
 
 if __name__ == '__main__':

@@ -318,7 +318,7 @@ class Flow:
 
         return op_flow
 
-    def build(self, copy_flow: bool = True) -> 'Flow':
+    def build(self, inplace: bool = True) -> 'Flow':
         """
         Build the current flow and make it ready to use
 
@@ -327,7 +327,7 @@ class Flow:
             No need to manually call it since 0.0.8. When using flow with the
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
-        :param copy_flow: return the copy of the current flow.
+        :param inplace: if set to ``False`` then return the copy of the current flow.
         :return: the current flow (by default)
 
         .. note::
@@ -337,15 +337,15 @@ class Flow:
             .. code-block:: python
 
                 f = Flow()
-                with f.build(copy_flow=True) as fl:
-                    fl.index()
+                with f:
+                    f.index()
 
                 with f.build(copy_flow=False) as fl:
                     fl.search()
 
         """
 
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        op_flow = self if inplace else copy.deepcopy(self)
 
         _pod_edges = set()
 
@@ -453,7 +453,7 @@ class Flow:
         """
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            self.build(copy_flow=False)
+            self.build(inplace=True)
 
         if self.args.logserver:
             self.logger.info('start logserver...')
@@ -501,12 +501,12 @@ class Flow:
         """
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            a = self.build(copy_flow=True)
+            a = self.build()
         else:
             a = self
 
         if other._build_level.value < FlowBuildLevel.GRAPH.value:
-            b = other.build(copy_flow=True)
+            b = other.build()
         else:
             b = other
 

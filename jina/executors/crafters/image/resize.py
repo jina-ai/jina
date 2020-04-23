@@ -1,13 +1,16 @@
 import numbers
-import numpy as np
-from . import ImageChunkCrafter
 from typing import Union, Tuple, Dict
+
+import numpy as np
+
+from . import ImageChunkCrafter
 
 
 class ImageResizer(ImageChunkCrafter):
     """
     :class:`ImageResizer` resize the image to the given size.
     """
+
     def __init__(self,
                  target_size: Union[Tuple[int], int],
                  how='BILINEAR',
@@ -41,4 +44,3 @@ class ImageResizer(ImageChunkCrafter):
         img = self.restore_channel_axis(np.asarray(_img))
         return dict(
             doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))
-

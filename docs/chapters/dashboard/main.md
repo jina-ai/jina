@@ -31,8 +31,8 @@ f = (Flow(logserver=True)
         .add(...)
         .add(...))
 
-with f.build() as fl:
-    fl.index(...)
+with f:
+    f.index(...)
 ```
 
 </td>
@@ -54,8 +54,8 @@ pods:
 ```python
 f = Flow.load_config('myflow.yml')
 
-with f.build() as fl:
-    fl.index(...)
+with f:
+    f.index(...)
 ```
 
 </td>

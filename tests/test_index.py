@@ -87,8 +87,8 @@ class MyTestCase(JinaTestCase):
 
     def test_simple_route(self):
         f = Flow().add(yaml_path='_forward')
-        with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True)
+        with f:
+            f.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_update_method(self):
         a = DummyIndexer(index_filename='test.bin')
@@ -122,22 +122,22 @@ class MyTestCase(JinaTestCase):
         def start_client(fl):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
-        with f1.build() as fl1:
-            self.assertEqual(fl1.num_peas, 6)
-            t1 = mp.Process(target=start_client, args=(fl1,))
+        with f1:
+            self.assertEqual(f1.num_peas, 6)
+            t1 = mp.Process(target=start_client, args=(f1,))
             t1.daemon = True
-            t2 = mp.Process(target=start_client, args=(fl1,))
+            t2 = mp.Process(target=start_client, args=(f1,))
             t2.daemon = True
 
             t1.start()
             t2.start()
             time.sleep(5)
 
-        with f2.build() as fl2:
-            self.assertEqual(fl2.num_peas, 6)
-            t1 = mp.Process(target=start_client, args=(fl2,))
+        with f2:
+            self.assertEqual(f2.num_peas, 6)
+            t1 = mp.Process(target=start_client, args=(f2,))
             t1.daemon = True
-            t2 = mp.Process(target=start_client, args=(fl2,))
+            t2 = mp.Process(target=start_client, args=(f2,))
             t2.daemon = True
 
             t1.start()
@@ -154,10 +154,10 @@ class MyTestCase(JinaTestCase):
         def start_client(fl):
             fl.index(raw_bytes=random_docs(10), in_proto=True)
 
-        with f.build() as fl:
-            t1 = mp.Process(target=start_client, args=(fl,))
+        with f:
+            t1 = mp.Process(target=start_client, args=(f,))
             t1.daemon = True
-            t2 = mp.Process(target=start_client, args=(fl,))
+            t2 = mp.Process(target=start_client, args=(f,))
             t2.daemon = True
 
             t1.start()
@@ -166,8 +166,8 @@ class MyTestCase(JinaTestCase):
 
     def test_index(self):
         f = Flow().add(yaml_path='yaml/test-index.yml', replicas=3, separated_workspace=True)
-        with f.build(copy_flow=True) as fl:
-            fl.index(raw_bytes=random_docs(1000), in_proto=True)
+        with f:
+            f.index(raw_bytes=random_docs(1000), in_proto=True)
 
         for j in range(3):
             self.assertTrue(os.path.exists(f'test2-{j + 1}/test2.bin'))
@@ -175,8 +175,8 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(f'test2-{j + 1}/test2.bin', f'test2-{j + 1}/tmp2', f'test2-{j + 1}')
 
         time.sleep(3)
-        with f.build(copy_flow=True) as fl:
-            fl.search(raw_bytes=random_docs(1), in_proto=True, callback=get_result, top_k=100)
+        with f:
+            f.search(raw_bytes=random_docs(1), in_proto=True, callback=get_result, top_k=100)
 
 
 if __name__ == '__main__':
