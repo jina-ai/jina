@@ -199,3 +199,29 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+
+Open Source Software Licensed Under the Apache License, Version 2.0:
+-------------------------------------------------------------------------
+1. grpc  1.21.2
+Copyright 2014 gRPC authors.
+
+
+Open Source Software Licensed Under the BSD 3-Clause License:
+-------------------------------------------------------------------------
+1. numpy  1.16.2
+Copyright 2005-2019, NumPy Developers.
+All rights reserved.
+
+2. PyZMQ  18.0.1
+Copyright (c) 2009-2012, Brian Granger, Min Ragan-Kelley
+All rights reserved.
+
+3. protobuf 3.7.1
+Copyright 2008 Google Inc.
+All rights reserved.
+
+Open Source Software Licensed Under the MIT License:
+-------------------------------------------------------------------------
+1. ruamel.yaml  0.15.94
+Copyright (c) 2014-2019 Anthon van der Neut, Ruamel bvba
