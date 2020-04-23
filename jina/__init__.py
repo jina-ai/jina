@@ -26,6 +26,9 @@ import random
 from types import SimpleNamespace
 import os
 
+# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
+os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
+
 __uptime__ = datetime.now().strftime('%Y%m%d%H%M%S')
 
 # update on MacOS

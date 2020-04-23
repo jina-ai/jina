@@ -1,9 +1,6 @@
 import argparse
 
 from ..helper import colored
-import argparse
-
-from ..helper import colored
 
 
 def add_arg_group(parser, title):
@@ -457,13 +454,6 @@ def get_main_parser():
                                      description='Start a Jina gateway that receives client remote requests via gRPC',
                                      help='start a gateway', formatter_class=_chf))
 
-    # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
-
-    # # check
-    # pp = sp.add_parser('check', help='check jina config, settings, imports, network etc', formatter_class=_chf)
-    # spp = pp.add_subparsers(dest='check',
-    #                         description='use "%(prog)-8s check [sub-command] --help" '
-    #                                     'to get detailed information about each sub-command', required=True)
 
     set_ping_parser(
         sp.add_parser('ping', help='ping a pod and check the network connectivity',
