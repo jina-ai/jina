@@ -36,7 +36,7 @@ jobs:
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
-            force: true
+          force: true
 
   update-doc:
     if: "!startsWith(github.event.head_commit.message, 'chore')"
