@@ -8,12 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: VinnyBabuManjaly/copyright-action@v1.0.0
-          with:
-            CopyrightString: 'Copyright (c) 2020 Jina AI Limited. All rights reserved.\nJina is licensed under the Apache License, Version 2.0. See LICENSE for the full license text.'
-            FileType: '.py'
-            Path: 'jina/'
-            IgnorePath: 'testfolder1/a/, testfolder3'
-            # Creates pull request with all changes in file
+        with:
+          CopyrightString: 'Copyright (c) 2020 Jina AI Limited. All rights reserved.\nJina is licensed under the Apache License, Version 2.0. See LICENSE for the full license text.'
+          FileType: '.py'
+          Path: 'jina/'
+          IgnorePath: 'testfolder1/a/, testfolder3'
+          # Creates pull request with all changes in file
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
         with:
