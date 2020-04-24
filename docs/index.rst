@@ -44,6 +44,7 @@ Welcome to Jina Documentations!
    :maxdepth: 2
    :caption: Extending Jina
 
+   chapters/extend/mwu
    chapters/extend/executor
    chapters/extend/driver
    chapters/hub/publish-your-pod-image
