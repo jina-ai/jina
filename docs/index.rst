@@ -36,6 +36,7 @@ Welcome to Jina Documentations!
    chapters/cli/main
    api/jina
    chapters/yaml/yaml
+   chapters/simple_exec
    chapters/proto/main
    chapters/envs
 

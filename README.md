@@ -225,7 +225,7 @@ Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#
 
 <tr>
 <td>
-<h4><a href="https://jina-ai.github.io/docs/chapters/flow/README.html">Use Flow API to Compose Your Search Workflow</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/flow/README.html">Use Flow API to Compose Your Search Workflow</a></h4>
 Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely
 </td>
 <td><h3>🐣</h3></td>
@@ -273,7 +273,7 @@ Learn how to increase the performance by using prefetching and sharding
 
 <tr>
 <td>
-<h4><a href="https://jina-ai.github.io/docs/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
 Learn to run Jina on remote instances and distribute your workflow
 </td>
 <td><h3>🕊</h3></td>
@@ -282,7 +282,7 @@ Learn to run Jina on remote instances and distribute your workflow
 
 <tr>
 <td>
-<h4><a href="https://jina-ai.github.io/docs/chapters/extend/executor.html">Extend Jina by Implementing Your Own Executor</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/extend/executor.html">Extend Jina by Implementing Your Own Executor</a></h4>
 Learn how to implement your own ideas into Jina's plugin
 </td>
 <td><h3>🕊</h3></td>
@@ -291,7 +291,7 @@ Learn how to implement your own ideas into Jina's plugin
 
 <tr>
 <td>
-<h4><a href="https://jina-ai.github.io/docs/chapters/hub/main.html">Run Jina Pod via Docker Container</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/hub/main.html">Run Jina Pod via Docker Container</a></h4>
 Learn how Jina solves complex dependencies easily with Docker container
 </td>
 <td><h3>🕊</h3></td>
@@ -310,18 +310,18 @@ Learn to use Jina Hub and share your extension with engineers around the globe
 
 ## Documentation 
 
-<a href="https://jina-ai.github.io/docs/">
+<a href="https://docs.jina.ai/">
 <img align="right" width="350px" src="./.github/jina-docs.png" />
 </a>
 
 The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release event of the master branch. You can find more details about the following topics in our documentation.
 
-- [Jina command line interface arguments explained](https://jina-ai.github.io/docs/chapters/cli/main.html)
-- [Jina Python API interface](https://jina-ai.github.io/docs/api/jina.html)
-- [Jina YAML syntax for executor, driver and flow](https://jina-ai.github.io/docs/chapters/yaml/yaml.html)
-- [Jina Protobuf schema](https://jina-ai.github.io/docs/chapters/proto/main.html)
-- [Environment variables used in Jina](https://jina-ai.github.io/docs/chapters/envs.html)
-- ... [and more](https://jina-ai.github.io/docs/index.html)
+- [Jina command line interface arguments explained](https://docs.jina.ai/chapters/cli/main.html)
+- [Jina Python API interface](https://docs.jina.ai/api/jina.html)
+- [Jina YAML syntax for executor, driver and flow](https://docs.jina.ai/chapters/yaml/yaml.html)
+- [Jina Protobuf schema](https://docs.jina.ai/chapters/proto/main.html)
+- [Environment variables used in Jina](https://docs.jina.ai/chapters/envs.html)
+- ... [and more](https://docs.jina.ai/index.html)
 
 Are you a Doc-star? Then join us! We welcome all kinds of improvements on the documentation. 
 
@@ -356,14 +356,4 @@ We are looking for partnerships to build a Open Governance model (e.g. Technical
 
 Copyright (c) 2020 Jina AI Limited
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Jina is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
