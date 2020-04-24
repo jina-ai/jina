@@ -44,9 +44,9 @@
   <a href="https://blog.jina.ai">Blog</a>
 </p>
 
-Want to build a search system backed by deep learning? Then you come to the right place!
+Want to build a search system backed by deep learning? You come to the right place!
 
-**Jina** is *the* cloud-native neural search framework powered by the state-of-the-art AI and deep learning. It is actively maintained by a full-time, [venture-backed team](https://jina.ai).
+**Jina** is *the* cloud-native neural search framework powered by the state-of-the-art AI and deep learning. It is **long-term supported** by a full-time, [venture-backed team](https://jina.ai).
 
 **🌌 The Universal Search Solution** - Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
 
