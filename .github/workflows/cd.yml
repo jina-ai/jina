@@ -42,7 +42,6 @@ jobs:
           FileType: '.py'
           Path: 'jina/'
       - run: |
-          git fetch --prune --unshallow
           git add -u
           git commit -m "chore: update copyright header"
           git status
