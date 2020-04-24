@@ -7,8 +7,11 @@ assignees: ''
 
 ---
 
+**Environment**
+<!-- Run `jina --version-full` and copy paste the output here -->
+
 **Describe the Feature**
 <!-- A clear and concise description of what the bug is. -->
 
 **Describe your Proposal**
-<!-- code/pull request link -->
+<!-- copy past your code/pull request link -->

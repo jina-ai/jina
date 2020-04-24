@@ -7,14 +7,14 @@ assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Environment**
+<!-- Run `jina --version-full` and copy paste the output here -->
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Describe the Feature**
+<!-- A clear and concise description of what the bug is. -->
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Describe How You Solve it**
+<!-- copy past your code/pull request link -->
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Screenshots**
+<!-- If applicable, add screenshots to help explain your problem. -->
