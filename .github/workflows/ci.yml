@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: VinnyBabuManjaly/copyright-action@v1.0.0
         with:
-          CopyrightString: 'Copyright (c) 2020 Jina AI Limited. All rights reserved.\nJina is licensed under the Apache License, Version 2.0. See LICENSE for the full license text.'
+          CopyrightString: '__copyright__ = "Copyright 2020, Jina AI Limited. All rights reserved."\n__license__="Apache-2.0"\n\n'
           FileType: '.py'
           Path: 'jina/'
       - run: |
