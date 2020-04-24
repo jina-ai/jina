@@ -3,6 +3,6 @@ contact_links:
   - name: "📚 Read Jina Docs"
     url: https://docs.jina.ai/
     about: Find your solution from our documenations
-  - name: Contact the Team
-    url: hello@jina.ai
-    about: Contact us if your question is non-technical
+  - name: "🔎 Search on Existing Issues"
+    url: https://github.com/jina-ai/jina/search?q=&type=Issues
+    about: Someone else may already post this issue and got solved
