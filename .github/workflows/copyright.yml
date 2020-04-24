@@ -30,3 +30,5 @@ jobs:
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           force: true
+      - run: echo "end"
+        if: succeeded() || failed()
