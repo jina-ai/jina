@@ -11,11 +11,8 @@ def add_arg_group(parser, title):
 
 
 def set_base_parser():
-    from .. import __version__, __proto_version__
-    from google.protobuf.internal import api_implementation
-    from ..helper import colored
-    import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
-    from grpc import _grpcio_metadata
+    from .. import __version__
+    from ..helper import colored, get_full_version
     # create the top-level parser
     urls = {
         'Docs': ('📚', 'https://docs.jina.ai'),
@@ -37,28 +34,9 @@ def set_base_parser():
     )
     parser.add_argument('-v', '--version', action='version', version=__version__,
                         help='show Jina version')
+
     parser.add_argument('-vf', '--version-full', action='version',
-                        version='jina: %s\n'
-                                'jina-proto: %s\n'
-                                'jina-vcs-tag: %s\n'
-                                'libzmq: %s\n'
-                                'pyzmq: %s\n'
-                                'numpy: %s\n'
-                                'protobuf: %s\n'
-                                'proto-backend: %s\n'
-                                'grpcio: %s\n'
-                                'ruamel.yaml: %s\n'
-                                %
-                                (__version__,
-                                 __proto_version__,
-                                 os.environ.get('JINA_VCS_VERSION', colored('(unset)', 'yellow')),
-                                 zmq.zmq_version(),
-                                 zmq.__version__,
-                                 numpy.__version__,
-                                 google.protobuf.__version__,
-                                 api_implementation._default_implementation_type,
-                                 getattr(grpc, '__version__', _grpcio_metadata.__version__),
-                                 ruamel.yaml.__version__),
+                        version=get_full_version(),
                         help='show Jina and all dependencies versions')
     return parser
 
@@ -456,7 +434,6 @@ def get_main_parser():
     set_gateway_parser(sp.add_parser('gateway',
                                      description='Start a Jina gateway that receives client remote requests via gRPC',
                                      help='start a gateway', formatter_class=_chf))
-
 
     set_ping_parser(
         sp.add_parser('ping', help='ping a pod and check the network connectivity',
