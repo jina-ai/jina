@@ -12,6 +12,32 @@ on:
 
 
 jobs:
+  update-copyright:
+    if: "!startsWith(github.event.head_commit.message, 'chore')"
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            token: ${{ secrets.JINA_DEV_BOT }}
+        - run: |
+            git fetch --prune --unshallow
+            git config --local user.email "dev-bot@jina.ai"
+            git config --local user.name "Jina Dev Bot"
+        - uses: VinnyBabuManjaly/copyright-action@v1.0.0
+          with:
+            CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
+            FileType: '.py'
+            Path: 'jina/'
+        - run: |
+            git add -u
+            git commit -m "chore: update copyright header"
+            git status
+        - if: failure()
+        - uses: ad-m/github-push-action@master
+          with:
+            github_token: ${{ secrets.JINA_DEV_BOT }}
+              force: true
+
   update-doc:
     if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
@@ -30,25 +56,6 @@ jobs:
       #          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
       #          DOCKERHUB_REPOSITORY: jinaai/jina
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.JINA_DEV_BOT }}
-      - run: |
-          git fetch --prune --unshallow
-          git config --local user.email "dev-bot@jina.ai"
-          git config --local user.name "Jina Dev Bot"
-      - uses: VinnyBabuManjaly/copyright-action@v1.0.0
-        with:
-          CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
-          FileType: '.py'
-          Path: 'jina/'
-      - run: |
-          git add -u
-          git commit -m "chore: update copyright header"
-          git status
-      - uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.JINA_DEV_BOT }}
-          force: true
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
