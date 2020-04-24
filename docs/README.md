@@ -2,6 +2,7 @@
 
 ![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)
 
+Please read the documentations at https://docs.jina.ai 
 
 This repository hosts the documentation of Jina. It gets updated when [jina-ai/jina](https://github.com/jina-ai/jina/) is modified.
 

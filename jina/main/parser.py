@@ -162,7 +162,7 @@ def set_pea_parser(parser=None):
                      help='the yaml config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '
-                          '> one of "_clear", "_route", "_forward", "_logroute", "_merge" '
+                          '> one of "_clear", "_route", "_forward", "_logforward", "_merge" '
                           '> the content of YAML config (must starts with "!")')  # pod(no use) -> pea
     gp0.add_argument('--py-modules', type=str, nargs='*',
                      help='the customized python modules need to be imported before loading the'

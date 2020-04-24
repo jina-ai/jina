@@ -93,9 +93,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo1(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:devel', yaml_path='_logroute', entrypoint='jina pod')
-             .add(name='d2', image='jinaai/jina:devel', yaml_path='_logroute', entrypoint='jina pod')
-             .add(name='d3', image='jinaai/jina:devel', yaml_path='_logroute',
+             .add(name='d1', image='jinaai/jina:devel', yaml_path='_logforward', entrypoint='jina pod')
+             .add(name='d2', image='jinaai/jina:devel', yaml_path='_logforward', entrypoint='jina pod')
+             .add(name='d3', image='jinaai/jina:devel', yaml_path='_logforward',
                   needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2']))
 
@@ -104,9 +104,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo_mixed(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:devel', yaml_path='_logroute', entrypoint='jina pod')
-             .add(name='d2', yaml_path='_logroute')
-             .add(name='d3', image='jinaai/jina:devel', yaml_path='_logroute',
+             .add(name='d1', image='jinaai/jina:devel', yaml_path='_logforward', entrypoint='jina pod')
+             .add(name='d2', yaml_path='_logforward')
+             .add(name='d3', image='jinaai/jina:devel', yaml_path='_logforward',
                   needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2'])
              )

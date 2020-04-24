@@ -36,6 +36,7 @@ Welcome to Jina Documentations!
    chapters/cli/main
    api/jina
    chapters/yaml/yaml
+   chapters/simple_exec
    chapters/proto/main
    chapters/envs
 
@@ -43,6 +44,7 @@ Welcome to Jina Documentations!
    :maxdepth: 2
    :caption: Extending Jina
 
+   chapters/extend/mwu
    chapters/extend/executor
    chapters/extend/driver
    chapters/hub/publish-your-pod-image
