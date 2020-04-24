@@ -12,12 +12,9 @@ jobs:
           CopyrightString: 'Copyright (c) 2020 Jina AI Limited. All rights reserved.\nJina is licensed under the Apache License, Version 2.0. See LICENSE for the full license text.'
           FileType: '.py'
           Path: 'jina/'
-          IgnorePath: 'testfolder1/a/, testfolder3'
-          # Creates pull request with all changes in file
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          cat jina/peapods/zmq.py
+          cat jina/drivers/reduce.py
 
 #  commit-lint:
 #    runs-on: ubuntu-latest
