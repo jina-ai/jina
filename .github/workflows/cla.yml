@@ -21,6 +21,6 @@ jobs:
           path-To-cladocument: 'https://github.com/jina-ai/jina/blob/master/CLA.md'
           # branch should not be protected
           branch: 'master'
-          whitelist: nan-wang,jina-bot,BingHo1013
+          whitelist: hanxiao,nan-wang,jina-bot,BingHo1013
           empty-commit-flag: false
           blockchain-storage-flag: false

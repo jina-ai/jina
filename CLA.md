@@ -1,7 +1,7 @@
 # Contributor License Agreement
 
 Thank you for your interest in contributing to software projects 
-managed by Jina AI Limited ("We" or "Us" or "JINA"). In order to 
+managed by Jina AI Limited ("JINA", "We" or "Us"). In order to 
 clarify the intellectual property license granted with Contributions 
 from any person or entity, JINA
 must have a Contributor License Agreement ("CLA") on file that has
