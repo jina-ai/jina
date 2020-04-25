@@ -14,9 +14,9 @@ jobs:
           repository: hanxiao/auto-close-issues
           ref: master
           token: ${{ secrets.JINA_DEV_BOT }}   # stored in GitHub secrets
-          path: .github/actions/my-action
+          path: ./.github/actions/my-action
       - name: Automatically close issues that don't follow the issue template
-        uses: .github/actions/my-action
+        uses: ./.github/actions/my-action
         with:
           github-token: ${{ secrets.JINA_DEV_BOT }}
           issue-close-message: "@${issue.user.login}: hello! :wave:\n\nThis issue is being automatically closed because it does not follow the issue template." # optional property
