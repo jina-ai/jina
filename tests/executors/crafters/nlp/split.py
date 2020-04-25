@@ -1,6 +1,6 @@
 import unittest
 from tests import JinaTestCase
-from jina.executors.crafters.nlp.split import Sentencizer
+from jina.executors.crafters.nlp.split import Sentencizer, JiebaCrafter
 
 
 class MyTestCase(JinaTestCase):
@@ -16,6 +16,11 @@ class MyTestCase(JinaTestCase):
         crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
         self.assertEqual(len(crafted_chunk_list), 2)
 
+    def test_jieba_crafter(self):
+        jieba_crafter = JiebaCrafter(mode='accurate')
+        raw_bytes = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf-8')
+        crafted_chunk_list = jieba_crafter.craft(raw_bytes, 0)
+        self.assertEqual(len(crafted_chunk_list), 14)
 
 if __name__ == '__main__':
     unittest.main()
