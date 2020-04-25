@@ -64,6 +64,7 @@ class JiebaCrafter(BaseSegmenter):
         if mode not in ('accurate', 'all', 'search'):
             raise ValueError('you must choose one of modes to cut the text: accurate, all, search.')
         self.mode = mode
+
     def craft(self, raw_bytes: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
         Split the chinese text into words
@@ -75,10 +76,8 @@ class JiebaCrafter(BaseSegmenter):
         text = raw_bytes.decode('utf-8')
         if self.mode == 'search':
             words = jieba.cut_for_search(text)
-
         elif self.mode == 'all':
             words = jieba.cut(text, cut_all=True)
-
         else:
             words = jieba.cut(text)
 
