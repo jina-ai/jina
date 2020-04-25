@@ -27,10 +27,10 @@ class BaseRanker(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.col_score = 3
-        self.col_query_chunk_id = 2
-        self.col_chunk_id = 1
         self.col_doc_id = 0
+        self.col_chunk_id = 1
+        self.col_query_chunk_id = 2
+        self.col_score = 3
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
         """Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
@@ -39,10 +39,10 @@ class BaseRanker(BaseExecutor):
 
         :param match_idx: a [N x 4] numpy ``ndarray``, column-wise:
 
-                - ``match_idx[:,0]``: ``doc_id`` of the matched chunks, integer
-                - ``match_idx[:,1]``: ``chunk_id`` of the matched chunks, integer
-                - ``match_idx[:,2]``: ``chunk_id`` of the query chunks, integer
-                - ``match_idx[:,3]``: distance/metric/score between the query and matched chunks, float
+                - ``match_idx[:, 0]``: ``doc_id`` of the matched chunks, integer
+                - ``match_idx[:, 1]``: ``chunk_id`` of the matched chunks, integer
+                - ``match_idx[:, 2]``: ``chunk_id`` of the query chunks, integer
+                - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
         :param query_chunk_meta: the meta information of the query chunks, where the key is query chunks' ``chunk_id``,
             the value is extracted by the ``required_keys``.
         :param match_chunk_meta: the meta information of the matched chunks, where the key is matched chunks'
@@ -62,11 +62,15 @@ class BaseRanker(BaseExecutor):
         Group the ``match_idx`` by ``doc_id``
         :return: an iterator over the groups
         """
-        # sort by doc_id
-        _sorted_m = match_idx[match_idx[:, self.col_doc_id].argsort()]
-        _, _doc_counts = np.unique(_sorted_m[:, self.col_doc_id], return_counts=True)
-        # group by doc_id
-        return [g for g in np.split(_sorted_m, np.cumsum(_doc_counts)) if g.shape[0] > 0]
+        return self._group_by(match_idx, self.col_doc_id)
+
+    @staticmethod
+    def _group_by(match_idx, col):
+        # sort by ``col``
+        _sorted_m = match_idx[match_idx[:, col].argsort()]
+        _, _doc_counts = np.unique(_sorted_m[:, col], return_counts=True)
+        # group by ``col``
+        return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         raise NotImplementedError
@@ -74,7 +78,8 @@ class BaseRanker(BaseExecutor):
     @staticmethod
     def sort_doc_by_score(r):
         """
-        Sort the (``doc_id``, ``score``) tuple by the ``score``
+        Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
+        :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
         """
         r = np.array(r, dtype=np.float64)
         r = r[r[:, -1].argsort()[::-1]]
@@ -94,10 +99,10 @@ class MaxRanker(BaseRanker):
         return self.get_doc_id(match_idx), match_idx[:, self.col_score].max()
 
 
-class MinRanker(MaxRanker):
+class MinRanker(BaseRanker):
     """
     :class:`MinRanker` calculates the score of the matched doc form the matched chunks. For each matched doc, the score
-        is the maximal score from all the matched chunks belonging to this doc.
+        is the minimal score from all the matched chunks belonging to this doc.
     """
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
