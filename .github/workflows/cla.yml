@@ -12,12 +12,12 @@ jobs:
       - name: "CLA Assistant"
         if: (github.event.comment.body == 'recheckcla' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request'
         # Alpha Release
-        uses: cla-assistant/github-action@v1.3.0-alpha
+        uses: hanxiao/github-action@v1.3.0-alpha
         env:
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
         with:
-          path-to-signatures: 'signatures/version1/cla.json'
-          path-To-cladocument: 'https://github.com/ibakshay/test-action-workflow/blob/master/cla.md'
+          path-to-signatures: '.github/signatures/v1/cla.json'
+          path-To-cladocument: 'https://github.com/jina-ai/jina/blob/master/CLA.md'
           # branch should not be protected
           branch: 'master'
           whitelist: nan-wang,jina-bot,BingHo1013
