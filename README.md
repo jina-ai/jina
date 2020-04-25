@@ -249,7 +249,7 @@ Learn how to use Jina to extract feature vector using any deep learning represen
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/urbandict-search">Build a BERT-based NLP Semantic Search System in 3 minutes</a></h4>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a BERT-based NLP Semantic Search System in 3 minutes</a></h4>
 Learn how to use Jina and DistilBert to build a slang search system
 </td>
 <td><h3>🐣</h3></td>
