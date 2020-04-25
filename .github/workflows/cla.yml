@@ -14,7 +14,7 @@ jobs:
         # Alpha Release
         uses: cla-assistant/github-action@v1.3.0-alpha
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
         with:
           path-to-signatures: 'signatures/version1/cla.json'
           path-To-cladocument: 'https://github.com/ibakshay/test-action-workflow/blob/master/cla.md'
