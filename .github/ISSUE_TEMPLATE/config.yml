@@ -3,6 +3,9 @@ contact_links:
   - name: "📚 Read Jina Docs"
     url: https://docs.jina.ai/
     about: Find your solution from our documenations
+  - name: "🐣 Learn by Examples"
+    url: https://github.com/jina-ai/examples
+    about: Learn from real-world examples
   - name: "🔎 Search on Existing Issues"
     url: https://github.com/jina-ai/jina/search?q=&type=Issues
     about: Someone else may already post this issue and got solved
