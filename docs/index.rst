@@ -36,15 +36,17 @@ Welcome to Jina Documentations!
    chapters/cli/main
    api/jina
    chapters/yaml/yaml
+   chapters/simple_exec
    chapters/proto/main
    chapters/envs
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Extending Jina
 
+   chapters/extend/mwu
    chapters/extend/executor
-   chapters/extend/executor-encoder
+   chapters/extend/driver
    chapters/hub/publish-your-pod-image
 
 .. toctree::
@@ -65,7 +67,7 @@ Welcome to Jina Documentations!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Frequently Asked Questions
+   :caption: Debugging and FAQ
 
    chapters/troubleshooting
    chapters/faq/user

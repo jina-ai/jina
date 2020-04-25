@@ -1,7 +1,11 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import os
+import re
+
 import numpy as np
 
-import re
 from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
 

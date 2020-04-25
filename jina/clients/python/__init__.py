@@ -1,6 +1,20 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
+from .grpc import GrpcClient
+from .helper import ProgressBar
 from typing import Iterator, Callable, Union
 
 from .grpc import GrpcClient
+from .helper import ProgressBar
+from ...excepts import BadClient
+from ...logging.profile import TimeContext
+from ...proto import jina_pb2
+from typing import Iterator, Callable, Union
+
+from .grpc import GrpcClient
+from .grpc import GrpcClient
+from .helper import ProgressBar
 from .helper import ProgressBar
 from ...excepts import BadClient
 from ...logging.profile import TimeContext
@@ -40,6 +54,8 @@ class PyClient(GrpcClient):
             for resp in self._stub.Call(req_iter):
                 if callback:
                     try:
+                        if self.args.callback_on_body:
+                            resp = getattr(resp, resp.WhichOneof('body'))
                         callback(resp)
                     except Exception as ex:
                         raise BadClient('error in client\'s callback: %s' % ex)

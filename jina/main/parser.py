@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import argparse
 
 from ..helper import colored
@@ -8,11 +11,8 @@ def add_arg_group(parser, title):
 
 
 def set_base_parser():
-    from .. import __version__, __proto_version__
-    from google.protobuf.internal import api_implementation
-    from ..helper import colored
-    import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
-    from grpc import _grpcio_metadata
+    from .. import __version__
+    from ..helper import colored, get_full_version
     # create the top-level parser
     urls = {
         'Docs': ('📚', 'https://docs.jina.ai'),
@@ -34,28 +34,9 @@ def set_base_parser():
     )
     parser.add_argument('-v', '--version', action='version', version=__version__,
                         help='show Jina version')
+
     parser.add_argument('-vf', '--version-full', action='version',
-                        version='jina: %s\n'
-                                'jina-proto: %s\n'
-                                'jina-vcs-tag: %s\n'
-                                'libzmq: %s\n'
-                                'pyzmq: %s\n'
-                                'numpy: %s\n'
-                                'protobuf: %s\n'
-                                'proto-backend: %s\n'
-                                'grpcio: %s\n'
-                                'ruamel.yaml: %s\n'
-                                %
-                                (__version__,
-                                 __proto_version__,
-                                 os.environ.get('JINA_VCS_VERSION', colored('(unset)', 'yellow')),
-                                 zmq.zmq_version(),
-                                 zmq.__version__,
-                                 numpy.__version__,
-                                 google.protobuf.__version__,
-                                 api_implementation._default_implementation_type,
-                                 getattr(grpc, '__version__', _grpcio_metadata.__version__),
-                                 ruamel.yaml.__version__),
+                        version=get_full_version(),
                         help='show Jina and all dependencies versions')
     return parser
 
@@ -162,7 +143,7 @@ def set_pea_parser(parser=None):
                      help='the yaml config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '
-                          '> one of "_clear", "_route", "_forward", "_logroute", "_merge" '
+                          '> one of "_clear", "_route", "_forward", "_logforward", "_merge" '
                           '> the content of YAML config (must starts with "!")')  # pod(no use) -> pea
     gp0.add_argument('--py-modules', type=str, nargs='*',
                      help='the customized python modules need to be imported before loading the'
@@ -411,6 +392,8 @@ def set_client_cli_parser(parser=None):
                      help='top_k results returned in the search mode')
     gp1.add_argument('--in-proto', action='store_true', default=False,
                      help='if the input data is already in protobuf Document format, or in raw bytes')
+    gp1.add_argument('--callback-on-body', action='store_true', default=False,
+                     help='callback function works directly on the request body')
     gp1.add_argument('--first-request-id', type=int,
                      default=0,
                      help='the starting number of request id, the consequent request_id will increment by one')
@@ -419,6 +402,7 @@ def set_client_cli_parser(parser=None):
                      help='the starting number of doc_id, the consequent doc_id will increment by one')
     _gp.add_argument('--random-doc-id', action='store_true', default=False,
                      help='randomize the doc_id, if this is set then `first_request_id` is ignored')
+
     gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
     return parser
@@ -450,14 +434,6 @@ def get_main_parser():
     set_gateway_parser(sp.add_parser('gateway',
                                      description='Start a Jina gateway that receives client remote requests via gRPC',
                                      help='start a gateway', formatter_class=_chf))
-
-    # set_grpc_service_parser(sp.add_parser('grpc', help='start a general purpose grpc service', formatter_class=adf))
-
-    # # check
-    # pp = sp.add_parser('check', help='check jina config, settings, imports, network etc', formatter_class=_chf)
-    # spp = pp.add_subparsers(dest='check',
-    #                         description='use "%(prog)-8s check [sub-command] --help" '
-    #                                     'to get detailed information about each sub-command', required=True)
 
     set_ping_parser(
         sp.add_parser('ping', help='ping a pod and check the network connectivity',

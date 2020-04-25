@@ -31,8 +31,8 @@ f = (Flow(logserver=True)
         .add(...)
         .add(...))
 
-with f.build() as fl:
-    fl.index(...)
+with f:
+    f.index(...)
 ```
 
 </td>
@@ -54,8 +54,8 @@ pods:
 ```python
 f = Flow.load_config('myflow.yml')
 
-with f.build() as fl:
-    fl.index(...)
+with f:
+    f.index(...)
 ```
 
 </td>
@@ -83,7 +83,7 @@ Either way, if you see the following logs show up in the console, then your log 
 
 ## Connect the Dashboard to Your Log Server
 
-Go to: [https://jina-ai.github.io/dashboard/](https://jina-ai.github.io/dashboard/)
+Go to: [https://dashboard.jina.ai/](https://dashboard.jina.ai/)
 
 Click on the globe icon on the top-left corner to connect to the log server.
 

@@ -1,8 +1,11 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import ctypes
 import random
 
 from . import BaseExecutableDriver
-from .helper import array2blob, pb_obj2dict, blob2array
+from .helper import array2pb, pb_obj2dict, pb2array
 
 
 class BaseCraftDriver(BaseExecutableDriver):
@@ -28,12 +31,12 @@ class ChunkCraftDriver(BaseCraftDriver):
             for c in d.chunks:
                 _args_dict = pb_obj2dict(c, self.exec.required_keys)
                 if 'blob' in self.exec.required_keys:
-                    _args_dict['blob'] = blob2array(c.blob)
+                    _args_dict['blob'] = pb2array(c.blob)
                 ret = self.exec_fn(**_args_dict)
                 if isinstance(ret, dict):
                     for k, v in ret.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2blob(v))
+                            c.blob.CopyFrom(array2pb(v))
                         else:
                             setattr(c, k, v)
                     continue
@@ -45,7 +48,7 @@ class ChunkCraftDriver(BaseCraftDriver):
                     c = d.chunks.add()
                     for k, v in c_dict.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2blob(v))
+                            c.blob.CopyFrom(array2pb(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
                                                 f'is it intentional? chunk_id will be override by {self.__class__} '
@@ -80,10 +83,12 @@ class SegmentDriver(BaseCraftDriver):
         no need to self-assign it in your segmenter
     """
 
-    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
+    def __init__(
+            self, first_chunk_id: int = 0, random_chunk_id: bool = True, save_raw_bytes: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.first_chunk_id = first_chunk_id
         self.random_chunk_id = random_chunk_id
+        self.save_raw_bytes = save_raw_bytes
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
@@ -93,7 +98,7 @@ class SegmentDriver(BaseCraftDriver):
                     c = d.chunks.add()
                     for k, v in r.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2blob(v))
+                            c.blob.CopyFrom(array2pb(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
                                                 f'is it intentional? chunk_id will be override by {self.__class__} '
@@ -106,5 +111,7 @@ class SegmentDriver(BaseCraftDriver):
                     c.doc_id = d.doc_id
                     self.first_chunk_id += 1
                 d.length = len(ret)
+                if self.save_raw_bytes:
+                    d.meta_info = d.raw_bytes
             else:
                 self.logger.warning('doc %d gives no chunk' % d.doc_id)

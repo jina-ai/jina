@@ -2,7 +2,17 @@ import os
 import time
 
 import numpy as np
-from jina.drivers.helper import array2blob
+from jina.drivers.helper import array2pb
+from jina.enums import SchedulerType
+from jina.executors.crafters import BaseDocCrafter
+from jina.flow import Flow
+from jina.proto import jina_pb2
+from tests import JinaTestCase
+import os
+import time
+
+import numpy as np
+from jina.drivers.helper import array2pb
 from jina.enums import SchedulerType
 from jina.executors.crafters import BaseDocCrafter
 from jina.flow import Flow
@@ -16,7 +26,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
             c = d.chunks.add()
-            c.embedding.CopyFrom(array2blob(np.random.random([embed_dim])))
+            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
             c.chunk_id = c_id
             c.doc_id = j
             c_id += 1
@@ -43,7 +53,7 @@ class MyTestCase(JinaTestCase):
         f = Flow(runtime='process').add(
             name='sw',
             yaml_path='SlowWorker',
-            replicas=10).build()
+            replicas=10)
         with f:
             f.index(raw_bytes=random_docs(100), in_proto=True, batch_size=10)
 
@@ -51,6 +61,6 @@ class MyTestCase(JinaTestCase):
         f = Flow(runtime='process').add(
             name='sw',
             yaml_path='SlowWorker',
-            replicas=10, scheduling=SchedulerType.ROUND_ROBIN).build()
+            replicas=10, scheduling=SchedulerType.ROUND_ROBIN)
         with f:
             f.index(raw_bytes=random_docs(100), in_proto=True, batch_size=10)

@@ -11,6 +11,19 @@ from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto import jina_pb2
 from tests import JinaTestCase
+import unittest
+
+import requests
+from jina import JINA_GLOBAL
+from jina.enums import FlowOptimizeLevel
+from jina.flow import Flow
+from jina.main.checker import NetworkChecker
+from jina.main.parser import set_pea_parser, set_ping_parser
+from jina.main.parser import set_pod_parser
+from jina.peapods.pea import BasePea
+from jina.peapods.pod import BasePod
+from jina.proto import jina_pb2
+from tests import JinaTestCase
 
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
@@ -57,9 +70,9 @@ class MyTestCase(JinaTestCase):
              .add(name='r9', yaml_path='_forward', needs='r5')
              .add(name='r10', yaml_path='_merge', needs=['r9', 'r8']))
 
-        with f.build() as fl:
-            fl.dry_run()
-        fl.save_config('tmp.yml')
+        with f:
+            f.dry_run()
+        f.save_config('tmp.yml')
         Flow.load_config('tmp.yml')
 
         with Flow.load_config('tmp.yml') as fl:
@@ -77,11 +90,11 @@ class MyTestCase(JinaTestCase):
         f = (Flow()
              .add(yaml_path='_forward'))
 
-        with f.build() as fl:
-            fl.index(raw_bytes=bytes_gen)
+        with f:
+            f.index(raw_bytes=bytes_gen)
 
-        with f.build() as fl:
-            fl.index(raw_bytes=bytes_fn)
+        with f:
+            f.index(raw_bytes=bytes_fn)
 
         with f:
             f.index(raw_bytes=bytes_fn)
@@ -90,8 +103,8 @@ class MyTestCase(JinaTestCase):
     def test_load_flow_from_yaml(self):
         with open('yaml/test-flow.yml') as fp:
             a = Flow.load_config(fp)
-            with open('yaml/swarm-out.yml', 'w') as fp, a.build() as fl:
-                fl.to_swarm_yaml(fp)
+            with open('yaml/swarm-out.yml', 'w') as fp, a:
+                a.to_swarm_yaml(fp)
             self.add_tmpfile('yaml/swarm-out.yml')
 
     def test_flow_identical(self):
@@ -116,8 +129,8 @@ class MyTestCase(JinaTestCase):
         f = (Flow()
              .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
 
-        with f.build() as fl:
-            fl.dry_run()
+        with f:
+            f.dry_run()
 
     def test_pod_status(self):
         args = set_pod_parser().parse_args(['--replicas', '3'])
@@ -130,8 +143,8 @@ class MyTestCase(JinaTestCase):
         f = (Flow()
              .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
 
-        with f.build() as fl:
-            fl.index(raw_bytes=random_docs(10), in_proto=True)
+        with f:
+            f.index(raw_bytes=random_docs(10), in_proto=True)
 
     def test_flow_yaml_dump(self):
         f = Flow(logserver_config='yaml/test-server-config.yml',

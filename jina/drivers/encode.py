@@ -1,5 +1,8 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from . import BaseExecutableDriver
-from .helper import extract_chunks, array2blob
+from .helper import extract_chunks, array2pb
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
@@ -30,7 +33,7 @@ class EncodeDriver(BaseEncodeDriver):
                         'mismatched %d chunks and a %s shape embedding, '
                         'the first dimension must be the same' % (len(chunk_pts), embeds.shape))
                 for c, emb in zip(chunk_pts, embeds):
-                    c.embedding.CopyFrom(array2blob(emb))
+                    c.embedding.CopyFrom(array2pb(emb))
             except Exception as ex:
                 self.logger.error(ex, exc_info=True)
                 self.logger.warning('encoder driver throws an exception, '

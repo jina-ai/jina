@@ -1,13 +1,19 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import numbers
-import numpy as np
-from . import ImageChunkCrafter
 from typing import Union, Tuple, Dict
+
+import numpy as np
+
+from . import ImageChunkCrafter
 
 
 class ImageResizer(ImageChunkCrafter):
     """
     :class:`ImageResizer` resize the image to the given size.
     """
+
     def __init__(self,
                  target_size: Union[Tuple[int], int],
                  how='BILINEAR',
@@ -36,8 +42,8 @@ class ImageResizer(ImageChunkCrafter):
         :param doc_id: the doc id
         :return: a chunk dict with the cropped image
         """
-        raw_img = self._load_image(blob)
-        processed_img = self._resize_short(raw_img, self.output_dim, self.how)
+        raw_img = self.load_image(blob)
+        _img = self._resize_short(raw_img, self.output_dim, self.how)
+        img = self.restore_channel_axis(np.asarray(_img))
         return dict(
-            doc_id=doc_id, offset=0, weight=1., blob=np.asarray(processed_img).astype('float32'))
-
+            doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))

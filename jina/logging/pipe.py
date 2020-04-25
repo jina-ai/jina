@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import os
 import re
 import sys
@@ -7,6 +10,7 @@ from collections import defaultdict
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
+
 
 class PipeLogger:
     def __init__(self, args: 'argparse.Namespace'):

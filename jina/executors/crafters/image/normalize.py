@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import Tuple, Dict, Union
 
 import numpy as np
@@ -44,9 +47,10 @@ class ImageNormalizer(ImageChunkCrafter):
         :param doc_id: the doc id
         :return: a chunk dict with the normalized image
         """
-        raw_img = self._load_image(blob)
-        processed_img = self._normalize(raw_img)
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=processed_img)
+        raw_img = self.load_image(blob)
+        _img = self._normalize(raw_img)
+        img = self.restore_channel_axis(_img)
+        return dict(doc_id=doc_id, offset=0, weight=1., blob=img)
 
     def _normalize(self, img):
         img = self._resize_short(img, target_size=self.resize_dim)
@@ -54,6 +58,4 @@ class ImageNormalizer(ImageChunkCrafter):
         img = np.array(img).astype('float32') / 255
         img -= self.img_mean
         img /= self.img_std
-        if self.channel_axis != -1:
-            img = np.moveaxis(img, -1, self.channel_axis)
         return img

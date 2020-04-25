@@ -4,7 +4,7 @@ import time
 import unittest
 
 import numpy as np
-from jina.drivers.helper import array2blob
+from jina.drivers.helper import array2pb
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from jina.flow import Flow
@@ -20,7 +20,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
             c = d.chunks.add()
-            c.embedding.CopyFrom(array2blob(np.random.random([embed_dim])))
+            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
             c.chunk_id = c_id
             c.doc_id = j
             c_id += 1
@@ -96,8 +96,8 @@ class MyTestCase(JinaTestCase):
                        replicas=3, separated_workspace=True,
                        host='localhost', port_grpc=f_args.port_grpc)
 
-        with f.build(copy_flow=True) as fl:
-            fl.index(raw_bytes=random_docs(1000), in_proto=True)
+        with f:
+            f.index(raw_bytes=random_docs(1000), in_proto=True)
 
         time.sleep(3)
         for j in range(3):
@@ -121,8 +121,8 @@ class MyTestCase(JinaTestCase):
                   replicas=3, separated_workspace=True,
                   host='192.168.31.76', port_grpc=44444))
 
-        with f.build(copy_flow=True) as fl:
-            fl.index(raw_bytes=random_docs(1000), in_proto=True)
+        with f:
+            f.index(raw_bytes=random_docs(1000), in_proto=True)
 
 
 if __name__ == '__main__':

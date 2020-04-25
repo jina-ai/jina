@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import os
 import random
 import re
@@ -480,3 +483,34 @@ def get_non_defaults_args(args, parser, taboo=(None,)) -> Dict:
         if k in _defaults and k not in taboo and _defaults[k] != v:
             non_defaults[k] = v
     return non_defaults
+
+
+def get_full_version():
+    from . import __version__, __proto_version__, __jina_env__
+    from google.protobuf.internal import api_implementation
+    import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
+    from grpc import _grpcio_metadata
+    import platform
+    from .logging import default_logger
+    try:
+        info = {'jina': __version__,
+                'jina-proto': __proto_version__,
+                'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', colored('(unset)', 'yellow')),
+                'libzmq': zmq.zmq_version(),
+                'pyzmq': numpy.__version__,
+                'protobuf': google.protobuf.__version__,
+                'proto-backend': api_implementation._default_implementation_type,
+                'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
+                'ruamel.yaml': ruamel.yaml.__version__,
+                'python': platform.python_version(),
+                'platform': platform.system(),
+                'platform-release': platform.release(),
+                'platform-version': platform.version(),
+                'architecture': platform.machine(),
+                'processor': platform.processor()}
+        version_info = '\n'.join(f'{k:30s}{v}' for k, v in info.items())
+        env_info = '\n'.join('%-30s%s' % (k, os.environ.get(k, colored('(unset)', 'yellow'))) for k in
+                             __jina_env__)
+        return version_info + '\n' + env_info
+    except Exception as e:
+        default_logger.exception(e)

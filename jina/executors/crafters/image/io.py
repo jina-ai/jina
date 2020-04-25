@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import Dict, List
 
 import numpy as np
@@ -9,6 +12,7 @@ class ImageReader(BaseSegmenter):
     """
     :class:`ImageReader` loads the image from the given file path and save the `ndarray` of the image in the Chunk.
     """
+
     def __init__(self, channel_axis: int = -1, *args, **kwargs):
         """
         :class:`ImageReader` load an image file and craft into image matrix.

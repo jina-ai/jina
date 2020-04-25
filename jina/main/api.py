@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 def pod(args):
     """Start a Pod"""
     from ..peapods import Pod
@@ -57,7 +60,7 @@ def flow(args):
         from threading import Event
         f = Flow.load_config(args.yaml_path)
         f._update_args(args)
-        with f.build():
+        with f:
 
             try:
                 Event().wait()

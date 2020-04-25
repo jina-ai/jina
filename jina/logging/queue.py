@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import atexit
 import multiprocessing
 
@@ -11,14 +14,18 @@ def clear_queue():
 
     This is only used when server-side event (SSE) logging is turned on.
     """
-    while not __sse_queue__.empty():
-        __sse_queue__.get_nowait()
+    try:
+        while not __sse_queue__.empty():
+            __sse_queue__.get_nowait()
 
-    while not __profile_queue__.empty():
-        __profile_queue__.get_nowait()
+        while not __profile_queue__.empty():
+            __profile_queue__.get_nowait()
 
-    while not __log_queue__.empty():
-        __log_queue__.get_nowait()
+        while not __log_queue__.empty():
+            __log_queue__.get_nowait()
+    except:
+        # let's ignore this for a peaceful ending
+        pass
 
 
 atexit.register(clear_queue)  #: clear the log queue when exit

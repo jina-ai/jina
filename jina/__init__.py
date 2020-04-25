@@ -1,6 +1,9 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.0.8'
+__version__ = '0.0.9'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -25,6 +28,9 @@ from datetime import datetime
 import random
 from types import SimpleNamespace
 import os
+
+# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
+os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 __uptime__ = datetime.now().strftime('%Y%m%d%H%M%S')
 
