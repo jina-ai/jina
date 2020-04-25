@@ -7,7 +7,7 @@ on:
     types: [opened,closed,synchronize]
 
 jobs:
-  CLAssistant:
+  cla-check:
     runs-on: ubuntu-latest
     steps:
       - name: "CLA Assistant"
