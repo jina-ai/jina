@@ -9,7 +9,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Automatically close issues that don't follow the issue template
-        uses: lucasbento/auto-close-issues@master
+        uses: lucasbento/auto-close-issues@v1.0.2
         with:
           github-token: ${{ secrets.JINA_DEV_BOT }}
           issue-close-message: "@${issue.user.login}: hello! :wave:This issue is being automatically closed because it does not follow the issue template." # optional property
