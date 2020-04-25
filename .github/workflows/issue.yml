@@ -3,14 +3,12 @@ on:
     types: [opened, edited]
 
 jobs:
-  auto_close_issues:
+  autoclose:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Automatically close issues that don't follow the issue template
-        uses: hanxiao/auto-close-issues@master
-        with:
-          github-token: ${{ secrets.JINA_DEV_BOT }}
-          issue-close-message: "@${issue.user.login}: hello! :wave:\n\nThis issue is being automatically closed because it does not follow the issue template." # optional property
-          closed-issues-label: "🙁 Not following issue template" # optional property
+    - name: Autoclose issues that did not follow issue template
+      uses: roots/issue-closer@v1.1
+      with:
+        repo-token: ${{ secrets.JINA_DEV_BOT }}
+        issue-close-message: "@${issue.user.login} this issue was automatically closed because it did not follow the issue template"
+        issue-pattern: ".*guidelines for Contributing.*"
