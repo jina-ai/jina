@@ -45,21 +45,13 @@ class TfIdfRanker(BaseRanker):
             In both `query_chunk_meta` and `match_chunk_meta`, ONLY the fields from the ``required_keys`` are kept.
 
         """
-        _sorted_m = match_idx[match_idx[:, self.col_doc_id].argsort()]
-        _, _doc_counts = np.unique(_sorted_m[:, self.col_doc_id], return_counts=True)
-        _group_by_doc_id = np.split(_sorted_m, np.cumsum(_doc_counts))
+        _groups = self.group_by_doc_id(match_idx)
         r = []
         _q_idf = self.get_idf(match_idx)
-        for _g in _group_by_doc_id:
-            if _g.shape[0] == 0:
-                continue
-            _q_tf = self.get_tf(_g, match_chunk_meta)
-            _doc_id = _g[0, 0]
-            _doc_score = self._get_score(_g, _q_tf, _q_idf)
+        for _g in _groups:
+            _doc_id, _doc_score = self._get_score(_g, query_chunk_meta, match_chunk_meta, _q_idf)
             r.append((_doc_id, _doc_score))
-        r = np.array(r, dtype=np.float64)
-        r = r[r[:, -1].argsort()[::-1]]
-        return r
+        return self.sort_doc_by_score(r)
 
     def get_idf(self, match_idx):
         """Get the idf dictionary for query chunks that matched a given doc.
@@ -130,7 +122,7 @@ class TfIdfRanker(BaseRanker):
         c_id_list = _sorted_m[row_id, self.col_chunk_id]
         return q_tf_list, q_id_list, c_id_list
 
-    def _get_score(self, match_idx, tf, idf):
+    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, idf, *args, **kwargs):
         """Get the doc score based on the weighted sum of matching scores. The weights are calculated from the tf-idf of
              the query chunks.
 
@@ -141,13 +133,14 @@ class TfIdfRanker(BaseRanker):
 
         :return: a scalar value of the weighted score.
         """
+        tf = self.get_tf(match_idx, match_chunk_meta)
         _weights = match_idx[:, self.col_score]
         _q_tfidf = np.vectorize(tf.get)(match_idx[:, self.col_query_chunk_id], 0) * \
                 np.vectorize(idf.get)(match_idx[:, self.col_query_chunk_id], 0)
         _sum = np.sum(_q_tfidf)
-        if _sum == 0:
-            return 0
-        return np.sum(_weights * _q_tfidf) * 1.0 / _sum
+        _doc_id = self.get_doc_id(match_idx)
+        _score = 0. if _sum == 0 else np.sum(_weights * _q_tfidf) * 1.0 / _sum
+        return _doc_id, _score
 
 
 class BM25Ranker(TfIdfRanker):
