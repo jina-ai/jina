@@ -20,7 +20,13 @@ class BaseRanker(BaseExecutor):
 
     """
 
-    required_keys = {}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
+    required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.col_score = 3
+        self.col_query_chunk_id = 2
+        self.col_chunk_id = 1
+        self.col_doc_id = 0
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
         """Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
@@ -41,3 +47,38 @@ class BaseRanker(BaseExecutor):
                 the second column is the score/distance/metric between the matched doc and the query doc (float).
         """
         raise NotImplementedError
+
+
+class MaxRanker(BaseRanker):
+    """
+    :class:`MaxRanker` calculates the score of the matched doc form the matched chunks. For each matched doc, the score
+        is the maximal score from all the matched chunks belonging to this doc.
+    """
+    def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
+        # sort by doc_id
+        _sorted_m = match_idx[match_idx[:, self.col_doc_id].argsort()]
+        _, _doc_counts = np.unique(_sorted_m[:, self.col_doc_id], return_counts=True)
+        # group by doc_id
+        _group_by_doc_id = np.split(_sorted_m, np.cumsum(_doc_counts))
+        r = []
+        for _g in _group_by_doc_id:
+            if _g.shape[0] == 0:
+                continue
+            _doc_id = _g[0, 0]
+            _doc_score = self._get_score(_g[:, self.col_score])
+            r.append((_doc_id, _doc_score))
+        r = np.array(r, dtype=np.float64)
+        r = r[r[:, -1].argsort()[::-1]]
+        return r
+
+    def _get_score(self, g):
+        return g.max()
+
+
+class MinRanker(MaxRanker):
+    """
+    :class:`MinRanker` calculates the score of the matched doc form the matched chunks. For each matched doc, the score
+        is the maximal score from all the matched chunks belonging to this doc.
+    """
+    def _get_score(self, g):
+        return g.min()

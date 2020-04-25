@@ -23,10 +23,6 @@ class TfIdfRanker(BaseRanker):
         """
         super().__init__(*args, **kwargs)
         self.threshold = threshold
-        self.col_score = 3
-        self.col_query_chunk_id = 2
-        self.col_chunk_id = 1
-        self.col_doc_id = 0
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
         """
@@ -54,9 +50,9 @@ class TfIdfRanker(BaseRanker):
             if _g.shape[0] == 0:
                 continue
             _q_tf = self.get_tf(_g, match_chunk_meta)
-            _q_id = _g[0, 0]
-            _q_score = self._get_score(_g, _q_tf, _q_idf)
-            r.append((_q_id, _q_score))
+            _doc_id = _g[0, 0]
+            _doc_score = self._get_score(_g, _q_tf, _q_idf)
+            r.append((_doc_id, _doc_score))
         r = np.array(r, dtype=np.float64)
         r = r[r[:, -1].argsort()[::-1]]
         return r
