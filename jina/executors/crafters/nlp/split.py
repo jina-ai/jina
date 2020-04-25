@@ -50,9 +50,9 @@ class Sentencizer(BaseSegmenter):
                 dict(doc_id=doc_id, text=s, offset=idx, weight=1.0, length=len(sents)))
         return results
 
-class JiebaCrafter(BaseSegmenter):
+class JiebaSegmenter(BaseSegmenter):
     """
-    :class:`JiebaCrafter` split the chinese text on the doc-level into words on the chunk-level with `jieba`.
+    :class:`JiebaSegmenter` split the chinese text on the doc-level into words on the chunk-level with `jieba`.
     """
 
     def __init__(self, mode: str='accurate', *args, **kwargs):
