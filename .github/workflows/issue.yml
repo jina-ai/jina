@@ -11,6 +11,6 @@ jobs:
       - name: Automatically close issues that don't follow the issue template
         uses: lucasbento/auto-close-issues@v1.0.2
         with:
-          github-token: ${{ secrets.JINA_DEV_BOT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-close-message: "@${issue.user.login}: hello! :wave:This issue is being automatically closed because it does not follow the issue template." # optional property
           closed-issues-label: "🙁 Not following issue template" # optional property
