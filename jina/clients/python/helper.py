@@ -58,6 +58,7 @@ class ProgressBar:
             sys.stdout.write('\n')
         sys.stdout.flush()
         profile_logger.debug({'num_bars': num_bars,
+                              'num_req': self.num_bars,
                               'bar_len': self.bar_len,
                               'task_name': self.task_name,
                               'speed': (self.proc_doc if self.proc_doc > 0 else self.num_bars) / elapsed,
