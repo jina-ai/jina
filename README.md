@@ -79,8 +79,6 @@ Jina is an open-source project. [We are hiring](https://jina.ai/jobs) AI enginee
 
 ## Install
 
-You can install or run Jina via PyPi or Docker container.
-
 #### Install from PyPi
  
 On Linux/MacOS with Python >= 3.7 installed, simply run this command in your terminal:
