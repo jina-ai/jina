@@ -1,0 +1,25 @@
+name: "CLA Assistant"
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened,closed,synchronize]
+
+jobs:
+  CLAssistant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "CLA Assistant"
+        if: (github.event.comment.body == 'recheckcla' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request'
+        # Alpha Release
+        uses: cla-assistant/github-action@v1.3.0-alpha
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path-to-signatures: 'signatures/version1/cla.json'
+          path-To-cladocument: 'https://github.com/ibakshay/test-action-workflow/blob/master/cla.md'
+          # branch should not be protected
+          branch: 'master'
+          whitelist: nan-wang,jina-bot,BingHo1013
+          empty-commit-flag: false
+          blockchain-storage-flag: false
