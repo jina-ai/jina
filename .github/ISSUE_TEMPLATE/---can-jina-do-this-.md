@@ -7,6 +7,6 @@ assignees: ''
 
 ---
 
-** What is Your Expectation **
+**What is your expectation**
 
 <!-- Explain your expected behavior here -->

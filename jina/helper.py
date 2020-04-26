@@ -22,6 +22,17 @@ __all__ = ['batch_iterator', 'yaml',
            'colored', 'kwargs2list', 'valid_yaml_path']
 
 
+def get_readable_size(num_bytes):
+    if num_bytes < 1024:
+        return f'{num_bytes} Bytes'
+    elif num_bytes < 1024 ** 2:
+        return f'{num_bytes / 1024:.1f} KB'
+    elif num_bytes < 1024 ** 3:
+        return f'{num_bytes / (1024 ** 2):.1f} MB'
+    else:
+        return f'{num_bytes // (1024 ** 3):.1f} GB'
+
+
 def print_load_table(load_stat):
     from .logging import default_logger
 

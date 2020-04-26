@@ -14,7 +14,7 @@ import zmq.asyncio
 from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
-from ..helper import colored, get_random_identity
+from ..helper import colored, get_random_identity, get_readable_size
 from ..logging import default_logger, profile_logger
 from ..logging.base import get_logger
 from ..proto import jina_pb2, is_data_request
@@ -161,12 +161,14 @@ class Zmqlet:
 
     def print_stats(self):
         """Print out the network stats of of itself """
-        self.logger.info('msg_sent: %d bytes_sent: %.0f KB msg_recv: %d bytes_recv:%.0f KB' % (
-            self.msg_sent, self.bytes_sent / 1024, self.msg_recv, self.bytes_recv / 1024))
+        self.logger.info(f'#sent: {self.msg_sent} '
+                         f'#recv: {self.msg_recv} '
+                         f'sent_size: {get_readable_size(self.bytes_sent)} '
+                         f'recv_size: {get_readable_size(self.bytes_recv)}')
         profile_logger.debug({'msg_sent': self.msg_sent,
                               'msg_recv': self.msg_recv,
-                              'bytes_sent': self.bytes_sent / 1024,
-                              'bytes_recv': self.bytes_recv / 1024})
+                              'bytes_sent': self.bytes_sent,
+                              'bytes_recv': self.bytes_recv})
 
     def send_message(self, msg: 'jina_pb2.Message'):
         """Send a message via the output socket
@@ -304,7 +306,7 @@ def send_message(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
         if array_in_pb:
             _msg = [c_id, msg.SerializeToString()]
             sock.send_multipart(_msg)
-            num_bytes = sys.getsizeof(_msg)
+            num_bytes = sys.getsizeof(_msg) + msg.ByteSize()
         else:
             doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
             # now raw_bytes are removed from message, hoping for faster de/serialization
@@ -315,7 +317,7 @@ def send_message(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
                     *doc_bytes, *chunk_bytes]
             sock.send_multipart(_msg)  # 5, 6
 
-            num_bytes = sys.getsizeof(_msg)
+            num_bytes = sum(sys.getsizeof(m) for m in _msg)
     except zmq.error.Again:
         raise TimeoutError(
             'cannot send message to sock %s after timeout=%dms, please check the following:'
@@ -352,7 +354,7 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
             _msg = [c_id, msg.SerializeToString()]
 
             await sock.send_multipart(_msg)
-            num_bytes = sys.getsizeof(_msg)
+            num_bytes = sys.getsizeof(_msg) + msg.ByteSize()
         else:
             doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
             # now raw_bytes are removed from message, hoping for faster de/serialization
@@ -363,7 +365,7 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
                     *doc_bytes, *chunk_bytes]
             await sock.send_multipart(_msg)  # 5, 6
 
-            num_bytes = sys.getsizeof(_msg)
+            num_bytes = sum(sys.getsizeof(m) for m in _msg)
 
         return num_bytes
     except zmq.error.Again:
@@ -403,7 +405,8 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
             sock.setsockopt(zmq.RCVTIMEO, -1)
 
         msg_data = sock.recv_multipart()
-        num_bytes = sys.getsizeof(msg_data)
+        # receive a list, count the size of each in that list
+        num_bytes = sum(sys.getsizeof(m) for m in msg_data)
 
         if sock.type == zmq.DEALER:
             # dealer consumes the first part of the message as id, we need to prepend it back
@@ -457,7 +460,8 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
         msg_data = await sock.recv_multipart()
 
         msg = jina_pb2.Message()
-        num_bytes = sys.getsizeof(msg_data)
+        # receive a list, count the size of each in that list
+        num_bytes = sum(sys.getsizeof(m) for m in msg_data)
         msg.ParseFromString(msg_data[1])
         if check_version:
             _check_msg_version(msg)
