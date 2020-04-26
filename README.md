@@ -24,10 +24,11 @@
 
 <p align="center">
   <a href="https://jina.ai">English</a> •
-  <a href="">日本語</a> •
-  <a href="">français</a> •
-  <a href="">Русский язык</a> •
-  <a href="">中文</a>
+  <a href="README_de.md">Deutsch</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README_jp.md">日本語</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README_fr.md">français</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README_ru.md">Русский язык</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README_zh.md">中文</a>
 </p>
 
 
