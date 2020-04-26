@@ -51,7 +51,7 @@ Want to build a search system backed by deep learning? You come to the right pla
 
 **🌌 The Universal Search Solution** - Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
 
-**🚀 High Preformat & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data. Features such as replicas and shards come off-the-shelf.
+**🚀 High Performant & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data. Features such as replicas and shards come off-the-shelf.
 
 **🐣 System Engineering Made Easy** - Jina offers an one-stop solution that frees you from handcrafting and gluing packages, libraries and database. With the most intuitive API and [dashboard UI](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
 
@@ -88,7 +88,7 @@ On Linux/MacOS with Python >= 3.7 installed, simply run this command in your ter
 pip install jina
 ```
 
-To install Jina with extra dependencies, or install it on Raspberry Pi please refer to the documentations.
+To install Jina with extra dependencies, or install it on Raspberry Pi please refer to the [documentations](https://docs.jina.ai).
 
 #### ...or Run with Docker Container 
 
@@ -100,7 +100,7 @@ docker run jinaai/jina
 
 ## Jina "Hello, World!" 👋🌍
 
-As a starter, we invite you to try Jina's "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply do:
+As a starter, you are invited to try Jina's "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply do:
 
 ```bash
 jina hello-world
@@ -248,16 +248,16 @@ Learn how to use Jina to extract feature vector using any deep learning represen
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a BERT-based NLP Semantic Search System in 3 minutes</a></h4>
-Learn how to use Jina and DistilBert to build a slang search system
+<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search System</a></h4>
+Learn how build a script search system for South Park and practice your knowledge on Flows and Pods
 </td>
 <td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System in 3 minutes</a></h4>
-Learn how to use Jina and Torchvision to build a flower image search system
+<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System</a></h4>
+Learn how to build an image search system and how to define you own executors and run them in docker
 </td>
 <td><h3>🐣</h3></td>
 </tr>
