@@ -52,7 +52,7 @@ Jina ist das cloud-native neuronale Such-Framework, das auf modernster KI und ti
 
 🚀**Leistungsstark und auf dem neuesten Stand der Technik** - Jina strebt KI in Produktion an. Sie können Ihr VideoBERT, Xception, Ihren Word-Tokenizer, Bildsegmentierer und Ihre Datenbank leicht skalieren, um Daten auf Milliardenebene zu verarbeiten. Funktionen wie Replikate und Scherben kommen von der Stange.
 
-🐣**Systemtechnik leicht gemacht** - Jina bietet eine Lösung aus einer Hand, die Sie von Handarbeit und Kleben von Verpackungen, Bibliotheken und Datenbanken befreit[Mit der intuitivsten API und Dashboard-UI](https://github.com/jina-ai/dashboard)Der Aufbau eines cloud-nativen Suchsystems ist nur eine Kleinigkeit.
+🐣**Systemtechnik leicht gemacht** - Jina bietet eine Lösung aus einer Hand, die Sie von Handarbeit und Kleben von Verpackungen, Bibliotheken und Datenbanken befreit. Mit der intuitivsten API und[dashboard](https://github.com/jina-ai/dashboard)Der Aufbau eines cloud-nativen Suchsystems ist nur eine Kleinigkeit.
 
 🧩**Leistungsstarke Erweiterungen, einfache Integration** - Neues KI-Modell für Jina? Schreiben Sie einfach ein Python-Skript oder erstellen Sie ein Docker-Image. Das Einfügen neuer Algorithmen war noch nie so einfach, wie es sein sollte[Sehen Sie sich Jina Hub an (beta)](https://github.com/jina-ai/jina-hub) und finden Sie weitere Erweiterungen zu verschiedenen Anwendungsfällen, die von der Gemeinschaft beigetragen wurden.
 
@@ -91,7 +91,7 @@ So installieren Sie Jina mit zusätzlichen Abhängigkeiten, oder installieren Si
 
 #### ...oder Ausführen mit Docker-Container
 
-Wir stellen ein universelles Jina-Image (nur 80MB!) zur Verfügung, das mehrere Architekturen unterstützt (einschließlich x64, x86, arm-64/v7/v6), einfach tun
+Wir bieten ein universelles Docker-Image (nur 80MB!) an, das mehrere Architekturen unterstützt (einschließlich x64, x86, arm-64/v7/v6), einfach tun
 
 ```bash
 docker run jinaai/jina

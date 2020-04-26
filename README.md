@@ -54,7 +54,7 @@ Want to build a search system backed by deep learning? You come to the right pla
 
 🚀 **High Performant & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data. Features such as replicas and shards come off-the-shelf.
 
-🐣 **System Engineering Made Easy** - Jina offers a one-stop solution that frees you from handcrafting and gluing packages, libraries and databases. [With the most intuitive API and dashboard UI](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
+🐣 **System Engineering Made Easy** - Jina offers a one-stop solution that frees you from handcrafting and gluing packages, libraries and databases. With the most intuitive API and [dashboard](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
 
 🧩 **Powerful Extensions, Simple Integration** - New AI model for Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. [Check out Jina Hub (beta)](https://github.com/jina-ai/jina-hub) and find more extensions on different use-cases contributed by the community.
 
@@ -93,7 +93,7 @@ To install Jina with extra dependencies, or install it on Raspberry Pi [please r
 
 #### ...or Run with Docker Container 
 
-We provide a universal Jina image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6), simply do: 
+We provide a universal Docker image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6), simply do: 
 
 ```bash
 docker run jinaai/jina

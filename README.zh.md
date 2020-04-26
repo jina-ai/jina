@@ -52,7 +52,7 @@ Jina是由最先进的AI和深度学习驱动的云端神经搜索框架。它�
 
 🚀**高性能和最先进的设备** - Jina的目标是AI在生产过程中。你可以轻松地扩展出你的VideoBERT、Xception、你的单词令牌器、图像分割器和数据库来处理亿级数据。复制品和碎片等功能都是现成的。
 
-🐣**简单的系统工程** - Jina提供了一站式的解决方案，让您从手工制作和胶合包、库和数据库中解脱出来。[拥有最直观的API和仪表板UI。](https://github.com/jina-ai/dashboard)WWW.ZHUYESD.COM构建一个云端搜索系统只是分分钟的事情。
+🐣**简单的系统工程** - Jina提供了一个一站式的解决方案，让你从手工制作和粘合包、库和数据库中解脱出来。通过最直观的API和[仪表板](https://github.com/jina-ai/dashboard)构建一个云端搜索系统只是分分钟的事情。
 
 🧩**强大的扩展功能，简单的集成** - Jina的新AI模型？只需编写一个Python脚本或构建一个Docker镜像即可。插入新的算法从来都不是那么容易的事情，就像它应该做的那样。[看看Jina Hub (测试版)](https://github.com/jina-ai/jina-hub)并在社区贡献的不同用例上找到更多的扩展。
 
@@ -91,7 +91,7 @@ pip install jina
 
 #### ...或使用Docker容器运行
 
-我们提供了一个通用的Jina图像（只有80MB！），支持多种架构（包括x64、x86、x86、arm-64/v7/v6），简单的说就是。
+我们提供了一个通用的Docker图像（只有80MB！），支持多种架构（包括x64、x86、x86、arm-64/v7/v6），只需做到这一点。
 
 ```bash
 docker run jinaai/jina
@@ -99,7 +99,7 @@ docker run jinaai/jina
 
 ## 吉娜 "你好，世界！"👋🌍
 
-作为入门者，我们邀请您尝试一下Jina的 "Hello，世界"--简单的图像神经搜索的演示[时尚-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/).不需要额外的依赖关系，只需做。
+作为入门者，我们邀请你尝试一下Jina的 "Hello，世界"--简单的图像神经搜索的演示[时尚-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/).不需要额外的依赖关系，只需做。
 
 ```bash
 jina hello-world

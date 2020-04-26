@@ -46,13 +46,13 @@
 
 Vous souhaitez mettre en place un système de recherche fondé sur un apprentissage approfondi ? Vous êtes au bon endroit !
 
-Jina est le cadre de recherche neuronale natif des nuages alimenté par l'IA de pointe et l'apprentissage profond. Elle est soutenue à long terme par une équipe à plein temps, soutenue par des entreprises.
+Jina est le cadre de recherche neuronale natif des nuages alimenté par l'IA de pointe et l'apprentissage profond. Elle est soutenue à long terme par une équipe à plein temps, soutenue par le capital-risque.
 
 🌌**La solution de recherche universelle** - Jina permet l'indexation et la recherche à grande échelle de tout type de données sur de multiples plateformes et architectures. Que vous recherchiez des images, des clips vidéo, des extraits audio, de longs documents juridiques ou de courts tweets, Jina peut les gérer tous.
 
 🚀**Performances et état de l'art** - Jina vise l'AI-in-production. Vous pouvez facilement adapter votre VideoBERT, Xception, votre word tokenizer, votre segmenteur d'images et votre base de données pour traiter des données de plusieurs milliards de niveaux. Des fonctionnalités telles que les répliques et les tessons sont disponibles sur le marché.
 
-🐣**L'ingénierie des systèmes rendue facile** - Jina propose une solution unique qui vous libère de l'artisanat et du collage de paquets, de bibliothèques et de bases de données[Avec l'API la plus intuitive et l'interface utilisateur du tableau de bord](https://github.com/jina-ai/dashboard)La construction d'un système de recherche dans les nuages n'est qu'une question de minutes.
+🐣**L'ingénierie des systèmes rendue facile** - Jina propose une solution unique qui vous libère de l'artisanat et du collage de paquets, de bibliothèques et de bases de données. Avec l'API la plus intuitive et[tableau de bord](https://github.com/jina-ai/dashboard)La construction d'un système de recherche dans les nuages n'est qu'une question de minutes.
 
 🧩**Des extensions puissantes, une intégration simple** - Un nouveau modèle d'IA pour Jina ? Il suffit d'écrire un script Python ou de construire une image Docker. Le branchement de nouveaux algorithmes n'a jamais été aussi simple, comme il se doit[Voir Jina Hub (beta)](https://github.com/jina-ai/jina-hub) et trouver d'autres extensions sur différents cas d'utilisation fournis par la communauté.
 
@@ -91,7 +91,7 @@ Pour installer Jina avec des dépendances supplémentaires, ou l'installer sur R
 
 #### ...ou courir avec un conteneur de docker
 
-Nous fournissons une image Jina universelle (seulement 80MB !) qui supporte plusieurs architectures (y compris x64, x86, arm-64/v7/v6), il suffit de le faire 
+Nous fournissons une image Docker universelle (seulement 80MB !) qui supporte plusieurs architectures (y compris x64, x86, arm-64/v7/v6), il suffit de le faire 
 
 ```bash
 docker run jinaai/jina
