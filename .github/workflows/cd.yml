@@ -22,7 +22,7 @@ jobs:
           FOLDING: false
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TOC_TITLE: ''
-          TARGET_PATHS: 'README.md, CHANGELOG.md, CONTRIBUTING.md'
+          TARGET_PATHS: 'README.md,CHANGELOG.md,CONTRIBUTING.md'
           COMMIT_MESSAGE: 'chore(docs): update TOC'
       #      - uses: peter-evans/dockerhub-description@v2.1.0
       #        env:
