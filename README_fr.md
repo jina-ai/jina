@@ -48,11 +48,11 @@ Vous souhaitez mettre en place un système de recherche fondé sur un apprentiss
 
 **Jina est le cadre de recherche neuronale natif des nuages, alimenté par l'IA de pointe et l'apprentissage approfondi. Il est soutenu à long terme par une équipe à plein temps (https://jina.ai).
 
-**🌌 The Universal Search Solution** - Jina permet l'indexation et la recherche à grande échelle de tout type sur de multiples plateformes et architectures. Que vous recherchiez des images, des clips vidéo, des extraits audio, de longs documents juridiques ou de courts tweets, Jina peut les gérer tous.
+**🌌 La solution de recherche universelle** - Jina permet l'indexation et la recherche à grande échelle de tout type sur de multiples plateformes et architectures. Que vous recherchiez des images, des clips vidéo, des extraits audio, de longs documents juridiques ou de courts tweets, Jina peut les gérer tous.
 
-**🚀 High Preformat & State-of-the-Art** - Jina vise l'IA-in-production. Vous pouvez facilement adapter votre VideoBERT, Xception, votre word tokenizer, votre segmenteur d'images et votre base de données pour traiter des données de plusieurs milliards de niveaux. Des fonctionnalités telles que les répliques et les tessons sont disponibles sur le marché.
+**🚀 Performant et à la pointe de la technologie** - Jina vise l'IA-in-production. Vous pouvez facilement adapter votre VideoBERT, Xception, votre word tokenizer, votre segmenteur d'images et votre base de données pour traiter des données de plusieurs milliards de niveaux. Des fonctionnalités telles que les répliques et les tessons sont disponibles sur le marché.
 
-**🐣 System Engineering Made Easy** - Jina propose une solution complète qui vous libère de la fabrication et du collage d'emballages, de bibliothèques et de bases de données. Grâce à l'API la plus intuitive et à l'interface utilisateur du tableau de bord (https://github.com/jina-ai/dashboard), la création d'un système de recherche natif du nuage ne prend qu'une minute.
+**🐣 L'ingénierie des systèmes rendue facile** - Jina propose une solution complète qui vous libère de la fabrication et du collage d'emballages, de bibliothèques et de bases de données. Grâce à l'API la plus intuitive et à l'interface utilisateur du tableau de bord (https://github.com/jina-ai/dashboard), la création d'un système de recherche natif du nuage ne prend qu'une minute.
 
 **🧩 Extensions puissantes, intégration simple** - Nouveau modèle d'IA pour Jina ? Il suffit d'écrire un script Python ou de construire une image Docker. Le branchement de nouveaux algorithmes n'a jamais été aussi simple qu'il devrait l'être. Consultez [Jina Hub (beta)](https://github.com/jina-ai/jina-hub) et trouvez d'autres extensions sur différents cas d'utilisation proposés par la communauté.
 
@@ -247,16 +247,16 @@ Apprenez à utiliser Jina pour extraire un vecteur de caractéristique en utilis
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Construire un système de recherche sémantique en PNL basé sur le BERT en 3 minutes</a></h4>
-Apprenez à utiliser Jina et DistilBert pour construire un système de recherche en argot
+<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Construire un système de recherche sémantique en NLP</a></h4>
+Apprenez comment construire un système de recherche de script pour South Park et mettez en pratique vos connaissances sur les flux et les pods
 </td>
 <td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Construire un système de recherche d'images de fleurs en 3 minutes</a></h4>
-Apprenez à utiliser Jina et Torchvision pour créer un système de recherche d'images de fleurs
+<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Créer un système de recherche d'images de fleurs</a></h4>
+Apprenez comment construire un système de recherche d'images et comment définir vos propres exécuteurs et les faire fonctionner en docker
 </td>
 <td><h3>🐣</h3></td>
 </tr>

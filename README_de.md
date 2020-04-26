@@ -48,11 +48,11 @@ Wollen Sie ein Suchsystem aufbauen, das durch tiefes Lernen unterstützt wird? H
 
 **Jina** ist **das* cloud-native neuronale Such-Framework, das auf modernster KI und tiefgehendem Lernen basiert. Es wird **langfristig unterstützt** von einem Vollzeit-[Venture-unterstützten Team] (https://jina.ai).
 
-**🌌 The Universal Search Solution** - Jina ermöglicht groß angelegte Indizes und Abfragen jeder Art auf mehreren Plattformen und Architekturen. Ganz gleich, ob Sie nach Bildern, Videoclips, Audioschnipseln, langen Rechtsdokumenten oder kurzen Tweets suchen, Jina kann sie alle verarbeiten.
+**🌌 Die universelle Suchlösung** - Jina ermöglicht groß angelegte Indizes und Abfragen jeder Art auf mehreren Plattformen und Architekturen. Ganz gleich, ob Sie nach Bildern, Videoclips, Audioschnipseln, langen Rechtsdokumenten oder kurzen Tweets suchen, Jina kann sie alle verarbeiten.
 
-**🚀 Hohes Vorformat & auf dem neuesten Stand der Technik** - Jina zielt auf KI in der Produktion ab. Sie können Ihr VideoBERT, Xception, Ihren Word-Tokenizer, Bildsegmentierer und Ihre Datenbank leicht skalieren, um Daten in Milliardenhöhe zu verarbeiten. Funktionen wie Replikate und Scherben kommen von der Stange.
+**🚀 leistungsstark & auf dem neuesten Stand der Technik** - Jina zielt auf KI in der Produktion ab. Sie können Ihr VideoBERT, Xception, Ihren Word-Tokenizer, Bildsegmentierer und Ihre Datenbank leicht skalieren, um Daten in Milliardenhöhe zu verarbeiten. Funktionen wie Replikate und Scherben kommen von der Stange.
 
-**🐣 System Engineering Made Easy** - Jina bietet eine Lösung aus einer Hand, die Sie von Handarbeit und Kleben von Paketen, Bibliotheken und Datenbank befreit. Mit der intuitivsten API und [Dashboard-UI] (https://github.com/jina-ai/dashboard) ist der Aufbau eines Cloud-nativen Suchsystems nur eine Sache von Minuten.
+**🐣 Systemtechnik leicht gemacht** - Jina bietet eine Lösung aus einer Hand, die Sie von Handarbeit und Kleben von Paketen, Bibliotheken und Datenbank befreit. Mit der intuitivsten API und [Dashboard-UI] (https://github.com/jina-ai/dashboard) ist der Aufbau eines Cloud-nativen Suchsystems nur eine Sache von Minuten.
 
 **🧩 Leistungsstarke Erweiterungen, einfache Integration** - Neues KI-Modell für Jina? Schreiben Sie einfach ein Python-Skript oder erstellen Sie ein Docker-Image. Das Einbinden neuer Algorithmen war noch nie so einfach, wie es sein sollte. Schauen Sie sich [Jina Hub (beta)](https://github.com/jina-ai/jina-hub) an und finden Sie weitere Erweiterungen zu verschiedenen Anwendungsfällen, die von der Gemeinschaft beigetragen wurden.
 
@@ -250,16 +250,16 @@ Lernen Sie, wie Sie Jina verwenden können, um Merkmalsvektoren mit Hilfe einer 
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Erstellen Sie ein BERT-basiertes semantisches NLP-Suchsystem in 3 Minuten</a></h4>
-Erfahren Sie, wie Sie mit Jina und DistilBert ein Slangsuchsystem aufbauen können
+<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Ein semantisches NLP-Suchsystem aufbauen</a></h4>
+Erfahren Sie, wie Sie ein Skript-Suchsystem für South Park aufbauen und üben Sie Ihr Wissen über Flows und Pods
 </td>
 <td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Aufbau eines Blumenbild-Suchsystems in 3 Minuten</a></h4>
-Erfahren Sie, wie Sie mit Jina und Torchvision ein Blumenbild-Suchsystem aufbauen können
+<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Ein Blumenbild-Suchsystem aufbauen</a></h4>
+Lernen Sie, wie man ein Bildsuchsystem aufbaut und wie man eigene Ausführer definiert und diese im Docker laufen lässt
 </td>
 <td><h3>🐣</h3></td>
 </tr>
