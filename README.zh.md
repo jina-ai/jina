@@ -44,68 +44,68 @@
   <a href="https://jina.ai/blog">Blog</a>
 </p>
 
-想要构建一个由深度学习支持的搜索系统？你来对地方了！
+想建立一个以深度学习为支撑的搜索系统？你来对地方了!
 
-**名字**是__云原生神经搜索框架由最先进的人工智能和深度学习提供支持。是的**长期支持**全职的，[风险支持团队](https://jina.ai).
+Jina是由最先进的AI和深度学习驱动的云端神经搜索框架。它得到了一个全职的、由风险投资支持的团队的长期支持。
 
-**🌌通用搜索解决方案**- Jina 可在多个平台和体系结构上实现任何类型的大规模索引和查询。无论您是在寻找图像、视频剪辑、音频片段、长法律文档、短推文，Jina 都能处理所有这些操作。
+🌌**通用搜索解决方案** - Jina可以在多个平台和架构上实现任何类型的大规模索引和查询。无论您是搜索图片、视频片段、音频片段、长的法律文档、短的推文，Jina都能处理。
 
-**🚀高性能和最先进的**- Jina 的目标是 AI 生产。您可以轻松扩展 VideoBERT、Xception、单词标记器、图像分段器和数据库，以处理数十亿级数据。副本和分片等功能是现成的。
+🚀**高性能和最先进的设备** - Jina的目标是AI在生产过程中。你可以轻松地扩展出你的VideoBERT、Xception、你的单词令牌器、图像分割器和数据库来处理亿级数据。复制品和碎片等功能都是现成的。
 
-**🐣系统工程变得简单**- Jina 提供一站式解决方案，让您从手工制作和胶着包、库和数据库中解放。拥有最直观的 API 和[仪表板 UI](https://github.com/jina-ai/dashboard)，构建云原生搜索系统只是一分钟的事情。
+🐣**简单的系统工程** - Jina提供了一站式的解决方案，让您从手工制作和胶合包、库和数据库中解脱出来。[拥有最直观的API和仪表板UI。](https://github.com/jina-ai/dashboard)WWW.ZHUYESD.COM构建一个云端搜索系统只是分分钟的事情。
 
-**🧩强大的扩展，简单的集成**-Jina 的新 AI 型号？只需编写 Python 脚本或构建 Docker 映像即可。插入新的算法从未如此简单，因为它应该如此简单。退房[吉纳中心（贝塔）](https://github.com/jina-ai/jina-hub)并找到更多扩展，了解社区贡献的不同用例。
+🧩**强大的扩展功能，简单的集成** - Jina的新AI模型？只需编写一个Python脚本或构建一个Docker镜像即可。插入新的算法从来都不是那么容易的事情，就像它应该做的那样。[看看Jina Hub (测试版)](https://github.com/jina-ai/jina-hub)并在社区贡献的不同用例上找到更多的扩展。
 
-Jina是一个开源项目。[我们正在招聘](https://jina.ai/jobs)AI 工程师、全堆栈开发人员、传道者、要构建的 PM__下一个神经搜索生态系统在开源。
+Jina是一个开源项目。[我们正在招聘](https://jina.ai/jobs)AI工程师、全栈开发者、传道者、PM，打造下一个开源的神经搜索生态。
 
-## 内容
+## 目录
 
 <img align="right" width="350px" src="./.github/install.png" />
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
-- [安装](#%E5%AE%89%E8%A3%85)
-- [吉娜"你好，世界 👋🌍！](#%E5%90%89%E5%A8%9C%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C-)
-- [开始](#%E5%BC%80%E5%A7%8B)
-- [文档](#%E6%96%87%E6%A1%A3)
-- [贡献](#%E8%B4%A1%E7%8C%AE)
-- [社区](#%E7%A4%BE%E5%8C%BA)
-- [路线 图](#%E8%B7%AF%E7%BA%BF-%E5%9B%BE)
-- [许可证](#%E8%AE%B8%E5%8F%AF%E8%AF%81)
+-   [安装](#install)
+-   [吉娜 "你好，世界！"👋🌍](#jina-hello-world-)
+-   [开始](#getting-started)
+-   [文档](#documentation)
+-   [贡献者](#contributing)
+-   [社区](#community)
+-   [路线图](#roadmap)
+-   [许可证](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 安装
 
-#### 从 PyPi 安装
+#### 从PyPi安装
 
-在安装了 Python = 3.7 的 Linux/MacOS 上，只需在终端中运行此命令：
+在安装了 Python >= 3.7 的 Linux/MacOS 上，只需在终端上运行此命令即可。
 
 ```bash
 pip install jina
 ```
 
-要安装具有额外依赖关系的 Jina，或将其安装在树莓派上，请参阅[文档](https://docs.jina.ai).
+要在Raspberry Pi上安装Jina，或者在Raspberry Pi上安装Jina，需要额外的依赖关系。[请参考文件](https://docs.jina.ai).
 
-#### ...或使用 Docker 容器运行
+#### ...或使用Docker容器运行
 
-我们提供通用的 Jina 映像（仅 80MB！），支持多个体系结构（包括 x64、x86、arm-64/v7/v6），只需执行：
+我们提供了一个通用的Jina图像（只有80MB！），支持多种架构（包括x64、x86、x86、arm-64/v7/v6），简单的说就是。
 
 ```bash
 docker run jinaai/jina
 ```
 
-## 吉娜"你好，世界 👋🌍！
+## 吉娜 "你好，世界！"👋🌍
 
-作为初学者，你被邀请尝试Jina的"你好，世界" - 图像神经搜索的简单演示[时尚-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/).无需额外的依赖项，只需执行：
+作为入门者，我们邀请您尝试一下Jina的 "Hello，世界"--简单的图像神经搜索的演示[时尚-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/).不需要额外的依赖关系，只需做。
 
 ```bash
 jina hello-world
 ```
 
-...甚至更容易为 Docker 用户，_无需任何安装_只是：
+....甚至对Docker用户来说更容易。**不需要任何安装。**简单地。
 
 ```bash
 docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
@@ -120,13 +120,13 @@ docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 
 </details>  
 
-它下载时尚-MNIST培训和测试数据，并告诉Jina_指数_训练集中的 60，000 张图片。然后，它随机采样来自测试集的图像作为_查询_，请吉娜检索相关结果。大约 1 分钟后，它将打开一个网页并显示如下所示的结果：
+它下载Fashi-MNIST训练和测试数据；告诉Jina从训练集中索引6万张图像。然后，它从测试集中随机抽取图像作为查询，要求Jina检索相关结果。大约1分钟后，它将打开一个网页，并显示出这样的结果。
 
 <p align="center">
   <img src="docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
-背后的实现呢？简单，因为它应该是：
+那背后的实施呢？就像它应该是很简单的。
 
 <table>
 <tr>
@@ -184,15 +184,15 @@ pods:
 </tr>
 </table>
 
-所有大字，你可以命名：计算机视觉，神经红外，微服务，消息队列，弹性，副本和分片发生在一分钟内！
+所有你能说出名字的大词：计算机视觉、神经IR、微服务、消息队列、弹性、复制&碎片，都是在短短一分钟内发生的!
 
-感兴趣？通过：
+有兴趣吗？玩，并尝试不同的选择。
 
 ```bash
 jina hello-world --help
 ```
 
-请务必继续我们的[金娜 101 指南](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina)- 在3分钟内了解Jina的所有关键概念！
+[请务必继续关注我们的《吉娜101指南》。](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - 在3分钟内理解吉娜的所有关键概念!  
 
 ## 开始
 
@@ -245,7 +245,7 @@ Learn how to use Jina to extract feature vector using any deep learning represen
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search System</a></h4>
-Learn how build a script search system for South Park and practice your knowledge on Flows and Pods
+Learn how to build a script search system for South Park and practice your knowledge on Flows and Pods
 </td>
 <td><h3>🐣</h3></td>
 </tr>
@@ -253,7 +253,7 @@ Learn how build a script search system for South Park and practice your knowledg
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System</a></h4>
-Learn how to build an image search system and how to define you own executors and run them in docker
+Learn how to build an image search system and define you own executors and run them in docker
 </td>
 <td><h3>🐣</h3></td>
 </tr>
@@ -293,7 +293,7 @@ Learn how Jina solves complex dependencies easily with Docker container
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
-Learn to use Jina Hub and share your extension with engineers around the globe
+Learn to use Jina Hub and share your extensions with engineers around the globe
 </td>
 <td><h3>🚀</h3></td>
 </tr>
@@ -307,45 +307,44 @@ Learn to use Jina Hub and share your extension with engineers around the globe
 <img align="right" width="350px" src="./.github/jina-docs.png" />
 </a>
 
-深入了解 Jina 的最佳方式是阅读我们的文档。文档基于主分支的每个推送、合并和发布事件构建。您可以在我们的文档中找到有关以下主题的更多详细信息。
+要深入学习Jina，最好的方法就是阅读我们的文档。文档建立在主分支的每个推送、合并和发布事件上。你可以在我们的文档中找到关于以下主题的更多细节。
 
--   [Jina 命令行接口参数解释](https://docs.jina.ai/chapters/cli/main.html)
--   [吉纳Python API接口](https://docs.jina.ai/api/jina.html)
--   [针对执行器、驱动程序和流的 Jina YAML 语法](https://docs.jina.ai/chapters/yaml/yaml.html)
--   [吉娜普罗托布夫架构](https://docs.jina.ai/chapters/proto/main.html)
--   [Jina 中使用的环境变量](https://docs.jina.ai/chapters/envs.html)
--   ...[和更多](https://docs.jina.ai/index.html)
+-   [Jina命令行接口参数解释](https://docs.jina.ai/chapters/cli/main.html)
+-   [Jina Python API接口](https://docs.jina.ai/api/jina.html)
+-   [用于执行器、驱动和流程的Jina YAML语法](https://docs.jina.ai/chapters/yaml/yaml.html)
+-   [Jina Protobuf方案](https://docs.jina.ai/chapters/proto/main.html)
+-   [Jina中使用的环境变量](https://docs.jina.ai/chapters/envs.html)
+-   ..[以及更多](https://docs.jina.ai/index.html)
 
-你是医生明星吗？那就加入我们吧！我们欢迎对文档进行各种改进。
+你是 "医生 "明星吗？是的?加入我们吧!我们欢迎大家对文档进行各种改进。
 
-旧版本的文档[存档在此处](https://github.com/jina-ai/docs/releases).
+[旧版本的文档在这里存档。](https://github.com/jina-ai/docs/releases).
 
-## 贡献
+## 贡献者
 
-我们欢迎开放源码社区、个人和合作伙伴提供的各种贡献。没有你的积极参与，Jina不可能成功。
+我们欢迎来自开源社区、个人和合作伙伴的各种贡献。没有你的积极参与，Jina就不会成功。
 
-以下资源可帮助您做出良好的第一贡献：
+下面的资源将帮助你做好第一份贡献。
 
--   [贡献指南](CONTRIBUTING.md)
--   [发布周期和开发阶段](RELEASE.md)
+-   [缴款准则](CONTRIBUTING.md)
+-   [释放周期和发展阶段](RELEASE.md)
 
 ## 社区
 
--   [松弛通道](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w)- 一个沟通平台，供开发人员讨论Jina
--   [社区通讯](mailto:newsletter+subscribe@jina.ai)- 订阅 Jina 的最新更新、发布和事件新闻
--   [LinkedIn](https://www.linkedin.com/company/jinaai/)- 了解 Jina AI 作为公司
--   ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)- 关注我们，并使用井号标签与我们互动`#JinaSearch`  
--   [加入我们](mailto:hr@jina.ai)-想和我们在吉纳全职工作吗？我们正在招聘！
--   [公司](https://jina.ai)- 了解更多关于我们公司，我们完全致力于开源！
+-   [Slack频道](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - 为开发者提供交流平台，探讨Jina
+-   [社区通讯](mailto:newsletter+subscribe@jina.ai) - 订阅金娜的最新更新、发布和活动消息，订阅金娜的最新动态、发布和活动消息。
+-   [LinkedIn](https://www.linkedin.com/company/jinaai/) - 了解Jina AI公司并寻找工作机会
+-   ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - 关注我们，并使用tag标签与我们互动`#JinaSearch`  
+-   [公司](https://jina.ai) - 了解更多关于我们公司的信息，我们完全致力于开源!
 
-## 路线 图
+## 路线图
 
-的[GitHub 里程碑](https://github.com/jina-ai/jina/milestones)为未来的改进开辟道路。
+[GitHub的里程碑](https://github.com/jina-ai/jina/milestones)为今后的改进工作铺设了道路。
 
-我们正在寻找合作伙伴关系，在Jina周围建立一个开放治理模式（例如技术指导委员会），从而建立健康的开源生态系统和开发商友好的文化。如果您有兴趣参与，请随时与我们联系：[hello@jina.ai](mailto:hello@jina.ai)
+我们正在寻找合作伙伴，围绕Jina建立一个开放治理模式（如技术指导委员会），以建立一个健康的开源生态系统和开发者友好的文化。如果您有兴趣参与，请随时联系我们，地址是[hello@jina.ai](mailto:hello@jina.ai).
 
 ## 许可证
 
-版权所有（c） 2020 金娜AI有限公司。保留所有权利。
+Copyright (c) 2020 Jina AI Limited.保留所有权利。
 
-Jina 根据 Apache 许可证 2.0 获得许可。看到[许可证](LICENSE)用于完整许可证文本。
+Jina是在Apache License 2.0版本下授权的。[许可证全文见LICENSE。](LICENSE)

@@ -49,17 +49,18 @@ Want to build a search system backed by deep learning? You come to the right pla
 
 **Jina** is *the* cloud-native neural search framework powered by the state-of-the-art AI and deep learning. It is **long-term supported** by a full-time, [venture-backed team](https://jina.ai).
 
-**🌌 The Universal Search Solution** - Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
 
-**🚀 High Performant & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data. Features such as replicas and shards come off-the-shelf.
+🌌 **The Universal Search Solution** - Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
 
-**🐣 System Engineering Made Easy** - Jina offers a one-stop solution that frees you from handcrafting and gluing packages, libraries and databases. With the most intuitive API and [dashboard UI](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
+🚀 **High Performant & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, your word tokenizer, image segmenter and database to handle billion-level data. Features such as replicas and shards come off-the-shelf.
 
-**🧩 Powerful Extensions, Simple Integration** - New AI model for Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. Check out [Jina Hub (beta)](https://github.com/jina-ai/jina-hub) and find more extensions on different use-cases contributed by the community.
+🐣 **System Engineering Made Easy** - Jina offers a one-stop solution that frees you from handcrafting and gluing packages, libraries and databases. [With the most intuitive API and dashboard UI](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
 
-Jina is an open-source project. [We are hiring](https://jina.ai/jobs) AI engineers, full-stack developers, evangelists, PMs to build *the* next neural search eco-system in open-source. 
+🧩 **Powerful Extensions, Simple Integration** - New AI model for Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. [Check out Jina Hub (beta)](https://github.com/jina-ai/jina-hub) and find more extensions on different use-cases contributed by the community.
 
-## Contents
+Jina is an open-source project. [We are hiring](https://jina.ai/jobs) AI engineers, full-stack developers, evangelists, PMs to build the next neural search eco-system in open-source. 
+
+## Table of Contents
 
 <img align="right" width="350px" src="./.github/install.png" />
 
@@ -88,7 +89,7 @@ On Linux/MacOS with Python >= 3.7 installed, simply run this command in your ter
 pip install jina
 ```
 
-To install Jina with extra dependencies, or install it on Raspberry Pi please refer to the [documentations](https://docs.jina.ai).
+To install Jina with extra dependencies, or install it on Raspberry Pi [please refer to the documentations](https://docs.jina.ai).
 
 #### ...or Run with Docker Container 
 
@@ -106,7 +107,7 @@ As a starter, you are invited to try Jina's "Hello, World" - a simple demo of im
 jina hello-world
 ```
 
-...or even easier for Docker users, *no any install required*, simply:
+...or even easier for Docker users, **no any install required,** simply:
 
 ```bash
 docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
@@ -121,7 +122,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 
 </details>  
 
-It downloads Fashion-MNIST training and test data and tells Jina to *index* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. After about 1 minute, it will open a webpage and show results like this:
+It downloads Fashion-MNIST training and test data; tells Jina to index 60,000 images from the training set. Then, it randomly samples images from the test set as queries, asks Jina to retrieve relevant results. After about 1 minute, it will open a webpage and show results like this:
 
 <p align="center">
   <img src="docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
@@ -189,13 +190,13 @@ pods:
 
 All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
 
-Intrigued? Play with different options via:
+Intrigued? Play and try different options:
 
 ```bash
 jina hello-world --help
 ```
 
-Make sure to continue with our [Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - understanding all key concepts of Jina in 3 minutes!  
+[Make sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - understanding all key concepts of Jina in 3 minutes!  
 
 
 ## Getting Started
@@ -322,9 +323,9 @@ The best way to learn Jina in depth is to read our documentation. Documentation 
 - [Environment variables used in Jina](https://docs.jina.ai/chapters/envs.html)
 - ... [and more](https://docs.jina.ai/index.html)
 
-Are you a Doc-star? If positive, join us! We welcome all kinds of improvements on the documentation. 
+Are you a "Doc"-star? Affirmative? Join us! We welcome all kinds of improvements on the documentation. 
 
-Documentation of the older version [is archived in here](https://github.com/jina-ai/docs/releases).
+[Documentations for the older versions are archived in here](https://github.com/jina-ai/docs/releases).
 
 ## Contributing
 
@@ -345,13 +346,13 @@ The following resources will help you make a good first contribution:
 
 ## Roadmap
 
-The [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to the future improvements.
+[GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to the future improvements.
 
-We are looking for partnerships to build a Open Governance model (e.g. Technical Steering Committee) around Jina, which enables a healthy open source ecosystem and developer-friendly culture. If you are interested in participating, feel free to contact us at [hello@jina.ai](mailto:hello@jina.ai)
+We are looking for partnerships to build a Open Governance model (e.g. Technical Steering Committee) around Jina, which enables a healthy open source ecosystem and developer-friendly culture. If you are interested in participating, feel free to contact us at [hello@jina.ai](mailto:hello@jina.ai).
 
 
 ## License
 
 Copyright (c) 2020 Jina AI Limited. All rights reserved.
 
-Jina is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
+Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
