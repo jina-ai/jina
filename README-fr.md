@@ -23,25 +23,26 @@
 </p>
 
 <p align="center">
-  <a href="https://jina.ai">English</a> •
-  <a href="">日本語</a> •
-  <a href="">français</a> •
-  <a href="">Русский язык</a> •
-  <a href="">中文</a>
+  <a href="https://github.com/jina-ai/jina">English</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README-jp.md">日本語</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README-fr.md">français</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README-de.md">Deutsch</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README-ru.md">Русский язык</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README-cn.md">中文</a>
 </p>
 
 
 <p align="center">
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
-  <a href="https://docs.jina.ai">Examples</a> •
+  <a href="https://github.com/jina-ai/examples">Examples</a> •
   <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
-  <a href="https://board.jina.ai">Dashboard (beta)</a> •
+  <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jina.ai/jobs">We are Hiring</a> •
   <a href="https://jina.ai/events">Events</a> •
-  <a href="https://blog.jina.ai">Blog</a>
+  <a href="https://jina.ai/blog">Blog</a>
 </p>
 
 Vous souhaitez mettre en place un système de recherche fondé sur un apprentissage approfondi ? Vous êtes au bon endroit !
