@@ -1,6 +1,6 @@
 ---
 name: "\U0001F914 Maybe a Bug? I'm not sure"
-about: I met a problem and I don’t know how to solve it
+about: I met a problem and I don’t know how to solve it, maybe a misunderstanding?
 title: ''
 labels: kind/problem
 assignees: ''

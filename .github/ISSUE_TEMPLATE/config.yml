@@ -8,7 +8,7 @@ contact_links:
     about: Learn from real-world examples
   - name: "🚏 Contributing Guideline"
     url: https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md
-    about: Learn from real-world examples
+    about: Follow the guideline to make a good pull request
   - name: "🔎 Search on Existing Issues"
     url: https://github.com/jina-ai/jina/search?q=&type=Issues
     about: Someone else may already post this issue and got solved
