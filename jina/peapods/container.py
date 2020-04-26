@@ -28,6 +28,9 @@ class ContainerPea(BasePea):
                                              taboo={'image', 'entrypoint', 'volumes', 'pull_latest'})
 
         if self.args.pull_latest:
+            self.logger.warning(f'pulling {self.args.image}, this could take a while. if you encounter '
+                                f'timeout error due to pulling takes to long, then please set '
+                                f'"timeout-ready" to a larger value.')
             self._client.images.pull(self.args.image)
 
         _volumes = {}
