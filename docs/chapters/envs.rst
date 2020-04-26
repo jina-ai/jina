@@ -14,7 +14,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
         .. highlight:: python
         .. code-block:: python
 
-            os.environ['JINA_LOG_PROFILING'] = 'true'
+            os.environ['JINA_LOG_NO_PROFILING'] = 'true'
 
             from jina.flow import Flow
 
@@ -104,9 +104,9 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: unset
 
-.. confval:: JINA_LOG_PROFILING
+.. confval:: JINA_LOG_NO_PROFILING
 
-    Turn on the server side event logging for profiling
+    Turn off the server side event logging for profiling, you won't able to see "task" tab in the dashboard.
 
     :default: unset
 
