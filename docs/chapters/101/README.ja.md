@@ -35,27 +35,23 @@
   </tr>
 </table>
 
-
 <h2 align="center">Document & Chunk</h2>
 
 <img align="left" src="img/ILLUS1.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
+Jinaで。**a Documentは、あなたが検索したいものです。**テキスト文書、短いつぶやき、コードスニペット、画像、ビデオ/オーディオクリップ、一日のGPSトレースなど。ドキュメントは検索時の入力クエリでもあります。
 
+**ChunkはDocumentの小さな意味単位です。**文章にしても、64x64の画像パッチにしても、3秒のビデオクリップにしても、座標とアドレスのペアにしてもいい。
 
-In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc.. A Document is also the input query when searching.
-
-**A Chunk is a small semantic unit of a Document.** It could be a sentence, a 64x64 image patch, a 3 second video clip, a pair of coordinate and address. 
-
-In Jina, a Document is like chocolate bar. Not only because it comes in different formats and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, you also don’t want to grind it into powder; either way you will lose the flavor (i.e. the semantic).
+JinaでいうところのDocumentはチョコレートバーのようなもの。形や材料が違うだけでなく、自分の好きなようにチャンクに割ることができるからです。結局、買って保存するものがチョコバーで、食べて消化するものがチャンクということになる。バー全体を飲み込むのは嫌だし、粉にするのも嫌だし、どちらにしても味（つまり意味）を失うことになります。
 
 <br/><br/><br/>
-
 
 <h2 align="center">YAML config</h2>
 
 <img align="right" src="img/ILLUS2.png" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**A YAML config is widely used in Jina to describe the properties of an object.** It offers customization, allowing users to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML config, and save an object into a YAML config.
+**YAML設定はオブジェクトのプロパティを記述するためにJinaで広く使われています。**それはカスタマイズを提供し、ユーザーがそのコードに触れることなくオブジェクトの動作を変更することを可能にします。Jinaは単純なYAML設定から直接非常に複雑なオブジェクトを構築し、YAML設定にオブジェクトを保存することができます。
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -63,26 +59,26 @@ In Jina, a Document is like chocolate bar. Not only because it comes in differen
 
 <img align="left" src="img/ILLUS3.png" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Executor represents an algorithmic unit in Jina.** Algorithms such as encoding images into vectors, storing vectors on the disk, ranking results, can all be formulated as Executors. Executor provides useful interfaces, enabling AI developers and engineers to concentrate on the algorithm. Features such as persistency, scheduling, chaining, grouping and parallelization come out of the box.
+**ExecutorはJinaのアルゴリズム単位を表します。**画像をベクターにエンコードする、ベクターをディスクに格納する、結果をランキングするなどのアルゴリズムは、すべてExecutorとして定式化することができます。Executorは便利なインターフェースを提供し、AI開発者やエンジニアがアルゴリズムに集中できるようにします。永続性、スケジューリング、チェーニング、グループ化、並列化などの機能は、その場から出てきます。
 
-The properties of an Executor are stored in a YAML config, they always go hand in hand.
+ExecutorのプロパティはYAMLの設定に保存されます。
 
 <br/><br/><br/>
 
 <h3 align="center">Family of Executors</h3>
 
-
 <p align="center">
   <img src="img/ILLUS4.png" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-**Executor is a big family.** Each family member focuses on one important aspect of the search system. Let’s meet:
-- **Crafter**: for crafting/segmenting/transforming the Documents and Chunks;
-- **Encoder**: for representing the Chunk as vector;
-- **Indexer**: for saving and retrieving vectors and key-value information from storage;
-- **Ranker**: for sorting the results;
+**Executorは大家族です。**家族それぞれが検索システムの重要な一面に焦点を当てています。会ってみましょう
 
-Having a new algorithm in mind? No problem, this family always welcomes new members!
+-   **Crafter**DocumentとChunkをクラフト/セグメント/変換するためのものです。
+-   **Encoder**: Chunkをベクトルで表現する。
+-   **Indexer**: ベクトルやキー値の情報を保存したり取得したりするためのものです。
+-   **Ranker**: 結果をソートするために使用します。
+
+新しいアルゴリズムを考えていますか？問題ありません、このファミリーは常に新しいメンバーを歓迎します!
 
 <br/><br/>
 
@@ -90,31 +86,27 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 <img align="right" src="img/ILLUS5.png" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Driver defines how an Executor behaves on network requests.** Driver helps the Executor to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and process (e.g. Numpy array).
+**Driver は、ネットワーク要求に対して Executor がどのように振る舞うかを定義します。**Driverは、トラフィックデータ(Protobufなど)をExecutorが理解して処理できる形式(Numpy配列など)に解釈することで、Executorがネットワークトラフィックを処理するのに役立ちます。
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
-
 
 <h2 align="center">Pea</h2>
 
 <img align="left" src="img/ILLUS6.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pea wraps an Executor and grants its ability to exchange data over a network.** Pea can send and receive data from other Peas. Pea can also run inside a Docker container, containing all dependencies and the contextual environment in one place.
+**PeaはExecutorをラップし、ネットワークを介してデータを交換する能力を付与します。**Peaは他のPeaとデータを送受信することができます。また、PeaはDockerコンテナ内で実行することができ、すべての依存関係とコンテキスト環境を一箇所に格納します。
 
 <img align="right" src="img/ILLUS7.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-
-
 <h2 align="center">Pod</h2>
 
 <img align="left" src="img/ILLUS8.png" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pod is a group of Peas with the same property.** Peas are running in parallel inside a Pod. Pod unifies the network interfaces of those Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds more control, scheduling and context management to the Peas.
+**Podは、同じ性質を持つPeasのグループです。**Peas は Pod 内で並列に動作しています。Pod は、それらの Peas のネットワークインターフェースを統一し、外から見ると 1 つの Pea に見えるようにします。それ以上に、Pod は Peas に制御、スケジューリング、コンテキスト管理を追加します。
 
-Pod can be run either on local host or on different computers over a network. 
+Podは、ローカルホストまたはネットワーク上の異なるコンピュータのいずれかで実行することができます。
 
 <img align="right" src="img/ILLUS9.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -122,23 +114,17 @@ Pod can be run either on local host or on different computers over a network. 
 
 <h2 align="center">Flow</h2>
 
-
 <img align="left" src="img/ILLUS10.png" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-
-**Flow represents a high-level task**, e.g. indexing, searching, training. It manages the states and context of a group of Pods, orchestrating them to accomplish one task. Flow embraces diversity, whether a Pod is remote or in the Docker container, one Flow rules them all!
+**Flowは高レベルのタスクを表します。**例えば、インデックス作成、検索、トレーニングなどです。FlowはPodsのグループの状態とコンテキストを管理し、一つのタスクを達成するためにそれらをオーケストレーションします。Flowは多様性を受け入れ、PodがリモートであろうとDockerコンテナ内であろうと、1つのFlowがすべてを支配します。
 
 <br/><br/><br/><br/><br/><br/>
 
-
-
 <h2 align="center">From Micro to Macro</h2>
 
+Jinaは幸せな家族です。Jinaを使うと和を感じることができます。
 
-Jina is a happy family. You can feel the harmony when you use Jina. 
-
-You can design at the micro-level and scale that up to the macro-level. YAMLs becomes algorithms, threads become processes, Pods become flows. The patterns and logic always remain the same. This is the beauty of Jina. 
-
+ミクロレベルで設計し、マクロレベルまでスケールアップすることができます。YAMLはアルゴリズムになり、スレッドはプロセスになり、Podsはフローになります。パターンとロジックは常に同じままです。これがJinaの良さです。
 
 <p align="center">
   <img src="img/ILLUS11.png" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
@@ -180,7 +166,4 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 </p>
 <br><br><br>
 
-
-
-The look and feel of this document ("Jina 101: First Thing to Learn About Jina") is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
-
+本文書（「Jina 101：Jinaについて学ぶための最初のこと」）の外観と使用感は、著作権 © Jina AI Limited.すべての著作権はJina AI Limitedに帰属します。お客様は、Jina AI Limitedの書面による明示的な許可なしに、ビジュアルデザインの要素やコンセプトのいかなる部分も複製、コピー、再利用することはできません。

@@ -35,27 +35,23 @@
   </tr>
 </table>
 
-
 <h2 align="center">Document & Chunk</h2>
 
 <img align="left" src="img/ILLUS1.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
+在Jina中。**a Document是指你要搜索的任何东西。**检索对象：文本文档、简短的推文、代码片段、图片、视频/音频片段、一天的GPS轨迹等。Document也是搜索时的输入查询。
 
+**Chunk是Document的一个小语义单位。**可以是一个句子，一个64X64的图像补丁，一个3秒的视频片段，一对坐标和地址。
 
-In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc.. A Document is also the input query when searching.
-
-**A Chunk is a small semantic unit of a Document.** It could be a sentence, a 64x64 image patch, a 3 second video clip, a pair of coordinate and address. 
-
-In Jina, a Document is like chocolate bar. Not only because it comes in different formats and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, you also don’t want to grind it into powder; either way you will lose the flavor (i.e. the semantic).
+在Jina中，Document就像巧克力棒一样。不仅因为它有不同的形式和成分，而且你可以用自己喜欢的方式把它分成大块。最终，你买来的是巧克力棒，储存的是巧克力块，而你吃下去消化的是巧克力块。你不想把整块巧克力棒吞下去，你也不想把它磨成粉，无论哪种方式，你都会失去它的味道（即语义）。
 
 <br/><br/><br/>
-
 
 <h2 align="center">YAML config</h2>
 
 <img align="right" src="img/ILLUS2.png" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**A YAML config is widely used in Jina to describe the properties of an object.** It offers customization, allowing users to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML config, and save an object into a YAML config.
+**在Jina中，YAML配置被广泛用于描述一个对象的属性。**它提供了自定义功能，允许用户在不接触对象代码的情况下改变对象的行为。Jina可以直接从一个简单的YAML配置中建立一个非常复杂的对象，并将对象保存到YAML配置中。
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -63,26 +59,26 @@ In Jina, a Document is like chocolate bar. Not only because it comes in differen
 
 <img align="left" src="img/ILLUS3.png" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Executor represents an algorithmic unit in Jina.** Algorithms such as encoding images into vectors, storing vectors on the disk, ranking results, can all be formulated as Executors. Executor provides useful interfaces, enabling AI developers and engineers to concentrate on the algorithm. Features such as persistency, scheduling, chaining, grouping and parallelization come out of the box.
+**Executor代表了Jina中的算法单元。**诸如将图像编码成向量、将向量存储在磁盘上、对结果进行排序等算法，都可以用Executor来表述。Executor提供了有用的接口，使AI开发者和工程师能够专注于算法。诸如持久性、调度、链式、分组和并行化等功能一应俱全。
 
-The properties of an Executor are stored in a YAML config, they always go hand in hand.
+Executor的属性存储在YAML配置中，它们总是齐头并进。
 
 <br/><br/><br/>
 
 <h3 align="center">Family of Executors</h3>
 
-
 <p align="center">
   <img src="img/ILLUS4.png" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-**Executor is a big family.** Each family member focuses on one important aspect of the search system. Let’s meet:
-- **Crafter**: for crafting/segmenting/transforming the Documents and Chunks;
-- **Encoder**: for representing the Chunk as vector;
-- **Indexer**: for saving and retrieving vectors and key-value information from storage;
-- **Ranker**: for sorting the results;
+**Executor是一个大家庭。**每一个家庭成员都会集中在一个重要的方面进行搜索系统。让我们来认识一下。
 
-Having a new algorithm in mind? No problem, this family always welcomes new members!
+-   **Crafter**：用于制作/分割/转换Document和Chunk。
+-   **Encoder**编码：用于将Chunk表示为矢量。
+-   **Indexer**：用于从存储中保存和检索向量和键值信息。
+-   **Ranker**：用于对结果进行排序。
+
+心中有了新的算法？没问题，这个家族随时欢迎新成员加入!
 
 <br/><br/>
 
@@ -90,31 +86,27 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 <img align="right" src="img/ILLUS5.png" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Driver defines how an Executor behaves on network requests.** Driver helps the Executor to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and process (e.g. Numpy array).
+**Driver定义了Executor在网络请求时的行为方式。**Driver通过将流量数据（如Protobuf）解释成Executor能够理解和处理的格式（如Numpy数组），帮助Executor处理网络流量。
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
-
 
 <h2 align="center">Pea</h2>
 
 <img align="left" src="img/ILLUS6.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pea wraps an Executor and grants its ability to exchange data over a network.** Pea can send and receive data from other Peas. Pea can also run inside a Docker container, containing all dependencies and the contextual environment in one place.
+**Pea包装一个Executor并授予其通过网络交换数据的能力。**Pea可以从其他Pea发送和接收数据。Pea也可以在Docker容器内运行，在一个地方包含所有的依赖关系和上下文环境。
 
 <img align="right" src="img/ILLUS7.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-
-
 <h2 align="center">Pod</h2>
 
 <img align="left" src="img/ILLUS8.png" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pod is a group of Peas with the same property.** Peas are running in parallel inside a Pod. Pod unifies the network interfaces of those Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds more control, scheduling and context management to the Peas.
+**Pod是一组具有相同属性的Peas。**Peas在一个Pod内部并行运行。Pod统一了这些Peas的网络接口，使它们从外部看起来就像一个个Pea。除此之外，Pod还为Peas增加了更多的控制、调度和上下文管理。
 
-Pod can be run either on local host or on different computers over a network. 
+Pod既可以在本地主机上运行，也可以通过网络在不同的计算机上运行。
 
 <img align="right" src="img/ILLUS9.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -122,23 +114,17 @@ Pod can be run either on local host or on different computers over a network. 
 
 <h2 align="center">Flow</h2>
 
-
 <img align="left" src="img/ILLUS10.png" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-
-**Flow represents a high-level task**, e.g. indexing, searching, training. It manages the states and context of a group of Pods, orchestrating them to accomplish one task. Flow embraces diversity, whether a Pod is remote or in the Docker container, one Flow rules them all!
+**Flow代表了一项高级任务**, 例如，索引、搜索、训练。它管理一组Pods的状态和上下文，协调它们来完成一个任务。Flow拥抱了多样性，无论一个Pod是在远程还是在Docker容器中，一个Flow统治了所有的Pod!
 
 <br/><br/><br/><br/><br/><br/>
 
-
-
 <h2 align="center">From Micro to Macro</h2>
 
+Jina是一个幸福的家庭。当你使用Jina时，你可以感受到这种和谐。
 
-Jina is a happy family. You can feel the harmony when you use Jina. 
-
-You can design at the micro-level and scale that up to the macro-level. YAMLs becomes algorithms, threads become processes, Pods become flows. The patterns and logic always remain the same. This is the beauty of Jina. 
-
+你可以在微观层面进行设计，并将其扩展到宏观层面。YAMLs变成算法，线程变成进程，Pods变成流。模式和逻辑始终保持不变。这就是Jina的魅力所在。
 
 <p align="center">
   <img src="img/ILLUS11.png" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
@@ -180,7 +166,4 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 </p>
 <br><br><br>
 
-
-
-The look and feel of this document ("Jina 101: First Thing to Learn About Jina") is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
-
+本文（"Jina 101：了解Jina的第一件事"）的外观和感觉是Jina AI有限公司版权所有。保留所有权利。未经Jina AI有限公司明确的书面许可，客户不得复制、拷贝或重复使用任何部分的视觉设计元素或概念。

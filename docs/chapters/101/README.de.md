@@ -35,27 +35,23 @@
   </tr>
 </table>
 
-
 <h2 align="center">Document & Chunk</h2>
 
 <img align="left" src="img/ILLUS1.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
+In Jina,**ein Dokument ist alles, wonach Sie suchen möchten**: ein Textdokument, ein kurzer Tweet, ein Codeschnipsel, ein Bild, ein Video-/Audioclip, GPS-Spuren eines Tages usw. Ein Dokument ist auch die Eingabeanfrage bei der Suche.
 
+**Ein Chunk ist eine kleine semantische Einheit eines Dokuments.** Es könnte ein Satz, ein 64x64-Bildfeld, ein 3-Sekunden-Videoclip, ein Koordinaten- und Adressenpaar sein
 
-In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc.. A Document is also the input query when searching.
-
-**A Chunk is a small semantic unit of a Document.** It could be a sentence, a 64x64 image patch, a 3 second video clip, a pair of coordinate and address. 
-
-In Jina, a Document is like chocolate bar. Not only because it comes in different formats and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, you also don’t want to grind it into powder; either way you will lose the flavor (i.e. the semantic).
+In Jina ist ein Dokument wie ein Schokoriegel. Nicht nur, weil es in verschiedenen Formaten und Zutaten erhältlich ist, sondern auch, weil man es nach Belieben in Stücke brechen kann. Was man schließlich kauft und lagert, sind die Schokoriegel, und was man isst und verdauen kann, sind die Stücke. Sie wollen nicht den ganzen Riegel schlucken, Sie wollen ihn auch nicht zu Pulver zermahlen; so oder so verlieren Sie den Geschmack (d.h. die Semantik).
 
 <br/><br/><br/>
-
 
 <h2 align="center">YAML config</h2>
 
 <img align="right" src="img/ILLUS2.png" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**A YAML config is widely used in Jina to describe the properties of an object.** It offers customization, allowing users to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML config, and save an object into a YAML config.
+**Eine YAML-Konfiguration wird in Jina häufig verwendet, um die Eigenschaften eines Objekts zu beschreiben.** Es bietet Anpassungsmöglichkeiten, so dass Benutzer das Verhalten eines Objekts ändern können, ohne seinen Code zu berühren. Jina kann ein sehr kompliziertes Objekt direkt aus einer einfachen YAML-Konfiguration erstellen und ein Objekt in einer YAML-Konfiguration speichern.
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -63,26 +59,26 @@ In Jina, a Document is like chocolate bar. Not only because it comes in differen
 
 <img align="left" src="img/ILLUS3.png" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Executor represents an algorithmic unit in Jina.** Algorithms such as encoding images into vectors, storing vectors on the disk, ranking results, can all be formulated as Executors. Executor provides useful interfaces, enabling AI developers and engineers to concentrate on the algorithm. Features such as persistency, scheduling, chaining, grouping and parallelization come out of the box.
+**Executor stellt eine algorithmische Einheit in Jina dar.** Algorithmen wie das Kodieren von Bildern in Vektoren, das Speichern von Vektoren auf der Platte, das Ranking der Ergebnisse, können alle als Executor formuliert werden. Executor bietet nützliche Schnittstellen, die es KI-Entwicklern und -Ingenieuren ermöglichen, sich auf den Algorithmus zu konzentrieren. Funktionen wie Persistenz, Planung, Verkettung, Gruppierung und Parallelisierung sind sofort einsatzbereit.
 
-The properties of an Executor are stored in a YAML config, they always go hand in hand.
+Die Eigenschaften eines EXECUTORs werden in einer YAML-Konfiguration gespeichert, sie gehen immer Hand in Hand.
 
 <br/><br/><br/>
 
 <h3 align="center">Family of Executors</h3>
 
-
 <p align="center">
   <img src="img/ILLUS4.png" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-**Executor is a big family.** Each family member focuses on one important aspect of the search system. Let’s meet:
-- **Crafter**: for crafting/segmenting/transforming the Documents and Chunks;
-- **Encoder**: for representing the Chunk as vector;
-- **Indexer**: for saving and retrieving vectors and key-value information from storage;
-- **Ranker**: for sorting the results;
+**Executor ist eine große Familie.** Jedes Familienmitglied konzentriert sich auf einen wichtigen Aspekt des Recherchensystems. Treffen wir uns:
 
-Having a new algorithm in mind? No problem, this family always welcomes new members!
+-   **Crafter**: für die Herstellung/Segmentierung/Umwandlung des Dokuments und Chunk;
+-   **Encoder**: zur Darstellung des Chunk als Vektor;
+-   **Indexer**: zum Speichern und Abrufen von Vektoren und Schlüsselwert-Informationen aus dem Speicher;
+-   **Ranker**: zum Sortieren der Ergebnisse;
+
+Haben Sie einen neuen Algorithmus im Sinn? Kein Problem, diese Familie heißt neue Mitglieder immer willkommen!
 
 <br/><br/>
 
@@ -90,31 +86,27 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 <img align="right" src="img/ILLUS5.png" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Driver defines how an Executor behaves on network requests.** Driver helps the Executor to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and process (e.g. Numpy array).
+**Driver definiert, wie sich ein Executor bei Netzwerkanforderungen verhält.** Driver hilft dem Executor bei der Abwicklung des Netzwerkverkehrs, indem er die Verkehrsdaten (z.B. Protobuf) in ein Format interpretiert, das der Executor verstehen und verarbeiten kann (z.B. Numpy array).
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
-
 
 <h2 align="center">Pea</h2>
 
 <img align="left" src="img/ILLUS6.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pea wraps an Executor and grants its ability to exchange data over a network.** Pea can send and receive data from other Peas. Pea can also run inside a Docker container, containing all dependencies and the contextual environment in one place.
+**Pea umhüllt einen Executor und gewährt ihm die Fähigkeit, Daten über ein Netzwerk auszutauschen.** Die Pea kann Daten von anderen PEAs senden und empfangen. Die Pea kann auch innerhalb eines Docker-Containers laufen, der alle Abhängigkeiten und die kontextbezogene Umgebung an einem Ort enthält.
 
 <img align="right" src="img/ILLUS7.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-
-
 <h2 align="center">Pod</h2>
 
 <img align="left" src="img/ILLUS8.png" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pod is a group of Peas with the same property.** Peas are running in parallel inside a Pod. Pod unifies the network interfaces of those Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds more control, scheduling and context management to the Peas.
+**Pod ist eine Gruppe von Erbsen mit der gleichen Eigenschaft.** Erbsen laufen parallel in einem Pod. Pod vereinheitlicht die Netzwerkschnittstellen dieser PEAs, so dass sie von außen wie eine einzige Pea aussehen. Darüber hinaus verleiht ein Pod den Peas mehr Kontrolle, Zeitplanung und Kontextmanagement.
 
-Pod can be run either on local host or on different computers over a network. 
+Pod kann entweder auf einem lokalen Host oder auf verschiedenen Computern über ein Netzwerk ausgeführt werden
 
 <img align="right" src="img/ILLUS9.png" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -122,23 +114,17 @@ Pod can be run either on local host or on different computers over a network. 
 
 <h2 align="center">Flow</h2>
 
-
 <img align="left" src="img/ILLUS10.png" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-
-**Flow represents a high-level task**, e.g. indexing, searching, training. It manages the states and context of a group of Pods, orchestrating them to accomplish one task. Flow embraces diversity, whether a Pod is remote or in the Docker container, one Flow rules them all!
+**Flow stellt eine hochrangige Aufgabe dar**z.B. Indexierung, Suche, Schulung. Es verwaltet die Zustände und den Kontext einer Gruppe von Pods und orchestriert sie, um eine Aufgabe zu erfüllen. Flow umfasst die Vielfalt, unabhängig davon, ob sich ein Pod entfernt oder im Docker-Container befindet - ein Flow beherrscht sie alle!
 
 <br/><br/><br/><br/><br/><br/>
 
-
-
 <h2 align="center">From Micro to Macro</h2>
 
+Jina ist eine glückliche Familie. Sie können die Harmonie spüren, wenn Sie Jina benutzen
 
-Jina is a happy family. You can feel the harmony when you use Jina. 
-
-You can design at the micro-level and scale that up to the macro-level. YAMLs becomes algorithms, threads become processes, Pods become flows. The patterns and logic always remain the same. This is the beauty of Jina. 
-
+Sie können auf der Mikroebene entwerfen und diese bis auf die Makroebene skalieren. Aus YAMLs werden Algorithmen, aus Threads werden Prozesse, aus Pods werden Flüsse. Die Muster und die Logik bleiben immer gleich. Das ist die Schönheit von Jina
 
 <p align="center">
   <img src="img/ILLUS11.png" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
@@ -180,7 +166,4 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 </p>
 <br><br><br>
 
-
-
-The look and feel of this document ("Jina 101: First Thing to Learn About Jina") is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
-
+Das Aussehen und die Gestaltung dieses Dokuments ("Jina 101: First Thing to Learn About Jina") ist urheberrechtlich geschützt © Jina AI Limited. Alle Rechte vorbehalten. Der Kunde darf ohne ausdrückliche schriftliche Genehmigung von Jina AI Limited keine Teile der visuellen Designelemente oder Konzepte vervielfältigen, kopieren oder wiederverwenden.
