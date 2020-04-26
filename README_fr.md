@@ -66,14 +66,14 @@ Jina est un projet open-source. Nous recrutons](https://jina.ai/jobs) des ingén
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Install](#install)
+- [Installez](#installez)
 - [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Getting Started](#getting-started)
+- [Pour commencer](#pour-commencer)
 - [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Community](#community)
-- [Roadmap](#roadmap)
-- [License](#license)
+- [Contribuer à](#contribuer-%C3%A0)
+- [Communauté](#communaut%C3%A9)
+- [Feuille de route](#feuille-de-route)
+- [Licence](#licence)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

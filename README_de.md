@@ -69,14 +69,14 @@ Jina ist ein Open-Source-Projekt. Wir stellen](https://jina.ai/jobs) KI-Ingenieu
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Install](#install)
+- [installieren](#installieren)
 - [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Community](#community)
-- [Roadmap](#roadmap)
-- [License](#license)
+- [Erste Schritte](#erste-schritte)
+- [Dokumentation](#dokumentation)
+- [Beitragend](#beitragend)
+- [Gemeinschaft](#gemeinschaft)
+- [Fahrplan](#fahrplan)
+- [Lizenz](#lizenz)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

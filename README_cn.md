@@ -69,14 +69,14 @@ Jina是一个开源项目。我们正在招聘](https://jina.ai/jobs)AI工程师
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Install](#install)
+- [安装](#%E5%AE%89%E8%A3%85)
 - [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Community](#community)
-- [Roadmap](#roadmap)
-- [License](#license)
+- [开始](#%E5%BC%80%E5%A7%8B)
+- [文档](#%E6%96%87%E6%A1%A3)
+- [贡献者](#%E8%B4%A1%E7%8C%AE%E8%80%85)
+- [社区](#%E7%A4%BE%E5%8C%BA)
+- [路线图](#%E8%B7%AF%E7%BA%BF%E5%9B%BE)
+- [许可证](#%E8%AE%B8%E5%8F%AF%E8%AF%81)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
