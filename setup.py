@@ -72,14 +72,11 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Jina is the cloud-native neural search solution '
-                'powered by AI and deep learning. '
-                'It provides a universal solution of large-scale index and query '
-                'for media contents.',
-    author='Jina Team and All Contributors',
+    description='Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning',
+    author='Jina Dev Team',
     author_email='dev-team@jina.ai',
     license='Apache 2.0',
-    url='https://jina.ai',
+    url='https://github.com/jina-ai/jina',
     download_url='https://github.com/jina-ai/jina/tags',
     long_description=_long_description,
     long_description_content_type='text/markdown',
@@ -93,13 +90,13 @@ setup(
         'console_scripts': ['jina=jina.main:main'],
     },
     classifiers=(
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
-        'Programming Language :: Cython',
         'Programming Language :: Unix Shell',
         'Environment :: Console',
         'License :: OSI Approved :: Apache Software License',
@@ -116,5 +113,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ),
     keywords='jina cloud-native semantic query search index elastic neural-network encoding '
-             'embedding serving docker container image video audio lfai cncf',
+             'embedding serving docker container image video audio deep-learning',
 )
