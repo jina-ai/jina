@@ -67,7 +67,7 @@ Jina是一个开源项目。[我们正在招聘](https://jina.ai/jobs)AI工程�
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 -   [安装](#install)
--   [吉娜 "你好，世界！"👋🌍](#jina-hello-world-)
+-   [Jina "你好，世界！"👋🌍](#jina-hello-world-)
 -   [开始](#getting-started)
 -   [文档](#documentation)
 -   [贡献者](#contributing)
@@ -97,9 +97,9 @@ pip install jina
 docker run jinaai/jina
 ```
 
-## 吉娜 "你好，世界！"👋🌍
+## Jina "你好，世界！"👋🌍
 
-作为入门者，我们邀请你尝试一下Jina的 "Hello，世界"--简单的图像神经搜索的演示[时尚-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/).不需要额外的依赖关系，只需做。
+作为入门者，我们邀请你尝试一下Jina的 "Hello，世界"--简单的图像神经搜索的演示[Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/).不需要额外的依赖关系，只需做。
 
 ```bash
 jina hello-world
@@ -192,7 +192,7 @@ pods:
 jina hello-world --help
 ```
 
-[请务必继续关注我们的《吉娜101指南》。](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - 在3分钟内理解吉娜的所有关键概念!  
+[请务必继续关注我们的《Jina101指南》。](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - 在3分钟内理解Jina的所有关键概念!  
 
 ## 开始
 
