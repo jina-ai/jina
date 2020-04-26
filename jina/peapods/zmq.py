@@ -163,8 +163,8 @@ class Zmqlet:
         """Print out the network stats of of itself """
         self.logger.info(f'#sent: {self.msg_sent} '
                          f'#recv: {self.msg_recv} '
-                         f'sent size: {get_readable_size(self.bytes_sent)} '
-                         f'recv size: {get_readable_size(self.bytes_recv)}')
+                         f'sent_size: {get_readable_size(self.bytes_sent)} '
+                         f'recv_size: {get_readable_size(self.bytes_recv)}')
         profile_logger.debug({'msg_sent': self.msg_sent,
                               'msg_recv': self.msg_recv,
                               'bytes_sent': self.bytes_sent,
