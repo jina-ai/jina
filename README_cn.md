@@ -52,7 +52,7 @@
 
 **🌌 通用搜索解决方案**--Jina可以在多个平台和架构上实现任何类型的大规模索引和查询。无论您是搜索图片、视频片段、音频片段、长的法律文档、短的推文，Jina都能处理。
 
-**🚀高前格式和最新技术** - Jina的目标是AI-in-production。您可以轻松扩展出您的VideoBERT、Xception、您的单词标记器、图像分割器和数据库，以处理亿级数据。复制品和碎片等功能都是现成的。
+**🚀高性能和最新技术** - Jina的目标是AI-in-production。您可以轻松扩展出VideoBERT、Xception、您最爱的词法分析器、亦或是图像语义分割和数据库，以处理亿级数据。复制品和碎片等功能都是现成的。
 
 **🐣系统工程轻松搞定** - Jina提供了一个一站式的解决方案，让你从手工制作和粘包、库和数据库中解脱出来。通过最直观的API和【dashboard UI】(https://github.com/jina-ai/dashboard)，构建一个云端搜索系统只是分分钟的事情。
 
@@ -102,7 +102,7 @@ docker run jinaai/jina
 
 ## Jina "Hello, World!" 👋🌍
 
-作为入门者，我们邀请您尝试一下Jina的 "Hello，World"--简单的图像神经搜索[FASHION-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/)的简单演示。不需要额外的依赖，只需做：
+作为入门者，您可以尝试一下Jina的 "Hello，World"--简单的图像神经搜索[FASHION-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/)的简单演示。不需要额外的依赖，只需做：
 
 ```bash
 jina hello-world
@@ -250,16 +250,16 @@ jina hello-world --help
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">3分钟内构建基于BERT的NLP语义搜索系统</a></h4>
-学习如何使用Jina和DistilBert来构建俚语搜索系统
+<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">构建NLP语义搜索系统</a></h4>
+学习如何构建南方公园的脚本搜索系统，练习Flows和Pods的相关知识
 </td>
 <td><h3>🐣</h3></td>
 </tr>
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">3分钟内构建花卉图片搜索系统</a></h4>
-学习如何使用Jina和Torchvision构建花卉图片搜索系统
+<h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">构建花卉图片搜索系统</a></h4>
+学习如何构建一个图像搜索系统，以及如何定义自己的执行器并在docker中运行。
 </td>
 <td><h3>🐣</h3></td>
 </tr>
