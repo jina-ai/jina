@@ -106,7 +106,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
 .. confval:: JINA_LOG_PROFILING
 
-    Turn on the server side event logging for profiling
+    Turn on the server side event logging for profiling, otherwise you won't able to see "task" tab in the dashboard.
 
     :default: unset
 
