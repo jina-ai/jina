@@ -161,6 +161,7 @@ class MyTestCase(JinaTestCase):
              .add(name='d2', yaml_path='_forward'))
         with f:
             self.assertEqual(getattr(f._pod_nodes['d1'].peas_args['tail'], 'host_out'), defaulthost)
+            f.dry_run()
 
     def test_tail_host_docker2local(self):
         f = (Flow()
@@ -168,3 +169,4 @@ class MyTestCase(JinaTestCase):
              .add(name='d2', yaml_path='_forward'))
         with f:
             self.assertEqual(getattr(f._pod_nodes['d1'].tail_args, 'host_out'), localhost)
+            f.dry_run()

@@ -422,6 +422,9 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
 
     if as_router:
         _head_args.name = (args.name or '') + '-head'
+
+    # head and tail never run in docker, reset their image to None
+    _head_args.image = None
     return _head_args
 
 
@@ -436,6 +439,9 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
         _tail_args.yaml_path = args.reducing_yaml_path
         _tail_args.name = (args.name or '') + '-tail'
     _tail_args.num_part = num_part
+
+    # head and tail never run in docker, reset their image to None
+    _tail_args.image = None
     return _tail_args
 
 
@@ -454,10 +460,7 @@ def _fill_in_host(bind_args, connect_args):
         local_host = 'host.docker.internal'
 
     if bind_local and conn_local and conn_docker:
-        if conn_tail:
-            return __default_host__
-        else:
-            return local_host
+        return local_host
     elif bind_local and conn_local and not conn_docker:
         return __default_host__
     elif not bind_local and bind_conn_same_remote:
