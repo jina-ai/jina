@@ -501,9 +501,11 @@ def get_full_version():
     from google.protobuf.internal import api_implementation
     import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
     from grpc import _grpcio_metadata
+    from pkg_resources import resource_filename
     import platform
     from .logging import default_logger
     try:
+
         info = {'jina': __version__,
                 'jina-proto': __proto_version__,
                 'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', colored('(unset)', 'yellow')),
@@ -518,7 +520,9 @@ def get_full_version():
                 'platform-release': platform.release(),
                 'platform-version': platform.version(),
                 'architecture': platform.machine(),
-                'processor': platform.processor()}
+                'processor': platform.processor(),
+                'jina-resources': resource_filename('jina', 'resources')
+                }
         version_info = '\n'.join(f'{k:30s}{v}' for k, v in info.items())
         env_info = '\n'.join('%-30s%s' % (k, os.environ.get(k, colored('(unset)', 'yellow'))) for k in
                              __jina_env__)

@@ -6,7 +6,7 @@ import os
 
 from . import default_logger
 from .queue import __sse_queue__, __profile_queue__
-from .. import JINA_GLOBAL
+from .. import JINA_GLOBAL, __version__
 from ..helper import yaml
 
 
@@ -34,7 +34,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
 
     """
     try:
-        from flask import Flask, Response
+        from flask import Flask, Response, jsonify
         from flask_cors import CORS
     except ImportError:
         raise ImportError('Flask or its dependencies are not fully installed, '
@@ -68,6 +68,23 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     def get_profile():
         """Get the profile logs, endpoint `/profile/stream`  """
         return Response(_profile_stream(), mimetype='text/event-stream')
+
+    @app.route(_config['endpoints']['podapi'])
+    def get_podargs():
+        """Get the default args of a pod"""
+
+        from jina.main.parser import set_pod_parser
+        from argparse import _StoreAction, _StoreTrueAction
+        port_attr = ('help', 'choices', 'default')
+        d = {}
+        parser = set_pod_parser()
+        for a in parser._actions:
+            if isinstance(a, _StoreAction) or isinstance(a, _StoreTrueAction):
+                d[a.dest] = {p: getattr(a, p) for p in port_attr}
+                d[a.dest]['type'] = a.type.__name__ if a.type else a.type
+
+        d = {'pod': d, 'version': __version__, 'usage': parser.format_help()}
+        return jsonify(d)
 
     @app.route(_config['endpoints']['shutdown'])
     def shutdown():
