@@ -15,6 +15,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -445,4 +446,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```925600fe```](https://github.com/jina-ai/jina/commit/925600fe551b068f7034158dea34d7f51dd1bc67)] __-__ update language order (*Han Xiao*)
  - [[```3d272587```](https://github.com/jina-ai/jina/commit/3d2725874cf6dfd6782afd4b8de4b44df2620c01)] __-__ fix layout (*Han Xiao*)
  - [[```ae4e9db8```](https://github.com/jina-ai/jina/commit/ae4e9db80302584bd49e09f8c5bdac4397e56ec8)] __-__ fix layout 101 (*Han Xiao*)
+
+## Release Note (`0.1.0`)
+
+> Release time: 2020-04-27 22:52:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```da3671c1```](https://github.com/jina-ai/jina/commit/da3671c12574813d9ded352a7cb79aba7dcdf1a7)] __-__ setup script (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```530bbd09```](https://github.com/jina-ai/jina/commit/530bbd09cdcae564773db76f805eee5699f2fa33)] __-__ revert force tag (*Han Xiao*)
+ - [[```1687a058```](https://github.com/jina-ai/jina/commit/1687a058b80db6a887e395d4f6c07e7d690082bd)] __-__ remove force tag (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```80a51403```](https://github.com/jina-ai/jina/commit/80a51403144e6ec9958a3058cd70955dedb9b27f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7ee1c3e0```](https://github.com/jina-ai/jina/commit/7ee1c3e06c3ee37012d749f046d45af7debef811)] __-__ __version__: bumping version to 0.0.10 (*Jina Dev Bot*)
 
