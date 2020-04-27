@@ -26,11 +26,11 @@ jobs:
           TOC_TITLE: ''
           TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
           COMMIT_MESSAGE: 'chore(docs): update TOC'
-      #      - uses: peter-evans/dockerhub-description@v2.1.0
-      #        env:
-      #          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-      #          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
-      #          DOCKERHUB_REPOSITORY: jinaai/jina
+      - uses: peter-evans/dockerhub-description@v2.1.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+          DOCKERHUB_REPOSITORY: jinaai/jina
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
