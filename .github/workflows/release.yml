@@ -2,7 +2,7 @@ name: Release Cycle
 
 on:
   schedule:
-    - cron: "55 15 * * 5"
+    - cron: "50 23 * * 1"
 
 #on:
 #  push:
@@ -25,6 +25,9 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           npm install git-release-notes
           pip install twine wheel
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
       - run: ./release.sh
       - if: failure()
         run: echo "nothing to release"

@@ -145,7 +145,7 @@ setup(
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
     },
-    classifiers=(
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
@@ -167,7 +167,7 @@ setup(
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
-    ),
+    ],
     keywords='jina cloud-native semantic query search index elastic neural-network encoding '
              'embedding serving docker container image video audio deep-learning',
 )

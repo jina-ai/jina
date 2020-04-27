@@ -36,7 +36,7 @@ function clean_build {
 function pub_pypi {
     # publish to pypi
     clean_build
-    python setup.py sdist bdist_wheel
+    python setup.py sdist
     twine upload dist/*
     clean_build
 }
@@ -82,6 +82,9 @@ NEXT_VER=$(echo $RELEASE_VER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sp
 printf "bump master version: \e[1;32m$NEXT_VER\e[0m\n"
 
 make_release_note
+
+pub_pypi
+
 VER_TAG_NEXT=$VER_TAG"'"${NEXT_VER#"v"}"'"
 update_ver_line "$VER_TAG" "$VER_TAG_NEXT" $INIT_FILE
 git_commit
