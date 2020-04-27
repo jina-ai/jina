@@ -39,9 +39,9 @@
 
 <img align="left" src="img/ILLUS1.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-Jinaで。**a Documentは、あなたが検索したいものです。**テキスト文書、短いつぶやき、コードスニペット、画像、ビデオ/オーディオクリップ、一日のGPSトレースなど。ドキュメントは検索時の入力クエリでもあります。
+Jinaで。**a Documentは、あなたが検索したいものです**。テキスト文書、短いつぶやき、コードスニペット、画像、ビデオ/オーディオクリップ、一日のGPSトレースなど。ドキュメントは検索時の入力クエリでもあります。
 
-**ChunkはDocumentの小さな意味単位です。**文章にしても、64x64の画像パッチにしても、3秒のビデオクリップにしても、座標とアドレスのペアにしてもいい。
+**ChunkはDocumentの小さな意味単位です**。文章にしても、64x64の画像パッチにしても、3秒のビデオクリップにしても、座標とアドレスのペアにしてもいい。
 
 JinaでいうところのDocumentはチョコレートバーのようなもの。形や材料が違うだけでなく、自分の好きなようにチャンクに割ることができるからです。結局、買って保存するものがチョコバーで、食べて消化するものがチャンクということになる。バー全体を飲み込むのは嫌だし、粉にするのも嫌だし、どちらにしても味（つまり意味）を失うことになります。
 
@@ -51,7 +51,7 @@ JinaでいうところのDocumentはチョコレートバーのようなもの�
 
 <img align="right" src="img/ILLUS2.png" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**YAML設定はオブジェクトのプロパティを記述するためにJinaで広く使われています。**それはカスタマイズを提供し、ユーザーがそのコードに触れることなくオブジェクトの動作を変更することを可能にします。Jinaは単純なYAML設定から直接非常に複雑なオブジェクトを構築し、YAML設定にオブジェクトを保存することができます。
+**YAML設定はオブジェクトのプロパティを記述するためにJinaで広く使われています**。それはカスタマイズを提供し、ユーザーがそのコードに触れることなくオブジェクトの動作を変更することを可能にします。Jinaは単純なYAML設定から直接非常に複雑なオブジェクトを構築し、YAML設定にオブジェクトを保存することができます。
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -59,7 +59,7 @@ JinaでいうところのDocumentはチョコレートバーのようなもの�
 
 <img align="left" src="img/ILLUS3.png" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**ExecutorはJinaのアルゴリズム単位を表します。**画像をベクターにエンコードする、ベクターをディスクに格納する、結果をランキングするなどのアルゴリズムは、すべてExecutorとして定式化することができます。Executorは便利なインターフェースを提供し、AI開発者やエンジニアがアルゴリズムに集中できるようにします。永続性、スケジューリング、チェーニング、グループ化、並列化などの機能は、その場から出てきます。
+**ExecutorはJinaのアルゴリズム単位を表します**。画像をベクターにエンコードする、ベクターをディスクに格納する、結果をランキングするなどのアルゴリズムは、すべてExecutorとして定式化することができます。Executorは便利なインターフェースを提供し、AI開発者やエンジニアがアルゴリズムに集中できるようにします。永続性、スケジューリング、チェーニング、グループ化、並列化などの機能は、その場から出てきます。
 
 ExecutorのプロパティはYAMLの設定に保存されます。
 
@@ -71,7 +71,7 @@ ExecutorのプロパティはYAMLの設定に保存されます。
   <img src="img/ILLUS4.png" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-**Executorは大家族です。**家族それぞれが検索システムの重要な一面に焦点を当てています。会ってみましょう
+**Executorは大家族です**。家族それぞれが検索システムの重要な一面に焦点を当てています。会ってみましょう
 
 -   **Crafter**DocumentとChunkをクラフト/セグメント/変換するためのものです。
 -   **Encoder**: Chunkをベクトルで表現する。
@@ -86,7 +86,7 @@ ExecutorのプロパティはYAMLの設定に保存されます。
 
 <img align="right" src="img/ILLUS5.png" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Driver は、ネットワーク要求に対して Executor がどのように振る舞うかを定義します。**Driverは、トラフィックデータ(Protobufなど)をExecutorが理解して処理できる形式(Numpy配列など)に解釈することで、Executorがネットワークトラフィックを処理するのに役立ちます。
+**Driver は、ネットワーク要求に対して Executor がどのように振る舞うかを定義します**。Driverは、トラフィックデータ(Protobufなど)をExecutorが理解して処理できる形式(Numpy配列など)に解釈することで、Executorがネットワークトラフィックを処理するのに役立ちます。
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
@@ -94,7 +94,7 @@ ExecutorのプロパティはYAMLの設定に保存されます。
 
 <img align="left" src="img/ILLUS6.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**PeaはExecutorをラップし、ネットワークを介してデータを交換する能力を付与します。**Peaは他のPeaとデータを送受信することができます。また、PeaはDockerコンテナ内で実行することができ、すべての依存関係とコンテキスト環境を一箇所に格納します。
+**PeaはExecutorをラップし、ネットワークを介してデータを交換する能力を付与します**。Peaは他のPeaとデータを送受信することができます。また、PeaはDockerコンテナ内で実行することができ、すべての依存関係とコンテキスト環境を一箇所に格納します。
 
 <img align="right" src="img/ILLUS7.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -104,7 +104,7 @@ ExecutorのプロパティはYAMLの設定に保存されます。
 
 <img align="left" src="img/ILLUS8.png" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Podは、同じ性質を持つPeasのグループです。**Peas は Pod 内で並列に動作しています。Pod は、それらの Peas のネットワークインターフェースを統一し、外から見ると 1 つの Pea に見えるようにします。それ以上に、Pod は Peas に制御、スケジューリング、コンテキスト管理を追加します。
+**Podは、同じ性質を持つPeasのグループです**。Peas は Pod 内で並列に動作しています。Pod は、それらの Peas のネットワークインターフェースを統一し、外から見ると 1 つの Pea に見えるようにします。それ以上に、Pod は Peas に制御、スケジューリング、コンテキスト管理を追加します。
 
 Podは、ローカルホストまたはネットワーク上の異なるコンピュータのいずれかで実行することができます。
 
@@ -116,7 +116,7 @@ Podは、ローカルホストまたはネットワーク上の異なるコン�
 
 <img align="left" src="img/ILLUS10.png" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Flowは高レベルのタスクを表します。**例えば、インデックス作成、検索、トレーニングなどです。FlowはPodsのグループの状態とコンテキストを管理し、一つのタスクを達成するためにそれらをオーケストレーションします。Flowは多様性を受け入れ、PodがリモートであろうとDockerコンテナ内であろうと、1つのFlowがすべてを支配します。
+**Flowは高レベルのタスクを表します**。例えば、インデックス作成、検索、トレーニングなどです。FlowはPodsのグループの状態とコンテキストを管理し、一つのタスクを達成するためにそれらをオーケストレーションします。Flowは多様性を受け入れ、PodがリモートであろうとDockerコンテナ内であろうと、1つのFlowがすべてを支配します。
 
 <br/><br/><br/><br/><br/><br/>
 
