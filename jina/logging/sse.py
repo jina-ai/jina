@@ -81,7 +81,12 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
         for a in parser._actions:
             if isinstance(a, _StoreAction) or isinstance(a, _StoreTrueAction):
                 d[a.dest] = {p: getattr(a, p) for p in port_attr}
-                d[a.dest]['type'] = a.type.__name__ if a.type else a.type
+                if a.type:
+                    d[a.dest]['type'] = a.type.__name__
+                elif isinstance(a, _StoreTrueAction):
+                    d[a.dest]['type'] = 'bool'
+                else:
+                    d[a.dest]['type'] = a.type
 
         d = {'pod': d, 'version': __version__, 'usage': parser.format_help()}
         return jsonify(d)
