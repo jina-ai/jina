@@ -114,7 +114,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 <summary>Click here to see the console output</summary>
 
 <p align="center">
-  <img src="docs/chapters/helloworld/hello-world-demo.png?raw=true" alt="hello world console output">
+  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-demo.png?raw=true" alt="hello world console output">
 </p>
 
 </details>  
@@ -122,7 +122,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 Sie lädt die Trainings- und Testdaten von Fashion-MNIST herunter; Jina wird angewiesen, 60.000 Bilder aus dem Trainingsset zu indexieren. Dann entnimmt sie nach dem Zufallsprinzip Bilder aus dem Testset als Abfragen und bittet Jina, relevante Ergebnisse abzurufen. Nach etwa 1 Minute öffnet sie eine Webseite und zeigt Ergebnisse wie dieses:
 
 <p align="center">
-  <img src="docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
+  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
 Und die Umsetzung dahinter? So einfach wie es sein sollte:
@@ -177,7 +177,7 @@ pods:
 </td>
 <td>
 
-![Flow in Dashboard](docs/chapters/helloworld/hello-world-flow.png)
+![Flow in Dashboard](https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-flow.png)
 
 </td>
 </tr>
@@ -199,7 +199,7 @@ jina hello-world --help
   <tr>
       <td width="30%">
     <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">
-      <img src="docs/chapters/101/img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+      <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/101/img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
     </a>
     </td>
     <td width="70%">

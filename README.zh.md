@@ -114,7 +114,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 <summary>Click here to see the console output</summary>
 
 <p align="center">
-  <img src="docs/chapters/helloworld/hello-world-demo.png?raw=true" alt="hello world console output">
+  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-demo.png?raw=true" alt="hello world console output">
 </p>
 
 </details>  
@@ -122,7 +122,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 它下载Fashi-MNIST训练和测试数据；告诉Jina从训练集中索引6万张图像。然后，它从测试集中随机抽取图像作为查询，要求Jina检索相关结果。大约1分钟后，它将打开一个网页，并显示出这样的结果。
 
 <p align="center">
-  <img src="docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
+  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
 那背后的实施呢？就像它应该是很简单的。
@@ -177,7 +177,7 @@ pods:
 </td>
 <td>
 
-![Flow in Dashboard](docs/chapters/helloworld/hello-world-flow.png)
+![Flow in Dashboard](https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-flow.png)
 
 </td>
 </tr>
@@ -199,7 +199,7 @@ jina hello-world --help
   <tr>
       <td width="30%">
     <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">
-      <img src="docs/chapters/101/img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+      <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/101/img/ILLUS12.png" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
     </a>
     </td>
     <td width="70%">
