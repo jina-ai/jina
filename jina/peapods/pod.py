@@ -308,7 +308,6 @@ class FlowPod(BasePod):
             second.head_args.socket_in = SocketType.PULL_CONNECT
 
             first.tail_args.host_out = __default_host__
-            # 返回from的host
             second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
                                                      connect_args=second.head_args)
             second.head_args.port_in = first.tail_args.port_out
@@ -316,7 +315,6 @@ class FlowPod(BasePod):
             first.tail_args.socket_out = SocketType.PUSH_CONNECT
             second.head_args.socket_in = SocketType.PULL_BIND
 
-            # 返回from的host
             first.tail_args.host_out = _fill_in_host(connect_args=first.tail_args,
                                                      bind_args=second.head_args)
             second.head_args.host_in = __default_host__
