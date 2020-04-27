@@ -47,6 +47,7 @@ jobs:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/jina-docs
           directory: docs/_build/html
+          force: true
 
   update-docker:
     needs: update-doc
