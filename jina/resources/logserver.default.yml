@@ -6,5 +6,6 @@ endpoints:
   yaml: /data/yaml  # get the YAML spec of a flow
   shutdown: /action/shutdown  # shutdown the log server
   ready: /status/ready  # tell if the log server is ready, return 200 if yes
+  podapi: /data/api/pod  # get the api spec of the pod
 
 

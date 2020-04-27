@@ -15,6 +15,7 @@ Welcome to Jina Documentations!
    chapters/install/via-docker
    chapters/install/on-rasp-linux
    chapters/install/upgrade
+   chapters/install/autocomplete
 
 
 .. toctree::
