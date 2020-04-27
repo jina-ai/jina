@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 def _update_autocomplete():
     from jina.main.parser import get_main_parser, set_pea_parser, \
         set_hw_parser, set_flow_parser, set_pod_parser, \
