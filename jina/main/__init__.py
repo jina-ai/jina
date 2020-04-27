@@ -32,8 +32,22 @@ def _get_run_args(print_args: bool = True):
         exit()
 
 
+def _quick_ac_lookup():
+    from .autocomplete import ac_table
+    if sys.argv[1] == 'commands':
+        for k in ac_table['commands']:
+            print(k)
+        exit()
+    elif sys.argv[1] == 'completions':
+        if sys.argv[2] in ac_table['completions']:
+            for k in ac_table['completions'][sys.argv[2]]:
+                print(k)
+        exit()
+
+
 def main():
     """The main entrypoint of the CLI """
+    _quick_ac_lookup()
     from . import api
     args = _get_run_args()
     getattr(api, args.cli.replace('-', '_'))(args)

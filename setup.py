@@ -1,7 +1,10 @@
 import sys
 from os import path
 
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
+from setuptools.command.develop import develop
+from setuptools.command.install import install
 
 PY37 = 'py37'
 PY38 = 'py38'
@@ -67,6 +70,55 @@ def get_extra_requires(path, add_all=True):
         return {}
 
 
+def register_ac():
+    from pathlib import Path
+    import os
+    from pkg_resources import resource_filename
+
+    home = str(Path.home())
+    _check = [{'sh': os.path.join(home, '.zshrc'),
+               'ac': resource_filename('jina', '/'.join(('resources', 'completions', 'jina.zsh')))},
+              {'sh': os.path.join(home, '.bashrc'),
+               'ac': resource_filename('jina', '/'.join(('resources', 'completions', 'jina.bash')))},
+              {'sh': os.path.join(home, '.config', 'fish', 'config.fish'),
+               'ac': resource_filename('jina', '/'.join(('resources', 'completions', 'jina.fish')))}]
+
+    def add_ac(f):
+        if os.path.exists(f['sh']):
+            # zsh installed:
+            already_in = False
+            with open(f['sh']) as fp:
+                for v in fp:
+                    if f['ac'] in v:
+                        already_in = True
+                        break
+            if not already_in:
+                with open(f['sh'], 'a') as fp:
+                    fp.write('\nsource %s\n' % f['ac'])
+
+    try:
+        for k in _check:
+            add_ac(k)
+    except Exception:
+        pass
+
+
+class PostDevelopCommand(develop):
+    """Post-installation for development mode."""
+
+    def run(self):
+        develop.run(self)
+        register_ac()
+
+
+class PostInstallCommand(install):
+    """Post-installation for installation mode."""
+
+    def run(self):
+        install.run(self)
+        register_ac()
+
+
 setup(
     name=pkg_name,
     packages=find_packages(),
@@ -88,6 +140,10 @@ setup(
     extras_require=get_extra_requires('extra-requirements.txt'),
     entry_points={
         'console_scripts': ['jina=jina.main:main'],
+    },
+    cmdclass={
+        'develop': PostDevelopCommand,
+        'install': PostInstallCommand,
     },
     classifiers=(
         'Development Status :: 5 - Production/Stable',
