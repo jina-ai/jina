@@ -1,5 +1,6 @@
 import os
 import time
+from sys import platform
 
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
@@ -27,6 +28,10 @@ built = False
 img_name = 'jina/mwu-encoder'
 
 
+defaulthost = '0.0.0.0'
+localhost = defaulthost if (platform == "linux" or platform == "linux2") else 'host.docker.internal'
+
+
 def build_image():
     if not built:
         import docker
@@ -38,6 +43,7 @@ def build_image():
 
 # @unittest.skipUnless(os.getenv('JINA_TEST_CONTAINER', False), 'skip the container test if not set')
 class MyTestCase(JinaTestCase):
+
 
     def tearDown(self) -> None:
         super().tearDown()
@@ -148,3 +154,17 @@ class MyTestCase(JinaTestCase):
                 NetworkChecker(a5)
 
         self.assertEqual(cm.exception.code, 0)
+
+    def test_tail_host_docker2local_replicas(self):
+        f = (Flow()
+             .add(name='d1', image='jinaai/jina:devel', entrypoint='jina pod', yaml_path='_forward', replicas=3)
+             .add(name='d2', yaml_path='_forward'))
+        with f:
+            self.assertEqual(getattr(f._pod_nodes['d1'].peas_args['tail'], 'host_out'), defaulthost)
+
+    def test_tail_host_docker2local(self):
+        f = (Flow()
+             .add(name='d1', image='jinaai/jina:devel', entrypoint='jina pod', yaml_path='_forward')
+             .add(name='d2', yaml_path='_forward'))
+        with f:
+            self.assertEqual(getattr(f._pod_nodes['d1'].tail_args, 'host_out'), localhost)
