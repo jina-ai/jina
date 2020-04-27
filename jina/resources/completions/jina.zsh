@@ -1,3 +1,5 @@
+# Jina CLI Autocomplete
+
 if [[ ! -o interactive ]]; then
     return
 fi

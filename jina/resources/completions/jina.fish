@@ -1,3 +1,5 @@
+# Jina CLI Autocomplete
+
 function __fish_jina_needs_command
   set cmd (commandline -opc)
   if [ (count $cmd) -eq 1 -a $cmd[1] = 'jina' ]

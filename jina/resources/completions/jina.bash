@@ -1,3 +1,4 @@
+# Jina CLI Autocomplete
 
 _jina() {
   COMPREPLY=()

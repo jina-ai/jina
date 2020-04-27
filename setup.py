@@ -73,15 +73,15 @@ def get_extra_requires(path, add_all=True):
 def register_ac():
     from pathlib import Path
     import os
-    from pkg_resources import resource_filename
+    from pkg_resources import resource_stream
 
     home = str(Path.home())
     _check = [{'sh': os.path.join(home, '.zshrc'),
-               'ac': resource_filename('jina', '/'.join(('resources', 'completions', 'jina.zsh')))},
+               'ac': resource_stream('jina', '/'.join(('resources', 'completions', 'jina.zsh'))).read()},
               {'sh': os.path.join(home, '.bashrc'),
-               'ac': resource_filename('jina', '/'.join(('resources', 'completions', 'jina.bash')))},
+               'ac': resource_stream('jina', '/'.join(('resources', 'completions', 'jina.bash'))).read()},
               {'sh': os.path.join(home, '.config', 'fish', 'config.fish'),
-               'ac': resource_filename('jina', '/'.join(('resources', 'completions', 'jina.fish')))}]
+               'ac': resource_stream('jina', '/'.join(('resources', 'completions', 'jina.fish'))).read()}]
 
     def add_ac(f):
         if os.path.exists(f['sh']):
@@ -89,12 +89,12 @@ def register_ac():
             already_in = False
             with open(f['sh']) as fp:
                 for v in fp:
-                    if f['ac'] in v:
+                    if '# Jina CLI Autocomplete' in v:
                         already_in = True
                         break
             if not already_in:
                 with open(f['sh'], 'a') as fp:
-                    fp.write('\nsource %s\n' % f['ac'])
+                    fp.write(f['ac'].decode())
 
     try:
         for k in _check:

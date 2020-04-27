@@ -1,16 +1,17 @@
 name: Release Cycle
 
-on:
-  schedule:
-    - cron: "55 15 * * 5"
-
 #on:
-#  push:
-#    branches:
-#      - master
+#  schedule:
+#    - cron: "55 15 * * 5"
+
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   regular-release:
+    if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
