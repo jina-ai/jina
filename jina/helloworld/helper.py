@@ -92,7 +92,7 @@ def write_html(html_path):
         default_logger.success(f'You should see a "hello-world.html" opened in your browser, '
                                f'if not you may open {url_html_path} manually')
 
-    colored_url = colored('https://github.com/jina-ai/jina', color='cyan', attrs='underline')
+    colored_url = colored('https://opensource.jina.ai', color='cyan', attrs='underline')
     default_logger.success(
         f'🤩 Intrigued? Play with "jina hello-world --help" and learn more about Jina at {colored_url}')
 

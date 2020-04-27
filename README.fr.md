@@ -8,7 +8,7 @@
 [![Jina](.github/badges/jina-hello-world-badge.svg "Run Jina 'Hello, World!' without installing anything")](#jina-hello-world-)
 [![Jina](.github/badges/license-badge.svg "Jina is licensed under Apache-2.0")](#license)
 [![Jina Docs](.github/badges/docs-badge.svg "Checkout our docs and learn Jina")](https://docs.jina.ai)
-[![We are hiring](.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jina.ai/jobs)
+[![We are hiring](.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jobs.jina.ai)
 <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src=".github/badges/twitter-badge.svg"
        alt="tweet button" title="👍Share Jina with your friends on Twitter"></img>
@@ -39,7 +39,7 @@
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
-  <a href="https://jina.ai/jobs">We are Hiring</a> •
+  <a href="https://jobs.jina.ai">We are Hiring</a> •
   <a href="https://jina.ai/events">Events</a> •
   <a href="https://jina.ai/blog">Blog</a>
 </p>
@@ -56,7 +56,7 @@ Jina est le cadre de recherche neuronale natif des nuages alimenté par l'IA de 
 
 🧩**Des extensions puissantes, une intégration simple** - Un nouveau modèle d'IA pour Jina ? Il suffit d'écrire un script Python ou de construire une image Docker. Le branchement de nouveaux algorithmes n'a jamais été aussi simple, comme il se doit[Voir Jina Hub (beta)](https://github.com/jina-ai/jina-hub) et trouver d'autres extensions sur différents cas d'utilisation fournis par la communauté.
 
-Jina est un projet open-source[Nous recrutons](https://jina.ai/jobs) Des ingénieurs en IA, des développeurs, des évangélistes et des députés pour construire le prochain écosystème de recherche neurale en open-source
+Jina est un projet open-source[Nous recrutons](https://jobs.jina.ai) Des ingénieurs en IA, des développeurs, des évangélistes et des députés pour construire le prochain écosystème de recherche neurale en open-source
 
 ## Table des matières
 

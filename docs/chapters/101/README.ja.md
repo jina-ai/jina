@@ -15,7 +15,7 @@
 <a href="https://github.com/jina-ai/jina/">
     <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
 </a>
-<a href="https://jina.ai/jobs">
+<a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg" alt="Check out jobs@Jina AI">
 </a>
     <a href="#">
@@ -157,7 +157,7 @@ Jinaは幸せな家族です。Jinaを使うと和を感じることができま
 <a href="https://github.com/jina-ai/jina/">
     <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
 </a>
-<a href="https://jina.ai/jobs">
+<a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg" alt="Check out jobs@Jina AI">
 </a>
     <a href="#">

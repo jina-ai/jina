@@ -15,7 +15,7 @@
 <a href="https://github.com/jina-ai/jina/">
     <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
 </a>
-<a href="https://jina.ai/jobs">
+<a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg" alt="Check out jobs@Jina AI">
 </a>
     <a href="#">
@@ -124,7 +124,7 @@ Pod既可以在本地主机上运行，也可以通过网络在不同的计算�
 
 Jina是一个幸福的家庭。当你使用Jina时，你可以感受到这种和谐。
 
-你可以在微观层面进行设计，并将其扩展到宏观层面。YAMLs变成算法，线程变成进程，Pods变成流。模式和逻辑始终保持不变。这就是Jina的魅力所在。
+你可以在微观层面进行设计，并将其扩展到宏观层面。YAML变成算法，线程变成进程，Pods变成流。模式和逻辑始终保持不变。这就是Jina的魅力所在。
 
 <p align="center">
   <img src="img/ILLUS11.png" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
@@ -157,7 +157,7 @@ Jina是一个幸福的家庭。当你使用Jina时，你可以感受到这种和
 <a href="https://github.com/jina-ai/jina/">
     <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
 </a>
-<a href="https://jina.ai/jobs">
+<a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg" alt="Check out jobs@Jina AI">
 </a>
     <a href="#">

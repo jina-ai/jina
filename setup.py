@@ -76,7 +76,7 @@ setup(
     author='Jina Dev Team',
     author_email='dev-team@jina.ai',
     license='Apache 2.0',
-    url='https://github.com/jina-ai/jina',
+    url='https://opensource.jina.ai',
     download_url='https://github.com/jina-ai/jina/tags',
     long_description=_long_description,
     long_description_content_type='text/markdown',

@@ -8,7 +8,7 @@
 [![Jina](.github/badges/jina-hello-world-badge.svg "Run Jina 'Hello, World!' without installing anything")](#jina-hello-world-)
 [![Jina](.github/badges/license-badge.svg "Jina is licensed under Apache-2.0")](#license)
 [![Jina Docs](.github/badges/docs-badge.svg "Checkout our docs and learn Jina")](https://docs.jina.ai)
-[![We are hiring](.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jina.ai/jobs)
+[![We are hiring](.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jobs.jina.ai)
 <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src=".github/badges/twitter-badge.svg"
        alt="tweet button" title="👍Share Jina with your friends on Twitter"></img>
@@ -39,7 +39,7 @@
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
-  <a href="https://jina.ai/jobs">We are Hiring</a> •
+  <a href="https://jobs.jina.ai">We are Hiring</a> •
   <a href="https://jina.ai/events">Events</a> •
   <a href="https://jina.ai/blog">Blog</a>
 </p>
@@ -56,7 +56,7 @@ Jina - это облачная нейронная поисковая систе�
 
 🧩**Мощные расширения, простая интеграция** - Новая модель ИИ для Джины? Просто напишите сценарий на Python или создайте образ Docker. Подключение новых алгоритмов никогда не было таким простым, как должно быть[Зацените Джина Хаб (бета)](https://github.com/jina-ai/jina-hub) и найти больше расширений по различным случаям использования, внесенным сообществом.
 
-Джина - проект с открытым исходным кодом[Мы нанимаем](https://jina.ai/jobs) Инженеры по ИИ, разработчики полного стека, евангелисты, ПМ для построения следующей нейронной поисковой эко-системы с открытым исходным кодом
+Джина - проект с открытым исходным кодом[Мы нанимаем](https://jobs.jina.ai) Инженеры по ИИ, разработчики полного стека, евангелисты, ПМ для построения следующей нейронной поисковой эко-системы с открытым исходным кодом
 
 ## Содержание
 

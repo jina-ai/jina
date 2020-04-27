@@ -8,7 +8,7 @@
 [![Jina](.github/badges/jina-hello-world-badge.svg "Run Jina 'Hello, World!' without installing anything")](#jina-hello-world-)
 [![Jina](.github/badges/license-badge.svg "Jina is licensed under Apache-2.0")](#license)
 [![Jina Docs](.github/badges/docs-badge.svg "Checkout our docs and learn Jina")](https://docs.jina.ai)
-[![We are hiring](.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jina.ai/jobs)
+[![We are hiring](.github/badges/jina-corp-badge-hiring.svg "We are hiring full-time position at Jina")](https://jobs.jina.ai)
 <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src=".github/badges/twitter-badge.svg"
        alt="tweet button" title="👍Share Jina with your friends on Twitter"></img>
@@ -39,7 +39,7 @@
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
-  <a href="https://jina.ai/jobs">We are Hiring</a> •
+  <a href="https://jobs.jina.ai">We are Hiring</a> •
   <a href="https://jina.ai/events">Events</a> •
   <a href="https://jina.ai/blog">Blog</a>
 </p>
@@ -56,7 +56,7 @@ Jina是由最先进的AI和深度学习驱动的云端神经搜索框架。它�
 
 🧩**强大的扩展功能，简单的集成** - Jina的新AI模型？只需编写一个Python脚本或构建一个Docker镜像即可。插入新的算法从来都不是那么容易的事情，就像它应该做的那样。[看看Jina Hub (测试版)](https://github.com/jina-ai/jina-hub)并在社区贡献的不同用例上找到更多的扩展。
 
-Jina是一个开源项目。[我们正在招聘](https://jina.ai/jobs)AI工程师、全栈开发者、传道者、PM，打造下一个开源的神经搜索生态。
+Jina是一个开源项目。[我们正在招聘](https://jobs.jina.ai)AI工程师、全栈开发者、传道者、PM，打造下一个开源的神经搜索生态。
 
 ## 目录
 

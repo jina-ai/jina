@@ -15,11 +15,12 @@ def set_base_parser():
     from ..helper import colored, get_full_version
     # create the top-level parser
     urls = {
+        'Jina 101': ('🐣', 'https://101.jina.ai'),
         'Docs': ('📚', 'https://docs.jina.ai'),
-        'Code': ('🧑‍💻', 'https://github.com/jina-ai/jina/'),
-        'Jina Hub': ('📦', 'https://github.com/jina-ai/jina-hub/'),
-        'Home': ('🌐', 'https://jina.ai'),
-        'Hiring': ('🙌', 'hr@jina.ai')
+        'Examples': ('🚀‍', 'https://learn.jina.ai'),
+        'Dashboard': ('📊', 'https://dashboard.jina.ai'),
+        'Code': ('🧑‍💻', 'https://opensource.jina.ai'),
+        'Hiring!': ('🙌', 'hello@jina.ai')
     }
     url_str = '\n'.join(f'{v[0]} {k:10.10} {colored(v[1], "cyan", attrs=["underline"])}' for k, v in urls.items())
 

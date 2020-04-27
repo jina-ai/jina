@@ -15,7 +15,7 @@
 <a href="https://github.com/jina-ai/jina/">
     <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
 </a>
-<a href="https://jina.ai/jobs">
+<a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg" alt="Check out jobs@Jina AI">
 </a>
     <a href="#">
@@ -171,7 +171,7 @@ You can design at the micro-level and scale that up to the macro-level. YAMLs be
 <a href="https://github.com/jina-ai/jina/">
     <img src="../../../.github/badges/jina-badge.svg" alt="Visit Jina on Github">
 </a>
-<a href="https://jina.ai/jobs">
+<a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg" alt="Check out jobs@Jina AI">
 </a>
     <a href="#">
