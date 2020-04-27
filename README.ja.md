@@ -177,7 +177,7 @@ pods:
 </td>
 <td>
 
-![Flow in Dashboard](https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-flow.png)
+![Flow in Dashboard](https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-flow.png?raw=true)
 
 </td>
 </tr>
