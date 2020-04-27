@@ -34,14 +34,13 @@
 <p align="center">
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
-  <a href="https://github.com/jina-ai/examples">Examples</a> •
+  <a href="https://learn.jina.ai">Examples</a> •
   <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a> •
-  <a href="https://jina.ai/events">Events</a> •
-  <a href="https://jina.ai/blog">Blog</a>
+
 </p>
 
 Хотите построить поисковую систему, подкрепленную глубоким изучением? Вы пришли в нужное место!
