@@ -39,9 +39,9 @@
 
 <img align="left" src="img/ILLUS1.png" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-在Jina中。**a Document是指你要搜索的任何东西。**检索对象：文本文档、简短的推文、代码片段、图片、视频/音频片段、一天的GPS轨迹等。Document也是搜索时的输入查询。
+在Jina中。**Document是指你要搜索的任何东西**。检索对象：文本文档、简短的推文、代码片段、图片、视频/音频片段、一天的GPS轨迹等。Document也是搜索时的输入查询。
 
-**Chunk是Document的一个小语义单位。**可以是一个句子，一个64X64的图像补丁，一个3秒的视频片段，一对坐标和地址。
+**Chunk是Document的一个小语义单位**。可以是一个句子，一个64X64的图像补丁，一个3秒的视频片段，一对坐标和地址。
 
 在Jina中，Document就像巧克力棒一样。不仅因为它有不同的形式和成分，而且你可以用自己喜欢的方式把它分成大块。最终，你买来的是巧克力棒，储存的是巧克力块，而你吃下去消化的是巧克力块。你不想把整块巧克力棒吞下去，你也不想把它磨成粉，无论哪种方式，你都会失去它的味道（即语义）。
 
@@ -51,7 +51,7 @@
 
 <img align="right" src="img/ILLUS2.png" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**在Jina中，YAML配置被广泛用于描述一个对象的属性。**它提供了自定义功能，允许用户在不接触对象代码的情况下改变对象的行为。Jina可以直接从一个简单的YAML配置中建立一个非常复杂的对象，并将对象保存到YAML配置中。
+**在Jina中，YAML配置被广泛用于描述一个对象的属性**。它提供了自定义功能，允许用户在不接触对象代码的情况下改变对象的行为。Jina可以直接从一个简单的YAML配置中建立一个非常复杂的对象，并将对象保存到YAML配置中。
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -59,11 +59,11 @@
 
 <img align="left" src="img/ILLUS3.png" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Executor代表了Jina中的算法单元。**诸如将图像编码成向量、将向量存储在磁盘上、对结果进行排序等算法，都可以用Executor来表述。Executor提供了有用的接口，使AI开发者和工程师能够专注于算法。诸如持久性、调度、链式、分组和并行化等功能一应俱全。
+**Executor代表了Jina中的算法单元**。诸如将图像编码成向量、将向量存储在磁盘上、对结果进行排序等算法，都可以用Executor来表述。Executor提供了有用的接口，使AI开发者和工程师能够专注于算法。诸如持久性、调度、链式、分组和并行化等功能一应俱全。
 
 Executor的属性存储在YAML配置中，它们总是齐头并进。
 
-<br/><br/><br/>
+<br/><br/><br/><br/><br/><br/>
 
 <h3 align="center">Family of Executors</h3>
 
@@ -71,7 +71,7 @@ Executor的属性存储在YAML配置中，它们总是齐头并进。
   <img src="img/ILLUS4.png" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-**Executor是一个大家庭。**每一个家庭成员都会集中在一个重要的方面进行搜索系统。让我们来认识一下。
+**Executor是一个大家庭**。每一个家庭成员都会集中在一个重要的方面进行搜索系统。让我们来认识一下。
 
 -   **Crafter**：用于制作/分割/转换Document和Chunk。
 -   **Encoder**编码：用于将Chunk表示为矢量。
@@ -86,7 +86,7 @@ Executor的属性存储在YAML配置中，它们总是齐头并进。
 
 <img align="right" src="img/ILLUS5.png" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Driver定义了Executor在网络请求时的行为方式。**Driver通过将流量数据（如Protobuf）解释成Executor能够理解和处理的格式（如Numpy数组），帮助Executor处理网络流量。
+**Driver定义了Executor在网络请求时的行为方式**。Driver通过将流量数据（如Protobuf）解释成Executor能够理解和处理的格式（如Numpy数组），帮助Executor处理网络流量。
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
@@ -94,7 +94,7 @@ Executor的属性存储在YAML配置中，它们总是齐头并进。
 
 <img align="left" src="img/ILLUS6.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pea包装一个Executor并授予其通过网络交换数据的能力。**Pea可以从其他Pea发送和接收数据。Pea也可以在Docker容器内运行，在一个地方包含所有的依赖关系和上下文环境。
+**Pea包装一个Executor并授予其通过网络交换数据的能力**。Pea可以从其他Pea发送和接收数据。Pea也可以在Docker容器内运行，在一个地方包含所有的依赖关系和上下文环境。
 
 <img align="right" src="img/ILLUS7.png" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -104,7 +104,7 @@ Executor的属性存储在YAML配置中，它们总是齐头并进。
 
 <img align="left" src="img/ILLUS8.png" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pod是一组具有相同属性的Peas。**Peas在一个Pod内部并行运行。Pod统一了这些Peas的网络接口，使它们从外部看起来就像一个个Pea。除此之外，Pod还为Peas增加了更多的控制、调度和上下文管理。
+**Pod是一组具有相同属性的Peas**。Peas在一个Pod内部并行运行。Pod统一了这些Peas的网络接口，使它们从外部看起来就像一个个Pea。除此之外，Pod还为Peas增加了更多的控制、调度和上下文管理。
 
 Pod既可以在本地主机上运行，也可以通过网络在不同的计算机上运行。
 
@@ -118,7 +118,7 @@ Pod既可以在本地主机上运行，也可以通过网络在不同的计算�
 
 **Flow代表了一项高级任务**, 例如，索引、搜索、训练。它管理一组Pods的状态和上下文，协调它们来完成一个任务。Flow拥抱了多样性，无论一个Pod是在远程还是在Docker容器中，一个Flow统治了所有的Pod!
 
-<br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <h2 align="center">From Micro to Macro</h2>
 
