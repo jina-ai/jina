@@ -15,6 +15,7 @@ class MyTestCase(JinaTestCase):
         for j in ('pod', 'pea', 'gateway', 'log',
                   'check', 'ping', 'client', 'flow', 'hello-world'):
             subprocess.check_call(['jina', j, '--help'])
+        subprocess.check_call(['jina'])
 
     def test_helloworld(self):
         subprocess.check_call(['jina', 'hello-world'])
