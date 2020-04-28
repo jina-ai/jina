@@ -1,13 +1,13 @@
 name: Release Cycle
 
-on:
-  schedule:
-    - cron: "55 15 * * 5"
-
 #on:
-#  push:
-#    branches:
-#      - master
+#  schedule:
+#    - cron: "55 15 * * 5"
+
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   regular-release:
