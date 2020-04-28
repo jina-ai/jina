@@ -97,7 +97,7 @@ To install Jina with extra dependencies, or install it on Raspberry Pi [please r
 We provide a universal Docker image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6), simply do: 
 
 ```bash
-docker run jinaai/jina
+docker run jinaai/jina --help
 ```
 
 ## Jina "Hello, World!" 👋🌍
