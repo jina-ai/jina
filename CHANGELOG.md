@@ -16,6 +16,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -471,4 +472,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```80a51403```](https://github.com/jina-ai/jina/commit/80a51403144e6ec9958a3058cd70955dedb9b27f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```7ee1c3e0```](https://github.com/jina-ai/jina/commit/7ee1c3e06c3ee37012d749f046d45af7debef811)] __-__ __version__: bumping version to 0.0.10 (*Jina Dev Bot*)
+
+## Release Note (`0.1.1`)
+
+> Release time: 2020-04-28 09:43:18
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```e7cc2079```](https://github.com/jina-ai/jina/commit/e7cc2079e644ccfdd053c5c83cf5b0fa4db3175e)] __-__ hello world template (*Han Xiao*)
+ - [[```61a0fd43```](https://github.com/jina-ai/jina/commit/61a0fd435f5db6a34fbdaef61693e6cdc61bd5ef)] __-__ badge links (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```71581a9e```](https://github.com/jina-ai/jina/commit/71581a9e00ac2d57e0265b85d2717c5823d0f80f)] __-__ trigger first release (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```0e9fb9df```](https://github.com/jina-ai/jina/commit/0e9fb9df716661548ed5a859db286add06adc601)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9ce86752```](https://github.com/jina-ai/jina/commit/9ce86752eac0f6062a30841951351767cfa76ee1)] __-__ __version__: bumping version to 0.1.1 (*Jina Dev Bot*)
 
