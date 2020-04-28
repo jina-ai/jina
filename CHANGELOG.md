@@ -17,6 +17,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -497,4 +498,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```0e9fb9df```](https://github.com/jina-ai/jina/commit/0e9fb9df716661548ed5a859db286add06adc601)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9ce86752```](https://github.com/jina-ai/jina/commit/9ce86752eac0f6062a30841951351767cfa76ee1)] __-__ __version__: bumping version to 0.1.1 (*Jina Dev Bot*)
+
+## Release Note (`0.1.2`)
+
+> Release time: 2020-04-28 14:21:31
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```0e605cec```](https://github.com/jina-ai/jina/commit/0e605cec769c2d2406f8f4479a95c6004f1b98fc)] __-__ ar (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```f6dc0231```](https://github.com/jina-ai/jina/commit/f6dc02316170ebb37b9515db75c2ef50c4eb1ac8)] __-__ update sphinx 101 (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```a947ca45```](https://github.com/jina-ai/jina/commit/a947ca45b1e036e6036570f80a2717f645e9f5c8)] __-__ hotfix cli 3 (*Han Xiao*)
+ - [[```281b90a9```](https://github.com/jina-ai/jina/commit/281b90a998aec9a3f268954d90566c4699b6837e)] __-__ hotfix cli 2 (*Han Xiao*)
+ - [[```b7b80f0a```](https://github.com/jina-ai/jina/commit/b7b80f0a575f6fa258624e865798cf3f9f49153d)] __-__ hotfix cli (*Han Xiao*)
+ - [[```5c9d6f33```](https://github.com/jina-ai/jina/commit/5c9d6f33bf5c13fba1bea862190533402a3451f3)] __-__ fix typo in readme (*Han Xiao*)
+ - [[```9157e1a9```](https://github.com/jina-ai/jina/commit/9157e1a9429ccd04c7e5123273d40b136f69d977)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```cad622ef```](https://github.com/jina-ai/jina/commit/cad622ef266c268c4d6406db8d622d393c9ffe66)] __-__ revert back to friday release (*Han Xiao*)
+ - [[```f7b6adb5```](https://github.com/jina-ai/jina/commit/f7b6adb5f53363f8b0ce0b585a79877f4ef15f8e)] __-__ fix pypi link (*Han Xiao*)
+ - [[```2122b3c2```](https://github.com/jina-ai/jina/commit/2122b3c254f88cfb053f6ee05591932bafcd6534)] __-__ __version__: bumping version to 0.1.2 (*Jina Dev Bot*)
 
