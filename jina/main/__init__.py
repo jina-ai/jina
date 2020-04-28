@@ -34,16 +34,17 @@ def _get_run_args(print_args: bool = True):
 
 def _quick_ac_lookup():
     from .autocomplete import ac_table
-    if sys.argv[1] == 'commands':
-        for k in ac_table['commands']:
-            print(k)
-        exit()
-    elif sys.argv[1] == 'completions':
-        if sys.argv[2] in ac_table['completions']:
-            for k in ac_table['completions'][sys.argv[2]]:
-                if k not in sys.argv:
-                    print(k)
-        exit()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'commands':
+            for k in ac_table['commands']:
+                print(k)
+            exit()
+        elif sys.argv[1] == 'completions':
+            if sys.argv[2] in ac_table['completions']:
+                for k in ac_table['completions'][sys.argv[2]]:
+                    if k not in sys.argv:
+                        print(k)
+            exit()
 
 
 def main():
