@@ -39,7 +39,7 @@ Jina only requires five dependencies `numpy`, `pyzmq`, `protobuf`, `grpcio` and 
 Some of the Executors may require extra dependencies. The full table of the extra dependencies can be found in `extra-requirements.txt`. You can cherry-pick what you want to install, e.g.
 
 ```bash
-pip install jina[nlp+cv]
+pip install "jina[nlp+cv]"
 ``` 
 
 This will install all dependencies tagged with `nlp` or `cv`.
@@ -47,7 +47,7 @@ This will install all dependencies tagged with `nlp` or `cv`.
 Though not recommended, you can install Jina with full dependencies via:
 
 ```bash
-pip install jina[all]
+pip install "jina[all]"
 ``` 
 
 ## Install Jina on Raspberry Pi and other Linux Systems

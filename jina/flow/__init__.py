@@ -442,7 +442,7 @@ class Flow:
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
-                f'use "pip install jina[http]" to install the dependencies')
+                f'use pip install "jina[http]" (with double quotes) to install the dependencies')
         except:
             self.logger.error('logserver fails to start')
 

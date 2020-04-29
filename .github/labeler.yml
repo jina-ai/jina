@@ -18,6 +18,9 @@ area/core:
 area/helper:
   - jina/*.py
 
+area/helloworld:
+  - jina/helloworld/*
+
 area/network:
   - jina/peapods/**/*
   - jina/proto/**/*
@@ -74,3 +77,4 @@ component/proto:
 
 component/resource:
   - jina/resources/**/*
+
