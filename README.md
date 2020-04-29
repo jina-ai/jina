@@ -123,7 +123,7 @@ docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 
 </details>  
 
-It downloads Fashion-MNIST training and test data; tells Jina to index 60,000 images from the training set. Then, it randomly samples images from the test set as queries, asks Jina to retrieve relevant results. After about 1 minute, it will open a webpage and show results like this:
+It downloads Fashion-MNIST training and test data; tells Jina to index 60,000 images from the training set. Then, it randomly samples images from the test set as queries, asks Jina to retrieve relevant results. The whole process takes about 1 minute, eventually it will open a webpage and show results like this:
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
@@ -343,7 +343,7 @@ The following resources will help you make a good first contribution:
 - [Slack channel](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
 - [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest update, release and event news of Jina
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
-- ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - follow us and interact with us using hashtag `#JinaSearch`  
+- [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow us and interact with us using hashtag `#JinaSearch`  
 - [Company](https://jina.ai) - know more about our company, we are fully committed to open-source!
 
 ## Roadmap
