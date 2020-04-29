@@ -85,7 +85,7 @@ View "Hello World" in Jina Dashboard
 .. highlight:: bash
 .. code-block:: bash
 
-    pip install jina[sse]
+    pip install "jina[sse]"
 
     jina hello-world --logserver
 

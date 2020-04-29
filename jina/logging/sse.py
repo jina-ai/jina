@@ -39,7 +39,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     except ImportError:
         raise ImportError('Flask or its dependencies are not fully installed, '
                           'they are required for serving HTTP requests.'
-                          'Please use "pip install jina[flask]" to install it.')
+                          'Please use pip install "jina[flask]" to install it.')
 
     try:
         with open(server_config_path) as fp:
