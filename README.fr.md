@@ -227,6 +227,16 @@ Learn how to orchestrate Pods to work together: sequentially and in parallel; lo
 <td><h3>🐣</h3></td>
 </tr>
 
+
+<tr>
+<td>
+<h4><a href="https://docs.jina.ai/chapters/io/main.html">Input and Output Functions in Jina</a></h4>
+Learn how the input and output functions work in Jina
+</td>
+<td><h3>🐣</h3></td>
+</tr>
+
+
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/dashboard">Use Dashboard to Get Insight of Jina Workflow</a></h4>
