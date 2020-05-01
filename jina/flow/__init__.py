@@ -17,7 +17,7 @@ from ruamel.yaml import StringIO
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, get_parsed_args
+from ..helper import yaml, expand_env_var, get_non_defaults_args, get_parsed_args, deprecated_alias
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
@@ -516,7 +516,7 @@ class Flow:
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _get_client(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None, **kwargs):
+    def _get_client(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None, **kwargs):
         from ..main.parser import set_client_cli_parser
         from ..clients.python import PyClient
 
@@ -525,12 +525,13 @@ class Flow:
         p_args.port_grpc = self._pod_nodes['gateway'].port_grpc
         p_args.host = self._pod_nodes['gateway'].host
         c = PyClient(p_args)
-        if bytes_gen:
-            c.raw_bytes = bytes_gen
+        if input_fn:
+            c.input_fn = input_fn
         return c
 
-    def train(self, raw_bytes: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              callback: Callable[['jina_pb2.Message'], None] = None,
+    @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
+    def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+              output_fn: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
         """Do training on the current flow
 
@@ -564,14 +565,15 @@ class Flow:
             with f.build(runtime='thread') as flow:
                 flow.train(bytes_gen=my_reader())
 
-        :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
-        :param callback: the callback function to invoke after training
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param output_fn: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(raw_bytes, mode='train', **kwargs).start(callback)
+        self._get_client(input_fn, mode='train', **kwargs).start(output_fn)
 
-    def index(self, raw_bytes: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              callback: Callable[['jina_pb2.Message'], None] = None,
+    @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
+    def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+              output_fn: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
         """Do indexing on the current flow
 
@@ -605,14 +607,15 @@ class Flow:
 
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
-        :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
-        :param callback: the callback function to invoke after indexing
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(raw_bytes, mode='index', **kwargs).start(callback)
+        self._get_client(input_fn, mode='index', **kwargs).start(output_fn)
 
-    def search(self, raw_bytes: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-               callback: Callable[['jina_pb2.Message'], None] = None,
+    @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
+    def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+               output_fn: Callable[['jina_pb2.Message'], None] = None,
                **kwargs):
         """Do indexing on the current flow
 
@@ -647,11 +650,11 @@ class Flow:
             with f.build(runtime='thread') as flow:
                 flow.search(bytes_gen=my_reader())
 
-        :param raw_bytes: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
-        :param callback: the callback function to invoke after searching
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param output_fn: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(raw_bytes, mode='search', **kwargs).start(callback)
+        self._get_client(input_fn, mode='search', **kwargs).start(output_fn)
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow

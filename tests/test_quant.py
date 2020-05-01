@@ -50,7 +50,7 @@ class MyTestCase(JinaTestCase):
             yaml_path='_forward').add(
             yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward')
         with f as fl:
-            fl.index(random_docs, callback=get_output, in_proto=True)
+            fl.index(random_docs, output_fn=get_output, in_proto=True)
 
     def test_quant(self):
         for j in ('fp32', 'fp16', 'uint8'):

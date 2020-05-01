@@ -33,10 +33,10 @@ class PyClient(GrpcClient):
 
         :param args: args provided by the CLI
         :param delay: if ``True`` then the client starts sending request after initializing, otherwise one needs to set
-            the :attr:`raw_bytes` before using :func:`start` or :func:`call`
+            the :attr:`input_fn` before using :func:`start` or :func:`call`
         """
         super().__init__(args)
-        self._raw_bytes = None
+        self._input_fn = None
 
     def call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
         """ Calling the server, better use :func:`start` instead.
@@ -44,7 +44,7 @@ class PyClient(GrpcClient):
         :param callback: a callback function, invoke after every response is received
         """
         kwargs = vars(self.args)
-        kwargs['data'] = self.raw_bytes
+        kwargs['data'] = self.input_fn
 
         from . import request
         tname = self.args.mode
@@ -62,23 +62,23 @@ class PyClient(GrpcClient):
                 p_bar.update(self.args.batch_size)
 
     @property
-    def raw_bytes(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]:
+    def input_fn(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]:
         """ An iterator of bytes, each element represents a document's raw content,
-        i.e. ``raw_bytes`` defined int the protobuf
+        i.e. ``input_fn`` defined int the protobuf
         """
-        if self._raw_bytes:
-            return self._raw_bytes
+        if self._input_fn:
+            return self._input_fn
         else:
-            raise BadClient('raw_bytes is empty or not set')
+            raise BadClient('input_fn is empty or not set')
 
-    @raw_bytes.setter
-    def raw_bytes(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]):
-        if self._raw_bytes:
-            self.logger.warning('raw_bytes is not empty, overrided')
+    @input_fn.setter
+    def input_fn(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]):
+        if self._input_fn:
+            self.logger.warning('input_fn is not empty, overrided')
         if hasattr(bytes_gen, '__call__'):
-            self._raw_bytes = bytes_gen()
+            self._input_fn = bytes_gen()
         else:
-            self._raw_bytes = bytes_gen
+            self._input_fn = bytes_gen
 
     def dry_run(self) -> bool:
         """Send a DRYRUN request to the server, passing through all pods on the server

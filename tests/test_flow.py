@@ -91,14 +91,14 @@ class MyTestCase(JinaTestCase):
              .add(yaml_path='_forward'))
 
         with f:
-            f.index(raw_bytes=bytes_gen)
+            f.index(input_fn=bytes_gen)
 
         with f:
-            f.index(raw_bytes=bytes_fn)
+            f.index(input_fn=bytes_fn)
 
         with f:
-            f.index(raw_bytes=bytes_fn)
-            f.index(raw_bytes=bytes_fn)
+            f.index(input_fn=bytes_fn)
+            f.index(input_fn=bytes_fn)
 
     def test_load_flow_from_yaml(self):
         with open('yaml/test-flow.yml') as fp:
@@ -144,7 +144,7 @@ class MyTestCase(JinaTestCase):
              .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
 
         with f:
-            f.index(raw_bytes=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
 
     def test_flow_yaml_dump(self):
         f = Flow(logserver_config='yaml/test-server-config.yml',

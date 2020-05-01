@@ -43,7 +43,7 @@ And the implementation behind? As simple as it should be:
         f = Flow.load_config('index.yml')
 
         with f:
-            f.index(raw_bytes=input_fn)
+            f.index(input_fn)
 
 .. confval:: YAML spec
 
