@@ -41,6 +41,7 @@ def hello_world(args):
     os.environ['REPLICAS'] = str(args.replicas)
     os.environ['HW_WORKDIR'] = args.workdir
     os.environ['WITH_LOGSERVER'] = str(args.logserver)
+    os.environ['JINA_ARRAY_QUANT'] = 'fp16'
 
     f = Flow().load_config(args.index_yaml_path)
     with f:
