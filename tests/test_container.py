@@ -76,14 +76,14 @@ class MyTestCase(JinaTestCase):
              .add(name='dummyEncoder', image=img_name))
 
         with f:
-            f.index(raw_bytes=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
 
     def test_flow_with_one_container_ext_yaml(self):
         f = (Flow()
              .add(name='dummyEncoder', image=img_name, yaml_path='./mwu-encoder/mwu_encoder_ext.yml'))
 
         with f:
-            f.index(raw_bytes=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
 
     def test_flow_with_replica_container_ext_yaml(self):
         f = (Flow()
@@ -93,9 +93,9 @@ class MyTestCase(JinaTestCase):
                   replicas=3))
 
         with f:
-            f.index(raw_bytes=random_docs(10), in_proto=True)
-            f.index(raw_bytes=random_docs(10), in_proto=True)
-            f.index(raw_bytes=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
 
     def test_flow_topo1(self):
         f = (Flow()
@@ -106,7 +106,7 @@ class MyTestCase(JinaTestCase):
              .join(['d3', 'd2']))
 
         with f:
-            f.index(raw_bytes=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
 
     def test_flow_topo_mixed(self):
         f = (Flow()
@@ -118,7 +118,7 @@ class MyTestCase(JinaTestCase):
              )
 
         with f:
-            f.index(raw_bytes=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
 
     def test_flow_topo_replicas(self):
         f = (Flow()
@@ -131,14 +131,14 @@ class MyTestCase(JinaTestCase):
 
         with f:
             f.dry_run()
-            f.index(raw_bytes=random_docs(1000), in_proto=True)
+            f.index(input_fn=random_docs(1000), in_proto=True)
 
     def test_container_volume(self):
         f = (Flow()
              .add(name='dummyEncoder', image=img_name, volumes='./abc', yaml_path='mwu-encoder/mwu_encoder_upd.yml'))
 
         with f:
-            f.index(raw_bytes=random_docs(10), in_proto=True)
+            f.index(input_fn=random_docs(10), in_proto=True)
 
         out_file = './abc/ext-mwu-encoder.bin'
         self.assertTrue(os.path.exists(out_file))

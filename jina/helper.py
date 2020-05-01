@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import functools
 import os
 import random
 import re
@@ -22,6 +23,30 @@ __all__ = ['batch_iterator', 'yaml',
            'colored', 'kwargs2list', 'valid_yaml_path']
 
 
+def deprecated_alias(**aliases):
+    def deco(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            rename_kwargs(f.__name__, kwargs, aliases)
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return deco
+
+
+def rename_kwargs(func_name, kwargs, aliases):
+    from .logging import default_logger
+    for alias, new in aliases.items():
+        if alias in kwargs:
+            if new in kwargs:
+                raise TypeError(f'{func_name} received both {alias} and {new}')
+            default_logger.warning(
+                f'"{alias}" is deprecated in "{func_name}()" '
+                f'and will be removed in the next version; please use "{new}" instead')
+            kwargs[new] = kwargs.pop(alias)
+
+
 def get_readable_size(num_bytes):
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
@@ -30,7 +55,7 @@ def get_readable_size(num_bytes):
     elif num_bytes < 1024 ** 3:
         return f'{num_bytes / (1024 ** 2):.1f} MB'
     else:
-        return f'{num_bytes // (1024 ** 3):.1f} GB'
+        return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
 def print_load_table(load_stat):

@@ -177,18 +177,18 @@ You can use `.index()`, `.search()` to feed index data and search query to a flo
 
 ```python
 with f:
-    f.index(raw_bytes)
+    f.index(input_fn)
 ```
 
 ```python
 with f:
-    f.search(raw_bytes, top_k=50, callback=print)
+    f.search(input_fn, top_k=50, output_fn=print)
 ```
 
-- `raw_bytes` is `Iterator[bytes]`, each of which corresponds to a bytes representation of a Document.
-- `callback` is the callback function after each request, take `Request` protobuf as the only input.
+- `input_fn` is `Iterator[bytes]`, each of which corresponds to a bytes representation of a Document.
+- `output_fn` is the callback function after each request, take `Request` protobuf as the only input.
 
-A simple `raw_bytes` can be `input_fn` defined as follows:
+A simple `input_fn` is defined as follows:
 
 ```python
 def input_fn():

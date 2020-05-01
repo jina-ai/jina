@@ -73,32 +73,29 @@ def get_extra_requires(path, add_all=True):
 def register_ac():
     from pathlib import Path
     import os
-    from pkg_resources import resource_stream
-
     home = str(Path.home())
-    _check = [{'sh': os.path.join(home, '.zshrc'),
-               'ac': resource_stream('jina', '/'.join(('resources', 'completions', 'jina.zsh'))).read()},
-              {'sh': os.path.join(home, '.bashrc'),
-               'ac': resource_stream('jina', '/'.join(('resources', 'completions', 'jina.bash'))).read()},
-              {'sh': os.path.join(home, '.config', 'fish', 'config.fish'),
-               'ac': resource_stream('jina', '/'.join(('resources', 'completions', 'jina.fish'))).read()}]
+    resource_path = 'jina/resources/completions/jina.%s'
+    _check = {'zsh': '.zshrc',
+              'bash': '.bashrc',
+              'fish': '.fish'}
 
-    def add_ac(f):
-        if os.path.exists(f['sh']):
+    def add_ac(k, v):
+        v_fp = os.path.join(home, v)
+        if os.path.exists(v_fp):
             # zsh installed:
             already_in = False
-            with open(f['sh']) as fp:
-                for v in fp:
-                    if '# Jina CLI Autocomplete' in v:
+            with open(v_fp) as fp:
+                for l in fp:
+                    if '# Jina CLI Autocomplete' in l:
                         already_in = True
                         break
             if not already_in:
-                with open(f['sh'], 'a') as fp:
-                    fp.write(f['ac'].decode())
+                with open(v_fp, 'a') as fp, open(resource_path % k) as fr:
+                    fp.write(fr.read())
 
     try:
-        for k in _check:
-            add_ac(k)
+        for k, v in _check.items():
+            add_ac(k, v)
     except Exception:
         pass
 

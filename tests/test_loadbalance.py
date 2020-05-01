@@ -55,7 +55,7 @@ class MyTestCase(JinaTestCase):
             yaml_path='SlowWorker',
             replicas=10)
         with f:
-            f.index(raw_bytes=random_docs(100), in_proto=True, batch_size=10)
+            f.index(input_fn=random_docs(100), in_proto=True, batch_size=10)
 
     def test_roundrobin(self):
         f = Flow(runtime='process').add(
@@ -63,4 +63,4 @@ class MyTestCase(JinaTestCase):
             yaml_path='SlowWorker',
             replicas=10, scheduling=SchedulerType.ROUND_ROBIN)
         with f:
-            f.index(raw_bytes=random_docs(100), in_proto=True, batch_size=10)
+            f.index(input_fn=random_docs(100), in_proto=True, batch_size=10)
