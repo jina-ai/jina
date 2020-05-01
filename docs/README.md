@@ -13,11 +13,11 @@ All doc-related issues should be [submitted to here](https://github.com/jina-ai/
 You can read the documentations locally via:
 
 ```bash
-git clone https://github.com/jina-ai/jina-docs.git
+git clone https://github.com/jina-ai/docs.git
 
 # python 3
-python -m http.server 8080 -d jina-docs
+python -m http.server 8080 -d docs
 
 # python 2
-cd jina-docs && python -m SimpleHTTPServer
+cd docs && python -m SimpleHTTPServer
 ```
