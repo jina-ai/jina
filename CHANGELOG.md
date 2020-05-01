@@ -18,6 +18,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -528,4 +529,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```cad622ef```](https://github.com/jina-ai/jina/commit/cad622ef266c268c4d6406db8d622d393c9ffe66)] __-__ revert back to friday release (*Han Xiao*)
  - [[```f7b6adb5```](https://github.com/jina-ai/jina/commit/f7b6adb5f53363f8b0ce0b585a79877f4ef15f8e)] __-__ fix pypi link (*Han Xiao*)
  - [[```2122b3c2```](https://github.com/jina-ai/jina/commit/2122b3c254f88cfb053f6ee05591932bafcd6534)] __-__ __version__: bumping version to 0.1.2 (*Jina Dev Bot*)
+
+## Release Note (`0.1.3`)
+
+> Release time: 2020-05-01 15:57:27
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Nan Wang,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```8279bdc6```](https://github.com/jina-ai/jina/commit/8279bdc68d0ad5a751db5e2702c30f3f350fabc5)] __-__ optimize helloworld network load (*Han Xiao*)
+ - [[```a76cdece```](https://github.com/jina-ai/jina/commit/a76cdece9f39de42fec05643776501f6ef893019)] __-__ __docs__: minor fix (*Nan Wang*)
+ - [[```9a21b91f```](https://github.com/jina-ai/jina/commit/9a21b91f0115f36f5ad3a60a0e7a1fa6bd588f88)] __-__ __docs__: update cmd in README (*Nan Wang*)
+
+### 📗 Documentation
+
+ - [[```41dfa4b9```](https://github.com/jina-ai/jina/commit/41dfa4b9635c19e5a80cd55859ea3a699176e550)] __-__ add io function explain (*Han Xiao*)
+ - [[```79cc8825```](https://github.com/jina-ai/jina/commit/79cc8825cead2de60e1bacf186b38effa73bd996)] __-__ fix pip install instruction (*Han Xiao*)
+ - [[```6e8d2d9e```](https://github.com/jina-ai/jina/commit/6e8d2d9ebc73c5868fda3ab62f46464a6e38056e)] __-__ fix link 101 to github (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```eaa43dfd```](https://github.com/jina-ai/jina/commit/eaa43dfd8e35cfaa2e7c35fec3f0483b9a0fca68)] __-__ add unit test for quantization (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```6a880a1b```](https://github.com/jina-ai/jina/commit/6a880a1b9af2ace9e2cb3346dc017028f6a78114)] __-__ update issue template (*Han Xiao*)
+ - [[```3b9c3f5b```](https://github.com/jina-ai/jina/commit/3b9c3f5b6b87c7b93aca482d2273addec8e692b8)] __-__ fix twitter link (*Han Xiao*)
+ - [[```13d44e96```](https://github.com/jina-ai/jina/commit/13d44e96d02d8882077c237c9916dc0b8a142e50)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a66136c9```](https://github.com/jina-ai/jina/commit/a66136c9ca7b48936bb29ead86ec9b3388f56d2d)] __-__ __version__: bumping version to 0.1.3 (*Jina Dev Bot*)
 
