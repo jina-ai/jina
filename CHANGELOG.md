@@ -19,6 +19,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -563,4 +564,29 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```3b9c3f5b```](https://github.com/jina-ai/jina/commit/3b9c3f5b6b87c7b93aca482d2273addec8e692b8)] __-__ fix twitter link (*Han Xiao*)
  - [[```13d44e96```](https://github.com/jina-ai/jina/commit/13d44e96d02d8882077c237c9916dc0b8a142e50)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```a66136c9```](https://github.com/jina-ai/jina/commit/a66136c9ca7b48936bb29ead86ec9b3388f56d2d)] __-__ __version__: bumping version to 0.1.3 (*Jina Dev Bot*)
+
+## Release Note (`0.1.4`)
+
+> Release time: 2020-05-01 18:51:49
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```c037c72f```](https://github.com/jina-ai/jina/commit/c037c72f820feb1a98ac51315a99c022ca9c65cb)] __-__ resource usage in setup #343 (*Han Xiao*)
+ - [[```c1f84a75```](https://github.com/jina-ai/jina/commit/c1f84a75ebdabd6b563bf0b2074e7f43f33d5ecb)] __-__ setup version warning (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```77e49eb6```](https://github.com/jina-ai/jina/commit/77e49eb699c382798e0f94b4176f0905c96edbd7)] __-__ rename flow io args (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```65fa39a9```](https://github.com/jina-ai/jina/commit/65fa39a9c3cce8150e46a117637a5fd05b1e467b)] __-__ hotfix setup.py (*Han Xiao*)
+ - [[```389f6081```](https://github.com/jina-ai/jina/commit/389f6081d19e3b9e473dab7d2eecc67165717b1c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```14abbbfe```](https://github.com/jina-ai/jina/commit/14abbbfef2b53a70ba8c9ae055257049c5b58f4d)] __-__ __version__: bumping version to 0.1.4 (*Jina Dev Bot*)
 
