@@ -20,7 +20,8 @@ def random_docs():
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
             c = d.chunks.add()
-            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+            # force sending at non-quantization
+            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim]), quantize=None))
             c.chunk_id = c_id
             c.doc_id = j
             c_id += 1
