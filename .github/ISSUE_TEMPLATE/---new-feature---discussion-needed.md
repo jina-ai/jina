@@ -10,10 +10,11 @@ assignees: ''
 **Describe the feature**
 <!-- A clear and concise description of what the feature is. -->
 
-**Describe your proposal**
+**Your proposal**
 <!-- copy past your code/pull request link -->
 
 ---
+<!-- Optional, but really help us locate the problem faster -->
 
 **Environment**
 <!-- Run `jina --version-full` and copy paste the output here -->

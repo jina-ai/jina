@@ -1,124 +1,130 @@
-# List of 57 Executors in Jina
+# List of 60 Executors in Jina
 
-This version of Jina includes 57 Executors.
+This version of Jina includes 60 Executors.
 
 ## Inheritances in a Tree View
 - `BaseExecutor`
-   - `BaseRanker`
-      - `BiMatchRanker`
-      - `TfIdfRanker`
-         - `BM25Ranker`
+   - `BaseEncoder`
+      - `BaseNumericEncoder`
+         - `BaseImageEncoder`
+            - `OnnxImageEncoder`
+            - `KerasImageEncoder`
+         - `PaddlehubEncoder`
+            - `ImagePaddlehubEncoder`
+            - `VideoPaddlehubEncoder`
+         - `BaseAudioEncoder`
+         - `BaseVideoEncoder`
+         - `TorchEncoder`
+            - `VideoTorchEncoder`
+            - `ImageTorchEncoder`
+         - `IncrementalPCAEncoder`
+      - `BaseTextEncoder`
+         - `OneHotTextEncoder`
+         - `TransformerEncoder`
+            - `TransformerTFEncoder`
+            - `TransformerTorchEncoder`
+         - `TextPaddlehubEncoder`
+         - `FlairTextEncoder`
+   - `CompoundExecutor`
+      - `PipelineEncoder`
+      - `ChunkIndexer`
+   - `BaseIndexer`
+      - `BaseKVIndexer`
+         - `BasePbIndexer`
+            - `LeveldbIndexer`
+               - `ChunkLeveldbIndexer`
+               - `DocLeveldbIndexer`
+            - `ChunkPbIndexer`
+            - `DocPbIndexer`
+      - `BaseVectorIndexer`
+         - `NumpyIndexer`
+            - `SptagIndexer`
+            - `AnnoyIndexer`
+            - `FaissIndexer`
+            - `NmslibIndexer`
    - `BaseCrafter`
       - `BaseChunkCrafter`
          - `ImageChunkCrafter`
+            - `ImageResizer`
+            - `ImageNormalizer`
             - `CenterImageCropper`
             - `FiveImageCropper`
             - `ImageCropper`
             - `RandomImageCropper`
             - `SlidingWindowImageCropper`
-            - `ImageResizer`
-            - `ImageNormalizer`
       - `BaseSegmenter`
+         - `JiebaSegmenter`
          - `Sentencizer`
          - `ImageReader`
       - `BaseDocCrafter`
-   - `BaseEncoder`
-      - `BaseNumericEncoder`
-         - `PaddlehubEncoder`
-            - `ImagePaddlehubEncoder`
-            - `VideoPaddlehubEncoder`
-         - `IncrementalPCAEncoder`
-         - `TorchEncoder`
-            - `ImageTorchEncoder`
-            - `VideoTorchEncoder`
-         - `BaseAudioEncoder`
-         - `BaseImageEncoder`
-            - `OnnxImageEncoder`
-            - `KerasImageEncoder`
-         - `BaseVideoEncoder`
-      - `BaseTextEncoder`
-         - `TextPaddlehubEncoder`
-         - `FlairTextEncoder`
-         - `TransformerEncoder`
-            - `TransformerTFEncoder`
-            - `TransformerTorchEncoder`
-         - `OneHotTextEncoder`
-   - `CompoundExecutor`
-      - `PipelineEncoder`
-      - `ChunkIndexer`
-   - `BaseIndexer`
-      - `BaseVectorIndexer`
-         - `NumpyIndexer`
-            - `SptagIndexer`
-            - `AnnoyIndexer`
-            - `NmslibIndexer`
-            - `FaissIndexer`
-      - `BaseKVIndexer`
-         - `BasePbIndexer`
-            - `ChunkPbIndexer`
-            - `DocPbIndexer`
-            - `LeveldbIndexer`
-               - `ChunkLeveldbIndexer`
-               - `DocLeveldbIndexer`
+   - `BaseRanker`
+      - `MaxRanker`
+      - `MinRanker`
+      - `BiMatchRanker`
+      - `TfIdfRanker`
+         - `BM25Ranker`
 
 ## Modules in a Table View 
 
 | Class | Module |
 | --- | --- |
-| `AnnoyIndexer` | `jina.executors.indexers.vector.faiss` |
+| `AnnoyIndexer` | `jina.executors.indexers.vector.nmslib` |
 | `BM25Ranker` | `jina.executors.rankers.tfidf` |
 | `BaseAudioEncoder` | `jina.executors.encoders.torchvision` |
 | `BaseChunkCrafter` | `jina.executors.crafters` |
-| `BaseCrafter` | `jina.executors.indexers` |
+| `BaseCrafter` | `jina.executors.compound` |
 | `BaseDocCrafter` | `jina.executors.crafters` |
-| `BaseEncoder` | `jina.executors.indexers` |
+| `BaseEncoder` | `jina.executors.compound` |
 | `BaseExecutor` |   |
 | `BaseImageEncoder` | `jina.executors.encoders.torchvision` |
-| `BaseIndexer` | `jina.executors.indexers` |
+| `BaseIndexer` | `jina.executors.compound` |
 | `BaseKVIndexer` | `jina.executors.indexers` |
 | `BaseNumericEncoder` | `jina.executors.encoders` |
-| `BasePbIndexer` | `jina.executors.indexers` |
-| `BaseRanker` | `jina.executors.indexers` |
+| `BasePbIndexer` | `jina.executors.indexers.keyvalue.proto` |
+| `BaseRanker` | `jina.executors.compound` |
 | `BaseSegmenter` | `jina.executors.crafters` |
 | `BaseTextEncoder` | `jina.executors.encoders` |
 | `BaseVectorIndexer` | `jina.executors.indexers` |
 | `BaseVideoEncoder` | `jina.executors.encoders.torchvision` |
 | `BiMatchRanker` | `jina.executors.rankers.tfidf` |
 | `CenterImageCropper` | `jina.executors.crafters.image` |
-| `ChunkIndexer` | `jina.executors.indexers` |
+| `ChunkIndexer` | `jina.executors.compound` |
 | `ChunkLeveldbIndexer` | `jina.executors.indexers.keyvalue.leveldb` |
-| `ChunkPbIndexer` | `jina.executors.indexers.keyvalue.leveldb` |
-| `CompoundExecutor` | `jina.executors.indexers` |
+| `ChunkPbIndexer` | `jina.executors.indexers.keyvalue.proto` |
+| `CompoundExecutor` | `jina.executors.compound` |
 | `DocLeveldbIndexer` | `jina.executors.indexers.keyvalue.leveldb` |
-| `DocPbIndexer` | `jina.executors.indexers.keyvalue.leveldb` |
-| `FaissIndexer` | `jina.executors.indexers.vector.faiss` |
+| `DocPbIndexer` | `jina.executors.indexers.keyvalue.proto` |
+| `FaissIndexer` | `jina.executors.indexers.vector.nmslib` |
 | `FiveImageCropper` | `jina.executors.crafters.image` |
-| `FlairTextEncoder` | `jina.executors.encoders.nlp.char` |
-| `ImageChunkCrafter` | `jina.executors.crafters.image` |
+| `FlairTextEncoder` | `jina.executors.encoders.nlp.flair` |
+| `ImageChunkCrafter` | `jina.executors.crafters` |
 | `ImageCropper` | `jina.executors.crafters.image` |
 | `ImageNormalizer` | `jina.executors.crafters.image` |
-| `ImagePaddlehubEncoder` | `jina.executors.encoders.paddlehub` |
-| `ImageReader` | `jina.executors.crafters.image.io` |
+| `ImagePaddlehubEncoder` | `jina.executors.encoders.video.paddlehub` |
+| `ImageReader` | `jina.executors.crafters` |
 | `ImageResizer` | `jina.executors.crafters.image` |
-| `ImageTorchEncoder` | `jina.executors.encoders.torchvision` |
+| `ImageTorchEncoder` | `jina.executors.encoders.image.torchvision` |
 | `IncrementalPCAEncoder` | `jina.executors.encoders.torchvision` |
+| `JiebaSegmenter` | `jina.executors.crafters` |
 | `KerasImageEncoder` | `jina.executors.encoders.image.tfkeras` |
-| `LeveldbIndexer` | `jina.executors.indexers.keyvalue.leveldb` |
-| `NmslibIndexer` | `jina.executors.indexers.vector.faiss` |
-| `NumpyIndexer` | `jina.executors.indexers` |
-| `OneHotTextEncoder` | `jina.executors.encoders.nlp.char` |
+| `LeveldbIndexer` | `jina.executors.indexers.keyvalue.proto` |
+| `MaxRanker` | `jina.executors.rankers.tfidf` |
+| `MinRanker` | `jina.executors.rankers.tfidf` |
+| `NmslibIndexer` | `jina.executors.indexers.vector.nmslib` |
+| `NumpyIndexer` | `jina.executors.indexers.vector.numpy` |
+| `OneHotTextEncoder` | `jina.executors.encoders.nlp.flair` |
 | `OnnxImageEncoder` | `jina.executors.encoders.image.tfkeras` |
 | `PaddlehubEncoder` | `jina.executors.encoders.torchvision` |
-| `PipelineEncoder` | `jina.executors.indexers` |
+| `PipelineEncoder` | `jina.executors.compound` |
 | `RandomImageCropper` | `jina.executors.crafters.image` |
-| `Sentencizer` | `jina.executors.crafters.image.io` |
+| `Sentencizer` | `jina.executors.crafters` |
 | `SlidingWindowImageCropper` | `jina.executors.crafters.image` |
-| `SptagIndexer` | `jina.executors.indexers.vector.faiss` |
-| `TextPaddlehubEncoder` | `jina.executors.encoders.nlp.char` |
+| `SptagIndexer` | `jina.executors.indexers.vector.nmslib` |
+| `TextPaddlehubEncoder` | `jina.executors.encoders.nlp.flair` |
 | `TfIdfRanker` | `jina.executors.rankers.tfidf` |
 | `TorchEncoder` | `jina.executors.encoders.torchvision` |
-| `TransformerEncoder` | `jina.executors.encoders.nlp.char` |
+| `TransformerEncoder` | `jina.executors.encoders.nlp.flair` |
 | `TransformerTFEncoder` | `jina.executors.encoders.nlp.transformer` |
 | `TransformerTorchEncoder` | `jina.executors.encoders.nlp.transformer` |
-| `VideoPaddlehubEncoder` | `jina.executors.encoders.paddlehub` |
-| `VideoTorchEncoder` | `jina.executors.encoders.torchvision` |
+| `VideoPaddlehubEncoder` | `jina.executors.encoders.video.paddlehub` |
+| `VideoTorchEncoder` | `jina.executors.encoders.image.torchvision` |

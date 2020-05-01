@@ -4,11 +4,11 @@ This version of Jina includes 35 Drivers.
 
 ## Inheritances in a Tree View
 - `BaseDriver`
-   - `MergeDriver`
-      - `MergeTopKDriver`
-         - `ChunkMergeTopKDriver`
-         - `DocMergeTopKDriver`
    - `BaseExecutableDriver`
+      - `BaseCraftDriver`
+         - `ChunkCraftDriver`
+         - `DocCraftDriver`
+         - `SegmentDriver`
       - `BaseIndexDriver`
          - `KVIndexDriver`
             - `ChunkKVIndexDriver`
@@ -16,65 +16,65 @@ This version of Jina includes 35 Drivers.
          - `VectorIndexDriver`
       - `BaseScoreDriver`
          - `Chunk2DocScoreDriver`
-      - `BaseCraftDriver`
-         - `ChunkCraftDriver`
-         - `DocCraftDriver`
-         - `SegmentDriver`
-      - `BaseEncodeDriver`
-         - `EncodeDriver`
       - `BaseSearchDriver`
          - `KVSearchDriver`
             - `ChunkKVSearchDriver`
             - `DocKVSearchDriver`
          - `VectorSearchDriver`
+      - `BaseEncodeDriver`
+         - `EncodeDriver`
+   - `ControlReqDriver`
+      - `RouteDriver`
+   - `ForwardDriver`
+   - `LogInfoDriver`
+   - `WaitDriver`
+   - `MergeDriver`
+      - `MergeTopKDriver`
+         - `ChunkMergeTopKDriver`
+         - `DocMergeTopKDriver`
    - `TopKFilterDriver`
    - `TopKSortDriver`
    - `PruneDriver`
       - `ChunkPruneDriver`
       - `DocPruneDriver`
       - `ReqPruneDriver`
-   - `ControlReqDriver`
-      - `RouteDriver`
-   - `ForwardDriver`
-   - `LogInfoDriver`
-   - `WaitDriver`
 
 ## Modules in a Table View 
 
 | Class | Module |
 | --- | --- |
-| `BaseCraftDriver` | `jina.drivers.search` |
+| `BaseCraftDriver` | `jina.drivers.encode` |
 | `BaseDriver` |   |
-| `BaseEncodeDriver` | `jina.drivers.search` |
-| `BaseExecutableDriver` | `jina.drivers.control` |
-| `BaseIndexDriver` | `jina.drivers.search` |
-| `BaseScoreDriver` | `jina.drivers.search` |
-| `BaseSearchDriver` | `jina.drivers.search` |
+| `BaseEncodeDriver` | `jina.drivers.encode` |
+| `BaseExecutableDriver` | `jina.drivers.prune` |
+| `BaseIndexDriver` | `jina.drivers.encode` |
+| `BaseScoreDriver` | `jina.drivers.encode` |
+| `BaseSearchDriver` | `jina.drivers.encode` |
 | `Chunk2DocScoreDriver` | `jina.drivers.score` |
 | `ChunkCraftDriver` | `jina.drivers.craft` |
 | `ChunkKVIndexDriver` | `jina.drivers.index` |
 | `ChunkKVSearchDriver` | `jina.drivers.search` |
 | `ChunkMergeTopKDriver` | `jina.drivers.reduce` |
 | `ChunkPruneDriver` | `jina.drivers.prune` |
-| `ControlReqDriver` | `jina.drivers.control` |
+| `ControlReqDriver` | `jina.drivers.prune` |
 | `DocCraftDriver` | `jina.drivers.craft` |
 | `DocKVIndexDriver` | `jina.drivers.index` |
 | `DocKVSearchDriver` | `jina.drivers.search` |
 | `DocMergeTopKDriver` | `jina.drivers.reduce` |
 | `DocPruneDriver` | `jina.drivers.prune` |
 | `EncodeDriver` | `jina.drivers.encode` |
-| `ForwardDriver` | `jina.drivers.control` |
+| `ForwardDriver` | `jina.drivers.prune` |
 | `KVIndexDriver` | `jina.drivers.index` |
 | `KVSearchDriver` | `jina.drivers.search` |
-| `LogInfoDriver` | `jina.drivers.control` |
-| `MergeDriver` | `jina.drivers.control` |
+| `LogInfoDriver` | `jina.drivers.prune` |
+| `MergeDriver` | `jina.drivers.prune` |
 | `MergeTopKDriver` | `jina.drivers.reduce` |
-| `PruneDriver` | `jina.drivers.control` |
+| `PruneDriver` | `jina.drivers.prune` |
 | `ReqPruneDriver` | `jina.drivers.prune` |
 | `RouteDriver` | `jina.drivers.control` |
 | `SegmentDriver` | `jina.drivers.craft` |
-| `TopKFilterDriver` | `jina.drivers.control` |
-| `TopKSortDriver` | `jina.drivers.control` |
+| `TopKFilterDriver` | `jina.drivers.prune` |
+| `TopKSortDriver` | `jina.drivers.prune` |
 | `VectorIndexDriver` | `jina.drivers.index` |
 | `VectorSearchDriver` | `jina.drivers.search` |
-| `WaitDriver` | `jina.drivers.control` |
+| `WaitDriver` | `jina.drivers.prune` |

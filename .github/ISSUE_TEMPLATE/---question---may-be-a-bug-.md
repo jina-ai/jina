@@ -10,10 +10,12 @@ assignees: ''
 **Describe your problem**
 <!-- A clear and concise description of what the bug is. -->
 
-**To reproduce**
-<!-- Steps to reproduce the behavior, what did you write? copy paste your code here -->
+**What is your guess?**
+<!-- Do you have a guess where the problem could be? -->
 
 ---
+
+<!-- Optional, but really help us locate the problem faster -->
 
 **Environment**
 <!-- Run `jina --version-full` and copy paste the output here -->
