@@ -2,3 +2,13 @@
 metas:
   name: myenc  # a customized name
   workspace: $HW_WORKDIR
+requests:
+  on:
+    IndexRequest:
+      - !EncodeDriver {}
+      - !DocPruneDriver
+        with:
+          pruned:
+            - meta_info
+    SearchRequest:
+      - !EncodeDriver {}
