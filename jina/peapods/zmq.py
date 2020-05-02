@@ -41,7 +41,13 @@ class Zmqlet:
         self.logger = logger or get_logger(self.name, **vars(args))
         self.send_recv_kwargs = vars(args)
         if args.compress_hwm > 0:
-            self.logger.info(f'compression is enabled and the high watermark is {args.compress_hwm} bytes')
+            try:
+                import lz4
+                self.logger.success(f'compression is enabled and the high watermark is {args.compress_hwm} bytes')
+            except ModuleNotFoundError:
+                self.logger.critical(f'compression is enabled but you do not have lz4 package. '
+                                     f'use "pip install lz4" to install this dependency')
+                raise
 
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
         self.opened_socks = []
