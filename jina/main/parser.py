@@ -315,6 +315,19 @@ def set_check_parser(parser=None):
     return parser
 
 
+def set_export_api_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument('--yaml-path', type=str,
+                        default='./jina-api-%s.yml',
+                        help='the YAML file path for stroing the exported API')
+    parser.add_argument('--json-path', type=str,
+                        default='./jina-api-%s.json',
+                        help='the JSON file path for stroing the exported API')
+    return parser
+
+
 def _set_grpc_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -468,6 +481,11 @@ def get_main_parser():
         sp.add_parser('client',
                       description='Start a Python client that connects to a remote Jina gateway',
                       formatter_class=_chf, **(dict(help='start a client')) if show_all else {}))
+
+    set_export_api_parser(sp.add_parser('export-api',
+                                        description='Export Jina API to JSON/YAML file for 3rd party applications',
+                                        formatter_class=_chf,
+                                        **(dict(help='export Jina API to file')) if show_all else {}))
     return parser
 
 

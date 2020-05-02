@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+
 def _update_autocomplete():
     from jina.main.parser import get_main_parser, set_pea_parser, \
         set_hw_parser, set_flow_parser, set_pod_parser, \
@@ -39,4 +40,41 @@ def _update_autocomplete():
 if __name__ == '__main__':
     _update_autocomplete()
 
-ac_table = {'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check', 'pea', 'log', 'client'], 'completions': {'pea': ['--help', '--version', '--version-full', '--name', '--identity', '--yaml-path', '--py-modules', '--image', '--entrypoint', '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in', '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout', '--timeout-ctrl', '--timeout-ready', '--dump-interval', '--exit-no-dump', '--read-only', '--separated-workspace', '--replica-id', '--check-version', '--array-in-pb', '--num-part', '--memory-hwm', '--runtime', '--max-idle-time', '--log-sse', '--log-remote', '--log-profile', '--override-exec-log', '--host', '--port-grpc', '--max-message-size', '--proxy'], 'hello-world': ['--help', '--version', '--version-full', '--workdir', '--logserver', '--shards', '--replicas', '--index-yaml-path', '--index-data-url', '--index-batch-size', '--query-yaml-path', '--query-data-url', '--query-batch-size', '--num-query', '--top-k'], 'flow': ['--help', '--version', '--version-full', '--yaml-path', '--logserver', '--logserver-config', '--optimize-level', '--output-type', '--output-path'], 'pod': ['--help', '--version', '--version-full', '--name', '--identity', '--yaml-path', '--py-modules', '--image', '--entrypoint', '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in', '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout', '--timeout-ctrl', '--timeout-ready', '--dump-interval', '--exit-no-dump', '--read-only', '--separated-workspace', '--replica-id', '--check-version', '--array-in-pb', '--num-part', '--memory-hwm', '--runtime', '--max-idle-time', '--log-sse', '--log-remote', '--log-profile', '--override-exec-log', '--host', '--port-grpc', '--max-message-size', '--proxy', '--replicas', '--polling', '--scheduling', '--reducing-yaml-path', '--shutdown-idle'], 'check': ['--help', '--version', '--version-full', '--summary-exec', '--summary-driver'], 'gateway': ['--help', '--version', '--version-full', '--name', '--identity', '--yaml-path', '--py-modules', '--image', '--entrypoint', '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in', '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout', '--timeout-ctrl', '--timeout-ready', '--dump-interval', '--exit-no-dump', '--read-only', '--separated-workspace', '--replica-id', '--check-version', '--array-in-pb', '--num-part', '--memory-hwm', '--runtime', '--max-idle-time', '--log-sse', '--log-remote', '--log-profile', '--override-exec-log', '--host', '--port-grpc', '--max-message-size', '--proxy', '--prefetch', '--prefetch-on-recv', '--allow-spawn'], 'ping': ['--help', '--version', '--version-full', '--timeout', '--retries', '--print-response'], 'client': ['--help', '--version', '--version-full', '--host', '--port-grpc', '--max-message-size', '--proxy', '--batch-size', '--mode', '--top-k', '--in-proto', '--callback-on-body', '--first-request-id', '--first-doc-id', '--random-doc-id', '--timeout-ready'], 'log': ['--help', '--version', '--version-full', '--groupby-regex', '--refresh-time']}}
+ac_table = {
+    'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check',
+                 'pea', 'log', 'client', 'export-api'], 'completions': {
+        'pea': ['--help', '--version', '--version-full', '--name', '--identity', '--yaml-path', '--py-modules',
+                '--image', '--entrypoint', '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in',
+                '--host-out', '--socket-in', '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout',
+                '--timeout-ctrl', '--timeout-ready', '--dump-interval', '--exit-no-dump', '--read-only',
+                '--separated-workspace', '--replica-id', '--check-version', '--array-in-pb', '--compress-hwm',
+                '--compress-lwm', '--num-part', '--memory-hwm', '--runtime', '--max-idle-time', '--log-sse',
+                '--log-remote', '--log-profile', '--override-exec-log', '--host', '--port-grpc', '--max-message-size',
+                '--proxy'],
+        'hello-world': ['--help', '--version', '--version-full', '--workdir', '--logserver', '--shards', '--replicas',
+                        '--index-yaml-path', '--index-data-url', '--index-batch-size', '--query-yaml-path',
+                        '--query-data-url', '--query-batch-size', '--num-query', '--top-k'],
+        'flow': ['--help', '--version', '--version-full', '--yaml-path', '--logserver', '--logserver-config',
+                 '--optimize-level', '--output-type', '--output-path'],
+        'pod': ['--help', '--version', '--version-full', '--name', '--identity', '--yaml-path', '--py-modules',
+                '--image', '--entrypoint', '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in',
+                '--host-out', '--socket-in', '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout',
+                '--timeout-ctrl', '--timeout-ready', '--dump-interval', '--exit-no-dump', '--read-only',
+                '--separated-workspace', '--replica-id', '--check-version', '--array-in-pb', '--compress-hwm',
+                '--compress-lwm', '--num-part', '--memory-hwm', '--runtime', '--max-idle-time', '--log-sse',
+                '--log-remote', '--log-profile', '--override-exec-log', '--host', '--port-grpc', '--max-message-size',
+                '--proxy', '--replicas', '--polling', '--scheduling', '--reducing-yaml-path', '--shutdown-idle'],
+        'check': ['--help', '--version', '--version-full', '--summary-exec', '--summary-driver'],
+        'gateway': ['--help', '--version', '--version-full', '--name', '--identity', '--yaml-path', '--py-modules',
+                    '--image', '--entrypoint', '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in',
+                    '--host-out', '--socket-in', '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout',
+                    '--timeout-ctrl', '--timeout-ready', '--dump-interval', '--exit-no-dump', '--read-only',
+                    '--separated-workspace', '--replica-id', '--check-version', '--array-in-pb', '--compress-hwm',
+                    '--compress-lwm', '--num-part', '--memory-hwm', '--runtime', '--max-idle-time', '--log-sse',
+                    '--log-remote', '--log-profile', '--override-exec-log', '--host', '--port-grpc',
+                    '--max-message-size', '--proxy', '--prefetch', '--prefetch-on-recv', '--allow-spawn'],
+        'ping': ['--help', '--version', '--version-full', '--timeout', '--retries', '--print-response'],
+        'client': ['--help', '--version', '--version-full', '--host', '--port-grpc', '--max-message-size', '--proxy',
+                   '--batch-size', '--mode', '--top-k', '--in-proto', '--callback-on-body', '--first-request-id',
+                   '--first-doc-id', '--random-doc-id', '--timeout-ready'],
+        'log': ['--help', '--version', '--version-full', '--groupby-regex', '--refresh-time']}}
