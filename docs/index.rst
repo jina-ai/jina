@@ -41,6 +41,7 @@ Welcome to Jina Documentations!
    chapters/simple_exec
    chapters/proto/main
    chapters/envs
+   chapters/api_schema
 
 .. toctree::
    :maxdepth: 2

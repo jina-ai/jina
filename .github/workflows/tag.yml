@@ -23,6 +23,7 @@ jobs:
           echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
           echo ::set-env name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
           pip install .
+      - run: |
           cd schema
           jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" latest.yml --json-path "${{env.JINA_VERSION}}.json" latest.json latest
           git config --local user.email "dev-bot@jina.ai"
