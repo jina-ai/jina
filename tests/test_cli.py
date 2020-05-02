@@ -13,7 +13,7 @@ class MyTestCase(JinaTestCase):
 
     def test_cli(self):
         for j in ('pod', 'pea', 'gateway', 'log',
-                  'check', 'ping', 'client', 'flow', 'hello-world'):
+                  'check', 'ping', 'client', 'flow', 'hello-world', 'export-api'):
             subprocess.check_call(['jina', j, '--help'])
         subprocess.check_call(['jina'])
 

@@ -7,6 +7,29 @@ on:
 
 
 jobs:
+  update-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/api
+          path: schema
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
+          echo ::set-env name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+          pip install .
+          cd schema
+          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" --yaml-path 'latest.yml' --json-path "${{env.JINA_VERSION}}.json" --json-path 'latest.json' --json-path 'latest'
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
+
+
   update-doc:
     runs-on: ubuntu-latest
     steps:

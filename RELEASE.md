@@ -47,3 +47,7 @@ On Friday release, it will:
 - bump the master to `x.y.(z+1)` and commit a `chore(version)` push.
 
 The current master version should always be one version ahead of `git tag -l | sort -V | tail -n1`.
+
+## Nightly Release
+
+Every midnight at 0:00, the docker image tagged with `x.y.z-devel` will be rebuilt on all platforms, include: linux/amd64, linux/arm64, linux/ppc64le, linux/s390x, linux/386, linux/arm/v7, linux/arm/v6.

@@ -32,15 +32,24 @@ jobs:
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
           DOCKERHUB_REPOSITORY: jinaai/jina
       - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/api
+          path: schema
+          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
       - run: |
           pip install .
-          echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
-      - name: make doc
-        run: |
           jina check
+          echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
+          cd schema
+          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" --yaml-path 'devel.yml' --json-path "${{env.JINA_VERSION}}.json" --json-path 'devel.json' --json-path 'devel'
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
+          cd ..
           ./make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
       - uses: ad-m/github-push-action@master
         with:
@@ -65,15 +74,15 @@ jobs:
           echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
-      - name: Run Buildx and Upload to Docker Cloud
-        run: |
-          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
-            --output "type=registry" \
-            --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
-            -t jinaai/jina:devel -t jinaai/jina:${{env.JINA_VERSION}} \
-            --file ./Dockerfiles/debianx.Dockerfile .
+      - name: Upload to Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jinaai/jina
+          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          dockerfile: Dockerfiles/debianx.Dockerfile
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
+          tags: "devel, ${{env.JINA_VERSION}}"
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:

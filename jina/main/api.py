@@ -55,17 +55,20 @@ def export_api(args):
     from ..logging import default_logger
 
     if args.yaml_path:
-        f_name = (args.yaml_path % __version__) if '%s' in args.yaml_path else args.yaml_path
-        from ..helper import yaml
-        with open(f_name, 'w', encoding='utf8') as fp:
-            yaml.dump(api_to_dict(), fp)
-        default_logger.info(f'API is exported to {f_name}')
+        for yp in args.yaml_path:
+            f_name = (yp % __version__) if '%s' in yp else yp
+            from ..helper import yaml
+            with open(f_name, 'w', encoding='utf8') as fp:
+                yaml.dump(api_to_dict(), fp)
+            default_logger.info(f'API is exported to {f_name}')
+
     if args.json_path:
-        f_name = (args.json_path % __version__) if '%s' in args.json_path else args.json_path
-        import json
-        with open(f_name, 'w', encoding='utf8') as fp:
-            json.dump(api_to_dict(), fp, sort_keys=True)
-        default_logger.info(f'API is exported to {f_name}')
+        for jp in args.json_path:
+            f_name = (jp % __version__) if '%s' in jp else jp
+            import json
+            with open(f_name, 'w', encoding='utf8') as fp:
+                json.dump(api_to_dict(), fp, sort_keys=True)
+            default_logger.info(f'API is exported to {f_name}')
 
 
 def hello_world(args):
