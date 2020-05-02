@@ -27,10 +27,10 @@ paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 bert-for-tf2:               nlp, py37
 Pillow:                     cv
-tensorflow>=2.0:            framework, py37
+tensorflow-gpu>=2.0:        framework, py37
 torchvision:                framework
 onnx:                       framework, py37
-onnxruntime:                framework, py37
+onnxruntime-gpu:            framework, py37
 annoy:                      index
 sklearn:                    framework
 plyvel:                     index

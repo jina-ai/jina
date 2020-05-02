@@ -87,6 +87,7 @@ class TransformerEncoder(BaseTextEncoder):
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
+        import torch
         token_ids_batch = []
         mask_ids_batch = []
         for c_idx in range(data.shape[0]):
@@ -95,8 +96,14 @@ class TransformerEncoder(BaseTextEncoder):
             mask_ids = [0 if t == self.tokenizer.pad_token_id else 1 for t in token_ids]
             token_ids_batch.append(token_ids)
             mask_ids_batch.append(mask_ids)
+
         token_ids_batch = self._tensor_func(token_ids_batch)
         mask_ids_batch = self._tensor_func(mask_ids_batch)
+
+        if isinstance(token_ids_batch, torch.Tensor) and self.on_gpu:
+            token_ids_batch = token_ids_batch.cuda()
+            mask_ids_batch = mask_ids_batch.cuda()
+
         with self._sess_func():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             if self.pooling_strategy == 'cls':
@@ -188,6 +195,9 @@ class TransformerTorchEncoder(TransformerEncoder):
             'ctrl': CTRLModel
         }
         self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
+        device = 'cuda:0' if self.on_gpu else 'cpu'
+        self.model.to(torch.device(device))
+
         self._tensor_func = torch.tensor
         self._sess_func = torch.no_grad
 
