@@ -20,6 +20,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -590,4 +591,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```65fa39a9```](https://github.com/jina-ai/jina/commit/65fa39a9c3cce8150e46a117637a5fd05b1e467b)] __-__ hotfix setup.py (*Han Xiao*)
  - [[```389f6081```](https://github.com/jina-ai/jina/commit/389f6081d19e3b9e473dab7d2eecc67165717b1c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```14abbbfe```](https://github.com/jina-ai/jina/commit/14abbbfef2b53a70ba8c9ae055257049c5b58f4d)] __-__ __version__: bumping version to 0.1.4 (*Jina Dev Bot*)
+
+## Release Note (`0.1.5`)
+
+> Release time: 2020-05-02 21:47:39
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```df2c1551```](https://github.com/jina-ai/jina/commit/df2c15519f15b67f6393b665a7836f56a0b2a947)] __-__ __cli__: export api to json and yaml files (*Han Xiao*)
+ - [[```4160994d```](https://github.com/jina-ai/jina/commit/4160994d197b8f1103c5f4036cbe3edb6915381c)] __-__ add compression as an option to peapod (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```5f4bffd3```](https://github.com/jina-ai/jina/commit/5f4bffd3c0d6580b6220795a3e436d3e24fe9daa)] __-__ __cli__: update cli autocomplete (*Han Xiao*)
+ - [[```eda56495```](https://github.com/jina-ai/jina/commit/eda56495813fb8ea26bef3ff73ec2ae5423234ee)] __-__ __docker__: add gcc dependency (*Han Xiao*)
+ - [[```eb2eaaf5```](https://github.com/jina-ai/jina/commit/eb2eaaf507cb9bb967abe0d3e3ea61f4367ef6a3)] __-__ __zmqlet__: add import check for lz4 (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```cf152c35```](https://github.com/jina-ai/jina/commit/cf152c35ab8efb55dfbf46b3ca637aaa78942885)] __-__ add schema to docs (*Han Xiao*)
+ - [[```4caa2c7a```](https://github.com/jina-ai/jina/commit/4caa2c7a2f89348a92417aeb49f4657025e9599f)] __-__ add nightly to release (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1550749a```](https://github.com/jina-ai/jina/commit/1550749a55cd65c64e79901be1f84c111d5376ae)] __-__ fix schema generator (*Han Xiao*)
+ - [[```ee6075e7```](https://github.com/jina-ai/jina/commit/ee6075e7b474e9038ae2e225d95de5e4f46edf98)] __-__ add nightly build speedup cd (*Han Xiao*)
+ - [[```7f551ed7```](https://github.com/jina-ai/jina/commit/7f551ed725d0367dc9214ea1e7f6145535c68e4c)] __-__ add schema generator (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```3e8d881a```](https://github.com/jina-ai/jina/commit/3e8d881af1de74c94f612d1cbc595995684e6653)] __-__ hotfix add schema (*Han Xiao*)
+ - [[```9a8d907e```](https://github.com/jina-ai/jina/commit/9a8d907e77388482af47f2575f8039aa61e82cb3)] __-__ fix api schema link (*Han Xiao*)
+ - [[```58c79d4e```](https://github.com/jina-ai/jina/commit/58c79d4e1e1f49b6f2504f8825a224006681a8cb)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```4af096dc```](https://github.com/jina-ai/jina/commit/4af096dcebf6a84499bf2e029ca1b400132a956d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```da8e7e45```](https://github.com/jina-ai/jina/commit/da8e7e452b4b81f00b1e811d37844ecf25d20b69)] __-__ reformat test code (*Han Xiao*)
+ - [[```d5052300```](https://github.com/jina-ai/jina/commit/d5052300edf48f3716add36bb92c7190c6be21ad)] __-__ __version__: bumping version to 0.1.5 (*Jina Dev Bot*)
 
