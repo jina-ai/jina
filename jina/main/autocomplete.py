@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
 ac_table = {
     'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check',
-                 'pea', 'log', 'client'], 'completions': {
+                 'pea', 'log', 'client', 'export-api'], 'completions': {
         'pea': ['--help', '--version', '--version-full', '--name', '--identity', '--yaml-path', '--py-modules',
                 '--image', '--entrypoint', '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in',
                 '--host-out', '--socket-in', '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout',
