@@ -39,10 +39,9 @@ class Zmqlet:
         self.args = args
         self.name = args.name or self.__class__.__name__
         self.logger = logger or get_logger(self.name, **vars(args))
-        self.send_recv_kwargs = dict(
-            check_version=self.args.check_version,
-            timeout=self.args.timeout,
-            array_in_pb=self.args.array_in_pb)
+        self.send_recv_kwargs = vars(args)
+        if args.compress_hwm > 0:
+            self.logger.info(f'compression is enabled and the high watermark is {args.compress_hwm} bytes')
 
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
         self.opened_socks = []
@@ -285,87 +284,78 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
 
 
 def send_message(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
-                 array_in_pb: bool = False, **kwargs) -> int:
+                 array_in_pb: bool = False, compress_hwm: int = -1, compress_lwm: float = 1., **kwargs) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
     :param array_in_pb: send the numpy array within the protobuf message, this often yields worse network efficiency
-
+    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
+    :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     try:
-        if timeout > 0:
-            sock.setsockopt(zmq.SNDTIMEO, timeout)
-        else:
-            sock.setsockopt(zmq.SNDTIMEO, -1)
+        _msg, num_bytes = _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout)
 
-        c_id = msg.envelope.receiver_id.encode()
-
-        if array_in_pb:
-            _msg = [c_id, msg.SerializeToString()]
-            sock.send_multipart(_msg)
-            num_bytes = sys.getsizeof(_msg) + msg.ByteSize()
-        else:
-            doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
-            # now raw_bytes are removed from message, hoping for faster de/serialization
-            _msg = [c_id,  # 0
-                    msg.SerializeToString(),  # 1
-                    chunk_byte_type,  # 2
-                    b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 3, 4
-                    *doc_bytes, *chunk_bytes]
-            sock.send_multipart(_msg)  # 5, 6
-
-            num_bytes = sum(sys.getsizeof(m) for m in _msg)
+        sock.send_multipart(_msg)
     except zmq.error.Again:
         raise TimeoutError(
             'cannot send message to sock %s after timeout=%dms, please check the following:'
             'is the server still online? is the network broken? are "port" correct? ' % (
                 sock, timeout))
+    except zmq.error.ZMQError as ex:
+        default_logger.critical(ex)
+    except asyncio.CancelledError:
+        default_logger.error('all gateway tasks are cancelled')
     except Exception as ex:
         raise ex
     finally:
-        sock.setsockopt(zmq.SNDTIMEO, -1)
+        try:
+            sock.setsockopt(zmq.SNDTIMEO, -1)
+        except zmq.error.ZMQError:
+            pass
 
     return num_bytes
 
 
+def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
+    if timeout > 0:
+        sock.setsockopt(zmq.SNDTIMEO, timeout)
+    else:
+        sock.setsockopt(zmq.SNDTIMEO, -1)
+    c_id = msg.envelope.receiver_id
+    if array_in_pb:
+        _msg, num_bytes = _prepare_send_msg(c_id, [msg.SerializeToString()], compress_hwm, compress_lwm)
+    else:
+        doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
+        # now raw_bytes are removed from message, hoping for faster de/serialization
+        _msg = [msg.SerializeToString(),  # 1
+                chunk_byte_type,  # 2
+                b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 3, 4
+                *doc_bytes, *chunk_bytes]
+
+        _msg, num_bytes = _prepare_send_msg(c_id, _msg, compress_hwm, compress_lwm)
+    return _msg, num_bytes
+
+
 async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
-                             array_in_pb: bool = False, **kwargs) -> int:
+                             array_in_pb: bool = False, compress_hwm: int = -1, compress_lwm: float = 1.,
+                             **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
     :param array_in_pb: send the numpy array within the protobuf message, this often yields worse network efficiency
-
+    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
+    :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     try:
-        if timeout > 0:
-            sock.setsockopt(zmq.SNDTIMEO, timeout)
-        else:
-            sock.setsockopt(zmq.SNDTIMEO, -1)
+        _msg, num_bytes = _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout)
 
-        c_id = msg.envelope.receiver_id.encode()
-
-        if array_in_pb:
-            _msg = [c_id, msg.SerializeToString()]
-
-            await sock.send_multipart(_msg)
-            num_bytes = sys.getsizeof(_msg) + msg.ByteSize()
-        else:
-            doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
-            # now raw_bytes are removed from message, hoping for faster de/serialization
-            _msg = [c_id,  # 0
-                    msg.SerializeToString(),  # 1
-                    chunk_byte_type,  # 2
-                    b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 3, 4
-                    *doc_bytes, *chunk_bytes]
-            await sock.send_multipart(_msg)  # 5, 6
-
-            num_bytes = sum(sys.getsizeof(m) for m in _msg)
+        await sock.send_multipart(_msg)
 
         return num_bytes
     except zmq.error.Again:
@@ -405,27 +395,8 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
             sock.setsockopt(zmq.RCVTIMEO, -1)
 
         msg_data = sock.recv_multipart()
-        # receive a list, count the size of each in that list
-        num_bytes = sum(sys.getsizeof(m) for m in msg_data)
 
-        if sock.type == zmq.DEALER:
-            # dealer consumes the first part of the message as id, we need to prepend it back
-            msg_data = [' '] + msg_data
-        elif sock.type == zmq.ROUTER:
-            # the router appends dealer id when receive it, we need to remove it
-            msg_data.pop(0)
-
-        msg = jina_pb2.Message()
-
-        msg.ParseFromString(msg_data[1])
-
-        if check_version:
-            _check_msg_version(msg)
-
-        # now we have a barebone msg, we need to fill in data
-        if len(msg_data) > 2:
-            _fill_raw_bytes_to_msg(msg, msg_data)
-        return msg, num_bytes
+        return _prepare_recv_msg(sock, msg_data, check_version)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -459,17 +430,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
 
         msg_data = await sock.recv_multipart()
 
-        msg = jina_pb2.Message()
-        # receive a list, count the size of each in that list
-        num_bytes = sum(sys.getsizeof(m) for m in msg_data)
-        msg.ParseFromString(msg_data[1])
-        if check_version:
-            _check_msg_version(msg)
-
-        # now we have a barebone msg, we need to fill in data
-        if len(msg_data) > 2:
-            _fill_raw_bytes_to_msg(msg, msg_data)
-        return msg, num_bytes
+        return _prepare_recv_msg(sock, msg_data, check_version)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -487,6 +448,64 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
             sock.setsockopt(zmq.RCVTIMEO, -1)
         except zmq.error.ZMQError:
             pass
+
+
+def _prepare_send_msg(client_id, bodies: List[bytes], compress_hwm: int, compress_lwm: float):
+    if isinstance(client_id, str):
+        client_id = client_id.encode()
+
+    _size_before = sum(sys.getsizeof(m) for m in bodies)
+    if _size_before > compress_hwm > 0:
+        from ..logging import default_logger
+        import lz4.frame
+        _bodies = [lz4.frame.compress(m) for m in bodies]
+        is_compressed = b'1'
+        _size_after = sum(sys.getsizeof(m) for m in _bodies)
+        rate = _size_after / _size_before
+        default_logger.debug(f'compressed, before: {_size_before} after: {_size_after}, '
+                             f'ratio: {(_size_after / _size_before * 100):.0f}%')
+        if rate > compress_lwm:
+            _bodies = bodies
+            is_compressed = b'0'
+            default_logger.debug(f'ineffective compression as the rate {rate:.2f} is higher than {compress_lwm}')
+    else:
+        _bodies = bodies
+        is_compressed = b'0'
+
+    _header = [client_id, is_compressed]
+    msg = _header + _bodies
+    num_bytes = sum(sys.getsizeof(m) for m in msg)
+    return msg, num_bytes
+
+
+def _prepare_recv_msg(sock, msg_data, check_version: bool):
+    if sock.type == zmq.DEALER:
+        # dealer consumes the first part of the message as id, we need to prepend it back
+        msg_data = [' '] + msg_data
+    elif sock.type == zmq.ROUTER:
+        # the router appends dealer id when receive it, we need to remove it
+        msg_data.pop(0)
+
+    if msg_data[1] == b'1':
+        # body message is compressed
+        import lz4.frame
+        for l in range(2, len(msg_data)):
+            msg_data[l] = lz4.frame.decompress(msg_data[l])
+
+    msg = jina_pb2.Message()
+
+    num_bytes = sum(sys.getsizeof(m) for m in msg_data)
+
+    msg.ParseFromString(msg_data[2])
+
+    if check_version:
+        _check_msg_version(msg)
+
+    # now we have a barebone msg, we need to fill in data
+    if len(msg_data) > 3:
+        _fill_raw_bytes_to_msg(msg, msg_data, offset=3)
+
+    return msg, num_bytes
 
 
 def _get_random_ipc() -> str:
@@ -630,12 +649,12 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
     return doc_bytes, chunk_bytes, chunk_byte_type
 
 
-def _fill_raw_bytes_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes]):
-    chunk_byte_type = msg_data[2].decode()
-    doc_bytes_len = int(msg_data[3])
-    chunk_bytes_len = int(msg_data[4])
-    doc_bytes = msg_data[5:(5 + doc_bytes_len)]
-    chunk_bytes = msg_data[(5 + doc_bytes_len):]
+def _fill_raw_bytes_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: int = 2):
+    chunk_byte_type = msg_data[offset].decode()
+    doc_bytes_len = int(msg_data[offset + 1])
+    chunk_bytes_len = int(msg_data[offset + 2])
+    doc_bytes = msg_data[(offset + 3):(offset + 3 + doc_bytes_len)]
+    chunk_bytes = msg_data[(offset + 3 + doc_bytes_len):]
     c_idx = 0
     d_idx = 0
 

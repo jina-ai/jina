@@ -1,6 +1,7 @@
 !Flow
 with:
   logserver: $WITH_LOGSERVER
+  compress_hwm: 1024
 pods:
   chunk_seg:
     yaml_path: $RESOURCE_DIR/helloworld.crafter.yml

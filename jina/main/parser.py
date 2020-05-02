@@ -20,7 +20,7 @@ def set_base_parser():
         'Examples': ('🚀‍', 'https://learn.jina.ai'),
         'Dashboard': ('📊', 'https://dashboard.jina.ai'),
         'Code': ('🧑‍💻', 'https://opensource.jina.ai'),
-        'Hiring!': ('🙌', 'hello@jina.ai')
+        'Hiring!': ('🙌', 'career@jina.ai')
     }
     url_str = '\n'.join(f'{v[0]} {k:10.10} {colored(v[1], "cyan", attrs=["underline"])}' for k, v in urls.items())
 
@@ -214,6 +214,14 @@ def set_pea_parser(parser=None):
     gp5.add_argument('--array-in-pb', action='store_true', default=False,
                      help='sending raw_bytes and numpy ndarray together within or separately from the protobuf message, '
                           'the latter often yields a better network efficiency')
+    gp5.add_argument('--compress-hwm', type=int, default=-1,
+                     help='the high watermark that triggers the message compression. '
+                          'message bigger than this HWM (in bytes) will be compressed by lz4 algorithm.'
+                          'set this to -1 to disable this feature.')
+    gp5.add_argument('--compress-lwm', type=float, default=1.,
+                     help='the low watermark that enables the sending of a compressed message. '
+                          'compression rate (after_size/before_size) lower than this LWM will considered as successeful '
+                          'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=1,
                      help='wait until the number of parts of message are all received')
 
