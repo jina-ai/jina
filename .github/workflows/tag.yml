@@ -24,7 +24,7 @@ jobs:
           echo ::set-env name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
           pip install .
           cd schema
-          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" --yaml-path 'latest.yml' --json-path "${{env.JINA_VERSION}}.json" --json-path 'latest.json' --json-path 'latest'
+          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" latest.yml --json-path "${{env.JINA_VERSION}}.json" latest.json latest
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push

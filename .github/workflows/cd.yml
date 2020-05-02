@@ -45,7 +45,7 @@ jobs:
           jina check
           echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
           cd schema
-          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" --yaml-path 'devel.yml' --json-path "${{env.JINA_VERSION}}.json" --json-path 'devel.json' --json-path 'devel'
+          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" devel.yml --json-path "${{env.JINA_VERSION}}.json" devel.json devel
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
