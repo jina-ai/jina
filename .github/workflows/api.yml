@@ -12,7 +12,7 @@ on:
 
 
 jobs:
-  update-doc:
+  update-schema:
     if: "!startsWith(github.event.head_commit.message, 'chore')"
     runs-on: ubuntu-latest
     steps:
@@ -31,7 +31,7 @@ jobs:
       - name: make schema
         run: |
           cd schema
-          jina export-api
+          jina export-api --yaml-path '%s.yml' --json-path '%s.json'
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
