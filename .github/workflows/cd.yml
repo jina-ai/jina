@@ -1,19 +1,19 @@
 name: CD
 
-#on:
-#  push:
-#    branches:
-#      - master
-
 on:
   push:
-    branches-ignore:
-      - '**'  # temporally ignore all
+    branches:
+      - master
+
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally ignore all
 
 
 jobs:
   update-doc:
-    if: "!startsWith(github.event.head_commit.message, 'chore')"
+    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
     runs-on: ubuntu-latest
     steps:
       - uses: technote-space/toc-generator@v2

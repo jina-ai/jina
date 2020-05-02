@@ -11,7 +11,7 @@ on:
 
 jobs:
   regular-release:
-    if: "!startsWith(github.event.head_commit.message, 'chore')"
+    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
