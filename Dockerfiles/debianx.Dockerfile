@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
 
 # python3-scipy
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    python3-numpy python3-zmq python3-protobuf python3-grpcio gcc && \
+    python3-numpy python3-zmq python3-protobuf python3-grpcio gcc linux-libc-dev linux-headers-generic && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
