@@ -44,6 +44,7 @@ jobs:
           pip install .
           jina check
           echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
+      - run: |
           cd schema
           jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" devel.yml --json-path "${{env.JINA_VERSION}}.json" devel.json devel
           git config --local user.email "dev-bot@jina.ai"
