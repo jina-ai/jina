@@ -3,6 +3,7 @@ FROM python:3.7.6-slim
 ARG VCS_REF
 ARG BUILD_DATE
 ARG JINA_VERSION
+ARG INSTALL_DEV
 
 LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.authors="dev-team@jina.ai" \
@@ -18,7 +19,8 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
 
 # python3-scipy
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    python3-numpy python3-zmq python3-protobuf python3-grpcio gcc libc-dev && \
+    python3-numpy python3-zmq python3-protobuf python3-grpcio && \
+    if [ -n "$INSTALL_DEV" ]; then apt-get install --no-install-recommends -y gcc libc-dev; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
@@ -34,7 +36,8 @@ ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD jina ./jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
-    if [ "${JINA_VERSION%-devel}" != "${JINA_VERSION}" ]; then pip install .[devel] --no-cache-dir --compile; else pip install . --no-cache-dir --compile; fi && \
+    pip install . --no-cache-dir --compile && \
+    if [ -n "$INSTALL_DEV" ]; then pip install .[devel] --no-cache-dir --compile; fi && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 

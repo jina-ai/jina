@@ -74,8 +74,8 @@ jobs:
           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
       - id: get_version
         run: |
-          echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+          echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
+          echo ::set-env name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Run Buildx and Upload to Docker Cloud
         run: |
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
@@ -85,9 +85,6 @@ jobs:
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
             -t "jinaai/jina:$JINA_VERSION" -t jinaai/jina:latest \
             --file ./Dockerfiles/debianx.Dockerfile .
-        env:
-          JINA_VERSION: ${{steps.get_version.outputs.JINA_VERSION}}
-          V_JINA_VERSION: ${{steps.get_version.outputs.V_JINA_VERSION}}
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
