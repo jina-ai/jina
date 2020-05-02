@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+
 from jina.drivers.helper import array2pb, pb2array
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -52,6 +53,16 @@ class MyTestCase(JinaTestCase):
         with f as fl:
             fl.index(random_docs, output_fn=get_output, in_proto=True)
 
+    def f2(self, quant):
+        os.environ['JINA_ARRAY_QUANT'] = quant
+
+        f = Flow(callback_on_body=True, compress_hwm=1024).add(yaml_path='_forward').add(yaml_path='_forward').add(
+            yaml_path='_forward').add(
+            yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward')
+        with f as fl:
+            fl.index(random_docs, output_fn=get_output, in_proto=True)
+
     def test_quant(self):
         for j in ('fp32', 'fp16', 'uint8'):
             self.f1(j)
+            self.f2(j)

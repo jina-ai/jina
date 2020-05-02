@@ -1,8 +1,9 @@
-import numpy as np
 import os
 
-from tests import JinaTestCase
+import numpy as np
+
 from jina.executors import BaseExecutor
+from tests import JinaTestCase
 
 
 class NumericTestCase(JinaTestCase):

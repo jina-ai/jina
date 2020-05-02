@@ -1,4 +1,5 @@
 import unittest
+
 import numpy as np
 
 from jina.executors.crafters.image.crop import ImageCropper, CenterImageCropper, RandomImageCropper, FiveImageCropper, \
@@ -17,11 +18,11 @@ class MyTestCase(JinaImageTestCase):
         crafter = ImageCropper(left, top, width, height)
         crafted_chunk = crafter.craft(img_array, 0, 0)
         np.testing.assert_array_equal(
-            crafted_chunk['blob'], np.asarray(img_array[top:top+height, left:left+width, :]),
+            crafted_chunk['blob'], np.asarray(img_array[top:top + height, left:left + width, :]),
             'img_array: {}\ntest: {}\ncontrol:{}'.format(
                 img_array.shape,
                 crafted_chunk['blob'].shape,
-                np.asarray(img_array[left:left+width, top:top+height, :]).shape))
+                np.asarray(img_array[left:left + width, top:top + height, :]).shape))
 
     def test_center_crop(self):
         img_size = 217

@@ -1,19 +1,7 @@
 import unittest
 
 import requests
-from jina import JINA_GLOBAL
-from jina.enums import FlowOptimizeLevel
-from jina.flow import Flow
-from jina.main.checker import NetworkChecker
-from jina.main.parser import set_pea_parser, set_ping_parser
-from jina.main.parser import set_pod_parser
-from jina.peapods.pea import BasePea
-from jina.peapods.pod import BasePod
-from jina.proto import jina_pb2
-from tests import JinaTestCase
-import unittest
 
-import requests
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow

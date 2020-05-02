@@ -1,5 +1,4 @@
 import unittest
-import os
 
 from jina.executors.encoders.image.onnx import OnnxImageEncoder
 from . import ImageTestCase

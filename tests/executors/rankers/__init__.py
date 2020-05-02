@@ -45,4 +45,3 @@ class RankerTestCase(JinaTestCase):
         self.assertEqual(doc_idx[1][0], 4294967294)
         # check the number of matched docs
         self.assertEqual(len(doc_idx), 2)
-

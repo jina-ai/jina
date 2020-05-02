@@ -2,6 +2,7 @@ import os
 import unittest
 
 import numpy as np
+
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector.annoy import AnnoyIndexer
 from jina.executors.indexers.vector.nmslib import NmslibIndexer

@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from . import NumericTestCase
 from jina.executors.encoders.numeric.pca import IncrementalPCAEncoder
+from . import NumericTestCase
 
 
 class MyTestCase(NumericTestCase):
