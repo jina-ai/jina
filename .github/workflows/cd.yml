@@ -1,9 +1,9 @@
 name: CD
 
-on:
-  push:
-    branches:
-      - master
+#on:
+#  push:
+#    branches:
+#      - master
 
 on:
   push:
