@@ -5,10 +5,10 @@ on:
     branches:
       - master
 
-#on:
-#  push:
-#    branches-ignore:
-#      - '**'  # temporally ignore all
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally ignore all
 
 
 jobs:

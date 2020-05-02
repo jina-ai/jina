@@ -1,0 +1,35 @@
+name: API Schema
+
+on:
+  push:
+    branches:
+      - master
+
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally ignore all
+
+
+jobs:
+  update-doc:
+    if: "!startsWith(github.event.head_commit.message, 'chore')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/hub-status
+          path: schema
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          pip install .
+          echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)"
+      - name: make schema
+        run: |
+          cd schema
+          jina export-api
+          git add . && git commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
