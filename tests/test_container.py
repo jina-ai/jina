@@ -27,7 +27,6 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
 built = False
 img_name = 'jina/mwu-encoder'
 
-
 defaulthost = '0.0.0.0'
 localhost = defaulthost if (platform == "linux" or platform == "linux2") else 'host.docker.internal'
 
@@ -43,7 +42,6 @@ def build_image():
 
 # @unittest.skipUnless(os.getenv('JINA_TEST_CONTAINER', False), 'skip the container test if not set')
 class MyTestCase(JinaTestCase):
-
 
     def tearDown(self) -> None:
         super().tearDown()

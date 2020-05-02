@@ -1,10 +1,12 @@
-import unittest
 import os
-from tests import JinaTestCase
-from jina.executors.indexers.keyvalue.leveldb import LeveldbIndexer
+import unittest
+
+from google.protobuf.json_format import MessageToJson
+
 import jina.proto.jina_pb2 as jina_pb2
 from jina.executors.indexers import BaseIndexer
-from google.protobuf.json_format import MessageToJson
+from jina.executors.indexers.keyvalue.leveldb import LeveldbIndexer
+from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
