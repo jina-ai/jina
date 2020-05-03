@@ -109,7 +109,7 @@ jina hello-world
 ....甚至对Docker用户来说更容易。**不需要任何安装**。简单地。
 
 ```bash
-docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
+docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
 ```
 
 <details>
