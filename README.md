@@ -111,7 +111,7 @@ jina hello-world
 ...or even easier for Docker users, **no any install required,** simply:
 
 ```bash
-docker run -v "$(PWD)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
+docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
 ```
 
 <details>

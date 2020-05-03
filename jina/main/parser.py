@@ -220,7 +220,7 @@ def set_pea_parser(parser=None):
                           'set this to -1 to disable this feature.')
     gp5.add_argument('--compress-lwm', type=float, default=1.,
                      help='the low watermark that enables the sending of a compressed message. '
-                          'compression rate (after_size/before_size) lower than this LWM will considered as successeful '
+                          'compression rate (after_size/before_size) lower than this LWM will be considered as successeful '
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=1,
                      help='wait until the number of parts of message are all received')

@@ -16,7 +16,7 @@ As a starter, we invite you to try Jina's "Hello, World" - a simple demo of imag
 .. highlight:: bash
 .. code-block:: bash
 
-    docker run -v "$(PWD)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
+    docker run -v "$(pwd)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
 
 
 .. image:: hello-world-demo.png
@@ -98,7 +98,7 @@ or if you use Docker:
 .. code-block:: bash
 
 
-    docker run -p 5000:5000 -v $(PWD)/tmp:/workspace jinaai/jina:devel hello-world --workdir /workspace --logserver && open tmp/hello-world.html
+    docker run -p 5000:5000 -v $(pwd)/tmp:/workspace jinaai/jina:devel hello-world --workdir /workspace --logserver && open tmp/hello-world.html
 
 
 
