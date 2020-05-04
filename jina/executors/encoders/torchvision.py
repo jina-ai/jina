@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from . import BaseNumericEncoder
+from .. import BaseTorchExecutor
 from ..decorators import batching, as_ndarray
 
 
-class TorchEncoder(BaseNumericEncoder):
+class TorchEncoder(BaseTorchExecutor):
     def __init__(self,
                  model_name: str,
                  channel_axis: int = 1,
@@ -17,11 +17,11 @@ class TorchEncoder(BaseNumericEncoder):
         self.channel_axis = channel_axis
         self._default_channel_axis = 1
 
-    def post_init(self):
-        import torch
+    def build_model(self):
         self._build_model()
-        device = 'cuda:0' if self.on_gpu else 'cpu'
-        self.model.to(torch.device(device))
+
+    def set_device(self):
+        self.model.to(self._device)
 
     @batching
     @as_ndarray

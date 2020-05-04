@@ -7,9 +7,10 @@ import numpy as np
 
 from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
+from ... import BaseTorchExecutor
 
 
-class FlairTextEncoder(BaseTextEncoder):
+class FlairTextEncoder(BaseTextEncoder, BaseTorchExecutor):
     """
     :class:`FlairTextEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
@@ -36,10 +37,9 @@ class FlairTextEncoder(BaseTextEncoder):
         self.model = None
         self.max_length = -1  # reserved variable for future usages
 
-    def post_init(self):
+    def build_model(self):
         from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, \
             DocumentPoolEmbeddings
-
         if self.model is not None:
             return
         embeddings_list = []

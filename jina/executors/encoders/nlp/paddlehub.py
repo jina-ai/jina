@@ -5,9 +5,10 @@ import numpy as np
 
 from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
+from ... import BasePaddleExecutor
 
 
-class TextPaddlehubEncoder(BaseTextEncoder):
+class TextPaddlehubEncoder(BaseTextEncoder, BasePaddleExecutor):
     """
     :class:`TextPaddlehubEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`TextPaddlehubEncoder` wraps the Ernie module from paddlehub.
@@ -40,7 +41,7 @@ class TextPaddlehubEncoder(BaseTextEncoder):
         self.max_length = max_length
         self.tokenizer = None
 
-    def post_init(self):
+    def build_model(self):
         import paddlehub as hub
         self.model = hub.Module(name=self.model_name)
         self.model.MAX_SEQ_LEN = self.max_length

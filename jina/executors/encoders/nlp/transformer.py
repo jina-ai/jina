@@ -8,9 +8,10 @@ import numpy as np
 from .. import BaseTextEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
+from ... import _BaseFramewordExecutor, BaseTfExecutor, BaseTorchExecutor
 
 
-class TransformerEncoder(BaseTextEncoder):
+class BaseTransformerEncoder(_BaseFramewordExecutor):
     """
     :class:`TransformerTextEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
     """
@@ -32,14 +33,13 @@ class TransformerEncoder(BaseTextEncoder):
         :param model_path: the path of the encoder model. If a valid path is given, the encoder will be loaded from the
             given path.
         """
-
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.pooling_strategy = pooling_strategy
         self.max_length = max_length
         self.raw_model_path = model_path
 
-    def post_init(self):
+    def _build_tokenizer(self):
         from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
             XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer, \
             FlaubertTokenizer, CamembertTokenizer, CTRLTokenizer
@@ -130,15 +130,20 @@ class TransformerEncoder(BaseTextEncoder):
         """
         return self.get_file_from_workspace(self.raw_model_path)
 
+    def build_model(self):
+        self._build_tokenizer()
+        self._build_model()
 
-class TransformerTFEncoder(TransformerEncoder):
+    def _build_model(self):
+        raise NotImplementedError
+
+
+class TransformerTFEncoder(BaseTfExecutor, BaseTransformerEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
-    def post_init(self):
-        super().post_init()
-
+    def _build_model(self):
         import tensorflow as tf
         from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
             TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
@@ -157,23 +162,19 @@ class TransformerTFEncoder(TransformerEncoder):
         self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
         self._tensor_func = tf.constant
         self._sess_func = tf.GradientTape
-
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))
 
 
-class TransformerTorchEncoder(TransformerEncoder):
+class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
 
-    def post_init(self):
-        super().post_init()
-
+    def _build_model(self):
         import torch
         from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
             RobertaModel, XLMRobertaModel, FlaubertModel, CamembertModel, CTRLModel
-
         model_dict = {
             'bert-base-uncased': BertModel,
             'openai-gpt': OpenAIGPTModel,
@@ -190,6 +191,5 @@ class TransformerTorchEncoder(TransformerEncoder):
         self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
         self._tensor_func = torch.tensor
         self._sess_func = torch.no_grad
-
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))

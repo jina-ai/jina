@@ -8,9 +8,10 @@ import numpy as np
 
 from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
+from ... import BaseOnnxExecutor
 
 
-class OnnxImageEncoder(BaseImageEncoder):
+class OnnxImageEncoder(BaseImageEncoder, BaseOnnxExecutor):
     """
     :class:`OnnxImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -42,7 +43,7 @@ class OnnxImageEncoder(BaseImageEncoder):
         self.raw_model_path = model_path
         self.model_name = ""
 
-    def post_init(self):
+    def build_model(self):
         import onnxruntime
         self.model_name = self.raw_model_path.split('/')[-1]
         self.tmp_model_path = self.get_file_from_workspace(f'{self.model_name}.tmp')

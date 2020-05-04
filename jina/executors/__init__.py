@@ -128,6 +128,7 @@ class BaseExecutor(metaclass=ExecutorType):
         self._last_snapshot_ts = datetime.now()
         self._drivers = {}  # type: Dict[str, List['BaseDriver']]
         self._attached_pea = None
+        self._backend = 'tensorflow'
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
         with TimeContext('post initiating, this may take some time', self.logger):
@@ -216,6 +217,27 @@ class BaseExecutor(metaclass=ExecutorType):
             All class members created here will NOT be serialized when calling :func:`save`. Therefore if you
             want to store them, please override the :func:`__getstate__`.
         """
+        self._set_device()
+
+    def _set_device(self):
+        if self._backend == 'tensorflow':
+            import tensorflow as tf
+            cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
+            gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
+            self._device = gpus[0] if self.on_gpu else cpus
+            # set before loading model
+        elif self._backend == 'paddlepaddle':
+            import paddle.fluid as fluid
+            self._device = fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
+        elif self._backend == 'pytorch':
+            import torch
+            self._device = torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
+        elif self._backend == 'onnx':
+            self._device = ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
+        else:
+            pass
+
+    def set_device(self):
         pass
 
     @classmethod
@@ -536,3 +558,54 @@ class BaseExecutor(metaclass=ExecutorType):
                     raise UnattachedDriver(d)
         else:
             raise NoDriverForRequest(req_type)
+
+
+class _BaseFramewordExecutor(BaseExecutor):
+    def post_init(self):
+        super().post_init()
+        self.build_model()
+        self.set_device()
+
+    def build_model(self):
+        raise NotImplementedError
+
+    def set_device(self):
+        raise NotImplementedError
+
+
+class BaseTorchExecutor(_BaseFramewordExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._backend = 'pytorch'
+
+    def set_device(self):
+        self.model.to(self._device)
+
+
+class BaseOnnxExecutor(BaseExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._backend = 'onnx'
+
+    def set_device(self):
+        self.model.set_providers(self._device)
+
+
+class BaseTfExecutor(_BaseFramewordExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._backend = 'tensorflow'
+
+    def set_device(self):
+        import tensorflow as tf
+        tf.config.experimental.set_visible_devices(self._device)
+
+
+class BasePaddleExecutor(_BaseFramewordExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._backend = 'paddlepaddle'
+
+    def set_device(self):
+        import paddle.fluid as fluid
+        self.exe = fluid.Executor(self._device)

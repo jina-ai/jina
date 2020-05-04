@@ -5,9 +5,10 @@ import numpy as np
 
 from . import BaseNumericEncoder
 from ..decorators import batching, as_ndarray
+from .. import BasePaddleExecutor
 
 
-class PaddlehubEncoder(BaseNumericEncoder):
+class PaddlehubEncoder(BaseNumericEncoder, BasePaddleExecutor):
     def __init__(self,
                  model_name: str,
                  output_feature: str,
@@ -23,14 +24,11 @@ class PaddlehubEncoder(BaseNumericEncoder):
         self.channel_axis = channel_axis
         self._default_channel_axis = -3
 
-    def post_init(self):
+    def build_model(self):
         import paddlehub as hub
-        import paddle.fluid as fluid
         module = hub.Module(name=self.model_name)
         inputs, outputs, self.model = module.context(trainable=False)
         self.get_inputs_and_outputs_name(inputs, outputs)
-        place = fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
-        self.exe = fluid.Executor(place)
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         raise NotImplementedError

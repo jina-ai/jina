@@ -5,9 +5,10 @@ import numpy as np
 
 from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
+from ... import BaseTfExecutor
 
 
-class KerasImageEncoder(BaseImageEncoder):
+class KerasImageEncoder(BaseImageEncoder, BaseTfExecutor):
     """
     :class:`KerasImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -42,14 +43,13 @@ class KerasImageEncoder(BaseImageEncoder):
         self.img_shape = img_shape
         self.channel_axis = channel_axis
 
-    def post_init(self):
+    def build_model(self):
         import tensorflow as tf
         model = getattr(tf.keras.applications, self.model_name)(
             input_shape=(self.img_shape, self.img_shape, 3),
             include_top=False,
             pooling=self.pool_strategy,
             weights='imagenet')
-
         model.trainable = False
         self.model = model
 
