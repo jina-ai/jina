@@ -3,8 +3,6 @@ __license__ = "Apache-2.0"
 
 import argparse
 
-from ..helper import colored
-
 
 def add_arg_group(parser, title):
     return parser.add_argument_group(title)
@@ -511,6 +509,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
             # add the heading if the section was non-empty
             if self.heading is not argparse.SUPPRESS and self.heading is not None:
+                from ..helper import colored
                 current_indent = self.formatter._current_indent
                 captial_heading = ' '.join(v[0].upper() + v[1:] for v in self.heading.split(' '))
                 heading = '⚙️  %*s%s\n' % (
@@ -531,6 +530,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         help = action.help
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
+                from ..helper import colored
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
 
