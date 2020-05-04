@@ -22,6 +22,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -655,4 +656,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```61c97022```](https://github.com/jina-ai/jina/commit/61c97022356bf0a496b76eaa76b78d01484c22af)] __-__ hotfix dockerfile for latest (*Han Xiao*)
  - [[```2e7bf04c```](https://github.com/jina-ai/jina/commit/2e7bf04c94d2a7279b37fe53309562e88ca5c24b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```5e37d3fe```](https://github.com/jina-ai/jina/commit/5e37d3fe58bf7c808ce836d6a496904a98788b36)] __-__ __version__: bumping version to 0.1.6 (*Jina Dev Bot*)
+
+## Release Note (`0.1.7`)
+
+> Release time: 2020-05-04 14:18:12
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```6640bb53```](https://github.com/jina-ai/jina/commit/6640bb53ef1bf311c5540f2dbe49325fc2affedb)] __-__ __cli__: remove color imports (*Han Xiao*)
+ - [[```01ff133c```](https://github.com/jina-ai/jina/commit/01ff133c26a96fc36f3bd8f0e6310631cd781b04)] __-__ __hello-world__: fix compression dep in hw demo (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```f0a5e4d1```](https://github.com/jina-ai/jina/commit/f0a5e4d187d61cd9ef7bf4867d79ce718d5f905b)] __-__ hotfix fix dep for latest (*Han Xiao*)
+ - [[```e4d44d45```](https://github.com/jina-ai/jina/commit/e4d44d45ceb3bd85fe80c25edf71cd4a64fddb01)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```df52882e```](https://github.com/jina-ai/jina/commit/df52882e921de8038914b0c5daf02374decec51b)] __-__ __version__: bumping version to 0.1.7 (*Jina Dev Bot*)
 
