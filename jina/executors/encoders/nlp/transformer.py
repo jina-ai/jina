@@ -8,10 +8,10 @@ import numpy as np
 from .. import BaseTextEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
-from ... import BaseFramewordExecutor, BaseTfExecutor, BaseTorchExecutor
+from ... import BaseFrameworkExecutor, BaseTFExecutor, BaseTorchExecutor
 
 
-class BaseTransformerEncoder(BaseFramewordExecutor):
+class BaseTransformerEncoder(BaseFrameworkExecutor):
     """
     :class:`TransformerTextEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
     """
@@ -138,7 +138,7 @@ class BaseTransformerEncoder(BaseFramewordExecutor):
         raise NotImplementedError
 
 
-class TransformerTFEncoder(BaseTfExecutor, BaseTransformerEncoder):
+class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """

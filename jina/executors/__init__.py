@@ -560,20 +560,37 @@ class BaseExecutor(metaclass=ExecutorType):
             raise NoDriverForRequest(req_type)
 
 
-class BaseFramewordExecutor(BaseExecutor):
+class BaseFrameworkExecutor(BaseExecutor):
+    """
+    :class:`BaseFrameworkExecutor` is the base class for the executors using other frameworks internally, including
+        `tensorflow`, `pytorch`, `onnx`, and, `paddlepaddle`.
+
+    ..notes:
+        The derived classes must implement `build_model()` and `set_device()` methods.
+    """
     def post_init(self):
         super().post_init()
         self.build_model()
         self.set_device()
 
     def build_model(self):
+        """
+        Build the model with the framework set by `self._backend`.
+        """
         raise NotImplementedError
 
     def set_device(self):
+        """
+        Set the device on which the model will be executed.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
         raise NotImplementedError
 
 
-class BaseTorchExecutor(BaseFramewordExecutor):
+class BaseTorchExecutor(BaseFrameworkExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'pytorch'
@@ -591,7 +608,7 @@ class BaseOnnxExecutor(BaseExecutor):
         self.model.set_providers(self._device)
 
 
-class BaseTfExecutor(BaseFramewordExecutor):
+class BaseTFExecutor(BaseFrameworkExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'tensorflow'
@@ -601,7 +618,7 @@ class BaseTfExecutor(BaseFramewordExecutor):
         tf.config.experimental.set_visible_devices(self._device)
 
 
-class BasePaddleExecutor(BaseFramewordExecutor):
+class BasePaddleExecutor(BaseFrameworkExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'paddlepaddle'
