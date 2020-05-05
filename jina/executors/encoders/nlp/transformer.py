@@ -8,10 +8,10 @@ import numpy as np
 from .. import BaseTextEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
-from ... import _BaseFramewordExecutor, BaseTfExecutor, BaseTorchExecutor
+from ... import BaseFramewordExecutor, BaseTfExecutor, BaseTorchExecutor
 
 
-class BaseTransformerEncoder(_BaseFramewordExecutor):
+class BaseTransformerEncoder(BaseFramewordExecutor):
     """
     :class:`TransformerTextEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
     """

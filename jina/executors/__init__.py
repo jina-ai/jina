@@ -128,7 +128,7 @@ class BaseExecutor(metaclass=ExecutorType):
         self._last_snapshot_ts = datetime.now()
         self._drivers = {}  # type: Dict[str, List['BaseDriver']]
         self._attached_pea = None
-        self._backend = 'tensorflow'
+        self._backend = None
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
         with TimeContext('post initiating, this may take some time', self.logger):
@@ -560,7 +560,7 @@ class BaseExecutor(metaclass=ExecutorType):
             raise NoDriverForRequest(req_type)
 
 
-class _BaseFramewordExecutor(BaseExecutor):
+class BaseFramewordExecutor(BaseExecutor):
     def post_init(self):
         super().post_init()
         self.build_model()
@@ -573,7 +573,7 @@ class _BaseFramewordExecutor(BaseExecutor):
         raise NotImplementedError
 
 
-class BaseTorchExecutor(_BaseFramewordExecutor):
+class BaseTorchExecutor(BaseFramewordExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'pytorch'
@@ -591,7 +591,7 @@ class BaseOnnxExecutor(BaseExecutor):
         self.model.set_providers(self._device)
 
 
-class BaseTfExecutor(_BaseFramewordExecutor):
+class BaseTfExecutor(BaseFramewordExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'tensorflow'
@@ -601,7 +601,7 @@ class BaseTfExecutor(_BaseFramewordExecutor):
         tf.config.experimental.set_visible_devices(self._device)
 
 
-class BasePaddleExecutor(_BaseFramewordExecutor):
+class BasePaddleExecutor(BaseFramewordExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'paddlepaddle'
