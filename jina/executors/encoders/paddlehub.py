@@ -8,7 +8,7 @@ from ..decorators import batching, as_ndarray
 from .. import BasePaddleExecutor
 
 
-class PaddlehubEncoder(BaseNumericEncoder, BasePaddleExecutor):
+class PaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
     def __init__(self,
                  model_name: str,
                  output_feature: str,

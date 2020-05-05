@@ -24,6 +24,7 @@ torch:                      framework
 transformers:               nlp, encode
 flair:                      nlp, encode
 paddlepaddle:               framework, py37
+paddlepaddle-gpu:           framework, py37, gpu
 paddlehub:                  framework, py37
 bert-for-tf2:               nlp, py37
 Pillow:                     cv
