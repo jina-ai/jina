@@ -126,7 +126,7 @@ def set_flow_parser(parser=None):
 
 
 def set_pea_parser(parser=None):
-    from ..enums import SocketType
+    from ..enums import SocketType, PeaRoleType
     from ..helper import random_port, get_random_identity
     from .. import __default_host__
     import os
@@ -222,6 +222,8 @@ def set_pea_parser(parser=None):
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=1,
                      help='wait until the number of parts of message are all received')
+    gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
+                     help='the role of this pea in a pod')
 
     gp6 = add_arg_group(parser, 'pea EXPERIMENTAL arguments')
     gp6.add_argument('--memory-hwm', type=int, default=-1,
@@ -229,7 +231,7 @@ def set_pea_parser(parser=None):
                           '-1 means no restriction')
     gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='process',
                      help='the parallel runtime of the pod')
-    gp5.add_argument('--max-idle-time', type=int, default=60,
+    gp6.add_argument('--max-idle-time', type=int, default=60,
                      help='label this pea as inactive when it does not '
                           'process any request after certain time (in second)')
 
@@ -240,8 +242,10 @@ def set_pea_parser(parser=None):
                      help='turn on remote logging')
     gp7.add_argument('--log-profile', action='store_true', default=False,
                      help='turn on the profiling logger')
-    gp7.add_argument('--override-exec-log', action='store_true', default=False,
-                     help='turn on to allow the override of the executor logger by the pea logger')
+    gp7.add_argument('--log-with-own-name', action='store_true', default=False,
+                     help='turn on to let each logger outputs in its own name (i.e. parent class name as the context), '
+                          'by default it is off so all logs from the same pod will have the same prefix. '
+                          'turn on to help debugging, turn off to have more clear logs and better grouping in dashboard')
     _set_grpc_parser(parser)
     return parser
 

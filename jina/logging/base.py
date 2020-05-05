@@ -49,7 +49,8 @@ class JsonFormatter(Formatter):
     """Format the log message as a JSON object so that it can be later used/parsed in browser with javascript. """
 
     KEYS = {'created', 'filename', 'funcName', 'levelname', 'lineno', 'msg',
-            'module', 'name', 'pathname', 'process', 'thread'}  #: keys to extract from the log
+            'module', 'name', 'pathname', 'process', 'thread', 'processName',
+            'threadName'}  #: keys to extract from the log
 
     def format(self, record):
         cr = copy(record)
@@ -161,11 +162,12 @@ def get_logger(context: str, context_len: int = 15,
     from .. import __uptime__
     from .queue import __sse_queue__, __profile_queue__, __log_queue__
     if not fmt_str:
+        title = os.environ.get('JINA_POD_NAME', context)
         if 'JINA_LOG_LONG' in os.environ:
-            fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
+            fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
                       f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
         else:
-            fmt_str = f'{context[:context_len]:>{context_len}}@%(process)2d' \
+            fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
                       f'[%(levelname).1s]:%(message)s'
 
     timed_fmt_str = f'%(asctime)s:' + fmt_str

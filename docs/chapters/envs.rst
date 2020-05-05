@@ -133,3 +133,9 @@ Here is the list of environment variables that ``jina`` respects during runtime.
     If set, then all pretrained model-related tests will be conducted in the unit test.
 
     :default: unset
+
+.. confval:: JINA_POD_NAME
+
+    The Pod name set when a Pod started when ``--log-with-pod-name`` is on, this should not given manually by users.
+
+    :default: unset

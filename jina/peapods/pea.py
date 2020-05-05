@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import argparse
 import multiprocessing
+import os
 import threading
 import time
 from collections import defaultdict
@@ -14,6 +15,7 @@ import zmq
 from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
+from ..enums import PeaRoleType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     RequestLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
@@ -107,7 +109,7 @@ class BasePea(metaclass=PeaMeta):
         """
         super().__init__()
         self.args = args
-        self.name = self.__class__.__name__
+        self.name = self.__class__.__name__  #: this is the process name
         self.daemon = True
 
         self.is_ready = _get_event(self)
@@ -133,9 +135,16 @@ class BasePea(metaclass=PeaMeta):
         if isinstance(args, argparse.Namespace):
             if args.name:
                 self.name = args.name
-            if args.replica_id > 0:
+            if args.role == PeaRoleType.HEAD:
+                self.name = '%s-head' % self.name
+            elif args.role == PeaRoleType.TAIL:
+                self.name = '%s-tail' % self.name
+            elif args.role == PeaRoleType.REPLICA:
                 self.name = '%s-%d' % (self.name, args.replica_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
+            if not args.log_with_own_name and args.name:
+                # everything in this Pea (process) will use the same name for display the log
+                os.environ['JINA_POD_NAME'] = args.name
             self.logger = get_logger(self.name, **vars(args))
         else:
             self.logger = get_logger(self.name)
@@ -223,8 +232,6 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.args.replica_id)
-                if self.args.override_exec_log:
-                    self.executor.logger = self.logger
                 self.executor.attach(pea=self)
                 # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:

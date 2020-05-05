@@ -197,6 +197,7 @@ class BasePod:
             start_rep_id = 0
         for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
             _args.replica_id = idx
+            _args.role = PeaRoleType.REPLICA
             p = Pea(_args, allow_remote=False)
             self.peas.append(p)
             self.stack.enter_context(p)
@@ -421,7 +422,8 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
             _head_args.yaml_path = '_forward'
 
     if as_router:
-        _head_args.name = (args.name or '') + '-head'
+        _head_args.name = args.name or ''
+        _head_args.role = PeaRoleType.HEAD
 
     # head and tail never run in docker, reset their image to None
     _head_args.image = None
@@ -437,7 +439,8 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
     _tail_args.socket_in = SocketType.PULL_BIND
     if as_router:
         _tail_args.yaml_path = args.reducing_yaml_path
-        _tail_args.name = (args.name or '') + '-tail'
+        _tail_args.name = args.name or ''
+        _tail_args.role = PeaRoleType.TAIL
     _tail_args.num_part = num_part
 
     # head and tail never run in docker, reset their image to None
@@ -450,7 +453,7 @@ def _fill_in_host(bind_args, connect_args):
 
     bind_local = (bind_args.host == '0.0.0.0')
     bind_docker = (bind_args.image is not None and bind_args.image)
-    conn_tail = (connect_args.name is not None and connect_args.name.endswith('-tail'))
+    conn_tail = (connect_args.name is not None and connect_args.role == PeaRoleType.TAIL)
     conn_local = (connect_args.host == '0.0.0.0')
     conn_docker = (connect_args.image is not None and connect_args.image)
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)

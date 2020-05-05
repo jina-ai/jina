@@ -201,3 +201,13 @@ class FlowBuildLevel(BetterEnum):
     """
     EMPTY = 0  #: Nothing is built
     GRAPH = 1  #: The underlying graph is built, you may visualize the flow
+
+
+class PeaRoleType(BetterEnum):
+    """ The enum of a Pea role
+
+    """
+    REPLICA = 0
+    HEAD = 1
+    TAIL = 2
+    SHARD = 3
