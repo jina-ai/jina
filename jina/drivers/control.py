@@ -76,7 +76,9 @@ class RouteDriver(ControlReqDriver):
                     self.is_pollin_paused = True
             else:
                 raise RuntimeError('if this router connects more than one dealer, '
-                                   'then this error should never be raised')
+                                   'then this error should never be raised. often when it '
+                                   'is raised, some Pods must fail to start, so please go '
+                                   'up and check the first error message in the log')
         elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
             self.idle_dealer_ids.add(self.envelope.receiver_id)
             self.logger.debug(f'{self.envelope.receiver_id} is idle')
