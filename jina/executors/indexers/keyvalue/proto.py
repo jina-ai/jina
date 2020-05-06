@@ -55,7 +55,7 @@ class BasePbIndexer(BaseKVIndexer):
         :param key: ``chunk_id`` or ``doc_id``
         :return: protobuf chunk or protobuf document
         """
-        if self.query_handler and key in self.query_handler:
+        if self.query_handler is not None and key in self.query_handler:
             return self.query_handler[key]
 
 
