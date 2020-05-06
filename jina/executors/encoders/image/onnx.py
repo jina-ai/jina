@@ -11,7 +11,7 @@ from ...decorators import batching, as_ndarray
 from ... import BaseOnnxExecutor
 
 
-class OnnxImageEncoder(BaseImageEncoder, BaseOnnxExecutor):
+class OnnxImageEncoder(BaseOnnxExecutor):
     """
     :class:`OnnxImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -20,15 +20,15 @@ class OnnxImageEncoder(BaseImageEncoder, BaseOnnxExecutor):
 
     def __init__(self,
                  output_feature: str = 'mobilenetv20_features_relu1_fwd',
-                 model_path: str =
-                 'https://s3.amazonaws.com/onnx-model-zoo/mobilenet/mobilenetv2-1.0/mobilenetv2-1.0.onnx',
+                 model_path: str = None,
                  pool_strategy: str = 'mean',
                  *args, **kwargs):
         """
 
         :param output_feature: the name of the layer for feature extraction.
-        :param model_path: the path/URL of the model in the format of `.onnx`. Check a list of available pretrained
-            models at https://github.com/onnx/models#image_classification
+        :param model_path: the path of the model in the format of `.onnx`. Check a list of available pretrained
+            models at https://github.com/onnx/models#image_classification and download the git LFS at your local path.
+            The ``model_path`` is the ``.onnx`` file path, e.g. ``/tmp/onnx/mobilenetv2-1.0/mobilenetv2-1.0.onnx``.
         :param pool_strategy: the pooling strategy
             - `None` means that the output of the model will be the 4D tensor output of the last convolutional block.
             - `mean` means that global average pooling will be applied to the output of the last convolutional block,

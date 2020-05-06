@@ -599,7 +599,7 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
         self.model.to(self._device)
 
 
-class BaseOnnxExecutor(BaseExecutor):
+class BaseOnnxExecutor(BaseFrameworkExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'onnx'

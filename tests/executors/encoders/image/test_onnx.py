@@ -5,9 +5,12 @@ from . import ImageTestCase
 
 
 class MyTestCase(ImageTestCase):
-    def _get_encoder(self):
+    def _get_encoder(self, metas):
         self.target_output_dim = 1280
-        return OnnxImageEncoder()
+        self.input_dim = 224
+        return OnnxImageEncoder(
+            model_path='/tmp/onnx/mobilenetv2-1.0/mobilenetv2-1.0.onnx',
+            metas=metas)
 
 
 if __name__ == '__main__':
