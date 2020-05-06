@@ -95,21 +95,23 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
             mask_ids = [0 if t == self.tokenizer.pad_token_id else 1 for t in token_ids]
             token_ids_batch.append(token_ids)
             mask_ids_batch.append(mask_ids)
-        token_ids_batch = self._tensor_func(token_ids_batch)
-        mask_ids_batch = self._tensor_func(mask_ids_batch)
+        token_ids_batch = self.array2tensor(token_ids_batch)
+        mask_ids_batch = self.array2tensor(mask_ids_batch)
         with self._sess_func():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
+            _mask_ids_batch = self.tensor2array(mask_ids_batch)
+            _seq_output = self.tensor2array(seq_output)
             if self.pooling_strategy == 'cls':
                 if self.model_name in ('bert-base-uncased', 'roberta-base'):
-                    output = extra_output[0].numpy()
+                    output = self.tensor2array(extra_output[0])
                 else:
-                    output = reduce_cls(seq_output.numpy(), mask_ids_batch.numpy(), self.cls_pos)
+                    output = reduce_cls(_seq_output, _mask_ids_batch, self.cls_pos)
             elif self.pooling_strategy == 'mean':
-                output = reduce_mean(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_mean(_seq_output, _mask_ids_batch)
             elif self.pooling_strategy == 'max':
-                output = reduce_max(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_max(_seq_output, _mask_ids_batch)
             elif self.pooling_strategy == 'min':
-                output = reduce_min(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_min(_seq_output, _mask_ids_batch)
             else:
                 self.logger.error("pooling strategy not found: {}".format(self.pooling_strategy))
                 raise NotImplementedError
@@ -136,6 +138,12 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
 
     def _build_model(self):
         raise NotImplementedError
+
+    def array2tensor(self, array):
+        return self._tensor_func(array)
+
+    def tensor2array(self, tensor):
+        return tensor.numpy()
 
 
 class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
@@ -193,3 +201,14 @@ class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
         self._sess_func = torch.no_grad
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))
+
+    def array2tensor(self, array):
+        tensor = super().array2tensor(array)
+        if self.on_gpu:
+            tensor = tensor.cuda()
+        return tensor
+
+    def tensor2array(self, tensor):
+        if self.on_gpu:
+            tensor = tensor.cpu()
+        return tensor.numpy()

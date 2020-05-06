@@ -5,15 +5,19 @@ from . import NlpTestCase
 
 
 class PytorchTestCase(NlpTestCase):
-    def _get_encoder(self):
-        encoder = TransformerTorchEncoder(model_name='bert-base-uncased', pooling_strategy='cls')
-        return encoder
+    def _get_encoder(self, metas):
+        return TransformerTorchEncoder(
+            model_name='bert-base-uncased',
+            pooling_strategy='cls',
+            metas=metas)
 
 
 class TfTestCase(NlpTestCase):
-    def _get_encoder(self):
-        encoder = TransformerTFEncoder(model_name='bert-base-uncased', pooling_strategy='cls')
-        return encoder
+    def _get_encoder(self, metas):
+        return TransformerTFEncoder(
+            model_name='bert-base-uncased',
+            pooling_strategy='cls',
+            metas=metas)
 
 
 if __name__ == '__main__':
