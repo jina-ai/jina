@@ -733,7 +733,7 @@ class BaseOnnxExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
-        self.model_name = ""
+        self.model_name = ''
         self._backend = 'onnx'
 
     def _set_device(self):
