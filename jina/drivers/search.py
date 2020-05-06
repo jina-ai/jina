@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from . import BaseExecutableDriver
 from .helper import extract_chunks
+from ..proto.jina_pb2 import ScoredResult
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -42,30 +43,42 @@ class KVSearchDriver(BaseSearchDriver):
     def __call__(self, *args, **kwargs):
         if self.level == 'doc':
             for d in self.req.docs:
-                for tk in d.topk_results:
-                    r = self.exec_fn(f'd{tk.match_doc.doc_id}')
-                    if r:
-                        tk.match_doc.CopyFrom(r)
+                self._update_topk_docs(d)
         elif self.level == 'chunk':
             for d in self.req.docs:
                 for c in d.chunks:
-                    for k in c.topk_results:
-                        r = self.exec_fn(f'c{k.match_chunk.chunk_id}')
-                        if r:
-                            k.match_chunk.CopyFrom(r)
+                    self._update_topk_chunks(c)
         elif self.level == 'all':
             for d in self.req.docs:
-                for tk in d.topk_results:
-                    r = self.exec_fn(f'd{tk.match_doc.doc_id}')
-                    if r:
-                        tk.match_doc.CopyFrom(r)
+                self._update_topk_docs(d)
                 for c in d.chunks:
-                    for k in c.topk_results:
-                        r = self.exec_fn(f'c{k.match_chunk.chunk_id}')
-                        if r:
-                            k.match_chunk.CopyFrom(r)
+                    self._update_topk_chunks(c)
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
+
+    def _update_topk_docs(self, d):
+        hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
+        for tk in d.topk_results:
+            r = self.exec_fn(f'd{tk.match_doc.doc_id}')
+            if r:
+                sr = ScoredResult()
+                sr.score.CopyFrom(tk.score)
+                sr.match_doc.CopyFrom(r)
+                hit_sr.append(sr)
+        d.ClearField('topk_results')
+        d.topk_results.extend(hit_sr)
+
+    def _update_topk_chunks(self, c):
+        hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
+        for tk in c.topk_results:
+            r = self.exec_fn(f'd{tk.match_chunk.chunk_id}')
+            if r:
+                sr = ScoredResult()
+                sr.score.CopyFrom(tk.score)
+                sr.match_chunk.CopyFrom(r)
+                hit_sr.append(sr)
+        c.ClearField('topk_results')
+        c.topk_results.extend(hit_sr)
 
 
 class DocKVSearchDriver(KVSearchDriver):

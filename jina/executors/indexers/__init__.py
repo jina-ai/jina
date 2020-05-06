@@ -84,8 +84,8 @@ class BaseIndexer(BaseExecutor):
 
         if self._query_handler is None:
             self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
-                                'If you are indexing data then that is fine, just means you can not do querying-while-indexing.'
-                                'If you are querying data then the index file must be broken.')
+                                'If you are indexing data from scratch then it is fine. '
+                                'If you are querying data then the index file must be empty or broken.')
         return self._query_handler
 
     @property
