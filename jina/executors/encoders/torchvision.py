@@ -29,8 +29,14 @@ class TorchEncoder(BaseTorchExecutor):
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
-        feature_map = self._get_features(torch.from_numpy(data.astype('float32'))).detach().numpy()
-        return self._get_pooling(feature_map)
+        _input = torch.from_numpy(data.astype('float32'))
+        if self.on_gpu:
+            _input = _input.cuda()
+        _feature = self._get_features(_input).detach()
+        if self.on_gpu:
+            _feature = _feature.cpu()
+        _feature = _feature.numpy()
+        return self._get_pooling(_feature)
 
     def _build_model(self):
         raise NotImplementedError

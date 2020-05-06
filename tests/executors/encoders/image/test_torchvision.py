@@ -8,7 +8,7 @@ class MyTestCase(ImageTestCase):
     def _get_encoder(self, metas):
         self.target_output_dim = 1280
         self.input_dim = 224
-        return ImageTorchEncoder()
+        return ImageTorchEncoder(metas=metas)
 
 
 if __name__ == '__main__':
