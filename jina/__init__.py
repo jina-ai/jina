@@ -57,6 +57,7 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_STACK_CONFIG',
                 'JINA_TEST_CONTAINER',
                 'JINA_TEST_PRETRAINED',
+                'JINA_TEST_GPU',
                 'JINA_VCS_VERSION',
                 'JINA_VERSION',
                 'JINA_WARN_UNNAMED',)
