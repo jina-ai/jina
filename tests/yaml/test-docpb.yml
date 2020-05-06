@@ -1,0 +1,6 @@
+!DocPbIndexer
+with:
+  index_filename: test-doc-shard.gz
+metas:
+  name: docpb2
+  workspace: ./test-docshard

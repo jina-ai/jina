@@ -27,6 +27,15 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
         yield d
 
 
+def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
+    for j in range(num_docs):
+        d = jina_pb2.Document()
+        for k in range(chunks_per_doc):
+            dd = d.topk_results.add()
+            dd.match_doc.doc_id = k
+        yield d
+
+
 class MyTestCase(JinaTestCase):
 
     def test_ping(self):
@@ -155,7 +164,7 @@ class MyTestCase(JinaTestCase):
     def test_shards(self):
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=3, separated_workspace=True)
         with f:
-            f.index(input_fn=random_docs(1000), in_proto=True)
+            f.index(input_fn=random_docs(1000), in_proto=True, random_doc_id=False)
         with f:
             pass
         self.add_tmpfile('test-docshard')
@@ -163,9 +172,14 @@ class MyTestCase(JinaTestCase):
     def test_shards_insufficient_data(self):
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=10, separated_workspace=True)
         with f:
-            f.index(input_fn=random_docs(2), in_proto=True)
+            f.index(input_fn=random_docs(2), in_proto=True, random_doc_id=False)
         with f:
             pass
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=10,
+                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
+        with f:
+            f.search(input_fn=random_queries(1), in_proto=True, random_doc_id=False, output_fn=print)
+        self.add_tmpfile('test-docshard')
 
 
 if __name__ == '__main__':

@@ -41,7 +41,7 @@ class BadDriverMap(Exception):
 
 
 class NoDriverForRequest(Exception):
-    """No matched handler for this request """
+    """No matched driver for this request """
 
 
 class UnattachedDriver(Exception):

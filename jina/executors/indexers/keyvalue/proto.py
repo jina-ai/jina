@@ -6,6 +6,7 @@ import json
 from typing import Union
 
 from google.protobuf.json_format import Parse
+
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 
@@ -54,7 +55,8 @@ class BasePbIndexer(BaseKVIndexer):
         :param key: ``chunk_id`` or ``doc_id``
         :return: protobuf chunk or protobuf document
         """
-        return self.query_handler[key]
+        if self.query_handler and key in self.query_handler:
+            return self.query_handler[key]
 
 
 class ChunkPbIndexer(BasePbIndexer):

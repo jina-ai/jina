@@ -43,19 +43,27 @@ class KVSearchDriver(BaseSearchDriver):
         if self.level == 'doc':
             for d in self.req.docs:
                 for tk in d.topk_results:
-                    tk.match_doc.CopyFrom(self.exec_fn(f'd{tk.match_doc.doc_id}'))
+                    r = self.exec_fn(f'd{tk.match_doc.doc_id}')
+                    if r:
+                        tk.match_doc.CopyFrom(r)
         elif self.level == 'chunk':
             for d in self.req.docs:
                 for c in d.chunks:
                     for k in c.topk_results:
-                        k.match_chunk.CopyFrom(self.exec_fn(f'c{k.match_chunk.chunk_id}'))
+                        r = self.exec_fn(f'c{k.match_chunk.chunk_id}')
+                        if r:
+                            k.match_chunk.CopyFrom(r)
         elif self.level == 'all':
             for d in self.req.docs:
                 for tk in d.topk_results:
-                    tk.match_doc.CopyFrom(self.exec_fn(f'd{tk.match_doc.doc_id}'))
+                    r = self.exec_fn(f'd{tk.match_doc.doc_id}')
+                    if r:
+                        tk.match_doc.CopyFrom(r)
                 for c in d.chunks:
                     for k in c.topk_results:
-                        k.match_chunk.CopyFrom(self.exec_fn(f'c{k.match_chunk.chunk_id}'))
+                        r = self.exec_fn(f'c{k.match_chunk.chunk_id}')
+                        if r:
+                            k.match_chunk.CopyFrom(r)
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
 
