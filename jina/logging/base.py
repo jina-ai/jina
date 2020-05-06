@@ -224,7 +224,7 @@ def get_logger(context: str, context_len: int = 15,
     console_handler.setFormatter(ColorFormatter(fmt_str))
     logger.addHandler(console_handler)
 
-    success_level = 25  # between WARNING and INFO
+    success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
     logging.addLevelName(success_level, 'SUCCESS')
     setattr(logger, 'success', lambda message: logger.log(success_level, message))
 
