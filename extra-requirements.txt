@@ -35,5 +35,3 @@ sklearn:                    framework
 plyvel:                     index
 jieba:                      nlp, preprocess
 lz4:                        optimization, devel, production, network
-paddlepaddle-gpu:           framework, py37, gpu
-onnxruntime-gpu:            framework, py37, gpu
