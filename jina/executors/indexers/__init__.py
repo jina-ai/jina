@@ -84,8 +84,8 @@ class BaseIndexer(BaseExecutor):
 
         if self._query_handler is None:
             self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
-                                'If you are indexing data then that is fine, just means you can not do querying-while-indexing.'
-                                'If you are querying data then the index file must be broken.')
+                                'If you are indexing data from scratch then it is fine. '
+                                'If you are querying data then the index file must be empty or broken.')
         return self._query_handler
 
     @property
@@ -128,13 +128,13 @@ class BaseIndexer(BaseExecutor):
     def close(self):
         """Close all file-handlers and release all resources. """
         self.flush()
-        call_obj_fn(self.write_handler, 'close')
-        call_obj_fn(self.query_handler, 'close')
+        call_obj_fn(self._write_handler, 'close')
+        call_obj_fn(self._query_handler, 'close')
         super().close()
 
     def flush(self):
         """Flush all buffered data to ``index_abspath`` """
-        call_obj_fn(self.write_handler, 'flush')
+        call_obj_fn(self._write_handler, 'flush')
 
 
 class BaseVectorIndexer(BaseIndexer):

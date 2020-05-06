@@ -20,6 +20,11 @@ class MyTestCase(JinaTestCase):
     def test_helloworld(self):
         subprocess.check_call(['jina', 'hello-world'])
 
+    def test_helloworld_py(self):
+        from jina.main.parser import set_hw_parser
+        from jina.helloworld import hello_world
+        hello_world(set_hw_parser().parse_args([]))
+
     def test_helloworld_flow(self):
         args = set_hw_parser().parse_args([])
 

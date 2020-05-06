@@ -24,6 +24,16 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
             c.chunk_id = c_id
             c.doc_id = j
             c_id += 1
+        d.meta_info = b'hello world'
+        yield d
+
+
+def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
+    for j in range(num_docs):
+        d = jina_pb2.Document()
+        for k in range(chunks_per_doc):
+            dd = d.topk_results.add()
+            dd.match_doc.doc_id = k
         yield d
 
 
@@ -151,6 +161,39 @@ class MyTestCase(JinaTestCase):
             self.assertTrue(hasattr(JINA_GLOBAL.logserver, 'ready'))
             a = requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
             self.assertEqual(a.status_code, 200)
+
+    def test_shards(self):
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=3, separated_workspace=True)
+        with f:
+            f.index(input_fn=random_docs(1000), in_proto=True, random_doc_id=False)
+        with f:
+            pass
+        self.add_tmpfile('test-docshard')
+
+    def test_shards_insufficient_data(self):
+        index_docs = 10
+        replicas = 20
+
+        def validate(req):
+            self.assertEqual(len(req.docs), 1)
+            self.assertEqual(len(req.docs[0].topk_results), index_docs)
+
+            for d in req.docs[0].topk_results:
+                self.assertTrue(hasattr(d.match_doc, 'weight'))
+                self.assertIsNotNone(d.match_doc.weight)
+                self.assertEqual(d.match_doc.meta_info, b'hello world')
+
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas, separated_workspace=True)
+        with f:
+            f.index(input_fn=random_docs(index_docs), in_proto=True, random_doc_id=False)
+        with f:
+            pass
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas,
+                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
+        with f:
+            f.search(input_fn=random_queries(1, index_docs), in_proto=True, random_doc_id=False, output_fn=validate,
+                     callback_on_body=True)
+        self.add_tmpfile('test-docshard')
 
 
 if __name__ == '__main__':

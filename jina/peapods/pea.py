@@ -360,9 +360,10 @@ class BasePea(metaclass=PeaMeta):
         except UnknownControlCommand as ex:
             self.logger.error(ex, exc_info=True)
         except DriverNotInstalled:
-            self.logger.error('no driver is installed to this service, this service will do nothing')
+            self.logger.error('no driver is installed to this pea, this pea will do nothing')
         except NoDriverForRequest:
-            self.logger.error('no matched handler for the request, this service is badly configured')
+            self.logger.error(f'no matched driver for {self.request_type} request, '
+                              f'this pea is either badly configured or it is not configured to handle {self.request_type} request')
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except zmq.error.ZMQError:
