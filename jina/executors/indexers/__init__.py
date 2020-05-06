@@ -128,13 +128,13 @@ class BaseIndexer(BaseExecutor):
     def close(self):
         """Close all file-handlers and release all resources. """
         self.flush()
-        call_obj_fn(self.write_handler, 'close')
-        call_obj_fn(self.query_handler, 'close')
+        call_obj_fn(self._write_handler, 'close')
+        call_obj_fn(self._query_handler, 'close')
         super().close()
 
     def flush(self):
         """Flush all buffered data to ``index_abspath`` """
-        call_obj_fn(self.write_handler, 'flush')
+        call_obj_fn(self._write_handler, 'flush')
 
 
 class BaseVectorIndexer(BaseIndexer):

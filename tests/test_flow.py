@@ -152,6 +152,21 @@ class MyTestCase(JinaTestCase):
             a = requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
             self.assertEqual(a.status_code, 200)
 
+    def test_shards(self):
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=3, separated_workspace=True)
+        with f:
+            f.index(input_fn=random_docs(1000), in_proto=True)
+        with f:
+            pass
+        self.add_tmpfile('test-docshard')
+
+    def test_shards_insufficient_data(self):
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=10, separated_workspace=True)
+        with f:
+            f.index(input_fn=random_docs(2), in_proto=True)
+        with f:
+            pass
+
 
 if __name__ == '__main__':
     unittest.main()
