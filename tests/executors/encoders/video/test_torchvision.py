@@ -5,10 +5,10 @@ from . import VideoTestCase
 
 
 class MyTestCase(VideoTestCase):
-    def _get_encoder(self):
+    def _get_encoder(self, metas):
         self.target_output_dim = 512
         self.input_dim = 112
-        return VideoTorchEncoder()
+        return VideoTorchEncoder(metas=metas)
 
 
 if __name__ == '__main__':
