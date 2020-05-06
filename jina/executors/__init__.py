@@ -222,10 +222,8 @@ class BaseExecutor(metaclass=ExecutorType):
     def _set_device(self):
         if self._backend == 'tensorflow':
             import tensorflow as tf
-            cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
             gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-            self._device = gpus[0] if self.on_gpu else cpus
-            # set before loading model
+            self._device = gpus[0] if self.on_gpu else []
         elif self._backend == 'paddlepaddle':
             import paddle.fluid as fluid
             self._device = fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
@@ -626,7 +624,7 @@ class BaseTFExecutor(BaseFrameworkExecutor):
 
     def pre_set_device(self):
         import tensorflow as tf
-        tf.config.experimental.set_visible_devices(self._device)
+        tf.config.experimental.set_visible_devices(devices=self._device, device_type='GPU')
 
 
 class BasePaddleExecutor(BaseFrameworkExecutor):
