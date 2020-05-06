@@ -570,8 +570,9 @@ class BaseFrameworkExecutor(BaseExecutor):
     """
     def post_init(self):
         super().post_init()
+        self.pre_set_device()
         self.build_model()
-        self.set_device()
+        self.post_set_device()
 
     def build_model(self):
         """
@@ -579,15 +580,25 @@ class BaseFrameworkExecutor(BaseExecutor):
         """
         raise NotImplementedError
 
-    def set_device(self):
+    def pre_set_device(self):
         """
-        Set the device on which the model will be executed.
+        Set the device on which the model will be executed before building the model.
 
         ..notes:
             In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
-        raise NotImplementedError
+        pass
+
+    def post_set_device(self):
+        """
+        Set the device on which the model will be executed after building the model.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
+        pass
 
 
 class BaseTorchExecutor(BaseFrameworkExecutor):
@@ -595,7 +606,7 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self._backend = 'pytorch'
 
-    def set_device(self):
+    def post_set_device(self):
         self.model.to(self._device)
 
 
@@ -604,7 +615,7 @@ class BaseOnnxExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self._backend = 'onnx'
 
-    def set_device(self):
+    def post_set_device(self):
         self.model.set_providers(self._device)
 
 
@@ -613,7 +624,7 @@ class BaseTFExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self._backend = 'tensorflow'
 
-    def set_device(self):
+    def pre_set_device(self):
         import tensorflow as tf
         tf.config.experimental.set_visible_devices(self._device)
 
@@ -623,6 +634,6 @@ class BasePaddleExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self._backend = 'paddlepaddle'
 
-    def set_device(self):
+    def post_set_device(self):
         import paddle.fluid as fluid
         self.exe = fluid.Executor(self._device)
