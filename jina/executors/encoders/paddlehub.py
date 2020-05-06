@@ -24,7 +24,7 @@ class PaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
         self.channel_axis = channel_axis
         self._default_channel_axis = -3
 
-    def build_model(self):
+    def post_init(self):
         import paddlehub as hub
         module = hub.Module(name=self.model_name)
         inputs, outputs, self.model = module.context(trainable=False)

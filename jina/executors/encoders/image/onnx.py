@@ -44,7 +44,7 @@ class OnnxImageEncoder(BaseOnnxExecutor):
         self.raw_model_path = model_path
         self.model_name = ""
 
-    def build_model(self):
+    def post_init(self):
         import onnxruntime
         self.model_name = self.raw_model_path.split('/')[-1]
         self.tmp_model_path = self.get_file_from_workspace(f'{self.model_name}.tmp')

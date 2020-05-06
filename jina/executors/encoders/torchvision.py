@@ -17,12 +17,6 @@ class TorchEncoder(BaseTorchExecutor):
         self.channel_axis = channel_axis
         self._default_channel_axis = 1
 
-    def build_model(self):
-        self._build_model()
-
-    def set_device(self):
-        self.model.to(self._device)
-
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
@@ -37,9 +31,6 @@ class TorchEncoder(BaseTorchExecutor):
             _feature = _feature.cpu()
         _feature = _feature.numpy()
         return self._get_pooling(_feature)
-
-    def _build_model(self):
-        raise NotImplementedError
 
     def _get_features(self, data):
         raise NotImplementedError

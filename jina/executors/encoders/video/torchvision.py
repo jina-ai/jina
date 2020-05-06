@@ -19,7 +19,7 @@ class VideoTorchEncoder(TorchEncoder):
         super().__init__(model_name, *args, **kwargs)
         self._default_channel_axis = 2
 
-    def _build_model(self):
+    def post_init(self):
         import torchvision.models.video as models
         self.model = getattr(models, self.model_name)(pretrained=True).eval()
 

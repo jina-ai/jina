@@ -39,7 +39,7 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         self.max_length = max_length
         self.raw_model_path = model_path
 
-    def _build_tokenizer(self):
+    def _init_tokenizer(self):
         from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
             XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer, \
             FlaubertTokenizer, CamembertTokenizer, CTRLTokenizer
@@ -132,11 +132,11 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         """
         return self.get_file_from_workspace(self.raw_model_path)
 
-    def build_model(self):
-        self._build_tokenizer()
-        self._build_model()
+    def post_init(self):
+        self._init_tokenizer()
+        self._init_model()
 
-    def _build_model(self):
+    def _init_model(self):
         raise NotImplementedError
 
     def array2tensor(self, array):
@@ -151,7 +151,7 @@ class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
-    def _build_model(self):
+    def _init_model(self):
         import tensorflow as tf
         from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
             TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
@@ -179,7 +179,7 @@ class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
 
-    def _build_model(self):
+    def _init_model(self):
         import torch
         from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
             RobertaModel, XLMRobertaModel, FlaubertModel, CamembertModel, CTRLModel

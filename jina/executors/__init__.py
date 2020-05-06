@@ -129,6 +129,7 @@ class BaseExecutor(metaclass=ExecutorType):
         self._drivers = {}  # type: Dict[str, List['BaseDriver']]
         self._attached_pea = None
         self._backend = None
+        self._post_set_device = True
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
         with TimeContext('post initiating, this may take some time', self.logger):
@@ -144,7 +145,12 @@ class BaseExecutor(metaclass=ExecutorType):
                 self._fill_requests(_requests)
 
             _before = set(list(vars(self).keys()))
-            self.post_init()
+            if self._post_set_device:
+                self.post_init()
+                self.set_device()
+            else:
+                self.set_device()
+                self.post_init()
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def _fill_requests(self, _requests):
@@ -217,23 +223,7 @@ class BaseExecutor(metaclass=ExecutorType):
             All class members created here will NOT be serialized when calling :func:`save`. Therefore if you
             want to store them, please override the :func:`__getstate__`.
         """
-        self._set_device()
-
-    def _set_device(self):
-        if self._backend == 'tensorflow':
-            import tensorflow as tf
-            gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-            self._device = gpus[0] if self.on_gpu else []
-        elif self._backend == 'paddlepaddle':
-            import paddle.fluid as fluid
-            self._device = fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
-        elif self._backend == 'pytorch':
-            import torch
-            self._device = torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
-        elif self._backend == 'onnx':
-            self._device = ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
-        else:
-            pass
+        pass
 
     def set_device(self):
         pass
@@ -563,40 +553,26 @@ class BaseFrameworkExecutor(BaseExecutor):
     :class:`BaseFrameworkExecutor` is the base class for the executors using other frameworks internally, including
         `tensorflow`, `pytorch`, `onnx`, and, `paddlepaddle`.
 
-    ..notes:
-        The derived classes must implement `build_model()` and `set_device()` methods.
     """
-    def post_init(self):
-        super().post_init()
-        self.pre_set_device()
-        self.build_model()
-        self.post_set_device()
+    def set_device(self):
+        if self._backend == 'tensorflow':
+            import tensorflow as tf
+            gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
+            self._device = gpus[0] if self.on_gpu else []
+        elif self._backend == 'paddlepaddle':
+            import paddle.fluid as fluid
+            self._device = fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
+        elif self._backend == 'pytorch':
+            import torch
+            self._device = torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
+        elif self._backend == 'onnx':
+            self._device = ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
+        else:
+            return
+        self._set_device()
 
-    def build_model(self):
-        """
-        Build the model with the framework set by `self._backend`.
-        """
-        raise NotImplementedError
-
-    def pre_set_device(self):
-        """
-        Set the device on which the model will be executed before building the model.
-
-        ..notes:
-            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
-            please use the environment variable `CUDA_VISIBLE_DEVICES`.
-        """
-        pass
-
-    def post_set_device(self):
-        """
-        Set the device on which the model will be executed after building the model.
-
-        ..notes:
-            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
-            please use the environment variable `CUDA_VISIBLE_DEVICES`.
-        """
-        pass
+    def _set_device(self):
+        raise NotImplemented
 
 
 class BaseTorchExecutor(BaseFrameworkExecutor):
@@ -604,7 +580,7 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self._backend = 'pytorch'
 
-    def post_set_device(self):
+    def _set_device(self):
         self.model.to(self._device)
 
 
@@ -613,18 +589,8 @@ class BaseOnnxExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self._backend = 'onnx'
 
-    def post_set_device(self):
+    def _set_device(self):
         self.model.set_providers(self._device)
-
-
-class BaseTFExecutor(BaseFrameworkExecutor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._backend = 'tensorflow'
-
-    def pre_set_device(self):
-        import tensorflow as tf
-        tf.config.experimental.set_visible_devices(devices=self._device, device_type='GPU')
 
 
 class BasePaddleExecutor(BaseFrameworkExecutor):
@@ -632,6 +598,19 @@ class BasePaddleExecutor(BaseFrameworkExecutor):
         super().__init__(*args, **kwargs)
         self._backend = 'paddlepaddle'
 
-    def post_set_device(self):
+    def _set_device(self):
         import paddle.fluid as fluid
         self.exe = fluid.Executor(self._device)
+
+
+class BaseTFExecutor(BaseFrameworkExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._backend = 'tensorflow'
+        self._post_set_device = False
+
+    def _set_device(self):
+        import tensorflow as tf
+        tf.config.experimental.set_visible_devices(devices=self._device, device_type='GPU')
+
+

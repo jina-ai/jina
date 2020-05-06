@@ -41,7 +41,7 @@ class TextPaddlehubEncoder(BaseTextEncoder, BasePaddleExecutor):
         self.max_length = max_length
         self.tokenizer = None
 
-    def build_model(self):
+    def post_init(self):
         import paddlehub as hub
         self.model = hub.Module(name=self.model_name)
         self.model.MAX_SEQ_LEN = self.max_length

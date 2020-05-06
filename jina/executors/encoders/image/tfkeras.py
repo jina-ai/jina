@@ -43,7 +43,7 @@ class KerasImageEncoder(BaseTFExecutor, BaseImageEncoder):
         self.img_shape = img_shape
         self.channel_axis = channel_axis
 
-    def build_model(self):
+    def post_init(self):
         import tensorflow as tf
         model = getattr(tf.keras.applications, self.model_name)(
             input_shape=(self.img_shape, self.img_shape, 3),

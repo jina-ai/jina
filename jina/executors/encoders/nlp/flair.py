@@ -35,8 +35,9 @@ class FlairTextEncoder(BaseTorchExecutor, BaseTextEncoder):
         self.embeddings = embeddings
         self.pooling_strategy = pooling_strategy
         self.max_length = -1  # reserved variable for future usages
+        self._post_set_device = False
 
-    def build_model(self):
+    def post_init(self):
         from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, \
             DocumentPoolEmbeddings
         embeddings_list = []
@@ -80,6 +81,6 @@ class FlairTextEncoder(BaseTorchExecutor, BaseTextEncoder):
             result = result.cpu()
         return result.numpy()
 
-    def pre_set_device(self):
+    def _set_device(self):
         import flair
         flair.device = self._device
