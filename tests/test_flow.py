@@ -172,6 +172,7 @@ class MyTestCase(JinaTestCase):
 
     def test_shards_insufficient_data(self):
         index_docs = 10
+        replicas = 20
 
         def validate(req):
             self.assertEqual(len(req.docs), 1)
@@ -182,12 +183,12 @@ class MyTestCase(JinaTestCase):
                 self.assertIsNotNone(d.match_doc.weight)
                 self.assertEqual(d.match_doc.meta_info, b'hello world')
 
-        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=20, separated_workspace=True)
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas, separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(index_docs), in_proto=True, random_doc_id=False)
         with f:
             pass
-        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=10,
+        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas,
                        separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
         with f:
             f.search(input_fn=random_queries(1, index_docs), in_proto=True, random_doc_id=False, output_fn=validate,
