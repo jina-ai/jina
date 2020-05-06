@@ -53,7 +53,7 @@ Want to build a search system backed by deep learning? You come to the right pla
 
 🌌 **The Universal Search Solution** - Jina enables large-scale index and query of any kind on multiple platforms and architectures. Whether you are searching for images, video clips, audio snippets, long legal documents, short tweets, Jina can handle them all.
 
-🚀 **High Performant & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, word tokenizer, image segmenter and database to handle billion-level data. Features such as replicas and shards come out-of-the-box.
+🚀 **High Performant & State-of-the-Art** - Jina aims at AI-in-production. You can easily scale out your VideoBERT, Xception, word tokenizer, image segmenter and database to handle billion-level data. Features such as async, replicas and sharding come out-of-the-box.
 
 🐣 **System Engineering Made Easy** - Jina offers a one-stop solution that frees you from handcrafting and gluing packages, libraries and databases. With the most intuitive API and [dashboard](https://github.com/jina-ai/dashboard), building a cloud-native search system is just a minute thing.
 
