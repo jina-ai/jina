@@ -5,8 +5,8 @@ from . import NlpTestCase
 
 
 class MyTestCase(NlpTestCase):
-    def _get_encoder(self):
-        return FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean')
+    def _get_encoder(self, metas):
+        return FlairTextEncoder(embeddings=('word:glove',), pooling_strategy='mean', metas=metas)
 
 
 if __name__ == '__main__':

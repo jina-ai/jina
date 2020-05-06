@@ -10,7 +10,7 @@ from ...decorators import batching, as_ndarray
 from ... import BaseTorchExecutor
 
 
-class FlairTextEncoder(BaseTextEncoder, BaseTorchExecutor):
+class FlairTextEncoder(BaseTorchExecutor, BaseTextEncoder):
     """
     :class:`FlairTextEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.
@@ -34,14 +34,11 @@ class FlairTextEncoder(BaseTextEncoder, BaseTorchExecutor):
         super().__init__(*args, **kwargs)
         self.embeddings = embeddings
         self.pooling_strategy = pooling_strategy
-        self.model = None
         self.max_length = -1  # reserved variable for future usages
 
     def build_model(self):
         from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, \
             DocumentPoolEmbeddings
-        if self.model is not None:
-            return
         embeddings_list = []
         for e in self.embeddings:
             model_name, model_id = e.split(':', maxsplit=1)
@@ -62,7 +59,9 @@ class FlairTextEncoder(BaseTextEncoder, BaseTorchExecutor):
                 embeddings_list.append(emb)
         if embeddings_list:
             self.model = DocumentPoolEmbeddings(embeddings_list, pooling=self.pooling_strategy)
-            self.logger.info('initialize flair encoder with embeddings: {}'.format(self.embeddings))
+            self.logger.info('flair encoder initialized with embeddings: {}'.format(self.embeddings))
+        else:
+            self.logger.error('flair encoder initialization failed.')
 
     @batching
     @as_ndarray
@@ -76,4 +75,11 @@ class FlairTextEncoder(BaseTextEncoder, BaseTorchExecutor):
         from flair.embeddings import Sentence
         c_batch = [Sentence(row) for row in data]
         self.model.embed(c_batch)
-        return torch.stack([c_text.get_embedding() for c_text in c_batch]).detach().numpy()
+        result = torch.stack([c_text.get_embedding() for c_text in c_batch]).detach()
+        if self.on_gpu:
+            result = result.cpu()
+        return result.numpy()
+
+    def pre_set_device(self):
+        import flair
+        flair.device = self._device
