@@ -23,6 +23,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -678,4 +679,60 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f0a5e4d1```](https://github.com/jina-ai/jina/commit/f0a5e4d187d61cd9ef7bf4867d79ce718d5f905b)] __-__ hotfix fix dep for latest (*Han Xiao*)
  - [[```e4d44d45```](https://github.com/jina-ai/jina/commit/e4d44d45ceb3bd85fe80c25edf71cd4a64fddb01)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```df52882e```](https://github.com/jina-ai/jina/commit/df52882e921de8038914b0c5daf02374decec51b)] __-__ __version__: bumping version to 0.1.7 (*Jina Dev Bot*)
+
+## Release Note (`0.1.8`)
+
+> Release time: 2020-05-06 15:15:54
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Nan Wang,  Xiong Ma,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```153e2aab```](https://github.com/jina-ai/jina/commit/153e2aab77e08c05b361ddb83a72822d284539f4)] __-__ __peapod__: add logs grouping by pod name (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```c78ec6ec```](https://github.com/jina-ai/jina/commit/c78ec6ecf27ea38e1c4ac51fe284ff587af207be)] __-__ __driver__: fix search driver logic in shards (*Han Xiao*)
+ - [[```9cc2a050```](https://github.com/jina-ai/jina/commit/9cc2a050dc2cde73910c78af6780ad5aadddffaf)] __-__ style (*Han Xiao*)
+ - [[```eb59499e```](https://github.com/jina-ai/jina/commit/eb59499e8787bde83d4f758c3ec0d3be49beffa3)] __-__ __indexer__: fix empty indexer reading (*Han Xiao*)
+ - [[```1c1a048c```](https://github.com/jina-ai/jina/commit/1c1a048c036c0e7955e45aa889d5617d64ff1ece)] __-__ add the env var for testing gpu (*Nan Wang*)
+ - [[```bea55a59```](https://github.com/jina-ai/jina/commit/bea55a59708ea9a3b6b43ee8e92bbc21b0edff73)] __-__ __logging__: add unittest (*Xiong Ma*)
+ - [[```bbbb9e71```](https://github.com/jina-ai/jina/commit/bbbb9e7161ef9905d1b2930029c038a687f615db)] __-__ __logging__: fix success level message (*Xiong Ma*)
+ - [[```f072778e```](https://github.com/jina-ai/jina/commit/f072778ef700129c5c8d13b29b325c93d8ca664e)] __-__ remove gpu dependencies (*Nan Wang*)
+ - [[```41dd06eb```](https://github.com/jina-ai/jina/commit/41dd06eb51cd3a118909b086ad746442a5e57dec)] __-__ clean up extrarequirements (*Nan Wang*)
+ - [[```d797a0a0```](https://github.com/jina-ai/jina/commit/d797a0a011c47a05e09c791b4e3ac1b6e6a9e17a)] __-__ add docs (*Nan Wang*)
+ - [[```9a9a838e```](https://github.com/jina-ai/jina/commit/9a9a838e85cee28931e50ee8c654628a177ab33d)] __-__ __shards__: fix shard writing logic when closing (*Han Xiao*)
+ - [[```c4fe17d4```](https://github.com/jina-ai/jina/commit/c4fe17d4b4b09b7af7fa401185360a6d76066557)] __-__ refactoring codes (*Nan Wang*)
+ - [[```0048f346```](https://github.com/jina-ai/jina/commit/0048f34629230140c4fc1eb7254f9643bbe040e1)] __-__ refactoring class names (*Nan Wang*)
+ - [[```eaee9172```](https://github.com/jina-ai/jina/commit/eaee91722a856e04d96d5cd935322b9ff500037a)] __-__ fix extrarequirements (*Nan Wang*)
+ - [[```9a44cabe```](https://github.com/jina-ai/jina/commit/9a44cabe6fa6c596e99bc6578c731aebe9a35d67)] __-__ adapt the extrarequirements (*Nan Wang*)
+ - [[```4931df1d```](https://github.com/jina-ai/jina/commit/4931df1d6e3a69892926d6837b184cc7616540ec)] __-__ fix flair on gpu (*Nan Wang*)
+ - [[```1ddf2480```](https://github.com/jina-ai/jina/commit/1ddf248024d5a92600ae3924c13aed66cc5ba3d6)] __-__ fix transformers on gpu (*Nan Wang*)
+ - [[```88982882```](https://github.com/jina-ai/jina/commit/88982882475a605b9e0fa0030f29b12921212778)] __-__ fix video unittests on gpu (*Nan Wang*)
+ - [[```d650e72f```](https://github.com/jina-ai/jina/commit/d650e72f97c887e6b1f2ac661d1d881df60479d1)] __-__ fix tensorflow on gpu (*Nan Wang*)
+ - [[```a37e9d7b```](https://github.com/jina-ai/jina/commit/a37e9d7b1e472a78caf88669ba5873e319475b5a)] __-__ fix unit tests for torchvision (*Nan Wang*)
+ - [[```ab7e663e```](https://github.com/jina-ai/jina/commit/ab7e663e1e7c658605d7dc9731c7e7898f548151)] __-__ fix unit tests for tfkeras (*Nan Wang*)
+ - [[```bd0cb496```](https://github.com/jina-ai/jina/commit/bd0cb496383c90b49694a3bcdfb43ae01bee00f5)] __-__ fix the unittests on gpu (*Nan Wang*)
+ - [[```9e75d5e0```](https://github.com/jina-ai/jina/commit/9e75d5e0b79bce7aef4d6b86d78054750938095a)] __-__ fix the paddlehub on gpu (*Nan Wang*)
+ - [[```a40b185d```](https://github.com/jina-ai/jina/commit/a40b185da15529c05a56b1a2cef6d637d6259c9b)] __-__ rename the classes (*Nan Wang*)
+ - [[```4077a182```](https://github.com/jina-ai/jina/commit/4077a18264140e26872e436072ee77b6da886612)] __-__ __hello-world__: add comments to help understand (*Han Xiao*)
+ - [[```9e3c8976```](https://github.com/jina-ai/jina/commit/9e3c89767dee31aa8011421a64799741a60ecc7b)] __-__ rename base classes (*Nan Wang*)
+ - [[```67cf25fd```](https://github.com/jina-ai/jina/commit/67cf25fd8fb06c5ecd0fa0ce7c884d8b3394d528)] __-__ __executors__: fix gpu supports (*Nan Wang*)
+ - [[```01ff133c```](https://github.com/jina-ai/jina/commit/01ff133c26a96fc36f3bd8f0e6310631cd781b04)] __-__ __hello-world__: fix compression dep in hw demo (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1f052743```](https://github.com/jina-ai/jina/commit/1f0527431be244024761767d1e6bfcea3e6fa0aa)] __-__ fix index shard testing (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```15a4216e```](https://github.com/jina-ai/jina/commit/15a4216e9b439eb8994809898921e511ee7e9d6f)] __-__ hotfix update env list (*Han Xiao*)
+ - [[```0d8d8924```](https://github.com/jina-ai/jina/commit/0d8d89242123a043761093b35f74ba603e4172c7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```97ab83a9```](https://github.com/jina-ai/jina/commit/97ab83a904474586eaec575a65493bf5176f6790)] __-__ __version__: bumping version to 0.1.8 (*Jina Dev Bot*)
+ - [[```df52882e```](https://github.com/jina-ai/jina/commit/df52882e921de8038914b0c5daf02374decec51b)] __-__ __version__: bumping version to 0.1.7 (*Jina Dev Bot*)
+ - [[```61c97022```](https://github.com/jina-ai/jina/commit/61c97022356bf0a496b76eaa76b78d01484c22af)] __-__ hotfix dockerfile for latest (*Han Xiao*)
 
