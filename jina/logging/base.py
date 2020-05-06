@@ -112,7 +112,7 @@ class NTLogger:
             sys.stdout.write('I:%s:%s' % (self.context, self._planify(msg)))
 
     def critical(self, msg: str, **kwargs):
-        """log info-level message"""
+        """log critical-level message"""
         if self.log_level <= LogVerbosity.CRITICAL:
             sys.stdout.write('C:%s:%s' % (self.context, self._planify(msg)))
 
@@ -132,7 +132,7 @@ class NTLogger:
             sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
 
     def success(self, msg: str, **kwargs):
-        """log warn-level message"""
+        """log success-level message"""
         if self.log_level <= LogVerbosity.SUCCESS:
             sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
 
@@ -224,8 +224,8 @@ def get_logger(context: str, context_len: int = 15,
     console_handler.setFormatter(ColorFormatter(fmt_str))
     logger.addHandler(console_handler)
 
-    logging.SUCCESS = 25  # between WARNING and INFO
-    logging.addLevelName(logging.SUCCESS, 'SUCCESS')
-    setattr(logger, 'success', lambda message, *args: logger._log(logging.SUCCESS, message, args))
+    success_level = 25  # between WARNING and INFO
+    logging.addLevelName(success_level, 'SUCCESS')
+    setattr(logger, 'success', lambda message: logger.log(success_level, message))
 
     return logger
