@@ -89,6 +89,9 @@ class BaseCVPaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
     """
     :class:`BaseCVPaddlehubEncoder` implements the common parts for :class:`ImagePaddlehubEncoder` and
         :class:`VideoPaddlehubEncoder`.
+
+    ..warning::
+        :class:`BaseCVPaddlehubEncoder`  is not intented to be used to do the real encoding.
     """
     def __init__(self,
                  model_name: str,
@@ -144,6 +147,12 @@ class BaseCVPaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
 
 
 class BaseTorchEncoder(BaseTorchExecutor):
+    """"
+    :class:`BaseTorchEncoder` implements the common part for :class:`ImageTorchEncoder` and :class:`VideoTorchEncoder`.
+
+    ..warning::
+        :class:`BaseTorchEncoder`  is not intented to be used to do the real encoding.
+    """
     def __init__(self,
                  model_name: str,
                  channel_axis: int = 1,
