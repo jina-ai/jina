@@ -617,7 +617,8 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
         self._backend = 'pytorch'
 
     def _set_device(self):
-        self.model.to(self._device)
+        if hasattr(self, 'model') and hasattr(self.model, 'to'):
+            self.model.to(self._device)
 
 
 class BasePaddleExecutor(BaseFrameworkExecutor):
