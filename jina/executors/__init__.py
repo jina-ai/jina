@@ -17,7 +17,7 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
+from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path, is_url
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 
@@ -226,6 +226,7 @@ class BaseExecutor(metaclass=ExecutorType):
         pass
 
     def set_device(self):
+        """Set the device on which the exectuor will be running."""
         pass
 
     @classmethod
@@ -555,6 +556,13 @@ class BaseFrameworkExecutor(BaseExecutor):
 
     """
     def set_device(self):
+        """Set the device on which the exectuor will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
+
         if self._backend == 'tensorflow':
             import tensorflow as tf
             gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
@@ -576,6 +584,34 @@ class BaseFrameworkExecutor(BaseExecutor):
 
 
 class BaseTorchExecutor(BaseFrameworkExecutor):
+    """
+    :class:`BaseTorchExecutor` implements the base class for the executors using :mod:`torch` library. The common setups
+         go into this class.
+
+    To implement your own executor with the :mod:`torch` library,
+
+    .. highlight:: python
+    .. code-block:: python
+
+        class MyAwesomeTorchEncoder(BaseTorchExecutor):
+            def post_init(self):
+                # load your awesome model
+                import torchvision.models as models
+                model = models.mobilenet_v2().features
+                self.model = model.eval()
+
+            def encode(self, data, *args, **kwargs):
+                # use your awesome model to encode/craft/score
+                import torch
+                _input = torch.from_numpy(data)
+                if self.on_gpu:
+                    _input = _input.cuda()
+                _output = self.model(_input).detach()
+                if self.on_gpu:
+                    _output = _output.cpu()
+                return _output.numpy()
+
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'pytorch'
@@ -584,16 +620,35 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
         self.model.to(self._device)
 
 
-class BaseOnnxExecutor(BaseFrameworkExecutor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._backend = 'onnx'
-
-    def _set_device(self):
-        self.model.set_providers(self._device)
-
-
 class BasePaddleExecutor(BaseFrameworkExecutor):
+    """
+    :class:`BasePaddleExecutor` implements the base class for the executors using :mod:`paddlepaddle` library. The
+        common setups go into this class.
+
+    To implement your own executor with the :mod:`paddlepaddle` library,
+
+    .. highlight:: python
+    .. code-block:: python
+
+        class MyAwesomePaddleEncoder(BasePaddleExecutor):
+            def post_init(self):
+                # load your awesome model
+                import paddlehub as hub
+                module = hub.Module(name='mobilenet_v2_imagenet')
+                inputs, outputs, self.model = module.context(trainable=False)
+                self.inputs_name = input_dict['image'].name
+                self.outputs_name = output_dict['feature_map'].name
+
+            def encode(self, data, *args, **kwargs):
+                # use your awesome model to encode/craft/score
+                _output, *_ = self.exe.run(
+                    program=self.model,
+                    fetch_list=[self.outputs_name],
+                    feed={self.inputs_name: data},
+                    return_numpy=True
+                )
+                return feature_map
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'paddlepaddle'
@@ -602,8 +657,35 @@ class BasePaddleExecutor(BaseFrameworkExecutor):
         import paddle.fluid as fluid
         self.exe = fluid.Executor(self._device)
 
+    def close(self):
+        self.exe.close()
+
 
 class BaseTFExecutor(BaseFrameworkExecutor):
+    """
+    :class:`BaseTFExecutor` implements the base class for the executors using :mod:`tensorflow` library. The common
+        setups go into this class.
+    To implement your own executor with the :mod:`tensorflow` library,
+
+    .. highlight:: python
+    .. code-block:: python
+
+        class MyAwesomeTFEncoder(BaseTFExecutor):
+            def post_init(self):
+                # load your awesome model
+                import tensorflow as tf
+                model = tf.keras.applications.MobileNetV2(
+                    input_shape=(self.img_shape, self.img_shape, 3),
+                    include_top=False,
+                    pooling=self.pool_strategy,
+                    weights='imagenet')
+                model.trainable = False
+                self.model = model
+
+            def encode(self, data, *args, **kwargs):
+                # use your awesome model to encode/craft/score
+                return self.model(data)
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._backend = 'tensorflow'
@@ -614,3 +696,72 @@ class BaseTFExecutor(BaseFrameworkExecutor):
         tf.config.experimental.set_visible_devices(devices=self._device, device_type='GPU')
 
 
+class BaseOnnxExecutor(BaseFrameworkExecutor):
+    """
+    :class:`BaseOnnxExecutor` implements the base class for the executors using :mod:`onnxruntime` library. The common
+        setups go into this class.
+
+    To implement your own executor with the :mod:`onnxruntime` library,
+
+    .. highlight:: python
+    .. code-block:: python
+
+        class MyAwesomeOnnxEncoder(BaseOnnxExecutor):
+            def post_init(self):
+                self._init_model()
+                self.inputs_name = self.model.get_inputs()[0].name
+
+            def encode(self, data, *args, **kwargs):
+                # use your awesome model to encode/craft/score
+                results = []
+                for idx in data:
+                    data_encoded, *_ = self.model.run(
+                        [self.outputs_name, ], {self.inputs_name: data})
+                    results.append(data_encoded)
+                return np.concatenate(results, axis=0)
+
+    """
+
+    def __init__(self, output_feature: str, model_path: str = None, *args, **kwargs):
+        """
+
+        :param output_feature: the name of the layer for feature extraction.
+        :param model_path: the path of the model in the format of `.onnx`. Check a list of available pretrained
+            models at https://github.com/onnx/models#image_classification and download the git LFS to your local path.
+            The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
+        """
+        super().__init__(*args, **kwargs)
+        self.outputs_name = output_feature
+        self.raw_model_path = model_path
+        self.model_name = ""
+        self._backend = 'onnx'
+
+    def _set_device(self):
+        self.model.set_providers(self._device)
+
+    def _init_model(self):
+        """
+        Load the model from the `.onnx` file and add outputs for the selected layer, i.e. ``outputs_name``. The modified
+             models is saved at `tmp_model_path`.
+        """
+        import onnxruntime
+        self.model_name = self.raw_model_path.split('/')[-1]
+        self.tmp_model_path = self.get_file_from_workspace(f'{self.model_name}.tmp')
+        if is_url(self.raw_model_path):
+            import urllib.request
+            download_path, *_ = urllib.request.urlretrieve(self.raw_model_path)
+            self.raw_model_path = download_path
+            self.logger.info('download the model at {}'.format(self.raw_model_path))
+        if not os.path.exists(self.tmp_model_path):
+            self._append_outputs(self.raw_model_path, self.outputs_name, self.tmp_model_path)
+            self.logger.info('save the model with outputs [{}] at {}'.format(self.outputs_name, self.tmp_model_path))
+        self.model = onnxruntime.InferenceSession(self.tmp_model_path, None)
+
+    @staticmethod
+    def _append_outputs(input_fn, outputs_name_to_append, output_fn):
+        import onnx
+        model = onnx.load(input_fn)
+        feature_map = onnx.helper.ValueInfoProto()
+        feature_map.name = outputs_name_to_append
+        model.graph.output.append(feature_map)
+        onnx.save(model, output_fn)

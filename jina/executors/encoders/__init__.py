@@ -142,9 +142,6 @@ class BaseCVPaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
         _reduce_axis = tuple((i for i in range(len(data.shape)) if i > 1))
         return getattr(np, self.pool_strategy)(data, axis=_reduce_axis)
 
-    def close(self):
-        self.exe.close()
-
 
 class BaseTorchEncoder(BaseTorchExecutor):
     """"
@@ -165,6 +162,7 @@ class BaseTorchEncoder(BaseTorchExecutor):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        import numpy as np
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch

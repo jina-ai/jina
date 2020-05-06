@@ -53,6 +53,3 @@ class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
         self.outputs_name = output_dict['feature_map'].name
         if self.model_name.startswith('vgg') or self.model_name.startswith('alexnet'):
             self.outputs_name = '@HUB_{}@fc_1.tmp_2'.format(self.model_name)
-
-    def close(self):
-        self.exe.close()
