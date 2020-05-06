@@ -3,10 +3,10 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..torchvision import TorchEncoder
+from .. import BaseTorchEncoder
 
 
-class ImageTorchEncoder(TorchEncoder):
+class ImageTorchEncoder(BaseTorchEncoder):
     """
     :class:`ImageTorchEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.

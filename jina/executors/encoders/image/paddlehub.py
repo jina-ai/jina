@@ -1,10 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..paddlehub import PaddlehubEncoder
+from .. import BaseCVPaddlehubEncoder
 
 
-class ImagePaddlehubEncoder(PaddlehubEncoder):
+class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
     """
     :class:`ImagePaddlehubEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.

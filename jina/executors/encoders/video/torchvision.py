@@ -1,10 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..torchvision import TorchEncoder
+from .. import BaseTorchEncoder
 
 
-class VideoTorchEncoder(TorchEncoder):
+class VideoTorchEncoder(BaseTorchEncoder):
     """
     :class:`VideoTorchEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into an
         ndarray of `B x D`.

@@ -5,7 +5,6 @@ import os
 
 import numpy as np
 
-from .. import BaseTextEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
 from ... import BaseFrameworkExecutor, BaseTFExecutor, BaseTorchExecutor

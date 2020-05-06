@@ -8,7 +8,7 @@ from ...decorators import batching, as_ndarray
 from ... import BasePaddleExecutor
 
 
-class TextPaddlehubEncoder(BaseTextEncoder, BasePaddleExecutor):
+class TextPaddlehubEncoder(BasePaddleExecutor, BaseTextEncoder):
     """
     :class:`TextPaddlehubEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`TextPaddlehubEncoder` wraps the Ernie module from paddlehub.
