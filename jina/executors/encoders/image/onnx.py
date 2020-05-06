@@ -1,16 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import os
-import re
-
 import numpy as np
 
+from ..frameworks import BaseOnnxEncoder
 from ...decorators import batching, as_ndarray
-from ... import BaseOnnxExecutor
 
 
-class OnnxImageEncoder(BaseOnnxExecutor):
+class OnnxImageEncoder(BaseOnnxEncoder):
     """
     :class:`OnnxImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -32,14 +29,6 @@ class OnnxImageEncoder(BaseOnnxExecutor):
         self.pool_strategy = pool_strategy
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
-
-    def post_init(self):
-        """
-        Load the model from the `.onnx` file and add outputs for the selected layer, i.e. ``outputs_name``. The modified
-             models is saved at `tmp_model_path`.
-        """
-        self._init_model()
-        self.inputs_name = self.model.get_inputs()[0].name
 
     @batching
     @as_ndarray

@@ -1,8 +1,8 @@
 import numpy as np
 
 from .. import BaseTextEncoder
-from ... import BaseTorchExecutor
 from ...decorators import batching, as_ndarray
+from ...frameworks import BaseTorchExecutor
 
 
 class FarmTextEncoder(BaseTorchExecutor, BaseTextEncoder):

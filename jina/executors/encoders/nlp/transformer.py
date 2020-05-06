@@ -7,7 +7,7 @@ import numpy as np
 
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
-from ... import BaseFrameworkExecutor, BaseTFExecutor, BaseTorchExecutor
+from ...frameworks import BaseFrameworkExecutor, BaseTorchExecutor, BaseTFExecutor
 
 
 class BaseTransformerEncoder(BaseFrameworkExecutor):
@@ -151,6 +151,7 @@ class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
     """
 
     def _init_model(self):
+        self.to_device()
         import tensorflow as tf
         from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
             TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
@@ -171,6 +172,7 @@ class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
         self._sess_func = tf.GradientTape
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))
+
 
 
 class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
@@ -200,6 +202,7 @@ class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
         self._sess_func = torch.no_grad
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))
+        self.to_device(self.model)
 
     def array2tensor(self, array):
         tensor = super().array2tensor(array)

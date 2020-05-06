@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseTorchEncoder
+from ..frameworks import BaseTorchEncoder
 
 
 class ImageTorchEncoder(BaseTorchEncoder):
@@ -47,6 +47,7 @@ class ImageTorchEncoder(BaseTorchEncoder):
         import torchvision.models as models
         model = getattr(models, self.model_name)(pretrained=True)
         self.model = model.features.eval()
+        self.to_device(self.model)
 
     def _get_features(self, data):
         return self.model(data)
