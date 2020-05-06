@@ -139,3 +139,9 @@ Here is the list of environment variables that ``jina`` respects during runtime.
     The Pod name set when a Pod started when ``--log-with-pod-name`` is on, this should not given manually by users.
 
     :default: unset
+
+.. confval:: JINA_TEST_GPU
+
+    If set, then all gpu-related tests will be conducted in the unit test.
+
+    :default: unset

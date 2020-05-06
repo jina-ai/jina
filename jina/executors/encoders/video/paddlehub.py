@@ -1,10 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..paddlehub import PaddlehubEncoder
+from .. import BaseCVPaddlehubEncoder
 
 
-class VideoPaddlehubEncoder(PaddlehubEncoder):
+class VideoPaddlehubEncoder(BaseCVPaddlehubEncoder):
     """
     :class:`VideoPaddlehubEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -41,6 +41,3 @@ class VideoPaddlehubEncoder(PaddlehubEncoder):
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         self.inputs_name = input_dict[0].name
-
-    def close(self):
-        self.exe.close()

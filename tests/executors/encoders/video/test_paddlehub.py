@@ -5,10 +5,10 @@ from . import VideoTestCase
 
 
 class MyTestCase(VideoTestCase):
-    def _get_encoder(self):
+    def _get_encoder(self, metas):
         self.target_output_dim = 2048
         self.input_dim = 224
-        return VideoPaddlehubEncoder()
+        return VideoPaddlehubEncoder(metas=metas)
 
 
 if __name__ == '__main__':

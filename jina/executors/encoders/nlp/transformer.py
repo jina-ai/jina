@@ -5,12 +5,12 @@ import os
 
 import numpy as np
 
-from .. import BaseTextEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
+from ... import BaseFrameworkExecutor, BaseTFExecutor, BaseTorchExecutor
 
 
-class TransformerEncoder(BaseTextEncoder):
+class BaseTransformerEncoder(BaseFrameworkExecutor):
     """
     :class:`TransformerTextEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
     """
@@ -32,14 +32,13 @@ class TransformerEncoder(BaseTextEncoder):
         :param model_path: the path of the encoder model. If a valid path is given, the encoder will be loaded from the
             given path.
         """
-
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.pooling_strategy = pooling_strategy
         self.max_length = max_length
         self.raw_model_path = model_path
 
-    def post_init(self):
+    def _init_tokenizer(self):
         from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
             XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer, \
             FlaubertTokenizer, CamembertTokenizer, CTRLTokenizer
@@ -95,21 +94,23 @@ class TransformerEncoder(BaseTextEncoder):
             mask_ids = [0 if t == self.tokenizer.pad_token_id else 1 for t in token_ids]
             token_ids_batch.append(token_ids)
             mask_ids_batch.append(mask_ids)
-        token_ids_batch = self._tensor_func(token_ids_batch)
-        mask_ids_batch = self._tensor_func(mask_ids_batch)
+        token_ids_batch = self.array2tensor(token_ids_batch)
+        mask_ids_batch = self.array2tensor(mask_ids_batch)
         with self._sess_func():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
+            _mask_ids_batch = self.tensor2array(mask_ids_batch)
+            _seq_output = self.tensor2array(seq_output)
             if self.pooling_strategy == 'cls':
                 if self.model_name in ('bert-base-uncased', 'roberta-base'):
-                    output = extra_output[0].numpy()
+                    output = self.tensor2array(extra_output[0])
                 else:
-                    output = reduce_cls(seq_output.numpy(), mask_ids_batch.numpy(), self.cls_pos)
+                    output = reduce_cls(_seq_output, _mask_ids_batch, self.cls_pos)
             elif self.pooling_strategy == 'mean':
-                output = reduce_mean(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_mean(_seq_output, _mask_ids_batch)
             elif self.pooling_strategy == 'max':
-                output = reduce_max(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_max(_seq_output, _mask_ids_batch)
             elif self.pooling_strategy == 'min':
-                output = reduce_min(seq_output.numpy(), mask_ids_batch.numpy())
+                output = reduce_min(_seq_output, _mask_ids_batch)
             else:
                 self.logger.error("pooling strategy not found: {}".format(self.pooling_strategy))
                 raise NotImplementedError
@@ -130,15 +131,26 @@ class TransformerEncoder(BaseTextEncoder):
         """
         return self.get_file_from_workspace(self.raw_model_path)
 
+    def post_init(self):
+        self._init_tokenizer()
+        self._init_model()
 
-class TransformerTFEncoder(TransformerEncoder):
+    def _init_model(self):
+        raise NotImplementedError
+
+    def array2tensor(self, array):
+        return self._tensor_func(array)
+
+    def tensor2array(self, tensor):
+        return tensor.numpy()
+
+
+class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
-    def post_init(self):
-        super().post_init()
-
+    def _init_model(self):
         import tensorflow as tf
         from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
             TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
@@ -157,23 +169,19 @@ class TransformerTFEncoder(TransformerEncoder):
         self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
         self._tensor_func = tf.constant
         self._sess_func = tf.GradientTape
-
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))
 
 
-class TransformerTorchEncoder(TransformerEncoder):
+class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
 
-    def post_init(self):
-        super().post_init()
-
+    def _init_model(self):
         import torch
         from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
             RobertaModel, XLMRobertaModel, FlaubertModel, CamembertModel, CTRLModel
-
         model_dict = {
             'bert-base-uncased': BertModel,
             'openai-gpt': OpenAIGPTModel,
@@ -190,6 +198,16 @@ class TransformerTorchEncoder(TransformerEncoder):
         self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
         self._tensor_func = torch.tensor
         self._sess_func = torch.no_grad
-
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             self.model.resize_token_embeddings(len(self.tokenizer))
+
+    def array2tensor(self, array):
+        tensor = super().array2tensor(array)
+        if self.on_gpu:
+            tensor = tensor.cuda()
+        return tensor
+
+    def tensor2array(self, tensor):
+        if self.on_gpu:
+            tensor = tensor.cpu()
+        return tensor.numpy()

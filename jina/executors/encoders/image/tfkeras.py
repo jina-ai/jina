@@ -5,9 +5,10 @@ import numpy as np
 
 from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
+from ... import BaseTFExecutor
 
 
-class KerasImageEncoder(BaseImageEncoder):
+class KerasImageEncoder(BaseTFExecutor, BaseImageEncoder):
     """
     :class:`KerasImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -49,7 +50,6 @@ class KerasImageEncoder(BaseImageEncoder):
             include_top=False,
             pooling=self.pool_strategy,
             weights='imagenet')
-
         model.trainable = False
         self.model = model
 

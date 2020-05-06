@@ -1,10 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..torchvision import TorchEncoder
+from .. import BaseTorchEncoder
 
 
-class VideoTorchEncoder(TorchEncoder):
+class VideoTorchEncoder(BaseTorchEncoder):
     """
     :class:`VideoTorchEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into an
         ndarray of `B x D`.
@@ -19,7 +19,7 @@ class VideoTorchEncoder(TorchEncoder):
         super().__init__(model_name, *args, **kwargs)
         self._default_channel_axis = 2
 
-    def _build_model(self):
+    def post_init(self):
         import torchvision.models.video as models
         self.model = getattr(models, self.model_name)(pretrained=True).eval()
 

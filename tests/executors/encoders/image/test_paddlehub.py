@@ -5,9 +5,10 @@ from . import ImageTestCase
 
 
 class MyTestCase(ImageTestCase):
-    def _get_encoder(self):
+    def _get_encoder(self, metas):
         self.target_output_dim = 2048
-        return ImagePaddlehubEncoder()
+        self.input_dim = 224
+        return ImagePaddlehubEncoder(metas=metas)
 
 
 if __name__ == '__main__':

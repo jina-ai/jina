@@ -3,10 +3,10 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..torchvision import TorchEncoder
+from .. import BaseTorchEncoder
 
 
-class ImageTorchEncoder(TorchEncoder):
+class ImageTorchEncoder(BaseTorchEncoder):
     """
     :class:`ImageTorchEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -43,7 +43,7 @@ class ImageTorchEncoder(TorchEncoder):
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
 
-    def _build_model(self):
+    def post_init(self):
         import torchvision.models as models
         model = getattr(models, self.model_name)(pretrained=True)
         self.model = model.features.eval()

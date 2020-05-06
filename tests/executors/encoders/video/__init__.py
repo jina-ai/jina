@@ -4,10 +4,10 @@ import unittest
 import numpy as np
 
 from jina.executors import BaseExecutor
-from tests import JinaTestCase
+from tests.executors import ExecutorTestCase
 
 
-class VideoTestCase(JinaTestCase):
+class VideoTestCase(ExecutorTestCase):
     @property
     def workspace(self):
         return os.path.join(os.environ['TEST_WORKDIR'], 'test_tmp')
@@ -21,12 +21,12 @@ class VideoTestCase(JinaTestCase):
         self._target_output_dim = output_dim
 
     def get_encoder(self):
-        encoder = self._get_encoder()
+        encoder = self._get_encoder(self.metas)
         encoder.workspace = self.workspace
         self.add_tmpfile(encoder.workspace)
         return encoder
 
-    def _get_encoder(self):
+    def _get_encoder(self, metas):
         raise NotImplementedError
 
     @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')

@@ -1,10 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..paddlehub import PaddlehubEncoder
+from .. import BaseCVPaddlehubEncoder
 
 
-class ImagePaddlehubEncoder(PaddlehubEncoder):
+class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
     """
     :class:`ImagePaddlehubEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -53,6 +53,3 @@ class ImagePaddlehubEncoder(PaddlehubEncoder):
         self.outputs_name = output_dict['feature_map'].name
         if self.model_name.startswith('vgg') or self.model_name.startswith('alexnet'):
             self.outputs_name = '@HUB_{}@fc_1.tmp_2'.format(self.model_name)
-
-    def close(self):
-        self.exe.close()
