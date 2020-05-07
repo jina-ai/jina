@@ -15,7 +15,9 @@ if False:
 
 
 class PyClient(GrpcClient):
-    """A simple Python client for connecting to the gateway
+    """A simple Python client for connecting to the gateway. This class is for internal only,
+    use the python interface :func:`jina.clients.py_client` to start :class:`PyClient` if you
+    want to use it in Python.
 
     Assuming a Flow is "standby" on 192.168.1.100, with port_grpc at 55555.
 
