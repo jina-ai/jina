@@ -24,6 +24,8 @@ class BaseFrameworkExecutor(BaseExecutor):
             if self.framework == 'tensorflow':
                 import tensorflow as tf
                 devices = tf.config.experimental.list_physical_devices(device_type='GPU' if self.on_gpu else 'CPU')
+                if len(devices) == 0:
+                    raise ValueError('no {} devices founded'.format('GPU' if self.on_gpu else 'CPU'))
                 return devices[0]
             elif self.framework == 'paddlepaddle':
                 import paddle.fluid as fluid

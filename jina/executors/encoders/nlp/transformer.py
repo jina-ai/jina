@@ -31,52 +31,15 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         :param max_length: the max length to truncate the tokenized sequences to.
         :param model_path: the path of the encoder model. If a valid path is given, the encoder will be loaded from the
             given path.
+
+        ..warning::
+            `model_path` is a relative path in the executor's workspace.
         """
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.pooling_strategy = pooling_strategy
         self.max_length = max_length
         self.raw_model_path = model_path
-
-    def _init_tokenizer(self):
-        from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
-            XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer, \
-            FlaubertTokenizer, CamembertTokenizer, CTRLTokenizer
-
-        tokenizer_dict = {
-            'bert-base-uncased': BertTokenizer,
-            'openai-gpt': OpenAIGPTTokenizer,
-            'gpt2': GPT2Tokenizer,
-            'xlnet-base-cased': XLNetTokenizer,
-            'xlm-mlm-enfr-1024': XLMTokenizer,
-            'distilbert-base-cased': DistilBertTokenizer,
-            'roberta-base': RobertaTokenizer,
-            'xlm-roberta-base': XLMRobertaTokenizer,
-            'flaubert-base-cased': FlaubertTokenizer,
-            'camembert-base': CamembertTokenizer,
-            'ctrl': CTRLTokenizer
-        }
-
-        if self.model_name not in tokenizer_dict:
-            self.logger.error('{} not in our supports: {}'.format(self.model_name, ','.join(tokenizer_dict.keys())))
-            raise ValueError
-
-        self._tmp_model_path = self.model_name
-        if os.path.exists(self.model_abspath):
-            self._tmp_model_path = self.model_abspath
-
-        self.tokenizer = tokenizer_dict[self.model_name].from_pretrained(self._tmp_model_path)
-        self.tokenizer.padding_side = 'right'
-
-        if self.model_name in (
-                'bert-base-uncased', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base', 'flaubert-base-cased',
-                'camembert-base'):
-            self.cls_pos = 'head'
-        elif self.model_name in ('xlnet-base-cased'):
-            self.cls_pos = 'tail'
-
-        if self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024', 'xlnet-base-cased'):
-            self.tokenizer.pad_token = '<PAD>'
 
     @batching
     @as_ndarray
@@ -96,7 +59,7 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
             mask_ids_batch.append(mask_ids)
         token_ids_batch = self.array2tensor(token_ids_batch)
         mask_ids_batch = self.array2tensor(mask_ids_batch)
-        with self._sess_func():
+        with self.session():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(seq_output)
@@ -124,6 +87,20 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         self.tokenizer.save_pretrained(self.model_abspath)
         return super().__getstate__()
 
+    def post_init(self):
+        self._model = None
+        self._tensor_func = None
+        self._sess_func = None
+        self.tmp_model_path = self.model_abspath if os.path.exists(self.model_abspath) else self.model_name
+        self._tokenizer = self.get_tokenizer()
+        self.cls_pos = 'tail' if self.model_name == 'xlnet-base-cased' else 'head'
+
+    def array2tensor(self, array):
+        return self.tensor_func(array)
+
+    def tensor2array(self, tensor):
+        return tensor.numpy()
+
     @property
     def model_abspath(self) -> str:
         """Get the file path of the encoder model storage
@@ -131,28 +108,78 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         """
         return self.get_file_from_workspace(self.raw_model_path)
 
-    def post_init(self):
-        self._init_tokenizer()
-        self._init_model()
+    @property
+    def model(self):
+        if self._model is None:
+            self._model = self.get_model()
+        return self._model
 
-    def _init_model(self):
+    @property
+    def session(self):
+        if self._sess_func is None:
+            self._sess_func = self.get_session()
+        return self._sess_func
+
+    @property
+    def tensor_func(self):
+        if self._tensor_func is None:
+            self._tensor_func = self.get_tensor_func()
+        return self._tensor_func
+
+    @property
+    def tokenizer(self):
+        if self._tokenizer is None:
+            self._tokenizer = self.get_tokenizer()
+        return self._tokenizer
+
+    def get_tokenizer(self):
+        from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
+            XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer, \
+            FlaubertTokenizer, CamembertTokenizer, CTRLTokenizer
+        tokenizer_dict = {
+            'bert-base-uncased': BertTokenizer,
+            'openai-gpt': OpenAIGPTTokenizer,
+            'gpt2': GPT2Tokenizer,
+            'xlnet-base-cased': XLNetTokenizer,
+            'xlm-mlm-enfr-1024': XLMTokenizer,
+            'distilbert-base-cased': DistilBertTokenizer,
+            'roberta-base': RobertaTokenizer,
+            'xlm-roberta-base': XLMRobertaTokenizer,
+            'flaubert-base-cased': FlaubertTokenizer,
+            'camembert-base': CamembertTokenizer,
+            'ctrl': CTRLTokenizer
+        }
+        if self.model_name not in tokenizer_dict:
+            self.logger.error('{} not in our supports: {}'.format(self.model_name, ','.join(tokenizer_dict.keys())))
+            raise ValueError
+        _tokenizer = tokenizer_dict[self.model_name].from_pretrained(self.tmp_model_path)
+        _tokenizer.padding_side = 'right'
+        if self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024', 'xlnet-base-cased'):
+            _tokenizer.pad_token = '<PAD>'
+        return _tokenizer
+
+    def get_cls_pos(self):
+        return 'tail' if self.model_name == 'xlnet-base-cased' else 'head'
+
+    def get_tmp_model_path(self):
+        return self.model_abspath if os.path.exists(self.model_abspath) else self.model_name
+
+    def get_model(self):
         raise NotImplementedError
 
-    def array2tensor(self, array):
-        return self._tensor_func(array)
+    def get_session(self):
+        raise NotImplementedError
 
-    def tensor2array(self, tensor):
-        return tensor.numpy()
+    def get_tensor_func(self):
+        raise NotImplementedError
 
 
-class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
+class TransformerTFEncoder(BaseTransformerEncoder, BaseTFExecutor):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
 
-    def _init_model(self):
-        self.to_device()
-        import tensorflow as tf
+    def get_model(self):
         from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
             TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
         model_dict = {
@@ -167,20 +194,27 @@ class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
             'camembert-base': TFCamembertModel,
             'ctrl': TFCTRLModel
         }
-        self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
-        self._tensor_func = tf.constant
-        self._sess_func = tf.GradientTape
+        _model = model_dict[self.model_name].from_pretrained(pretrained_model_name_or_path=self.tmp_model_path)
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            self.model.resize_token_embeddings(len(self.tokenizer))
+            _model.resize_token_embeddings(len(self.tokenizer))
+        return _model
+
+    def get_session(self):
+        import tensorflow as tf
+        return tf.GradientTape
+
+    def get_tensor_func(self):
+        self.to_device()
+        import tensorflow as tf
+        return tf.constant
 
 
-class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
+class TransformerTorchEncoder(BaseTransformerEncoder, BaseTorchExecutor):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
 
-    def _init_model(self):
-        import torch
+    def get_model(self):
         from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
             RobertaModel, XLMRobertaModel, FlaubertModel, CamembertModel, CTRLModel
         model_dict = {
@@ -196,20 +230,23 @@ class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
             'camembert-base': CamembertModel,
             'ctrl': CTRLModel
         }
-        self.model = model_dict[self.model_name].from_pretrained(self._tmp_model_path)
-        self._tensor_func = torch.tensor
-        self._sess_func = torch.no_grad
+        _model = model_dict[self.model_name].from_pretrained(self.tmp_model_path)
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            self.model.resize_token_embeddings(len(self.tokenizer))
-        self.to_device(self.model)
+            _model.resize_token_embeddings(len(self.tokenizer))
+        self.to_device(_model)
+        return _model
+
+    def get_session(self):
+        import torch
+        return torch.no_grad
+
+    def get_tensor_func(self):
+        import torch
+        return torch.tensor
 
     def array2tensor(self, array):
         tensor = super().array2tensor(array)
-        if self.on_gpu:
-            tensor = tensor.cuda()
-        return tensor
+        return tensor.cuda() if self.on_gpu else tensor
 
     def tensor2array(self, tensor):
-        if self.on_gpu:
-            tensor = tensor.cpu()
-        return tensor.numpy()
+        return tensor.cpu().numpy() if self.on_gpu else tensor.numpy()
