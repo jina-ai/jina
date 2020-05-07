@@ -17,7 +17,7 @@ from ruamel.yaml import StringIO
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, get_parsed_args, deprecated_alias
+from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
@@ -516,18 +516,10 @@ class Flow:
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _get_client(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None, **kwargs):
-        from ..main.parser import set_client_cli_parser
-        from ..clients.python import PyClient
-
+    def _get_client(self, **kwargs):
         kwargs.update(self._common_kwargs)
-        _, p_args, _ = get_parsed_args(kwargs, set_client_cli_parser(), 'Client')
-        p_args.port_grpc = self._pod_nodes['gateway'].port_grpc
-        p_args.host = self._pod_nodes['gateway'].host
-        c = PyClient(p_args)
-        if input_fn:
-            c.input_fn = input_fn
-        return c
+        from ..clients import py_client
+        return py_client(port_grpc=self.port_grpc, host=self.host, **kwargs)
 
     @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
@@ -569,7 +561,7 @@ class Flow:
         :param output_fn: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(input_fn, mode='train', **kwargs).start(output_fn)
+        self._get_client(**kwargs).train(input_fn, output_fn)
 
     @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
@@ -611,7 +603,7 @@ class Flow:
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(input_fn, mode='index', **kwargs).start(output_fn)
+        self._get_client(**kwargs).index(input_fn, output_fn)
 
     @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
@@ -654,12 +646,12 @@ class Flow:
         :param output_fn: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(input_fn, mode='search', **kwargs).start(output_fn)
+        self._get_client(**kwargs).search(input_fn, output_fn)
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow
         useful for testing connectivity and debugging"""
-        if not self._get_client(mode='search', **kwargs).dry_run():
+        if not self._get_client(**kwargs).dry_run():
             raise FlowConnectivityError('a dry run shows this flow is badly connected due to the network settings')
 
     @build_required(FlowBuildLevel.GRAPH)
@@ -679,3 +671,13 @@ class Flow:
             }
 
         yaml.dump(swarm_yml, path)
+
+    @property
+    @build_required(FlowBuildLevel.GRAPH)
+    def port_grpc(self):
+        return self._pod_nodes['gateway'].port_grpc
+
+    @property
+    @build_required(FlowBuildLevel.GRAPH)
+    def host(self):
+        return self._pod_nodes['gateway'].host
