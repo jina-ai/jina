@@ -7,7 +7,7 @@ import numpy as np
 
 from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
-from ... import BaseTorchExecutor
+from ...frameworks import BaseTorchExecutor
 
 
 class FlairTextEncoder(BaseTorchExecutor, BaseTextEncoder):
@@ -38,6 +38,8 @@ class FlairTextEncoder(BaseTorchExecutor, BaseTextEncoder):
         self._post_set_device = False
 
     def post_init(self):
+        import flair
+        flair.device = self.device
         from flair.embeddings import WordEmbeddings, FlairEmbeddings, BytePairEmbeddings, PooledFlairEmbeddings, \
             DocumentPoolEmbeddings
         embeddings_list = []
@@ -80,7 +82,3 @@ class FlairTextEncoder(BaseTorchExecutor, BaseTextEncoder):
         if self.on_gpu:
             result = result.cpu()
         return result.numpy()
-
-    def _set_device(self):
-        import flair
-        flair.device = self._device

@@ -5,7 +5,7 @@ import numpy as np
 
 from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
-from ... import BasePaddleExecutor
+from ...frameworks import BasePaddleExecutor
 
 
 class TextPaddlehubEncoder(BasePaddleExecutor, BaseTextEncoder):

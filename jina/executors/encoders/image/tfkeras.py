@@ -5,7 +5,7 @@ import numpy as np
 
 from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
-from ... import BaseTFExecutor
+from ...frameworks import BaseTFExecutor
 
 
 class KerasImageEncoder(BaseTFExecutor, BaseImageEncoder):
@@ -44,6 +44,7 @@ class KerasImageEncoder(BaseTFExecutor, BaseImageEncoder):
         self.channel_axis = channel_axis
 
     def post_init(self):
+        self.to_device()
         import tensorflow as tf
         model = getattr(tf.keras.applications, self.model_name)(
             input_shape=(self.img_shape, self.img_shape, 3),

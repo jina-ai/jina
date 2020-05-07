@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from .. import BaseTorchEncoder
+from ..frameworks import BaseTorchEncoder
 
 
 class VideoTorchEncoder(BaseTorchEncoder):
@@ -22,6 +22,7 @@ class VideoTorchEncoder(BaseTorchEncoder):
     def post_init(self):
         import torchvision.models.video as models
         self.model = getattr(models, self.model_name)(pretrained=True).eval()
+        self.to_device(self.model)
 
     def _get_features(self, x):
         x = self.model.stem(x)
