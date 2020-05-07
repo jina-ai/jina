@@ -59,7 +59,7 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
             mask_ids_batch.append(mask_ids)
         token_ids_batch = self.array2tensor(token_ids_batch)
         mask_ids_batch = self.array2tensor(mask_ids_batch)
-        with self.session:
+        with self.session():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(seq_output)
@@ -88,12 +88,12 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         return super().__getstate__()
 
     def post_init(self):
-        self._tokenizer = None
-        self._cls_pos = None
         self._model = None
         self._tensor_func = None
         self._sess_func = None
-        self._tmp_model_path = None
+        self.tmp_model_path = self.model_abspath if os.path.exists(self.model_abspath) else self.model_name
+        self._tokenizer = self.get_tokenizer()
+        self.cls_pos = 'tail' if self.model_name == 'xlnet-base-cased' else 'head'
 
     def array2tensor(self, array):
         return self.tensor_func(array)
@@ -117,14 +117,12 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
     @property
     def session(self):
         if self._sess_func is None:
-            import tensorflow as tf
             self._sess_func = self.get_session()
         return self._sess_func
 
     @property
     def tensor_func(self):
         if self._tensor_func is None:
-            import tensorflow as tf
             self._tensor_func = self.get_tensor_func()
         return self._tensor_func
 
@@ -133,18 +131,6 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         if self._tokenizer is None:
             self._tokenizer = self.get_tokenizer()
         return self._tokenizer
-
-    @property
-    def cls_pos(self):
-        if self._cls_pos is None:
-            self._cls_pos = self.get_cls_pos()
-        return self._cls_pos
-
-    @property
-    def tmp_model_path(self):
-        if self._tmp_model_path is None:
-            self._tmp_model_path = self.get_tmp_model_path()
-        return self._tmp_model_path
 
     def get_tokenizer(self):
         from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
@@ -194,7 +180,6 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTFExecutor):
     """
 
     def get_model(self):
-        self.to_device()
         from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
             TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
         model_dict = {
@@ -209,7 +194,7 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTFExecutor):
             'camembert-base': TFCamembertModel,
             'ctrl': TFCTRLModel
         }
-        _model = model_dict[self.model_name].from_pretrained(self.tmp_model_path)
+        _model = model_dict[self.model_name].from_pretrained(pretrained_model_name_or_path=self.tmp_model_path)
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
             _model.resize_token_embeddings(len(self.tokenizer))
         return _model
@@ -219,6 +204,7 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTFExecutor):
         return tf.GradientTape
 
     def get_tensor_func(self):
+        self.to_device()
         import tensorflow as tf
         return tf.constant
 
