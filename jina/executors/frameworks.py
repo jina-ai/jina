@@ -56,8 +56,8 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
             def post_init(self):
                 # load your awesome model
                 import torchvision.models as models
-                model = models.mobilenet_v2().features
-                self.model = model.eval()
+                self.model = models.mobilenet_v2().features.eval()
+                self.to_device(self.model)
 
             def encode(self, data, *args, **kwargs):
                 # use your awesome model to encode/craft/score
@@ -96,6 +96,7 @@ class BasePaddleExecutor(BaseFrameworkExecutor):
                 inputs, outputs, self.model = module.context(trainable=False)
                 self.inputs_name = input_dict['image'].name
                 self.outputs_name = output_dict['feature_map'].name
+                self.exe = self.to_device()
 
             def encode(self, data, *args, **kwargs):
                 # use your awesome model to encode/craft/score
@@ -127,6 +128,7 @@ class BaseTFExecutor(BaseFrameworkExecutor):
         class MyAwesomeTFEncoder(BaseTFExecutor):
             def post_init(self):
                 # load your awesome model
+                self.to_device()
                 import tensorflow as tf
                 model = tf.keras.applications.MobileNetV2(
                     input_shape=(self.img_shape, self.img_shape, 3),
@@ -159,9 +161,16 @@ class BaseOnnxExecutor(BaseFrameworkExecutor):
     .. code-block:: python
 
         class MyAwesomeOnnxEncoder(BaseOnnxExecutor):
+            def __init__(self, output_feature, model_path, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.outputs_name = output_feature
+                self.model_path = model_path
+
             def post_init(self):
-                self._init_model()
+                import onnxruntime
+                self.model = onnxruntime.InferenceSession(self.model_path, None)
                 self.inputs_name = self.model.get_inputs()[0].name
+                self.to_device(self.model)
 
             def encode(self, data, *args, **kwargs):
                 # use your awesome model to encode/craft/score
