@@ -171,8 +171,8 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile('test-docshard')
 
     def test_shards_insufficient_data(self):
-        index_docs = 10
-        replicas = 20
+        index_docs = 3
+        replicas = 4
 
         def validate(req):
             self.assertEqual(len(req.docs), 1)
