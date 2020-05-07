@@ -407,7 +407,7 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--batch-size', type=int, default=100,
                      help='the number of documents in each request')
     gp1.add_argument('--mode', choices=['index', 'search', 'train'], type=str,
-                     required=True,
+                     # required=True,
                      help='the mode of the client and the server')
     gp1.add_argument('--top-k', type=int,
                      default=10,

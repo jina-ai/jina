@@ -195,6 +195,22 @@ class MyTestCase(JinaTestCase):
                      callback_on_body=True)
         self.add_tmpfile('test-docshard')
 
+    def test_py_client(self):
+        f = (Flow().add(name='r1', yaml_path='_forward')
+             .add(name='r2', yaml_path='_forward')
+             .add(name='r3', yaml_path='_forward', needs='r1')
+             .add(name='r4', yaml_path='_forward', needs='r2')
+             .add(name='r5', yaml_path='_forward', needs='r3')
+             .add(name='r6', yaml_path='_forward', needs='r4')
+             .add(name='r8', yaml_path='_forward', needs='r6')
+             .add(name='r9', yaml_path='_forward', needs='r5')
+             .add(name='r10', yaml_path='_merge', needs=['r9', 'r8']))
+
+        with f:
+            f.dry_run()
+            from jina.clients import py_client
+            py_client(port_grpc=f.port_grpc, host=f.host).dry_run()
+
 
 if __name__ == '__main__':
     unittest.main()
