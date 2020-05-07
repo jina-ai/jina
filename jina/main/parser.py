@@ -291,9 +291,9 @@ def set_ping_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('host', type=str,
+    parser.add_argument('host', type=str, nargs='?', default='localhost',
                         help='host address of the target pod/pea, e.g. 0.0.0.0')
-    parser.add_argument('port', type=int,
+    parser.add_argument('port', type=int, nargs='?', default=-1,
                         help='the control port of the target pod/pea')
     parser.add_argument('--timeout', type=int, default=3000,
                         help='timeout (ms) of one check, -1 for waiting forever')
