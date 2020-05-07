@@ -174,7 +174,6 @@ class TransformerTFEncoder(BaseTFExecutor, BaseTransformerEncoder):
             self.model.resize_token_embeddings(len(self.tokenizer))
 
 
-
 class TransformerTorchEncoder(BaseTorchExecutor, BaseTransformerEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
