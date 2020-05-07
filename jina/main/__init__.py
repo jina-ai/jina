@@ -11,8 +11,11 @@ def _get_run_args(print_args: bool = True):
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
+        from argparse import _StoreAction, _StoreTrueAction
         args = parser.parse_args()
-        default_args = parser.parse_args([sys.argv[1]])
+        p = parser._actions[-1].choices[sys.argv[1]]
+        default_args = {a.dest: a.default for a in p._actions if
+                        isinstance(a, _StoreAction) or isinstance(a, _StoreTrueAction)}
         if print_args:
             from pkg_resources import resource_filename
             with open(resource_filename('jina', '/'.join(('resources', 'jina.logo')))) as fp:
@@ -20,7 +23,7 @@ def _get_run_args(print_args: bool = True):
             param_str = []
             for k, v in sorted(vars(args).items()):
                 j = f'{k.replace("_", "-"): >30.30} = {str(v):30.30}'
-                if getattr(default_args, k) == v:
+                if default_args.get(k, None) == v:
                     param_str.append('   ' + j)
                 else:
                     param_str.append('🔧️ ' + colored(j, 'blue', 'on_yellow'))

@@ -7,21 +7,12 @@ import os
 def api_to_dict():
     from ..enums import BetterEnum
     from .. import __version__
-    from .parser import set_pod_parser, set_pea_parser, \
-        set_flow_parser, set_client_cli_parser, \
-        set_gateway_parser, set_hw_parser, set_ping_parser, set_check_parser, set_export_api_parser
+    from .parser import get_main_parser
+
     from argparse import _StoreAction, _StoreTrueAction
     port_attr = ('help', 'choices', 'default', 'required', 'option_strings', 'dest')
 
-    parsers = {'pod': set_pod_parser,
-               'pea': set_pea_parser,
-               'flow': set_flow_parser,
-               'client': set_client_cli_parser,
-               'gateway': set_gateway_parser,
-               'hello-world': set_hw_parser,
-               'ping': set_ping_parser,
-               'check': set_check_parser,
-               'export-api': set_export_api_parser}
+    parsers = get_main_parser()._actions[-1].choices
 
     all_d = {'name': 'Jina',
              'description': 'Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology',
@@ -35,10 +26,10 @@ def api_to_dict():
              'methods': [],
              'revision': os.environ.get('JINA_VCS_VERSION')}
 
-    for p_name, pp in parsers.items():
+    for p_name in parsers.keys():
         d = {'name': p_name, 'options': []}
-        parser = pp()
-        parser2 = pp()
+        parser = get_main_parser()._actions[-1].choices[p_name]
+        parser2 = get_main_parser()._actions[-1].choices[p_name]
         random_dest = set()
         for a, b in zip(parser._actions, parser2._actions):
             if a.default != b.default:
