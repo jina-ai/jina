@@ -20,7 +20,7 @@ def set_base_parser():
         'Code': ('🧑‍💻', 'https://opensource.jina.ai'),
         'Hiring!': ('🙌', 'career@jina.ai')
     }
-    url_str = '\n'.join(f'{v[0]} {k:10.10} {colored(v[1], "cyan", attrs=["underline"])}' for k, v in urls.items())
+    url_str = '\n'.join(f'{v[0]} {k:10.10}\t{colored(v[1], "cyan", attrs=["underline"])}' for k, v in urls.items())
 
     parser = argparse.ArgumentParser(
         epilog=f'Jina (v{colored(__version__, "green")}) is the cloud-native neural search solution '
