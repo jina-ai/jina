@@ -28,6 +28,7 @@ class MyTestCase(JinaTestCase):
         from jina.helloworld import hello_world
         hello_world(set_hw_parser().parse_args([]))
 
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_helloworld_flow(self):
         args = set_hw_parser().parse_args([])
 
