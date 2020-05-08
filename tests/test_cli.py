@@ -3,12 +3,11 @@ import subprocess
 import unittest
 from pathlib import Path
 
-from pkg_resources import resource_filename
-
 from jina.clients import py_client
 from jina.flow import Flow
 from jina.helloworld import download_data, input_fn
 from jina.main.parser import set_hw_parser
+from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
@@ -23,6 +22,7 @@ class MyTestCase(JinaTestCase):
     def test_helloworld(self):
         subprocess.check_call(['jina', 'hello-world'])
 
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_helloworld_py(self):
         from jina.main.parser import set_hw_parser
         from jina.helloworld import hello_world
@@ -58,7 +58,7 @@ class MyTestCase(JinaTestCase):
         with f:
             py_client(host=f.host,
                       port_grpc=f.port_grpc,
-                      batch_size=args.index_batch_size).index(input_fn(targets['index']['filename']))
+                      ).index(input_fn(targets['index']['filename']), batch_size=args.index_batch_size)
 
 
 if __name__ == '__main__':

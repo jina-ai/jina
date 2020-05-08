@@ -97,16 +97,24 @@ class PyClient(GrpcClient):
         req_iter = getattr(request, self.mode)(**kwargs)
         return self._stub.CallUnary(next(req_iter))
 
-    def call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
+    def call(self, callback: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         """ Calling the server, better use :func:`start` instead.
 
         :param callback: a callback function, invoke after every response is received
         """
-        kwargs = vars(self.args)
-        kwargs['data'] = self.input_fn
+        # take the default args from client
+        _kwargs = vars(self.args)
+        _kwargs['data'] = self.input_fn
+        # override by the caller-specific kwargs
+        for k in _kwargs.keys():
+            if k in kwargs:
+                _kwargs[k] = kwargs[k]
 
         tname = self.mode
-        req_iter = getattr(request, tname)(**kwargs)
+        if 'mode' in kwargs:
+            tname = kwargs['mode']
+
+        req_iter = getattr(request, tname)(**_kwargs)
         # next(req_iter)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
@@ -158,19 +166,19 @@ class PyClient(GrpcClient):
         return False
 
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              output_fn: Callable[['jina_pb2.Message'], None] = None):
+              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = 'train'
         self.input_fn = input_fn
-        self.start(output_fn)
+        self.start(output_fn, **kwargs)
 
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-               output_fn: Callable[['jina_pb2.Message'], None] = None):
+               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = 'search'
         self.input_fn = input_fn
-        self.start(output_fn)
+        self.start(output_fn, **kwargs)
 
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              output_fn: Callable[['jina_pb2.Message'], None] = None):
+              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = 'index'
         self.input_fn = input_fn
-        self.start(output_fn)
+        self.start(output_fn, **kwargs)
