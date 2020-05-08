@@ -9,7 +9,7 @@ import grpc
 from jina.logging.profile import TimeContext
 
 from .grpc_asyncio import AsyncioExecutor
-from .zmq import AsyncZmqlet, add_envelope
+from .zmq import AsyncZmqlet, add_envelope, Zmqlet
 from .. import __stop_msg__
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
@@ -95,6 +95,11 @@ class GatewayPea:
             except NoDriverForRequest:
                 # remove envelope and send back the request
                 return msg.request
+
+        async def CallUnary(self, request, context):
+            with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
+                await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity))
+                return await zmqlet.recv_message(callback=self.recv_callback)
 
         async def Call(self, request_iterator, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:

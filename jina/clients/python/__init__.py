@@ -6,8 +6,10 @@ from typing import Iterator, Callable, Union
 from .grpc import GrpcClient
 from .helper import ProgressBar
 from ...excepts import BadClient
+from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
+from . import request
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -61,20 +63,38 @@ class PyClient(GrpcClient):
         else:
             raise ValueError(f'{value} must be one of {avail}')
 
-    def check_input(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None):
+    @staticmethod
+    def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None, in_proto: bool=False):
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
+        :param in_proto: if the input data is already in protobuf Document format, or in raw bytes
         """
-        kwargs = vars(self.args)
-        kwargs['data'] = input_fn
-        from . import request
+        kwargs = {'data': input_fn, 'in_proto': in_proto}
+
         try:
-            r = next(getattr(request, self.mode)(**kwargs))
-            self.logger.success(f'input_fn is valid and the first request is as follows:\n{r}')
+            r = next(getattr(request, 'index')(**kwargs))
+            default_logger.success(f'input_fn is valid and the first request is as follows:\n{r}')
         except:
-            self.logger.error(f'input_fn is not valid!')
+            default_logger.error(f'input_fn is not valid!')
             raise
+
+    def call_unary(self, data: Union['jina_pb2.Document', bytes], mode:str) -> None:
+        """ Calling the server with one request only, and return the result
+
+        This function should not be used in production due to its low-efficiency. For example,
+        you should not use it in a for-loop. Use :meth:`call` instead.
+        Nonetheless, you can use it for testing one query and check the result.
+
+        :param data: the binary data of the document or the ``Document`` in protobuf
+        :param mode: request will be sent in this mode, available ``train``, ``index``, ``query``
+        """
+        self.mode = mode
+        kwargs = vars(self.args)
+        kwargs['data'] = [data]
+
+        req_iter = getattr(request, self.mode)(**kwargs)
+        return self._stub.CallUnary(next(req_iter))
 
     def call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
         """ Calling the server, better use :func:`start` instead.
@@ -84,7 +104,6 @@ class PyClient(GrpcClient):
         kwargs = vars(self.args)
         kwargs['data'] = self.input_fn
 
-        from . import request
         tname = self.mode
         req_iter = getattr(request, tname)(**kwargs)
         # next(req_iter)
