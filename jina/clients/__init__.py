@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+
 def py_client(**kwargs):
     """A simple Python client for connecting to the gateway.
 

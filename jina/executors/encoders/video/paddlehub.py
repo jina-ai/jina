@@ -12,6 +12,7 @@ class VideoPaddlehubEncoder(BaseCVPaddlehubEncoder):
     Internally, :class:`VideoPaddlehubEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
+
     def __init__(self,
                  pool_strategy: str = None,
                  *args, **kwargs):

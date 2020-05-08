@@ -269,6 +269,9 @@ service JinaRPC {
     rpc Call (stream Request) returns (stream Request) {
     }
 
+    rpc CallUnary (Request) returns (Request) {
+    }
+
     // Pass in a Request and a filled Request will be returned.
     rpc Spawn (SpawnRequest) returns (stream SpawnRequest) {
     }

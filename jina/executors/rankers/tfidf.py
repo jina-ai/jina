@@ -136,7 +136,7 @@ class TfIdfRanker(BaseRanker):
         tf = self.get_tf(match_idx, match_chunk_meta)
         _weights = match_idx[:, self.col_score]
         _q_tfidf = np.vectorize(tf.get)(match_idx[:, self.col_query_chunk_id], 0) * \
-                np.vectorize(idf.get)(match_idx[:, self.col_query_chunk_id], 0)
+                   np.vectorize(idf.get)(match_idx[:, self.col_query_chunk_id], 0)
         _sum = np.sum(_q_tfidf)
         _doc_id = self.get_doc_id(match_idx)
         _score = 0. if _sum == 0 else np.sum(_weights * _q_tfidf) * 1.0 / _sum
@@ -152,6 +152,7 @@ class BM25Ranker(TfIdfRanker):
         as the naive ``document-frequency``. Please refer to the functions for the details of calculating ``tf`` and
         ``idf``.
     """
+
     def __init__(self, k=1.2, b=0.75, *args, **kwargs):
         """
 
@@ -199,5 +200,5 @@ class BM25Ranker(TfIdfRanker):
         _q_tf_list, _q_id_list, _c_id_list = self._get_tf(match_idx)
         _avg_n_doc = np.mean([c_meta['length'] for c_meta in match_chunk_meta.values()])
         return {q_idx: (1 + self.k) * tf / (
-                        self.k * (1 - self.b + self.b * match_chunk_meta[c_idx]['length'] / _avg_n_doc) + tf)
+                self.k * (1 - self.b + self.b * match_chunk_meta[c_idx]['length'] / _avg_n_doc) + tf)
                 for c_idx, q_idx, tf in zip(_c_id_list, _q_id_list, _q_tf_list)}

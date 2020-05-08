@@ -3,9 +3,11 @@ __license__ = "Apache-2.0"
 
 from typing import Iterator, Callable, Union
 
+from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar
 from ...excepts import BadClient
+from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
 
@@ -61,32 +63,58 @@ class PyClient(GrpcClient):
         else:
             raise ValueError(f'{value} must be one of {avail}')
 
-    def check_input(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None):
+    @staticmethod
+    def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+                    in_proto: bool = False):
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
+        :param in_proto: if the input data is already in protobuf Document format, or in raw bytes
         """
-        kwargs = vars(self.args)
-        kwargs['data'] = input_fn
-        from . import request
+        kwargs = {'data': input_fn, 'in_proto': in_proto}
+
         try:
-            r = next(getattr(request, self.mode)(**kwargs))
-            self.logger.success(f'input_fn is valid and the first request is as follows:\n{r}')
+            r = next(getattr(request, 'index')(**kwargs))
+            default_logger.success(f'input_fn is valid and the first request is as follows:\n{r}')
         except:
-            self.logger.error(f'input_fn is not valid!')
+            default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call(self, callback: Callable[['jina_pb2.Message'], None] = None) -> None:
+    def call_unary(self, data: Union['jina_pb2.Document', bytes], mode: str) -> None:
+        """ Calling the server with one request only, and return the result
+
+        This function should not be used in production due to its low-efficiency. For example,
+        you should not use it in a for-loop. Use :meth:`call` instead.
+        Nonetheless, you can use it for testing one query and check the result.
+
+        :param data: the binary data of the document or the ``Document`` in protobuf
+        :param mode: request will be sent in this mode, available ``train``, ``index``, ``query``
+        """
+        self.mode = mode
+        kwargs = vars(self.args)
+        kwargs['data'] = [data]
+
+        req_iter = getattr(request, self.mode)(**kwargs)
+        return self._stub.CallUnary(next(req_iter))
+
+    def call(self, callback: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         """ Calling the server, better use :func:`start` instead.
 
         :param callback: a callback function, invoke after every response is received
         """
-        kwargs = vars(self.args)
-        kwargs['data'] = self.input_fn
+        # take the default args from client
+        _kwargs = vars(self.args)
+        _kwargs['data'] = self.input_fn
+        # override by the caller-specific kwargs
+        for k in _kwargs.keys():
+            if k in kwargs:
+                _kwargs[k] = kwargs[k]
 
-        from . import request
         tname = self.mode
-        req_iter = getattr(request, tname)(**kwargs)
+        if 'mode' in kwargs:
+            tname = kwargs['mode']
+
+        req_iter = getattr(request, tname)(**_kwargs)
         # next(req_iter)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
@@ -138,19 +166,19 @@ class PyClient(GrpcClient):
         return False
 
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              output_fn: Callable[['jina_pb2.Message'], None] = None):
+              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = 'train'
         self.input_fn = input_fn
-        self.start(output_fn)
+        self.start(output_fn, **kwargs)
 
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-               output_fn: Callable[['jina_pb2.Message'], None] = None):
+               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = 'search'
         self.input_fn = input_fn
-        self.start(output_fn)
+        self.start(output_fn, **kwargs)
 
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              output_fn: Callable[['jina_pb2.Message'], None] = None):
+              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = 'index'
         self.input_fn = input_fn
-        self.start(output_fn)
+        self.start(output_fn, **kwargs)

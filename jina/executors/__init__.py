@@ -218,7 +218,6 @@ class BaseExecutor(metaclass=ExecutorType):
         """
         pass
 
-
     @classmethod
     def pre_init(cls):
         """This function is called before the object initiating (i.e. :func:`__call__`)
@@ -537,5 +536,3 @@ class BaseExecutor(metaclass=ExecutorType):
                     raise UnattachedDriver(d)
         else:
             raise NoDriverForRequest(req_type)
-
-

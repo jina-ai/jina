@@ -24,6 +24,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -47,6 +48,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.1.6`)](#release-note-016)
 - [Release Note (`0.1.7`)](#release-note-017)
 - [Release Note (`0.1.8`)](#release-note-018)
+- [Release Note (`0.1.9`)](#release-note-019)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -736,4 +738,41 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```97ab83a9```](https://github.com/jina-ai/jina/commit/97ab83a904474586eaec575a65493bf5176f6790)] __-__ __version__: bumping version to 0.1.8 (*Jina Dev Bot*)
  - [[```df52882e```](https://github.com/jina-ai/jina/commit/df52882e921de8038914b0c5daf02374decec51b)] __-__ __version__: bumping version to 0.1.7 (*Jina Dev Bot*)
  - [[```61c97022```](https://github.com/jina-ai/jina/commit/61c97022356bf0a496b76eaa76b78d01484c22af)] __-__ hotfix dockerfile for latest (*Han Xiao*)
+
+## Release Note (`0.1.9`)
+
+> Release time: 2020-05-08 15:57:49
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Nan Wang,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```657b002c```](https://github.com/jina-ai/jina/commit/657b002c687f3b6c85f683986d9bcb4c02b89afd)] __-__ improve python api for client (*Han Xiao*)
+ - [[```2b4260f5```](https://github.com/jina-ai/jina/commit/2b4260f5eae8e34d48b212888ecf11e241a8d7e1)] __-__ __encoder__: add farm nlp encoder (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```c125fd1f```](https://github.com/jina-ai/jina/commit/c125fd1f644c483d0194d817e15c1ee88fe4a459)] __-__ default args cause ping error (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```b9fab059```](https://github.com/jina-ai/jina/commit/b9fab05941a4442397a73d18cc4765c294ae5917)] __-__ fix the tf version (*Nan Wang*)
+ - [[```d6e893c7```](https://github.com/jina-ai/jina/commit/d6e893c7c168111088c0896ccebab256010bbe25)] __-__ __encoders__: refactoring transformers api (*Nan Wang*)
+ - [[```b45944c5```](https://github.com/jina-ai/jina/commit/b45944c53dfcfb559584df9109f25b914309aedb)] __-__ __executors__: adapt code blocks (*Nan Wang*)
+ - [[```ac4b10ff```](https://github.com/jina-ai/jina/commit/ac4b10ff32ec8972c64fe809ff9dcdaf7efffac9)] __-__ on_gpu and to_device in baseclass (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b427224e```](https://github.com/jina-ai/jina/commit/b427224e3ba368168b774bc6fa5a2d5f5e84c7c4)] __-__ set test timout to 15m (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```a0a13c80```](https://github.com/jina-ai/jina/commit/a0a13c80ca45fd5f1dcbf2b45c1695c68015d41e)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```cde8df99```](https://github.com/jina-ai/jina/commit/cde8df9995da626d4c1e41b07432b2d8748c10f1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```27039e01```](https://github.com/jina-ai/jina/commit/27039e011d3b42a04876220dc964acc8aea1561a)] __-__ fix phrases in performant (*Han Xiao*)
+ - [[```cd5e640c```](https://github.com/jina-ai/jina/commit/cd5e640cd76a40afd9f2e118e0edfb418b5274ea)] __-__ __version__: bumping version to 0.1.9 (*Jina Dev Bot*)
 
