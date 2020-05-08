@@ -1,7 +1,7 @@
 import unittest
 
 from jina.executors.encoders.nlp.farm import FarmTextEncoder
-from . import NlpTestCase
+from tests.executors.encoders.nlp import NlpTestCase
 
 
 class MyTestCase(NlpTestCase):

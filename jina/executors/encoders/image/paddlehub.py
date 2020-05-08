@@ -1,20 +1,17 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from .. import BaseImageEncoder
 from ..frameworks import BaseCVPaddlehubEncoder
 
 
-class ImagePaddlehubEncoder(BaseImageEncoder, BaseCVPaddlehubEncoder):
+class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
     """
     :class:`ImagePaddlehubEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
     Internally, :class:`ImagePaddlehubEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
-    def __init__(self,
-                 model_name: str = 'xception71_imagenet',
-                 *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -43,11 +40,13 @@ class ImagePaddlehubEncoder(BaseImageEncoder, BaseCVPaddlehubEncoder):
 
 
         """
-        if 'pool_strategy' in kwargs:
-            kwargs.pop('pool_strategy')
-        if 'output_feature' in kwargs:
-            kwargs.pop('output_feature')
-        super().__init__(model_name, output_feature=None, pool_strategy='mean', *args, **kwargs)
+        super().__init__(*args, **kwargs)
+        if self.model_name is None:
+            self.model_name = 'xception71_imagenet'
+        if self.outputs_name is None:
+            self.outputs_name = None
+        if self.pool_strategy is None:
+            self.pool_strategy = 'mean'
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         self.inputs_name = input_dict['image'].name

@@ -3,12 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
-from ..frameworks import BasePaddlehubEncoder
+from ..frameworks import BaseTextPaddlehubEncoder
 
 
-class TextPaddlehubEncoder(BaseTextEncoder, BasePaddlehubEncoder):
+class TextPaddlehubEncoder(BaseTextPaddlehubEncoder):
     """
     :class:`TextPaddlehubEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`TextPaddlehubEncoder` wraps the Ernie module from paddlehub.
@@ -16,7 +15,6 @@ class TextPaddlehubEncoder(BaseTextEncoder, BasePaddlehubEncoder):
     """
 
     def __init__(self,
-                 model_name: str = 'ernie_tiny',
                  max_length: int = 128,
                  *args,
                  **kwargs):
@@ -37,9 +35,9 @@ class TextPaddlehubEncoder(BaseTextEncoder, BasePaddlehubEncoder):
             https://www.paddlepaddle.org.cn/hublist?filter=en_category&value=SemanticModel
         """
         super().__init__(*args, **kwargs)
-        self.model_name = model_name
+        if self.model_name is None:
+            self.model_name = 'ernie_tiny'
         self.max_length = max_length
-        self.tokenizer = None
 
     def post_init(self):
         import paddlehub as hub

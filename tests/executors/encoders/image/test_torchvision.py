@@ -1,7 +1,7 @@
 import unittest
 
 from jina.executors.encoders.image.torchvision import ImageTorchEncoder
-from . import ImageTestCase
+from tests.executors.encoders.image import ImageTestCase
 
 
 class MyTestCase(ImageTestCase):

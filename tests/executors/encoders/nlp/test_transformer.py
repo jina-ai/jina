@@ -1,7 +1,7 @@
 import unittest
 
 from jina.executors.encoders.nlp.transformer import TransformerTFEncoder, TransformerTorchEncoder
-from . import NlpTestCase
+from tests.executors.encoders.nlp import NlpTestCase
 
 
 class PytorchTestCase(NlpTestCase):

@@ -3,11 +3,10 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseImageEncoder
-from ..frameworks import BaseTorchEncoder
+from ..frameworks import BaseCVTorchEncoder
 
 
-class ImageTorchEncoder(BaseImageEncoder, BaseTorchEncoder):
+class ImageTorchEncoder(BaseCVTorchEncoder):
     """
     :class:`ImageTorchEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -15,9 +14,7 @@ class ImageTorchEncoder(BaseImageEncoder, BaseTorchEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self,
-                 model_name: str = 'mobilenet_v2',
-                 pool_strategy: str = 'mean', *args, **kwargs):
+    def __init__(self, pool_strategy: str = 'mean', *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -39,10 +36,12 @@ class ImageTorchEncoder(BaseImageEncoder, BaseTorchEncoder):
                  thus the output of the model will be a 2D tensor.
             - `max` means that global max pooling will be applied.
         """
-        super().__init__(model_name, *args, **kwargs)
-        self.pool_strategy = pool_strategy
+        super().__init__(*args, **kwargs)
+        if self.model_name is None:
+            self.model_name = 'mobilenet_v2'
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
+        self.pool_strategy = pool_strategy
 
     def post_init(self):
         import torchvision.models as models

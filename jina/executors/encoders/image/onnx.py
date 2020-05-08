@@ -3,21 +3,18 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseImageEncoder
 from ..frameworks import BaseOnnxEncoder
 from ...decorators import batching, as_ndarray
 
 
-class OnnxImageEncoder(BaseImageEncoder, BaseOnnxEncoder):
+class OnnxImageEncoder(BaseOnnxEncoder):
     """
     :class:`OnnxImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
     Internally, :class:`OnnxImageEncoder` wraps the models from `onnxruntime`.
     """
 
-    def __init__(self,
-                 pool_strategy: str = 'mean',
-                 *args, **kwargs):
+    def __init__(self, pool_strategy: str = 'mean', *args, **kwargs):
         """
 
         :param pool_strategy: the pooling strategy

@@ -1,7 +1,7 @@
 import unittest
 
 from jina.executors.encoders.video.torchvision import VideoTorchEncoder
-from . import VideoTestCase
+from tests.executors.encoders.video import VideoTestCase
 
 
 class MyTestCase(VideoTestCase):

@@ -3,12 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
-from ..frameworks import BaseTFEncoder
+from ..frameworks import BaseCVTFEncoder
 
 
-class KerasImageEncoder(BaseImageEncoder, BaseTFEncoder):
+class KerasImageEncoder(BaseCVTFEncoder):
     """
     :class:`KerasImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -16,7 +15,7 @@ class KerasImageEncoder(BaseImageEncoder, BaseTFEncoder):
     https://keras.io/applications/
     """
 
-    def __init__(self, model_name: str = 'MobileNetV2', img_shape: int = 96,
+    def __init__(self, img_shape: int = 96,
                  pool_strategy: str = 'avg', channel_axis: int = -1, *args, **kwargs):
         """
 
@@ -38,7 +37,8 @@ class KerasImageEncoder(BaseImageEncoder, BaseTFEncoder):
                 If given other, then ``np.moveaxis(data, channel_axis, -1)`` is performed before :meth:`encode`.
         """
         super().__init__(*args, **kwargs)
-        self.model_name = model_name
+        if self.model_name is None:
+            self.model_name = 'MobileNetV2'
         self.pool_strategy = pool_strategy
         self.img_shape = img_shape
         self.channel_axis = channel_axis

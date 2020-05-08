@@ -12,6 +12,10 @@ class BaseFrameworkExecutor(BaseExecutor):
     """
     framework = None
 
+    def __init__(self, model_name: str = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
     @property
     def device(self):
         """Set the device on which the exectuor will be running.

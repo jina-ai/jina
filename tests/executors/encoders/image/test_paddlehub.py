@@ -1,7 +1,7 @@
 import unittest
 
 from jina.executors.encoders.image.paddlehub import ImagePaddlehubEncoder
-from . import ImageTestCase
+from tests.executors.encoders.image import ImageTestCase
 
 
 class MyTestCase(ImageTestCase):

@@ -3,12 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
-from ..frameworks import BaseTorchEncoder
+from ..frameworks import BaseTextTorchEncoder
 
 
-class FarmTextEncoder(BaseTextEncoder, BaseTorchEncoder):
+class FarmTextEncoder(BaseTextTorchEncoder):
     """FARM-based text encoder: (Framework for Adapting Representation Models)
     https://github.com/deepset-ai/FARM
 
@@ -33,14 +32,15 @@ class FarmTextEncoder(BaseTextEncoder, BaseTorchEncoder):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self.model_name_or_path = model_name_or_path
+        if self.model_name is None:
+            self.model_name = 'deepset/bert-base-cased-squad2'
         self.num_processes = num_processes
         self.extraction_strategy = extraction_strategy
         self.extraction_layer = extraction_layer
 
     def post_init(self):
         from farm.infer import Inferencer
-        self.model = Inferencer.load(model_name_or_path=self.model_name_or_path, task_type='embeddings',
+        self.model = Inferencer.load(model_name_or_path=self.model_name, task_type='embeddings',
                                      num_processes=self.num_processes)
 
     @batching

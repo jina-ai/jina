@@ -2,11 +2,10 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 
-from .. import BaseVideoEncoder
 from ..frameworks import BaseCVPaddlehubEncoder
 
 
-class VideoPaddlehubEncoder(BaseVideoEncoder, BaseCVPaddlehubEncoder):
+class VideoPaddlehubEncoder(BaseCVPaddlehubEncoder):
     """
     :class:`VideoPaddlehubEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -14,8 +13,6 @@ class VideoPaddlehubEncoder(BaseVideoEncoder, BaseCVPaddlehubEncoder):
     https://github.com/PaddlePaddle/PaddleHub
     """
     def __init__(self,
-                 model_name: str = 'tsn_kinetics400',
-                 output_feature: str = '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0',
                  pool_strategy: str = None,
                  *args, **kwargs):
         """
@@ -33,11 +30,11 @@ class VideoPaddlehubEncoder(BaseVideoEncoder, BaseCVPaddlehubEncoder):
                 model will be a 2D tensor.
             - `max` means that global max pooling will be applied.
         """
-        if 'pool_strategy' in kwargs:
-            kwargs.pop('pool_strategy')
-        if 'output_feature' in kwargs:
-            kwargs.pop('output_feature')
-        super().__init__(model_name, output_feature, pool_strategy, *args, **kwargs)
+        super().__init__(*args, **kwargs)
+        if self.model_name is None:
+            self.model_name = 'tsn_kinetics400'
+        if self.outputs_name is None:
+            self.outputs_name = '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0'
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
 

@@ -5,18 +5,13 @@ import os
 
 import numpy as np
 
-from . import BaseNumericEncoder
+from . import BaseEncoder
 from ..decorators import batching, as_ndarray
 from ..frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor, BaseTFExecutor, BaseFrameworkExecutor
 from ...helper import is_url
 
 
-class BaseFrameworkEncoder(BaseFrameworkExecutor, BaseNumericEncoder):
-    pass
-
-
-class BaseOnnxEncoder(BaseOnnxExecutor, BaseFrameworkEncoder):
-
+class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):
     def __init__(self, output_feature: str, model_path: str = None, *args, **kwargs):
         """
 
@@ -28,7 +23,6 @@ class BaseOnnxEncoder(BaseOnnxExecutor, BaseFrameworkEncoder):
         super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
-        self.model_name = ''
 
     def post_init(self):
         """
@@ -60,7 +54,58 @@ class BaseOnnxEncoder(BaseOnnxExecutor, BaseFrameworkEncoder):
         onnx.save(model, output_fn)
 
 
-class BaseTorchEncoder(BaseTorchExecutor, BaseFrameworkEncoder):
+class BaseTFEncoder(BaseTFExecutor, BaseEncoder):
+    pass
+
+
+class BaseTorchEncoder(BaseTorchExecutor, BaseEncoder):
+    pass
+
+
+class BasePaddlehubEncoder(BasePaddleExecutor, BaseEncoder):
+    pass
+
+
+class BaseTextTFEncoder(BaseTFEncoder):
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+
+        :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
+        :return: an ndarray of `B x D`
+        """
+        pass
+
+
+class BaseTextTorchEncoder(BaseTorchEncoder):
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+
+        :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
+        :return: an ndarray of `B x D`
+        """
+        pass
+
+
+class BaseTextPaddlehubEncoder(BasePaddlehubEncoder):
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+
+        :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
+        :return: an ndarray of `B x D`
+        """
+        pass
+
+
+class BaseCVTFEncoder(BaseTFEncoder):
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+        :param data: a `B x ([T] x D)` numpy ``ndarray``, `B` is the size of the batch
+        :return: a `B x D` numpy ``ndarray``
+        """
+        pass
+
+
+class BaseCVTorchEncoder(BaseTorchEncoder):
     """"
     :class:`BaseTorchEncoder` implements the common part for :class:`ImageTorchEncoder` and :class:`VideoTorchEncoder`.
 
@@ -68,12 +113,8 @@ class BaseTorchEncoder(BaseTorchExecutor, BaseFrameworkEncoder):
         :class:`BaseTorchEncoder`  is not intented to be used to do the real encoding.
     """
 
-    def __init__(self,
-                 model_name: str = '',
-                 channel_axis: int = 1,
-                 *args, **kwargs):
+    def __init__(self, channel_axis: int = 1, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.model_name = model_name
         self.channel_axis = channel_axis
         self._default_channel_axis = 1
 
@@ -100,14 +141,6 @@ class BaseTorchEncoder(BaseTorchExecutor, BaseFrameworkEncoder):
         return feature_map
 
 
-class BaseTFEncoder(BaseTFExecutor, BaseFrameworkEncoder):
-    pass
-
-
-class BasePaddlehubEncoder(BasePaddleExecutor, BaseFrameworkEncoder):
-    pass
-
-
 class BaseCVPaddlehubEncoder(BasePaddlehubEncoder):
     """
     :class:`BaseCVPaddlehubEncoder` implements the common parts for :class:`ImagePaddlehubEncoder` and
@@ -118,14 +151,12 @@ class BaseCVPaddlehubEncoder(BasePaddlehubEncoder):
     """
 
     def __init__(self,
-                 model_name: str = None,
                  output_feature: str = None,
                  pool_strategy: str = None,
                  channel_axis: int = -3,
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
-        self.model_name = model_name
         self.pool_strategy = pool_strategy
         self.outputs_name = output_feature
         self.inputs_name = None
@@ -169,5 +200,3 @@ class BaseCVPaddlehubEncoder(BasePaddlehubEncoder):
     def get_pooling(self, data: 'np.ndarray', axis=None) -> 'np.ndarray':
         _reduce_axis = tuple((i for i in range(len(data.shape)) if i > 1))
         return getattr(np, self.pool_strategy)(data, axis=_reduce_axis)
-
-
