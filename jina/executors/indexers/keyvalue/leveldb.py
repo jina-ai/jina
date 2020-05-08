@@ -5,6 +5,7 @@ import json
 from typing import Union
 
 from google.protobuf.json_format import Parse
+
 from jina.executors.indexers.keyvalue.proto import BasePbIndexer
 from jina.executors.indexers.keyvalue.proto import jina_pb2
 
@@ -13,6 +14,7 @@ class LeveldbIndexer(BasePbIndexer):
     """
     :class:`LeveldbIndexer` use `LevelDB` to save and query protobuf chunk/document.
     """
+
     def post_init(self):
         super().post_init()
         self._db_handler = None

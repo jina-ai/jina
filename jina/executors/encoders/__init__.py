@@ -82,5 +82,3 @@ class PipelineEncoder(CompoundExecutor):
 
             if idx + 1 < len(self.components):
                 data = be.encode(data, *args, **kwargs)
-
-

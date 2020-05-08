@@ -6,8 +6,8 @@ import os
 import threading
 
 import grpc
-from jina.logging.profile import TimeContext
 
+from jina.logging.profile import TimeContext
 from .grpc_asyncio import AsyncioExecutor
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
@@ -95,6 +95,11 @@ class GatewayPea:
             except NoDriverForRequest:
                 # remove envelope and send back the request
                 return msg.request
+
+        async def CallUnary(self, request, context):
+            with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
+                await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity))
+                return await zmqlet.recv_message(callback=self.recv_callback)
 
         async def Call(self, request_iterator, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:

@@ -11,6 +11,7 @@ class VideoTorchEncoder(BaseTorchEncoder):
     Internally, :class:`VideoTorchEncoder` wraps the models from `torchvision.models`.
     https://pytorch.org/docs/stable/torchvision/models.html
     """
+
     def __init__(self, model_name: str = 'r3d_18', *args, **kwargs):
         """
 
