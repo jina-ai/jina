@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Iterator, Callable, Union
 
+from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar
 from ...excepts import BadClient
 from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
-from . import request
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -64,7 +64,8 @@ class PyClient(GrpcClient):
             raise ValueError(f'{value} must be one of {avail}')
 
     @staticmethod
-    def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None, in_proto: bool=False):
+    def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+                    in_proto: bool = False):
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
@@ -79,7 +80,7 @@ class PyClient(GrpcClient):
             default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call_unary(self, data: Union['jina_pb2.Document', bytes], mode:str) -> None:
+    def call_unary(self, data: Union['jina_pb2.Document', bytes], mode: str) -> None:
         """ Calling the server with one request only, and return the result
 
         This function should not be used in production due to its low-efficiency. For example,

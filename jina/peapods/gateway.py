@@ -6,10 +6,10 @@ import os
 import threading
 
 import grpc
-from jina.logging.profile import TimeContext
 
+from jina.logging.profile import TimeContext
 from .grpc_asyncio import AsyncioExecutor
-from .zmq import AsyncZmqlet, add_envelope, Zmqlet
+from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor

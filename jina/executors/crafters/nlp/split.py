@@ -50,12 +50,13 @@ class Sentencizer(BaseSegmenter):
                 dict(doc_id=doc_id, text=s, offset=idx, weight=1.0, length=len(sents)))
         return results
 
+
 class JiebaSegmenter(BaseSegmenter):
     """
     :class:`JiebaSegmenter` split the chinese text on the doc-level into words on the chunk-level with `jieba`.
     """
 
-    def __init__(self, mode: str='accurate', *args, **kwargs):
+    def __init__(self, mode: str = 'accurate', *args, **kwargs):
         """
 
         :param mode: the jieba cut mode, accurate, all, search. default accurate

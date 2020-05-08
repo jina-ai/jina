@@ -11,6 +11,7 @@ class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
     Internally, :class:`ImagePaddlehubEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
+
     def __init__(self,
                  model_name: str = 'xception71_imagenet',
                  *args, **kwargs):

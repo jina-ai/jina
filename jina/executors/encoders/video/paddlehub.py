@@ -11,6 +11,7 @@ class VideoPaddlehubEncoder(BaseCVPaddlehubEncoder):
     Internally, :class:`VideoPaddlehubEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
+
     def __init__(self,
                  model_name: str = 'tsn_kinetics400',
                  output_feature: str = '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0',

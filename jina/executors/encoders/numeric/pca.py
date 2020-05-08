@@ -15,6 +15,7 @@ class IncrementalPCAEncoder(BaseNumericEncoder):
         :class:`IncrementalPCAEncoder` must be trained before calling ``encode()``. This encoder can be trained in an
         incremental way.
     """
+
     def __init__(self,
                  output_dim: int,
                  num_features: int = None,
