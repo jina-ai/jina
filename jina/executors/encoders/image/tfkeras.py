@@ -5,10 +5,10 @@ import numpy as np
 
 from .. import BaseImageEncoder
 from ...decorators import batching, as_ndarray
-from ...frameworks import BaseTFExecutor
+from ..frameworks import BaseTFEncoder
 
 
-class KerasImageEncoder(BaseTFExecutor, BaseImageEncoder):
+class KerasImageEncoder(BaseImageEncoder, BaseTFEncoder):
     """
     :class:`KerasImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.

@@ -5,10 +5,10 @@ import numpy as np
 
 from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
-from ...frameworks import BasePaddleExecutor
+from ..frameworks import BasePaddlehubEncoder
 
 
-class TextPaddlehubEncoder(BasePaddleExecutor, BaseTextEncoder):
+class TextPaddlehubEncoder(BaseTextEncoder, BasePaddlehubEncoder):
     """
     :class:`TextPaddlehubEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`TextPaddlehubEncoder` wraps the Ernie module from paddlehub.

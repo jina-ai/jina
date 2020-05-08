@@ -7,11 +7,15 @@ import numpy as np
 
 from . import BaseNumericEncoder
 from ..decorators import batching, as_ndarray
-from ..frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor
+from ..frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor, BaseTFExecutor, BaseFrameworkExecutor
 from ...helper import is_url
 
 
-class BaseOnnxEncoder(BaseOnnxExecutor):
+class BaseFrameworkEncoder(BaseFrameworkExecutor, BaseNumericEncoder):
+    pass
+
+
+class BaseOnnxEncoder(BaseOnnxExecutor, BaseFrameworkEncoder):
 
     def __init__(self, output_feature: str, model_path: str = None, *args, **kwargs):
         """
@@ -56,7 +60,55 @@ class BaseOnnxEncoder(BaseOnnxExecutor):
         onnx.save(model, output_fn)
 
 
-class BaseCVPaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
+class BaseTorchEncoder(BaseTorchExecutor, BaseFrameworkEncoder):
+    """"
+    :class:`BaseTorchEncoder` implements the common part for :class:`ImageTorchEncoder` and :class:`VideoTorchEncoder`.
+
+    ..warning::
+        :class:`BaseTorchEncoder`  is not intented to be used to do the real encoding.
+    """
+
+    def __init__(self,
+                 model_name: str = '',
+                 channel_axis: int = 1,
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
+        self.channel_axis = channel_axis
+        self._default_channel_axis = 1
+
+    @batching
+    @as_ndarray
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        import numpy as np
+        if self.channel_axis != self._default_channel_axis:
+            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
+        import torch
+        _input = torch.from_numpy(data.astype('float32'))
+        if self.on_gpu:
+            _input = _input.cuda()
+        _feature = self._get_features(_input).detach()
+        if self.on_gpu:
+            _feature = _feature.cpu()
+        _feature = _feature.numpy()
+        return self._get_pooling(_feature)
+
+    def _get_features(self, data):
+        raise NotImplementedError
+
+    def _get_pooling(self, feature_map):
+        return feature_map
+
+
+class BaseTFEncoder(BaseTFExecutor, BaseFrameworkEncoder):
+    pass
+
+
+class BasePaddlehubEncoder(BasePaddleExecutor, BaseFrameworkEncoder):
+    pass
+
+
+class BaseCVPaddlehubEncoder(BasePaddlehubEncoder):
     """
     :class:`BaseCVPaddlehubEncoder` implements the common parts for :class:`ImagePaddlehubEncoder` and
         :class:`VideoPaddlehubEncoder`.
@@ -66,8 +118,8 @@ class BaseCVPaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
     """
 
     def __init__(self,
-                 model_name: str,
-                 output_feature: str,
+                 model_name: str = None,
+                 output_feature: str = None,
                  pool_strategy: str = None,
                  channel_axis: int = -3,
                  *args,
@@ -119,41 +171,3 @@ class BaseCVPaddlehubEncoder(BasePaddleExecutor, BaseNumericEncoder):
         return getattr(np, self.pool_strategy)(data, axis=_reduce_axis)
 
 
-class BaseTorchEncoder(BaseTorchExecutor):
-    """"
-    :class:`BaseTorchEncoder` implements the common part for :class:`ImageTorchEncoder` and :class:`VideoTorchEncoder`.
-
-    ..warning::
-        :class:`BaseTorchEncoder`  is not intented to be used to do the real encoding.
-    """
-
-    def __init__(self,
-                 model_name: str,
-                 channel_axis: int = 1,
-                 *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.model_name = model_name
-        self.channel_axis = channel_axis
-        self._default_channel_axis = 1
-
-    @batching
-    @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        import numpy as np
-        if self.channel_axis != self._default_channel_axis:
-            data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
-        import torch
-        _input = torch.from_numpy(data.astype('float32'))
-        if self.on_gpu:
-            _input = _input.cuda()
-        _feature = self._get_features(_input).detach()
-        if self.on_gpu:
-            _feature = _feature.cpu()
-        _feature = _feature.numpy()
-        return self._get_pooling(_feature)
-
-    def _get_features(self, data):
-        raise NotImplementedError
-
-    def _get_pooling(self, feature_map):
-        return feature_map

@@ -5,10 +5,10 @@ import numpy as np
 
 from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
-from ...frameworks import BaseTorchExecutor
+from ..frameworks import BaseTorchEncoder
 
 
-class FarmTextEncoder(BaseTorchExecutor, BaseTextEncoder):
+class FarmTextEncoder(BaseTextEncoder, BaseTorchEncoder):
     """FARM-based text encoder: (Framework for Adapting Representation Models)
     https://github.com/deepset-ai/FARM
 

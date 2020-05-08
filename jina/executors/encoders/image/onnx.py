@@ -3,11 +3,12 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
+from .. import BaseImageEncoder
 from ..frameworks import BaseOnnxEncoder
 from ...decorators import batching, as_ndarray
 
 
-class OnnxImageEncoder(BaseOnnxEncoder):
+class OnnxImageEncoder(BaseImageEncoder, BaseOnnxEncoder):
     """
     :class:`OnnxImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
