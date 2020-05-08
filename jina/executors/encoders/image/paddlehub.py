@@ -38,7 +38,6 @@ class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
             ``densenet121_imagenet``, ``darknet53_imagenet``,
         ``alexnet_imagenet``,
 
-
         """
         super().__init__(*args, **kwargs)
         if self.model_name is None:
