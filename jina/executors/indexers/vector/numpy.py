@@ -5,7 +5,6 @@ import gzip
 from typing import Tuple, Optional
 
 import numpy as np
-
 from jina.executors.indexers import BaseVectorIndexer
 
 

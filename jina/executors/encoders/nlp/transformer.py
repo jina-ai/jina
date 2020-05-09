@@ -5,10 +5,10 @@ import os
 
 import numpy as np
 
+from .. import BaseEncoder
+from ..frameworks import BaseTextTFEncoder, BaseTextTorchEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
-from ..frameworks import BaseTextTFEncoder, BaseTextTorchEncoder
-from .. import BaseEncoder
 
 
 class BaseTransformerEncoder(BaseEncoder):

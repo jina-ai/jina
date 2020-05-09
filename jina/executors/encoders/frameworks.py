@@ -7,7 +7,7 @@ import numpy as np
 
 from . import BaseEncoder
 from ..decorators import batching, as_ndarray
-from ..frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor, BaseTFExecutor, BaseFrameworkExecutor
+from ..frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor, BaseTFExecutor
 from ...helper import is_url
 
 

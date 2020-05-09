@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ...decorators import batching, as_ndarray
 from ..frameworks import BaseTextPaddlehubEncoder
+from ...decorators import batching, as_ndarray
 
 
 class TextPaddlehubEncoder(BaseTextPaddlehubEncoder):

@@ -207,9 +207,20 @@ input_fn = (b's' for _ in range(10))
 If you don't use Python as client, or your client and flow are on different instances. You can hold a flow in running state and use client in other languages to connect to it. Simply:
 
 ```python
+import threading
+
 with f:
-    while True:
-        pass
+    threading.Event().wait()
+```
+
+Please checkout https://github.com/jina-ai/examples/tree/master/helloword-in-cs for a complete example.
+
+**WARNING**: don't use while loop to do the waiting, it is extremely low-efficient:
+
+```python
+with f:
+    while True: # <- dont do that
+        pass # <- dont do that
 ```
 
 ## Use Flow API in YAML

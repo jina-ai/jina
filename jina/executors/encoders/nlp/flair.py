@@ -5,8 +5,8 @@ from typing import Union, Tuple, List
 
 import numpy as np
 
-from ...decorators import batching, as_ndarray
 from ..frameworks import BaseTextTorchEncoder
+from ...decorators import batching, as_ndarray
 
 
 class FlairTextEncoder(BaseTextTorchEncoder):

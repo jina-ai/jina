@@ -6,7 +6,6 @@ import json
 from typing import Union
 
 from google.protobuf.json_format import Parse
-
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 
