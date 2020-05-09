@@ -7,16 +7,16 @@ import numpy as np
 
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
-from ...frameworks import BaseFrameworkExecutor, BaseTorchExecutor, BaseTFExecutor
+from ..frameworks import BaseTextTFEncoder, BaseTextTorchEncoder
+from .. import BaseEncoder
 
 
-class BaseTransformerEncoder(BaseFrameworkExecutor):
+class BaseTransformerEncoder(BaseEncoder):
     """
     :class:`TransformerTextEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
     """
 
     def __init__(self,
-                 model_name: str = 'bert-base-uncased',
                  pooling_strategy: str = 'mean',
                  max_length: int = 64,
                  model_path: str = 'transformer',
@@ -36,7 +36,8 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
             `model_path` is a relative path in the executor's workspace.
         """
         super().__init__(*args, **kwargs)
-        self.model_name = model_name
+        if self.model_name is None:
+            self.model_name = 'bert-base-uncased'
         self.pooling_strategy = pooling_strategy
         self.max_length = max_length
         self.raw_model_path = model_path
@@ -174,7 +175,7 @@ class BaseTransformerEncoder(BaseFrameworkExecutor):
         raise NotImplementedError
 
 
-class TransformerTFEncoder(BaseTransformerEncoder, BaseTFExecutor):
+class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
@@ -209,7 +210,7 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTFExecutor):
         return tf.constant
 
 
-class TransformerTorchEncoder(BaseTransformerEncoder, BaseTorchExecutor):
+class TransformerTorchEncoder(BaseTransformerEncoder, BaseTextTorchEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """

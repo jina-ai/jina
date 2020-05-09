@@ -29,15 +29,18 @@ class NumericTestCase(JinaTestCase):
 
     def get_encoder(self):
         encoder = self._get_encoder()
-        encoder.workspace = self.workspace
-        self.add_tmpfile(encoder.workspace)
+        if encoder is not None:
+            encoder.workspace = self.workspace
+            self.add_tmpfile(encoder.workspace)
         return encoder
 
     def _get_encoder(self):
-        raise NotImplementedError
+        return None
 
     def test_encoding_results(self):
         encoder = self.get_encoder()
+        if encoder is None:
+            return
         test_data = np.random.rand(10, self.input_dim)
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape, (test_data.shape[0], self.target_output_dim))
@@ -45,6 +48,8 @@ class NumericTestCase(JinaTestCase):
 
     def test_save_and_load(self):
         encoder = self.get_encoder()
+        if encoder is None:
+            return
         test_data = np.random.rand(10, self.input_dim)
         encoded_data_control = encoder.encode(test_data)
         encoder.touch()
@@ -57,6 +62,8 @@ class NumericTestCase(JinaTestCase):
 
     def test_save_and_load_config(self):
         encoder = self.get_encoder()
+        if encoder is None:
+            return
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)

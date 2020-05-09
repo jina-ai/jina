@@ -14,9 +14,7 @@ class OnnxImageEncoder(BaseOnnxEncoder):
     Internally, :class:`OnnxImageEncoder` wraps the models from `onnxruntime`.
     """
 
-    def __init__(self,
-                 pool_strategy: str = 'mean',
-                 *args, **kwargs):
+    def __init__(self, pool_strategy: str = 'mean', *args, **kwargs):
         """
 
         :param pool_strategy: the pooling strategy

@@ -12,6 +12,10 @@ class BaseFrameworkExecutor(BaseExecutor):
     """
     framework = None
 
+    def __init__(self, model_name: str = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
     @property
     def device(self):
         """Set the device on which the exectuor will be running.
@@ -23,10 +27,11 @@ class BaseFrameworkExecutor(BaseExecutor):
         try:
             if self.framework == 'tensorflow':
                 import tensorflow as tf
-                devices = tf.config.experimental.list_physical_devices(device_type='GPU' if self.on_gpu else 'CPU')
-                if len(devices) == 0:
-                    raise ValueError('no {} devices founded'.format('GPU' if self.on_gpu else 'CPU'))
-                return devices[0]
+                cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
+                gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
+                if self.on_gpu and len(gpus) > 0:
+                    cpus.append(gpus[0])
+                return cpus
             elif self.framework == 'paddlepaddle':
                 import paddle.fluid as fluid
                 return fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()

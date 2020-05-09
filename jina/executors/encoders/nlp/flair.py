@@ -5,12 +5,11 @@ from typing import Union, Tuple, List
 
 import numpy as np
 
-from .. import BaseTextEncoder
 from ...decorators import batching, as_ndarray
-from ...frameworks import BaseTorchExecutor
+from ..frameworks import BaseTextTorchEncoder
 
 
-class FlairTextEncoder(BaseTorchExecutor, BaseTextEncoder):
+class FlairTextEncoder(BaseTextTorchEncoder):
     """
     :class:`FlairTextEncoder` encodes data from an array of string in size `B` into a ndarray in size `B x D`.
     Internally, :class:`FlairTextEncoder` wraps the DocumentPoolEmbeddings from Flair.

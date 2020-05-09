@@ -1,7 +1,7 @@
 import unittest
 
 from jina.executors.encoders.image.onnx import OnnxImageEncoder
-from . import ImageTestCase
+from tests.executors.encoders.image import ImageTestCase
 
 
 class MyTestCase(ImageTestCase):

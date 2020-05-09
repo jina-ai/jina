@@ -11,10 +11,7 @@ class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
     Internally, :class:`ImagePaddlehubEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
-
-    def __init__(self,
-                 model_name: str = 'xception71_imagenet',
-                 *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -41,13 +38,14 @@ class ImagePaddlehubEncoder(BaseCVPaddlehubEncoder):
             ``densenet121_imagenet``, ``darknet53_imagenet``,
         ``alexnet_imagenet``,
 
-
         """
-        if 'pool_strategy' in kwargs:
-            kwargs.pop('pool_strategy')
-        if 'output_feature' in kwargs:
-            kwargs.pop('output_feature')
-        super().__init__(model_name, output_feature=None, pool_strategy='mean', *args, **kwargs)
+        super().__init__(*args, **kwargs)
+        if self.model_name is None:
+            self.model_name = 'xception71_imagenet'
+        if self.outputs_name is None:
+            self.outputs_name = None
+        if self.pool_strategy is None:
+            self.pool_strategy = 'mean'
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         self.inputs_name = input_dict['image'].name
