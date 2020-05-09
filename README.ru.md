@@ -279,6 +279,14 @@ Learn how to increase the performance by using prefetching and sharding
 
 <tr>
 <td>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Revisit "Hello, World!" in a Client-Server Architecture</a></h4>
+Learn how to run a Flow remotely and use a local client to connect to it
+</td>
+<td><h3>🕊</h3></td>
+</tr>
+
+<tr>
+<td>
 <h4><a href="https://docs.jina.ai/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
 Learn to run Jina on remote instances and distribute your workflow
 </td>

@@ -84,7 +84,6 @@ def flow(args):
         f = Flow.load_config(args.yaml_path)
         f._update_args(args)
         with f:
-
             try:
                 Event().wait()
             except KeyboardInterrupt:
