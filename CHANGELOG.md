@@ -25,6 +25,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -775,4 +776,44 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```cde8df99```](https://github.com/jina-ai/jina/commit/cde8df9995da626d4c1e41b07432b2d8748c10f1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```27039e01```](https://github.com/jina-ai/jina/commit/27039e011d3b42a04876220dc964acc8aea1561a)] __-__ fix phrases in performant (*Han Xiao*)
  - [[```cd5e640c```](https://github.com/jina-ai/jina/commit/cd5e640cd76a40afd9f2e118e0edfb418b5274ea)] __-__ __version__: bumping version to 0.1.9 (*Jina Dev Bot*)
+
+## Release Note (`0.1.10`)
+
+> Release time: 2020-05-09 09:37:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Nan Wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```ed8fe7e0```](https://github.com/jina-ai/jina/commit/ed8fe7e073b0e48e2012c802f08b66dbe7861933)] __-__ add unary request send/recv handling (*Han Xiao*)
+ - [[```30bd550a```](https://github.com/jina-ai/jina/commit/30bd550a460c46ae6de8e13793e7471e5a0a8b94)] __-__ __proto__: add unary grpc endpoint (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```d686726e```](https://github.com/jina-ai/jina/commit/d686726e7ee5c30dbcb07dcc3ce8edbff9ddabaf)] __-__ fix the tf devices (*Nan Wang*)
+ - [[```61ce7c18```](https://github.com/jina-ai/jina/commit/61ce7c1821c8a94020a2de3bd183a732f5f59b6c)] __-__ fix the unittests (*Nan Wang*)
+ - [[```75c71dd6```](https://github.com/jina-ai/jina/commit/75c71dd6adaa05dc847e31832fbeab7e91ec9a2b)] __-__ __executors__: fix the mro issues (*Nan Wang*)
+ - [[```bda92d81```](https://github.com/jina-ai/jina/commit/bda92d8174fd59a70188781e725b2fe1b1a7b3df)] __-__ __executors__: fix the mro issue (*Nan Wang*)
+
+### 🚧 Code Refactoring
+
+ - [[```6b3aa7d6```](https://github.com/jina-ai/jina/commit/6b3aa7d6b1458da9c029c6f5c371465a870ddad2)] __-__ add kwargs override in python client io (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```dd407191```](https://github.com/jina-ai/jina/commit/dd407191764e477bff7de4a8ed33915aef36f0fa)] __-__ update toc of tutorials (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```6927f7fa```](https://github.com/jina-ai/jina/commit/6927f7fa36108cc093fec5bbb2640b90a12a2050)] __-__ hotfix fix encoder inherit map (*Han Xiao*)
+ - [[```ef92cb17```](https://github.com/jina-ai/jina/commit/ef92cb1755cc4428ea60b7250cbad51941ff5a86)] __-__ reformat the code and imports (*Han Xiao*)
+ - [[```2911a455```](https://github.com/jina-ai/jina/commit/2911a4553bfe45cfbe71bb6b80512c2e8234b0b5)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```2972eb72```](https://github.com/jina-ai/jina/commit/2972eb7203fe854258dfc2fcb9958e7566d5e9d9)] __-__ hotfix the mro issues in executors (*Nan Wang*)
+ - [[```55cae572```](https://github.com/jina-ai/jina/commit/55cae572fc4810e6dcc7fe9174ab5f5006bb471a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```6e60a79e```](https://github.com/jina-ai/jina/commit/6e60a79eb7313510a215540bf5f5298d577bf2fa)] __-__ reformat the code (*Han Xiao*)
+ - [[```b7f138b6```](https://github.com/jina-ai/jina/commit/b7f138b681fb2c25c991c0a957a1bfab2a61ae91)] __-__ __version__: bumping version to 0.1.10 (*Jina Dev Bot*)
 
