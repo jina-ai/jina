@@ -1,6 +1,8 @@
 import os
 import shutil
+import sys
 import unittest
+from os.path import dirname
 
 
 class JinaTestCase(unittest.TestCase):
@@ -21,8 +23,5 @@ class JinaTestCase(unittest.TestCase):
         self.tmp_files.extend(path)
 
 
-dirname = os.path.dirname(__file__)
-
-
-def getpath(p):
-    return os.path.join(dirname, p)
+file_dir = os.path.dirname(__file__)
+sys.path.append(dirname(file_dir))
