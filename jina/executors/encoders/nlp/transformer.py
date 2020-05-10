@@ -65,7 +65,7 @@ class BaseTransformerEncoder(BaseEncoder):
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(seq_output)
             if self.pooling_strategy == 'cls':
-                if self.model_name in ('bert-base-uncased', 'roberta-base'):
+                if hasattr(self._tokenizer, 'cls_token'):
                     output = self.tensor2array(extra_output[0])
                 else:
                     output = reduce_cls(_seq_output, _mask_ids_batch, self.cls_pos)
