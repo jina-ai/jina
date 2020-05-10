@@ -95,7 +95,7 @@ class BaseTransformerEncoder(BaseEncoder):
         self.tmp_model_path = self.model_abspath if os.path.exists(self.model_abspath) else self.model_name
         self._tokenizer = self.get_tokenizer()
 
-        self._has_cls_token = True if getattr(self._tokenizer, 'cls_token', None) is not None else False
+        self._has_cls_token = hasattr(self._tokenizer, 'cls_token')
 
         self.cls_pos = 'tail' if self.model_name == 'xlnet-base-cased' else 'head'
 
