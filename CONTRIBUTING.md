@@ -134,6 +134,7 @@ We do not enforce the naming of PR and branch, but we highly recommend you to fo
 Locally you can do unittest via:
 
 ```bash
+pip install ".[match-py-ver]"
 cd tests && python -m unittest *.py -v
 ```
 

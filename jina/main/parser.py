@@ -309,10 +309,8 @@ def set_check_parser(parser=None):
         parser = set_base_parser()
 
     parser.add_argument('--summary-exec', type=str,
-                        default='./docs/chapters/all_exec.md',
                         help='the markdown file path for all executors summary')
     parser.add_argument('--summary-driver', type=str,
-                        default='./docs/chapters/all_driver.md',
                         help='the markdown file path for all drivers summary')
     return parser
 
