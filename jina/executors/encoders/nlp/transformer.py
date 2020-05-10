@@ -65,7 +65,7 @@ class BaseTransformerEncoder(BaseEncoder):
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(seq_output)
             if self.pooling_strategy == 'cls':
-                if self._has_cls_token:
+                if hasattr(self._tokenizer, 'cls_token'):
                     output = self.tensor2array(extra_output[0])
                 else:
                     output = reduce_cls(_seq_output, _mask_ids_batch, self.cls_pos)
@@ -94,9 +94,6 @@ class BaseTransformerEncoder(BaseEncoder):
         self._sess_func = None
         self.tmp_model_path = self.model_abspath if os.path.exists(self.model_abspath) else self.model_name
         self._tokenizer = self.get_tokenizer()
-
-        self._has_cls_token = hasattr(self._tokenizer, 'cls_token')
-
         self.cls_pos = 'tail' if self.model_name == 'xlnet-base-cased' else 'head'
 
     def array2tensor(self, array):
