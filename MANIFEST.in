@@ -1,2 +1,3 @@
 recursive-include jina/resources *
+include extra-requirements.txt
 prune tests/
