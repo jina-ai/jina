@@ -26,6 +26,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -817,4 +818,36 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```55cae572```](https://github.com/jina-ai/jina/commit/55cae572fc4810e6dcc7fe9174ab5f5006bb471a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```6e60a79e```](https://github.com/jina-ai/jina/commit/6e60a79eb7313510a215540bf5f5298d577bf2fa)] __-__ reformat the code (*Han Xiao*)
  - [[```b7f138b6```](https://github.com/jina-ai/jina/commit/b7f138b681fb2c25c991c0a957a1bfab2a61ae91)] __-__ __version__: bumping version to 0.1.10 (*Jina Dev Bot*)
+
+## Release Note (`0.1.11`)
+
+> Release time: 2020-05-11 13:56:11
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Nan Wang,  Jina Dev Bot,  xiong-ma,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```482ed876```](https://github.com/jina-ai/jina/commit/482ed876dcdce0d3003800b134ab1ed3960d5e48)] __-__ __transformer__: delete tmp attr (*xiong-ma*)
+ - [[```e5756b3c```](https://github.com/jina-ai/jina/commit/e5756b3c169b02f6d5de70c33acce20170929cc2)] __-__ __transformer__: change getattr to hasattr (*xiong-ma*)
+ - [[```2370dd6b```](https://github.com/jina-ai/jina/commit/2370dd6b046d7cc7ca14f98055a967e22200bb96)] __-__ __transformer__: fix cls embedding (*xiong-ma*)
+
+### 📗 Documentation
+
+ - [[```b4bf44d4```](https://github.com/jina-ai/jina/commit/b4bf44d441d4a48c485bad499cd6e8c0e276a9da)] __-__ __executors__: fix a typo (*Nan Wang*)
+ - [[```db8e00bc```](https://github.com/jina-ai/jina/commit/db8e00bcbd3b057e8b6dba6ce0dc2e022a9dbc23)] __-__ __executors__: add more docs (*Nan Wang*)
+ - [[```b147a1ed```](https://github.com/jina-ai/jina/commit/b147a1edccd9e857cda3b4ea66f52741b931382e)] __-__ __executors__: fix the doc for the Sentencizer (*Nan Wang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```d9f628ad```](https://github.com/jina-ai/jina/commit/d9f628ada4daf191ada631ee1fc204ade853252e)] __-__ fix dir path add dep to contrib md (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```15380fa6```](https://github.com/jina-ai/jina/commit/15380fa697d5e88d590fc17472330cd34c6972e7)] __-__ hotfix include extra req to manifest (*Han Xiao*)
+ - [[```21e574b9```](https://github.com/jina-ai/jina/commit/21e574b9ed0f4d1f6b2f94cddad3d711ddf95972)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```28202863```](https://github.com/jina-ai/jina/commit/2820286360ad40b4b706488559e713272575c63a)] __-__ __version__: bumping version to 0.1.11 (*Jina Dev Bot*)
 
