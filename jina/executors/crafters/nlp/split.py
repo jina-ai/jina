@@ -19,8 +19,8 @@ class Sentencizer(BaseSegmenter):
                  *args, **kwargs):
         """
 
-        :param min_sent_len: the minimal length of the sentence.
-        :param max_sent_len: the maximal length of the sentence.
+        :param min_sent_len: the minimal number of characters (including white spaces) of the sentence.
+        :param max_sent_len: the maximal length of characters (including white spaces) of the sentence.
         :param punct_chars: the punctuation characters to split on.
         """
         super().__init__(*args, **kwargs)
