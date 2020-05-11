@@ -10,26 +10,31 @@ from .. import BaseSegmenter
 class Sentencizer(BaseSegmenter):
     """
     :class:`Sentencizer` split the text on the doc-level into sentences on the chunk-level with a rule-base strategy.
+        The text are splitted on the the punctuation characters that are listed in ``punct_chars``. The sentences that
+        are shorter than the ``min_sent_len`` or longer than the ``max_sent_len`` after stripping will be discarded.
     """
 
     def __init__(self,
                  min_sent_len: int = 1,
-                 max_sent_len: int = -1,
+                 max_sent_len: int = 1e5,
                  punct_chars: str = None,
                  *args, **kwargs):
         """
 
-        :param min_sent_len: the minimal number of characters (including white spaces) of the sentence.
-        :param max_sent_len: the maximal length of characters (including white spaces) of the sentence.
+        :param min_sent_len: the minimal number of characters (including white spaces) of the sentence, by default 1.
+        :param max_sent_len: the maximal length of characters (including white spaces) of the sentence, by default 1e5.
         :param punct_chars: the punctuation characters to split on.
         """
         super().__init__(*args, **kwargs)
         self.min_sent_len = min_sent_len
-        self.max_sent_len = max_sent_len if max_sent_len > 0 else 1e5
+        self.max_sent_len = max_sent_len
         self.punct_chars = punct_chars
         if not punct_chars:
             self.punct_chars = ['!', '.', '?', '։', '؟', '۔', '܀', '܁', '܂', '‼', '‽', '⁇', '⁈', '⁉', '⸮', '﹖', '﹗',
                                 '！', '．', '？', '｡', '。']
+        if self.min_sent_len < self.max_sent_len:
+            self.logger.warning('the min_sent_len (={}) should be smaller or equal to the max_sent_len (={})'.format(
+                self.min_sent_len, self.max_sent_len))
         self._slit_pat = re.compile('([{0}])+([^{0}])'.format(''.join(self.punct_chars)))
 
     def craft(self, raw_bytes: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
