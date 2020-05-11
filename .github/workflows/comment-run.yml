@@ -1,0 +1,17 @@
+name: "Comment run"
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  comment-run:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # 0 indicates all history
+        fetch-depth: 0
+    - uses: nwtgck/actions-comment-run@v1.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        allowed-associations: '["OWNER"]'
