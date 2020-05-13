@@ -5,25 +5,31 @@ on: [pull_request]
 jobs:
   commit-lint:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   label-pr:
     needs: commit-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: "pascalgn/size-label-action@v0.2.1"
-        env:
-          GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
+      - uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          xs_max_size: '10'
+          s_max_size: '100'
+          m_max_size: '500'
+          l_max_size: '1000'
+          fail_if_xl: 'false'
       - uses: actions/labeler@v2
         with:
           repo-token: "${{ secrets.JINA_DEV_BOT }}"
+
 
   unit-test:
     needs: commit-lint
