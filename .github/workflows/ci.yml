@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: codelytv/pr-size-labeler@v1
         with:
-          GITHUB_TOKEN: ${{ secrets.DOCSBUILDER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           xs_max_size: '10'
           s_max_size: '100'
           m_max_size: '500'
