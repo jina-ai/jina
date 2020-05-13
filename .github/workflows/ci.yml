@@ -18,14 +18,9 @@ jobs:
     needs: commit-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: codelytv/pr-size-labeler@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
-          xs_max_size: '10'
-          s_max_size: '100'
-          m_max_size: '500'
-          l_max_size: '1000'
-          fail_if_xl: 'false'
+      - uses: "pascalgn/size-label-action@v0.2.1"
+        env:
+          GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
       - uses: actions/labeler@v2
         with:
           repo-token: "${{ secrets.JINA_DEV_BOT }}"
