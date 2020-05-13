@@ -45,6 +45,8 @@ class ImageTorchEncoder(BaseCVTorchEncoder):
 
     def post_init(self):
         import torchvision.models as models
+        if self.pool_strategy is not None:
+            self.pool_fn = getattr(np, self.pool_strategy)
         model = getattr(models, self.model_name)(pretrained=True)
         self.model = model.features.eval()
         self.to_device(self.model)
@@ -55,4 +57,4 @@ class ImageTorchEncoder(BaseCVTorchEncoder):
     def _get_pooling(self, feature_map: 'np.ndarray') -> 'np.ndarray':
         if feature_map.ndim == 2 or self.pool_strategy is None:
             return feature_map
-        return getattr(np, self.pool_strategy)(feature_map, axis=(2, 3))
+        return self.pool_fn(feature_map, axis=(2, 3))
