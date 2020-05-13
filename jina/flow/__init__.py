@@ -519,7 +519,11 @@ class Flow:
     def _get_client(self, **kwargs):
         kwargs.update(self._common_kwargs)
         from ..clients import py_client
-        return py_client(port_grpc=self.port_grpc, host=self.host, **kwargs)
+        if 'port_grpc' not in kwargs:
+            kwargs['port_grpc'] = self.port_grpc
+        if 'host' not in kwargs:
+            kwargs['host'] = self.host
+        return py_client(**kwargs)
 
     @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
