@@ -15,7 +15,7 @@ jobs:
         # Alpha Release
         uses: hanxiao/github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
         with:
           path-to-signatures: '.github/signatures/v1/cla.json'
           path-To-cladocument: 'https://github.com/jina-ai/jina/blob/master/CLA.md'
