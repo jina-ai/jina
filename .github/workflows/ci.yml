@@ -12,7 +12,7 @@ jobs:
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
       - uses: wagoid/commitlint-github-action@v1
         env:
-          GITHUB_TOKEN: "${{ secrets.JINA_DEV_BOT }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   label-pr:
     needs: commit-lint
