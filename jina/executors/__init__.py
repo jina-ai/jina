@@ -20,7 +20,6 @@ from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriv
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
-from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
