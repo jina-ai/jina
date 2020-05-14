@@ -1,0 +1,112 @@
+name: builder-release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-update:
+    if: "!startsWith(github.event.head_commit.message, 'chore')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/hub-builder
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: git fetch --prune --unshallow
+
+      - name: pull status repo
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/hub-status
+          path: status
+          token: ${{ secrets.JINA_DEV_BOT }}
+
+      - name: pull jina-ai/api repo
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/api
+          path: api
+          token: ${{ secrets.JINA_DEV_BOT }}
+
+      - name: pull jina-ai/jina repo
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina
+          path: src/jina
+          token: ${{ secrets.JINA_DEV_BOT }}
+
+      - name: pull jina-ai/jina-hub repo
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina-hub
+          path: hub
+          token: ${{ secrets.JINA_DEV_BOT }}
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+
+      - name: build and test all new images
+        run: |
+          echo ${{ steps.buildx.outputs.platforms }}
+          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          pip install -r requirements.txt
+          python app.py --reason "core update" --bleach-first --update-strategy=core-release --test
+        env:
+          MONGODB_CREDENTIALS: ${{ secrets.MONGODB_CREDENTIALS }}
+          DOCKERHUB_DEVBOT_USER: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          DOCKERHUB_DEVBOT_TOKEN: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+        timeout-minutes: 30
+
+      - name: commit readme and hub badge
+        run: |
+          cd status
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add README.md hub-stat.svg
+          git commit -qm "chore: update readme and hub badge" -a
+          git show '--stat-count=10' HEAD
+          git config --list
+
+      - name: push readme and hub badge
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/hub-status
+          force: true
+          directory: status/
+
+      - name: commit build history
+        run: |
+          cd api
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add hub/build.json
+          git commit -qm "chore: update build history" -a
+          git show '--stat-count=10' HEAD
+          git config --list
+
+      - name: push build history
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/api
+          force: true
+          directory: api/
+
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 3
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOC_TITLE: ''
+          TARGET_PATHS: 'README.md'
+          COMMIT_MESSAGE: 'chore(docs): update TOC'
