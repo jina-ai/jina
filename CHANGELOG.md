@@ -27,6 +27,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -851,4 +852,57 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```15380fa6```](https://github.com/jina-ai/jina/commit/15380fa697d5e88d590fc17472330cd34c6972e7)] __-__ hotfix include extra req to manifest (*Han Xiao*)
  - [[```21e574b9```](https://github.com/jina-ai/jina/commit/21e574b9ed0f4d1f6b2f94cddad3d711ddf95972)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```28202863```](https://github.com/jina-ai/jina/commit/2820286360ad40b4b706488559e713272575c63a)] __-__ __version__: bumping version to 0.1.11 (*Jina Dev Bot*)
+
+## Release Note (`0.1.12`)
+
+> Release time: 2020-05-15 15:57:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Nan Wang,  Joan Fontanals Martinez,  Jina Dev Bot,  xiong-ma,  🙇
+
+
+### 🆕 New Features
+
+ - [[```2a3abaa1```](https://github.com/jina-ai/jina/commit/2a3abaa1e0a1aabe4fb556c51404fed26a28a96b)] __-__ __executors__: add custom torch vision encoder (*Joan Fontanals Martinez*)
+
+### 🐞 Bug fixes
+
+ - [[```24d35375```](https://github.com/jina-ai/jina/commit/24d35375fe7f293976dea0ae0dd0915679941416)] __-__ fix string literals in the forward references (*Nan Wang*)
+ - [[```91ca702a```](https://github.com/jina-ai/jina/commit/91ca702ab656b9f503ab38af2e0458651f114e88)] __-__ undo the pylint fix (*Nan Wang*)
+ - [[```e999af1d```](https://github.com/jina-ai/jina/commit/e999af1daa59597eb17eec57b15dc38766e52c9b)] __-__ fix the pylint error (*Nan Wang*)
+ - [[```b97885aa```](https://github.com/jina-ai/jina/commit/b97885aad08261d4594622b82eeea07f471416f5)] __-__ __flow__: fix the port_grpc bug (*Nan Wang*)
+ - [[```fa07110b```](https://github.com/jina-ai/jina/commit/fa07110b06fead2bcbd1213e22896674894d24c6)] __-__ __drivers__: fix the bug in handling empty chunks (*Nan Wang*)
+ - [[```5b62c315```](https://github.com/jina-ai/jina/commit/5b62c315d1615835d904584b357ac71e6e0ab4e3)] __-__ __encoders__: fix the broken transformers (*Nan Wang*)
+ - [[```482ed876```](https://github.com/jina-ai/jina/commit/482ed876dcdce0d3003800b134ab1ed3960d5e48)] __-__ __transformer__: delete tmp attr (*xiong-ma*)
+ - [[```e5756b3c```](https://github.com/jina-ai/jina/commit/e5756b3c169b02f6d5de70c33acce20170929cc2)] __-__ __transformer__: change getattr to hasattr (*xiong-ma*)
+ - [[```2370dd6b```](https://github.com/jina-ai/jina/commit/2370dd6b046d7cc7ca14f98055a967e22200bb96)] __-__ __transformer__: fix cls embedding (*xiong-ma*)
+
+### 📗 Documentation
+
+ - [[```b4bf44d4```](https://github.com/jina-ai/jina/commit/b4bf44d441d4a48c485bad499cd6e8c0e276a9da)] __-__ __executors__: fix a typo (*Nan Wang*)
+ - [[```db8e00bc```](https://github.com/jina-ai/jina/commit/db8e00bcbd3b057e8b6dba6ce0dc2e022a9dbc23)] __-__ __executors__: add more docs (*Nan Wang*)
+ - [[```b147a1ed```](https://github.com/jina-ai/jina/commit/b147a1edccd9e857cda3b4ea66f52741b931382e)] __-__ __executors__: fix the doc for the Sentencizer (*Nan Wang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b57685c0```](https://github.com/jina-ai/jina/commit/b57685c058fea07cabece1a3ff62f9061818c62f)] __-__ sync with master (*Han Xiao*)
+ - [[```cdd6feff```](https://github.com/jina-ai/jina/commit/cdd6feffd60c0b16735bbc02657a357a37459d0a)] __-__ update cla credentials (*Han Xiao*)
+ - [[```4eb393de```](https://github.com/jina-ai/jina/commit/4eb393de86bd0e286e221c6802b5a6e4a81000e1)] __-__ change to github token (*Han Xiao*)
+ - [[```adf126f1```](https://github.com/jina-ai/jina/commit/adf126f13d6e4e79a66f7b962d72fb5b06c665b2)] __-__ fix cla.yml (*Han Xiao*)
+ - [[```d9f628ad```](https://github.com/jina-ai/jina/commit/d9f628ada4daf191ada631ee1fc204ade853252e)] __-__ fix dir path add dep to contrib md (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```d147c519```](https://github.com/jina-ai/jina/commit/d147c519f5622ed8bc76442f804634a2009c6874)] __-__ update credentials (*Han Xiao*)
+ - [[```f5651ccc```](https://github.com/jina-ai/jina/commit/f5651cccd79a9efdc6dd69b9d17baacfc4102ec7)] __-__ fix cla dev-bot credentials (*Han Xiao*)
+ - [[```49aee4af```](https://github.com/jina-ai/jina/commit/49aee4af3993cc5eeb534f9b08faf7fc1bd21257)] __-__ fix cla-bot credential (*Han Xiao*)
+ - [[```340cc59c```](https://github.com/jina-ai/jina/commit/340cc59c16cf1e6e5c9cecc939b582ea44db8177)] __-__ move cla to separate branch (*Han Xiao*)
+ - [[```4c6c5ac9```](https://github.com/jina-ai/jina/commit/4c6c5ac95c32ea0910aa1655c6d3db41cdd260de)] __-__ change secrets in all ci pipeline (*Han Xiao*)
+ - [[```80224f78```](https://github.com/jina-ai/jina/commit/80224f78d28afa9037807f2bd8526e81b8396ecf)] __-__ add command run for issue (*Han Xiao*)
+ - [[```9158e962```](https://github.com/jina-ai/jina/commit/9158e9621fc79ef27fd815f3245ce1da94d0613c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```c762ae65```](https://github.com/jina-ai/jina/commit/c762ae65e2df3be77e74bc0ad69691c2f4d983cd)] __-__ __version__: bumping version to 0.1.12 (*Jina Dev Bot*)
+ - [[```28202863```](https://github.com/jina-ai/jina/commit/2820286360ad40b4b706488559e713272575c63a)] __-__ __version__: bumping version to 0.1.11 (*Jina Dev Bot*)
+ - [[```6927f7fa```](https://github.com/jina-ai/jina/commit/6927f7fa36108cc093fec5bbb2640b90a12a2050)] __-__ hotfix fix encoder inherit map (*Han Xiao*)
 
