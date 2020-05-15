@@ -32,7 +32,7 @@ class Sentencizer(BaseSegmenter):
         if not punct_chars:
             self.punct_chars = ['!', '.', '?', '։', '؟', '۔', '܀', '܁', '܂', '‼', '‽', '⁇', '⁈', '⁉', '⸮', '﹖', '﹗',
                                 '！', '．', '？', '｡', '。']
-        if self.min_sent_len < self.max_sent_len:
+        if self.min_sent_len > self.max_sent_len:
             self.logger.warning('the min_sent_len (={}) should be smaller or equal to the max_sent_len (={})'.format(
                 self.min_sent_len, self.max_sent_len))
         self._slit_pat = re.compile('([{0}])+([^{0}])'.format(''.join(self.punct_chars)))
