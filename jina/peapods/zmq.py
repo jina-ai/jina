@@ -5,6 +5,7 @@ import asyncio
 import os
 import sys
 import tempfile
+import time
 from typing import List, Callable, Optional
 from typing import Tuple
 
@@ -150,7 +151,7 @@ class Zmqlet:
         return zmq.Context()
 
     def __enter__(self):
-        # time.sleep(.1)  # sleep a bit until everything is ready
+        # time.sleep(.1)  # timeout handshake is unnecessary at the Pod level, it is only required for gateway
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -262,6 +263,9 @@ class AsyncZmqlet(Zmqlet):
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'{ex}, gateway cancelled?')
 
+    def __enter__(self):
+        time.sleep(.2)  # sleep a bit until handshake is done
+        return self
 
 def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int):
     """Send a control message to a specific address and wait for the response
