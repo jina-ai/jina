@@ -1,4 +1,4 @@
-name: builder-release
+name: core-release
 
 on:
   push:
