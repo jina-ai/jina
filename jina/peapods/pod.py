@@ -10,7 +10,7 @@ from threading import Thread
 from typing import Set, Dict, List, Callable, Union
 
 from . import Pea
-from .gateway import GatewayPea
+from .gateway import GatewayPea, HTTPGatewayPea
 from .pea import BasePea
 from .. import __default_host__
 from ..enums import *
@@ -481,7 +481,7 @@ class GatewayPod(BasePod):
     def start(self):
         self.stack = ExitStack()
         for s in self.all_args:
-            p = GatewayPea(s)
+            p = HTTPGatewayPea(s) if getattr(s, 'rest_api', False) else GatewayPea(s)
             self.peas.append(p)
             self.stack.enter_context(p)
 
