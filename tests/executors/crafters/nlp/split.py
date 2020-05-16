@@ -11,6 +11,27 @@ class MyTestCase(JinaTestCase):
         crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
         self.assertEqual(len(crafted_chunk_list), 2)
 
+    def test_sentencier_en_new_lines(self):
+        """
+        New lines are also considered as a separator.
+        """
+        sentencizer = Sentencizer()
+        raw_bytes = b'It is a sunny day!!!! When Andy comes back,\n' \
+                    b'we are going to the zoo.'
+        crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
+        self.assertEqual(len(crafted_chunk_list), 3)
+
+    def test_sentencier_en_float_numbers(self):
+        """
+        Separators in float numbers, URLs, emails, abbreviations (like 'Mr.')
+        are not taking into account.
+        """
+        sentencizer = Sentencizer()
+        raw_bytes = b'With a 0.99 probability this sentence will be ' \
+                    b'tokenized in 2 sentences.'
+        crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
+        self.assertEqual(len(crafted_chunk_list), 2)
+
     def test_sentencier_cn(self):
         sentencizer = Sentencizer()
         raw_bytes = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf8')
