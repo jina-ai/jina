@@ -306,7 +306,13 @@ class BasePea(metaclass=PeaMeta):
             pass
 
     def loop_body(self):
-        """The body of the request loop """
+        """The body of the request loop
+
+        .. note::
+
+            Class inherited from :class:`BasePea` must override this function. And add
+            :meth:`set_ready` when your loop body is started
+        """
         self.load_plugins()
         self.load_executor()
         self.zmqlet = Zmqlet(self.args, logger=self.logger)
