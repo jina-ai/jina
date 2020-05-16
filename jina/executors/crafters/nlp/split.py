@@ -10,8 +10,8 @@ from .. import BaseSegmenter
 class Sentencizer(BaseSegmenter):
     """
     :class:`Sentencizer` split the text on the doc-level into sentences on the chunk-level with a rule-base strategy.
-        The text are splitted on the the punctuation characters that are listed in ``punct_chars``. The sentences that
-        are shorter than the ``min_sent_len`` or longer than the ``max_sent_len`` after stripping will be discarded.
+        The text is split by the punctuation characters listed in ``punct_chars``.
+        The sentences that are shorter than the ``min_sent_len`` or longer than the ``max_sent_len`` after stripping will be discarded.
     """
 
     def __init__(self,
