@@ -32,6 +32,17 @@ class MyTestCase(JinaTestCase):
         crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
         self.assertEqual(len(crafted_chunk_list), 2)
 
+    def test_sentencier_en_trim_spaces(self):
+        """
+        Trimming all spaces at the beginning an end of the chunks.
+        Keeping extra spaces inside chunks.
+        Ignoring chunks with only spaces.
+        """
+        sentencizer = Sentencizer()
+        raw_bytes = b'  This ,  text is...  . Amazing !!'
+        chunks = [i["text"] for i in sentencizer.craft(raw_bytes, 0)]
+        self.assertListEqual(chunks, ["This ,  text is", "Amazing"])
+
     def test_sentencier_cn(self):
         sentencizer = Sentencizer()
         raw_bytes = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf8')
