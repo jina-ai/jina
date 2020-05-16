@@ -20,28 +20,28 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: jina-ai/hub-status
-          path: status
+          path: builder/status
           token: ${{ secrets.JINA_DEV_BOT }}
 
       - name: pull jina-ai/api repo
         uses: actions/checkout@v2
         with:
           repository: jina-ai/api
-          path: api
+          path: builder/api
           token: ${{ secrets.JINA_DEV_BOT }}
 
       - name: pull jina-ai/jina repo
         uses: actions/checkout@v2
         with:
           repository: jina-ai/jina
-          path: src/jina
+          path: builder/src/jina
           token: ${{ secrets.JINA_DEV_BOT }}
 
       - name: pull jina-ai/jina-hub repo
         uses: actions/checkout@v2
         with:
           repository: jina-ai/jina-hub
-          path: hub
+          path: builder/hub
           token: ${{ secrets.JINA_DEV_BOT }}
 
       - uses: actions/setup-python@v1
@@ -58,7 +58,7 @@ jobs:
         run: |
           echo ${{ steps.buildx.outputs.platforms }}
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          pip install -r requirements.txt
+          pip install -r builder/requirements.txt
           python app.py --reason "core update" --bleach-first --update-strategy=core-release --test
         env:
           MONGODB_CREDENTIALS: ${{ secrets.MONGODB_CREDENTIALS }}
@@ -82,7 +82,7 @@ jobs:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/hub-status
           force: true
-          directory: status/
+          directory: builder/status/
 
       - name: commit build history
         run: |
@@ -100,7 +100,7 @@ jobs:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/api
           force: true
-          directory: api/
+          directory: builder/api/
 
       - uses: technote-space/toc-generator@v2
         with:
