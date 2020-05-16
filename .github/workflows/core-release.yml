@@ -3,7 +3,7 @@ name: core-release
 on:
   push:
     branches:
-      - master
+      - feat-build
 
 jobs:
   build-update:
