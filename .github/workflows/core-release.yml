@@ -15,7 +15,7 @@ jobs:
           repository: jina-ai/hub-builder
           path: builder
           token: ${{ secrets.JINA_DEV_BOT }}
-      - run: git fetch --prune --unshallow
+      - run: cd builder && git fetch --prune --unshallow
 
       - name: pull status repo
         uses: actions/checkout@v2
