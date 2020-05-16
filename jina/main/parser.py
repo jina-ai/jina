@@ -390,6 +390,9 @@ def set_gateway_parser(parser=None):
                      help='the number of additional requests to fetch on every receive')
     gp1.add_argument('--allow-spawn', action='store_true', default=False,
                      help='accept the spawn requests sent from other remote Jina')
+    gp1.add_argument('--rest-api', action='store_true', default=False,
+                     help='use REST-API as the interface instead of gRPC with port number '
+                          'set to the value of "port-grpc"')
     return parser
 
 
