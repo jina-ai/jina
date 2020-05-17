@@ -1,8 +1,9 @@
 name: core-release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"  # push to version tags trigger the build
 
 jobs:
   build-update:
