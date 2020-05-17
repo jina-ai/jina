@@ -171,6 +171,20 @@ with f:
 
 This will send `ControRequest` to all pods following the topology you defined. You can use it to test the connectivity of all pods. 
 
+### Iterate over the Pods in the Flow
+
+You can iterate the pods in a Flow like in a list.
+
+```python
+f = (Flow().add(...)
+           .add(...))
+
+for p in f.build():
+    print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
+```
+
+Note `f.build()` will build the underlying network context but not running the pods. It is very useful for debugging.
+
 ### Feed Data to the Flow
 
 You can use `.index()`, `.search()` to feed index data and search query to a flow:

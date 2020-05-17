@@ -6,9 +6,11 @@ import os
 import threading
 
 import grpc
-
+from google.protobuf.json_format import MessageToJson
 from jina.logging.profile import TimeContext
+
 from .grpc_asyncio import AsyncioExecutor
+from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
@@ -19,7 +21,7 @@ from ..proto import jina_pb2_grpc, jina_pb2
 
 
 class GatewayPea:
-    """A :class:`BasePea`-like class for holding Gateway.
+    """A :class:`BasePea`-like class for holding a gRPC Gateway.
 
     It has similar :meth:`start` and context interface as :class:`BasePea`,
     but it is not built on thread or process. It works directly in the main thread main process.
@@ -34,20 +36,24 @@ class GatewayPea:
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
 
+        os.environ['JINA_POD_NAME'] = 'gateway'
         self.logger = get_logger(self.__class__.__name__, **vars(args))
         if args.allow_spawn:
             self.logger.critical('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')
+        self._p_servicer = self._Pea(args)
+        self._stop_event = threading.Event()
+        self.is_ready = threading.Event()
+        self.init_server(args)
+
+    def init_server(self, args):
         self._server = grpc.server(
             AsyncioExecutor(),
             options=[('grpc.max_send_message_length', args.max_message_size),
                      ('grpc.max_receive_message_length', args.max_message_size)])
 
-        self._p_servicer = self._Pea(args)
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
         self._bind_address = '{0}:{1}'.format(args.host, args.port_grpc)
         self._server.add_insecure_port(self._bind_address)
-        self._stop_event = threading.Event()
-        self.is_ready = threading.Event()
 
     def __enter__(self):
         return self.start()
@@ -177,3 +183,87 @@ class GatewayPea:
         def close(self):
             for p in self.peapods:
                 p.close()
+
+
+class HTTPGatewayPea(BasePea):
+    """A :class:`BasePea`-like class for holding a HTTP Gateway.
+
+    :class`HTTPGateway` is still in beta. Feature such as prefetch is not available yet.
+    Unlike :class:`GatewayPea`, it does not support bi-directional streaming. Therefore, it is
+    synchronous from the client perspective.
+    """
+
+    def loop_body(self):
+        self._p_servicer = GatewayPea._Pea(self.args)
+        self.get_http_server()
+
+    def close(self):
+        if hasattr(self, 'terminate'):
+            self.terminate()
+
+    def get_http_server(self):
+        try:
+            from flask import Flask, Response, jsonify, request
+            from flask_cors import CORS
+            from gevent.pywsgi import WSGIServer
+        except ImportError:
+            raise ImportError('Flask or its dependencies are not fully installed, '
+                              'they are required for serving HTTP requests.'
+                              'Please use pip install "jina[flask]" to install it.')
+        app = Flask(__name__)
+        CORS(app)
+
+        def datauri2binary(datauri: str):
+            import urllib.request
+            if datauri.startswith('data:'):
+                _tmp = urllib.request.urlopen(datauri)
+                return _tmp.file.read()
+            else:
+                self.logger.error(f'expecting data URI, but got {datauri}')
+
+        def http_error(reason, code):
+            return jsonify({'reason': reason}), code
+
+        @app.route('/ready')
+        def is_ready():
+            return Response(status=200)
+
+        @app.route('/api/<mode>', methods=['POST'])
+        def api(mode):
+            from ..clients import python
+            mode_fn = getattr(python.request, mode, None)
+            if mode_fn is None:
+                return http_error(f'mode: {mode} is not supported yet', 405)
+            content = request.json
+            content['mode'] = mode
+            if 'data' in content:
+                content['data'] = [datauri2binary(d) for d in content['data']]
+            else:
+                return http_error('"data" field is empty', 406)
+
+            results = get_result_in_json(getattr(python.request, mode)(**content))
+            return Response(asyncio.run(results),
+                            status=200,
+                            mimetype='application/json')
+
+        async def get_result_in_json(req_iter):
+            return [MessageToJson(k) async for k in self._p_servicer.Call(req_iter, None)]
+
+        # os.environ['WERKZEUG_RUN_MAIN'] = 'true'
+        # log = logging.getLogger('werkzeug')
+        # log.disabled = True
+        # app.logger.disabled = True
+
+        # app.run('0.0.0.0', 5000)
+        server = WSGIServer((self.args.host, self.args.port_grpc), app, log=None)
+
+        def close(*args, **kwargs):
+            server.stop()
+            self.unset_ready()
+            self.is_shutdown.set()
+
+        from gevent import signal
+        signal.signal(signal.SIGTERM, close)
+        signal.signal(signal.SIGINT, close)  # CTRL C
+        self.set_ready()
+        server.serve_forever()

@@ -685,3 +685,6 @@ class Flow:
     @build_required(FlowBuildLevel.GRAPH)
     def host(self):
         return self._pod_nodes['gateway'].host
+
+    def __iter__(self):
+        return self._pod_nodes.values().__iter__()

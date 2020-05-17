@@ -211,6 +211,27 @@ class MyTestCase(JinaTestCase):
             from jina.clients import py_client
             py_client(port_grpc=f.port_grpc, host=f.host).dry_run()
 
+    def test_dry_run_with_two_pathways_diverging_at_gateway(self):
+        f = (Flow().add(name='r2', yaml_path='_forward')
+             .add(name='r3', yaml_path='_forward', needs='gateway')
+             .join(['r2', 'r3']))
+        for p in f.build():
+            print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
+        with f:
+            f.dry_run()
+
+    def test_dry_run_with_two_pathways_diverging_at_non_gateway(self):
+        f = (Flow().add(name='r1', yaml_path='_forward')
+             .add(name='r2', yaml_path='_forward')
+             .add(name='r3', yaml_path='_forward', needs='r1')
+             .join(['r2', 'r3']))
+
+        a = f.build()
+        for p in a:
+            print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
+        with f:
+            f.dry_run()
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -32,13 +32,12 @@ class Sentencizer(BaseSegmenter):
         if not punct_chars:
             self.punct_chars = ['!', '.', '?', '։', '؟', '۔', '܀', '܁', '܂', '‼', '‽', '⁇', '⁈', '⁉', '⸮', '﹖', '﹗',
                                 '！', '．', '？', '｡', '。', '\n']
-        if self.min_sent_len < self.max_sent_len:
+        if self.min_sent_len > self.max_sent_len:
             self.logger.warning('the min_sent_len (={}) should be smaller or equal to the max_sent_len (={})'.format(
                 self.min_sent_len, self.max_sent_len))
         self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(self.punct_chars)))
 
-    def craft(self, raw_bytes: bytes, doc_id: int,
-            *args, **kwargs) -> List[Dict]:
+    def craft(self, raw_bytes: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
 
