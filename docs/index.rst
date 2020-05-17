@@ -40,6 +40,7 @@ Welcome to Jina Documentations!
    chapters/yaml/yaml
    chapters/simple_exec
    chapters/proto/main
+   chapters/restapi/main
    chapters/envs
    chapters/api_schema
 

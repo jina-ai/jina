@@ -46,7 +46,7 @@ class Zmqlet:
                 self.logger.success(f'compression is enabled and the high watermark is {args.compress_hwm} bytes')
             except ModuleNotFoundError:
                 self.logger.error(f'compression is enabled but you do not have lz4 package. '
-                                  f'use "pip install lz4" to install this dependency')
+                                  f'use pip install "jina[lz4]" to install this dependency')
                 args.compress_hwm = -1  # disable the compression
         self.send_recv_kwargs = vars(args)
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
