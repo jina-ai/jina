@@ -8,7 +8,7 @@ class ArrayReader(BaseSegmenter):
         Numbers are split on the provided delimiter, default is comma (,)
     """
 
-    def __init__(self, delimiter=",", as_type="float32", *args, **kwargs):
+    def __init__(self, delimiter: str = ',', as_type: str = 'float32', *args, **kwargs):
         """
         :param delimiter: delimiter between numbers
         :param as_type: type of number
