@@ -1,8 +1,8 @@
 from typing import Dict, List
 import numpy as np
-from jina.executors.crafters import BaseSegmenter
+from jina.executors.crafters import BaseDocCrafter
 
-class ArrayReader(BaseSegmenter):
+class ArrayReader(BaseDocCrafter):
     """
     :class:`ArrayReader` convert the string of numbers into a numpy array and save to the Chunk.
         Numbers are split on the provided delimiter, default is comma (,)
@@ -39,4 +39,4 @@ class ArrayReader(BaseSegmenter):
             self.logger.error(
                 f'Data type mismatch. Cannot convert input to {self.as_type}.')
 
-        return [dict(doc_id=doc_id, offset=0, weight=1., blob=_array), ]
+        return dict(doc_id=doc_id, offset=0, weight=1., blob=_array)

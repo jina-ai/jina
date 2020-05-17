@@ -12,7 +12,7 @@ class MyTestCase(JinaTestCase):
         raw_bytes = ','.join([str(x) for x in sample_array]).encode('utf8')
 
         reader = ArrayReader()
-        crafted_chunk = reader.craft(raw_bytes, 0)[0]
+        crafted_chunk = reader.craft(raw_bytes, 0)
 
         np.testing.assert_array_equal(crafted_chunk['blob'], sample_array)
 
