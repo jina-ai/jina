@@ -73,8 +73,10 @@ def get_extra_requires(path, add_all=True):
 def register_ac():
     from pathlib import Path
     import os
+    import re
     home = str(Path.home())
     resource_path = 'jina/resources/completions/jina.%s'
+    regex = r'#\sJINA_CLI_BEGIN(.*)#\sJINA_CLI_END'
     _check = {'zsh': '.zshrc',
               'bash': '.bashrc',
               'fish': '.fish'}
@@ -82,16 +84,16 @@ def register_ac():
     def add_ac(k, v):
         v_fp = os.path.join(home, v)
         if os.path.exists(v_fp):
-            # zsh installed:
-            already_in = False
-            with open(v_fp) as fp:
-                for l in fp:
-                    if '# Jina CLI Autocomplete' in l:
-                        already_in = True
-                        break
-            if not already_in:
-                with open(v_fp, 'a') as fp, open(resource_path % k) as fr:
-                    fp.write(fr.read())
+            with open(v_fp) as fp, open(resource_path % k) as fr:
+                sh_content = fp.read()
+                if re.findall(regex, sh_content, flags=re.S):
+                    _sh_content = re.sub(regex, fr.read(), sh_content, flags=re.S)
+                else:
+                    _sh_content = sh_content + '\n\n' + fr.read()
+
+            if _sh_content:
+                with open(v_fp, 'w') as fp:
+                    fp.write(_sh_content)
 
     try:
         for k, v in _check.items():
