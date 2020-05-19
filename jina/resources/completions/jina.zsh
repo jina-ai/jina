@@ -1,5 +1,6 @@
-# Jina CLI Autocomplete
+# JINA_CLI_BEGIN
 
+## autocomplete
 if [[ ! -o interactive ]]; then
     return
 fi
@@ -18,3 +19,9 @@ _jina() {
 
   reply=(${(ps:\n:)completions})
 }
+
+# session-wise fix
+ulimit -n 4096
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+
+# JINA_CLI_END
