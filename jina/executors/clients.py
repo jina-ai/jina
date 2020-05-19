@@ -11,9 +11,9 @@ class BaseClientExecutor(BaseExecutor):
 
 
 class TFServingClientExecutor(BaseClientExecutor):
-    def __init__(self, name, input_name, output_name, signature_name='serving_default', *args, **kwargs):
+    def __init__(self, service_name, input_name, output_name, signature_name='serving_default', *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = name
+        self.service_name = service_name
         self.input_name = input_name
         self.output_name = output_name
         self.signature_name = signature_name
@@ -23,18 +23,32 @@ class TFServingClientExecutor(BaseClientExecutor):
         self._channel = grpc.insecure_channel('{}:{}'.format(self.host, self.port))
         self._stub = prediction_service_pb2_grpc.PredictionServiceStub(self._channel)
 
-    def get_request(self, data_dict):
+    def get_request(self, data):
         request = self.get_default_request()
-        return self.fill_request(request, data_dict)
+        input_dict = self.get_input(data)
+        return self.fill_request(request, input_dict)
+
+    def get_input(self, data):
+        raise NotImplementedError
+
+    def get_response(self, response):
+        if response.exception():
+            self.logger.error('exception raised in encoding: {}'.format(response.exception))
+            raise ValueError
+        return self.get_output(response)
+
+    def get_output(self, response):
+        raise NotImplementedError
 
     def get_default_request(self):
         from tensorflow_serving.apis import predict_pb2
         request = predict_pb2.PredictRequest()
-        request.model_spec.name = self.name
+        request.model_spec.name = self.service_name
         request.model_spec.signature_name = self.signature_name
         return request
 
-    def fill_request(self, request, data_dict):
+    @staticmethod
+    def fill_request(request, data_dict):
         import tensorflow as tf
         for k, v in data_dict.items():
             request.inputs[k].CopyFrom(tf.make_tensor_proto(v))
