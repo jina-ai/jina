@@ -1,13 +1,13 @@
 import unittest
 
 from tests import JinaTestCase
-from jina.executors.encoders.clients import UnaryTFServingEncoder
+from jina.executors.encoders.clients import UnaryTFServingClientEncoder
 
 
 class MyTestCase(JinaTestCase):
     @unittest.skip('add grpc mocking for this test')
     def test_something(self):
-        encoder = UnaryTFServingEncoder(
+        encoder = UnaryTFServingClientEncoder(
             host='0.0.0.0', port='8500', service_name='mnist',
             input_name='images', output_name='scores',
             signature_name='predict_images')
