@@ -4,6 +4,8 @@ from typing import Dict
 
 if False:
     from tensorflow_serving.apis import predict_pb2
+    from tensorflow_serving.apis import classification_pb2
+    from tensorflow_serving.apis import regression_pb2
 
 
 class BaseClientExecutor(BaseExecutor):
@@ -28,7 +30,8 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
     :class:`BaseTFServingClientExecutor` is the base class for the executors that wrap up a tf serving client. For the
         sake of generality, this implementation has the dependency on :mod:`tensorflow_serving`.
 
-    To implement your own executor with `tfserving`,
+    Assuming that the tf server is running with `Predict` method, one can implement an executor with a `tfserving`
+        client as following,
 
     .. highlight:: python
     .. code-block:: python
@@ -58,7 +61,9 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
             when exporting the tf serving model.
         :param method_name: the name of the tf serving method. This parameter corresponds to the `method_name` parameter
              when building the signature map with ``build_signature_def()``. Currently, only ``Predict`` is supported.
-             The other methods including ``Classify``, ``Regression``, and ``MultiInference`` are under development.
+            The other methods including ``Classify``, ``Regression`` needs users to implement the
+            `_fill_classify_request` and `_fill_regression_request`, correspondingly. For the details of
+            ``signature_defs``, please refer to https://www.tensorflow.org/tfx/serving/signature_defs.
 
         """
         super().__init__(*args, **kwargs)
@@ -80,10 +85,17 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         Construct the gRPC request to the tf server.
 
         """
-        request = self.get_default_request()
-        input_dict = self.get_input(data)
+        _request = self.get_default_request()
+        _data_dict = self.get_input(data)
+        return self.fill_request(_request, _data_dict)
+
+    def fill_request(self, request, input_dict):
         if self.method_name == 'Predict':
-            return self.fill_request(request, input_dict)
+            return self._fill_predict_request(request, input_dict)
+        elif self.method_name == 'Classify':
+            return self._fill_classification_request(request, input_dict)
+        elif self.method_name == 'Regression':
+            return self._fill_regression_request(request, input_dict)
         else:
             raise NotImplementedError
 
@@ -129,17 +141,27 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         elif self.method_name == 'Regression':
             from tensorflow_serving.apis import regression_pb2
             request = regression_pb2.RegressionRequest()
-        elif self.method_name == 'MultiInference':
-            from tensorflow_serving.apis import inference_pb2
-            request = inference_pb2.MultiInferenceRequest()
         else:
-            self.logger.error('unknonwn method_name: {}'.format(self.method_name))
+            self.logger.error('unknown method_name: {}'.format(self.method_name))
             raise NotImplementedError
         return request
 
-    @staticmethod
-    def fill_request(request, data_dict):
+    def _fill_predict_request(self, request: 'predict_pb2.PredictRequest', data_dict: Dict) -> 'predict_pb2.PredictRequest':
+        """ Fill in the request with the data dict
+        """
         import tensorflow as tf
         for k, v in data_dict.items():
             request.inputs[k].CopyFrom(tf.make_tensor_proto(v))
         return request
+
+    @staticmethod
+    def _fill_classification_request(self, request: 'classification_pb2.ClassificationRequest', data_dict: Dict) \
+            -> 'classification_pb2.ClassificationRequest':
+        self.logger.error('building Classify request failed, _fill_classify_request() is not implemented')
+        pass
+
+    @staticmethod
+    def _fill_regression_request(self, request: 'regression_pb2.RegressionRequest', data_dict: Dict) \
+            -> 'regression_pb2.RegressionRequest':
+        self.logger.error('building Regression request failed, _fill_regression_request() is not implemented')
+        pass
