@@ -13,6 +13,6 @@ ARG PIP_TAG
 RUN pip install ."$PIP_TAG"
 
 RUN cat $HOME/.bashrc
-RUN grep -Fxq "# Jina CLI Autocomplete" $HOME/.bashrc
+RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
 
 ENTRYPOINT ["jina"]
