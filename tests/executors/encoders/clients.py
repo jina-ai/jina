@@ -9,13 +9,11 @@ from tests import JinaTestCase
 
 class MnistTFServingClientEncoder(UnaryTFServingClientEncoder):
     def __init__(self, *args, **kwargs):
-        default_kwargs = dict(input_name='images', output_name='scores', model_name='mnist')
+        default_kwargs = dict(
+            host='0.0.0.0', port='8500', method_name='Predict', signature_name='predict_images',
+            input_name='images', output_name='scores', model_name='mnist')
         kwargs.update(default_kwargs)
         super().__init__(*args, **kwargs)
-        self.host = '0.0.0.0'
-        self.port = '8500'
-        self.method_name = 'Predict'
-        self.signature_name = 'predict_images'
 
 
 # @unittest.skip('add grpc mocking for this test')

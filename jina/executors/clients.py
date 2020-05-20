@@ -13,7 +13,7 @@ class BaseClientExecutor(BaseExecutor):
     :class:`BaseClientExecutor` is the base class for the executors that wrap up a client to other server.
 
     """
-    def __init__(self, host=None, port=None, timeout=-1, *args, **kwargs):
+    def __init__(self, host: str, port: str, timeout: int = -1, *args, **kwargs):
         """
         :param host: the host address of the server
         :param port: the host port of the server
@@ -53,7 +53,8 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
                 return np.array(response.result().outputs['output_feature'].float_val)
 
     """
-    def __init__(self, model_name, signature_name='serving_default', method_name='Predict', *args, **kwargs):
+    def __init__(self, model_name: str, signature_name: str = 'serving_default', method_name: str = 'Predict',
+                 *args, **kwargs):
         """
         :param model_name: the name of the tf serving model. It must match the `MODEL_NAME` parameter when starting the
             tf server.
@@ -69,7 +70,15 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.signature_name = signature_name
+        self._method_name_dict = {
+            'Predict': ('predict_pb2', 'PredictRequest'),
+            'Classify': ('classification_pb2', 'ClassificationRequest'),
+            'Regression': ('regression_pb2', 'RegressionRequest')
+        }
+        if method_name not in self._method_name_dict:
+            raise ValueError('unknown method name: {}'.format(self.method_name))
         self.method_name = method_name
+        self.module_name, self.request_name = self._method_name_dict[self.method_name]
 
     def post_init(self):
         """
@@ -90,14 +99,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         return self.fill_request(_request, _data_dict)
 
     def fill_request(self, request, input_dict):
-        if self.method_name == 'Predict':
-            return self._fill_predict_request(request, input_dict)
-        elif self.method_name == 'Classify':
-            return self._fill_classification_request(request, input_dict)
-        elif self.method_name == 'Regression':
-            return self._fill_regression_request(request, input_dict)
-        else:
-            raise NotImplementedError
+        return getattr(self, self.method_name)(request, input_dict)
 
     def get_input(self, data) -> Dict:
         """
@@ -132,36 +134,27 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         return request
 
     def _get_default_request(self):
-        if self.method_name == 'Predict':
-            from tensorflow_serving.apis import predict_pb2
-            request = predict_pb2.PredictRequest()
-        elif self.method_name == 'Classify':
-            from tensorflow_serving.apis import classification_pb2
-            request = classification_pb2.ClassificationRequest()
-        elif self.method_name == 'Regression':
-            from tensorflow_serving.apis import regression_pb2
-            request = regression_pb2.RegressionRequest()
-        else:
-            self.logger.error('unknown method_name: {}'.format(self.method_name))
-            raise NotImplementedError
-        return request
+        import tensorflow_serving.apis
+        return getattr(getattr(tensorflow_serving.apis, self.module_name), self.request_name)()
 
-    def _fill_predict_request(self, request: 'predict_pb2.PredictRequest', data_dict: Dict) -> 'predict_pb2.PredictRequest':
-        """ Fill in the request with the data dict
+    def Predict(self, request: 'predict_pb2.PredictRequest', data_dict: Dict) -> 'predict_pb2.PredictRequest':
+        """ Fill in the ``PredictRequest`` with the data dict
         """
         import tensorflow as tf
         for k, v in data_dict.items():
             request.inputs[k].CopyFrom(tf.make_tensor_proto(v))
         return request
 
-    @staticmethod
-    def _fill_classification_request(self, request: 'classification_pb2.ClassificationRequest', data_dict: Dict) \
+    def Classify(self, request: 'classification_pb2.ClassificationRequest', data_dict: Dict) \
             -> 'classification_pb2.ClassificationRequest':
+        """ Fill in the ``ClassificationRequest`` with the data dict
+        """
         self.logger.error('building Classify request failed, _fill_classify_request() is not implemented')
         pass
 
-    @staticmethod
-    def _fill_regression_request(self, request: 'regression_pb2.RegressionRequest', data_dict: Dict) \
+    def Regression(self, request: 'regression_pb2.RegressionRequest', data_dict: Dict) \
             -> 'regression_pb2.RegressionRequest':
+        """ Fill in the ``RegressionRequest`` with the data dict
+        """
         self.logger.error('building Regression request failed, _fill_regression_request() is not implemented')
         pass

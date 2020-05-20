@@ -22,7 +22,7 @@ class UnaryTFServingClientEncoder(BaseTFServingClientEncoder):
         case, in which both the request and the response have a single data field.
 
     """
-    def __init__(self, input_name, output_name, *args, **kwargs):
+    def __init__(self, input_name: str, output_name: str, *args, **kwargs):
         """
         :param input_name: the name of data field in the request
         :param output_name: the name of data field in the response
