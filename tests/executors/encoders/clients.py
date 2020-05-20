@@ -16,7 +16,7 @@ class MnistTFServingClientEncoder(UnaryTFServingClientEncoder):
         super().__init__(*args, **kwargs)
 
 
-# @unittest.skip('add grpc mocking for this test')
+@unittest.skip('add grpc mocking for this test')
 class MyTestCase(JinaTestCase):
     @property
     def workspace(self):
