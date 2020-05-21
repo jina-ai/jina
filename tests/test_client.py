@@ -4,6 +4,7 @@ import requests
 
 from jina.clients import py_client
 from jina.clients.python import PyClient
+from jina.enums import ClientInputType
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
 from jina.peapods.gateway import HTTPGatewayPea
@@ -26,7 +27,7 @@ class MyTestCase(JinaTestCase):
         input_fn = iter([b'1234', b'45467'])
         PyClient.check_input(input_fn)
         input_fn = iter([Document(), Document()])
-        PyClient.check_input(input_fn, in_proto=True)
+        PyClient.check_input(input_fn, input_type=ClientInputType.PROTOBUF)
         bad_input_fn = iter([b'1234', '45467'])
         self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
         bad_input_fn = iter([Document()])
@@ -53,8 +54,8 @@ class MyTestCase(JinaTestCase):
             j = a.json()
             self.assertTrue('index' in j)
             self.assertEqual(len(j['index']['docs']), 2)
-            self.assertEqual(j['index']['docs'][0]['rawBytes'],
-                             'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
+            self.assertEqual(j['index']['docs'][0]['dataUri'],
+                             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
             self.assertEqual(a.status_code, 200)
 
     def test_gateway_index_with_args(self):
@@ -71,6 +72,6 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(len(j['index']['docs']), 2)
             self.assertEqual(j['index']['docs'][0]['docId'], 5)
             self.assertEqual(j['index']['docs'][1]['docId'], 6)
-            self.assertEqual(j['index']['docs'][0]['rawBytes'],
-                             'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
+            self.assertEqual(j['index']['docs'][0]['dataUri'],
+                             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
             self.assertEqual(a.status_code, 200)

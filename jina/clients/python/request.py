@@ -5,14 +5,15 @@ import ctypes
 import random
 from typing import Iterator, Union
 
+from ...enums import ClientInputType
 from ...helper import batch_iterator
 from ...proto import jina_pb2
 
 
-def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document']], batch_size: int = 0,
+def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: str = 'index', top_k: int = 50,
-              in_proto: bool = False,
+              input_type: ClientInputType = ClientInputType.RAW_BYTES,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     for pi in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
@@ -24,12 +25,14 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document']], batch
             else:
                 req.search.top_k = top_k
 
-        for raw_bytes in pi:
+        for _raw in pi:
             d = getattr(req, mode).docs.add()
-            if in_proto:
-                d.CopyFrom(raw_bytes)
-            else:
-                d.raw_bytes = raw_bytes
+            if input_type == ClientInputType.PROTOBUF:
+                d.CopyFrom(_raw)
+            elif input_type == ClientInputType.DATA_URI:
+                d.data_uri = _raw
+            elif input_type == ClientInputType.RAW_BYTES:
+                d.raw_bytes = _raw
             d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0
             first_doc_id += 1

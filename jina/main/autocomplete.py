@@ -51,7 +51,7 @@ ac_table = {
                     '--check-version', '--array-in-pb', '--compress-hwm', '--compress-lwm', '--num-part', '--role',
                     '--memory-hwm', '--runtime', '--max-idle-time', '--log-sse', '--log-remote', '--log-profile',
                     '--log-with-own-name', '--host', '--port-grpc', '--max-message-size', '--proxy', '--prefetch',
-                    '--prefetch-on-recv', '--allow-spawn'],
+                    '--prefetch-on-recv', '--allow-spawn', '--rest-api'],
         'ping': ['--help', '--timeout', '--retries', '--print-response'],
         'check': ['--help', '--summary-exec', '--summary-driver'],
         'pea': ['--help', '--name', '--identity', '--yaml-path', '--py-modules', '--image', '--entrypoint',
@@ -63,5 +63,5 @@ ac_table = {
                 '--log-with-own-name', '--host', '--port-grpc', '--max-message-size', '--proxy'],
         'log': ['--help', '--groupby-regex', '--refresh-time'],
         'client': ['--help', '--host', '--port-grpc', '--max-message-size', '--proxy', '--batch-size', '--mode',
-                   '--top-k', '--in-proto', '--callback-on-body', '--first-request-id', '--first-doc-id',
+                   '--top-k', '--input-type', '--callback-on-body', '--first-request-id', '--first-doc-id',
                    '--random-doc-id', '--timeout-ready'], 'export-api': ['--help', '--yaml-path', '--json-path']}}

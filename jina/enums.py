@@ -211,3 +211,19 @@ class PeaRoleType(BetterEnum):
     HEAD = 1
     TAIL = 2
     SHARD = 3
+
+
+class ClientMode(BetterEnum):
+    """ The enum of Client mode
+
+    """
+    INDEX = 0
+    SEARCH = 1
+    TRAIN = 2
+
+
+class ClientInputType(BetterEnum):
+    """ The input mode of the client"""
+    RAW_BYTES = 0
+    DATA_URI = 1
+    PROTOBUF = 2

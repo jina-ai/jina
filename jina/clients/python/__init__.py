@@ -6,6 +6,7 @@ from typing import Iterator, Callable, Union
 from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar
+from ...enums import ClientInputType
 from ...excepts import BadClient
 from ...logging import default_logger
 from ...logging.profile import TimeContext
@@ -65,13 +66,13 @@ class PyClient(GrpcClient):
 
     @staticmethod
     def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-                    in_proto: bool = False):
+                    input_type: ClientInputType = ClientInputType.PROTOBUF):
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
-        :param in_proto: if the input data is already in protobuf Document format, or in raw bytes
+        :param input_type: if the input data is in protobuf Document format, or in raw bytes, or data uri
         """
-        kwargs = {'data': input_fn, 'in_proto': in_proto}
+        kwargs = {'data': input_fn, 'input_type': input_type}
 
         try:
             r = next(getattr(request, 'index')(**kwargs))

@@ -7,15 +7,16 @@ import threading
 
 import grpc
 from google.protobuf.json_format import MessageToJson
-from jina.logging.profile import TimeContext
 
 from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
+from ..enums import ClientInputType
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
+from ..logging.profile import TimeContext
 from ..main.parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
 
@@ -241,9 +242,8 @@ class HTTPGatewayPea(BasePea):
                 return http_error(f'mode: {mode} is not supported yet', 405)
             content = request.json
             content['mode'] = mode
-            if 'data' in content:
-                content['data'] = [datauri2binary(d) for d in content['data']]
-            else:
+            content['input_type'] = ClientInputType.DATA_URI
+            if not 'data' in content:
                 return http_error('"data" field is empty', 406)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))

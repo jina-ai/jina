@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 from jina.drivers.helper import array2pb
-from jina.enums import FlowOptimizeLevel
+from jina.enums import FlowOptimizeLevel, ClientInputType
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
@@ -98,7 +98,7 @@ class MyTestCase(JinaTestCase):
                        host='localhost', port_grpc=f_args.port_grpc)
 
         with f:
-            f.index(input_fn=random_docs(1000), in_proto=True)
+            f.index(input_fn=random_docs(1000), input_type=ClientInputType.PROTOBUF)
 
         time.sleep(3)
         for j in range(3):
@@ -123,7 +123,7 @@ class MyTestCase(JinaTestCase):
                   host='192.168.31.76', port_grpc=44444))
 
         with f:
-            f.index(input_fn=random_docs(1000), in_proto=True)
+            f.index(input_fn=random_docs(1000), input_type=ClientInputType.PROTOBUF)
 
 
 if __name__ == '__main__':

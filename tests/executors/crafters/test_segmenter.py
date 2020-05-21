@@ -1,3 +1,4 @@
+from jina.enums import ClientInputType
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -29,9 +30,9 @@ class MyTestCase(JinaTestCase):
     def test_dummy_seg(self):
         f = Flow().add(yaml_path='DummySegment')
         with f:
-            f.index(input_fn=random_docs(10), in_proto=True, output_fn=self.get_chunk_id)
+            f.index(input_fn=random_docs(10), input_type=ClientInputType.PROTOBUF, output_fn=self.get_chunk_id)
 
     def test_dummy_seg_random(self):
         f = Flow().add(yaml_path='../../yaml/dummy-seg-random.yml')
         with f:
-            f.index(input_fn=random_docs(10), in_proto=True, output_fn=self.collect_chunk_id)
+            f.index(input_fn=random_docs(10), input_type=ClientInputType.PROTOBUF, output_fn=self.collect_chunk_id)
