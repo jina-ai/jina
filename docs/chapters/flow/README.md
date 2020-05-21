@@ -61,6 +61,15 @@ The input of a Pod is the output of the last Pod in sequential order. The gatewa
 
 All accepted arguments follow the command line interface of `Pod`, which can be found in `jina pod --help`. Just remember replace the dash `-` to underscore `_` in the name of the argument when referring it in Python.
 
+Besides the file path, in Flow API `yaml_path` can accept other types:
+
+| Type | Example | Remark |
+| --- | --- | --- |
+| YAML file path | `crafter/my.yml` | |
+| Inline YAML | `'!DataURICrafter\nwith: {mimetype: png}'` | don't forget `!` in the beginning |
+| The name of an executor [listed here](../all_exec.html) | `TransformerTorchEncoder` | only the executors that have full default values can be directly used |
+| Built-in simple executors [listed here](../simple_exec.html) | `_clear` | it always starts with `_` |
+ 
 #### Add a Containerized Pod into the Flow
 
 To run a Pod in a Docker container, simply specify the `image` argument.
