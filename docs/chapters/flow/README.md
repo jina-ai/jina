@@ -233,7 +233,7 @@ If you don't use Python as client, or your client and flow are on different inst
 import threading
 
 with f:
-    threading.Event().wait()
+    f.block()
 ```
 
 Please checkout https://github.com/jina-ai/examples/tree/master/helloword-in-cs for a complete example.

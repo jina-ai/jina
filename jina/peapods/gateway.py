@@ -271,4 +271,6 @@ class HTTPGatewayPea(BasePea):
         signal.signal(signal.SIGTERM, close)
         signal.signal(signal.SIGINT, close)  # CTRL C
         self.set_ready()
+        self.logger.warning('you are using a REST gateway, which is still in early beta version. '
+                            'advanced features such as prefetch and streaming are disabled.')
         server.serve_forever()

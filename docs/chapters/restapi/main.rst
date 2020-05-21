@@ -63,15 +63,12 @@ anymore. These IO interface are based on Python client, which uses gRPC
 behind the scene. You should use Javascript or Node and send HTTP
 request to communicate with this Flow instead.
 
-To block a Flow, use ``threading.Event``
+To block a Flow, use ``block()``
 
 .. code:: python
 
    with f:
-       try:
-           Event().wait()
-       except KeyboardInterrupt:
-           pass
+       f.block()
 
 In YAML
 ~~~~~~~
