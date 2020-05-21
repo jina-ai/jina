@@ -129,6 +129,9 @@ class GatewayPea:
                     self.logger.warning('if this takes too long, you may want to take smaller "--prefetch" or '
                                         'ask client to reduce "--batch-size"')
                     is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
+                    if is_req_empty:
+                        self.logger.error('receive an empty stream from the client! please check your client\'s input_fn')
+                        return
 
                 while not (zmqlet.msg_sent == zmqlet.msg_recv != 0 and is_req_empty):
                     self.logger.info(f'send: {zmqlet.msg_sent} '
