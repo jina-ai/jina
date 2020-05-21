@@ -66,7 +66,7 @@ class PyClient(GrpcClient):
 
     @staticmethod
     def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-                    input_type: ClientInputType = ClientInputType.PROTOBUF):
+                    input_type: ClientInputType = ClientInputType.RAW_BYTES):
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
