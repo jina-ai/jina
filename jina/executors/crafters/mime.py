@@ -47,7 +47,7 @@ class File2DataURICrafter(BaseDocCrafter):
         return ''.join(parts)
 
 
-class Bin2DataURICrafter(File2DataURICrafter):
+class Bytes2DataURICrafter(File2DataURICrafter):
     def __init__(self, mimetype: str, *args,
                  **kwargs):
         """ Build MIME type document from binary raw_bytes.
@@ -70,3 +70,16 @@ class Bin2DataURICrafter(File2DataURICrafter):
 
     def craft(self, raw_bytes, *args, **kwargs):
         return dict(data_uri=self.make_datauri(self.mimetype, raw_bytes))
+
+
+class DataURI2BytesCrafter(BaseDocCrafter):
+    """Convert data URI to raw_bytes at the doc level """
+
+    def craft(self, data_uri: str, *args, **kwargs):
+        import urllib.request
+        if data_uri.startswith('data:'):
+            tmp = urllib.request.urlopen(data_uri)
+            raw_bytes = tmp.file.read()
+            return dict(raw_bytes=raw_bytes)
+        else:
+            self.logger.error(f'expecting data URI, but got {data_uri}')
