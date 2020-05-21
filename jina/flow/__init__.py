@@ -688,3 +688,12 @@ class Flow:
 
     def __iter__(self):
         return self._pod_nodes.values().__iter__()
+
+    def block(self):
+        """Block the process until user hits KeyboardInterrupt """
+        try:
+            self.logger.success(f'flow is started at {self.host}:{self.port_grpc}, '
+                                f'you can now use client to send request!')
+            threading.Event().wait()
+        except KeyboardInterrupt:
+            pass

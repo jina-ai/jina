@@ -80,14 +80,10 @@ def flow(args):
     """Start a Flow from a YAML file"""
     from ..flow import Flow
     if args.yaml_path:
-        from threading import Event
         f = Flow.load_config(args.yaml_path)
         f._update_args(args)
         with f:
-            try:
-                Event().wait()
-            except KeyboardInterrupt:
-                pass
+            f.block()
     else:
         from jina.logging import default_logger
         default_logger.critical('start a flow from CLI requires a valid "--yaml-path"')
