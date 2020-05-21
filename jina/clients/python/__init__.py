@@ -75,7 +75,10 @@ class PyClient(GrpcClient):
 
         try:
             r = next(getattr(request, 'index')(**kwargs))
-            default_logger.success(f'input_fn is valid and the first request is as follows:\n{r}')
+            if r is not None:
+                default_logger.success(f'input_fn is valid and the first request is as follows:\n{r}')
+            else:
+                raise TypeError
         except:
             default_logger.error(f'input_fn is not valid!')
             raise
