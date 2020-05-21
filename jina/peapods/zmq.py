@@ -267,6 +267,7 @@ class AsyncZmqlet(Zmqlet):
         time.sleep(.2)  # sleep a bit until handshake is done
         return self
 
+
 def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int):
     """Send a control message to a specific address and wait for the response
 
