@@ -7,15 +7,16 @@ import threading
 
 import grpc
 from google.protobuf.json_format import MessageToJson
-from jina.logging.profile import TimeContext
 
 from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
+from ..enums import ClientInputType
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
+from ..logging.profile import TimeContext
 from ..main.parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
 
@@ -129,6 +130,11 @@ class GatewayPea:
                     self.logger.warning('if this takes too long, you may want to take smaller "--prefetch" or '
                                         'ask client to reduce "--batch-size"')
                     is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
+                    if is_req_empty and not prefetch_task:
+                        self.logger.error('receive an empty stream from the client! '
+                                          'please check your client\'s input_fn, '
+                                          'you can use "PyClient.check_input(input_fn())"')
+                        return
 
                 while not (zmqlet.msg_sent == zmqlet.msg_recv != 0 and is_req_empty):
                     self.logger.info(f'send: {zmqlet.msg_sent} '
@@ -236,9 +242,8 @@ class HTTPGatewayPea(BasePea):
                 return http_error(f'mode: {mode} is not supported yet', 405)
             content = request.json
             content['mode'] = mode
-            if 'data' in content:
-                content['data'] = [datauri2binary(d) for d in content['data']]
-            else:
+            content['input_type'] = ClientInputType.DATA_URI
+            if not 'data' in content:
                 return http_error('"data" field is empty', 406)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))

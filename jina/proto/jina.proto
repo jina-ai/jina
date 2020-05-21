@@ -97,8 +97,13 @@ message Document {
     // The unique document ID
     uint32 doc_id = 1;
 
-    // the raw binary content of this document, which often represents the original document when comes into jina
-    bytes raw_bytes = 3;
+    oneof content {
+        // the raw binary content of this document, which often represents the original document when comes into jina
+        bytes raw_bytes = 3;
+
+        // data uri
+        string data_uri = 9;
+    }
 
     // list of the chunks of this document
     repeated Chunk chunks = 4;

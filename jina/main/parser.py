@@ -400,6 +400,8 @@ def set_client_cli_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
+    from ..enums import ClientInputType
+
     _set_grpc_parser(parser)
 
     gp1 = add_arg_group(parser, 'client-specific arguments')
@@ -413,8 +415,9 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--top-k', type=int,
                      default=10,
                      help='top_k results returned in the search mode')
-    gp1.add_argument('--in-proto', action='store_true', default=False,
-                     help='if the input data is already in protobuf Document format, or in raw bytes')
+    gp1.add_argument('--input-type', choices=list(ClientInputType), default=ClientInputType.RAW_BYTES,
+                     type=ClientInputType.from_string,
+                     help='the type of input data')
     gp1.add_argument('--callback-on-body', action='store_true', default=False,
                      help='callback function works directly on the request body')
     gp1.add_argument('--first-request-id', type=int,
