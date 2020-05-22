@@ -113,9 +113,9 @@ class PyClient(GrpcClient):
             if k in kwargs:
                 _kwargs[k] = kwargs[k]
 
-        tname = self.mode
+        tname = str(self.mode).lower()
         if 'mode' in kwargs:
-            tname = kwargs['mode']
+            tname = str(kwargs['mode']).lower()
 
         req_iter = getattr(request, tname)(**_kwargs)
         # next(req_iter)
