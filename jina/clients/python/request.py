@@ -15,6 +15,9 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
               input_type: ClientInputType = ClientInputType.RAW_BYTES,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
+    if isinstance(mode, str):
+        mode = ClientMode.from_string(mode)
+
     for pi in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
         req.request_id = first_request_id
