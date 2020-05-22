@@ -224,7 +224,9 @@ class HTTPGatewayPea(BasePea):
 
         @app.route('/ready')
         def is_ready():
-            return Response(status=200)
+            response = Response(status=200)
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
 
         @app.route('/api/<mode>', methods=['POST'])
         def api(mode):
