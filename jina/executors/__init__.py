@@ -494,7 +494,7 @@ class BaseExecutor(metaclass=ExecutorType):
     @staticmethod
     def _get_dump_path_from_config(meta_config: Dict):
         if 'name' in meta_config:
-            if meta_config.get('separated_workspace', False):
+            if meta_config.get('separated_workspace', False) is True:
                 if 'replica_id' in meta_config and isinstance(meta_config['replica_id'], int):
                     work_dir = meta_config['replica_workspace']
                     dump_path = os.path.join(work_dir, '%s.%s' % (meta_config['name'], 'bin'))

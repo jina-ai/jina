@@ -12,7 +12,7 @@ from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
-from ..enums import ClientInputType
+from ..enums import ClientInputType, ClientMode
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
@@ -210,42 +210,41 @@ class HTTPGatewayPea(BasePea):
     def get_http_server(self):
         try:
             from flask import Flask, Response, jsonify, request
-            from flask_cors import CORS
+            from flask_cors import CORS, cross_origin
             from gevent.pywsgi import WSGIServer
         except ImportError:
             raise ImportError('Flask or its dependencies are not fully installed, '
                               'they are required for serving HTTP requests.'
                               'Please use pip install "jina[http]" to install it.')
         app = Flask(__name__)
+        app.config['CORS_HEADERS'] = 'Content-Type'
         CORS(app)
 
         def http_error(reason, code):
             return jsonify({'reason': reason}), code
 
         @app.route('/ready')
+        @cross_origin()
         def is_ready():
-            response = Response(status=200)
-            response.headers.add('Access-Control-Allow-Origin', '*')
-            return response
+            return Response(status=200)
 
         @app.route('/api/<mode>', methods=['POST'])
+        @cross_origin()
         def api(mode):
             from ..clients import python
             mode_fn = getattr(python.request, mode, None)
             if mode_fn is None:
                 return http_error(f'mode: {mode} is not supported yet', 405)
             content = request.json
-            content['mode'] = mode
+            content['mode'] = ClientMode.from_string(mode)
             content['input_type'] = ClientInputType.DATA_URI
             if not 'data' in content:
                 return http_error('"data" field is empty', 406)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
-            response = Response(asyncio.run(results),
-                                status=200,
-                                mimetype='application/json')
-            response.headers.add('Access-Control-Allow-Origin', '*')
-            return response
+            return Response(asyncio.run(results),
+                            status=200,
+                            mimetype='application/json')
 
         async def get_result_in_json(req_iter):
             return [MessageToJson(k) async for k in self._p_servicer.Call(req_iter, None)]
