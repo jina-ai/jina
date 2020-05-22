@@ -215,7 +215,7 @@ class HTTPGatewayPea(BasePea):
         except ImportError:
             raise ImportError('Flask or its dependencies are not fully installed, '
                               'they are required for serving HTTP requests.'
-                              'Please use pip install "jina[flask]" to install it.')
+                              'Please use pip install "jina[http]" to install it.')
         app = Flask(__name__)
         CORS(app)
 
