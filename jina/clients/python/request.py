@@ -5,7 +5,7 @@ import ctypes
 import random
 from typing import Iterator, Union
 
-from ...enums import ClientInputType
+from ...enums import ClientInputType, ClientMode
 from ...helper import batch_iterator
 from ...proto import jina_pb2
 
@@ -19,7 +19,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
         req = jina_pb2.Request()
         req.request_id = first_request_id
 
-        if mode == 'search':
+        if mode == ClientMode.SEARCH:
             if top_k <= 0:
                 raise ValueError('"top_k: %d" is not a valid number' % top_k)
             else:

@@ -219,14 +219,6 @@ class HTTPGatewayPea(BasePea):
         app = Flask(__name__)
         CORS(app)
 
-        def datauri2binary(datauri: str):
-            import urllib.request
-            if datauri.startswith('data:'):
-                _tmp = urllib.request.urlopen(datauri)
-                return _tmp.file.read()
-            else:
-                self.logger.error(f'expecting data URI, but got {datauri}')
-
         def http_error(reason, code):
             return jsonify({'reason': reason}), code
 

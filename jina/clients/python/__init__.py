@@ -6,7 +6,7 @@ from typing import Iterator, Callable, Union
 from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar
-from ...enums import ClientInputType
+from ...enums import ClientInputType, ClientMode
 from ...excepts import BadClient
 from ...logging import default_logger
 from ...logging.profile import TimeContext
@@ -56,13 +56,12 @@ class PyClient(GrpcClient):
         return self._mode
 
     @mode.setter
-    def mode(self, value):
-        avail = {'train', 'index', 'search'}
-        if value in avail:
+    def mode(self, value: ClientMode):
+        if isinstance(value, ClientMode):
             self._mode = value
             self.args.mode = value
         else:
-            raise ValueError(f'{value} must be one of {avail}')
+            raise ValueError(f'{value} must be one of {ClientMode}')
 
     @staticmethod
     def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
@@ -84,7 +83,7 @@ class PyClient(GrpcClient):
             default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call_unary(self, data: Union['jina_pb2.Document', bytes], mode: str) -> None:
+    def call_unary(self, data: Union['jina_pb2.Document', bytes], mode: ClientMode) -> None:
         """ Calling the server with one request only, and return the result
 
         This function should not be used in production due to its low-efficiency. For example,
@@ -98,7 +97,7 @@ class PyClient(GrpcClient):
         kwargs = vars(self.args)
         kwargs['data'] = [data]
 
-        req_iter = getattr(request, self.mode)(**kwargs)
+        req_iter = getattr(request, str(self.mode).lower())(**kwargs)
         return self._stub.CallUnary(next(req_iter))
 
     def call(self, callback: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
@@ -171,18 +170,18 @@ class PyClient(GrpcClient):
 
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
-        self.mode = 'train'
+        self.mode = ClientMode.TRAIN
         self.input_fn = input_fn
         self.start(output_fn, **kwargs)
 
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
-        self.mode = 'search'
+        self.mode = ClientMode.SEARCH
         self.input_fn = input_fn
         self.start(output_fn, **kwargs)
 
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
-        self.mode = 'index'
+        self.mode = ClientMode.INDEX
         self.input_fn = input_fn
         self.start(output_fn, **kwargs)
