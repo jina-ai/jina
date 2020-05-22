@@ -412,6 +412,10 @@ class BasePea(metaclass=PeaMeta):
             _timeout = getattr(self.args['peas'][0], 'timeout_ready', 5e3) / 1e3
         else:
             _timeout = getattr(self.args, 'timeout_ready', 5e3) / 1e3
+
+        if _timeout < 0:
+            _timeout = None
+
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 self.logger.critical(f'fail to start {self.__class__} with name {self.name}')
