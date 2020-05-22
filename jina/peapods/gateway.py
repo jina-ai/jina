@@ -239,9 +239,11 @@ class HTTPGatewayPea(BasePea):
                 return http_error('"data" field is empty', 406)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
-            return Response(asyncio.run(results),
-                            status=200,
-                            mimetype='application/json')
+            response = Response(asyncio.run(results),
+                                status=200,
+                                mimetype='application/json')
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
 
         async def get_result_in_json(req_iter):
             return [MessageToJson(k) async for k in self._p_servicer.Call(req_iter, None)]

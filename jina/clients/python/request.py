@@ -12,7 +12,7 @@ from ...proto import jina_pb2
 
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, mode: str = 'index', top_k: int = 50,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
               input_type: ClientInputType = ClientInputType.RAW_BYTES,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     for pi in batch_iterator(data, batch_size):
@@ -26,7 +26,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                 req.search.top_k = top_k
 
         for _raw in pi:
-            d = getattr(req, mode).docs.add()
+            d = getattr(req, str(mode).lower()).docs.add()
             if input_type == ClientInputType.PROTOBUF:
                 d.CopyFrom(_raw)
             elif input_type == ClientInputType.DATA_URI:
