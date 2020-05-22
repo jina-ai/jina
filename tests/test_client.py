@@ -4,7 +4,7 @@ import requests
 
 from jina.clients import py_client
 from jina.clients.python import PyClient
-from jina.enums import ClientInputType
+from jina.enums import ClientInputType, ClientMode
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
 from jina.peapods.gateway import HTTPGatewayPea
@@ -17,7 +17,7 @@ class MyTestCase(JinaTestCase):
     def test_client(self):
         f = Flow().add(yaml_path='_forward')
         with f:
-            print(py_client(port_grpc=f.port_grpc).call_unary(b'a1234', mode='index'))
+            print(py_client(port_grpc=f.port_grpc).call_unary(b'a1234', mode=ClientMode.INDEX))
 
     def tearDown(self) -> None:
         super().tearDown()

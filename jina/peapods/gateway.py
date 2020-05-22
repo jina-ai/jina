@@ -219,20 +219,14 @@ class HTTPGatewayPea(BasePea):
         app = Flask(__name__)
         CORS(app)
 
-        def datauri2binary(datauri: str):
-            import urllib.request
-            if datauri.startswith('data:'):
-                _tmp = urllib.request.urlopen(datauri)
-                return _tmp.file.read()
-            else:
-                self.logger.error(f'expecting data URI, but got {datauri}')
-
         def http_error(reason, code):
             return jsonify({'reason': reason}), code
 
         @app.route('/ready')
         def is_ready():
-            return Response(status=200)
+            response = Response(status=200)
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
 
         @app.route('/api/<mode>', methods=['POST'])
         def api(mode):
@@ -247,9 +241,11 @@ class HTTPGatewayPea(BasePea):
                 return http_error('"data" field is empty', 406)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
-            return Response(asyncio.run(results),
-                            status=200,
-                            mimetype='application/json')
+            response = Response(asyncio.run(results),
+                                status=200,
+                                mimetype='application/json')
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
 
         async def get_result_in_json(req_iter):
             return [MessageToJson(k) async for k in self._p_servicer.Call(req_iter, None)]

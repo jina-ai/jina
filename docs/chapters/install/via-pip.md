@@ -50,6 +50,13 @@ Though not recommended, you can install Jina with full dependencies via:
 pip install "jina[all]"
 ``` 
 
+### To install cherry-picked dependencies from master branch
+
+```bash
+pip install "git+https://github.com/jina-ai/jina.git#egg=jina[http]" 
+```
+
+
 ## Install Jina on Raspberry Pi and other Linux Systems
 
 On Raspbian or other Linux systems, you can also install Jina via:
