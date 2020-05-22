@@ -22,7 +22,7 @@ from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 
 if False:
-    pass
+    from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
