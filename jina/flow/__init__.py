@@ -697,3 +697,12 @@ class Flow:
             threading.Event().wait()
         except KeyboardInterrupt:
             pass
+
+    def use_grpc_gateway(self):
+        """Change to use gRPC gateway for IO """
+        self._common_kwargs['rest_api'] = False
+
+    def use_rest_gateway(self):
+        """Change to use REST gateway for IO """
+        self._common_kwargs['rest_api'] = True
+
