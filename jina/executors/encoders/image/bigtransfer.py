@@ -23,14 +23,14 @@ class BitImageEncoder(BaseCVTFEncoder):
 
             ``[model_name]`` includes `R50x1`, `R101x1`, `R50x3`, `R101x3`, `R152x4`
 
-        .. highlight:: bash
-        .. code-block:: bash
+            .. highlight:: bash
+            .. code-block:: bash
 
-            .
-            ├── saved_model.pb
-            └── variables
-                ├── variables.data-00000-of-00001
-                └── variables.index
+                .
+                ├── saved_model.pb
+                └── variables
+                    ├── variables.data-00000-of-00001
+                    └── variables.index
 
         :param channel_axis: the axis id of the channel, -1 indicate the color channel info at the last axis.
                 If given other, then ``np.moveaxis(data, channel_axis, -1)`` is performed before :meth:`encode`.
