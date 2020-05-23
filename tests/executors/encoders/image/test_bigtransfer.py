@@ -1,6 +1,6 @@
 import unittest
 
-from jina.executors.encoders.image.bigtransfer import BitImageEncoder
+from jina.executors.encoders.image.bigtransfer import BiTImageEncoder
 from tests.executors.encoders.image import ImageTestCase
 
 

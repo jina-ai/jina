@@ -7,13 +7,20 @@ from ..frameworks import BaseCVTFEncoder
 from ...decorators import batching, as_ndarray
 
 
-class BitImageEncoder(BaseCVTFEncoder):
+class BiTImageEncoder(BaseCVTFEncoder):
     """
-    :class:`BitImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
+    :class:`BiTImageEncoder` is Big Transfer (BiT) presented by Google (https://github.com/google-research/big_transfer),
+    this class use pretrained BiT to encode data from a ndarray, potentially B x (Channel x Height x Width) into a
     ndarray of `B x D`.
-    Internally, :class:`BitImageEncoder` wraps the models from https://storage.googleapis.com/bit_models/.
+    Internally, :class:`BiTImageEncoder` wraps the models from https://storage.googleapis.com/bit_models/.
+    More abot BiT:
+
+    .. warning::
+
+        Known issue: this does not work on tensorflow==2.2.0, https://github.com/tensorflow/tensorflow/issues/38571
     """
-    def __init__(self, model_path: str = None, channel_axis: int = -1, *args, **kwargs):
+
+    def __init__(self, model_path: str, channel_axis: int = -1, *args, **kwargs):
         """
         :param model_path: the path of the model in the `SavedModel` format. `model_path` should be a directory path,
             which has the following structure. The pretrained model can be downloaded at
@@ -42,13 +49,8 @@ class BitImageEncoder(BaseCVTFEncoder):
     def post_init(self):
         self.to_device()
         import tensorflow as tf
-        self.model = None
-        try:
-            _model = tf.saved_model.load(self.model_path)
-        except Exception:
-            self.logger.error(f'model initialization failed: {self.model_path}')
-            return
-        self.model = _model.signatures["serving_default"]
+        _model = tf.saved_model.load(self.model_path)
+        self.model = _model.signatures['serving_default']
         self._get_input = tf.convert_to_tensor
 
     @batching
