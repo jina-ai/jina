@@ -36,7 +36,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                 d.data_uri = _raw
             elif input_type == ClientInputType.RAW_BYTES:
                 if isinstance(_raw, str):
-                    _raw = _raw.encode()
+                    _raw = _raw.encode()  # auto-fix for str
                 d.raw_bytes = _raw
             d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0
