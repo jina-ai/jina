@@ -121,7 +121,6 @@ class BaseCVTorchEncoder(BaseTorchEncoder):
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        import numpy as np
         if self.channel_axis != self._default_channel_axis:
             data = np.moveaxis(data, self.channel_axis, self._default_channel_axis)
         import torch
