@@ -311,6 +311,13 @@ Learn how Jina solves complex dependencies easily with Docker container
 
 <tr>
 <td>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
+Learn to how to use SOTA visual representation for searching Pokémon!
+</td>
+<td><h3>🚀</h3></td>
+</tr>
+<tr>
+<td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
 Learn to use Jina Hub and share your extensions with engineers around the globe
 </td>
