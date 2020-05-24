@@ -1,12 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
-
 import numpy as np
 
-from .numpy import NumpyIndexer
-
+from jina.executors.indexers.vector.numpy import NumpyIndexer
+from typing import Tuple
 
 class SptagIndexer(NumpyIndexer):
     """SPTAG powered vector indexer
@@ -42,7 +40,6 @@ class SptagIndexer(NumpyIndexer):
         vecs = super().get_query_handler()
         if vecs is not None:
             import SPTAG
-
             _index = SPTAG.AnnIndex(self.method, 'Float', vecs.shape[1])
 
             # Set the thread number to speed up the build procedure in parallel

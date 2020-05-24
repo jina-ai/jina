@@ -6,23 +6,26 @@ import multiprocessing
 import os
 import threading
 import time
-from collections import defaultdict
-from queue import Empty
-from typing import Dict, List, Optional, Union
-
 import zmq
 
-from .zmq import send_ctrl_message, Zmqlet
-from .. import __ready_msg__, __stop_msg__
-from ..drivers.helper import routes2str, add_route
-from ..enums import PeaRoleType
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
+from collections import defaultdict
+
+from jina.peapods.zmq import send_ctrl_message, Zmqlet
+from jina import __ready_msg__, __stop_msg__
+from jina.drivers.helper import routes2str, add_route
+from jina.enums import PeaRoleType
+from jina.excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     RequestLoopEnd, \
     DriverNotInstalled, NoDriverForRequest
-from ..executors import BaseExecutor
-from ..logging import get_logger
-from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2, is_data_request
+from jina.executors import BaseExecutor
+from jina.helper import PathImporter
+from jina.logging import get_logger
+from jina.logging.queue import __log_queue__
+from jina.logging.profile import used_memory, TimeDict
+from jina.proto import jina_pb2, is_data_request
+
+from queue import Empty
+from typing import Dict, List, Optional, Union
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -217,7 +220,6 @@ class BasePea(metaclass=PeaMeta):
     @property
     def log_iterator(self):
         """Get the last log using iterator """
-        from ..logging.queue import __log_queue__
         while self.is_ready.is_set():
             try:
                 yield __log_queue__.get_nowait()
@@ -334,7 +336,6 @@ class BasePea(metaclass=PeaMeta):
 
     def load_plugins(self):
         if self.args.py_modules:
-            from ..helper import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
     def loop_teardown(self):

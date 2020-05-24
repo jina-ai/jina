@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseNumericEncoder
-from ...decorators import batching, require_train
+from jina.executors.encoders import BaseNumericEncoder
+from jina.executors.decorators import batching, require_train
 
 
 class IncrementalPCAEncoder(BaseNumericEncoder):

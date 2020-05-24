@@ -4,19 +4,23 @@ __license__ = "Apache-2.0"
 import argparse
 import copy
 import time
+
 from contextlib import ExitStack
+
+from jina import __default_host__
+from jina.enums import *
+from jina.helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args
+from jina.logging.queue import __log_queue__
+from jina.main.parser import set_pod_parser, set_gateway_parser
+from jina.peapods import Pea
+from jina.peapods.gateway import GatewayPea, HTTPGatewayPea
+from jina.peapods.pea import BasePea
+from jina.peapods.remote import RemoteMutablePod
+
 from queue import Empty
+from sys import platform
 from threading import Thread
 from typing import Set, Dict, List, Callable, Union
-
-from . import Pea
-from .gateway import GatewayPea, HTTPGatewayPea
-from .pea import BasePea
-from .. import __default_host__
-from ..enums import *
-from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args
-from ..main.parser import set_pod_parser, set_gateway_parser
-
 
 class BasePod:
     """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
@@ -218,7 +222,6 @@ class BasePod:
             The log may not strictly follow the time order given that we are polling the log
             from all peas in the sequential manner.
         """
-        from ..logging.queue import __log_queue__
         while not self.is_shutdown:
             try:
                 yield __log_queue__.get_nowait()
@@ -369,7 +372,6 @@ class FlowPod(BasePod):
         if self._args.host == __default_host__:
             return super().start()
         else:
-            from .remote import RemoteMutablePod
             _remote_pod = RemoteMutablePod(self.peas_args)
             self.stack = ExitStack()
             self.stack.enter_context(_remote_pod)
@@ -449,7 +451,6 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
 
 
 def _fill_in_host(bind_args, connect_args):
-    from sys import platform
 
     bind_local = (bind_args.host == '0.0.0.0')
     bind_docker = (bind_args.image is not None and bind_args.image)

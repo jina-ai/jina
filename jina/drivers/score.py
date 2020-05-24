@@ -4,8 +4,8 @@ __license__ = "Apache-2.0"
 # lift the chunk-level topk to doc-level topk
 import numpy as np
 
-from . import BaseExecutableDriver
-from .helper import pb_obj2dict
+from jina.drivers import BaseExecutableDriver
+from jina.drivers.helper import pb_obj2dict
 
 
 class BaseScoreDriver(BaseExecutableDriver):

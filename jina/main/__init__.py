@@ -3,21 +3,23 @@ __license__ = "Apache-2.0"
 
 import sys
 
+from argparse import _StoreAction, _StoreTrueAction
+from jina.helper import colored
+from jina.logging import default_logger
+from jina.main import api
+from jina.main.autocomplete import ac_table
+from jina.main.parser import get_main_parser
+from pkg_resources import resource_filename
 
 def _get_run_args(print_args: bool = True):
-    from ..logging import default_logger
-    from .parser import get_main_parser
-    from ..helper import colored
-
+    
     parser = get_main_parser()
     if len(sys.argv) > 1:
-        from argparse import _StoreAction, _StoreTrueAction
         args = parser.parse_args()
         p = parser._actions[-1].choices[sys.argv[1]]
         default_args = {a.dest: a.default for a in p._actions if
                         isinstance(a, _StoreAction) or isinstance(a, _StoreTrueAction)}
         if print_args:
-            from pkg_resources import resource_filename
             with open(resource_filename('jina', '/'.join(('resources', 'jina.logo')))) as fp:
                 logo_str = fp.read()
             param_str = []
@@ -36,7 +38,6 @@ def _get_run_args(print_args: bool = True):
 
 
 def _quick_ac_lookup():
-    from .autocomplete import ac_table
     if len(sys.argv) > 1:
         if sys.argv[1] == 'commands':
             for k in ac_table['commands']:
@@ -53,6 +54,5 @@ def _quick_ac_lookup():
 def main():
     """The main entrypoint of the CLI """
     _quick_ac_lookup()
-    from . import api
     args = _get_run_args()
     getattr(api, args.cli.replace('-', '_'))(args)

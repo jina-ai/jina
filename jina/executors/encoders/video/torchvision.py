@@ -1,9 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from .. import BaseVideoEncoder
-from ..frameworks import BaseCVTorchEncoder
-
+from jina.executors.encoders import BaseVideoEncoder
+from jina.executors.encoders.frameworks import BaseCVTorchEncoder
 
 class VideoTorchEncoder(BaseCVTorchEncoder, BaseVideoEncoder):
     """

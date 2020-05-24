@@ -1,14 +1,17 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import docker
 import os
+
+from jina import __ready_msg__
+from jina.helper import valid_yaml_path, kwargs2list, get_non_defaults_args
+from jina.logging import get_logger
+from jina.main.parser import set_pea_parser
+from jina.peapods.pea import BasePea
+
 from pathlib import Path
-
-from .pea import BasePea
-from .. import __ready_msg__
-from ..helper import valid_yaml_path, kwargs2list, get_non_defaults_args
-from ..logging import get_logger
-
+from sys import platform
 
 class ContainerPea(BasePea):
     """A BasePea that wraps another "dockerized" BasePea
@@ -17,13 +20,11 @@ class ContainerPea(BasePea):
     """
 
     def post_init(self):
-        import docker
         self._client = docker.from_env()
 
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
         # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
-        from ..main.parser import set_pea_parser
         non_defaults = get_non_defaults_args(self.args, set_pea_parser(),
                                              taboo={'image', 'entrypoint', 'volumes', 'pull_latest'})
 
@@ -53,7 +54,6 @@ class ContainerPea(BasePea):
         if self.args.socket_out.is_bind:
             _expose_port.append(self.args.port_out)
 
-        from sys import platform
         if platform == "linux" or platform == "linux2":
             net_mode = 'host'
         else:
@@ -76,8 +76,6 @@ class ContainerPea(BasePea):
 
     def loop_body(self):
         """Direct the log from the container to local console """
-        import docker
-
         logger = get_logger('🐳', **vars(self.args), fmt_str='🐳 %(message)s')
         try:
             for line in self._container.logs(stream=True):
@@ -94,7 +92,6 @@ class ContainerPea(BasePea):
     def loop_teardown(self):
         """Stop the container """
         if getattr(self, '_container', None):
-            import docker
             try:
                 self._container.stop()
             except docker.errors.NotFound:

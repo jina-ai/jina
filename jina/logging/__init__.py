@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import os
 
-from .base import get_logger
+from jina.logging.base import get_logger
 
 default_logger = get_logger('JINA')  #: a logger at the global-level
 

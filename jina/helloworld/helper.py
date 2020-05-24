@@ -10,12 +10,12 @@ import webbrowser
 import zlib
 
 import numpy as np
+
+from jina.clients.python import ProgressBar
+from jina.helper import colored
+from jina.logging import default_logger
+
 from pkg_resources import resource_filename
-
-from ..clients.python import ProgressBar
-from ..helper import colored
-from ..logging import default_logger
-
 
 def load_mnist(path):
     with gzip.open(path, 'rb') as fp:

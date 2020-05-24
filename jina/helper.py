@@ -2,19 +2,31 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import functools
+import importlib.util
+import io
+import numpy as np
 import os
+import platform
 import random
 import re
+import socket
 import sys
+import threading
 import time
+import zmq, numpy, google.protobuf, grpc, ruamel.yaml
+
+from contextlib import closing
+from google.protobuf.internal import api_implementation
+from grpc import _grpcio_metadata
 from itertools import islice
+
+from jina import JINA_GLOBAL
+
+from pkg_resources import resource_filename
+from ruamel.yaml import YAML, nodes
 from types import SimpleNamespace
 from typing import Iterator, Any, Union, List, Dict
 
-import numpy as np
-from ruamel.yaml import YAML, nodes
-
-from . import JINA_GLOBAL
 
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
@@ -36,7 +48,7 @@ def deprecated_alias(**aliases):
 
 
 def rename_kwargs(func_name, kwargs, aliases):
-    from .logging import default_logger
+    from jina.logging import default_logger
     for alias, new in aliases.items():
         if alias in kwargs:
             if new in kwargs:
@@ -59,8 +71,7 @@ def get_readable_size(num_bytes):
 
 
 def print_load_table(load_stat):
-    from .logging import default_logger
-
+    from jina.logging import default_logger
     load_table = []
     for k, v in load_stat.items():
         for cls_name, import_stat, err_reason in v:
@@ -74,7 +85,7 @@ def print_load_table(load_stat):
 
 
 def print_load_csv_table(load_stat):
-    from .logging import default_logger
+    from jina.logging import default_logger
 
     load_table = []
     for k, v in load_stat.items():
@@ -204,7 +215,7 @@ def load_contrib_module():
         modules = []
 
         if contrib:
-            from .logging import default_logger
+            from jina.logging import default_logger
             default_logger.info(
                 'find a value in $JINA_CONTRIB_MODULE=%s, will load them as external modules' % contrib)
             for p in contrib.split(','):
@@ -232,7 +243,6 @@ class PathImporter:
 
     @staticmethod
     def _path_import(absolute_path):
-        import importlib.util
         module_name = PathImporter._get_module_name(absolute_path)
         spec = importlib.util.spec_from_file_location(module_name, absolute_path)
         module = importlib.util.module_from_spec(spec)
@@ -258,9 +268,6 @@ def random_name() -> str:
 
 
 def random_port() -> int:
-    from contextlib import closing
-    import socket
-    import threading
     with threading.Lock():
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
             s.bind(('', 0))
@@ -471,8 +478,7 @@ def kwargs2list(kwargs: Dict):
 
 def valid_yaml_path(path: str, to_stream: bool = False):
     # priority, filepath > classname > default
-    import io
-    from pkg_resources import resource_filename
+    
     if hasattr(path, 'read'):
         # already a readable stream
         return path
@@ -500,7 +506,7 @@ def get_parsed_args(kwargs, parser, parser_name: str = None):
     try:
         p_args, unknown_args = parser.parse_known_args(args)
         if unknown_args:
-            from .logging import default_logger
+            from jina.logging import default_logger
             default_logger.warning(
                 f'parser {parser_name} can not '
                 f'recognize the following args: {unknown_args}, '
@@ -522,15 +528,9 @@ def get_non_defaults_args(args, parser, taboo=(None,)) -> Dict:
 
 
 def get_full_version():
-    from . import __version__, __proto_version__, __jina_env__
-    from google.protobuf.internal import api_implementation
-    import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
-    from grpc import _grpcio_metadata
-    from pkg_resources import resource_filename
-    import platform
-    from .logging import default_logger
     try:
-
+        from jina import __version__, __proto_version__, __jina_env__
+        from jina.logging import default_logger
         info = {'jina': __version__,
                 'jina-proto': __proto_version__,
                 'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', colored('(unset)', 'yellow')),

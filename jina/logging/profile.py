@@ -1,11 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import resource
 import time
+
 from collections import defaultdict
 from functools import wraps
 
-from ..helper import colored
+from jina.helper import colored
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -18,10 +20,9 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     :param unit: unit of the memory, default in Gigabytes
     """
     try:
-        import resource
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
     except ModuleNotFoundError:
-        from . import default_logger
+        from jina.logging import default_logger
         default_logger.error('module "resource" can not be found and you are likely running it on Windows, '
                              'i will return 0')
         return 0
@@ -40,8 +41,7 @@ def profiling(func):
             print(1)
 
     """
-    from . import default_logger
-
+    from jina.logging import default_logger
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
         start_t = time.perf_counter()

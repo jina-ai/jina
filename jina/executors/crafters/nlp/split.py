@@ -1,10 +1,11 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import jieba
 import re
-from typing import List, Dict
 
-from .. import BaseSegmenter
+from jina.executors.crafters import BaseSegmenter
+from typing import List, Dict
 
 
 class Sentencizer(BaseSegmenter):
@@ -82,7 +83,6 @@ class JiebaSegmenter(BaseSegmenter):
         :param doc_id: the doc id
         :return: a list of chunk dicts
         """
-        import jieba
         text = raw_bytes.decode('utf-8')
         if self.mode == 'search':
             words = jieba.cut_for_search(text)

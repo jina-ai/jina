@@ -1,8 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from . import BaseExecutor
-
+from jina.executors import BaseExecutor
 
 class BaseFrameworkExecutor(BaseExecutor):
     """

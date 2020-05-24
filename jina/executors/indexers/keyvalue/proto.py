@@ -3,12 +3,12 @@ __license__ = "Apache-2.0"
 
 import gzip
 import json
-from typing import Union
 
 from google.protobuf.json_format import Parse
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 
+from typing import Union
 
 class BasePbIndexer(BaseKVIndexer):
     """Storing and querying protobuf chunk/document using gzip and Python dict. """

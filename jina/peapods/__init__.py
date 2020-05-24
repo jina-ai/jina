@@ -1,10 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Union
 
-from .. import __default_host__
-from ..logging import default_logger
+from jina import __default_host__
+from jina.helper import get_parsed_args
+from jina.logging import default_logger
+from jina.main.parser import set_pea_parser, set_pod_parser
+from jina.peapods.pea import BasePea
+from jina.peapods.container import ContainerPea
+from jina.peapods.remote import RemotePea, RemoteMutablePod
+from typing import Dict, Union   
 
 if False:
     import argparse
@@ -19,8 +24,6 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
 
     """
     if args is None:
-        from ..main.parser import set_pea_parser
-        from ..helper import get_parsed_args
         _, args, _ = get_parsed_args(kwargs, set_pea_parser(), 'Pea')
     if not allow_remote:
         # set the host back to local, as for the remote, it is running "locally"
@@ -29,13 +32,10 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
             default_logger.warning(f'setting host to {__default_host__} as allow_remote set to False')
 
     if args.host != __default_host__:
-        from .remote import RemotePea
         return RemotePea(args)
     elif args.image:
-        from .container import ContainerPea
         return ContainerPea(args)
     else:
-        from .pea import BasePea
         return BasePea(args)
 
 
@@ -47,8 +47,6 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
     :param kwargs: all supported arguments from CLI
     """
     if args is None:
-        from ..main.parser import set_pod_parser
-        from ..helper import get_parsed_args
         _, args, _ = get_parsed_args(kwargs, set_pod_parser(), 'Pod')
     if isinstance(args, dict):
         hosts = set()
@@ -64,10 +62,9 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
 
         if len(hosts) == 1:
             if __default_host__ in hosts:
-                from .pod import MutablePod
+                from jina.peapods.pod import BasePod, MutablePod
                 return MutablePod(args)
             else:
-                from .remote import RemoteMutablePod
                 return RemoteMutablePod(args)
 
     if not allow_remote and args.host != __default_host__:
@@ -75,8 +72,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
         default_logger.warning(f'host is reset to {__default_host__} as allow_remote=False')
 
     if args.host != __default_host__:
-        from .remote import RemotePod
         return RemotePod(args)
     else:
-        from .pod import BasePod
+        from jina.peapods.pod import BasePod
         return BasePod(args)

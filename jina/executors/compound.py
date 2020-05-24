@@ -1,10 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import inspect
+
 from collections import defaultdict
 from typing import Dict, List, Callable, Union
 
-from . import BaseExecutor, AnyExecutor
+from jina.executors import BaseExecutor, AnyExecutor
 
 
 class CompoundExecutor(BaseExecutor):
@@ -299,7 +301,6 @@ class CompoundExecutor(BaseExecutor):
             raise AttributeError('bad names: %s and %s' % (comp_name, comp_fn_name))
 
     def _set_routes(self) -> None:
-        import inspect
         # add all existing routes
         r = defaultdict(list)
         common = {}  # set(dir(BaseExecutor()))

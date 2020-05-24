@@ -2,11 +2,10 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import io
-from typing import Dict, List
-
 import numpy as np
 
-from .. import BaseSegmenter
+from jina.executors.crafters import BaseSegmenter
+from typing import Dict, List
 
 
 class ImageReader(BaseSegmenter):

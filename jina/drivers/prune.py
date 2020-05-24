@@ -1,10 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from jina.drivers import BaseDriver
+
 from typing import Tuple
-
-from . import BaseDriver
-
 
 class PruneDriver(BaseDriver):
     """Clean some fields from the chunk-level protobuf to reduce the total size of the request

@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseTextEncoder
-from ...decorators import batching, as_ndarray
+from jina.executors.encoders import BaseTextEncoder
+from jina.executors.decorators import batching, as_ndarray
 
 
 class OneHotTextEncoder(BaseTextEncoder):

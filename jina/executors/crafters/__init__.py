@@ -2,9 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
-from typing import Dict, List
 
-from .. import BaseExecutor
+from jina.executors import BaseExecutor
+from typing import Dict, List
 
 
 class BaseCrafter(BaseExecutor):

@@ -4,8 +4,8 @@ __license__ = "Apache-2.0"
 from typing import Any
 import numpy as np
 
-from ..clients import BaseTFServingClientExecutor
-from . import BaseEncoder
+from jina.executors.clients import BaseTFServingClientExecutor
+from jina.executors.encoders import BaseEncoder
 
 
 class BaseTFServingClientEncoder(BaseTFServingClientExecutor, BaseEncoder):

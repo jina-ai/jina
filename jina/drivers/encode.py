@@ -1,8 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from . import BaseExecutableDriver
-from .helper import extract_chunks, array2pb
+from jina.drivers import BaseExecutableDriver
+from jina.drivers.helper import extract_chunks, array2pb
 
 
 class BaseEncodeDriver(BaseExecutableDriver):

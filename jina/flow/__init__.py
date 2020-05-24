@@ -2,29 +2,33 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import copy
+# import flask, flask_cors
 import os
+import ruamel.yaml
 import tempfile
 import threading
 import time
+# import urllib.request
+
 from collections import OrderedDict
 from contextlib import ExitStack
 from functools import wraps
+
+from jina import JINA_GLOBAL
+from jina.enums import FlowBuildLevel, FlowOptimizeLevel
+from jina.excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
+from jina.helper import yaml, expand_env_var, get_non_defaults_args, get_parsed_args, deprecated_alias
+from jina.logging import get_logger
+from jina.logging.sse import start_sse_logger
+from jina.main.parser import set_flow_parser
+from jina.peapods.pod import SocketType, FlowPod, GatewayFlowPod
+
+from ruamel.yaml import StringIO
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 
-import ruamel.yaml
-from ruamel.yaml import StringIO
-
-from .. import JINA_GLOBAL
-from ..enums import FlowBuildLevel, FlowOptimizeLevel
-from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias
-from ..logging import get_logger
-from ..logging.sse import start_sse_logger
-from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
-
 if False:
-    from ..proto import jina_pb2
     import argparse
+    from jina.proto import jina_pb2
 
 
 def build_required(required_level: 'FlowBuildLevel'):
@@ -90,10 +94,8 @@ class Flow:
         self._update_args(args, **kwargs)
 
     def _update_args(self, args, **kwargs):
-        from ..main.parser import set_flow_parser
         _flow_parser = set_flow_parser()
         if args is None:
-            from ..helper import get_parsed_args
             _, args, _ = get_parsed_args(kwargs, _flow_parser, 'Flow')
 
         self.args = args
@@ -518,7 +520,7 @@ class Flow:
     @build_required(FlowBuildLevel.GRAPH)
     def _get_client(self, **kwargs):
         kwargs.update(self._common_kwargs)
-        from ..clients import py_client
+        from jina.clients import py_client
         if 'port_grpc' not in kwargs:
             kwargs['port_grpc'] = self.port_grpc
         if 'host' not in kwargs:

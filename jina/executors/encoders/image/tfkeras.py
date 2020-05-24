@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseCVTFEncoder
-from ...decorators import batching, as_ndarray
+from jina.executors.decorators import batching, as_ndarray
+from jina.executors.encoders.frameworks import BaseCVTFEncoder
 
 
 class KerasImageEncoder(BaseCVTFEncoder):

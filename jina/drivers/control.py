@@ -3,9 +3,9 @@ __license__ = "Apache-2.0"
 
 import time
 
-from . import BaseDriver
-from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
-from ..proto import jina_pb2, is_data_request
+from jina.drivers import BaseDriver
+from jina.excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
+from jina.proto import jina_pb2, is_data_request
 
 
 class ControlReqDriver(BaseDriver):

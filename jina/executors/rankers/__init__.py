@@ -5,7 +5,7 @@ from typing import Dict
 
 import numpy as np
 
-from .. import BaseExecutor
+from jina.executors import BaseExecutor
 
 
 class BaseRanker(BaseExecutor):

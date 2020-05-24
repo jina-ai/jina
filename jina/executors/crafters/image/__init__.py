@@ -1,12 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Union
 
 import numpy as np
+import PIL.Image as Image
 
-from .. import BaseChunkCrafter
-
+from jina.executors.crafters import BaseChunkCrafter
+from typing import Tuple, Union
+from PIL import Image
 
 class ImageChunkCrafter(BaseChunkCrafter):
     """
@@ -43,7 +44,6 @@ class ImageChunkCrafter(BaseChunkCrafter):
         Load an image array and return a `PIL.Image` object.
         """
 
-        from PIL import Image
         img = self.check_channel_axis(blob)
         return Image.fromarray(img.astype('uint8'))
 
@@ -59,7 +59,6 @@ class ImageChunkCrafter(BaseChunkCrafter):
         :param how: the interpolation method. Valid values include `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`.
             Default is `LANCZOS`. Please refer to `PIL.Image` for detaisl.
         """
-        import PIL.Image as Image
         assert isinstance(img, Image.Image), 'img must be a PIL.Image'
         if isinstance(target_size, int):
             percent = float(target_size) / min(img.size[0], img.size[1])
@@ -90,7 +89,6 @@ class ImageChunkCrafter(BaseChunkCrafter):
             .. warning:: When `precise` is used, ``top`` and ``left`` must be fed valid value.
 
         """
-        import PIL.Image as Image
         assert isinstance(img, Image.Image), 'img must be a PIL.Image'
         img_w, img_h = img.size
         if isinstance(target_size, int):

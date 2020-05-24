@@ -1,13 +1,14 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import os
-from typing import Dict, Any, Iterable, Tuple
 
 import numpy as np
+import os
 
-from ..proto import jina_pb2
+from jina.helper import colored
+from jina.proto import jina_pb2
 
+from typing import Dict, Any, Iterable, Tuple
 
 def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
     """Convert a blob protobuf to a numpy ndarray.
@@ -117,7 +118,6 @@ def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
     route_str = [r.pod for r in msg.envelope.routes]
     if flag_current:
         route_str.append('⚐')
-    from ..helper import colored
     return colored('▸', 'green').join(route_str)
 
 

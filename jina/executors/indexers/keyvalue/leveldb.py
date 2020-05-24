@@ -1,12 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import plyvel
 import json
-from typing import Union
 
 from google.protobuf.json_format import Parse
 from jina.executors.indexers.keyvalue.proto import BasePbIndexer
 from jina.executors.indexers.keyvalue.proto import jina_pb2
+from typing import Union
 
 
 class LeveldbIndexer(BasePbIndexer):
@@ -21,7 +22,6 @@ class LeveldbIndexer(BasePbIndexer):
     @property
     def db_handler(self):
         if self._db_handler is None:
-            import plyvel
             self._db_handler = plyvel.DB(self.index_abspath, create_if_missing=True)
         return self._db_handler
 

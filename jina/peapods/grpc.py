@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import grpc
 
-from .pea import BasePea
-from ..helper import PathImporter
+from jina.helper import PathImporter
+from jina.peapods.pea import BasePea
 
 
 class GRPCService(BasePea):

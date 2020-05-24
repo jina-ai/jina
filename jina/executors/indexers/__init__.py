@@ -1,15 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import os
-from typing import Tuple
 
 import numpy as np
+import os
 
-from .. import BaseExecutor
-from ..compound import CompoundExecutor
-from ...helper import call_obj_fn
+from jina.executors import BaseExecutor
+from jina.executors.compound import CompoundExecutor
+from jina.helper import call_obj_fn
 
+from typing import Tuple
 
 class BaseIndexer(BaseExecutor):
     """``BaseIndexer`` stores and searches with vectors.

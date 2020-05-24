@@ -4,13 +4,13 @@ __license__ = "Apache-2.0"
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
 
 import inspect
-from functools import wraps
-from typing import Callable, Any, Union, Iterator, List
-
 import numpy as np
 
-from .metas import get_default_metas
-from ..helper import batch_iterator
+from functools import wraps
+from jina.executors.metas import get_default_metas
+from jina.helper import batch_iterator
+
+from typing import Callable, Any, Union, Iterator, List
 
 
 def as_update_method(func: Callable):

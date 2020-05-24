@@ -1,12 +1,11 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
-
+import nmslib
 import numpy as np
 
-from .numpy import NumpyIndexer
-
+from jina.executors.indexers.vector.numpy import NumpyIndexer
+from typing import Tuple
 
 class NmslibIndexer(NumpyIndexer):
     """nmslib powered vector indexer
@@ -42,7 +41,6 @@ class NmslibIndexer(NumpyIndexer):
     def get_query_handler(self):
         vecs = super().get_query_handler()
         if vecs is not None:
-            import nmslib
             _index = nmslib.init(method=self.method, space=self.space)
             _index.addDataPointBatch(vecs.astype(np.float32))
             _index.createIndex({'post': 2}, print_progress=self.print_progress)

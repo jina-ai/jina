@@ -2,23 +2,26 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import asyncio
+import grpc
 import os
 import threading
 
-import grpc
 from google.protobuf.json_format import MessageToJson
 
-from .grpc_asyncio import AsyncioExecutor
-from .pea import BasePea
-from .zmq import AsyncZmqlet, add_envelope
-from .. import __stop_msg__
-from ..enums import ClientInputType, ClientMode
-from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
-from ..executors import BaseExecutor
-from ..logging.base import get_logger
-from ..logging.profile import TimeContext
-from ..main.parser import set_pea_parser, set_pod_parser
-from ..proto import jina_pb2_grpc, jina_pb2
+from jina import __stop_msg__
+from jina.enums import ClientInputType, ClientMode
+from jina.excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
+from jina.executors import BaseExecutor
+from jina.logging.base import get_logger
+from jina.logging.profile import TimeContext
+from jina.main.parser import set_pea_parser, set_pod_parser
+from jina.peapods import Pea, Pod
+from jina.peapods.pea import BasePea
+from jina.peapods.grpc_asyncio import AsyncioExecutor
+from jina.peapods.remote import mutable_pod_req2peas_args, peas_args2mutable_pod_req
+from jina.peapods.zmq import AsyncZmqlet, add_envelope
+from jina.proto import jina_pb2_grpc, jina_pb2
+
 
 
 class GatewayPea:
@@ -150,7 +153,6 @@ class GatewayPea:
         async def Spawn(self, request, context):
             _req = getattr(request, request.WhichOneof('body'))
             if self.args.allow_spawn:
-                from . import Pea, Pod
                 _req_type = type(_req)
                 if _req_type == jina_pb2.SpawnRequest.PeaSpawnRequest:
                     _args = set_pea_parser().parse_known_args(_req.args)[0]
@@ -163,10 +165,8 @@ class GatewayPea:
                     # need to return the new port and host ip number back
                     # we do not allow remote spawn request to spawn a "remote-remote" pea/pod
                     p = Pod(_args, allow_remote=False)
-                    from .remote import peas_args2mutable_pod_req
                     request = peas_args2mutable_pod_req(p.peas_args)
                 elif _req_type == jina_pb2.SpawnRequest.MutablepodSpawnRequest:
-                    from .remote import mutable_pod_req2peas_args
                     p = Pod(mutable_pod_req2peas_args(_req), allow_remote=False)
                 else:
                     raise BadRequestType('don\'t know how to handle %r' % _req_type)

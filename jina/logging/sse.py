@@ -4,10 +4,12 @@ __license__ = "Apache-2.0"
 import logging
 import os
 
-from . import default_logger
-from .queue import __sse_queue__, __profile_queue__
-from .. import JINA_GLOBAL, __version__
-from ..helper import yaml
+from argparse import _StoreAction, _StoreTrueAction
+from jina import JINA_GLOBAL, __version__
+from jina.helper import yaml
+from jina.logging import default_logger
+from jina.logging.queue import __sse_queue__, __profile_queue__
+from jina.main.parser import set_pod_parser
 
 
 def start_sse_logger(server_config_path: str, flow_yaml: str = None):
@@ -72,9 +74,6 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     @app.route(_config['endpoints']['podapi'])
     def get_podargs():
         """Get the default args of a pod"""
-
-        from jina.main.parser import set_pod_parser
-        from argparse import _StoreAction, _StoreTrueAction
         port_attr = ('help', 'choices', 'default')
         d = {}
         parser = set_pod_parser()

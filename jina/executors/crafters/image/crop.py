@@ -1,11 +1,11 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Dict, List, Union
 
 import numpy as np
 
-from . import ImageChunkCrafter
+from jina.executors.crafters.image import ImageChunkCrafter
+from typing import Tuple, Dict, List, Union
 
 
 class ImageCropper(ImageChunkCrafter):

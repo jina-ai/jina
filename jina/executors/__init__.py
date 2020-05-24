@@ -4,25 +4,24 @@ __license__ = "Apache-2.0"
 import os
 import pickle
 import re
+import ruamel.yaml.constructor
 import tempfile
 import uuid
+
 from datetime import datetime
+from jina.excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
+from jina.executors.decorators import as_train_method, as_update_method, store_init_kwargs
+from jina.executors.metas import get_default_metas, fill_metas_with_defaults
+from jina.helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
+from jina.logging.base import get_logger
+from jina.logging.profile import TimeContext
 from pathlib import Path
+from ruamel.yaml import StringIO
 from types import SimpleNamespace
 from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
 
-import ruamel.yaml.constructor
-from ruamel.yaml import StringIO
-
-from .decorators import as_train_method, as_update_method, store_init_kwargs
-from .metas import get_default_metas, fill_metas_with_defaults
-from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
-from ..logging.base import get_logger
-from ..logging.profile import TimeContext
-
 if False:
-    from ..drivers import BaseDriver
+    from jina.drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -139,7 +138,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     _metas = get_default_metas()
 
                 if not _requests:
-                    from ..executors.requests import get_default_reqs
+                    from jina.executors.requests import get_default_reqs
                     _requests = get_default_reqs(type.mro(self.__class__))
 
                 self._fill_metas(_metas)
@@ -154,7 +153,7 @@ class BaseExecutor(metaclass=ExecutorType):
         if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
             # if control request is forget in YAML, then fill it
             if 'ControlRequest' not in _requests['on']:
-                from ..drivers.control import ControlReqDriver
+                from jina.drivers.control import ControlReqDriver
                 _requests['on']['ControlRequest'] = [ControlReqDriver()]
 
             for req_type, drivers in _requests['on'].items():

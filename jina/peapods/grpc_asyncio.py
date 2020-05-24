@@ -5,8 +5,8 @@ import asyncio
 import functools
 import inspect
 import threading
-from concurrent import futures
 
+from concurrent import futures
 from grpc import _server
 
 

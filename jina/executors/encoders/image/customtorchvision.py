@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .torchvision import ImageTorchEncoder
+from jina.executors.encoders.image.torchvision import ImageTorchEncoder
 
 
 class CustomImageTorchEncoder(ImageTorchEncoder):

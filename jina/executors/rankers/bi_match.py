@@ -3,8 +3,7 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from . import BaseRanker
-
+from jina.executors.rankers import BaseRanker
 
 class BiMatchRanker(BaseRanker):
     """The :class:`BiMatchRanker` counts the best chunk-hit from both query and doc perspective.

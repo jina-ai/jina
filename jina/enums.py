@@ -36,7 +36,7 @@ To use these enums in YAML config, following the example below:
 """
 
 from enum import IntEnum, EnumMeta
-
+from jina.helper import yaml
 
 class EnumType(EnumMeta):
 
@@ -52,7 +52,6 @@ class EnumType(EnumMeta):
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        from .helper import yaml
         yaml.register_class(cls)
         return cls
 

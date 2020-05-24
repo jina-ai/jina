@@ -1,14 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import numpy as np
 import os
 
-import numpy as np
-
-from . import BaseEncoder
-from ..decorators import batching, as_ndarray
-from ..frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor, BaseTFExecutor
-from ...helper import is_url
+from jina.executors.encoders import BaseEncoder
+from jina.executors.decorators import batching, as_ndarray
+from jina.executors.frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor, BaseTFExecutor
+from jina.helper import is_url
 
 
 class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):

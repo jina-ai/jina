@@ -4,8 +4,8 @@ __license__ = "Apache-2.0"
 import ctypes
 import random
 
-from . import BaseExecutableDriver
-from .helper import array2pb, pb_obj2dict, pb2array
+from jina.drivers import BaseExecutableDriver
+from jina.drivers.helper import array2pb, pb_obj2dict, pb2array
 
 
 class BaseCraftDriver(BaseExecutableDriver):

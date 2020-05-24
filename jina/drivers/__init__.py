@@ -2,20 +2,20 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
-from functools import wraps
-from typing import Callable, List
-
 import ruamel.yaml.constructor
 
-from ..executors.compound import CompoundExecutor
-from ..helper import yaml
-from ..proto import jina_pb2
+from functools import wraps
+from jina.executors.compound import CompoundExecutor
+from jina.helper import yaml
+from jina.proto import jina_pb2
+from typing import Callable, List
 
 if False:
     # fix type-hint complain for sphinx and flake
-    from ..peapods.pea import BasePea
-    from ..executors import AnyExecutor
     import logging
+
+    from jina.peapods.pea import BasePea
+    from jina.executors import AnyExecutor
 
 
 def store_init_kwargs(func):

@@ -3,12 +3,12 @@ __license__ = "Apache-2.0"
 
 import ctypes
 import random
+
+from jina.enums import ClientInputType, ClientMode
+from jina.helper import batch_iterator
+from jina.proto import jina_pb2
+
 from typing import Iterator, Union
-
-from ...enums import ClientInputType, ClientMode
-from ...helper import batch_iterator
-from ...proto import jina_pb2
-
 
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,

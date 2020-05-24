@@ -2,11 +2,10 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numbers
-from typing import Union, Tuple, Dict
-
 import numpy as np
 
-from . import ImageChunkCrafter
+from jina.executors.crafters.image import ImageChunkCrafter
+from typing import Union, Tuple, Dict
 
 
 class ImageResizer(ImageChunkCrafter):

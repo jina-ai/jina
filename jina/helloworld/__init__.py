@@ -4,12 +4,12 @@ __license__ = "Apache-2.0"
 import os
 from pathlib import Path
 
-from pkg_resources import resource_filename
 
-from .components import *
-from .helper import write_png, input_fn, print_result, write_html, download_data
-from ..flow import Flow
-from ..helper import countdown, colored
+from jina.flow import Flow
+from jina.helloworld.components import *
+from jina.helloworld.helper import write_png, input_fn, print_result, write_html, download_data
+from jina.helper import countdown, colored
+from pkg_resources import resource_filename
 
 
 def hello_world(args):

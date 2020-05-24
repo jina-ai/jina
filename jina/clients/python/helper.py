@@ -4,8 +4,8 @@ __license__ = "Apache-2.0"
 import sys
 import time
 
-from ...helper import colored
-from ...logging import profile_logger
+from jina.helper import colored
+from jina.logging import profile_logger
 
 
 class ProgressBar:

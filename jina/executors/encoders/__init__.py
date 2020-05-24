@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 from typing import Any
 
-from .. import BaseExecutor
-from ..compound import CompoundExecutor
+from jina.executors import BaseExecutor
+from jina.executors.compound import CompoundExecutor
 
 if False:
     # fix type-hint complain for sphinx and flake

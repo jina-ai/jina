@@ -2,23 +2,25 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import asyncio
+import lz4
+import lz4.frame
 import os
 import sys
 import tempfile
 import time
-from typing import List, Callable, Optional
-from typing import Tuple
-
 import zmq
 import zmq.asyncio
 
-from .. import __default_host__
-from ..enums import SocketType
-from ..excepts import MismatchedVersion
-from ..helper import colored, get_random_identity, get_readable_size
-from ..logging import default_logger, profile_logger
-from ..logging.base import get_logger
-from ..proto import jina_pb2, is_data_request
+from jina import __default_host__, __version__, __proto_version__
+from jina.enums import SocketType
+from jina.excepts import MismatchedVersion
+from jina.helper import colored, get_random_identity, get_readable_size
+from jina.logging import default_logger, profile_logger
+from jina.logging.base import get_logger
+from jina.proto import jina_pb2, is_data_request
+
+from typing import List, Callable, Optional
+from typing import Tuple
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -42,7 +44,6 @@ class Zmqlet:
         self.logger = logger or get_logger(self.name, **vars(args))
         if args.compress_hwm > 0:
             try:
-                import lz4
                 self.logger.success(f'compression is enabled and the high watermark is {args.compress_hwm} bytes')
             except ModuleNotFoundError:
                 self.logger.error(f'compression is enabled but you do not have lz4 package. '
@@ -466,8 +467,6 @@ def _prepare_send_msg(client_id, bodies: List[bytes], compress_hwm: int, compres
 
     _size_before = sum(sys.getsizeof(m) for m in bodies)
     if _size_before > compress_hwm > 0:
-        from ..logging import default_logger
-        import lz4.frame
         _bodies = [lz4.frame.compress(m) for m in bodies]
         is_compressed = b'1'
         _size_after = sum(sys.getsizeof(m) for m in _bodies)
@@ -498,7 +497,6 @@ def _prepare_recv_msg(sock, msg_data, check_version: bool):
 
     if msg_data[1] == b'1':
         # body message is compressed
-        import lz4.frame
         for l in range(2, len(msg_data)):
             msg_data[l] = lz4.frame.decompress(msg_data[l])
 
@@ -585,8 +583,6 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
 
 
 def _check_msg_version(msg: 'jina_pb2.Message'):
-    from ..logging import default_logger
-    from .. import __version__, __proto_version__
     if hasattr(msg.envelope, 'version'):
         if not msg.envelope.version.jina:
             # only happen in unittest
@@ -737,7 +733,6 @@ def add_envelope(req, pod_name, identity) -> 'jina_pb2.Message':
 
 
 def _add_version(evlp: 'jina_pb2.Envelope'):
-    from .. import __version__, __proto_version__
     evlp.version.jina = __version__
     evlp.version.proto = __proto_version__
     evlp.version.vcs = os.environ.get('JINA_VCS_VERSION', '')

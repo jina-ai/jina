@@ -1,12 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Union, Tuple, List
-
 import numpy as np
 
-from ..frameworks import BaseTextTorchEncoder
-from ...decorators import batching, as_ndarray
+from jina.executors.decorators import batching, as_ndarray
+from jina.executors.encoders.frameworks import BaseTextTorchEncoder
+
+from typing import Union, Tuple, List
 
 
 class FlairTextEncoder(BaseTextTorchEncoder):

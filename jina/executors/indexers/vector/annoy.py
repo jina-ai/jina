@@ -1,11 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
 
 import numpy as np
 
-from .numpy import NumpyIndexer
+from annoy import AnnoyIndex
+from jina.executors.indexers.vector.numpy import NumpyIndexer
+from typing import Tuple
 
 
 class AnnoyIndexer(NumpyIndexer):
@@ -34,7 +35,6 @@ class AnnoyIndexer(NumpyIndexer):
     def get_query_handler(self):
         vecs = super().get_query_handler()
         if vecs is not None:
-            from annoy import AnnoyIndex
             _index = AnnoyIndex(self.num_dim, self.metric)
             vecs = vecs.astype(np.float32)
             for idx, v in enumerate(vecs):

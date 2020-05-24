@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 import os
 
+from argparse import _StoreAction, _StoreTrueAction
+from jina import __version__
+from jina.enums import BetterEnum
+from jina.main.parser import get_main_parser
+
 
 def api_to_dict():
-    from ..enums import BetterEnum
-    from .. import __version__
-    from .parser import get_main_parser
-
-    from argparse import _StoreAction, _StoreTrueAction
     port_attr = ('help', 'choices', 'default', 'required', 'option_strings', 'dest')
 
     parsers = get_main_parser()._actions[-1].choices

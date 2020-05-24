@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseTextTorchEncoder
-from ...decorators import batching, as_ndarray
+from jina.executors.encoders.frameworks import BaseTextTorchEncoder
+from jina.executors.decorators import batching, as_ndarray
 
 
 class FarmTextEncoder(BaseTextTorchEncoder):
@@ -39,7 +39,6 @@ class FarmTextEncoder(BaseTextTorchEncoder):
         self.extraction_layer = extraction_layer
 
     def post_init(self):
-        from farm.infer import Inferencer
         self.model = Inferencer.load(model_name_or_path=self.model_name, task_type='embeddings',
                                      num_processes=self.num_processes)
 

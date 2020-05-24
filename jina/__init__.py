@@ -9,8 +9,21 @@ __version__ = '0.1.15'
 # this is managed by proto/build-proto.sh and updated on every execution
 __proto_version__ = '0.0.22'
 
+import importlib
+import os
+import pkgutil
 import platform
+import random
+import signal
 import sys
+
+from collections import defaultdict
+from datetime import datetime
+
+from pkgutil import iter_modules
+from setuptools import find_packages
+from types import SimpleNamespace
+
 
 # do some os-wise patches
 
@@ -21,13 +34,9 @@ if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
     # temporary fix for python 3.8 on macos where the default start is set to "spawn"
     # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
     from multiprocessing import set_start_method
-
+    
     set_start_method('fork')
 
-from datetime import datetime
-import random
-from types import SimpleNamespace
-import os
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -88,8 +97,6 @@ def import_classes(namespace: str, targets=None,
     :param import_once: import everything only once, to avoid repeated import
     """
 
-    import os, sys
-
     if namespace == 'jina.executors':
         import_type = 'ExecutorType'
         if import_once and JINA_GLOBAL.imported.executors:
@@ -101,9 +108,6 @@ def import_classes(namespace: str, targets=None,
     else:
         raise TypeError('namespace: %s is unrecognized' % namespace)
 
-    from setuptools import find_packages
-    import pkgutil
-    from pkgutil import iter_modules
     path = os.path.dirname(pkgutil.get_loader(namespace).path)
 
     modules = set()
@@ -123,11 +127,8 @@ def import_classes(namespace: str, targets=None,
             for info in iter_modules([pkgpath]):
                 if not info.ispkg:
                     modules.add('.'.join([namespace, pkg, info.name]))
-
-    from collections import defaultdict
     load_stat = defaultdict(list)
     bad_imports = []
-
     if isinstance(targets, str):
         targets = {targets}
     elif isinstance(targets, list):
@@ -138,8 +139,7 @@ def import_classes(namespace: str, targets=None,
         raise TypeError('target must be a set, but received %r' % targets)
 
     depend_tree = {}
-    import importlib
-    from .helper import colored
+    from jina.helper import colored    
     for m in modules:
         try:
             mod = importlib.import_module(m)
@@ -162,7 +162,7 @@ def import_classes(namespace: str, targets=None,
                                 return  # target execs are all found and loaded, return
                         try:
                             # load the default request for this executor if possible
-                            from .executors.requests import get_default_reqs
+                            from jina.executors.requests import get_default_reqs
                             get_default_reqs(type.mro(getattr(mod, k)))
                         except ValueError:
                             pass
@@ -179,11 +179,11 @@ def import_classes(namespace: str, targets=None,
         raise ImportError('%s can not be found in jina' % targets)
 
     if show_import_table:
-        from .helper import print_load_table, print_dep_tree_rst
+        from jina.helper import print_load_table, print_dep_tree_rst
         print_load_table(load_stat)
     else:
         if bad_imports:
-            from .logging import default_logger
+            from jina.logging import default_logger
             default_logger.error('theses modules or classes can not be imported %s' % bad_imports)
 
     if namespace == 'jina.executors':
@@ -199,7 +199,6 @@ import_classes('jina.drivers', show_import_table=False, import_once=True)
 import_classes('jina.executors', show_import_table=False, import_once=True)
 
 # manually install the default signal handler
-import signal
 
 signal.signal(signal.SIGINT, signal.default_int_handler)
 
@@ -216,7 +215,7 @@ def raise_nofile(nofile_atleast=4096):
     parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256
     temporary setting extinguishing with Python session.
     """
-    from .logging import default_logger
+    from jina.logging import default_logger
     if res is None:
         return (None,) * 2
 

@@ -3,8 +3,9 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from . import BaseExecutableDriver
-from .helper import extract_chunks
+from google.protobuf.json_format import MessageToJson
+from jina.drivers import BaseExecutableDriver
+from jina.drivers.helper import extract_chunks
 
 
 class BaseIndexDriver(BaseExecutableDriver):
@@ -57,7 +58,6 @@ class KVIndexDriver(BaseIndexDriver):
         self.level = level
 
     def __call__(self, *args, **kwargs):
-        from google.protobuf.json_format import MessageToJson
         if self.level == 'doc':
             content = {f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs}
         elif self.level == 'chunk':

@@ -5,12 +5,13 @@ from typing import Callable, Dict
 
 import grpc
 
-from .pea import BasePea
-from .zmq import Zmqlet, send_ctrl_message
-from ..clients.python import GrpcClient
-from ..helper import kwargs2list
-from ..logging import get_logger
-from ..proto import jina_pb2
+from jina.clients.python import GrpcClient
+from jina.helper import kwargs2list
+from jina.logging import get_logger
+from jina.main.parser import set_pea_parser
+from jina.peapods.pea import BasePea
+from jina.peapods.zmq import Zmqlet, send_ctrl_message
+from jina.proto import jina_pb2
 
 if False:
     import argparse
@@ -113,7 +114,6 @@ def peas_args2mutable_pod_req(peas_args: Dict):
 
 
 def mutable_pod_req2peas_args(req):
-    from ..main.parser import set_pea_parser
     return {
         'head': set_pea_parser().parse_known_args(req.head.args)[0] if req.head.args else None,
         'tail': set_pea_parser().parse_known_args(req.tail.args)[0] if req.tail.args else None,

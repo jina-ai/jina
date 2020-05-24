@@ -1,8 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..frameworks import BaseCVPaddlehubEncoder
-
+from jina.executors.encoders.frameworks import BaseCVPaddlehubEncoder
 
 class VideoPaddlehubEncoder(BaseCVPaddlehubEncoder):
     """

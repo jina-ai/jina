@@ -6,14 +6,15 @@ import logging
 import os
 import re
 import sys
+
 from copy import copy
+from jina.logging.queue import __sse_queue__, __profile_queue__, __log_queue__
+from jina.logging.profile import used_memory
+from jina.enums import LogVerbosity
+from jina.helper import colored
 from logging import Formatter
 from logging.handlers import QueueHandler
 from typing import Union
-
-from .profile import used_memory
-from ..enums import LogVerbosity
-from ..helper import colored
 
 
 class ColorFormatter(Formatter):
@@ -159,8 +160,7 @@ def get_logger(context: str, context_len: int = 15,
         One can change the verbosity of jina logger via the environment variable ``JINA_LOG_VERBOSITY``
 
     """
-    from .. import __uptime__
-    from .queue import __sse_queue__, __profile_queue__, __log_queue__
+    from jina import __uptime__
     if not fmt_str:
         title = os.environ.get('JINA_POD_NAME', context)
         if 'JINA_LOG_LONG' in os.environ:

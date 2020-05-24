@@ -2,11 +2,17 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+import time
 
-from .. import __jina_env__, import_classes
-from ..helper import colored, print_dep_tree_rst
-from ..logging import default_logger
+from google.protobuf.json_format import MessageToJson
 
+from jina import __jina_env__, import_classes
+from jina.helper import colored, print_dep_tree_rst
+from jina.logging import default_logger
+from jina.logging.profile import TimeContext
+from jina.peapods.pea import send_ctrl_message
+from jina.proto import jina_pb2
+        
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
@@ -42,11 +48,6 @@ class NetworkChecker:
     """Check if a BasePod is running or not """
 
     def __init__(self, args: 'argparse.Namespace'):
-        from ..peapods.pea import send_ctrl_message
-        from ..proto import jina_pb2
-        from ..logging.profile import TimeContext
-        from google.protobuf.json_format import MessageToJson
-        import time
         ctrl_addr = 'tcp://%s:%d' % (args.host, args.port)
         try:
             total_time = 0

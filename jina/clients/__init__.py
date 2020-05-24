@@ -23,8 +23,9 @@ def py_client(**kwargs):
         # to index
         py_client(port_grpc='192.168.1.100', host=55555).index(input_fn, output_fn)
     """
-    from ..main.parser import set_client_cli_parser
-    from ..helper import get_parsed_args
-    from .python import PyClient
+    from jina.clients.python import PyClient
+    from jina.helper import get_parsed_args
+    from jina.main.parser import set_client_cli_parser
+
     _, args, _ = get_parsed_args(kwargs, set_client_cli_parser(), 'Client')
     return PyClient(args)

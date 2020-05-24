@@ -1,7 +1,11 @@
 import os
 import re
 import sys
+
 from os import path
+from sphinx.domains.python import PyField
+from sphinx.locale import _
+from sphinx.util.docfields import Field
 
 sys.path.insert(0, path.abspath('..'))
 
@@ -89,9 +93,6 @@ set_type_checking_flag = False
 
 
 def setup(app):
-    from sphinx.domains.python import PyField
-    from sphinx.util.docfields import Field
-    from sphinx.locale import _
 
     app.add_object_type(
         'confval',
