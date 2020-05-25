@@ -37,3 +37,5 @@ plyvel:                     index
 jieba:                      nlp, preprocess
 lz4:                        optimization, devel, production, network
 gevent:                     http, devel
+pre-commit:                 framework, py37
+black:                      framework, py37
