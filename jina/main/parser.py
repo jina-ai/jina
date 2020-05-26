@@ -418,6 +418,8 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--input-type', choices=list(ClientInputType), default=ClientInputType.BUFFER,
                      type=ClientInputType.from_string,
                      help='the type of input data')
+    gp1.add_argument('--mime-type', type=str,
+                     help='MIME type of the input, useful when input-type is set to BUFFER')
     gp1.add_argument('--callback-on-body', action='store_true', default=False,
                      help='callback function works directly on the request body')
     gp1.add_argument('--first-request-id', type=int,

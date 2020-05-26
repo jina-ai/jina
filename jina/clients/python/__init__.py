@@ -117,6 +117,11 @@ class PyClient(GrpcClient):
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
 
+        if 'mime_type' not in kwargs:
+            self.logger.warning('starting from v0.2.0, '
+                                'the best practice of sending binary data is with "mime_type". '
+                                'when not given then MIME sniff (based on libmagic) will be used')
+
         req_iter = getattr(request, tname)(**_kwargs)
         # next(req_iter)
 
