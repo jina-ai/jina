@@ -65,7 +65,7 @@ class PyClient(GrpcClient):
 
     @staticmethod
     def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-                    input_type: ClientInputType = ClientInputType.RAW_BYTES):
+                    input_type: ClientInputType = ClientInputType.BUFFER):
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
@@ -116,6 +116,11 @@ class PyClient(GrpcClient):
         tname = str(self.mode).lower()
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
+
+        if 'mime_type' not in kwargs:
+            self.logger.warning('starting from v0.2.0, '
+                                'the best practice of sending binary data is with "mime_type". '
+                                'when not given then MIME sniff (based on libmagic) will be used')
 
         req_iter = getattr(request, tname)(**_kwargs)
         # next(req_iter)

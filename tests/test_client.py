@@ -7,7 +7,7 @@ from jina.clients.python import PyClient
 from jina.enums import ClientInputType, ClientMode
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
-from jina.peapods.gateway import HTTPGatewayPea
+from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
 
@@ -28,18 +28,18 @@ class MyTestCase(JinaTestCase):
         PyClient.check_input(input_fn)
         input_fn = iter([Document(), Document()])
         PyClient.check_input(input_fn, input_type=ClientInputType.PROTOBUF)
-        bad_input_fn = iter([b'1234', '45467'])
-        self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
+        # bad_input_fn = iter([b'1234', '45467'])  this is invalid as we convert str to binary
+        # self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
         bad_input_fn = iter([Document()])
         self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
 
     def test_gateway_ready(self):
         p = set_gateway_parser().parse_args([])
-        with HTTPGatewayPea(p):
+        with RESTGatewayPea(p):
             a = requests.get(f'http://0.0.0.0:{p.port_grpc}/ready')
             self.assertEqual(a.status_code, 200)
 
-        with HTTPGatewayPea(p):
+        with RESTGatewayPea(p):
             a = requests.post(f'http://0.0.0.0:{p.port_grpc}/api/ass')
             self.assertEqual(a.status_code, 405)
 

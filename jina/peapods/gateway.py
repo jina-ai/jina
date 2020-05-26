@@ -191,10 +191,10 @@ class GatewayPea:
                 p.close()
 
 
-class HTTPGatewayPea(BasePea):
+class RESTGatewayPea(BasePea):
     """A :class:`BasePea`-like class for holding a HTTP Gateway.
 
-    :class`HTTPGateway` is still in beta. Feature such as prefetch is not available yet.
+    :class`RESTGatewayPea` is still in beta. Feature such as prefetch is not available yet.
     Unlike :class:`GatewayPea`, it does not support bi-directional streaming. Therefore, it is
     synchronous from the client perspective.
     """

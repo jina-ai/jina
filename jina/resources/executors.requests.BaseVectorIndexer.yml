@@ -6,6 +6,6 @@ on:
   IndexRequest:
     - !DocPruneDriver
       with:
-        pruned: raw_bytes
+        pruned: buffer
     - !VectorIndexDriver {}
     - !ChunkPruneDriver {}

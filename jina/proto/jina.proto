@@ -8,7 +8,7 @@ package jina;
  */
 message NdArray {
     // the actual array data, in bytes
-    bytes raw_bytes = 1;
+    bytes buffer = 1;
 
     // the shape (dimensions) of the array
     repeated uint32 shape = 2;
@@ -68,7 +68,7 @@ message Chunk {
         NdArray blob = 4;
 
         // raw bytes of chunk
-        bytes raw_bytes = 5;
+        bytes buffer = 5;
     }
 
     // the embedding array of this chunk
@@ -88,6 +88,9 @@ message Chunk {
 
     // the top-k matched chunks
     repeated ScoredResult topk_results = 11;
+
+    // mime type of this chunk, by default it is inherit from the document
+    string mime_type = 12;
 }
 
 /**
@@ -99,10 +102,13 @@ message Document {
 
     oneof content {
         // the raw binary content of this document, which often represents the original document when comes into jina
-        bytes raw_bytes = 3;
+        bytes buffer = 3;
 
         // data uri
         string data_uri = 9;
+
+        // a local file path, or a remote url starts with http or https
+        string file_path = 11;
     }
 
     // list of the chunks of this document
@@ -119,6 +125,9 @@ message Document {
 
     // the top-k matched chunks
     repeated ScoredResult topk_results = 8;
+
+    // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
+    string mime_type = 10;
 }
 
 /**

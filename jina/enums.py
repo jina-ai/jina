@@ -224,6 +224,7 @@ class ClientMode(BetterEnum):
 
 class ClientInputType(BetterEnum):
     """ The input mode of the client"""
-    RAW_BYTES = 0
+    BUFFER = 0
     DATA_URI = 1
     PROTOBUF = 2
+    FILE_PATH = 3

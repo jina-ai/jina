@@ -525,7 +525,7 @@ class Flow:
             kwargs['host'] = self.host
         return py_client(**kwargs)
 
-    @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
+    @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
@@ -567,7 +567,7 @@ class Flow:
         """
         self._get_client(**kwargs).train(input_fn, output_fn)
 
-    @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
+    @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
@@ -609,7 +609,7 @@ class Flow:
         """
         self._get_client(**kwargs).index(input_fn, output_fn)
 
-    @deprecated_alias(raw_bytes='input_fn', callback='output_fn')
+    @deprecated_alias(buffer='input_fn', callback='output_fn')
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None,
                **kwargs):

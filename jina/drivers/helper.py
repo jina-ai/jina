@@ -17,7 +17,7 @@ def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
 
     :param blob: a blob described in protobuf
     """
-    x = np.frombuffer(blob.raw_bytes, dtype=blob.dtype)
+    x = np.frombuffer(blob.buffer, dtype=blob.dtype)
 
     if blob.quantization == jina_pb2.NdArray.FP16:
         x = x.astype(blob.original_dtype)
@@ -61,7 +61,7 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     else:
         blob.quantization = jina_pb2.NdArray.NONE
 
-    blob.raw_bytes = x.tobytes()
+    blob.buffer = x.tobytes()
     blob.shape.extend(list(x.shape))
     blob.dtype = x.dtype.name
     return blob
@@ -73,7 +73,7 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tupl
     :param docs: an iterable of protobuf documents
     :param embedding: an indicator of extracting embedding or not.
                     If ``True`` then all chunk-level embedding are extracted.
-                    If ``False`` then ``text``, ``raw_bytes``, ``blob`` info of each chunks are extracted
+                    If ``False`` then ``text``, ``buffer``, ``blob`` info of each chunks are extracted
     :return: A tuple of four pieces:
 
             - a numpy ndarray of extracted info
@@ -87,9 +87,9 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tupl
     bad_chunk_ids = []
 
     if embedding:
-        _extract_fn = lambda c: c.embedding.raw_bytes and pb2array(c.embedding)
+        _extract_fn = lambda c: c.embedding.buffer and pb2array(c.embedding)
     else:
-        _extract_fn = lambda c: c.text or c.raw_bytes or (c.blob and pb2array(c.blob))
+        _extract_fn = lambda c: c.text or c.buffer or (c.blob and pb2array(c.blob))
 
     for d in docs:
         if not d.chunks:

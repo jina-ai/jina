@@ -63,5 +63,6 @@ ac_table = {
                 '--log-with-own-name', '--host', '--port-grpc', '--max-message-size', '--proxy'],
         'log': ['--help', '--groupby-regex', '--refresh-time'],
         'client': ['--help', '--host', '--port-grpc', '--max-message-size', '--proxy', '--batch-size', '--mode',
-                   '--top-k', '--input-type', '--callback-on-body', '--first-request-id', '--first-doc-id',
-                   '--random-doc-id', '--timeout-ready'], 'export-api': ['--help', '--yaml-path', '--json-path']}}
+                   '--top-k', '--input-type', '--mime-type', '--callback-on-body', '--first-request-id',
+                   '--first-doc-id', '--random-doc-id', '--timeout-ready'],
+        'export-api': ['--help', '--yaml-path', '--json-path']}}

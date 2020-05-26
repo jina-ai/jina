@@ -161,11 +161,11 @@ class ChunkIndexer(CompoundExecutor):
 
         -  In the index time
             - 1. stores the vector via :class:`BaseVectorIndexer`
-            - 2. remove all vector information (embedding, raw_bytes, blob, text)
+            - 2. remove all vector information (embedding, buffer, blob, text)
             - 3. store the remained meta information via :class:`BaseKVIndexer`
         - In the query time
             - 1. Find the knn using the vector via :class:`BaseVectorIndexer`
-            - 2. remove all vector information (embedding, raw_bytes, blob, text)
+            - 2. remove all vector information (embedding, buffer, blob, text)
             - 3. Fill in the meta information of the chunk via :class:`BaseKVIndexer`
 
     One can use the :class:`ChunkIndexer` via
@@ -206,7 +206,7 @@ class ChunkIndexer(CompoundExecutor):
                 level: chunk
                 pruned:
                   - embedding
-                  - raw_bytes
+                  - buffer
                   - blob
                   - text
             - !KVSearchDriver
@@ -222,7 +222,7 @@ class ChunkIndexer(CompoundExecutor):
                 level: chunk
                 pruned:
                   - embedding
-                  - raw_bytes
+                  - buffer
                   - blob
                   - text
             - !KVIndexDriver

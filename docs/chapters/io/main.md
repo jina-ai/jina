@@ -7,7 +7,7 @@ In this chapter I will explain the input and output design of Jina.
 
 ### TLDR;
 - Everything is sent in bytes
-- Use crafter to work with `raw_bytes`
+- Use crafter to work with `buffer`
 
 In the [Flow API](../flow/README.md), we highlight that you can use `.index()`, `.search()` and `.train()` to feed index data and search query to a flow:
 
@@ -58,7 +58,7 @@ def input_fn():
 
 which basically reads gif video in binary.
 
-The corresponding `crafter` takes whatever stored in `raw_bytes` and try to make sense out of it:
+The corresponding `crafter` takes whatever stored in `buffer` and try to make sense out of it:
 
 ```python
 import io
@@ -66,13 +66,13 @@ from PIL import Image
 from jina.executors.crafters import BaseDocCrafter
 
 class GifCrafter(BaseDocCrafter):
-    def craft(self, raw_bytes):
-        im = Image.open(io.BytesIO(raw_bytes))
+    def craft(self, buffer):
+        im = Image.open(io.BytesIO(buffer))
         # manipulate the image here
         # ...
 ``` 
 
-In this example, `PIL.Image.open` takes either the filename or file object as argument. We convert `raw_bytes` to a file object here using `io.BytesIO`.
+In this example, `PIL.Image.open` takes either the filename or file object as argument. We convert `buffer` to a file object here using `io.BytesIO`.
 
 Alternatively, if your input function is sending the file name only, e.g.
 
@@ -90,13 +90,13 @@ from PIL import Image
 from jina.executors.crafters import BaseDocCrafter
 
 class GifCrafter(BaseDocCrafter):
-    def craft(self, raw_bytes):
-        im = Image.open(raw_bytes.decode())
+    def craft(self, buffer):
+        im = Image.open(buffer.decode())
         # manipulate the image here
         # ...
 ``` 
 
-`raw_bytes` now stores the file path, so we convert it back to normal string with `.decode()` and reads from the file path.
+`buffer` now stores the file path, so we convert it back to normal string with `.decode()` and reads from the file path.
 
 One can also combine two types of data together, e.g.
 
@@ -116,15 +116,15 @@ from PIL import Image
 
 class GifCrafter(BaseDocCrafter):
 
-    def craft(self, raw_bytes, *args, **kwargs):
-        file_name, img_raw = raw_bytes.split(b'JINA_DELIM')
+    def craft(self, buffer, *args, **kwargs):
+        file_name, img_raw = buffer.split(b'JINA_DELIM')
         im = Image.open(io.BytesIO(img_raw))
         # manipulate the image and file_name here
         # ...
 
 ```
 
-As you can see from the examples above, we use `raw_bytes` to transfer string and gif video.
+As you can see from the examples above, we use `buffer` to transfer string and gif video.
 
 `.index()`, `.search()` and `.train()` also accept `batch_size` which controls the number of documents per each request. But this does not change the implementation of the `crafter`, as the `crafter` always works at document level. 
 

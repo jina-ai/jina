@@ -8,7 +8,7 @@ on:
         level: chunk
         pruned:
           - embedding
-          - raw_bytes
+          - buffer
           - blob
           - text
     - !KVSearchDriver
@@ -24,7 +24,7 @@ on:
         level: chunk
         pruned:
           - embedding
-          - raw_bytes
+          - buffer
           - blob
           - text
     - !KVIndexDriver

@@ -37,3 +37,4 @@ plyvel:                     index
 jieba:                      nlp, preprocess
 lz4:                        optimization, devel, production, network
 gevent:                     http, devel
+python-magic:               http, devel
