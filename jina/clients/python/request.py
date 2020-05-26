@@ -5,6 +5,8 @@ import ctypes
 import random
 from typing import Iterator, Union
 
+from ...logging import default_logger
+
 from ...enums import ClientInputType, ClientMode
 from ...helper import batch_iterator
 from ...proto import jina_pb2
@@ -14,6 +16,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
               first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
               input_type: ClientInputType = ClientInputType.BUFFER,
+              mime_type: str = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
@@ -40,6 +43,10 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                 if isinstance(_raw, str):
                     _raw = _raw.encode()  # auto-fix for str
                 d.buffer = _raw
+                if not mime_type:
+                    default_logger.warning('starting from v0.2.0, '
+                                           'the best practice of sending binary data is with "mime_type". '
+                                           'when not given then MIME sniff (based on libmagic) will be used')
             d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0
             first_doc_id += 1

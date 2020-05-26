@@ -99,28 +99,32 @@ class DocMIMEDriver(DocCraftDriver):
             if m_type and m_type not in mimetypes.types_map.values():
                 m_type = mimetypes.guess_type(f'*.{m_type}')[0]
 
-            if not m_type:
-                d_type = d.WhichOneof('content')
-                d_content = getattr(d, d_type)
+            d_type = d.WhichOneof('content')
+            if not m_type and d_type:  # for ClientInputType=PROTO, d_type could be empty
                 if d_type == 'buffer':
+                    d_content = getattr(d, d_type)
                     # d.mime_type = 'application/octet-stream'  # default by IANA standard
                     try:
                         import magic
                         m_type = magic.from_buffer(d_content, mime=True)
                     except (ImportError, ModuleNotFoundError):
-                        self.logger.error(f'can not sniff the MIME type '
-                                          f'MIME sniffing requires pip install "jina[http]" '
-                                          f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
+                        self.logger.warning(f'can not sniff the MIME type '
+                                            f'MIME sniffing requires pip install "jina[http]" '
+                                            f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
                     except Exception as ex:
-                        self.logger.error(f'can not sniff the MIME type due to the exception {ex}')
+                        self.logger.warning(f'can not sniff the MIME type due to the exception {ex}')
                 elif d_type in {'file_path', 'data_uri'}:
-
+                    d_content = getattr(d, d_type)
                     m_type = mimetypes.guess_type(d_content)[0]
                     if not m_type and urllib.parse.urlparse(d_content).scheme in {'http', 'https', 'data'}:
                         tmp = urllib.request.urlopen(d_content)
                         m_type = tmp.info().get_content_type()
 
-            d.mime_type = m_type or self.default_mime
+            if m_type:
+                d.mime_type = m_type
+            else:
+                d.mime_type = self.default_mime
+                self.logger.warning(f'can not determine the MIME type, set to default {self.default_mime}')
 
 
 class SegmentDriver(BaseCraftDriver):
