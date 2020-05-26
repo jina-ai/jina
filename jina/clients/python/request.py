@@ -35,7 +35,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
             elif input_type == ClientInputType.DATA_URI:
                 d.data_uri = _raw
             elif input_type == ClientInputType.FILE_PATH:
-                d.file_type = _raw
+                d.file_path = _raw
             elif input_type == ClientInputType.BUFFER:
                 if isinstance(_raw, str):
                     _raw = _raw.encode()  # auto-fix for str
