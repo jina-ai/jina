@@ -11,8 +11,8 @@ class PruneDriver(BaseDriver):
 
     For example,
 
-        - "chunk" level removed fields can be ``embedding``, ``raw_bytes``, ``blob``, ``text``.
-        - "doc" level removed fields can be ``chunks``, ``raw_bytes``
+        - "chunk" level removed fields can be ``embedding``, ``buffer``, ``blob``, ``text``.
+        - "doc" level removed fields can be ``chunks``, ``buffer``
         - "request" level is often useful when the proceeding Pods require only a signal, not the full message.
     """
 
@@ -58,20 +58,20 @@ class PruneDriver(BaseDriver):
 class ChunkPruneDriver(PruneDriver):
     """Clean some fields from the chunk-level protobuf to reduce the total size of the request
 
-    Removed fields are ``embedding``, ``raw_bytes``, ``blob``, ``text``.
+    Removed fields are ``embedding``, ``buffer``, ``blob``, ``text``.
     """
 
-    def __init__(self, pruned=('embedding', 'raw_bytes', 'blob', 'text'), level='chunk', *args, **kwargs):
+    def __init__(self, pruned=('embedding', 'buffer', 'blob', 'text'), level='chunk', *args, **kwargs):
         super().__init__(pruned, level, *args, **kwargs)
 
 
 class DocPruneDriver(PruneDriver):
     """Clean some fields from the doc-level protobuf to reduce the total size of request
 
-    Removed fields are ``chunks``, ``raw_bytes``
+    Removed fields are ``chunks``, ``buffer``
     """
 
-    def __init__(self, pruned=('chunks', 'raw_bytes'), level='doc', *args, **kwargs):
+    def __init__(self, pruned=('chunks', 'buffer'), level='doc', *args, **kwargs):
         super().__init__(pruned, level, *args, **kwargs)
 
 

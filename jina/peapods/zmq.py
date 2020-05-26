@@ -339,7 +339,7 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
         _msg, num_bytes = _prepare_send_msg(c_id, [msg.SerializeToString()], compress_hwm, compress_lwm)
     else:
         doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
-        # now raw_bytes are removed from message, hoping for faster de/serialization
+        # now buffer are removed from message, hoping for faster de/serialization
         _msg = [msg.SerializeToString(),  # 1
                 chunk_byte_type,  # 2
                 b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 3, 4
@@ -513,7 +513,7 @@ def _prepare_recv_msg(sock, msg_data, check_version: bool):
 
     # now we have a barebone msg, we need to fill in data
     if len(msg_data) > 3:
-        _fill_raw_bytes_to_msg(msg, msg_data, offset=3)
+        _fill_buffer_to_msg(msg, msg_data, offset=3)
 
     return msg, num_bytes
 
@@ -632,8 +632,8 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
     docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
     # for train request
     for d in docs:
-        doc_bytes.append(d.raw_bytes)
-        d.ClearField('raw_bytes')
+        doc_bytes.append(d.buffer)
+        d.ClearField('buffer')
 
         for c in d.chunks:
             # oneof content {
@@ -641,17 +641,17 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
             # NdArray blob = 3;
             # bytes raw = 7;
             # }
-            chunk_bytes.append(c.embedding.raw_bytes)
-            c.embedding.ClearField('raw_bytes')
+            chunk_bytes.append(c.embedding.buffer)
+            c.embedding.ClearField('buffer')
 
             ctype = c.WhichOneof('content') or ''
             chunk_byte_type = ctype.encode()
-            if ctype == 'raw_bytes':
-                chunk_bytes.append(c.raw_bytes)
-                c.ClearField('raw_bytes')
+            if ctype == 'buffer':
+                chunk_bytes.append(c.buffer)
+                c.ClearField('buffer')
             elif ctype == 'blob':
-                chunk_bytes.append(c.blob.raw_bytes)
-                c.blob.ClearField('raw_bytes')
+                chunk_bytes.append(c.blob.buffer)
+                c.blob.ClearField('buffer')
             elif ctype == 'text':
                 chunk_bytes.append(c.text.encode())
                 c.ClearField('text')
@@ -659,7 +659,7 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
     return doc_bytes, chunk_bytes, chunk_byte_type
 
 
-def _fill_raw_bytes_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: int = 2):
+def _fill_buffer_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: int = 2):
     chunk_byte_type = msg_data[offset].decode()
     doc_bytes_len = int(msg_data[offset + 1])
     chunk_bytes_len = int(msg_data[offset + 2])
@@ -675,19 +675,19 @@ def _fill_raw_bytes_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offse
     docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
     for d in docs:
         if doc_bytes and doc_bytes[d_idx]:
-            d.raw_bytes = doc_bytes[d_idx]
+            d.buffer = doc_bytes[d_idx]
             d_idx += 1
 
         for c in d.chunks:
             if chunk_bytes and chunk_bytes[c_idx]:
-                c.embedding.raw_bytes = chunk_bytes[c_idx]
+                c.embedding.buffer = chunk_bytes[c_idx]
             c_idx += 1
 
-            if chunk_byte_type == 'raw_bytes':
-                c.raw_bytes = chunk_bytes[c_idx]
+            if chunk_byte_type == 'buffer':
+                c.buffer = chunk_bytes[c_idx]
                 c_idx += 1
             elif chunk_byte_type == 'blob':
-                c.blob.raw_bytes = chunk_bytes[c_idx]
+                c.blob.buffer = chunk_bytes[c_idx]
                 c_idx += 1
             elif chunk_byte_type == 'text':
                 c.text = chunk_bytes[c_idx].decode()

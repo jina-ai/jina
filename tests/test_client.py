@@ -7,7 +7,7 @@ from jina.clients.python import PyClient
 from jina.enums import ClientInputType, ClientMode
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
-from jina.peapods.gateway import HTTPGatewayPea
+from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
 
@@ -35,11 +35,11 @@ class MyTestCase(JinaTestCase):
 
     def test_gateway_ready(self):
         p = set_gateway_parser().parse_args([])
-        with HTTPGatewayPea(p):
+        with RESTGatewayPea(p):
             a = requests.get(f'http://0.0.0.0:{p.port_grpc}/ready')
             self.assertEqual(a.status_code, 200)
 
-        with HTTPGatewayPea(p):
+        with RESTGatewayPea(p):
             a = requests.post(f'http://0.0.0.0:{p.port_grpc}/api/ass')
             self.assertEqual(a.status_code, 405)
 

@@ -13,7 +13,7 @@ class MyTestCase(JinaTestCase):
     def _create_Document(self, doc_id, text, weight, length):
         d = jina_pb2.Document()
         d.doc_id = doc_id
-        d.raw_bytes = text.encode('utf8')
+        d.buffer = text.encode('utf8')
         d.weight = weight
         d.length = length
         return d

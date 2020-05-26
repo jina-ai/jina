@@ -13,7 +13,7 @@ from ...proto import jina_pb2
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
-              input_type: ClientInputType = ClientInputType.RAW_BYTES,
+              input_type: ClientInputType = ClientInputType.BUFFER,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
@@ -34,10 +34,12 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                 d.CopyFrom(_raw)
             elif input_type == ClientInputType.DATA_URI:
                 d.data_uri = _raw
-            elif input_type == ClientInputType.RAW_BYTES:
+            elif input_type == ClientInputType.FILE_PATH:
+                d.file_type = _raw
+            elif input_type == ClientInputType.BUFFER:
                 if isinstance(_raw, str):
                     _raw = _raw.encode()  # auto-fix for str
-                d.raw_bytes = _raw
+                d.buffer = _raw
             d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0
             first_doc_id += 1

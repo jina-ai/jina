@@ -210,7 +210,7 @@ def set_pea_parser(parser=None):
                      help='comparing the jina and proto version of incoming message with local setup, '
                           'mismatch raise an exception')
     gp5.add_argument('--array-in-pb', action='store_true', default=False,
-                     help='sending raw_bytes and numpy ndarray together within or separately from the protobuf message, '
+                     help='sending buffer and numpy ndarray together within or separately from the protobuf message, '
                           'the latter often yields a better network efficiency')
     gp5.add_argument('--compress-hwm', type=int, default=-1,
                      help='the high watermark that triggers the message compression. '
@@ -415,7 +415,7 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--top-k', type=int,
                      default=10,
                      help='top_k results returned in the search mode')
-    gp1.add_argument('--input-type', choices=list(ClientInputType), default=ClientInputType.RAW_BYTES,
+    gp1.add_argument('--input-type', choices=list(ClientInputType), default=ClientInputType.BUFFER,
                      type=ClientInputType.from_string,
                      help='the type of input data')
     gp1.add_argument('--callback-on-body', action='store_true', default=False,

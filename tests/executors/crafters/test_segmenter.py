@@ -12,7 +12,7 @@ def random_docs(num_docs):
 
 class DummySegment(BaseSegmenter):
     def craft(self):
-        return [dict(raw_bytes=b'aa'), dict(raw_bytes=b'bb')]
+        return [dict(buffer=b'aa'), dict(buffer=b'bb')]
 
 
 class MyTestCase(JinaTestCase):

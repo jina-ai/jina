@@ -22,15 +22,15 @@ class ArrayReader(BaseDocCrafter):
         self.delimiter = delimiter
         self.as_type = as_type
 
-    def craft(self, raw_bytes: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
         Split string into numbers and convert to numpy array
 
-        :param raw_bytes: the raw string in the `bytes` format
+        :param buffer: the raw string in the `bytes` format
         :param doc_id: the doc id
         :return: a chunk dict with the numpy array
         """
-        _string = raw_bytes.decode('utf8')
+        _string = buffer.decode('utf8')
         _string = _string.split(self.delimiter)
         _array = np.array(_string)
 

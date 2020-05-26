@@ -7,8 +7,8 @@ from tests import JinaTestCase
 class MyTestCase(JinaTestCase):
     def test_sentencier_en(self):
         sentencizer = Sentencizer()
-        raw_bytes = b'It is a sunny day!!!! When Andy comes back, we are going to the zoo.'
-        crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
+        buffer = b'It is a sunny day!!!! When Andy comes back, we are going to the zoo.'
+        crafted_chunk_list = sentencizer.craft(buffer, 0)
         self.assertEqual(len(crafted_chunk_list), 2)
 
     def test_sentencier_en_new_lines(self):
@@ -16,9 +16,9 @@ class MyTestCase(JinaTestCase):
         New lines are also considered as a separator.
         """
         sentencizer = Sentencizer()
-        raw_bytes = b'It is a sunny day!!!! When Andy comes back,\n' \
-                    b'we are going to the zoo.'
-        crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
+        buffer = b'It is a sunny day!!!! When Andy comes back,\n' \
+                 b'we are going to the zoo.'
+        crafted_chunk_list = sentencizer.craft(buffer, 0)
         self.assertEqual(len(crafted_chunk_list), 3)
 
     def test_sentencier_en_float_numbers(self):
@@ -27,9 +27,9 @@ class MyTestCase(JinaTestCase):
         are not taking into account.
         """
         sentencizer = Sentencizer()
-        raw_bytes = b'With a 0.99 probability this sentence will be ' \
-                    b'tokenized in 2 sentences.'
-        crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
+        buffer = b'With a 0.99 probability this sentence will be ' \
+                 b'tokenized in 2 sentences.'
+        crafted_chunk_list = sentencizer.craft(buffer, 0)
         self.assertEqual(len(crafted_chunk_list), 2)
 
     def test_sentencier_en_trim_spaces(self):
@@ -39,20 +39,20 @@ class MyTestCase(JinaTestCase):
         Ignoring chunks with only spaces.
         """
         sentencizer = Sentencizer()
-        raw_bytes = b'  This ,  text is...  . Amazing !!'
-        chunks = [i["text"] for i in sentencizer.craft(raw_bytes, 0)]
+        buffer = b'  This ,  text is...  . Amazing !!'
+        chunks = [i["text"] for i in sentencizer.craft(buffer, 0)]
         self.assertListEqual(chunks, ["This ,  text is", "Amazing"])
 
     def test_sentencier_cn(self):
         sentencizer = Sentencizer()
-        raw_bytes = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf8')
-        crafted_chunk_list = sentencizer.craft(raw_bytes, 0)
+        buffer = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf8')
+        crafted_chunk_list = sentencizer.craft(buffer, 0)
         self.assertEqual(len(crafted_chunk_list), 2)
 
     def test_jieba_crafter(self):
         jieba_crafter = JiebaSegmenter(mode='accurate')
-        raw_bytes = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf-8')
-        crafted_chunk_list = jieba_crafter.craft(raw_bytes, 0)
+        buffer = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf-8')
+        crafted_chunk_list = jieba_crafter.craft(buffer, 0)
         self.assertEqual(len(crafted_chunk_list), 14)
 
 

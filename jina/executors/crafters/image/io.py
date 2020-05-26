@@ -19,26 +19,26 @@ class ImageReader(BaseSegmenter):
         :class:`ImageReader` load an image file and craft into image matrix.
 
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param from_bytes: if set to true, then load image directly from raw_bytes, otherwise it assumes raw_bytes as file path
+        :param from_bytes: if set to true, then load image directly from buffer, otherwise it assumes buffer as file path
         """
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
         self.from_bytes = from_bytes
 
-    def craft(self, raw_bytes: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
-        Read the image from the given file path that specified in `raw_bytes` and save the `ndarray` of the image in
+        Read the image from the given file path that specified in `buffer` and save the `ndarray` of the image in
             the `blob` of the chunk.
 
-        :param raw_bytes: the image file path in raw bytes
+        :param buffer: the image file path in raw bytes
         :param doc_id: the id of the Document
 
         """
         from PIL import Image
         if self.from_bytes:
-            raw_img = Image.open(io.BytesIO(raw_bytes))
+            raw_img = Image.open(io.BytesIO(buffer))
         else:
-            raw_img = Image.open(raw_bytes.decode())
+            raw_img = Image.open(buffer.decode())
         if raw_img.mode != 'RGB':
             raw_img = raw_img.convert('RGB')
         img = np.array(raw_img).astype('float32')

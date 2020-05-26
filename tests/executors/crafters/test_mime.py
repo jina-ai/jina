@@ -21,23 +21,23 @@ def input_fn2(pattern='../../*.*'):
 
 class MyTestCase(JinaTestCase):
     def test_dummy_seg(self):
-        f = Flow().add(yaml_path='!Bytes2DataURICrafter\nwith: {mimetype: png}')
+        f = Flow().add(yaml_path='!Bytes2DataURI\nwith: {mimetype: png}')
         with f:
             f.index(input_fn=input_fn(), output_fn=print)
 
-        f = Flow().add(yaml_path='!Bytes2DataURICrafter\nwith: {mimetype: png, base64: true}')
+        f = Flow().add(yaml_path='!Bytes2DataURI\nwith: {mimetype: png, base64: true}')
         with f:
             f.index(input_fn=input_fn(), output_fn=print)
 
     def test_any_file(self):
-        f = Flow().add(yaml_path='!File2DataURICrafter\nwith: {base64: true}')
+        f = Flow().add(yaml_path='!FilePath2DataURI\nwith: {base64: true}')
         with f:
             f.index(input_fn=input_fn2, output_fn=print)
 
     def test_aba(self):
-        f = (Flow().add(yaml_path='!Bytes2DataURICrafter\nwith: {mimetype: png}')
-             .add(yaml_path='DataURI2BytesCrafter')
-             .add(yaml_path='!Bytes2DataURICrafter\nwith: {mimetype: png}'))
+        f = (Flow().add(yaml_path='!Bytes2DataURI\nwith: {mimetype: png}')
+             .add(yaml_path='DataURI2Bytes')
+             .add(yaml_path='!Bytes2DataURI\nwith: {mimetype: png}'))
 
         with f:
             f.index(input_fn=input_fn, output_fn=print)
