@@ -236,10 +236,11 @@ class RESTGatewayPea(BasePea):
             if mode_fn is None:
                 return http_error(f'mode: {mode} is not supported yet', 405)
             content = request.json
-            content['mode'] = ClientMode.from_string(mode)
-            content['input_type'] = ClientInputType.DATA_URI
-            if not 'data' in content:
+            if 'data' not in content:
                 return http_error('"data" field is empty', 406)
+
+            content['mode'] = ClientMode.from_string(mode)
+            content['input_type'] = ClientInputType.from_string(content.get('input_type', 'data_uri'))
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
             return Response(asyncio.run(results),
