@@ -44,6 +44,9 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                     d.file_path = _raw
                 elif scheme == 'data':
                     d.data_uri = _raw
+            else:
+                raise TypeError(f'{type(_raw)} type of input is not supported')
+
             d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0
             first_doc_id += 1
