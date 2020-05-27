@@ -38,9 +38,9 @@ class Any2Buffer(DataURI2Buffer):
         if buffer:
             pass
         elif file_path:
-            return super(FilePath2Buffer, self).craft(file_path)
+            return FilePath2Buffer.craft(self, file_path)
         elif data_uri:
-            return super(DataURI2Buffer, self).craft(data_uri)
+            return DataURI2Buffer.craft(self, data_uri)
         else:
             raise ValueError('this document has no "file_path", no "data_uri" and no "buffer" set')
 
