@@ -1,9 +1,14 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import base64
 import os
+import struct
 import urllib.parse
 import urllib.request
+import zlib
+
+import numpy as np
 
 from . import BaseDocCrafter
 
@@ -81,3 +86,39 @@ class Buffer2DataURI(FilePath2DataURI):
 
     def craft(self, buffer: bytes, mime_type: str, *args, **kwargs):
         return dict(data_uri=self.make_datauri(mime_type, buffer))
+
+
+class NumpyBuffer2PNGDataURI(FilePath2DataURI):
+    """Simple DocCrafter used in :command:`jina hello-world`,
+        it reads ``buffer`` into base64 png and stored in ``data_uri``"""
+
+    def __init__(self, width: int = 28, height: int = 28, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.width = width
+        self.height = height
+
+    def craft(self, buffer: bytes, *args, **kwargs):
+        doc = np.frombuffer(buffer, dtype=np.uint8)
+        pixels = []
+        for p in doc[::-1]:
+            pixels.extend([255 - int(p), 255 - int(p), 255 - int(p), 255])
+        buf = bytearray(pixels)
+
+        # reverse the vertical line order and add null bytes at the start
+        width_byte_4 = self.width * 4
+        raw_data = b''.join(
+            b'\x00' + buf[span:span + width_byte_4]
+            for span in range((self.height - 1) * width_byte_4, -1, - width_byte_4))
+
+        def png_pack(png_tag, data):
+            chunk_head = png_tag + data
+            return (struct.pack('!I', len(data)) +
+                    chunk_head +
+                    struct.pack('!I', 0xFFFFFFFF & zlib.crc32(chunk_head)))
+
+        png_bytes = b''.join([
+            b'\x89PNG\r\n\x1a\n',
+            png_pack(b'IHDR', struct.pack('!2I5B', self.width, self.height, 8, 6, 0, 0, 0)),
+            png_pack(b'IDAT', zlib.compress(raw_data, 9)),
+            png_pack(b'IEND', b'')])
+        return dict(data_uri='data:image/png;base64,' + base64.b64encode(png_bytes).decode())
