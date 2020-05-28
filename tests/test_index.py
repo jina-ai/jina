@@ -88,7 +88,7 @@ class MyTestCase(JinaTestCase):
     def test_simple_route(self):
         f = Flow().add(yaml_path='_forward')
         with f:
-            f.index(input_fn=random_docs(10), input_type=ClientInputType.PROTOBUF)
+            f.index(input_fn=random_docs(10))
 
     def test_update_method(self):
         a = DummyIndexer(index_filename='test.bin')
@@ -120,7 +120,7 @@ class MyTestCase(JinaTestCase):
         # f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='_forward', replicas=3)
 
         def start_client(fl):
-            fl.index(input_fn=random_docs(10), input_type=ClientInputType.PROTOBUF)
+            fl.index(input_fn=random_docs(10))
 
         with f1:
             self.assertEqual(f1.num_peas, 6)
@@ -152,7 +152,7 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(yaml_path='_forward')
 
         def start_client(fl):
-            fl.index(input_fn=random_docs(10), input_type=ClientInputType.PROTOBUF)
+            fl.index(input_fn=random_docs(10))
 
         with f:
             t1 = mp.Process(target=start_client, args=(f,))
@@ -167,7 +167,7 @@ class MyTestCase(JinaTestCase):
     def test_index(self):
         f = Flow().add(yaml_path='yaml/test-index.yml', replicas=3, separated_workspace=True)
         with f:
-            f.index(input_fn=random_docs(1000), input_type=ClientInputType.PROTOBUF)
+            f.index(input_fn=random_docs(1000))
 
         for j in range(3):
             self.assertTrue(os.path.exists(f'test2-{j + 1}/test2.bin'))
@@ -176,7 +176,7 @@ class MyTestCase(JinaTestCase):
 
         time.sleep(3)
         with f:
-            f.search(input_fn=random_docs(1), input_type=ClientInputType.PROTOBUF, output_fn=get_result, top_k=100)
+            f.search(input_fn=random_docs(1), output_fn=get_result, top_k=100)
 
 
 if __name__ == '__main__':

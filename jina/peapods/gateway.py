@@ -12,7 +12,7 @@ from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
-from ..enums import ClientInputType, ClientMode
+from ..enums import ClientMode
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
@@ -240,7 +240,6 @@ class RESTGatewayPea(BasePea):
                 return http_error('"data" field is empty', 406)
 
             content['mode'] = ClientMode.from_string(mode)
-            content['input_type'] = ClientInputType.from_string(content.get('input_type', 'data_uri'))
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
             return Response(asyncio.run(results),
