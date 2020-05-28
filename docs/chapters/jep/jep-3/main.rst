@@ -1,4 +1,4 @@
-JEP 1 --- Adding support for multi-fields search
+JEP 3 --- Adding support for multi-fields search
 =================================================================
 
 .. contents:: Table of Contents
@@ -26,18 +26,18 @@ Motivation
 ---------
 Multi-field search is commonly used in the production.
 Concretely, the use case is to limit the query within some fields that the user has selected.
-In the following case, there are three two fields in each document, i.e. ``title`` and ``summary``.
-The use case is to query only from the ``title`` field. Given the query, ``q='painter'``,
-the expected result is only ``hacker and painters``.
+In the following case, there are two documents and three two fields in each of them, i.e. ``title`` and ``summary``.
+The user wants to query ``painter`` but only from the ``title`` field, and the expected result is ``doc_id: 10``.
 
 .. highlight:: json
 .. code-block:: json
+
     {
-      "id": 10,
+      "doc_id": 10,
       "title": "the story of the art",
       "summary": "This is a book about the history of the art, and the stories of the great painters"
     }, {
-      "id": 11,
+      "doc_id": 11,
       "title": "hackers and painters",
       "summary": "This book discusses hacking, start-up companies, and many other technological issues"
     }
@@ -46,10 +46,11 @@ the expected result is only ``hacker and painters``.
 Rationale
 ---------
 The core issue of this use case is the need of marking the ``Chunks`` from different fields.
-During the query time, we would like to enable the users to change the selected fields in different queries without rebuilding the query ``Flow``.
+During the query time, the user should be able to change the selected fields in different queries without rebuilding the query ``Flow``.
 
 .. highlight:: json
 .. code-block:: json
+
     {
         "data": "painter",
         "top_k": 10,
@@ -70,6 +71,7 @@ To achieve this, we propose the following changes,
 
 .. highlight:: proto
 .. code-block:: proto
+
     message Chunk {
         ...
         string field_name = 13;
@@ -79,12 +81,14 @@ To achieve this, we propose the following changes,
 
 .. highlight:: python
 .. code-block:: python
+
     class FieldMapper(BaseSegmenter):
         def craft(self, *args, **kwargs) -> List[Dict]:
             pass
 
 .. highlight:: python
 .. code-block:: python
+
     class MapperDriver(SegmentDriver):
         pass
 
@@ -95,6 +99,7 @@ To achieve this, we propose the following changes,
 
 .. highlight:: yaml
 .. code-block:: yaml
+
     !FieldEncoder
     on:
         SearchRequest, IndexRequest:
