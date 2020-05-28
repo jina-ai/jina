@@ -142,7 +142,7 @@ class MyTestCase(JinaTestCase):
              .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
 
         with f:
-            f.index(input_fn=random_docs(10), input_type=ClientInputType.PROTOBUF)
+            f.index(input_fn=random_docs(10))
 
     def test_flow_yaml_dump(self):
         f = Flow(logserver_config='yaml/test-server-config.yml',
@@ -165,7 +165,7 @@ class MyTestCase(JinaTestCase):
     def test_shards(self):
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=3, separated_workspace=True)
         with f:
-            f.index(input_fn=random_docs(1000), input_type=ClientInputType.PROTOBUF, random_doc_id=False)
+            f.index(input_fn=random_docs(1000), random_doc_id=False)
         with f:
             pass
         self.add_tmpfile('test-docshard')
@@ -185,13 +185,13 @@ class MyTestCase(JinaTestCase):
 
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas, separated_workspace=True)
         with f:
-            f.index(input_fn=random_docs(index_docs), input_type=ClientInputType.PROTOBUF, random_doc_id=False)
+            f.index(input_fn=random_docs(index_docs), random_doc_id=False)
         with f:
             pass
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas,
                        separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
         with f:
-            f.search(input_fn=random_queries(1, index_docs), input_type=ClientInputType.PROTOBUF, random_doc_id=False, output_fn=validate,
+            f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
                      callback_on_body=True)
         self.add_tmpfile('test-docshard')
 

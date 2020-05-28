@@ -71,8 +71,9 @@ class DocCraftDriver(BaseCraftDriver):
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
             ret = self.exec_fn(**pb_obj2dict(d, self.exec.required_keys))
-            for k, v in ret.items():
-                setattr(d, k, v)
+            if ret:
+                for k, v in ret.items():
+                    setattr(d, k, v)
 
 
 class DocMIMEDriver(DocCraftDriver):

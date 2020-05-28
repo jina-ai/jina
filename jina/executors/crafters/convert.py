@@ -14,8 +14,9 @@ class FilePath2Buffer(BaseDocCrafter):
 
     def craft(self, file_path: str, *args, **kwargs):
         if urllib.parse.urlparse(file_path).scheme in {'http', 'https', 'data'}:
-            tmp = urllib.request.urlopen(file_path)
-            buffer = tmp.file.read()
+            page = urllib.request.Request(file_path, headers={'User-Agent': 'Mozilla/5.0'})
+            tmp = urllib.request.urlopen(page)
+            buffer = tmp.read()
         elif os.path.exists(file_path):
             with open(file_path, 'rb') as fp:
                 buffer = fp.read()
@@ -28,8 +29,20 @@ class DataURI2Buffer(FilePath2Buffer):
     """ Convert a data URI doc to a buffer doc.
     """
 
-    def craft(self, data_uri, *args, **kwargs):
+    def craft(self, data_uri: str, *args, **kwargs):
         return super().craft(data_uri)
+
+
+class Any2Buffer(DataURI2Buffer):
+    def craft(self, file_path: str, data_uri: str, buffer: bytes, *args, **kwargs):
+        if buffer:
+            pass
+        elif file_path:
+            return FilePath2Buffer.craft(self, file_path)
+        elif data_uri:
+            return DataURI2Buffer.craft(self, data_uri)
+        else:
+            raise ValueError('this document has no "file_path", no "data_uri" and no "buffer" set')
 
 
 class FilePath2DataURI(FilePath2Buffer):

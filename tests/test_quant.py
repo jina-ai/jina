@@ -52,7 +52,7 @@ class MyTestCase(JinaTestCase):
             yaml_path='_forward').add(
             yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward')
         with f as fl:
-            fl.index(random_docs, output_fn=get_output, input_type=ClientInputType.PROTOBUF)
+            fl.index(random_docs, output_fn=get_output)
 
     def f2(self, quant):
         os.environ['JINA_ARRAY_QUANT'] = quant
@@ -61,7 +61,7 @@ class MyTestCase(JinaTestCase):
             yaml_path='_forward').add(
             yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward').add(yaml_path='_forward')
         with f as fl:
-            fl.index(random_docs, output_fn=get_output, input_type=ClientInputType.PROTOBUF)
+            fl.index(random_docs, output_fn=get_output)
 
     def test_quant(self):
         for j in ('fp32', 'fp16', 'uint8'):

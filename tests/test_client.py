@@ -27,10 +27,10 @@ class MyTestCase(JinaTestCase):
         input_fn = iter([b'1234', b'45467'])
         PyClient.check_input(input_fn)
         input_fn = iter([Document(), Document()])
-        PyClient.check_input(input_fn, input_type=ClientInputType.PROTOBUF)
-        # bad_input_fn = iter([b'1234', '45467'])  this is invalid as we convert str to binary
-        # self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
-        bad_input_fn = iter([Document()])
+        PyClient.check_input(input_fn)
+        bad_input_fn = iter([b'1234', '45467', [12, 2, 3]])
+        self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
+        bad_input_fn = iter([Document(), None])
         self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
 
     def test_gateway_ready(self):
