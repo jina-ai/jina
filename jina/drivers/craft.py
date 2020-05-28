@@ -6,7 +6,7 @@ import random
 import urllib.parse
 import urllib.request
 
-from . import BaseExecutableDriver
+from . import BaseExecutableDriver, BaseDriver
 from .helper import array2pb, pb_obj2dict, pb2array
 
 
@@ -76,7 +76,7 @@ class DocCraftDriver(BaseCraftDriver):
                     setattr(d, k, v)
 
 
-class DocMIMEDriver(DocCraftDriver):
+class MIMEDriver(BaseDriver):
     """Guessing the MIME type based on the doc content
 
     Can be used before/after :class:`DocCraftDriver` to fill MIME type
