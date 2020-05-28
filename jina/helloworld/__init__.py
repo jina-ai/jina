@@ -7,7 +7,7 @@ from pathlib import Path
 from pkg_resources import resource_filename
 
 from .components import *
-from .helper import write_png, input_fn, print_result, write_html, download_data
+from .helper import input_fn, print_result, write_html, download_data
 from ..flow import Flow
 from ..helper import countdown, colored
 
