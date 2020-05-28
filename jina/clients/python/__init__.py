@@ -70,6 +70,9 @@ class PyClient(GrpcClient):
         :param input_fn: the input function
         :param input_type: if the input data is in protobuf Document format, or in raw bytes, or data uri
         """
+        if hasattr(input_fn, '__call__'):
+            input_fn = input_fn()
+
         kwargs = {'data': input_fn}
 
         try:
