@@ -1,0 +1,41 @@
+!Flow
+with:
+  board:
+    canvas:
+      gateway:
+        x: 528
+        y: 71
+      FieldsMapper:
+        x: 527
+        y: 199
+      TitleFilteredEncoder:
+        x: 377
+        y: 344
+      SumFilteredEncoder:
+        x: 665
+        y: 334
+      TitleIndexer:
+        x: 366
+        y: 539
+      SumIndexer:
+        x: 660
+        y: 539
+      join:
+        x: 516
+        y: 659
+pods:
+  gateway: {}
+  FieldsMapper:
+    needs: gateway
+  TitleFilteredEncoder:
+    needs: FieldsMapper
+  SumFilteredEncoder:
+    needs: FieldsMapper
+  TitleIndexer:
+    needs: TitleFilteredEncoder
+  SumIndexer:
+    needs: SumFilteredEncoder
+  join:
+    needs:
+      - TitleIndexer
+      - SumIndexer
