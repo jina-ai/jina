@@ -38,7 +38,7 @@ class DataURI2Buffer(FilePath2Buffer):
         return super().craft(data_uri)
 
 
-class Any2Buffer(DataURI2Buffer):
+class PathURI2Buffer(DataURI2Buffer):
     def craft(self, file_path: str, data_uri: str, buffer: bytes, *args, **kwargs):
         if buffer:
             pass
@@ -83,12 +83,20 @@ class FilePath2DataURI(FilePath2Buffer):
 
 
 class Buffer2DataURI(FilePath2DataURI):
+    """Convert buffer to data URI"""
 
     def craft(self, buffer: bytes, mime_type: str, *args, **kwargs):
         return dict(data_uri=self.make_datauri(mime_type, buffer))
 
 
-class NumpyBuffer2PNGDataURI(FilePath2DataURI):
+class Buffer2NdArray(BaseDocCrafter):
+    """Convert buffer to numpy array"""
+
+    def craft(self, buffer, *args, **kwargs):
+        return dict(blob=np.frombuffer(buffer))
+
+
+class Blob2PNGDataURI(FilePath2DataURI):
     """Simple DocCrafter used in :command:`jina hello-world`,
         it reads ``buffer`` into base64 png and stored in ``data_uri``"""
 
@@ -97,10 +105,9 @@ class NumpyBuffer2PNGDataURI(FilePath2DataURI):
         self.width = width
         self.height = height
 
-    def craft(self, buffer: bytes, *args, **kwargs):
-        doc = np.frombuffer(buffer, dtype=np.uint8)
+    def craft(self, blob, *args, **kwargs):
         pixels = []
-        for p in doc[::-1]:
+        for p in blob[::-1]:
             pixels.extend([255 - int(p), 255 - int(p), 255 - int(p), 255])
         buf = bytearray(pixels)
 

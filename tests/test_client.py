@@ -1,10 +1,13 @@
 import time
 
+import numpy as np
 import requests
 
 from jina.clients import py_client
 from jina.clients.python import PyClient
-from jina.enums import ClientInputType, ClientMode
+from jina.clients.python.io import input_files, input_numpy
+from jina.drivers.helper import array2pb
+from jina.enums import ClientMode
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
@@ -75,3 +78,26 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(j['index']['docs'][0]['dataUri'],
                              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
             self.assertEqual(a.status_code, 200)
+
+    def test_io_files(self):
+        PyClient.check_input(input_files('*.*'))
+        PyClient.check_input(input_files('*.*', recursive=True))
+        PyClient.check_input(input_files('*.*', size=2))
+        PyClient.check_input(input_files('*.*', size=2, read_mode='rb'))
+        PyClient.check_input(input_files('*.*', sampling_rate=.5))
+
+        f = Flow().add(yaml_path='PathURI2Buffer')
+
+        def validate_mime_type(req):
+            for d in req.index.docs:
+                self.assertEqual(d.mime_type, 'text/x-python')
+
+        with f:
+            f.index(input_files('*.py'), validate_mime_type)
+
+    def test_io_np(self):
+        print(type(np.random.random([100, 4])))
+        PyClient.check_input(input_numpy(np.random.random([100, 4, 2])))
+        PyClient.check_input(['asda', 'dsadas asdasd'])
+
+        print(type(array2pb(np.random.random([100, 4, 2]))))

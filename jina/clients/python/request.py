@@ -7,6 +7,9 @@ import random
 import urllib.parse
 from typing import Iterator, Union
 
+import numpy as np
+
+from ...drivers.helper import array2pb
 from ...enums import ClientMode
 from ...helper import batch_iterator
 from ...proto import jina_pb2
@@ -34,6 +37,8 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
             d = getattr(req, str(mode).lower()).docs.add()
             if isinstance(_raw, jina_pb2.Document):
                 d.CopyFrom(_raw)
+            elif isinstance(_raw, np.ndarray):
+                d.blob.CopyFrom(array2pb(_raw))
             elif isinstance(_raw, bytes):
                 d.buffer = _raw
                 if mime_type:
@@ -44,6 +49,8 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                     d.file_path = _raw
                 elif scheme == 'data':
                     d.data_uri = _raw
+                else:
+                    d.text = _raw
             else:
                 raise TypeError(f'{type(_raw)} type of input is not supported')
 

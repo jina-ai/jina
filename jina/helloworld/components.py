@@ -11,8 +11,8 @@ class MySegmenter(BaseSegmenter):
     """Simple Segementer used in :command:`jina hello-world`,
     each doc contains only one chunk """
 
-    def craft(self, buffer, doc_id, *args, **kwargs):
-        return [dict(blob=np.frombuffer(buffer, dtype=np.uint8))]
+    def craft(self, blob, *args, **kwargs):
+        return [dict(blob=blob)]
 
 
 class MyEncoder(BaseImageEncoder):

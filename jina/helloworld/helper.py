@@ -13,25 +13,6 @@ from ..clients.python import ProgressBar
 from ..helper import colored
 from ..logging import default_logger
 
-
-def load_mnist(path):
-    with gzip.open(path, 'rb') as fp:
-        return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 784])
-
-
-def input_fn(fp, index=True, num_doc=None):
-    img_data = load_mnist(fp)
-    if not index:
-        # shuffle for random query
-        img_data = np.take(img_data, np.random.permutation(img_data.shape[0]), axis=0)
-    d_id = 0
-    for r in img_data:
-        yield r.tobytes()
-        d_id += 1
-        if num_doc is not None and d_id > num_doc:
-            break
-
-
 result_html = []
 
 
@@ -73,3 +54,9 @@ def download_data(targets):
         for v in targets.values():
             if not os.path.exists(v['filename']):
                 urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update(1))
+            v['data'] = load_mnist(v['filename'])
+
+
+def load_mnist(path):
+    with gzip.open(path, 'rb') as fp:
+        return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 784])
