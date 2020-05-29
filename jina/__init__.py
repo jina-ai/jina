@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
