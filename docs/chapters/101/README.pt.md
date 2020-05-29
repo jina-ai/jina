@@ -1,6 +1,6 @@
 <table>
   <tr>
-    <td width="70%"><h1>Jina 101: First Thing to Learn About Jina</h1>
+    <td width="70%"><h1>Jina 101: A primeira coisa para se aprender sobre Jina</h1>
     <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src="../../../.github/badges/twitter-share101.svg?raw=true"
        alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
@@ -36,23 +36,26 @@
   </tr>
 </table>
 
+
 <h2 align="center">Document & Chunk</h2>
 
 <img align="left" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-In Jina,**ein Dokument ist alles, wonach Sie suchen möchten**: ein Textdokument, ein kurzer Tweet, ein Codeschnipsel, ein Bild, ein Video-/Audioclip, GPS-Spuren eines Tages usw. Ein Dokument ist auch die Eingabeanfrage bei der Suche.
 
-**Ein Chunk ist eine kleine semantische Einheit eines Dokuments.** Es könnte ein Satz, ein 64x64-Bildfeld, ein 3-Sekunden-Videoclip, ein Koordinaten- und Adressenpaar sein
+Em Jina, **um Document é qualquer coisa que você deseja procurar**: um documento de texto, um pequeno tweet, um trecho de código, uma imagem, um clipe de vídeo/áudio, rastreamentos GPS de um dia, etc. Um Document também é usado para se fazer uma pesquisar.
 
-In Jina ist ein Dokument wie ein Schokoriegel. Nicht nur, weil es in verschiedenen Formaten und Zutaten erhältlich ist, sondern auch, weil man es nach Belieben in Stücke brechen kann. Was man schließlich kauft und lagert, sind die Schokoriegel, und was man isst und verdauen kann, sind die Stücke. Sie wollen nicht den ganzen Riegel schlucken, Sie wollen ihn auch nicht zu Pulver zermahlen; so oder so verlieren Sie den Geschmack (d.h. die Semantik).
+**Um Chunk é uma pequena unidade semântica de um Document.** Pode ser uma frase, um patch de imagem de 64x64, um videoclipe de 3 segundos ou um par de coordenadas e endereços.
+
+Em Jina, um Document é como uma barra de chocolate. Não apenas porque ele vem em diferentes formatos e ingredientes, mas também porque você pode dividi-lo em pedaços da maneira que desejar. Eventualmente, o que você compra e armazena são as barras de chocolate e o que você come e digere são os pedaços. Você não quer engolir a barra inteira, também não deseja triturá-la em pó; de qualquer forma, você perderá o sabor (ou seja, a semântica).
 
 <br/><br/><br/>
+
 
 <h2 align="center">YAML config</h2>
 
 <img align="right" src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Eine YAML-Konfiguration wird in Jina häufig verwendet, um die Eigenschaften eines Objekts zu beschreiben.** Es bietet Anpassungsmöglichkeiten, so dass Benutzer das Verhalten eines Objekts ändern können, ohne seinen Code zu berühren. Jina kann ein sehr kompliziertes Objekt direkt aus einer einfachen YAML-Konfiguration erstellen und ein Objekt in einer YAML-Konfiguration speichern.
+**Um arquivo de configuração YAML é amplamente usada na Jina para descrever as propriedades de um objeto.** Ele oferece personalização, permitindo que os usuários alterem o comportamento de um objeto sem tocar em seu código. Jina pode criar um objeto muito complicado diretamente de uma configuração YAML simples, assim como salvar esse objeto em uma configuração YAML.
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -60,26 +63,27 @@ In Jina ist ein Dokument wie ein Schokoriegel. Nicht nur, weil es in verschieden
 
 <img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Executor stellt eine algorithmische Einheit in Jina dar.** Algorithmen wie das Kodieren von Bildern in Vektoren, das Speichern von Vektoren auf der Platte, das Ranking der Ergebnisse, können alle als Executor formuliert werden. Executor bietet nützliche Schnittstellen, die es KI-Entwicklern und -Ingenieuren ermöglichen, sich auf den Algorithmus zu konzentrieren. Funktionen wie Persistenz, Planung, Verkettung, Gruppierung und Parallelisierung sind sofort einsatzbereit.
+**O Executor representa uma unidade algorítmica em Jina.** Algoritmos, como um para codificar imagens em vetores, ou armazenar vetores no disco, ou classificar resultados, podem ser todos formulados como Executores. O Executor fornece interfaces úteis que permitem que desenvolvedores e engenheiros de IA se concentrem no algoritmo. Recursos como persistência, programação, encadeamento, agrupamento e paralelização já são automaticamente fornecidos.
 
-Die Eigenschaften eines EXECUTORs werden in einer YAML-Konfiguration gespeichert, sie gehen immer Hand in Hand.
+As propriedades de um Executor são armazenadas em uma configuração YAML, elas sempre andam de mãos dadas.
 
 <br/><br/><br/>
 
 <h3 align="center">Family of Executors</h3>
 
+
 <p align="center">
   <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-**Executor ist eine große Familie.** Jedes Familienmitglied konzentriert sich auf einen wichtigen Aspekt des Recherchensystems. Treffen wir uns:
 
--   **Crafter**: für die Herstellung/Segmentierung/Umwandlung des Dokuments und Chunk;
--   **Encoder**: zur Darstellung des Chunk als Vektor;
--   **Indexer**: zum Speichern und Abrufen von Vektoren und Schlüsselwert-Informationen aus dem Speicher;
--   **Ranker**: zum Sortieren der Ergebnisse;
+**O Executor é uma grande família.** Cada membro da família se concentra em um aspecto importante do sistema de busca. Conhecam alguns membros dessa família:
+- **Crafter**: para criar/segmentar/transformar os Documents e Chunks;
+- **Encoder**: para representar um Chunk como vetor;
+- **Indexador**: para salvar e recuperar vetores e informações sobre valores-chave do armazenamento;
+- **Ranker**: para classificar os resultados;
 
-Haben Sie einen neuen Algorithmus im Sinn? Kein Problem, diese Familie heißt neue Mitglieder immer willkommen!
+Tem em mente um novo algoritmo? Não tem problema, essa família sempre recebe novos membros!
 
 <br/><br/>
 
@@ -87,15 +91,17 @@ Haben Sie einen neuen Algorithmus im Sinn? Kein Problem, diese Familie heißt ne
 
 <img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Driver definiert, wie sich ein Executor bei Netzwerkanforderungen verhält.** Driver hilft dem Executor bei der Abwicklung des Netzwerkverkehrs, indem er die Verkehrsdaten (z.B. Protobuf) in ein Format interpretiert, das der Executor verstehen und verarbeiten kann (z.B. Numpy array).
+**O Driver define como o Executor se comporta em solicitações de rede.** O Driver ajuda o Executor a lidar com o tráfego de rede, interpretando os dados de tráfego (por exemplo, Protobuf) no formato que o Executor pode entender e processar (por exemplo, uma matriz em Numpy).
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+
 
 <h2 align="center">Pea</h2>
 
 <img align="left" src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pea umhüllt einen Executor und gewährt ihm die Fähigkeit, Daten über ein Netzwerk auszutauschen.** Die Pea kann Daten von anderen PEAs senden und empfangen. Die Pea kann auch innerhalb eines Docker-Containers laufen, der alle Abhängigkeiten und die kontextbezogene Umgebung an einem Ort enthält.
+**A Pea (ervilha) envolve um Executor e concede sua capacidade de trocar dados através de uma rede.** A Pea pode enviar e receber dados de outras Peas. A Pea também pode ser executado dentro de um contêiner de Docker, contendo todas as dependências e o ambiente contextual em um único local.
 
 <img align="right" src="img/ILLUS7.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -105,9 +111,9 @@ Haben Sie einen neuen Algorithmus im Sinn? Kein Problem, diese Familie heißt ne
 
 <img align="left" src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pod ist eine Gruppe von Erbsen mit der gleichen Eigenschaft.** Erbsen laufen parallel in einem Pod. Pod vereinheitlicht die Netzwerkschnittstellen dieser PEAs, so dass sie von außen wie eine einzige Pea aussehen. Darüber hinaus verleiht ein Pod den Peas mehr Kontrolle, Zeitplanung und Kontextmanagement.
+**O Pod é um grupo de Peas com a mesma propriedade.** As Peas são executadas em paralelo dentro de um Pod. O Pod unifica as interfaces de rede dessas Peas, fazendo com que pareçam uma única Pea do lado de fora. Além disso, um Pod adiciona mais controle, programação e gerenciamento de contexto às Peas.
 
-Pod kann entweder auf einem lokalen Host oder auf verschiedenen Computern über ein Netzwerk ausgeführt werden
+O pod pode ser executado no host local ou em computadores diferentes de uma rede.
 
 <img align="right" src="img/ILLUS9.png?raw=true" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -115,17 +121,18 @@ Pod kann entweder auf einem lokalen Host oder auf verschiedenen Computern über 
 
 <h2 align="center">Flow</h2>
 
+
 <img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Flow stellt eine hochrangige Aufgabe dar**z.B. Indexierung, Suche, Schulung. Es verwaltet die Zustände und den Kontext einer Gruppe von Pods und orchestriert sie, um eine Aufgabe zu erfüllen. Flow umfasst die Vielfalt, unabhängig davon, ob sich ein Pod entfernt oder im Docker-Container befindet - ein Flow beherrscht sie alle!
+**O fluxo representa uma tarefa de alto nível**, como indexação, pesquisa and treinamento. Ele gerencia os estados e o contexto de um grupo de Pods, orquestrando-os para realizar uma tarefa. O Flow abraça a diversidade, seja um Pod remoto ou no contêiner do Docker, um Flow é quem manda!
 
 <br/><br/><br/><br/><br/><br/>
 
 <h2 align="center">From Micro to Macro</h2>
 
-Jina ist eine glückliche Familie. Sie können die Harmonie spüren, wenn Sie Jina benutzen
+Jina é uma família feliz. Você pode sentir a harmonia ao usar Jina.
 
-Sie können auf der Mikroebene entwerfen und diese bis auf die Makroebene skalieren. Aus YAMLs werden Algorithmen, aus Threads werden Prozesse, aus Pods werden Flüsse. Die Muster und die Logik bleiben immer gleich. Das ist die Schönheit von Jina
+Você pode projetar no nível micro e dimensioná-lo até o nível macro. YAMLs tornam-se algoritmos, threads tornam-se processos, Pods tornam-se fluxos. Os padrões e a lógica sempre permanecem os mesmos. Esta é a beleza de Jina.
 
 <p align="center">
   <img src="img/ILLUS11.png?raw=true" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
@@ -167,4 +174,6 @@ Sie können auf der Mikroebene entwerfen und diese bis auf die Makroebene skalie
 </p>
 <br><br><br>
 
-Das Aussehen und die Gestaltung dieses Dokuments ("Jina 101: First Thing to Learn About Jina") ist urheberrechtlich geschützt © Jina AI Limited. Alle Rechte vorbehalten. Der Kunde darf ohne ausdrückliche schriftliche Genehmigung von Jina AI Limited keine Teile der visuellen Designelemente oder Konzepte vervielfältigen, kopieren oder wiederverwenden.
+
+A aparência deste documento ("Jina 101: a primeira coisa a aprender sobre a Jina") é protegida por direitos autorais © Jina AI Limited. Todos os direitos reservados. Pessoas não podem duplicar, copiar ou reutilizar qualquer parte dos elementos ou conceitos do design visual sem a permissão expressa por escrito da Jina AI Limited.
+

@@ -25,6 +25,7 @@
 <a href="README.md">English</a> •
   <a href="README.ja.md">日本語</a> •
   <a href="README.fr.md">français</a> •
+  <a href="README.pt.md">Português</a> •
   <a href="README.de.md">Deutsch</a> •
   <a href="README.ru.md">Русский язык</a> •
   <a href="README.zh.md">中文</a>
