@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 import glob
 import itertools as it
 import random
