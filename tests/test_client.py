@@ -114,4 +114,7 @@ class MyTestCase(JinaTestCase):
             f.index_numpy(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
 
         with f:
+            f.index(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
+
+        with f:
             f.index(['asda', 'dsadas asdasd'], output_fn=lambda x: check_non_empty(x, 'text'))

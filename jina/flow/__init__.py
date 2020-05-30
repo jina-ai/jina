@@ -539,10 +539,8 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            with f.build(runtime='thread') as flow:
-                flow.train(txt_file='aa.txt')
-                flow.train(image_zip_file='aa.zip', batch_size=64)
-                flow.train(video_zip_file='aa.zip')
+            with f:
+                f.train(input_fn)
                 ...
 
 
@@ -651,10 +649,8 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            with f.build(runtime='thread') as flow:
-                flow.index(txt_file='aa.txt')
-                flow.index(image_zip_file='aa.zip', batch_size=64)
-                flow.index(video_zip_file='aa.zip')
+            with f:
+                f.index(input_fn)
                 ...
 
 
@@ -696,10 +692,8 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            with f.build(runtime='thread') as flow:
-                flow.search(txt_file='aa.txt')
-                flow.search(image_zip_file='aa.zip', batch_size=64)
-                flow.search(video_zip_file='aa.zip')
+            with f:
+                f.search(input_fn)
                 ...
 
 

@@ -143,7 +143,7 @@ class PyClient(GrpcClient):
         """ An iterator of bytes, each element represents a document's raw content,
         i.e. ``input_fn`` defined int the protobuf
         """
-        if self._input_fn:
+        if self._input_fn is not None:
             return self._input_fn
         else:
             raise BadClient('input_fn is empty or not set')
