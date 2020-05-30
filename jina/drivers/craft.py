@@ -8,6 +8,7 @@ import urllib.request
 
 from . import BaseExecutableDriver, BaseDriver
 from .helper import array2pb, pb_obj2dict, pb2array
+from ..proto import jina_pb2
 
 
 class BaseCraftDriver(BaseExecutableDriver):
@@ -38,7 +39,10 @@ class ChunkCraftDriver(BaseCraftDriver):
                 if isinstance(ret, dict):
                     for k, v in ret.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2pb(v))
+                            if isinstance(v, jina_pb2.NdArray):
+                                c.blob.CopyFrom(v)
+                            else:
+                                c.blob.CopyFrom(array2pb(v))
                         else:
                             setattr(c, k, v)
                     continue
@@ -48,7 +52,10 @@ class ChunkCraftDriver(BaseCraftDriver):
                 c = d.chunks.add()
                 for k, v in c_dict.items():
                     if k == 'blob':
-                        c.blob.CopyFrom(array2pb(v))
+                        if isinstance(v, jina_pb2.NdArray):
+                            c.blob.CopyFrom(v)
+                        else:
+                            c.blob.CopyFrom(array2pb(v))
                     elif k == 'chunk_id':
                         self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
                                             f'is it intentional? chunk_id will be override by {self.__class__} '
@@ -70,7 +77,10 @@ class DocCraftDriver(BaseCraftDriver):
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
-            ret = self.exec_fn(**pb_obj2dict(d, self.exec.required_keys))
+            _args_dict = pb_obj2dict(d, self.exec.required_keys)
+            if 'blob' in self.exec.required_keys:
+                _args_dict['blob'] = pb2array(d.blob)
+            ret = self.exec_fn(**_args_dict)
             if ret:
                 for k, v in ret.items():
                     setattr(d, k, v)
@@ -145,13 +155,19 @@ class SegmentDriver(BaseCraftDriver):
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
-            ret = self.exec_fn(**pb_obj2dict(d, self.exec.required_keys))
+            _args_dict = pb_obj2dict(d, self.exec.required_keys)
+            if 'blob' in self.exec.required_keys:
+                _args_dict['blob'] = pb2array(d.blob)
+            ret = self.exec_fn(**_args_dict)
             if ret:
                 for r in ret:
                     c = d.chunks.add()
                     for k, v in r.items():
                         if k == 'blob':
-                            c.blob.CopyFrom(array2pb(v))
+                            if isinstance(v, jina_pb2.NdArray):
+                                c.blob.CopyFrom(v)
+                            else:
+                                c.blob.CopyFrom(array2pb(v))
                         elif k == 'chunk_id':
                             self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
                                                 f'is it intentional? chunk_id will be override by {self.__class__} '
@@ -169,3 +185,27 @@ class SegmentDriver(BaseCraftDriver):
                     d.meta_info = d.buffer
             else:
                 self.logger.warning('doc %d gives no chunk' % d.doc_id)
+
+
+class UnarySegmentDriver(BaseDriver):
+    def __init__(
+            self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.first_chunk_id = first_chunk_id
+        self.random_chunk_id = random_chunk_id
+
+    def __call__(self, *args, **kwargs):
+        for d in self.req.docs:
+            c = d.chunks.add()
+            c.length = 1
+            d_type = d.WhichOneof('content')
+            if d_type in {'blob'}:
+                getattr(c, d_type).CopyFrom(getattr(d, d_type))
+            else:
+                setattr(c, d_type, getattr(d, d_type))
+            c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
+                -1).value)
+            c.doc_id = d.doc_id
+            c.mime_type = d.mime_type
+            self.first_chunk_id += 1
+            d.length = 1

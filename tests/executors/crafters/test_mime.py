@@ -50,8 +50,8 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index(input_fn=input_fn, output_fn=print)
 
-    def test_any2buffer(self):
-        f = (Flow().add(yaml_path='Any2Buffer')
+    def test_pathURI2Buffer(self):
+        f = (Flow().add(yaml_path='PathURI2Buffer')
              .add(yaml_path='Buffer2DataURI'))
 
         with f:
