@@ -25,9 +25,9 @@ Abstract
 Motivation
 ---------
 Multi-field search is commonly used in practice.
-Concretely, the use case is to limit the query within some fields that the user has selected.
-In the following case, there are two documents and three two fields in each of them, i.e. ``title`` and ``summary``.
-The user wants to query ``painter`` but only from the ``title`` field, and the expected result is ``doc_id: 11``.
+Concretely, as a user, I want to limit the query within some selected fields.
+In the following use case, there are two documents and three two fields in each of them, i.e. ``title`` and ``summary``.
+The user wants to query ``painter`` but **only** from the ``title`` field. The expected result will be ``{'doc_id': 11, 'title': 'hackers and painters'}``.
 
 .. highlight:: json
 .. code-block:: json
@@ -47,23 +47,36 @@ Rationale
 ---------
 The core issue of this use case is the need of marking the ``Chunks`` from different fields.
 During the query time,
-the user should be able to change the selected fields in different queries without rebuilding the query ``Flow``.
+the user should be able to change the selected fields in different queries **without rebuilding the query** ``Flow``.
 
-We need first add new fields in the protobuf defination. At the ``Chunk`` level, one new field, namely ``field_name``, is required to denote the field information of the ``Chunk``. Each ``Document`` have one or more fields, each field can be further splitted into one or more ``Chunks``. In other words, each ``Chunk`` can only be assigned to one field, and each field contains one or more ``Chunks``.
+Modify ``jina.proto``
+^^^^^^^^^^^^^^^^^^^^^
 
-Secondly, at the ``Request`` level, we will add another new field, namely ``filter_by``, for the ``SearchRequest`` so that the users can specify different fields in each request.
-
-Let's take the following ``Flow`` as an example, `FieldsMapper` is a ``Crafter`` that split each ``Document`` into fields and add the  ``field_name`` information for ``Chunks``.
-
-Flow
-^^^^
+Let's take the following ``Flow`` as an example.
+The `FieldsMapper` is a ``Crafter`` that split each ``Document`` into fields and add the  ``field_name`` information for ``Chunks``.
+Afterwards, the ``Chunks`` containing the ``title`` and the ``summary`` information are processed differently in two pathways and stored seperately.
 
 .. image:: JEP3-index-design.png
    :align: center
    :width: 60%
 
-During the query time, the ``EncodeDriver`` will extract only the ``Chunks`` that meet the ``filter_by`` requirement.
-This requires the refactoring of the ``EncodeDriver``. The change will mainly taken place in the ``extract_chunks`` function, as below.
+To add the field information into ``Chunks``, we need first add new fields in the protobuf defination.
+At the ``Chunk`` level, one new field, namely ``field_name``, is required to denote the field information of the ``Chunk``.
+Each ``Document`` have one or more fields, and each field can be further splitted into one or more ``Chunks``.
+In other words, each ``Chunk`` can **only** be assigned to one field, but each field contains one or more ``Chunks``.
+
+.. highlights::
+    The concept of ``field`` can be considered as a group of ``Chunks``.
+
+Secondly, at the ``Request`` level, we will add another new field, namely ``filter_by``, for the ``SearchRequest``.
+This is used to store the information of on which fields the user wants to query.
+By adding this information, the users can specify different fields to query in each search request.
+
+Adapt Index-Flow Pods
+^^^^^^^^^^^^^^^^^^^^^
+During index time, most parts of the ``Flow`` stay the same as before.
+In order to make the ``Indexer`` only index the ``Chunks`` whose ``field_name`` meet the selected fields, we need to adapt the ``VectorIndexDriver`` and the ``extract_chunks`` function.
+A new argument, ``filter_by``, is introduced to specify which fields will be indexed.
 
 .. highlight:: python
 .. code-block:: python
@@ -79,41 +92,6 @@ This requires the refactoring of the ``EncodeDriver``. The change will mainly ta
 .. highlight:: python
 .. code-block:: python
 
-    class EncodeDriver(BaseEncodeDriver):
-        """Extract the chunk-level content from documents and call executor and do encoding
-        """
-
-        def __call__(self, *args, **kwargs):
-            contents, chunk_pts, no_chunk_docs, bad_chunk_ids = \
-                extract_chunks(self.req.docs, self.req.filter_by, embedding=False)
-
-
-Plus, we need refactoring the ``BasePea`` so that the information of the services to wait is stored. This information is required when the ``Pea`` handle the input requests.
-In the query time, the ``Pea`` needs to combine this information together with the ``filter_by`` information from the request to eventually decides which requests to wait.
-In the current version (v.0.1.14), the information of the services to wait is only stored at the ``Pod`` level for the purpose of building the graph when the ``Pod`` is used together with the ``Flow`` api.
-To make this information available at the ``Pea`` level, we need add ``--needs`` as a new argument in the ``set_pea_parser`` and adapt the ``handle()`` function accordingly.
-So that the ``Pea`` only wait for the services that selected by the ``filter_by``.
-If the ``filter_by`` is not given, the ``Pea`` will wait for all the services defined during the initialization.
-
-.. highlight:: python
-.. code-block:: python
-
-    def set_pea_parser(parser=None):
-        gp5 = add_arg_group(parser, 'pea messaging arguments')
-        gp5.add_argument('--needs', type=str, action='append', default=None)
-
-In another example, we want to share the same ``Encoder`` but index the ``Chunks`` from different fields in seperated indices. The diagram is as below.
-
-.. image:: JEP3-index-share-encoder.png
-   :align: center
-   :width: 60%
-
-In the index time, we need adapt the ``VectorIndexDriver`` to the ``extract_chunks`` function. So that the ``VectorIndexDriver`` only keep the ``Chunks`` from the fields specified by ``filter_by`` argument.
-The same logic goes for the ``ChunkKVIndexDriver``.
-
-.. highlight:: python
-.. code-block:: python
-
     class VectorIndexDriver(BaseIndexDriver):
         def __init__(self, filter_by: Union[str, List[str], Tuple[str]] = None, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -123,6 +101,8 @@ The same logic goes for the ``ChunkKVIndexDriver``.
             embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
                 extract_chunks(self.req.docs, self.filter_by, embedding=True)
 
+
+The same change goes for the ``ChunkKVIndexDriver``.
 
 .. highlight:: python
 .. code-block:: python
@@ -143,8 +123,41 @@ The same logic goes for the ``ChunkKVIndexDriver``.
                 self.exec_fn(content)
 
 
+Adapt Query-Flow Pods
+^^^^^^^^^^^^^^^^^^^^^
 
-In the query time, the ``VectorSearchDriver`` and the ``KVSearchDriver`` also need to be adapted accordingly in order to only process the ``Chunks`` meet ``filter_by``.
+During the query time, the ``EncodeDriver`` will extract only the ``Chunks`` that meet the ``filter_by`` in the ``SearchRequest``.
+To do so, we need adapt ``EncodeDriver`` to the ``extract_chunks()`` which has been refactored in the previous section.
+
+.. highlight:: python
+.. code-block:: python
+
+    class EncodeDriver(BaseEncodeDriver):
+        """Extract the chunk-level content from documents and call executor and do encoding
+        """
+
+        def __call__(self, *args, **kwargs):
+            contents, chunk_pts, no_chunk_docs, bad_chunk_ids = \
+                extract_chunks(self.req.docs, self.req.filter_by, embedding=False)
+
+
+Plus, we need to refactor the ``BasePea`` so that the ``Pea`` gets the information of how many incoming messages are expected.
+The expected number of incoming messages will change from query to query because the user will select different fields with the ``filter_by`` argument.
+In the current version (v.0.1.15), this information is fixed and stored in ``self.args.num_parts`` when the graph is built.
+And the ``Pea`` will **NOT** start processing the data until the expected number of incoming messages arrive.
+In order to make the ``Pea`` handle the varying number of incoming messages, we need to make the expected number adjustable on the fly for each query.
+Note that the ``self.args.num_parts`` is the upper bound of the expected number of incoming messages.
+Thereafter, it is reasonable to set the expected number of incoming messages as following,
+
+.. highlight:: python
+.. code-block:: python
+
+        num_part = self.args.num_part
+        if self.request_type == 'SearchRequest':
+            # modify the num_part on the fly for SearchRequest
+            num_part = min(self.args.num_part, max(len(self.request.filtered_by), 1))
+
+In the query time, the ``VectorSearchDriver`` and the ``KVSearchDriver`` also need to be adapted accordingly in order to **only** process the ``Chunks`` meet the ``filter_by`` requirement.
 
 .. highlight:: python
 .. code-block:: python
@@ -153,6 +166,7 @@ In the query time, the ``VectorSearchDriver`` and the ``KVSearchDriver`` also ne
         def __call__(self, *args, **kwargs):
             embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
                 extract_chunks(self.req.docs, self.req.filter_by, embedding=True)
+            ...
 
 
 .. highlight:: python
@@ -160,24 +174,22 @@ In the query time, the ``VectorSearchDriver`` and the ``KVSearchDriver`` also ne
 
     class KVSearchDriver(BaseSearchDriver):
         def __call__(self, *args, **kwargs):
-            if self.level == 'doc':
-                for d in self.req.docs:
-                    self._update_topk_docs(d)
+            ...
             elif self.level == 'chunk':
                 for d in self.req.docs:
                     for c in d.chunks:
                         if c.field_name not in self.req.filter_by:
                             continue
-                        self._update_topk_chunks(c)
+                        ...
             elif self.level == 'all':
                 for d in self.req.docs:
                     self._update_topk_docs(d)
                     for c in d.chunks:
                         if c.field_name not in self.req.filter_by:
                             continue
-                        self._update_topk_chunks(c)
-            else:
-                raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
+                        ...
+            ...
+
 
 Specification
 -------------
@@ -195,24 +207,7 @@ The selected multiple fields will be given in the query by ``field_name`` as fol
     }
 
 
-
-Backwards Compatibility
------------------------
-
-[Describe potential impact and severity on pre-existing code.]
-
-
-Reference Implementation
-------------------------
-
-[Link to any existing implementation and details about its state, e.g. proof-of-concept.]
-
 Open Issues
 -----------
 
 This use case can be further extened to the multi-modality search by extending the ``filter_by`` to accepting the ``mimitype``.
-
-References
-----------
-
-[A collection of URLs used as references through the JEP.]
