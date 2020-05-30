@@ -20,7 +20,7 @@ JEP 3 --- Adding support for multi-fields search
 Abstract
 --------
 
-[A short (~200 word) description of the technical issue being addressed.]
+We propose a way to implement the multi-field search in Jina.
 
 Motivation
 ---------
