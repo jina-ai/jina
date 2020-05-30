@@ -12,7 +12,7 @@ from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
-from ..enums import ClientInputType, ClientMode
+from ..enums import ClientMode
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
@@ -236,10 +236,10 @@ class RESTGatewayPea(BasePea):
             if mode_fn is None:
                 return http_error(f'mode: {mode} is not supported yet', 405)
             content = request.json
-            content['mode'] = ClientMode.from_string(mode)
-            content['input_type'] = ClientInputType.DATA_URI
-            if not 'data' in content:
+            if 'data' not in content:
                 return http_error('"data" field is empty', 406)
+
+            content['mode'] = ClientMode.from_string(mode)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
             return Response(asyncio.run(results),

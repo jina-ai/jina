@@ -400,7 +400,7 @@ def set_client_cli_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from ..enums import ClientInputType, ClientMode
+    from ..enums import ClientMode
 
     _set_grpc_parser(parser)
 
@@ -415,9 +415,6 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--top-k', type=int,
                      default=10,
                      help='top_k results returned in the search mode')
-    gp1.add_argument('--input-type', choices=list(ClientInputType), default=ClientInputType.BUFFER,
-                     type=ClientInputType.from_string,
-                     help='the type of input data')
     gp1.add_argument('--mime-type', type=str,
                      help='MIME type of the input, useful when input-type is set to BUFFER')
     gp1.add_argument('--callback-on-body', action='store_true', default=False,

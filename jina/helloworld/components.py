@@ -3,26 +3,16 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..executors.crafters import BaseSegmenter, BaseDocCrafter
+from ..executors.crafters import BaseSegmenter
 from ..executors.encoders import BaseImageEncoder
-
-
-class MyDocCrafter(BaseDocCrafter):
-    """Simple DocCrafter used in :command:`jina hello-world`,
-    it reads ``buffer`` into base64 png and stored in ``meta_info``"""
-
-    def craft(self, buffer, *args, **kwargs):
-        doc = np.frombuffer(buffer, dtype=np.uint8)
-        from .helper import write_png
-        return dict(meta_info=write_png(doc))
 
 
 class MySegmenter(BaseSegmenter):
     """Simple Segementer used in :command:`jina hello-world`,
     each doc contains only one chunk """
 
-    def craft(self, buffer, doc_id, *args, **kwargs):
-        return [dict(blob=np.frombuffer(buffer, dtype=np.uint8))]
+    def craft(self, blob, *args, **kwargs):
+        return [dict(blob=blob)]
 
 
 class MyEncoder(BaseImageEncoder):

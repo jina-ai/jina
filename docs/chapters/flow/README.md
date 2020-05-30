@@ -236,7 +236,7 @@ with f:
     f.block()
 ```
 
-Please checkout https://github.com/jina-ai/examples/tree/master/helloword-in-cs for a complete example.
+Please checkout https://github.com/jina-ai/examples/tree/master/helloworld-in-cs for a complete example.
 
 **WARNING**: don't use while loop to do the waiting, it is extremely low-efficient:
 

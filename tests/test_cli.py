@@ -3,11 +3,13 @@ import subprocess
 import unittest
 from pathlib import Path
 
-from jina.clients import py_client
-from jina.flow import Flow
-from jina.helloworld import download_data, input_fn
-from jina.main.parser import set_hw_parser
 from pkg_resources import resource_filename
+
+from jina.clients import py_client
+from jina.clients.python.io import input_numpy
+from jina.flow import Flow
+from jina.helloworld import download_data
+from jina.main.parser import set_hw_parser
 from tests import JinaTestCase
 
 
@@ -59,7 +61,7 @@ class MyTestCase(JinaTestCase):
         with f:
             py_client(host=f.host,
                       port_grpc=f.port_grpc,
-                      ).index(input_fn(targets['index']['filename']), batch_size=args.index_batch_size)
+                      ).index(input_numpy(targets['index']['data']), batch_size=args.index_batch_size)
 
 
 if __name__ == '__main__':

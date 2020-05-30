@@ -1,10 +1,9 @@
-!Blob2PNGDataURI
+!BaseExecutor
 metas:
-  name: blob2png
+  name: test_crafter
 requests:
   on:
     [IndexRequest, SearchRequest]:
       - !UnarySegmentDriver {}
-      - !DocCraftDriver {}
     ControlRequest:
       - !ControlReqDriver {}

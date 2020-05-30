@@ -7,7 +7,7 @@ from pathlib import Path
 from pkg_resources import resource_filename
 
 from .components import *
-from .helper import write_png, input_fn, print_result, write_html, download_data
+from .helper import print_result, write_html, download_data
 from ..flow import Flow
 from ..helper import countdown, colored
 
@@ -52,7 +52,7 @@ def hello_world(args):
     f = Flow.load_config(args.index_yaml_path)
     # run it!
     with f:
-        f.index(input_fn(targets['index']['filename']), batch_size=args.index_batch_size)
+        f.index_numpy(targets['index']['data'], batch_size=args.index_batch_size)
 
     # wait for couple of seconds
     countdown(8, reason=colored('behold! im going to switch to query mode', 'cyan',
@@ -62,8 +62,8 @@ def hello_world(args):
     f = Flow.load_config(args.query_yaml_path)
     # run it!
     with f:
-        f.search(input_fn(targets['query']['filename'], index=False, num_doc=args.num_query),
-                 output_fn=print_result, top_k=args.top_k, batch_size=args.query_batch_size)
+        f.search_numpy(targets['query']['data'], shuffle=True, size=args.num_query,
+                       output_fn=print_result, top_k=args.top_k, batch_size=args.query_batch_size)
 
     # write result to html
     write_html(os.path.join(args.workdir, 'hello-world.html'))

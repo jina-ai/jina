@@ -30,6 +30,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -59,6 +61,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.1.12`)](#release-note-0112)
 - [Release Note (`0.1.13`)](#release-note-0113)
 - [Release Note (`0.1.14`)](#release-note-0114)
+- [Release Note (`0.2.0`)](#release-note-020)
+- [Release Note (`0.2.1`)](#release-note-021)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1078,4 +1082,62 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```80224f78```](https://github.com/jina-ai/jina/commit/80224f78d28afa9037807f2bd8526e81b8396ecf)] __-__ add command run for issue (*Han Xiao*)
  - [[```c762ae65```](https://github.com/jina-ai/jina/commit/c762ae65e2df3be77e74bc0ad69691c2f4d983cd)] __-__ __version__: bumping version to 0.1.12 (*Jina Dev Bot*)
  - [[```15380fa6```](https://github.com/jina-ai/jina/commit/15380fa697d5e88d590fc17472330cd34c6972e7)] __-__ hotfix include extra req to manifest (*Han Xiao*)
+
+## Release Note (`0.2.0`)
+
+> Release time: 2020-05-28 18:02:11
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```fda57905```](https://github.com/jina-ai/jina/commit/fda579051f6d58bc13db7ea67b78d1f7f95265b3)] __-__ __client__: auto detect input_type (*Han Xiao*)
+ - [[```6702c61c```](https://github.com/jina-ai/jina/commit/6702c61c99e999a8ab5fb733c720304a5dc6d3ad)] __-__ __crafter__: add Any2Buffer convert (*Han Xiao*)
+ - [[```9dfe9188```](https://github.com/jina-ai/jina/commit/9dfe9188d8df75cf3fa1220e86d064be1cbd21df)] __-__ __crafter__: add buffer, data_uri, file_path convert (*Han Xiao*)
+ - [[```c2d3e819```](https://github.com/jina-ai/jina/commit/c2d3e8199ff38e85754b45d2fca96b28d72a5f8a)] __-__ __proto__: add mime_type to proto (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```efd63716```](https://github.com/jina-ai/jina/commit/efd63716e4575477434a70827ba88b2a2d725b0c)] __-__ __drivers__: mime driver now inherit from basedriver (*Han Xiao*)
+ - [[```76bd4e63```](https://github.com/jina-ai/jina/commit/76bd4e6341ffcf61481a7f3bc2b465bca36af87b)] __-__ __client__: fix check input function (*Han Xiao*)
+ - [[```82c7c52c```](https://github.com/jina-ai/jina/commit/82c7c52c05515db400e4b2f810646195ce89ae9b)] __-__ __client__: raise exception on bad input (*Han Xiao*)
+ - [[```963ea7fb```](https://github.com/jina-ai/jina/commit/963ea7fbcd4b51e6dc0b596feaad2e82e0294cfd)] __-__ __client__: fix mime_type warning (*Han Xiao*)
+ - [[```b7e472e2```](https://github.com/jina-ai/jina/commit/b7e472e22eb2a35e850da000d62b9492e3c0dac0)] __-__ __crafter__: fix content read when doc is pb already (*Han Xiao*)
+ - [[```276e1420```](https://github.com/jina-ai/jina/commit/276e1420bfddbb2f881a7a18659a5d716b3deff9)] __-__ fix typo in tests (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```80adf9c9```](https://github.com/jina-ai/jina/commit/80adf9c98d3075dac9eacbd48a3b03349274c50a)] __-__ __helloworld__: use data uri instead of metainfo (*Han Xiao*)
+ - [[```f14c146a```](https://github.com/jina-ai/jina/commit/f14c146a3ebae7b5f420cc430e76753ac993208a)] __-__ __client__: remove client input type (*Han Xiao*)
+ - [[```a39371f7```](https://github.com/jina-ai/jina/commit/a39371f750a5172dd9a8a3fbb5eb3bf2c941a7b7)] __-__ __crafter__: move mime type detect to driver (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```774e4757```](https://github.com/jina-ai/jina/commit/774e4757522c57eea96eff0e4e13d4bcf59f5ece)] __-__ add google bit model tutorial (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```b72ad858```](https://github.com/jina-ai/jina/commit/b72ad858744a0314facbaed27491befdb8dcd3c2)] __-__ hotfix release 0.2.0 (*Han Xiao*)
+ - [[```1fdaabbf```](https://github.com/jina-ai/jina/commit/1fdaabbfd9aec7029f22f6cc6e8814f2c79d9ec9)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```25d5797f```](https://github.com/jina-ai/jina/commit/25d5797fa995bee3966686bcd34434d0a87cc342)] __-__ release 0.2.0 (*Han Xiao*)
+ - [[```dcb387db```](https://github.com/jina-ai/jina/commit/dcb387db99f5ab5fbf783600aadaa2eed87ad763)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```ff63c7fc```](https://github.com/jina-ai/jina/commit/ff63c7fc18019332207540f397daf5b950dc106d)] __-__ __version__: bumping version to 0.1.15 (*Jina Dev Bot*)
+
+## Release Note (`0.2.1`)
+
+> Release time: 2020-05-29 15:57:53
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```e6ba1682```](https://github.com/jina-ai/jina/commit/e6ba1682a69a2d40c9198f5789e7866f282f37bb)] __-__ __version__: bumping version to 0.2.1 (*Jina Dev Bot*)
 

@@ -98,7 +98,7 @@ class MyTestCase(JinaTestCase):
                        host='localhost', port_grpc=f_args.port_grpc)
 
         with f:
-            f.index(input_fn=random_docs(1000), input_type=ClientInputType.PROTOBUF)
+            f.index(input_fn=random_docs(1000))
 
         time.sleep(3)
         for j in range(3):
@@ -123,7 +123,7 @@ class MyTestCase(JinaTestCase):
                   host='192.168.31.76', port_grpc=44444))
 
         with f:
-            f.index(input_fn=random_docs(1000), input_type=ClientInputType.PROTOBUF)
+            f.index(input_fn=random_docs(1000))
 
 
 if __name__ == '__main__':

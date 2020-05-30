@@ -94,7 +94,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     @app.route(_config['endpoints']['shutdown'])
     def shutdown():
         from flask import request
-        if not 'werkzeug.server.shutdown' in request.environ:
+        if 'werkzeug.server.shutdown' not in request.environ:
             raise RuntimeError('Not running the development server')
         request.environ['werkzeug.server.shutdown']()
         return 'Server shutting down...'

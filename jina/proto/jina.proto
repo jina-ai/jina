@@ -64,7 +64,7 @@ message Chunk {
         // the original text of the chunk (only apply to the text document)
         string text = 3;
 
-        // the original ndarray of the chunk (apply to the image/video document)
+        // the original ndarray of the chunk (apply to the image/audio/video document)
         NdArray blob = 4;
 
         // raw bytes of chunk
@@ -104,11 +104,17 @@ message Document {
         // the raw binary content of this document, which often represents the original document when comes into jina
         bytes buffer = 3;
 
-        // data uri
+        // a data uri document
         string data_uri = 9;
 
-        // a local file path, or a remote url starts with http or https
+        // a local file path, or a remote url starts with http or https points to a document
         string file_path = 11;
+
+       // the ndarray of the image/audio/video document
+        NdArray blob = 12;
+
+        // a text document
+        string text = 13;
     }
 
     // list of the chunks of this document
