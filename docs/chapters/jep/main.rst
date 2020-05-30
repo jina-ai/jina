@@ -117,3 +117,4 @@ Current JEPs
 
    jep-1/main
    jep-2/main
+   jep-3/main
