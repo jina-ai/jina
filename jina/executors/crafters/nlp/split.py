@@ -94,6 +94,6 @@ class JiebaSegmenter(BaseSegmenter):
         chunks = []
         for idx, word in enumerate(words):
             chunks.append(
-                dict(doc_id=doc_id, text=word, offset=idx, weight=1.0, length=len(word)))
+                dict(doc_id=doc_id, text=word, offset=idx, weight=1.0, length=len(words)))
 
         return chunks
