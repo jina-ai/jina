@@ -101,3 +101,17 @@ class MyTestCase(JinaTestCase):
         PyClient.check_input(['asda', 'dsadas asdasd'])
 
         print(type(array2pb(np.random.random([100, 4, 2]))))
+
+    def test_unary_driver(self):
+        f = Flow().add(yaml_path='yaml/unarycrafter.yml')
+
+        def check_non_empty(req, field):
+            for d in req.index.docs:
+                self.assertEqual(len(d.chunks), 1)
+                self.assertEqual(d.chunks[0].WhichOneof('content'), field)
+
+        with f:
+            f.index_numpy(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
+
+        with f:
+            f.index(['asda', 'dsadas asdasd'], output_fn=lambda x: check_non_empty(x, 'text'))

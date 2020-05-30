@@ -199,7 +199,10 @@ class UnarySegmentDriver(BaseDriver):
             c = d.chunks.add()
             c.length = 1
             d_type = d.WhichOneof('content')
-            getattr(c, d_type).CopyFrom(getattr(d, d_type))
+            if d_type in {'blob'}:
+                getattr(c, d_type).CopyFrom(getattr(d, d_type))
+            else:
+                setattr(c, d_type, getattr(d, d_type))
             c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
                 -1).value)
             c.doc_id = d.doc_id
