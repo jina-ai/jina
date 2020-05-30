@@ -17,7 +17,8 @@ class EncodeDriver(BaseEncodeDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs, embedding=False)
+        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = \
+            extract_chunks(self.req.docs, self.req.filter_by, embedding=False)
 
         if no_chunk_docs:
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)

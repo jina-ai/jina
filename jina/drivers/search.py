@@ -47,11 +47,15 @@ class KVSearchDriver(BaseSearchDriver):
         elif self.level == 'chunk':
             for d in self.req.docs:
                 for c in d.chunks:
+                    if c.field_name not in self.req.filter_by:
+                        continue
                     self._update_topk_chunks(c)
         elif self.level == 'all':
             for d in self.req.docs:
                 self._update_topk_docs(d)
                 for c in d.chunks:
+                    if c.field_name not in self.req.filter_by:
+                        continue
                     self._update_topk_chunks(c)
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
@@ -101,7 +105,8 @@ class VectorSearchDriver(BaseSearchDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs, embedding=True)
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
+            extract_chunks(self.req.docs, self.req.filter_by, embedding=True)
 
         if no_chunk_docs:
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)

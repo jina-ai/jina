@@ -5,6 +5,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_chunks
+from typing import Union, List, Tuple
 
 
 class BaseIndexDriver(BaseExecutableDriver):
@@ -18,9 +19,13 @@ class VectorIndexDriver(BaseIndexDriver):
     """Extract chunk-level embeddings and add it to the executor
 
     """
+    def __init__(self, filter_by: Union[str, List[str], Tuple[str]] = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filter_by = filter_by
 
     def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs, embedding=True)
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
+            extract_chunks(self.req.docs, self.filter_by, embedding=True)
 
         if no_chunk_docs:
             self.pea.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
@@ -79,6 +84,16 @@ class DocKVIndexDriver(KVIndexDriver):
 
 
 class ChunkKVIndexDriver(KVIndexDriver):
-
-    def __init__(self, level: str = 'chunk', *args, **kwargs):
+    def __init__(self,
+                 level: str = 'chunk', filter_by: Union[str, List[str], Tuple[str]] = None, *args, **kwargs):
         super().__init__(level, *args, **kwargs)
+        self.filter_by = filter_by if self.filter_by else []
+
+    def __call__(self, *args, **kwargs):
+        from google.protobuf.json_format import MessageToJson
+        content = {
+            f'c{c.chunk_id}': MessageToJson(c)
+            for d in self.req.docs for c in d.chunks
+            if len(self.filter_by) > 0 and c.field_name in self.filter_by}
+        if content:
+            self.exec_fn(content)
