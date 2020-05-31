@@ -14,7 +14,7 @@ from jina.proto import jina_pb2
 from tests import JinaTestCase
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
+def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, field_name=''):
     c_id = 0
     for j in range(num_docs):
         d = jina_pb2.Document()
@@ -23,6 +23,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
             c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
             c.chunk_id = c_id
             c.doc_id = j
+            c.field_name = field_name
             c_id += 1
         d.meta_info = b'hello world'
         yield d
@@ -231,6 +232,29 @@ class MyTestCase(JinaTestCase):
             print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
         with f:
             f.dry_run()
+
+    def test_multifield_indexer_filter_by(self):
+        import os
+        num_docs = 1
+        num_chunks = 2
+        os.environ['FILTER_BY'] = 'title'
+        f = Flow().add(name='idx', yaml_path='yaml/test-multifield-idx.yml')
+        with f:
+            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='title'), random_doc_id=False)
+            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary'), random_doc_id=False)
+        assert(f["idx"].size == 2, True)
+
+    def test_multifield_encoder_filter_by(self):
+        import os
+        num_docs = 1
+        num_chunks = 2
+        os.environ['FILTER_BY'] = 'title'
+        f = (Flow().add(name='enc', yaml_path='yaml/test-multifield-enc.yml')
+             .add(name='idx', yaml_path='yaml/test-multifield-dummy-idx.yml'))
+        with f:
+            f.index(input_fn=random_docs(num_docs, num_chunks, field_name='title'), random_doc_id=False)
+            f.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary'), random_doc_id=False)
+        assert(f["idx"].size == 2, True)
 
 
 if __name__ == '__main__':
