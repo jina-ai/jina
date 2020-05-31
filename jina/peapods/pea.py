@@ -163,7 +163,7 @@ class BasePea(metaclass=PeaMeta):
         num_part = self.args.num_part
         if self.request_type == 'SearchRequest':
             # modify the num_part on the fly for SearchRequest
-            num_part = min(self.args.num_part, max(len(self.request.filtered_by), 1))
+            num_part = min(self.args.num_part, max(len(self.request.filter_by), 1))
         if num_part > 1 and is_data_request(self._request):
             # do gathering, not for control request, unless it is dryrun
             req_id = msg.envelope.request_id

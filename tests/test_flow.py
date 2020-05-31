@@ -43,6 +43,22 @@ def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
         yield d
 
 
+def random_queries_with_filter_by(num_docs, chunks_per_doc=5, embed_dim=None):
+    c_id = 0
+    for j in range(num_docs):
+        d = jina_pb2.Document()
+        for k in range(chunks_per_doc):
+            c = d.chunks.add()
+            if isinstance(embed_dim, int):
+                c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+            else:
+                c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+            c.chunk_id = c_id
+            c.doc_id = j
+            c_id += 1
+        yield d
+
+
 class MyTestCase(JinaTestCase):
 
     def test_ping(self):
@@ -242,14 +258,29 @@ class MyTestCase(JinaTestCase):
         import os
         num_docs = 1
         num_chunks = 2
+        workspace = './multifield-indexer'
+        yaml_path = 'yaml/test-multifield-indexer.yml'
         os.environ['FILTER_BY'] = 'title'
-        os.environ['TMP_WORKSPACE'] = './multifield-indexer'
-        f = Flow().add(name='idx', yaml_path='yaml/test-multifield-indexer.yml')
-        self.add_tmpfile('./multifield-indexer')
+        os.environ['TMP_WORKSPACE'] = workspace
+        def validate(rsp):
+            self.assertEqual(len(rsp.docs), 1)
+            self.assertEqual(len(rsp.docs[0].topk_results), num_docs)
+        f = Flow().add(name='idx', yaml_path=yaml_path)
         with f:
-            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='title'), random_doc_id=False)
-            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary'), random_doc_id=False)
-            self.assertEqual(f._pod_nodes["idx"].peas[0], 2)
+            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='title'),
+                    random_doc_id=False)
+            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary'),
+                    random_doc_id=False)
+        f.close()
+        fq = (Flow().add(name='idx', yaml_path=yaml_path)
+              .add(name='ranker', yaml_path='MinRanker'))
+        with fq:
+            fq.search(input_fn=random_queries_with_filter_by(1, 1, 10),
+                      random_doc_id=False,
+                      output_fn=validate,
+                      callback_on_body=True,
+                      filter_by='sum')
+        self.add_tmpfile(workspace)
 
     def test_multifield_encoder_filter_by(self):
         import os
@@ -261,6 +292,8 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index(input_fn=random_docs(num_docs, num_chunks, field_name='title'), random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary'), random_doc_id=False)
+
+            # f.search
         # assert(f["idx"].size == 2, True)
 
 
