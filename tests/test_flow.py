@@ -1,6 +1,7 @@
 import unittest
 
 import requests
+import numpy as np
 
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel, ClientInputType
@@ -11,16 +12,20 @@ from jina.main.parser import set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto import jina_pb2
+from jina.drivers.helper import array2pb
 from tests import JinaTestCase
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, field_name=''):
+def random_docs(num_docs, chunks_per_doc=5, embed_dim=None, field_name=''):
     c_id = 0
     for j in range(num_docs):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
             c = d.chunks.add()
-            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+            if isinstance(embed_dim, int):
+                c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+            else:
+                c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
             c.chunk_id = c_id
             c.doc_id = j
             c.field_name = field_name
@@ -238,11 +243,13 @@ class MyTestCase(JinaTestCase):
         num_docs = 1
         num_chunks = 2
         os.environ['FILTER_BY'] = 'title'
-        f = Flow().add(name='idx', yaml_path='yaml/test-multifield-idx.yml')
+        os.environ['TMP_WORKSPACE'] = './multifield-indexer'
+        f = Flow().add(name='idx', yaml_path='yaml/test-multifield-indexer.yml')
+        self.add_tmpfile('./multifield-indexer')
         with f:
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='title'), random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary'), random_doc_id=False)
-        assert(f["idx"].size == 2, True)
+            self.assertEqual(f._pod_nodes["idx"].peas[0], 2)
 
     def test_multifield_encoder_filter_by(self):
         import os
@@ -254,7 +261,7 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index(input_fn=random_docs(num_docs, num_chunks, field_name='title'), random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary'), random_doc_id=False)
-        assert(f["idx"].size == 2, True)
+        # assert(f["idx"].size == 2, True)
 
 
 if __name__ == '__main__':

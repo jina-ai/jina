@@ -19,8 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='jina',
   syntax='proto3',
   serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe9\x01\n\x07NdArray\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\x12\r\n\x05shape\x18\x02 \x03(\r\x12\r\n\x05\x64type\x18\x03 \x01(\t\x12\x34\n\x0cquantization\x18\x04 \x01(\x0e\x32\x1e.jina.NdArray.QuantizationMode\x12\x0f\n\x07max_val\x18\x05 \x01(\x02\x12\x0f\n\x07min_val\x18\x06 \x01(\x02\x12\r\n\x05scale\x18\x07 \x01(\x02\x12\x16\n\x0eoriginal_dtype\x18\x08 \x01(\t\"1\n\x10QuantizationMode\x12\x08\n\x04NONE\x10\x00\x12\x08\n\x04\x46P16\x10\x01\x12\t\n\x05UINT8\x10\x02\"\xf2\x01\n\x0cScoredResult\x12\"\n\x0bmatch_chunk\x18\x01 \x01(\x0b\x32\x0b.jina.ChunkH\x00\x12#\n\tmatch_doc\x18\x02 \x01(\x0b\x32\x0e.jina.DocumentH\x00\x12\'\n\x05score\x18\x03 \x01(\x0b\x32\x18.jina.ScoredResult.Score\x1ah\n\x05Score\x12\r\n\x05value\x18\x01 \x01(\x02\x12\x0f\n\x07op_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12*\n\x08operands\x18\x04 \x03(\x0b\x32\x18.jina.ScoredResult.ScoreB\x06\n\x04\x62ody\"\xab\x02\n\x05\x43hunk\x12\x0e\n\x06\x64oc_id\x18\x01 \x01(\r\x12\x10\n\x08\x63hunk_id\x18\x02 \x01(\r\x12\x0e\n\x04text\x18\x03 \x01(\tH\x00\x12\x1d\n\x04\x62lob\x18\x04 \x01(\x0b\x32\r.jina.NdArrayH\x00\x12\x10\n\x06\x62uffer\x18\x05 \x01(\x0cH\x00\x12 \n\tembedding\x18\x06 \x01(\x0b\x32\r.jina.NdArray\x12\x0e\n\x06offset\x18\x07 \x01(\r\x12\x0e\n\x06weight\x18\x08 \x01(\x02\x12\x0e\n\x06length\x18\t \x01(\r\x12\x11\n\tmeta_info\x18\n \x01(\x0c\x12(\n\x0ctopk_results\x18\x0b \x03(\x0b\x32\x12.jina.ScoredResult\x12\x11\n\tmime_type\x18\x0c \x01(\t\x12\x12\n\nfiled_name\x18\r \x01(\tB\t\n\x07\x63ontent\"\xed\x01\n\x08\x44ocument\x12\x0e\n\x06\x64oc_id\x18\x01 \x01(\r\x12\x10\n\x06\x62uffer\x18\x03 \x01(\x0cH\x00\x12\x12\n\x08\x64\x61ta_uri\x18\t \x01(\tH\x00\x12\x13\n\tfile_path\x18\x0b \x01(\tH\x00\x12\x1b\n\x06\x63hunks\x18\x04 \x03(\x0b\x32\x0b.jina.Chunk\x12\x0e\n\x06weight\x18\x05 \x01(\x02\x12\x0e\n\x06length\x18\x06 \x01(\r\x12\x11\n\tmeta_info\x18\x07 \x01(\x0c\x12(\n\x0ctopk_results\x18\x08 \x03(\x0b\x32\x12.jina.ScoredResult\x12\x11\n\tmime_type\x18\n \x01(\tB\t\n\x07\x63ontent\"\xc1\x03\n\x08\x45nvelope\x12\x11\n\tsender_id\x18\x01 \x01(\t\x12\x13\n\x0breceiver_id\x18\x02 \x01(\t\x12\x12\n\nrequest_id\x18\x03 \x01(\r\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x12$\n\x06routes\x18\x05 \x03(\x0b\x32\x14.jina.Envelope.Route\x12\'\n\x07version\x18\x06 \x01(\x0b\x32\x16.jina.Envelope.Version\x12%\n\x06status\x18\x07 \x01(\x0e\x32\x15.jina.Envelope.Status\x1a\x82\x01\n\x05Route\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x1a\x33\n\x07Version\x12\x0c\n\x04jina\x18\x01 \x01(\t\x12\r\n\x05proto\x18\x02 \x01(\t\x12\x0b\n\x03vcs\x18\x03 \x01(\t\"8\n\x06Status\x12\x0b\n\x07SUCCESS\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x12\x0b\n\x07PENDING\x10\x02\x12\t\n\x05READY\x10\x03\"K\n\x07Message\x12 \n\x08\x65nvelope\x18\x01 \x01(\x0b\x32\x0e.jina.Envelope\x12\x1e\n\x07request\x18\x02 \x01(\x0b\x32\r.jina.Request\"\x84\x05\n\x07Request\x12\x12\n\nrequest_id\x18\x01 \x01(\r\x12+\n\x05train\x18\x02 \x01(\x0b\x32\x1a.jina.Request.TrainRequestH\x00\x12+\n\x05index\x18\x03 \x01(\x0b\x32\x1a.jina.Request.IndexRequestH\x00\x12-\n\x06search\x18\x04 \x01(\x0b\x32\x1b.jina.Request.SearchRequestH\x00\x12/\n\x07\x63ontrol\x18\x05 \x01(\x0b\x32\x1c.jina.Request.ControlRequestH\x00\x1a;\n\x0cTrainRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x12\r\n\x05\x66lush\x18\x02 \x01(\x08\x1a,\n\x0cIndexRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x1aO\n\rSearchRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x12\r\n\x05top_k\x18\x02 \x01(\r\x12\x11\n\tfilter_by\x18\x03 \x03(\t\x1a\xe6\x01\n\x0e\x43ontrolRequest\x12\x35\n\x07\x63ommand\x18\x01 \x01(\x0e\x32$.jina.Request.ControlRequest.Command\x12\x34\n\x04\x61rgs\x18\x02 \x03(\x0b\x32&.jina.Request.ControlRequest.ArgsEntry\x1a+\n\tArgsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\":\n\x07\x43ommand\x12\r\n\tTERMINATE\x10\x00\x12\n\n\x06STATUS\x10\x01\x12\n\n\x06\x44RYRUN\x10\x02\x12\x08\n\x04IDLE\x10\x03\x42\x06\n\x04\x62ody\"\xc3\x04\n\x0cSpawnRequest\x12\x31\n\x03pea\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequestH\x00\x12\x31\n\x03pod\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PodSpawnRequestH\x00\x12@\n\x0bmutable_pod\x18\x03 \x01(\x0b\x32).jina.SpawnRequest.MutablepodSpawnRequestH\x00\x12\x12\n\nlog_record\x18\x04 \x01(\t\x12)\n\x06status\x18\x05 \x01(\x0e\x32\x19.jina.SpawnRequest.Status\x1a\x1f\n\x0fPeaSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\x1f\n\x0fPodSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\xae\x01\n\x16MutablepodSpawnRequest\x12\x30\n\x04head\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04tail\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04peas\x18\x03 \x03(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\"Q\n\x06Status\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0f\n\x0b\x45RROR_OTHER\x10\x01\x12\x13\n\x0f\x45RROR_DUPLICATE\x10\x02\x12\x14\n\x10\x45RROR_NOTALLOWED\x10\x03\x42\x06\n\x04\x62ody2\x97\x01\n\x07JinaRPC\x12*\n\x04\x43\x61ll\x12\r.jina.Request\x1a\r.jina.Request\"\x00(\x01\x30\x01\x12+\n\tCallUnary\x12\r.jina.Request\x1a\r.jina.Request\"\x00\x12\x33\n\x05Spawn\x12\x12.jina.SpawnRequest\x1a\x12.jina.SpawnRequest\"\x00\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe9\x01\n\x07NdArray\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\x12\r\n\x05shape\x18\x02 \x03(\r\x12\r\n\x05\x64type\x18\x03 \x01(\t\x12\x34\n\x0cquantization\x18\x04 \x01(\x0e\x32\x1e.jina.NdArray.QuantizationMode\x12\x0f\n\x07max_val\x18\x05 \x01(\x02\x12\x0f\n\x07min_val\x18\x06 \x01(\x02\x12\r\n\x05scale\x18\x07 \x01(\x02\x12\x16\n\x0eoriginal_dtype\x18\x08 \x01(\t\"1\n\x10QuantizationMode\x12\x08\n\x04NONE\x10\x00\x12\x08\n\x04\x46P16\x10\x01\x12\t\n\x05UINT8\x10\x02\"\xf2\x01\n\x0cScoredResult\x12\"\n\x0bmatch_chunk\x18\x01 \x01(\x0b\x32\x0b.jina.ChunkH\x00\x12#\n\tmatch_doc\x18\x02 \x01(\x0b\x32\x0e.jina.DocumentH\x00\x12\'\n\x05score\x18\x03 \x01(\x0b\x32\x18.jina.ScoredResult.Score\x1ah\n\x05Score\x12\r\n\x05value\x18\x01 \x01(\x02\x12\x0f\n\x07op_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12*\n\x08operands\x18\x04 \x03(\x0b\x32\x18.jina.ScoredResult.ScoreB\x06\n\x04\x62ody\"\xab\x02\n\x05\x43hunk\x12\x0e\n\x06\x64oc_id\x18\x01 \x01(\r\x12\x10\n\x08\x63hunk_id\x18\x02 \x01(\r\x12\x0e\n\x04text\x18\x03 \x01(\tH\x00\x12\x1d\n\x04\x62lob\x18\x04 \x01(\x0b\x32\r.jina.NdArrayH\x00\x12\x10\n\x06\x62uffer\x18\x05 \x01(\x0cH\x00\x12 \n\tembedding\x18\x06 \x01(\x0b\x32\r.jina.NdArray\x12\x0e\n\x06offset\x18\x07 \x01(\r\x12\x0e\n\x06weight\x18\x08 \x01(\x02\x12\x0e\n\x06length\x18\t \x01(\r\x12\x11\n\tmeta_info\x18\n \x01(\x0c\x12(\n\x0ctopk_results\x18\x0b \x03(\x0b\x32\x12.jina.ScoredResult\x12\x11\n\tmime_type\x18\x0c \x01(\t\x12\x12\n\nfield_name\x18\r \x01(\tB\t\n\x07\x63ontent\"\xed\x01\n\x08\x44ocument\x12\x0e\n\x06\x64oc_id\x18\x01 \x01(\r\x12\x10\n\x06\x62uffer\x18\x03 \x01(\x0cH\x00\x12\x12\n\x08\x64\x61ta_uri\x18\t \x01(\tH\x00\x12\x13\n\tfile_path\x18\x0b \x01(\tH\x00\x12\x1b\n\x06\x63hunks\x18\x04 \x03(\x0b\x32\x0b.jina.Chunk\x12\x0e\n\x06weight\x18\x05 \x01(\x02\x12\x0e\n\x06length\x18\x06 \x01(\r\x12\x11\n\tmeta_info\x18\x07 \x01(\x0c\x12(\n\x0ctopk_results\x18\x08 \x03(\x0b\x32\x12.jina.ScoredResult\x12\x11\n\tmime_type\x18\n \x01(\tB\t\n\x07\x63ontent\"\xc1\x03\n\x08\x45nvelope\x12\x11\n\tsender_id\x18\x01 \x01(\t\x12\x13\n\x0breceiver_id\x18\x02 \x01(\t\x12\x12\n\nrequest_id\x18\x03 \x01(\r\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x12$\n\x06routes\x18\x05 \x03(\x0b\x32\x14.jina.Envelope.Route\x12\'\n\x07version\x18\x06 \x01(\x0b\x32\x16.jina.Envelope.Version\x12%\n\x06status\x18\x07 \x01(\x0e\x32\x15.jina.Envelope.Status\x1a\x82\x01\n\x05Route\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x1a\x33\n\x07Version\x12\x0c\n\x04jina\x18\x01 \x01(\t\x12\r\n\x05proto\x18\x02 \x01(\t\x12\x0b\n\x03vcs\x18\x03 \x01(\t\"8\n\x06Status\x12\x0b\n\x07SUCCESS\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x12\x0b\n\x07PENDING\x10\x02\x12\t\n\x05READY\x10\x03\"K\n\x07Message\x12 \n\x08\x65nvelope\x18\x01 \x01(\x0b\x32\x0e.jina.Envelope\x12\x1e\n\x07request\x18\x02 \x01(\x0b\x32\r.jina.Request\"\x84\x05\n\x07Request\x12\x12\n\nrequest_id\x18\x01 \x01(\r\x12+\n\x05train\x18\x02 \x01(\x0b\x32\x1a.jina.Request.TrainRequestH\x00\x12+\n\x05index\x18\x03 \x01(\x0b\x32\x1a.jina.Request.IndexRequestH\x00\x12-\n\x06search\x18\x04 \x01(\x0b\x32\x1b.jina.Request.SearchRequestH\x00\x12/\n\x07\x63ontrol\x18\x05 \x01(\x0b\x32\x1c.jina.Request.ControlRequestH\x00\x1a;\n\x0cTrainRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x12\r\n\x05\x66lush\x18\x02 \x01(\x08\x1a,\n\x0cIndexRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x1aO\n\rSearchRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x12\r\n\x05top_k\x18\x02 \x01(\r\x12\x11\n\tfilter_by\x18\x03 \x03(\t\x1a\xe6\x01\n\x0e\x43ontrolRequest\x12\x35\n\x07\x63ommand\x18\x01 \x01(\x0e\x32$.jina.Request.ControlRequest.Command\x12\x34\n\x04\x61rgs\x18\x02 \x03(\x0b\x32&.jina.Request.ControlRequest.ArgsEntry\x1a+\n\tArgsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\":\n\x07\x43ommand\x12\r\n\tTERMINATE\x10\x00\x12\n\n\x06STATUS\x10\x01\x12\n\n\x06\x44RYRUN\x10\x02\x12\x08\n\x04IDLE\x10\x03\x42\x06\n\x04\x62ody\"\xc3\x04\n\x0cSpawnRequest\x12\x31\n\x03pea\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequestH\x00\x12\x31\n\x03pod\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PodSpawnRequestH\x00\x12@\n\x0bmutable_pod\x18\x03 \x01(\x0b\x32).jina.SpawnRequest.MutablepodSpawnRequestH\x00\x12\x12\n\nlog_record\x18\x04 \x01(\t\x12)\n\x06status\x18\x05 \x01(\x0e\x32\x19.jina.SpawnRequest.Status\x1a\x1f\n\x0fPeaSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\x1f\n\x0fPodSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\xae\x01\n\x16MutablepodSpawnRequest\x12\x30\n\x04head\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04tail\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04peas\x18\x03 \x03(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\"Q\n\x06Status\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0f\n\x0b\x45RROR_OTHER\x10\x01\x12\x13\n\x0f\x45RROR_DUPLICATE\x10\x02\x12\x14\n\x10\x45RROR_NOTALLOWED\x10\x03\x42\x06\n\x04\x62ody2\x97\x01\n\x07JinaRPC\x12*\n\x04\x43\x61ll\x12\r.jina.Request\x1a\r.jina.Request\"\x00(\x01\x30\x01\x12+\n\tCallUnary\x12\r.jina.Request\x1a\r.jina.Request\"\x00\x12\x33\n\x05Spawn\x12\x12.jina.SpawnRequest\x1a\x12.jina.SpawnRequest\"\x00\x30\x01\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
@@ -31,23 +30,19 @@ _NDARRAY_QUANTIZATIONMODE = _descriptor.EnumDescriptor(
   full_name='jina.NdArray.QuantizationMode',
   filename=None,
   file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
   values=[
     _descriptor.EnumValueDescriptor(
       name='NONE', index=0, number=0,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='FP16', index=1, number=1,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='UINT8', index=2, number=2,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
   ],
   containing_type=None,
   serialized_options=None,
@@ -61,28 +56,23 @@ _ENVELOPE_STATUS = _descriptor.EnumDescriptor(
   full_name='jina.Envelope.Status',
   filename=None,
   file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
   values=[
     _descriptor.EnumValueDescriptor(
       name='SUCCESS', index=0, number=0,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='ERROR', index=1, number=1,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='PENDING', index=2, number=2,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='READY', index=3, number=3,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
   ],
   containing_type=None,
   serialized_options=None,
@@ -96,28 +86,23 @@ _REQUEST_CONTROLREQUEST_COMMAND = _descriptor.EnumDescriptor(
   full_name='jina.Request.ControlRequest.Command',
   filename=None,
   file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
   values=[
     _descriptor.EnumValueDescriptor(
       name='TERMINATE', index=0, number=0,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='STATUS', index=1, number=1,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='DRYRUN', index=2, number=2,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='IDLE', index=3, number=3,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
   ],
   containing_type=None,
   serialized_options=None,
@@ -131,28 +116,23 @@ _SPAWNREQUEST_STATUS = _descriptor.EnumDescriptor(
   full_name='jina.SpawnRequest.Status',
   filename=None,
   file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
   values=[
     _descriptor.EnumValueDescriptor(
       name='SUCCESS', index=0, number=0,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='ERROR_OTHER', index=1, number=1,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='ERROR_DUPLICATE', index=2, number=2,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
     _descriptor.EnumValueDescriptor(
       name='ERROR_NOTALLOWED', index=3, number=3,
       serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
+      type=None),
   ],
   containing_type=None,
   serialized_options=None,
@@ -168,7 +148,6 @@ _NDARRAY = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='buffer', full_name='jina.NdArray.buffer', index=0,
@@ -176,56 +155,56 @@ _NDARRAY = _descriptor.Descriptor(
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='shape', full_name='jina.NdArray.shape', index=1,
       number=2, type=13, cpp_type=3, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='dtype', full_name='jina.NdArray.dtype', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='quantization', full_name='jina.NdArray.quantization', index=3,
       number=4, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='max_val', full_name='jina.NdArray.max_val', index=4,
       number=5, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='min_val', full_name='jina.NdArray.min_val', index=5,
       number=6, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='scale', full_name='jina.NdArray.scale', index=6,
       number=7, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='original_dtype', full_name='jina.NdArray.original_dtype', index=7,
       number=8, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -250,7 +229,6 @@ _SCOREDRESULT_SCORE = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='value', full_name='jina.ScoredResult.Score.value', index=0,
@@ -258,28 +236,28 @@ _SCOREDRESULT_SCORE = _descriptor.Descriptor(
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='op_name', full_name='jina.ScoredResult.Score.op_name', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='description', full_name='jina.ScoredResult.Score.description', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='operands', full_name='jina.ScoredResult.Score.operands', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -302,7 +280,6 @@ _SCOREDRESULT = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='match_chunk', full_name='jina.ScoredResult.match_chunk', index=0,
@@ -310,21 +287,21 @@ _SCOREDRESULT = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='match_doc', full_name='jina.ScoredResult.match_doc', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='score', full_name='jina.ScoredResult.score', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -338,9 +315,7 @@ _SCOREDRESULT = _descriptor.Descriptor(
   oneofs=[
     _descriptor.OneofDescriptor(
       name='body', full_name='jina.ScoredResult.body',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
+      index=0, containing_type=None, fields=[]),
   ],
   serialized_start=290,
   serialized_end=532,
@@ -353,7 +328,6 @@ _CHUNK = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='doc_id', full_name='jina.Chunk.doc_id', index=0,
@@ -361,91 +335,91 @@ _CHUNK = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='chunk_id', full_name='jina.Chunk.chunk_id', index=1,
       number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='text', full_name='jina.Chunk.text', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='blob', full_name='jina.Chunk.blob', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='buffer', full_name='jina.Chunk.buffer', index=4,
       number=5, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='embedding', full_name='jina.Chunk.embedding', index=5,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='offset', full_name='jina.Chunk.offset', index=6,
       number=7, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='weight', full_name='jina.Chunk.weight', index=7,
       number=8, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='length', full_name='jina.Chunk.length', index=8,
       number=9, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='meta_info', full_name='jina.Chunk.meta_info', index=9,
       number=10, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='topk_results', full_name='jina.Chunk.topk_results', index=10,
       number=11, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='mime_type', full_name='jina.Chunk.mime_type', index=11,
       number=12, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='filed_name', full_name='jina.Chunk.filed_name', index=12,
+      name='field_name', full_name='jina.Chunk.field_name', index=12,
       number=13, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -459,9 +433,7 @@ _CHUNK = _descriptor.Descriptor(
   oneofs=[
     _descriptor.OneofDescriptor(
       name='content', full_name='jina.Chunk.content',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
+      index=0, containing_type=None, fields=[]),
   ],
   serialized_start=535,
   serialized_end=834,
@@ -474,7 +446,6 @@ _DOCUMENT = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='doc_id', full_name='jina.Document.doc_id', index=0,
@@ -482,70 +453,70 @@ _DOCUMENT = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='buffer', full_name='jina.Document.buffer', index=1,
       number=3, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='data_uri', full_name='jina.Document.data_uri', index=2,
       number=9, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='file_path', full_name='jina.Document.file_path', index=3,
       number=11, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='chunks', full_name='jina.Document.chunks', index=4,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='weight', full_name='jina.Document.weight', index=5,
       number=5, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='length', full_name='jina.Document.length', index=6,
       number=6, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='meta_info', full_name='jina.Document.meta_info', index=7,
       number=7, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='topk_results', full_name='jina.Document.topk_results', index=8,
       number=8, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='mime_type', full_name='jina.Document.mime_type', index=9,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -559,9 +530,7 @@ _DOCUMENT = _descriptor.Descriptor(
   oneofs=[
     _descriptor.OneofDescriptor(
       name='content', full_name='jina.Document.content',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
+      index=0, containing_type=None, fields=[]),
   ],
   serialized_start=837,
   serialized_end=1074,
@@ -574,7 +543,6 @@ _ENVELOPE_ROUTE = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='pod', full_name='jina.Envelope.Route.pod', index=0,
@@ -582,28 +550,28 @@ _ENVELOPE_ROUTE = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='pod_id', full_name='jina.Envelope.Route.pod_id', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='start_time', full_name='jina.Envelope.Route.start_time', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='end_time', full_name='jina.Envelope.Route.end_time', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -626,7 +594,6 @@ _ENVELOPE_VERSION = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='jina', full_name='jina.Envelope.Version.jina', index=0,
@@ -634,21 +601,21 @@ _ENVELOPE_VERSION = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='proto', full_name='jina.Envelope.Version.proto', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='vcs', full_name='jina.Envelope.Version.vcs', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -671,7 +638,6 @@ _ENVELOPE = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='sender_id', full_name='jina.Envelope.sender_id', index=0,
@@ -679,49 +645,49 @@ _ENVELOPE = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='receiver_id', full_name='jina.Envelope.receiver_id', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='request_id', full_name='jina.Envelope.request_id', index=2,
       number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='timeout', full_name='jina.Envelope.timeout', index=3,
       number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='routes', full_name='jina.Envelope.routes', index=4,
       number=5, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='version', full_name='jina.Envelope.version', index=5,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='status', full_name='jina.Envelope.status', index=6,
       number=7, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -746,7 +712,6 @@ _MESSAGE = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='envelope', full_name='jina.Message.envelope', index=0,
@@ -754,14 +719,14 @@ _MESSAGE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='request', full_name='jina.Message.request', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -785,7 +750,6 @@ _REQUEST_TRAINREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='docs', full_name='jina.Request.TrainRequest.docs', index=0,
@@ -793,14 +757,14 @@ _REQUEST_TRAINREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='flush', full_name='jina.Request.TrainRequest.flush', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -823,7 +787,6 @@ _REQUEST_INDEXREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='docs', full_name='jina.Request.IndexRequest.docs', index=0,
@@ -831,7 +794,7 @@ _REQUEST_INDEXREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -854,7 +817,6 @@ _REQUEST_SEARCHREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='docs', full_name='jina.Request.SearchRequest.docs', index=0,
@@ -862,21 +824,21 @@ _REQUEST_SEARCHREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='top_k', full_name='jina.Request.SearchRequest.top_k', index=1,
       number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='filter_by', full_name='jina.Request.SearchRequest.filter_by', index=2,
       number=3, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -899,7 +861,6 @@ _REQUEST_CONTROLREQUEST_ARGSENTRY = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='key', full_name='jina.Request.ControlRequest.ArgsEntry.key', index=0,
@@ -907,14 +868,14 @@ _REQUEST_CONTROLREQUEST_ARGSENTRY = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='jina.Request.ControlRequest.ArgsEntry.value', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -937,7 +898,6 @@ _REQUEST_CONTROLREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='command', full_name='jina.Request.ControlRequest.command', index=0,
@@ -945,14 +905,14 @@ _REQUEST_CONTROLREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='args', full_name='jina.Request.ControlRequest.args', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -976,7 +936,6 @@ _REQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='request_id', full_name='jina.Request.request_id', index=0,
@@ -984,35 +943,35 @@ _REQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='train', full_name='jina.Request.train', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='index', full_name='jina.Request.index', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='search', full_name='jina.Request.search', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='control', full_name='jina.Request.control', index=4,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1026,9 +985,7 @@ _REQUEST = _descriptor.Descriptor(
   oneofs=[
     _descriptor.OneofDescriptor(
       name='body', full_name='jina.Request.body',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
+      index=0, containing_type=None, fields=[]),
   ],
   serialized_start=1606,
   serialized_end=2250,
@@ -1041,7 +998,6 @@ _SPAWNREQUEST_PEASPAWNREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='args', full_name='jina.SpawnRequest.PeaSpawnRequest.args', index=0,
@@ -1049,7 +1005,7 @@ _SPAWNREQUEST_PEASPAWNREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1072,7 +1028,6 @@ _SPAWNREQUEST_PODSPAWNREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='args', full_name='jina.SpawnRequest.PodSpawnRequest.args', index=0,
@@ -1080,7 +1035,7 @@ _SPAWNREQUEST_PODSPAWNREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1103,7 +1058,6 @@ _SPAWNREQUEST_MUTABLEPODSPAWNREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='head', full_name='jina.SpawnRequest.MutablepodSpawnRequest.head', index=0,
@@ -1111,21 +1065,21 @@ _SPAWNREQUEST_MUTABLEPODSPAWNREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='tail', full_name='jina.SpawnRequest.MutablepodSpawnRequest.tail', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='peas', full_name='jina.SpawnRequest.MutablepodSpawnRequest.peas', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1148,7 +1102,6 @@ _SPAWNREQUEST = _descriptor.Descriptor(
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
-  create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
       name='pea', full_name='jina.SpawnRequest.pea', index=0,
@@ -1156,35 +1109,35 @@ _SPAWNREQUEST = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='pod', full_name='jina.SpawnRequest.pod', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='mutable_pod', full_name='jina.SpawnRequest.mutable_pod', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='log_record', full_name='jina.SpawnRequest.log_record', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='status', full_name='jina.SpawnRequest.status', index=4,
       number=5, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1199,9 +1152,7 @@ _SPAWNREQUEST = _descriptor.Descriptor(
   oneofs=[
     _descriptor.OneofDescriptor(
       name='body', full_name='jina.SpawnRequest.body',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
+      index=0, containing_type=None, fields=[]),
   ],
   serialized_start=2253,
   serialized_end=2832,
@@ -1463,7 +1414,6 @@ _JINARPC = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  create_key=_descriptor._internal_create_key,
   serialized_start=2835,
   serialized_end=2986,
   methods=[
@@ -1475,7 +1425,6 @@ _JINARPC = _descriptor.ServiceDescriptor(
     input_type=_REQUEST,
     output_type=_REQUEST,
     serialized_options=None,
-    create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
     name='CallUnary',
@@ -1485,7 +1434,6 @@ _JINARPC = _descriptor.ServiceDescriptor(
     input_type=_REQUEST,
     output_type=_REQUEST,
     serialized_options=None,
-    create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
     name='Spawn',
@@ -1495,7 +1443,6 @@ _JINARPC = _descriptor.ServiceDescriptor(
     input_type=_SPAWNREQUEST,
     output_type=_SPAWNREQUEST,
     serialized_options=None,
-    create_key=_descriptor._internal_create_key,
   ),
 ])
 _sym_db.RegisterServiceDescriptor(_JINARPC)

@@ -6,7 +6,8 @@ SRC_NAME=jina.proto
 VER_FILE=../__init__.py
 
 # set up the plugin path
-PLUGIN_PATH=/Volumes/TOSHIBA-4T/Documents/grpc/bins/opt/grpc_python_plugin
+PLUGIN_PATH=/Users/nanwang/Codes/github/grpc/bins/opt/grpc_python_plugin
+#/Volumes/TOSHIBA-4T/Documents/grpc/bins/opt/grpc_python_plugin
 
 printf "\e[1;33mgenerating protobuf and grpc python interface\e[0m\n"
 

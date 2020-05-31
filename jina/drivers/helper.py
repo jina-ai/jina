@@ -100,7 +100,7 @@ def extract_chunks(
 
         for c in d.chunks:
             _c = _extract_fn(c)
-            if len(filter_by) > 0 and _c.field_name not in filter_by:
+            if len(filter_by) > 0 and c.field_name not in filter_by:
                 continue
             if _c is not None:
                 _contents.append(_c)

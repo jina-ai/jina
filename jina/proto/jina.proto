@@ -93,7 +93,7 @@ message Chunk {
     string mime_type = 12;
 
     // the field name
-    string filed_name = 13;
+    string field_name = 13;
 }
 
 /**

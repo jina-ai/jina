@@ -1,0 +1,51 @@
+!ChunkIndexer
+metas:
+  workspace: $TMP_WORKSPACE
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+    metas:
+      workspace: $TMP_WORKSPACE
+  - !BasePbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      workspace: $TMP_WORKSPACE
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: NumpyIndexer
+          filter_by: title
+      - !PruneDriver
+        with:
+          level: chunk
+          pruned:
+            - embedding
+            - blob
+            - text
+      - !KVIndexDriver
+        with:
+          level: chunk
+          executor: BasePbIndexer
+          filter_by: title
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: NumpyIndexer
+          filter_by: title
+      - !PruneDriver
+        with:
+          level: chunk
+          pruned:
+            - embedding
+            - raw_bytes
+            - blob
+            - text
+      - !KVSearchDriver
+        with:
+          level: chunk
+          executor: BasePbIndexer
+          filter_by: title
