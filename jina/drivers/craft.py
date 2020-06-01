@@ -5,7 +5,7 @@ import ctypes
 import random
 
 from . import BaseExecutableDriver, BaseDriver
-from .helper import array2pb, pb_obj2dict, pb2array, guess_mime
+from .helper import array2pb, pb_obj2dict, pb2array
 from ..proto import jina_pb2
 
 
@@ -84,58 +84,6 @@ class DocCraftDriver(BaseCraftDriver):
                     setattr(d, k, v)
 
 
-class MIMEDriver(BaseDriver):
-    """Guessing the MIME type based on the doc content
-
-    Can be used before/after :class:`DocCraftDriver` to fill MIME type
-    """
-
-    def __init__(self, default_mime: str = 'application/octet-stream', *args, **kwargs):
-        """
-
-        :param default_mime: for text documents without a specific subtype, text/plain should be used.
-            Similarly, for binary documents without a specific or known subtype, application/octet-stream should be used.
-        """
-        super().__init__(*args, **kwargs)
-        self.default_mime = default_mime
-        self.buffer_sniff = False
-        try:
-            import magic
-            self.buffer_sniff = True
-        except (ImportError, ModuleNotFoundError):
-            self.logger.warning(f'can not sniff the MIME type '
-                                f'MIME sniffing requires pip install "jina[http]" '
-                                f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
-
-    def __call__(self, *args, **kwargs):
-        import mimetypes
-
-        for d in self.req.docs:
-            # mime_type may be a file extension
-            m_type = d.mime_type
-            if m_type and (m_type not in mimetypes.types_map.values()):
-                m_type = mimetypes.guess_type(f'*.{m_type}')[0]
-
-            if not m_type:  # for ClientInputType=PROTO, d_type could be empty
-                d_type = d.WhichOneof('content')
-                if d_type == 'buffer':
-                    d_content = getattr(d, d_type)
-                    if self.buffer_sniff:
-                        try:
-                            import magic
-                            m_type = magic.from_buffer(d_content, mime=True)
-                        except Exception as ex:
-                            self.logger.warning(f'can not sniff the MIME type due to the exception {ex}')
-                if d.uri:
-                    m_type = guess_mime(d.uri)
-
-            if m_type:
-                d.mime_type = m_type
-            else:
-                d.mime_type = self.default_mime
-                self.logger.warning(f'can not determine the MIME type, set to default {self.default_mime}')
-
-
 class SegmentDriver(BaseCraftDriver):
     """Segment document into chunks using the executor
 
@@ -186,6 +134,10 @@ class SegmentDriver(BaseCraftDriver):
 
 
 class UnarySegmentDriver(BaseDriver):
+    """ The :class:`UnarySegmentDriver` copies whatever ``content`` set in the doc level to the chunk level, hence
+    creates a single-chunk document
+    """
+
     def __init__(
             self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
         super().__init__(*args, **kwargs)
