@@ -82,7 +82,7 @@ class MyTestCase(JinaTestCase):
     def test_multiple_executor(self):
         from jina.executors.encoders import BaseEncoder
         from jina.executors.indexers import BaseIndexer
-        from jina.executors.rankers import BaseRanker
+        from jina.executors.rankers import Chunk2DocRanker
         from jina.executors.crafters import BaseDocCrafter
         from jina.executors.crafters import BaseChunkCrafter
 
@@ -98,7 +98,7 @@ class MyTestCase(JinaTestCase):
         d2 = D2('dummy.bin')
         self.assertEqual(len(d2._drivers), 1)
 
-        class D3(BaseRanker):
+        class D3(Chunk2DocRanker):
             pass
 
         d3 = D3()

@@ -74,7 +74,7 @@ This version of Jina includes 80 Executors.
          - `BaseAudioEncoder`
          - `BaseImageEncoder`
       - `BaseTransformerEncoder`
-   - `BaseRanker`
+   - `Chunk2DocRanker`
       - `MaxRanker`
       - `MinRanker`
       - `TfIdfRanker`
@@ -117,7 +117,7 @@ This version of Jina includes 80 Executors.
 | `BasePaddleExecutor` | `jina.executors.frameworks` |
 | `BasePaddlehubEncoder` |   |
 | `BasePbIndexer` | `jina.executors.indexers` |
-| `BaseRanker` | `jina.executors.encoders` |
+| `Chunk2DocRanker` | `jina.executors.encoders` |
 | `BaseSegmenter` | `jina.executors.crafters` |
 | `BaseTFEncoder` |   |
 | `BaseTFExecutor` |   |

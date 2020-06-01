@@ -64,7 +64,7 @@ If your algorithm is so unique and does not fit any any of the category below, y
 
           You want to segment the documents into chunks.
 
-    * :class:`jina.executors.BaseRanker`
+    * :class:`jina.executors.Chunk2DocRanker`
 
       You want to segment/transform the documents and chunks.
 
@@ -155,7 +155,7 @@ Each :class:`Executor` has a core method, which defines the algorithmic behavior
 +----------------------+----------------------------+
 | :class:`BaseIndexer` | :meth:`add`, :meth:`query` |
 +----------------------+----------------------------+
-| :class:`BaseRanker`  | :meth:`score`              |
+| :class:`Chunk2DocRanker`  | :meth:`score`              |
 +----------------------+----------------------------+
 
 
