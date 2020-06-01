@@ -22,7 +22,7 @@ class ArrayReader(BaseDocCrafter):
         self.delimiter = delimiter
         self.as_type = as_type
 
-    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> Dict:
         """
         Split string into numbers and convert to numpy array
 
