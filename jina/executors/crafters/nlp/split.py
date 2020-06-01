@@ -133,7 +133,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
 
     def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
-        Split the chinese text into overlapping chunks
+        Split the text into overlapping chunks
         :param buffer: the raw text in the `bytes` format
         :param doc_id: the doc id
         :return: a list of chunk dicts
