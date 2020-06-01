@@ -143,7 +143,7 @@ Further readings:
 
 The output function in Jina is basically *asynchronous callback*. For the sake of efficiency Jina is designed to be highly asynchronous on data transmission. You just keep sending request to Jina without any blocking. When a request is finished, the callback function will be invoked.
 
-For example, the following will print the request after a `IndexReqeust` is finished:
+For example, the following will print the request after a `IndexRequest` is finished:
 
 ```python
 with f:
@@ -170,17 +170,3 @@ def print_html(resp):
 f.search(input_fn,
                  output_fn=print_html, top_k=args.top_k, batch_size=args.query_batch_size)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
