@@ -37,16 +37,15 @@ class Sentencizer(BaseSegmenter):
                 self.min_sent_len, self.max_sent_len))
         self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(self.punct_chars)))
 
-    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
 
-        :param buffer: the raw text in the `bytes` format
+        :param text: the raw text
         :param doc_id: the doc id
         :return: a list of chunk dicts with the cropped images
         """
 
-        text = buffer.decode('utf8')
         all_sentences = self._slit_pat.findall(text)
         results = []
         for idx, s in enumerate(all_sentences):
@@ -75,15 +74,14 @@ class JiebaSegmenter(BaseSegmenter):
             raise ValueError('you must choose one of modes to cut the text: accurate, all, search.')
         self.mode = mode
 
-    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
         Split the chinese text into words
-        :param buffer: the raw text in the `bytes` format
+        :param text: the raw text
         :param doc_id: the doc id
         :return: a list of chunk dicts
         """
         import jieba
-        text = buffer.decode('utf-8')
         if self.mode == 'search':
             words = jieba.cut_for_search(text)
         elif self.mode == 'all':

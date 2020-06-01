@@ -63,7 +63,7 @@ class CompoundExecutor(BaseExecutor):
           - !GifPreprocessor
             with:
               every_k_frame: 2
-              from_bytes: true
+              from_buffer: true
             metas:
               name: gif2chunk_preprocessor  # a customized name
         metas:
