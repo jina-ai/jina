@@ -2,5 +2,5 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   [SearchRequest, TrainRequest, IndexRequest]:
-    - !MIMEDriver {}
+#    - !MIMEDriver {}  # https://github.com/jina-ai/jina/pull/474 has made MIME sniff on the client side
     - !DocCraftDriver {}

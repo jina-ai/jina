@@ -44,8 +44,11 @@ class Path2DataURI(URI2Buffer):
         self.base64 = base64
 
     def craft(self, uri: str, mime_type: str, *args, **kwargs):
-        d = super().craft(uri)
-        return dict(uri=self.make_datauri(mime_type, d['buffer']))
+        if uri and urllib.parse.urlparse(uri).scheme == 'data':
+            pass
+        else:
+            d = super().craft(uri)
+            return dict(uri=self.make_datauri(mime_type, d['buffer']))
 
     def make_datauri(self, mimetype, buffer):
         parts = ['data:', mimetype]
@@ -65,8 +68,11 @@ class Path2DataURI(URI2Buffer):
 class Buffer2DataURI(Path2DataURI):
     """Convert buffer to data URI"""
 
-    def craft(self, buffer: bytes, mime_type: str, *args, **kwargs):
-        return dict(uri=self.make_datauri(mime_type, buffer))
+    def craft(self, buffer: bytes, uri: str, mime_type: str, *args, **kwargs):
+        if uri and urllib.parse.urlparse(uri).scheme == 'data':
+            pass
+        else:
+            return dict(uri=self.make_datauri(mime_type, buffer))
 
 
 class Buffer2NdArray(BaseDocCrafter):
