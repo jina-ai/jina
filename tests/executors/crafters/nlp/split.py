@@ -1,6 +1,6 @@
 import unittest
 
-from jina.executors.crafters.nlp.split import Sentencizer, JiebaSegmenter
+from jina.executors.crafters.nlp.split import Sentencizer, JiebaSegmenter, SlidingWindowSegmenter
 from tests import JinaTestCase
 
 
@@ -54,6 +54,16 @@ class MyTestCase(JinaTestCase):
         buffer = '今天是个大晴天！安迪回来以后，我们准备去动物园。'.encode('utf-8')
         crafted_chunk_list = jieba_crafter.craft(buffer, 0)
         self.assertEqual(len(crafted_chunk_list), 14)
+
+    def test_sliding_window_segmenter(self):
+        window_size = 20
+        step_size = 10
+        sliding_window_segmenter = SlidingWindowSegmenter(
+            window_size=window_size, step_size=step_size)
+        buffer = b'It is a sunny day!!!! When Andy comes back, we are going to the zoo.'
+        crafted_chunk_list = sliding_window_segmenter.craft(buffer, 0)
+        print(len(buffer) // step_size)
+        self.assertEqual(len(crafted_chunk_list), len(buffer) // step_size)
 
 
 if __name__ == '__main__':

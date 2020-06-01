@@ -21,6 +21,7 @@ This version of Jina includes 80 Executors.
    - `BaseCrafter`
       - `BaseSegmenter`
          - `JiebaSegmenter`
+         - `SlidingWindowSegmenter`
          - `Sentencizer`
          - `ImageReader`
       - `BaseChunkCrafter`
@@ -153,7 +154,7 @@ This version of Jina includes 80 Executors.
 | `ImageResizer` | `jina.executors.crafters.image` |
 | `ImageTorchEncoder` | `jina.executors.encoders.frameworks` |
 | `IncrementalPCAEncoder` | `jina.executors.encoders` |
-| `JiebaSegmenter` | `jina.executors.crafters` |
+| `JiebaSegmenter` | `jina.executors.crafters.nlp` |
 | `KerasImageEncoder` | `jina.executors.encoders.frameworks` |
 | `LeveldbIndexer` | `jina.executors.indexers.keyvalue.leveldb` |
 | `MaxRanker` | `jina.executors.rankers.bi_match` |
@@ -164,8 +165,9 @@ This version of Jina includes 80 Executors.
 | `OnnxImageEncoder` | `jina.executors.encoders.frameworks` |
 | `PipelineEncoder` | `jina.executors.encoders` |
 | `RandomImageCropper` | `jina.executors.crafters.image` |
-| `Sentencizer` | `jina.executors.crafters` |
+| `Sentencizer` | `jina.executors.crafters.nlp` |
 | `SlidingWindowImageCropper` | `jina.executors.crafters.image` |
+| `SlidingWindowSegmenter` | `jina.executors.crafters.nlp` |
 | `SptagIndexer` | `jina.executors.indexers.vector.nmslib` |
 | `TextPaddlehubEncoder` | `jina.executors.encoders.frameworks` |
 | `TfIdfRanker` | `jina.executors.rankers.bi_match` |
