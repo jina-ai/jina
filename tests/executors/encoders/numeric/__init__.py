@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-
 from jina.executors import BaseExecutor
 from tests import JinaTestCase
 

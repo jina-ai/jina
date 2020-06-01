@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-
 from jina.executors.crafters.image.crop import ImageCropper, CenterImageCropper, RandomImageCropper, FiveImageCropper, \
     SlidingWindowImageCropper
 from tests.executors.crafters.image import JinaImageTestCase

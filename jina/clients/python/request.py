@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import ctypes
+import mimetypes
 import os
 import random
 import urllib.parse
@@ -9,9 +10,10 @@ from typing import Iterator, Union
 
 import numpy as np
 
-from ...drivers.helper import array2pb
+from ...drivers.helper import array2pb, guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator
+from ...logging import default_logger
 from ...proto import jina_pb2
 
 
@@ -20,6 +22,19 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
               mime_type: str = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
+    buffer_sniff = False
+
+    try:
+        import magic
+        buffer_sniff = True
+    except (ImportError, ModuleNotFoundError):
+        default_logger.warning(f'can not sniff the MIME type '
+                               f'MIME sniffing requires pip install "jina[http]" '
+                               f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
+
+    if mime_type and (mime_type not in mimetypes.types_map.values()):
+        mime_type = mimetypes.guess_type(f'*.{mime_type}')[0]
+
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
 
@@ -41,18 +56,25 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                 d.blob.CopyFrom(array2pb(_raw))
             elif isinstance(_raw, bytes):
                 d.buffer = _raw
-                if mime_type:
-                    d.mime_type = mime_type
+                if not mime_type and buffer_sniff:
+                    try:
+                        import magic
+                        mime_type = magic.from_buffer(_raw, mime=True)
+                    except Exception as ex:
+                        default_logger.warning(f'can not sniff the MIME type due to the exception {ex}')
             elif isinstance(_raw, str):
                 scheme = urllib.parse.urlparse(_raw).scheme
-                if scheme in {'http', 'https'} or os.path.exists(_raw) or os.access(os.path.dirname(_raw), os.W_OK):
-                    d.file_path = _raw
-                elif scheme == 'data':
-                    d.data_uri = _raw
+                if (scheme in {'http', 'https', 'data'} or os.path.exists(_raw)
+                        or os.access(os.path.dirname(_raw), os.W_OK)):
+                    d.uri = _raw
+                    mime_type = guess_mime(_raw)
                 else:
                     d.text = _raw
             else:
                 raise TypeError(f'{type(_raw)} type of input is not supported')
+
+            if mime_type:
+                d.mime_type = mime_type
 
             d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0

@@ -1,9 +1,9 @@
-import unittest
 import os
-import numpy as np
+import unittest
 
-from jina.executors.encoders.clients import UnaryTFServingClientEncoder
+import numpy as np
 from jina.executors import BaseExecutor
+from jina.executors.encoders.clients import UnaryTFServingClientEncoder
 from tests import JinaTestCase
 
 

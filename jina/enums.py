@@ -221,10 +221,3 @@ class ClientMode(BetterEnum):
     SEARCH = 1
     TRAIN = 2
 
-
-class ClientInputType(BetterEnum):
-    """ The input mode of the client"""
-    BUFFER = 0
-    DATA_URI = 1
-    PROTOBUF = 2
-    FILE_PATH = 3

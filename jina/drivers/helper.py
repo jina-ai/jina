@@ -1,7 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import mimetypes
 import os
+import urllib.parse
+import urllib.request
 from typing import Dict, Any, Iterable, Tuple
 
 import numpy as np
@@ -141,3 +144,13 @@ def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     :param keys: an iterable of keys for extraction
     """
     return {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
+
+
+def guess_mime(uri):
+    # guess when uri points to a local file
+    m_type = mimetypes.guess_type(uri)[0]
+    # guess when uri points to a remote file
+    if not m_type and urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
+        tmp = urllib.request.urlopen(uri)
+        m_type = tmp.info().get_content_type()
+    return m_type

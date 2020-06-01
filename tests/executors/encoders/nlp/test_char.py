@@ -2,7 +2,6 @@ import os
 import unittest
 
 import numpy as np
-
 from jina.executors import BaseExecutor
 from jina.executors.encoders.nlp.char import OneHotTextEncoder
 from tests import JinaTestCase

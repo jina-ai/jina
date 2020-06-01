@@ -1,4 +1,3 @@
-from jina.enums import ClientInputType
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from jina.proto import jina_pb2

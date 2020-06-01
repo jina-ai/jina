@@ -1,7 +1,6 @@
 from typing import Any
 
 import numpy as np
-
 from jina.executors.encoders import BaseEncoder
 
 

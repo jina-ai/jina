@@ -18,10 +18,10 @@ result_html = []
 
 def print_result(resp):
     for d in resp.search.docs:
-        vi = d.data_uri
+        vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
         for kk in d.topk_results:
-            kmi = kk.match_doc.data_uri
+            kmi = kk.match_doc.uri
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
             # k['score']['explained'] = json.loads(kk.score.explained)
         result_html.append('</td></tr>\n')

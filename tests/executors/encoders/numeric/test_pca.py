@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-
 from jina.executors.encoders.numeric.pca import IncrementalPCAEncoder
 from tests.executors.encoders.numeric import NumericTestCase
 

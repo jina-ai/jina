@@ -1,7 +1,5 @@
 import unittest
 
-from pkg_resources import resource_filename
-
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import KVSearchDriver
@@ -9,6 +7,7 @@ from jina.executors import BaseExecutor
 from jina.helper import yaml
 from jina.main.parser import set_pod_parser
 from jina.peapods import Pod
+from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
