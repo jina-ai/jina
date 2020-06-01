@@ -14,16 +14,16 @@ class ImageReader(BaseSegmenter):
     :class:`ImageReader` loads the image from the given file path and save the `ndarray` of the image in the Chunk.
     """
 
-    def __init__(self, channel_axis: int = -1, from_bytes: bool = False, *args, **kwargs):
+    def __init__(self, channel_axis: int = -1, from_buffer: bool = False, *args, **kwargs):
         """
         :class:`ImageReader` load an image file and craft into image matrix.
 
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param from_bytes: if set to true, then load image directly from buffer, otherwise it assumes buffer as file path
+        :param from_buffer: if set to true, then load image directly from buffer, otherwise it assumes buffer as file path
         """
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
-        self.from_bytes = from_bytes
+        self.from_buffer = from_buffer
 
     def craft(self, buffer: bytes, uri: str, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
@@ -36,7 +36,7 @@ class ImageReader(BaseSegmenter):
 
         """
         from PIL import Image
-        if self.from_bytes:
+        if self.from_buffer:
             raw_img = Image.open(io.BytesIO(buffer))
         else:
             raw_img = Image.open(uri)
@@ -45,4 +45,4 @@ class ImageReader(BaseSegmenter):
         img = np.array(raw_img).astype('float32')
         if self.channel_axis != -1:
             img = np.moveaxis(img, -1, self.channel_axis)
-        return [dict(doc_id=doc_id, offset=0, weight=1., blob=img), ]
+        return [dict(offset=0, weight=1., blob=img)]
