@@ -25,12 +25,13 @@ class ImageReader(BaseSegmenter):
         self.channel_axis = channel_axis
         self.from_bytes = from_bytes
 
-    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, buffer: bytes, uri: str, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
         Read the image from the given file path that specified in `buffer` and save the `ndarray` of the image in
             the `blob` of the chunk.
 
-        :param buffer: the image file path in raw bytes
+        :param buffer: the image in raw bytes
+        :param uri: the image file path
         :param doc_id: the id of the Document
 
         """
@@ -38,7 +39,7 @@ class ImageReader(BaseSegmenter):
         if self.from_bytes:
             raw_img = Image.open(io.BytesIO(buffer))
         else:
-            raw_img = Image.open(buffer.decode())
+            raw_img = Image.open(uri)
         if raw_img.mode != 'RGB':
             raw_img = raw_img.convert('RGB')
         img = np.array(raw_img).astype('float32')
