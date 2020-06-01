@@ -3,10 +3,10 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from . import BaseRanker
+from . import Chunk2DocRanker
 
 
-class BiMatchRanker(BaseRanker):
+class BiMatchRanker(Chunk2DocRanker):
     """The :class:`BiMatchRanker` counts the best chunk-hit from both query and doc perspective.
 
     .. warning:: Here we suppose that the smaller chunk score means the more similar.

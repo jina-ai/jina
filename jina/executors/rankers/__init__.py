@@ -9,11 +9,18 @@ from .. import BaseExecutor
 
 
 class BaseRanker(BaseExecutor):
-    """The base class for a `Ranker`. A `Ranker` translates the chunk-wise score (distance) to the doc-wise score.
+    """The base class for a `Ranker`"""
 
-    In the query-time, :class:`BaseRanker` is an almost-always required component.
+    def score(self, *args, **kwargs):
+        raise NotImplementedError
+
+
+class Chunk2DocRanker(BaseRanker):
+    """ A :class:`Chunk2DocRanker` translates the chunk-wise score (distance) to the doc-wise score.
+
+    In the query-time, :class:`Chunk2DocRanker` is an almost-always required component.
     Because in the end we want to retrieve top-k documents of given query-document not top-k chunks of
-    given query-chunks. The purpose of :class:`BaseRanker` is to aggregate the already existed top-k chunks
+    given query-chunks. The purpose of :class:`Chunk2DocRanker` is to aggregate the already existed top-k chunks
     into documents.
 
     The key function here is :func:`score`.
@@ -89,7 +96,7 @@ class BaseRanker(BaseExecutor):
         return match_with_same_doc_id[0, self.col_doc_id]
 
 
-class MaxRanker(BaseRanker):
+class MaxRanker(Chunk2DocRanker):
     """
     :class:`MaxRanker` calculates the score of the matched doc form the matched chunks. For each matched doc, the score
         is the maximal score from all the matched chunks belonging to this doc.
@@ -101,7 +108,7 @@ class MaxRanker(BaseRanker):
         return self.get_doc_id(match_idx), match_idx[:, self.col_score].max()
 
 
-class MinRanker(BaseRanker):
+class MinRanker(Chunk2DocRanker):
     """
     :class:`MinRanker` calculates the score of the matched doc form the matched chunks. For each matched doc, the score
         is `1 / (1 + s)`, where `s` is the minimal score from all the matched chunks belonging to this doc.

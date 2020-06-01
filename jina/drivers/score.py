@@ -8,14 +8,14 @@ from . import BaseExecutableDriver
 from .helper import pb_obj2dict
 
 
-class BaseScoreDriver(BaseExecutableDriver):
+class BaseRankDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
 
-class Chunk2DocScoreDriver(BaseScoreDriver):
+class Chunk2DocRankDriver(BaseRankDriver):
     """Extract chunk-level score and use the executor to compute the doc-level score
 
     """
