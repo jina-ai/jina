@@ -1411,15 +1411,15 @@ _JINARPC = _descriptor.ServiceDescriptor(
   serialized_start=2815,
   serialized_end=2966,
   methods=[
-    _descriptor.MethodDescriptor(
-      name='Call',
-      full_name='jina.JinaRPC.Call',
-      index=0,
-      containing_service=None,
-      input_type=_REQUEST,
-      output_type=_REQUEST,
-      serialized_options=None,
-    ),
+  _descriptor.MethodDescriptor(
+    name='Call',
+    full_name='jina.JinaRPC.Call',
+    index=0,
+    containing_service=None,
+    input_type=_REQUEST,
+    output_type=_REQUEST,
+    serialized_options=None,
+  ),
   _descriptor.MethodDescriptor(
     name='CallUnary',
     full_name='jina.JinaRPC.CallUnary',
