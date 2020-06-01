@@ -2,7 +2,6 @@ import os
 import time
 from sys import platform
 
-from jina.enums import ClientInputType
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser

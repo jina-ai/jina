@@ -1,12 +1,11 @@
 import os
 
-from pkg_resources import resource_filename
-
 from jina.executors import BaseExecutor
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import yaml, expand_dict
 from jina.main.parser import set_pea_parser
 from jina.peapods.pea import BasePea
+from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 

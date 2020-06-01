@@ -3,13 +3,12 @@ import subprocess
 import unittest
 from pathlib import Path
 
-from pkg_resources import resource_filename
-
 from jina.clients import py_client
 from jina.clients.python.io import input_numpy
 from jina.flow import Flow
 from jina.helloworld import download_data
 from jina.main.parser import set_hw_parser
+from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 

@@ -3,11 +3,9 @@ __license__ = "Apache-2.0"
 
 import ctypes
 import random
-import urllib.parse
-import urllib.request
 
 from . import BaseExecutableDriver, BaseDriver
-from .helper import array2pb, pb_obj2dict, pb2array
+from .helper import array2pb, pb_obj2dict, pb2array, guess_mime
 from ..proto import jina_pb2
 
 
@@ -100,6 +98,14 @@ class MIMEDriver(BaseDriver):
         """
         super().__init__(*args, **kwargs)
         self.default_mime = default_mime
+        self.buffer_sniff = False
+        try:
+            import magic
+            self.buffer_sniff = True
+        except (ImportError, ModuleNotFoundError):
+            self.logger.warning(f'can not sniff the MIME type '
+                                f'MIME sniffing requires pip install "jina[http]" '
+                                f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
 
     def __call__(self, *args, **kwargs):
         import mimetypes
@@ -107,29 +113,21 @@ class MIMEDriver(BaseDriver):
         for d in self.req.docs:
             # mime_type may be a file extension
             m_type = d.mime_type
-            if m_type and m_type not in mimetypes.types_map.values():
+            if m_type and (m_type not in mimetypes.types_map.values()):
                 m_type = mimetypes.guess_type(f'*.{m_type}')[0]
 
-            d_type = d.WhichOneof('content')
-            if not m_type and d_type:  # for ClientInputType=PROTO, d_type could be empty
+            if not m_type:  # for ClientInputType=PROTO, d_type could be empty
+                d_type = d.WhichOneof('content')
                 if d_type == 'buffer':
                     d_content = getattr(d, d_type)
-                    # d.mime_type = 'application/octet-stream'  # default by IANA standard
-                    try:
-                        import magic
-                        m_type = magic.from_buffer(d_content, mime=True)
-                    except (ImportError, ModuleNotFoundError):
-                        self.logger.warning(f'can not sniff the MIME type '
-                                            f'MIME sniffing requires pip install "jina[http]" '
-                                            f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
-                    except Exception as ex:
-                        self.logger.warning(f'can not sniff the MIME type due to the exception {ex}')
-                elif d_type in {'file_path', 'data_uri'}:
-                    d_content = getattr(d, d_type)
-                    m_type = mimetypes.guess_type(d_content)[0]
-                    if not m_type and urllib.parse.urlparse(d_content).scheme in {'http', 'https', 'data'}:
-                        tmp = urllib.request.urlopen(d_content)
-                        m_type = tmp.info().get_content_type()
+                    if self.buffer_sniff:
+                        try:
+                            import magic
+                            m_type = magic.from_buffer(d_content, mime=True)
+                        except Exception as ex:
+                            self.logger.warning(f'can not sniff the MIME type due to the exception {ex}')
+                if d.uri:
+                    m_type = guess_mime(d.uri)
 
             if m_type:
                 d.mime_type = m_type

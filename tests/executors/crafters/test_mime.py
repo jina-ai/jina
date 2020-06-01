@@ -38,20 +38,20 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=input_fn(), output_fn=print)
 
     def test_any_file(self):
-        f = Flow().add(yaml_path='!FilePath2DataURI\nwith: {base64: true}')
+        f = Flow().add(yaml_path='!Path2DataURI\nwith: {base64: true}')
         with f:
             f.index(input_fn=input_fn2, output_fn=print)
 
     def test_aba(self):
         f = (Flow().add(yaml_path='!Buffer2DataURI\nwith: {mimetype: png}')
-             .add(yaml_path='DataURI2Buffer')
+             .add(yaml_path='URI2Buffer')
              .add(yaml_path='!Buffer2DataURI\nwith: {mimetype: png}'))
 
         with f:
             f.index(input_fn=input_fn, output_fn=print)
 
     def test_pathURI2Buffer(self):
-        f = (Flow().add(yaml_path='PathURI2Buffer')
+        f = (Flow().add(yaml_path='URI2Buffer')
              .add(yaml_path='Buffer2DataURI'))
 
         with f:

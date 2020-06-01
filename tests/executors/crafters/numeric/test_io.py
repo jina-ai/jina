@@ -1,6 +1,6 @@
 import unittest
-import numpy as np
 
+import numpy as np
 from jina.executors.crafters.numeric.io import ArrayReader
 from tests import JinaTestCase
 

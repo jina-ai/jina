@@ -2,9 +2,8 @@ import os
 import time
 
 import numpy as np
-
 from jina.drivers.helper import array2pb
-from jina.enums import SchedulerType, ClientInputType
+from jina.enums import SchedulerType
 from jina.executors.crafters import BaseDocCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2

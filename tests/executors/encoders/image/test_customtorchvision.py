@@ -1,11 +1,11 @@
+import tempfile
 import unittest
 
-from jina.executors.encoders.image.customtorchvision import CustomImageTorchEncoder
-from tests.executors.encoders.image import ImageTestCase
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import tempfile
+from jina.executors.encoders.image.customtorchvision import CustomImageTorchEncoder
+from tests.executors.encoders.image import ImageTestCase
 
 
 class TestNet(nn.Module):

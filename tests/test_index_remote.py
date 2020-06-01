@@ -4,9 +4,8 @@ import time
 import unittest
 
 import numpy as np
-
 from jina.drivers.helper import array2pb
-from jina.enums import FlowOptimizeLevel, ClientInputType
+from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser

@@ -13,46 +13,26 @@ import numpy as np
 from . import BaseDocCrafter
 
 
-class FilePath2Buffer(BaseDocCrafter):
+class URI2Buffer(BaseDocCrafter):
     """ Convert local file path, remote URL doc to a buffer doc.
     """
 
-    def craft(self, file_path: str, *args, **kwargs):
-        if urllib.parse.urlparse(file_path).scheme in {'http', 'https', 'data'}:
-            page = urllib.request.Request(file_path, headers={'User-Agent': 'Mozilla/5.0'})
+    def craft(self, uri: str, *args, **kwargs):
+        if urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
+            page = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
             tmp = urllib.request.urlopen(page)
             buffer = tmp.read()
-        elif os.path.exists(file_path):
-            with open(file_path, 'rb') as fp:
+        elif os.path.exists(uri):
+            with open(uri, 'rb') as fp:
                 buffer = fp.read()
         else:
-            raise FileNotFoundError(f'{file_path} is not a URL or a valid local path')
+            raise FileNotFoundError(f'{uri} is not a URL or a valid local path')
         return dict(buffer=buffer)
 
 
-class DataURI2Buffer(FilePath2Buffer):
-    """ Convert a data URI doc to a buffer doc.
-    """
-
-    def craft(self, data_uri: str, *args, **kwargs):
-        return super().craft(data_uri)
-
-
-class PathURI2Buffer(DataURI2Buffer):
-    def craft(self, file_path: str, data_uri: str, buffer: bytes, *args, **kwargs):
-        if buffer:
-            pass
-        elif file_path:
-            return FilePath2Buffer.craft(self, file_path)
-        elif data_uri:
-            return DataURI2Buffer.craft(self, data_uri)
-        else:
-            raise ValueError('this document has no "file_path", no "data_uri" and no "buffer" set')
-
-
-class FilePath2DataURI(FilePath2Buffer):
+class Path2DataURI(URI2Buffer):
     def __init__(self, charset: str = 'utf-8', base64: bool = False, *args, **kwargs):
-        """ Convert file path doc to data uri doc.
+        """ Convert file path doc to data uri doc. Internally it first reads into buffer and then converts it to data URI.
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
@@ -63,9 +43,12 @@ class FilePath2DataURI(FilePath2Buffer):
         self.charset = charset
         self.base64 = base64
 
-    def craft(self, file_path: str, mime_type: str, *args, **kwargs):
-        d = super().craft(file_path)
-        return dict(data_uri=self.make_datauri(mime_type, d['buffer']))
+    def craft(self, uri: str, mime_type: str, *args, **kwargs):
+        if uri and urllib.parse.urlparse(uri).scheme == 'data':
+            pass
+        else:
+            d = super().craft(uri)
+            return dict(uri=self.make_datauri(mime_type, d['buffer']))
 
     def make_datauri(self, mimetype, buffer):
         parts = ['data:', mimetype]
@@ -82,23 +65,26 @@ class FilePath2DataURI(FilePath2Buffer):
         return ''.join(parts)
 
 
-class Buffer2DataURI(FilePath2DataURI):
+class Buffer2DataURI(Path2DataURI):
     """Convert buffer to data URI"""
 
-    def craft(self, buffer: bytes, mime_type: str, *args, **kwargs):
-        return dict(data_uri=self.make_datauri(mime_type, buffer))
+    def craft(self, buffer: bytes, uri: str, mime_type: str, *args, **kwargs):
+        if uri and urllib.parse.urlparse(uri).scheme == 'data':
+            pass
+        else:
+            return dict(uri=self.make_datauri(mime_type, buffer))
 
 
 class Buffer2NdArray(BaseDocCrafter):
     """Convert buffer to numpy array"""
 
-    def craft(self, buffer, *args, **kwargs):
+    def craft(self, buffer: bytes, *args, **kwargs):
         return dict(blob=np.frombuffer(buffer))
 
 
-class Blob2PNGDataURI(FilePath2DataURI):
+class Blob2PNGDataURI(BaseDocCrafter):
     """Simple DocCrafter used in :command:`jina hello-world`,
-        it reads ``buffer`` into base64 png and stored in ``data_uri``"""
+        it reads ``buffer`` into base64 png and stored in ``uri``"""
 
     def __init__(self, width: int = 28, height: int = 28, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,4 +114,4 @@ class Blob2PNGDataURI(FilePath2DataURI):
             png_pack(b'IHDR', struct.pack('!2I5B', self.width, self.height, 8, 6, 0, 0, 0)),
             png_pack(b'IDAT', zlib.compress(raw_data, 9)),
             png_pack(b'IEND', b'')])
-        return dict(data_uri='data:image/png;base64,' + base64.b64encode(png_bytes).decode())
+        return dict(uri='data:image/png;base64,' + base64.b64encode(png_bytes).decode())

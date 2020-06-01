@@ -2,7 +2,6 @@ import os
 import unittest
 
 import numpy as np
-
 from jina.executors import BaseExecutor
 from tests.executors import ExecutorTestCase
 
