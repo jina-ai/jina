@@ -71,6 +71,8 @@ class NumpyIndexer(BaseVectorIndexer):
                     f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
                     f'did you write to this index twice?')
                 return None
+            if vecs.shape[0] == 0:
+                self.logger.warning(f'an empty index is loaded, size: {vecs.shape[0]}')
             return vecs
         else:
             return None
@@ -108,6 +110,7 @@ class NumpyIndexer(BaseVectorIndexer):
         self.key_bytes += keys.tobytes()
         self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]
+        self.logger.info('chunk size: {}'.format(self.size))
 
     def query(self, keys: np.ndarray, top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """ Find the top-k vectors with smallest ``metric`` and return their ids.
@@ -121,6 +124,8 @@ class NumpyIndexer(BaseVectorIndexer):
             Distance (the smaller the better) is returned, not the score.
 
         """
+        if self.query_handler is None:
+            raise ValueError('query handler is empty')
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
             try:
                 from scipy.spatial.distance import cdist

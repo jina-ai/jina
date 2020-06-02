@@ -92,7 +92,7 @@ def extract_chunks(
     bad_chunk_ids = []
 
     if embedding:
-        _extract_fn = lambda c: c.embedding.buffer and pb2array(c.embedding)
+        _extract_fn = lambda c: c.embedding.buffer and pb2array(c.embedding) if c.embedding.buffer else None
     else:
         _extract_fn = lambda c: c.text or c.buffer or (c.blob and pb2array(c.blob))
 

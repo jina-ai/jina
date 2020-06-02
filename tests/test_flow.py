@@ -13,6 +13,7 @@ from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto import jina_pb2
 from jina.drivers.helper import array2pb
+from jina.excepts import BadClient
 from tests import JinaTestCase
 
 
@@ -25,7 +26,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=None, field_name=''):
             if isinstance(embed_dim, int):
                 c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
             else:
-                c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+                c.text = 'i\'m chunk %d from doc %d with field_name %s' % (c_id, j, c.field_name)
             c.chunk_id = c_id
             c.doc_id = j
             c.field_name = field_name
@@ -261,40 +262,103 @@ class MyTestCase(JinaTestCase):
         num_chunks = 2
         workspace = './multifield-indexer'
         yaml_path = 'yaml/test-multifield-indexer.yml'
-        os.environ['FILTER_BY'] = 'title'
+        filter_by = 'title'
+        os.environ['FILTER_BY'] = filter_by
         os.environ['TMP_WORKSPACE'] = workspace
         def validate(rsp):
             self.assertEqual(len(rsp.docs), 1)
             self.assertEqual(len(rsp.docs[0].topk_results), num_docs)
-        f = Flow().add(name='idx', yaml_path=yaml_path)
+        f = Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
         with f:
-            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='title'),
+            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name=filter_by),
                     random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary'),
                     random_doc_id=False)
-        fq = (Flow().add(name='idx', yaml_path=yaml_path)
-              .add(name='ranker', yaml_path='MinRanker'))
+        fq = (Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
+              .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
         with fq:
             fq.search(input_fn=random_queries_with_filter_by(1, 1, 10),
                       random_doc_id=False,
                       output_fn=validate,
                       callback_on_body=True,
-                      filter_by='title')
+                      filter_by=filter_by)
         self.add_tmpfile(workspace)
 
     def test_multifield_encoder_filter_by(self):
         import os
         num_docs = 1
         num_chunks = 2
-        os.environ['FILTER_BY'] = 'title'
-        f = (Flow().add(name='enc', yaml_path='yaml/test-multifield-enc.yml')
-             .add(name='idx', yaml_path='yaml/test-multifield-dummy-idx.yml'))
+        workspace = './multifield-indexer'
+        filter_by = 'title'
+        encoder_yml = 'yaml/test-multifield-encoder.yml'
+        indexer_yml = 'yaml/test-multifield-indexer.yml'
+        os.environ['FILTER_BY'] = filter_by
+        os.environ['TMP_WORKSPACE'] = workspace
+
+        def validate(rsp):
+            self.assertEqual(len(rsp.docs[0].topk_results), num_docs)
+
+        f = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
+             .add(name='idx', yaml_path=indexer_yml, copy_flow=False))
         with f:
-            f.index(input_fn=random_docs(num_docs, num_chunks, field_name='title'), random_doc_id=False)
+            f.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by), random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary'), random_doc_id=False)
 
-            # f.search
-        # assert(f["idx"].size == 2, True)
+        fq = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
+              .add(name='idx', yaml_path=indexer_yml, copy_flow=False)
+              .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
+        with fq:
+            fq.search(input_fn=random_queries_with_filter_by(1, 1),
+                      random_doc_id=False,
+                      output_fn=validate,
+                      callback_on_body=True,
+                      filter_by=filter_by)
+        self.add_tmpfile(workspace)
+
+    def test_multifield_two_indices(self):
+        import os
+        num_docs = 1
+        num_chunks = 2
+        workspace = './multifield-indexer'
+        workspace_2 = './multifield-indexer-2'
+        filter_by = 'title'
+        filter_by_2 = 'summary'
+        indexer_yml = 'yaml/test-multifield-indexer.yml'
+        indexer_yml_2 = 'yaml/test-multifield-indexer-2.yml'
+        os.environ['FILTER_BY'] = filter_by
+        os.environ['TMP_WORKSPACE'] = workspace
+        os.environ['FILTER_BY_2'] = filter_by_2
+        os.environ['TMP_WORKSPACE_2'] = workspace_2
+
+        def validate(rsp):
+            self.assertEqual(len(rsp.docs[0].topk_results), 2)
+
+        f = (Flow().add(name='enc', yaml_path='OneHotTextEncoder', copy_flow=False)
+             .add(name='title_idx', yaml_path=indexer_yml, copy_flow=False)
+             .add(name='summary_idx', yaml_path=indexer_yml_2, copy_flow=False, needs='enc')
+             .join(needs=['title_idx', 'summary_idx']))
+
+        with f:
+            f.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by), random_doc_id=True)
+            f.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by_2), random_doc_id=True)
+
+        fq = (Flow().add(name='enc', yaml_path='OneHotTextEncoder', copy_flow=False)
+              .add(name='title_idx', yaml_path=indexer_yml, copy_flow=False)
+              .add(name='summary_idx', yaml_path=indexer_yml_2, copy_flow=False)
+              .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
+
+        with fq:
+            try:
+                fq.search(input_fn=random_queries_with_filter_by(1, 1),
+                          random_doc_id=False,
+                          output_fn=validate,
+                          callback_on_body=True,
+                          filter_by=filter_by)
+            except BadClient as e:
+                self.assertTrue(False, e)
+            finally:
+                self.add_tmpfile(workspace)
+                self.add_tmpfile(workspace_2)
 
 
 if __name__ == '__main__':

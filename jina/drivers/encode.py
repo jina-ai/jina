@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from . import BaseExecutableDriver
 from .helper import extract_chunks, array2pb
+from typing import Union, List, Tuple
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
@@ -15,10 +16,13 @@ class BaseEncodeDriver(BaseExecutableDriver):
 class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
+    def __init__(self, filter_by: Union[List[str], Tuple[str]] = [], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filter_by = filter_by
 
     def __call__(self, *args, **kwargs):
         contents, chunk_pts, no_chunk_docs, bad_chunk_ids = \
-            extract_chunks(self.req.docs, self.req.filter_by, embedding=False)
+            extract_chunks(self.req.docs, self.filter_by, embedding=False)
 
         if no_chunk_docs:
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
