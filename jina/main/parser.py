@@ -429,7 +429,7 @@ def set_client_cli_parser(parser=None):
                      help='randomize the doc_id, if this is set then `first_request_id` is ignored')
     gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
-    gp1.add_argument('--filter-by', type=str, action='append',
+    gp1.add_argument('--filter-by', type=str, nargs='*',
                      help='field names to query on')
     return parser
 
