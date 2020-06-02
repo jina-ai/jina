@@ -71,7 +71,7 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
 
 
 def extract_chunks(
-        docs: Iterable['jina_pb2.Document'], filter_by: Union[str, Tuple[str], List[str]], embedding: bool) -> Tuple:
+        docs: Iterable['jina_pb2.Document'], filter_by: Union[Tuple[str], List[str]], embedding: bool) -> Tuple:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents

@@ -56,6 +56,7 @@ def random_queries_with_filter_by(num_docs, chunks_per_doc=5, embed_dim=None):
             c.chunk_id = c_id
             c.doc_id = j
             c_id += 1
+        d.meta_info = b'hello world'
         yield d
 
 
@@ -271,7 +272,6 @@ class MyTestCase(JinaTestCase):
                     random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary'),
                     random_doc_id=False)
-        f.close()
         fq = (Flow().add(name='idx', yaml_path=yaml_path)
               .add(name='ranker', yaml_path='MinRanker'))
         with fq:
@@ -279,7 +279,7 @@ class MyTestCase(JinaTestCase):
                       random_doc_id=False,
                       output_fn=validate,
                       callback_on_body=True,
-                      filter_by='sum')
+                      filter_by='title')
         self.add_tmpfile(workspace)
 
     def test_multifield_encoder_filter_by(self):
