@@ -120,13 +120,12 @@ class URI2Buffer(BaseDriver):
             if urllib.parse.urlparse(d.uri).scheme in {'http', 'https', 'data'}:
                 page = urllib.request.Request(d.uri, headers={'User-Agent': 'Mozilla/5.0'})
                 tmp = urllib.request.urlopen(page)
-                buffer = tmp.read()
+                d.buffer = tmp.read()
             elif os.path.exists(d.uri):
                 with open(d.uri, 'rb') as fp:
-                    buffer = fp.read()
+                    d.buffer = fp.read()
             else:
                 raise FileNotFoundError(f'{d.uri} is not a URL or a valid local path')
-            d.buffer = buffer
 
 
 class URI2DataURI(URI2Buffer):
