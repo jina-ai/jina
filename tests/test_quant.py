@@ -1,9 +1,7 @@
 import os
 
 import numpy as np
-
 from jina.drivers.helper import array2pb, pb2array
-from jina.enums import ClientInputType
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase

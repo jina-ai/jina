@@ -19,8 +19,8 @@ This version of Jina includes 35 Drivers.
          - `SegmentDriver`
       - `BaseEncodeDriver`
          - `EncodeDriver`
-      - `BaseScoreDriver`
-         - `Chunk2DocScoreDriver`
+      - `BaseRankDriver`
+         - `Chunk2DocRankDriver`
       - `BaseSearchDriver`
          - `KVSearchDriver`
             - `ChunkKVSearchDriver`
@@ -48,9 +48,9 @@ This version of Jina includes 35 Drivers.
 | `BaseEncodeDriver` | `jina.drivers.index` |
 | `BaseExecutableDriver` | `jina.drivers.control` |
 | `BaseIndexDriver` | `jina.drivers.index` |
-| `BaseScoreDriver` | `jina.drivers.index` |
+| `BaseRankDriver` | `jina.drivers.index` |
 | `BaseSearchDriver` | `jina.drivers.index` |
-| `Chunk2DocScoreDriver` | `jina.drivers.score` |
+| `Chunk2DocRankDriver` | `jina.drivers.score` |
 | `ChunkCraftDriver` | `jina.drivers.craft` |
 | `ChunkKVIndexDriver` | `jina.drivers.index` |
 | `ChunkKVSearchDriver` | `jina.drivers.search` |

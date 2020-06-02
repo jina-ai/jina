@@ -1,9 +1,8 @@
 import os
 import unittest
 
-from google.protobuf.json_format import MessageToJson
-
 import jina.proto.jina_pb2 as jina_pb2
+from google.protobuf.json_format import MessageToJson
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.keyvalue.leveldb import LeveldbIndexer
 from tests import JinaTestCase

@@ -5,10 +5,10 @@ from typing import Dict
 
 import numpy as np
 
-from . import BaseRanker
+from . import Chunk2DocRanker
 
 
-class TfIdfRanker(BaseRanker):
+class TfIdfRanker(Chunk2DocRanker):
     """
     :class:`TfIdfRanker` calculates the weighted score from the matched chunks. The weights of each chunk is based on
         the tf-idf algorithm. Each query chunk is considered as a ``term``, and the frequency of the query chunk in a

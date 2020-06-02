@@ -2,7 +2,6 @@ import time
 
 import numpy as np
 import requests
-
 from jina.clients import py_client
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files, input_numpy
@@ -57,7 +56,7 @@ class MyTestCase(JinaTestCase):
             j = a.json()
             self.assertTrue('index' in j)
             self.assertEqual(len(j['index']['docs']), 2)
-            self.assertEqual(j['index']['docs'][0]['dataUri'],
+            self.assertEqual(j['index']['docs'][0]['uri'],
                              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
             self.assertEqual(a.status_code, 200)
 
@@ -75,7 +74,7 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(len(j['index']['docs']), 2)
             self.assertEqual(j['index']['docs'][0]['docId'], 5)
             self.assertEqual(j['index']['docs'][1]['docId'], 6)
-            self.assertEqual(j['index']['docs'][0]['dataUri'],
+            self.assertEqual(j['index']['docs'][0]['uri'],
                              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
             self.assertEqual(a.status_code, 200)
 
@@ -86,7 +85,7 @@ class MyTestCase(JinaTestCase):
         PyClient.check_input(input_files('*.*', size=2, read_mode='rb'))
         PyClient.check_input(input_files('*.*', sampling_rate=.5))
 
-        f = Flow().add(yaml_path='PathURI2Buffer')
+        f = Flow().add(yaml_path='URI2Buffer')
 
         def validate_mime_type(req):
             for d in req.index.docs:

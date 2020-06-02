@@ -2,12 +2,16 @@ import unittest
 
 import ruamel.yaml
 
+from jina.executors import BaseExecutor
 from jina.helper import expand_env_var
 from jina.logging import default_logger
 from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
+
+    def test_load_yaml0(self):
+        BaseExecutor.load_config('yaml/dummy_exec2.yml')
 
     def test_load_yaml1(self):
         from jina.executors.indexers.vector.numpy import NumpyIndexer

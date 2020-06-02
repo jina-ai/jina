@@ -1,6 +1,6 @@
 import unittest
-import numpy as np
 
+import numpy as np
 from jina.executors.crafters.audio.monophone import AudioMonophoner
 from tests import JinaTestCase
 

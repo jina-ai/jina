@@ -1,7 +1,5 @@
 import unittest
 
-from pkg_resources import resource_filename
-
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import KVSearchDriver
@@ -9,6 +7,7 @@ from jina.executors import BaseExecutor
 from jina.helper import yaml
 from jina.main.parser import set_pod_parser
 from jina.peapods import Pod
+from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
@@ -82,7 +81,7 @@ class MyTestCase(JinaTestCase):
     def test_multiple_executor(self):
         from jina.executors.encoders import BaseEncoder
         from jina.executors.indexers import BaseIndexer
-        from jina.executors.rankers import BaseRanker
+        from jina.executors.rankers import Chunk2DocRanker
         from jina.executors.crafters import BaseDocCrafter
         from jina.executors.crafters import BaseChunkCrafter
 
@@ -98,7 +97,7 @@ class MyTestCase(JinaTestCase):
         d2 = D2('dummy.bin')
         self.assertEqual(len(d2._drivers), 1)
 
-        class D3(BaseRanker):
+        class D3(Chunk2DocRanker):
             pass
 
         d3 = D3()

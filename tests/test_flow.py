@@ -4,7 +4,7 @@ import requests
 import numpy as np
 
 from jina import JINA_GLOBAL
-from jina.enums import FlowOptimizeLevel, ClientInputType
+from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
