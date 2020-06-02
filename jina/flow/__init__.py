@@ -29,7 +29,7 @@ if False:
 
 
 def build_required(required_level: 'FlowBuildLevel'):
-    """Annotate a function so that it requires certaidn build level to run.
+    """Annotate a function so that it requires certain build level to run.
 
     :param required_level: required build level to run this function.
 
@@ -81,6 +81,7 @@ class Flow:
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
         as the head and tail routers are removed.
+        
         """
         self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -335,7 +336,7 @@ class Flow:
         :return: the current flow (by default)
 
         .. note::
-            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
+            ``inplace=False`` is recommended if you are building the same flow multiple times in a row. e.g.
 
             .. highlight:: python
             .. code-block:: python
@@ -344,7 +345,7 @@ class Flow:
                 with f:
                     f.index()
 
-                with f.build(copy_flow=False) as fl:
+                with f.build(inplace=False) as fl:
                     fl.search()
 
         """
@@ -682,7 +683,7 @@ class Flow:
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None,
                **kwargs):
-        """Do indexing on the current flow
+        """Do searching on the current flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`search`.
 
@@ -720,8 +721,9 @@ class Flow:
         self._get_client(**kwargs).search(input_fn, output_fn)
 
     def dry_run(self, **kwargs):
-        """Send a DRYRUN request to this flow, passing through all pods in this flow
-        useful for testing connectivity and debugging"""
+        """Send a DRYRUN request to this flow, passing through all pods in this flow.
+        
+        Useful for testing connectivity and debugging"""
         if not self._get_client(**kwargs).dry_run():
             raise FlowConnectivityError('a dry run shows this flow is badly connected due to the network settings')
 
