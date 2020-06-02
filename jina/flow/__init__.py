@@ -29,7 +29,7 @@ if False:
 
 
 def build_required(required_level: 'FlowBuildLevel'):
-    """Annotate a function so that it requires certaidn build level to run.
+    """Annotate a function so that it requires certain build level to run.
 
     :param required_level: required build level to run this function.
 
@@ -71,7 +71,7 @@ class Flow:
 
         More explain on ``optimize_level``:
 
-        As an example, the following flow will generates a 6 Peas,
+        As an example, the following flow will generate 6 Peas,
 
         .. highlight:: python
         .. code-block:: python
@@ -80,7 +80,8 @@ class Flow:
 
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
-        as the head and tail routers are removed.
+        as the head and tail routers are removed.        
+        
         """
         self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -278,7 +279,7 @@ class Flow:
         return self.add(name='joiner', yaml_path='_merge', needs=needs, *args, **kwargs)
 
     def add(self,
-            needs: Union[str, Tuple[str], List[str]] = None,
+            needs: Union[str], Tuple[str], List[str]] = None,
             copy_flow: bool = True,
             **kwargs) -> 'Flow':
         """
@@ -335,7 +336,7 @@ class Flow:
         :return: the current flow (by default)
 
         .. note::
-            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
+            ``inplace=False`` is recommended if you are building the same flow multiple times in a row. e.g.
 
             .. highlight:: python
             .. code-block:: python
@@ -344,7 +345,7 @@ class Flow:
                 with f:
                     f.index()
 
-                with f.build(copy_flow=False) as fl:
+                with f.build(inplace=False) as fl:
                     fl.search()
 
         """
