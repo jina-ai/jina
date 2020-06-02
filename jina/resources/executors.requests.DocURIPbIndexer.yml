@@ -1,0 +1,19 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  SearchRequest:
+    - !KVSearchDriver
+      with:
+        level: doc
+    - !TopKFilterDriver {}
+  IndexRequest:
+    - !Buffer2URI {}
+    - !PruneDriver
+      with:
+        level: doc
+        pruned:
+          - chunks
+          - buffer
+    - !KVIndexDriver
+      with:
+        level: doc

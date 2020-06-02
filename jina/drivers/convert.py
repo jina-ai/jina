@@ -14,7 +14,20 @@ from . import BaseDriver
 from .helper import guess_mime, array2pb, pb2array
 
 
-class MIMEDriver(BaseDriver):
+class BaseConvertDriver(BaseDriver):
+
+    def __init__(self, override: bool = False, *args, **kwargs):
+        """
+
+        :param override: override the value even when exits
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+        self.override = override
+
+
+class MIMEDriver(BaseConvertDriver):
     """Guessing the MIME type based on the doc content
 
     Can be used before/after :class:`DocCraftDriver` to fill MIME type
@@ -43,6 +56,10 @@ class MIMEDriver(BaseDriver):
         for d in self.req.docs:
             # mime_type may be a file extension
             m_type = d.mime_type
+
+            if m_type and not self.override:
+                continue
+
             if m_type and (m_type not in mimetypes.types_map.values()):
                 m_type = mimetypes.guess_type(f'*.{m_type}')[0]
 
@@ -66,15 +83,17 @@ class MIMEDriver(BaseDriver):
                 self.logger.warning(f'can not determine the MIME type, set to default {self.default_mime}')
 
 
-class Buffer2NdArray(BaseDriver):
+class Buffer2NdArray(BaseConvertDriver):
     """Convert buffer to numpy array"""
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
+            if d.blob and not self.override:
+                continue
             d.blob.CopyFrom(array2pb(np.frombuffer(d.buffer)))
 
 
-class Blob2PngURI(BaseDriver):
+class Blob2PngURI(BaseConvertDriver):
     """Simple DocCrafter used in :command:`jina hello-world`,
         it reads ``buffer`` into base64 png and stored in ``uri``"""
 
@@ -85,6 +104,9 @@ class Blob2PngURI(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
+            if d.uri and not self.override:
+                continue
+
             arr = pb2array(d.blob)
             pixels = []
             for p in arr[::-1]:
@@ -111,22 +133,25 @@ class Blob2PngURI(BaseDriver):
             d.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
 
-class URI2Buffer(BaseDriver):
+class URI2Buffer(BaseConvertDriver):
     """ Convert local file path, remote URL doc to a buffer doc.
     """
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
+
+            if d.buffer and not self.override:
+                continue
+
             if urllib.parse.urlparse(d.uri).scheme in {'http', 'https', 'data'}:
                 page = urllib.request.Request(d.uri, headers={'User-Agent': 'Mozilla/5.0'})
                 tmp = urllib.request.urlopen(page)
-                buffer = tmp.read()
+                d.buffer = tmp.read()
             elif os.path.exists(d.uri):
                 with open(d.uri, 'rb') as fp:
-                    buffer = fp.read()
+                    d.buffer = fp.read()
             else:
                 raise FileNotFoundError(f'{d.uri} is not a URL or a valid local path')
-            d.buffer = buffer
 
 
 class URI2DataURI(URI2Buffer):
@@ -145,6 +170,9 @@ class URI2DataURI(URI2Buffer):
     def __call__(self, *args, **kwargs):
         super().__call__()
         for d in self.req.docs:
+            if d.uri and not self.override:
+                continue
+
             if d.uri and urllib.parse.urlparse(d.uri).scheme == 'data':
                 pass
             else:
@@ -170,6 +198,9 @@ class Buffer2URI(URI2DataURI):
 
     def __call__(self, *args, **kwargs):
         for d in self.req.docs:
+            if d.uri and not self.override:
+                continue
+
             if d.uri and urllib.parse.urlparse(d.uri).scheme == 'data':
                 pass
             else:

@@ -6,6 +6,7 @@ import json
 from typing import Union
 
 from google.protobuf.json_format import Parse
+
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 
@@ -65,4 +66,9 @@ class ChunkPbIndexer(BasePbIndexer):
 
 class DocPbIndexer(BasePbIndexer):
     """Shortcut for :class:`BasePbIndexer` equipped with ``requests.on`` for storing doc-level protobuf info,
+    differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
+
+
+class DataURIPbIndexer(DocPbIndexer):
+    """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,
     differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
