@@ -28,7 +28,7 @@ if False:
 
 
 def build_required(required_level: 'FlowBuildLevel'):
-    """Annotate a function so that it requires certaidn build level to run.
+    """Annotate a function so that it requires certain build level to run.
 
     :param required_level: required build level to run this function.
 
