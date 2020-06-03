@@ -209,15 +209,13 @@ class MyTestCase(JinaTestCase):
                 self.assertEqual(d.match_doc.meta_info, b'hello world')
 
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas, separated_workspace=True)
-        with f:
-            f.index(input_fn=random_docs(index_docs), random_doc_id=False)
-        with f:
-            pass
+        with f.build(inplace=False) as fl:
+            fl.index(input_fn=random_docs(index_docs), random_doc_id=False)
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas,
                        separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
-        with f:
-            f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
-                     callback_on_body=True)
+        with f.build(inplace=False) as fq:
+            fq.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
+                      callback_on_body=True)
         self.add_tmpfile('test-docshard')
 
     def test_py_client(self):
@@ -270,14 +268,14 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(len(rsp.docs), 1)
             self.assertEqual(len(rsp.docs[0].topk_results), num_docs)
         f = Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
-        with f:
+        with f.build(inplace=False) as fl:
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name=filter_by, beg_id=10),
                     random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary', beg_id=20),
                     random_doc_id=False)
-        fq = (Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
+        f = (Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
               .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
-        with fq:
+        with f.build(inplace=False) as fq:
             fq.search(input_fn=random_queries_with_filter_by(1, 1, 10),
                       random_doc_id=False,
                       output_fn=validate,
@@ -301,14 +299,14 @@ class MyTestCase(JinaTestCase):
 
         f = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
              .add(name='idx', yaml_path=indexer_yml, copy_flow=False))
-        with f:
-            f.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by, beg_id=10))
-            f.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary', beg_id=20))
+        with f.build(inplace=False) as fl:
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by, beg_id=10))
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary', beg_id=20))
 
-        fq = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
+        f = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
               .add(name='idx', yaml_path=indexer_yml, copy_flow=False)
               .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
-        with fq:
+        with f.build(inplace=False) as fq:
             fq.search(input_fn=random_queries_with_filter_by(1, 1),
                       random_doc_id=False,
                       output_fn=validate,
@@ -334,22 +332,22 @@ class MyTestCase(JinaTestCase):
         def validate(rsp):
             self.assertEqual(len(rsp.docs[0].topk_results), 2)
 
-        f = (Flow().add(name='enc', yaml_path='OneHotTextEncoder', copy_flow=False)
-             .add(name='title_idx', yaml_path=indexer_yml, copy_flow=False)
-             .add(name='summary_idx', yaml_path=indexer_yml_2, copy_flow=False, needs='enc')
+        f = (Flow().add(name='enc', yaml_path='OneHotTextEncoder')
+             .add(name='title_idx', yaml_path=indexer_yml)
+             .add(name='summary_idx', yaml_path=indexer_yml_2, needs='enc')
              .join(needs=['title_idx', 'summary_idx']))
 
-        with f:
-            f.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by, beg_id=10), random_doc_id=True)
-            f.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by_2, beg_id=20), random_doc_id=True)
+        with f.build(inplace=False) as fl:
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by, beg_id=10), random_doc_id=True)
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by_2, beg_id=20), random_doc_id=True)
 
-        fq = (Flow().add(name='enc', yaml_path='OneHotTextEncoder', copy_flow=False)
-              .add(name='title_idx', yaml_path=indexer_yml, copy_flow=False)
-              .add(name='summary_idx', yaml_path=indexer_yml_2, copy_flow=False, needs='enc')
+        f = (Flow().add(name='enc', yaml_path='OneHotTextEncoder')
+              .add(name='title_idx', yaml_path=indexer_yml)
+              .add(name='summary_idx', yaml_path=indexer_yml_2, needs='enc')
               .add(name='join', yaml_path='_merge_topk_chunks', needs=['title_idx', 'summary_idx'])
-              .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
+              .add(name='ranker', yaml_path='MinRanker'))
 
-        with fq:
+        with f.build(inplace=False) as fq:
             try:
                 fq.search(input_fn=random_queries_with_filter_by(1, 1),
                           random_doc_id=False,
