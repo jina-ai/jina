@@ -583,8 +583,8 @@ class Flow:
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn)
 
     def search_numpy(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                    output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                     output_fn: Callable[['jina_pb2.Message'], None] = None,
+                     **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow
 
         :param array: the numpy ndarray data source
@@ -596,6 +596,24 @@ class Flow:
         """
         from ..clients.python.io import input_numpy
         self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle), output_fn)
+
+    def index_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
+                    sampling_rate: float = None, read_mode='r',
+                    output_fn: Callable[['jina_pb2.Message'], None] = None,
+                    **kwargs):
+        """ Use a list of files as the query source for indexing on the current flow
+
+        :param filepath: a text file that each line contains a document
+        :param lines: a list of strings, each is considered as d document
+        :param size: the maximum number of the documents
+        :param sampling_rate: the sampling rate between [0, 1]
+        :param read_mode: specifies the mode in which the file
+                is opened. 'r' for reading in text mode, 'rb' for reading in binary
+        :param output_fn: the callback function to invoke after indexing
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        from ..clients.python.io import input_lines
+        self._get_client(**kwargs).index(input_lines(filepath, lines, size, sampling_rate, read_mode), output_fn)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -617,9 +635,9 @@ class Flow:
         self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn)
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
-                    size: int = None, sampling_rate: float = None, read_mode: str = None,
-                    output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                     size: int = None, sampling_rate: float = None, read_mode: str = None,
+                     output_fn: Callable[['jina_pb2.Message'], None] = None,
+                     **kwargs):
         """ Use a set of files as the query source for searching on the current flow
 
         :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
@@ -634,6 +652,24 @@ class Flow:
         """
         from ..clients.python.io import input_files
         self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn)
+
+    def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
+                     sampling_rate: float = None, read_mode='r',
+                     output_fn: Callable[['jina_pb2.Message'], None] = None,
+                     **kwargs):
+        """ Use a list of files as the query source for searching on the current flow
+
+        :param filepath: a text file that each line contains a document
+        :param lines: a list of strings, each is considered as d document
+        :param size: the maximum number of the documents
+        :param sampling_rate: the sampling rate between [0, 1]
+        :param read_mode: specifies the mode in which the file
+                is opened. 'r' for reading in text mode, 'rb' for reading in binary
+        :param output_fn: the callback function to invoke after indexing
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        from ..clients.python.io import input_lines
+        self._get_client(**kwargs).search(input_lines(filepath, lines, size, sampling_rate, read_mode), output_fn)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,

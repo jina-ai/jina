@@ -4,9 +4,40 @@ __license__ = "Apache-2.0"
 import glob
 import itertools as it
 import random
-from typing import List, Union
+from typing import List, Union, Iterator
 
 import numpy as np
+
+
+def input_lines(filepath: str = None, lines: Iterator[str] = None, size: int = None, sampling_rate: float = None,
+                read_mode='r'):
+    """ Input function that iterates over list of strings, it can be used in the Flow API
+
+    :param filepath: a text file that each line contains a document
+    :param lines: a list of strings, each is considered as d document
+    :param size: the maximum number of the documents
+    :param sampling_rate: the sampling rate between [0, 1]
+    :param read_mode: specifies the mode in which the file
+            is opened. 'r' for reading in text mode, 'rb' for reading in binary
+    :return:
+    """
+    if filepath:
+        fp = open(filepath, read_mode)
+    elif lines:
+        fp = lines
+    else:
+        raise ValueError('"filepath" and "lines" can not be both empty')
+
+    d = 0
+    for l in fp:
+        if sampling_rate is None or random.random() < sampling_rate:
+            yield l
+            d += 1
+        if size is not None and d > size:
+            break
+
+    if filepath:
+        fp.close()
 
 
 def input_files(patterns: Union[str, List[str]], recursive: bool = True,
@@ -19,9 +50,10 @@ def input_files(patterns: Union[str, List[str]], recursive: bool = True,
     :param size: the maximum number of the files
     :param sampling_rate: the sampling rate between [0, 1]
     :param read_mode: specifies the mode in which the file
-            is opened. 'r' for reading in text mode, 'rb' for reading in
+            is opened. 'r' for reading in text mode, 'rb' for reading in binary
     :return:
     """
+
     def iter_file_exts(ps):
         return it.chain.from_iterable(glob.iglob(p, recursive=recursive) for p in ps)
 
