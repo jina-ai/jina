@@ -1,8 +1,8 @@
 # Using Flow API to Compose Your Jina Workflow
 
-In a search system, task such as indexing is a workflow often involves multiple steps: preprocessing, encoding, storing etc. In Jina's architecture, each step is implemented by an Executor and wrapped by a Pod. This microservice design makes the whole pipeline flexible and scalable. Accomplishing a task is then orchestrating all these Pods work together, either sequentially or in parallel; locally or remotely. 
+In a search system, a task such as indexing often involves multiple steps: preprocessing, encoding, storing, etc. In Jina's architecture, each step is implemented by an Executor and wrapped by a Pod. This microservice design makes the whole pipeline flexible and scalable. Accomplishing a task is then orchestrating all these Pods work together, either sequentially or in parallel; locally or remotely. 
 
-Flow API is a context manager for Pods. Each `Flow` object corresponds to a real-world task, it helps user to manage the states and contexts of all Pods required in that task. Flow API translates a workflow defined in Python code, YAML spec and interactive graph to a runtime backed by multi-thread/process, Kubernetes, Docker Swarm, etc. Users don't need to worry about where the Pod is running and how the Pods are connected.
+Flow API is a context manager for Pods. Each `Flow` object corresponds to a real-world task. It helps the user to manage the states and contexts of all Pods required in that task. Flow API translates a workflow defined in Python code, YAML spec and interactive graph to a runtime backed by multi-thread/process, Kubernetes, Docker Swarm, etc. Users don't need to worry about where the Pod is running and how the Pods are connected.
 
 ![Flow is a context manager](flow-api-doc.png)
 
@@ -30,9 +30,9 @@ from jina.flow import Flow
 f = Flow()
 ```
 
-`Flow()` accepts some arguments, see `jina flow --help` or [our documentations](https://docs.jina.ai) for details. For example, `Flow(log_server=True)` will enable the logs emission to the [dashboard](https://github.com/jina-ai/dashboard). 
+`Flow()` accepts some arguments, see `jina flow --help` or [our documentation](https://docs.jina.ai) for details. For example, `Flow(log_server=True)` will enable the logs emission to the [dashboard](https://github.com/jina-ai/dashboard). 
 
-When the arguments given to `Flow()` can not be parsed, they will be propagated to all its `Pod` for parsing (if they accept, see `jina pod --help` for the list of arguments). For example, 
+When the arguments given to `Flow()` cannot be parsed, they are propagated to all their `Pods` for parsing (if they are accepted, see `jina pod --help` for the list of arguments). For example, 
 
 ```python
 f = Flow(read_only=True)
@@ -57,9 +57,9 @@ gateway -> p1 -> p2 -> p3 -> gateway
 
 ``` 
 
-The input of a Pod is the output of the last Pod in sequential order. The gateway is the entrypoint of the whole Jina network. The `gateway` Pod will be automatically added to every `Flow`, of which the output is the first Pod and the input is the last Pod defined in the Flow.
+The input of a Pod is the output of the last Pod in sequential order. The gateway is the entry point of the whole Jina network. The `gateway` Pod will be automatically added to every `Flow`, of which the output is the first Pod and the input is the last Pod defined in the Flow.
 
-All accepted arguments follow the command line interface of `Pod`, which can be found in `jina pod --help`. Just remember replace the dash `-` to underscore `_` in the name of the argument when referring it in Python.
+All accepted arguments follow the command line interface of `Pod`, which can be found in `jina pod --help`. Just remember to replace the dash `-` to underscore `_` in the name of the argument when referring to it in Python.
 
 Besides the file path, in Flow API `yaml_path` can accept other types:
 
@@ -80,7 +80,7 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ``` 
 
-This will run `p2` in a Docker container equipped with image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using container Pod can be found in [our documentations](https://docs.jina.ai). 
+This will run `p2` in a Docker container equipped with image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using container Pod can be found in [our documentation](https://docs.jina.ai). 
 
 #### Add a Remote Pod into the Flow
 
@@ -94,7 +94,7 @@ f = (Flow().add(name='p1')
 
 This will start `p2` remotely on `192.168.0.100`, whereas `p1` and `p3` run locally.
 
-To use remote Pod feature, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pod can be found in [our documentations](https://docs.jina.ai).  
+To use remote Pod feature, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pod can be found in [our documentation](https://docs.jina.ai).  
 
 
 #### Add a Remote Containerized Pod into the Flow
@@ -109,7 +109,7 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ```
 
-This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pod can be found in [our documentations](https://docs.jina.ai). 
+This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pod can be found in [our documentation](https://docs.jina.ai). 
 
 
 
@@ -133,7 +133,7 @@ gateway -> p1 -> p2
 ### Wait Parallel Steps to Finish
 
 
-In the last example, the message is returned to the gateway regardless the status `p2`. To wait multiple parallel steps to finish before continue, you can do:
+In the last example, the message is returned to the gateway regardless the status `p2`. To wait for multiple parallel steps to finish before continue, you can do:
 
 ```python
 f = (Flow().add(name='p1')
@@ -154,7 +154,7 @@ gateway -> p1 -> p2 ->
 
 ### Run a Flow
 
-To run a Flow, simply use `with` keyword:
+To run a Flow, simply use the `with` keyword:
 
 ```python
 f = (Flow().add(...)
@@ -165,7 +165,7 @@ with f:
 
 ```
 
-Though one can manually call `start()` method to run the flow, but then you also need to call `close()` method correspondingly to release the resource. Using `with` saves you the trouble, the resource is automatically released when running out of the scope. 
+Though you can manually call the `start()` method to run the flow, you also need to call the corresponding `close()` method to release the resource. Using `with` saves you the trouble, as the resource is automatically released when running out of the scope. 
 
 #### Test the Connectivity with Dry Run
 
@@ -178,7 +178,7 @@ with f:
 
 ```
 
-This will send `ControRequest` to all pods following the topology you defined. You can use it to test the connectivity of all pods. 
+This will send a `ControRequest` to all pods following the topology you defined. You can use it to test the connectivity of all pods. 
 
 ### Iterate over the Pods in the Flow
 
@@ -208,8 +208,8 @@ with f:
     f.search(input_fn, top_k=50, output_fn=print)
 ```
 
-- `input_fn` is `Iterator[bytes]`, each of which corresponds to a bytes representation of a Document.
-- `output_fn` is the callback function after each request, take `Request` protobuf as the only input.
+- `input_fn` is an `Iterator[bytes]`, each of which corresponds to the representation of a Document with bytes.
+- `output_fn` is the callback function after each request, take a `Request` protobuf as the only input.
 
 A simple `input_fn` is defined as follows:
 
@@ -223,11 +223,11 @@ def input_fn():
 input_fn = (b's' for _ in range(10))
 ```
 
-> Please note that the current Flow API does not support using `index()` `search()` in mix under one `with` scope. This is because the workflow of index and search are usually different, you can not use one workflow for both tasks.
+> Please note that the current Flow API does not support using `index()` and `search()` together in the same `with` scope. This is because the workflow of `index()` and `search()` are usually different and you cannot use one workflow for both tasks.
 
 #### Feed Data to the Flow using Other Client
 
-If you don't use Python as client, or your client and flow are on different instances. You can hold a flow in running state and use client in other languages to connect to it. Simply:
+If you don't use Python as a client, or your client and flow are in different instances. You can hold a flow in running state and use a client in another language to connect to it. Simply:
 
 ```python
 import threading
@@ -236,9 +236,9 @@ with f:
     f.block()
 ```
 
-Please checkout https://github.com/jina-ai/examples/tree/master/helloworld-in-cs for a complete example.
+Please checkout our [hello world in client-server architecture](https://github.com/jina-ai/examples/tree/master/helloworld-in-cs) for a complete example.
 
-**WARNING**: don't use while loop to do the waiting, it is extremely low-efficient:
+**WARNING**: don't use a while loop to do the waiting, it is extremely inefficient:
 
 ```python
 with f:
@@ -276,7 +276,7 @@ pods:
     read_only: true
 ```
 
-You can use enviroment variables via `$` in YAML. More information on the Flow YAML Schema can be found in [our documentations](https://docs.jina.ai). 
+You can use enviroment variables via `$` in YAML. More information on the Flow YAML Schema can be found in [our documentation](https://docs.jina.ai). 
 
 ### Load a Flow from YAML
 
@@ -301,4 +301,4 @@ With Jina Dashboard, you can interactively drag-n-drop Pod, set its attribute an
 ![Dashboard](flow-demo.gif)
 
 
-More information on the dashboard can be found in [here](https://github.com/jina-ai/dashboard).
+More information on the dashboard can be found [here](https://github.com/jina-ai/dashboard).
