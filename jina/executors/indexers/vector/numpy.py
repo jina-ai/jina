@@ -110,7 +110,6 @@ class NumpyIndexer(BaseVectorIndexer):
         self.key_bytes += keys.tobytes()
         self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]
-        self.logger.info('chunk size: {}'.format(self.size))
 
     def query(self, keys: np.ndarray, top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """ Find the top-k vectors with smallest ``metric`` and return their ids.
