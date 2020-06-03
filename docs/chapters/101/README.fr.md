@@ -44,7 +44,7 @@ En Jina,**un Document est tout ce que vous voulez rechercher**un document texte,
 
 **Un Chunk est une petite unité sémantique d'un Document.** Il peut s'agir d'une phrase, d'un patch d'image 64x64, d'un clip vidéo de 3 secondes, d'une paire de coordonnées et d'une adresse
 
-En Jina, un Document est comme une barre de chocolat. Non seulement parce qu'il se présente sous différents formats et ingrédients, mais aussi parce que vous pouvez le casser en morceaux comme vous le souhaitez. En fin de compte, ce que vous achetez et stockez, ce sont les barres de chocolat, et ce que vous mangez et digérez, ce sont les morceaux. Vous ne voulez pas avaler la barre entière, vous ne voulez pas non plus la moudre en poudre ; de toute façon, vous perdrez la saveur (c'est-à-dire la sémantique).
+En Jina, un Document est comme une barre de chocolat. Non seulement parce qu'il se présente sous différents formats et ingrédients, mais aussi parce que vous pouvez le casser en morceaux comme vous le souhaitez. En fin de compte, ce que vous achetez et stockez, ce sont les barres de chocolat, et ce que vous mangez et digérez, ce sont les morceaux. Vous ne voulez pas avaler la barre entière, vous ne voulez pas non plus la moudre en poudre; de toute façon, vous perdrez la saveur (c'est-à-dire la sémantique).
 
 <br/><br/><br/>
 
