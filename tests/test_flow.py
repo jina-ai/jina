@@ -268,15 +268,15 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(len(rsp.docs), 1)
             self.assertEqual(len(rsp.docs[0].topk_results), num_docs)
         f = Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
-        with f.build(inplace=False) as fl:
+        with f:
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name=filter_by, beg_id=10),
                     random_doc_id=False)
             f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary', beg_id=20),
                     random_doc_id=False)
         f = (Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
               .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
-        with f.build(inplace=False) as fq:
-            fq.search(input_fn=random_queries_with_filter_by(1, 1, 10),
+        with f:
+            f.search(input_fn=random_queries_with_filter_by(1, 1, 10),
                       random_doc_id=False,
                       output_fn=validate,
                       callback_on_body=True,
@@ -304,8 +304,8 @@ class MyTestCase(JinaTestCase):
             fl.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary', beg_id=20))
 
         f = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
-              .add(name='idx', yaml_path=indexer_yml, copy_flow=False)
-              .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
+             .add(name='idx', yaml_path=indexer_yml, copy_flow=False)
+             .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
         with f.build(inplace=False) as fq:
             fq.search(input_fn=random_queries_with_filter_by(1, 1),
                       random_doc_id=False,
