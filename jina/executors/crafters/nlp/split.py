@@ -131,10 +131,10 @@ class SlidingWindowSegmenter(BaseSegmenter):
                 'the step_size (={}) should not be larger than the window_size (={})'.format(
                     self.window_size, self.step_size))
 
-    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
         """
         Split the text into overlapping chunks
-        :param buffer: the raw text in the `bytes` format
+        :param text: the raw text in string format
         :param doc_id: the doc id
         :return: a list of chunk dicts
         """
@@ -155,17 +155,13 @@ class SlidingWindowSegmenter(BaseSegmenter):
                 d.extend(next(i, None)
                          for _ in range(step-1))
 
-        text = buffer.decode('utf-8')
-        chunks = ["".join(filter(None, list(chunk))) for chunk in sliding_window(
-            text, self.window_size, self.step_size)]
-            
+        chunks = [''.join(filter(None, list(chunk))) for chunk in
+                  sliding_window(text, self.window_size, self.step_size)]
         results = []
         for idx, s in enumerate(chunks):
             if self.min_substring_len <= len(s):
                 results.append(dict(
-                    doc_id=doc_id,
                     text=s,
                     offset=idx,
-                    weight=1.0,
-                    length=len(chunks)))
+                    weight=1.0))
         return results

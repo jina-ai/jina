@@ -60,10 +60,9 @@ class MyTestCase(JinaTestCase):
         step_size = 10
         sliding_window_segmenter = SlidingWindowSegmenter(
             window_size=window_size, step_size=step_size)
-        buffer = b'It is a sunny day!!!! When Andy comes back, we are going to the zoo.'
-        crafted_chunk_list = sliding_window_segmenter.craft(buffer, 0)
-        print(len(buffer) // step_size)
-        self.assertEqual(len(crafted_chunk_list), len(buffer) // step_size)
+        text = 'It is a sunny day!!!! When Andy comes back, we are going to the zoo.'
+        crafted_chunk_list = sliding_window_segmenter.craft(text, 0)
+        self.assertEqual(len(crafted_chunk_list), len(text) // step_size)
 
 
 if __name__ == '__main__':
