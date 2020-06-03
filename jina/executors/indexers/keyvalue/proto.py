@@ -15,6 +15,7 @@ class BasePbIndexer(BaseKVIndexer):
     """Storing and querying protobuf chunk/document using gzip and Python dict. """
 
     compress_level = 1  #: The compresslevel argument is an integer from 0 to 9 controlling the level of compression
+    flush_on_add = True  #: When set to true, the indexer is flushed on every add, it is safer but slower
 
     def get_query_handler(self):
         r = {}
@@ -47,7 +48,8 @@ class BasePbIndexer(BaseKVIndexer):
         """
         json.dump(obj, self.write_handler)
         self.write_handler.write('\n')
-        self.flush()
+        if self.flush_on_add:
+            self.flush()
 
     def query(self, key: int) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
         """ Find the protobuf chunk/doc using id

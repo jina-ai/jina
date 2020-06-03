@@ -233,4 +233,3 @@ class ChunkIndexer(CompoundExecutor):
             - !ControlReqDriver {}
     """
 
-    pass
