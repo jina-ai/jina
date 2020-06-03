@@ -578,7 +578,6 @@ class Flow:
         :param shuffle: shuffle the the numpy data source beforehand
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_numpy
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn)
@@ -594,7 +593,6 @@ class Flow:
         :param shuffle: shuffle the the numpy data source beforehand
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_numpy
         self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle), output_fn)
@@ -614,7 +612,6 @@ class Flow:
                 is opened. 'r' for reading in text mode, 'rb' for reading in
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_files
         self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn)
@@ -634,7 +631,6 @@ class Flow:
                 is opened. 'r' for reading in text mode, 'rb' for reading in
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_files
         self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn)
