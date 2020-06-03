@@ -393,6 +393,8 @@ def set_gateway_parser(parser=None):
     gp1.add_argument('--rest-api', action='store_true', default=False,
                      help='use REST-API as the interface instead of gRPC with port number '
                           'set to the value of "port-grpc"')
+    gp1.add_argument('--to-datauri', action='store_true', default=False,
+                     help='always represent the result document with data URI, instead of using buffer/blob/text')
     return parser
 
 

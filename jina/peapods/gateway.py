@@ -89,12 +89,27 @@ class GatewayPea:
             self.name = args.name or self.__class__.__name__
             self.logger = get_logger(self.name, **vars(args))
             self.executor = BaseExecutor()
+            if args.to_datauri:
+                from ..drivers.convert import All2URI
+                for k in ['SearchRequest', 'IndexRequest', 'TrainRequest']:
+                    self.executor.add_driver(All2URI(), k)
             self.executor.attach(pea=self)
             self.peapods = []
 
+        @property
+        def request_type(self) -> str:
+            return self._request.__class__.__name__
+
+        @property
+        def request(self) -> 'jina_pb2.Request':
+            """Get the current request body inside the protobuf message"""
+            return self._request
+
         def recv_callback(self, msg):
             try:
-                return self.executor(msg.__class__.__name__)
+                self._request = getattr(msg.request, msg.request.WhichOneof('body'))
+                self.executor(self.request_type)
+                return msg.request
             except NoExplicitMessage:
                 self.logger.error('gateway should not receive partial message, it can not do reduce')
             except RequestLoopEnd:

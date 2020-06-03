@@ -70,6 +70,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                     mime_type = guess_mime(_raw)
                 else:
                     d.text = _raw
+                    mime_type = 'text/plain'
             else:
                 raise TypeError(f'{type(_raw)} type of input is not supported')
 
