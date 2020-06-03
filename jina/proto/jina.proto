@@ -107,6 +107,12 @@ message Document {
         // the raw binary content of this document, which often represents the original document when comes into jina
         bytes buffer = 3;
 
+        // the ndarray of the image/audio/video document
+        NdArray blob = 12;
+
+        // a text document
+        string text = 13;
+
     }
 
     // list of the chunks of this document
