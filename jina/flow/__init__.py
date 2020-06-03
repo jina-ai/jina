@@ -71,7 +71,7 @@ class Flow:
 
         More explain on ``optimize_level``:
 
-        As an example, the following flow will generates a 6 Peas,
+        As an example, the following flow will generate 6 Peas,
 
         .. highlight:: python
         .. code-block:: python
@@ -269,7 +269,7 @@ class Flow:
 
     def join(self, needs: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
         """
-        Add a blocker to the flow, wait until all peas defined in `needs` completed.
+        Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
         :param needs: list of service names to wait
         :return: the modified flow
@@ -561,7 +561,7 @@ class Flow:
             with f.build(runtime='thread') as flow:
                 flow.train(bytes_gen=my_reader())
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param output_fn: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
@@ -605,7 +605,7 @@ class Flow:
                     **kwargs):
         """ Use a set of files as the index source for indexing on the current flow
 
-        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '*.py', '[*.zip, *.gz]'
+        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
         :param recursive: If recursive is true, the pattern '**' will match any files and
                     zero or more directories and subdirectories.
         :param size: the maximum number of the files
@@ -625,7 +625,7 @@ class Flow:
                     **kwargs):
         """ Use a set of files as the query source for searching on the current flow
 
-        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '*.py', '[*.zip, *.gz]'
+        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
         :param recursive: If recursive is true, the pattern '**' will match any files and
                     zero or more directories and subdirectories.
         :param size: the maximum number of the files
@@ -673,7 +673,7 @@ class Flow:
 
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
@@ -714,16 +714,15 @@ class Flow:
             with f.build(runtime='thread') as flow:
                 flow.search(bytes_gen=my_reader())
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param output_fn: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).search(input_fn, output_fn)
 
     def dry_run(self, **kwargs):
-        """Send a DRYRUN request to this flow, passing through all pods in this flow.
-        
-        Useful for testing connectivity and debugging"""
+        """Send a DRYRUN request to this flow, passing through all pods in this flow,
+        useful for testing connectivity and debugging"""
         if not self._get_client(**kwargs).dry_run():
             raise FlowConnectivityError('a dry run shows this flow is badly connected due to the network settings')
 
