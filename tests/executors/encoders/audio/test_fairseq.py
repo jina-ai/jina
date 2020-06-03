@@ -4,10 +4,9 @@ import unittest
 import numpy as np
 
 from jina.executors.encoders.audio.fairseq import Wav2VecSpeechEncoder
-from tests import JinaTestCase
+from tests.executors import ExecutorTestCase
 
-
-class MyTestCase(JinaTestCase):
+class MyTestCase(ExecutorTestCase):
     def _get_encoder(self):
         self.target_output_dim = 512
         return Wav2VecSpeechEncoder(model_path='/tmp/wav2vec_large.pt')
