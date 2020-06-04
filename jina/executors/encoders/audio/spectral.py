@@ -83,5 +83,4 @@ class ChromaPitchEncoder(BaseAudioEncoder):
         for chunk_data in data:
             chromagrams = chroma_cqt(y=chunk_data, sr=self.input_sample_rate, n_chroma=12, hop_length=self.hop_length)
             embeds.append(chromagrams.flatten())
-        result = np.array(embeds)
         return result
