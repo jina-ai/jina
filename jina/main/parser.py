@@ -64,6 +64,10 @@ def set_hw_parser(parser=None):
                          'all data, indices, shards and outputs will be saved there')
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
+    gp.add_argument('--logserver-config', type=str,
+                    default=resource_filename('jina',
+                                              '/'.join(('resources', 'logserver.default.yml'))),
+                    help='the yaml config of the log server')
     gp = add_arg_group(parser, 'scalability arguments')
     gp.add_argument('--shards', type=int,
                     default=2,
