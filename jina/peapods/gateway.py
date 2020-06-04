@@ -97,6 +97,11 @@ class GatewayPea:
             self.peapods = []
 
         @property
+        def message(self) -> 'jina_pb2.Message':
+            """Get the current protobuf message to be processed"""
+            return self._message
+
+        @property
         def request_type(self) -> str:
             return self._request.__class__.__name__
 
@@ -105,9 +110,10 @@ class GatewayPea:
             """Get the current request body inside the protobuf message"""
             return self._request
 
-        def recv_callback(self, msg):
+        def handle(self, msg: 'jina_pb2.Message'):
             try:
                 self._request = getattr(msg.request, msg.request.WhichOneof('body'))
+                self._message = msg
                 self.executor(self.request_type)
                 return msg.request
             except NoExplicitMessage:
@@ -121,7 +127,7 @@ class GatewayPea:
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
                 await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity))
-                return await zmqlet.recv_message(callback=self.recv_callback)
+                return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
@@ -136,7 +142,7 @@ class GatewayPea:
                             asyncio.create_task(
                                 zmqlet.send_message(
                                     add_envelope(next(request_iterator), 'gateway', zmqlet.args.identity)))
-                            fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.recv_callback)))
+                            fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                         except StopIteration:
                             return True
                     return False
