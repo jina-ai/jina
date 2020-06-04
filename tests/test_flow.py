@@ -1,8 +1,12 @@
+import os
 import unittest
 
+import numpy as np
 import requests
 from jina import JINA_GLOBAL
+from jina.drivers.helper import array2pb
 from jina.enums import FlowOptimizeLevel
+from jina.excepts import BadClient
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
@@ -167,7 +171,7 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=random_docs(1000), random_doc_id=False)
         with f:
             pass
-        self.add_tmpfile('test-docshard')
+        self.add_tmpfile('test-docshard-tmp')
 
     def test_shards_insufficient_data(self):
         index_docs = 3
@@ -187,12 +191,14 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=random_docs(index_docs), random_doc_id=False)
         with f:
             pass
+
         f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas,
                        separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
         with f:
             f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
                      callback_on_body=True)
-        self.add_tmpfile('test-docshard')
+
+        self.add_tmpfile('test-docshard-tmp')
 
     def test_py_client(self):
         f = (Flow().add(name='r1', yaml_path='_forward')

@@ -85,7 +85,7 @@ class MyTestCase(JinaTestCase):
         PyClient.check_input(input_files('*.*', size=2, read_mode='rb'))
         PyClient.check_input(input_files('*.*', sampling_rate=.5))
 
-        f = Flow().add(yaml_path='URI2Buffer')
+        f = Flow().add(yaml_path='- !URI2Buffer {}')
 
         def validate_mime_type(req):
             for d in req.index.docs:
