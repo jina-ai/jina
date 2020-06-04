@@ -45,7 +45,7 @@ class MFCCTimbreEncoder(BaseAudioEncoder):
             mfccs = mfcc(y=chunk_data, sr=self.input_sample_rate, n_mfcc=self.n_mfcc, n_fft=self.n_fft_length,
                          hop_length=self.hop_length)
             embeds.append(mfccs.flatten())
-        return result
+        return embeds
 
 
 class ChromaPitchEncoder(BaseAudioEncoder):
@@ -83,4 +83,4 @@ class ChromaPitchEncoder(BaseAudioEncoder):
         for chunk_data in data:
             chromagrams = chroma_cqt(y=chunk_data, sr=self.input_sample_rate, n_chroma=12, hop_length=self.hop_length)
             embeds.append(chromagrams.flatten())
-        return result
+        return embeds
