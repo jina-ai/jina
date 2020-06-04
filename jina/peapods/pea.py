@@ -160,15 +160,12 @@ class BasePea(metaclass=PeaMeta):
         self._message = msg
         req_type = type(self._request)
 
-        num_part = self.args.num_part
-        if self.request_type == 'SearchRequest':
-            # modify the num_part on the fly for SearchRequest
-            num_part = min(self.args.num_part, max(len(self.request.filter_by), 1))
-        if num_part > 1 and is_data_request(self._request):
+        if self.args.num_part > 1 and is_data_request(self._request):
             # do gathering, not for control request, unless it is dryrun
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
             num_req = len(self._pending_msgs[req_id])
+
             if num_req == self.args.num_part:
                 self._prev_messages = self._pending_msgs.pop(req_id)
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]

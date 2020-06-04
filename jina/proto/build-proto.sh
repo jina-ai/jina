@@ -1,15 +1,4 @@
 #!/usr/bin/env bash
-if [ "$#" -ne 1 ]; then
-    echo "Error: Please specify the [PATH_TO_GRPC_PYTHON_PLUGIN], refer more details at " \
-      "https://docs.jina.ai/chapters/proto/modify.html"
-    printf "\n"
-    echo "USAGE:"
-    printf "\t"
-    echo "bash ./build-proto.sh [PATH_TO_GRPC_PYTHON_PLUGIN]"
-    exit 1
-fi
-
-PLUGIN_PATH=${1}  # /Volumes/TOSHIBA-4T/Documents/grpc/bins/opt/grpc_python_plugin
 set -e
 
 SRC_DIR=./
@@ -17,6 +6,7 @@ SRC_NAME=jina.proto
 VER_FILE=../__init__.py
 
 # set up the plugin path
+PLUGIN_PATH=/Volumes/TOSHIBA-4T/Documents/grpc/bins/opt/grpc_python_plugin
 
 printf "\e[1;33mgenerating protobuf and grpc python interface\e[0m\n"
 
