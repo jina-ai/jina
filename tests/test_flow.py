@@ -1,6 +1,8 @@
 import unittest
 
 import requests
+import numpy as np
+
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
@@ -10,20 +12,27 @@ from jina.main.parser import set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto import jina_pb2
+from jina.drivers.helper import array2pb
+from jina.excepts import BadClient
 from tests import JinaTestCase
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-    c_id = 0
+def random_docs(num_docs, chunks_per_doc=5, embed_dim=None, field_name='', beg_id=0):
+    c_id = beg_id
     for j in range(num_docs):
         d = jina_pb2.Document()
+        d.meta_info = b'hello world'
+        d.doc_id = beg_id + j
         for k in range(chunks_per_doc):
             c = d.chunks.add()
-            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+            if isinstance(embed_dim, int):
+                c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+            else:
+                c.text = 'i\'m chunk %d from doc %d with field_name %s' % (c_id, j, c.field_name)
             c.chunk_id = c_id
-            c.doc_id = j
+            c.doc_id = d.doc_id
+            c.field_name = field_name
             c_id += 1
-        d.meta_info = b'hello world'
         yield d
 
 
@@ -33,6 +42,23 @@ def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
         for k in range(chunks_per_doc):
             dd = d.topk_results.add()
             dd.match_doc.doc_id = k
+        yield d
+
+
+def random_queries_with_filter_by(num_docs, chunks_per_doc=5, embed_dim=None):
+    c_id = 0
+    for j in range(num_docs):
+        d = jina_pb2.Document()
+        for k in range(chunks_per_doc):
+            c = d.chunks.add()
+            if isinstance(embed_dim, int):
+                c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+            else:
+                c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+            c.chunk_id = c_id
+            c.doc_id = j
+            c_id += 1
+        d.meta_info = b'hello world'
         yield d
 
 
@@ -231,6 +257,111 @@ class MyTestCase(JinaTestCase):
             print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
         with f:
             f.dry_run()
+
+    def test_multifield_indexer_filter_by(self):
+        import os
+        num_docs = 1
+        num_chunks = 2
+        workspace = './multifield-indexer'
+        yaml_path = 'yaml/test-multifield-indexer.yml'
+        filter_by = 'title'
+        os.environ['FILTER_BY'] = filter_by
+        os.environ['TMP_WORKSPACE'] = workspace
+        def validate(rsp):
+            self.assertEqual(len(rsp.docs), 1)
+            self.assertEqual(len(rsp.docs[0].topk_results), num_docs)
+        f = Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
+        with f:
+            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name=filter_by, beg_id=10),
+                    random_doc_id=False)
+            f.index(input_fn=random_docs(num_docs, num_chunks, embed_dim=10, field_name='summary', beg_id=20),
+                    random_doc_id=False)
+        f = (Flow().add(name='idx', yaml_path=yaml_path, copy_flow=False)
+              .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
+        with f:
+            f.search(input_fn=random_queries_with_filter_by(1, 1, 10),
+                      random_doc_id=False,
+                      output_fn=validate,
+                      callback_on_body=True,
+                      filter_by=filter_by)
+        self.add_tmpfile(workspace)
+
+    def test_multifield_encoder_filter_by(self):
+        import os
+        num_docs = 1
+        num_chunks = 2
+        workspace = './multifield-indexer'
+        filter_by = 'title'
+        encoder_yml = 'yaml/test-multifield-encoder.yml'
+        indexer_yml = 'yaml/test-multifield-indexer.yml'
+        os.environ['FILTER_BY'] = filter_by
+        os.environ['TMP_WORKSPACE'] = workspace
+
+        def validate(rsp):
+            self.assertEqual(len(rsp.docs[0].topk_results), num_docs)
+
+        f = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
+             .add(name='idx', yaml_path=indexer_yml, copy_flow=False))
+        with f.build(inplace=False) as fl:
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by, beg_id=10))
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name='summary', beg_id=20))
+
+        f = (Flow().add(name='enc', yaml_path=encoder_yml, copy_flow=False)
+             .add(name='idx', yaml_path=indexer_yml, copy_flow=False)
+             .add(name='ranker', yaml_path='MinRanker', copy_flow=False))
+        with f.build(inplace=False) as fq:
+            fq.search(input_fn=random_queries_with_filter_by(1, 1),
+                      random_doc_id=False,
+                      output_fn=validate,
+                      callback_on_body=True,
+                      filter_by=filter_by)
+        self.add_tmpfile(workspace)
+
+    def test_multifield_two_indices(self):
+        import os
+        num_docs = 1
+        num_chunks = 2
+        workspace = './multifield-indexer'
+        workspace_2 = './multifield-indexer-2'
+        filter_by = 'title'
+        filter_by_2 = 'summary'
+        indexer_yml = 'yaml/test-multifield-indexer.yml'
+        indexer_yml_2 = 'yaml/test-multifield-indexer-2.yml'
+        os.environ['FILTER_BY'] = filter_by
+        os.environ['TMP_WORKSPACE'] = workspace
+        os.environ['FILTER_BY_2'] = filter_by_2
+        os.environ['TMP_WORKSPACE_2'] = workspace_2
+
+        def validate(rsp):
+            self.assertEqual(len(rsp.docs[0].topk_results), 2)
+
+        f = (Flow().add(name='enc', yaml_path='OneHotTextEncoder')
+             .add(name='title_idx', yaml_path=indexer_yml)
+             .add(name='summary_idx', yaml_path=indexer_yml_2, needs='enc')
+             .join(needs=['title_idx', 'summary_idx']))
+
+        with f.build(inplace=False) as fl:
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by, beg_id=10), random_doc_id=True)
+            fl.index(input_fn=random_docs(num_docs, num_chunks, field_name=filter_by_2, beg_id=20), random_doc_id=True)
+
+        f = (Flow().add(name='enc', yaml_path='OneHotTextEncoder')
+              .add(name='title_idx', yaml_path=indexer_yml)
+              .add(name='summary_idx', yaml_path=indexer_yml_2, needs='enc')
+              .add(name='join', yaml_path='_merge_topk_chunks', needs=['title_idx', 'summary_idx'])
+              .add(name='ranker', yaml_path='MinRanker'))
+
+        with f.build(inplace=False) as fq:
+            try:
+                fq.search(input_fn=random_queries_with_filter_by(1, 1),
+                          random_doc_id=False,
+                          output_fn=validate,
+                          callback_on_body=True,
+                          filter_by=[filter_by, filter_by_2])
+            except BadClient as e:
+                self.assertTrue(False, e)
+            finally:
+                self.add_tmpfile(workspace)
+                self.add_tmpfile(workspace_2)
 
 
 if __name__ == '__main__':
