@@ -35,8 +35,6 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
             # np.uint32 uses 32 bits. np.float32 uses 23 bit mantissa, so integer greater than 2^23 will have their
             # least significant bits truncated.
-            if not match_idx:
-                continue
             match_idx = np.array(match_idx, dtype=np.float64)
 
             doc_idx = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
