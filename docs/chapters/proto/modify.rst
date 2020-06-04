@@ -21,12 +21,7 @@ Take MacOS as an example,
        cp -r ~/Downloads/protoc-3.7.1-osx-x86_64/include/* /usr/local/include/
 
 
-#. Install gRPC tools dependencies:
-
-    .. highlight:: bash
-    .. code-block:: bash
-
-        brew install automake autoconf libtool
+#. Install gRPC tools dependencies: :command:`brew install automake autoconf libtool`
 
 #. Install gRPC and ``grpc_python_plugin`` from the source:
 
@@ -38,12 +33,6 @@ Take MacOS as an example,
        make grpc_python_plugin
 
 
-#. This will compile the grpc-python-plugin and build it to, e.g., :file:`~/Documents/grpc/bins/opt/grpc_python_plugin`
+#. This will compile the grpc-python-plugin and build it to, e.g., :file:`/Documents/grpc/bins/opt/grpc_python_plugin`
 
-#. Generate the python interfaces.
-
-    .. highlight:: bash
-    .. code-block:: bash
-
-        cd jina/proto
-        bash build-proto.sh ~/Documents/grpc/bins/opt/grpc_python_plugin
+#. Generate the python interfaces via :command:` jina/proto/build-proto.sh`

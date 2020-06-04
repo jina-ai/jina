@@ -506,7 +506,6 @@ def valid_yaml_path(path: str, to_stream: bool = False):
 def get_parsed_args(kwargs, parser, parser_name: str = None):
     args = kwargs2list(kwargs)
     try:
-        # TODO: fix this to parse list of strings
         p_args, unknown_args = parser.parse_known_args(args)
         if unknown_args:
             from .logging import default_logger

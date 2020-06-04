@@ -1,7 +1,0 @@
-!OneHotTextEncoder
-requests:
-  on:
-    [SearchRequest, IndexRequest]:
-      - !EncodeDriver
-        with:
-          filter_by: $FILTER_BY
