@@ -9,6 +9,8 @@ class MergeDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         # take unique routes by service identity
+        if self.prev_reqs is None:
+            return
         routes = {(r.pod + r.pod_id): r for m in self.prev_msgs for r in m.envelope.routes}
         self.msg.envelope.ClearField('routes')
         self.msg.envelope.routes.extend(
@@ -18,7 +20,7 @@ class MergeDriver(BaseDriver):
 class MergeTopKDriver(MergeDriver):
     """Merge the topk results from multiple messages into one and sorted
 
-    Useful in indexer sharding (i.e. ``--replicas > 1``)
+    Useful in indexer sharding (i.e. ``--replicas > 1``) and having multiple indexers in parallel
 
     Complexity depends on the level:
          - ``level=chunk``: D x C x K x R
@@ -40,30 +42,31 @@ class MergeTopKDriver(MergeDriver):
         self.level = level
 
     def __call__(self, *args, **kwargs):
-        if self.level == 'chunk':
-            for _d_id, _doc in enumerate(self.req.docs):
-                for _c_id, _chunk in enumerate(_doc.chunks):
-                    _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].chunks[_c_id].topk_results]
-                    _chunk.ClearField('topk_results')
-                    _chunk.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
-        elif self.level == 'doc':
-            for _d_id, _doc in enumerate(self.req.docs):
-                _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
-                _doc.ClearField('topk_results')
-                _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
-        elif self.level == 'all':
-            for _d_id, _doc in enumerate(self.req.docs):
-                _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
-                _doc.ClearField('topk_results')
-                _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
+        if self.prev_reqs is not None:
+            if self.level == 'chunk':
+                for _d_id, _doc in enumerate(self.req.docs):
+                    for _c_id, _chunk in enumerate(_doc.chunks):
+                        _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].chunks[_c_id].topk_results]
+                        _chunk.ClearField('topk_results')
+                        _chunk.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
+            elif self.level == 'doc':
+                for _d_id, _doc in enumerate(self.req.docs):
+                    _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
+                    _doc.ClearField('topk_results')
+                    _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
+            elif self.level == 'all':
+                for _d_id, _doc in enumerate(self.req.docs):
+                    _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
+                    _doc.ClearField('topk_results')
+                    _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
 
-                for _c_id, _chunk in enumerate(_doc.chunks):
-                    _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].chunks[_c_id].topk_results]
-                    _chunk.ClearField('topk_results')
-                    _chunk.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
+                    for _c_id, _chunk in enumerate(_doc.chunks):
+                        _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].chunks[_c_id].topk_results]
+                        _chunk.ClearField('topk_results')
+                        _chunk.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
 
-        else:
-            raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
+            else:
+                raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
 
         super().__call__(*args, **kwargs)
 
