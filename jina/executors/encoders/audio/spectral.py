@@ -45,7 +45,6 @@ class MFCCTimbreEncoder(BaseAudioEncoder):
             mfccs = mfcc(y=chunk_data, sr=self.input_sample_rate, n_mfcc=self.n_mfcc, n_fft=self.n_fft_length,
                          hop_length=self.hop_length)
             embeds.append(mfccs.flatten())
-        result = np.array(embeds)
         return result
 
 
