@@ -47,12 +47,12 @@ class KVSearchDriver(BaseSearchDriver):
         elif self.level == 'chunk':
             for d in self.req.docs:
                 for c in d.chunks:
-                    self._update_topk_chunks(c)
+                    self._update_topk_chunks(c, self.req.filter_by)
         elif self.level == 'all':
             for d in self.req.docs:
                 self._update_topk_docs(d)
                 for c in d.chunks:
-                    self._update_topk_chunks(c)
+                    self._update_topk_chunks(c, self.req.filter_by)
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
 
@@ -68,7 +68,7 @@ class KVSearchDriver(BaseSearchDriver):
         d.ClearField('topk_results')
         d.topk_results.extend(hit_sr)
 
-    def _update_topk_chunks(self, c):
+    def _update_topk_chunks(self, c, filter_by):
         hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
         for tk in c.topk_results:
             r = self.exec_fn(f'c{tk.match_chunk.chunk_id}')
@@ -76,6 +76,8 @@ class KVSearchDriver(BaseSearchDriver):
                 sr = ScoredResult()
                 sr.score.CopyFrom(tk.score)
                 sr.match_chunk.CopyFrom(r)
+                if filter_by and sr.match_chunk.field_name not in filter_by:
+                    continue
                 hit_sr.append(sr)
         c.ClearField('topk_results')
         c.topk_results.extend(hit_sr)
@@ -101,7 +103,8 @@ class VectorSearchDriver(BaseSearchDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs, embedding=True)
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
+            extract_chunks(self.req.docs, filter_by=[], embedding=True)
 
         if no_chunk_docs:
             self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
@@ -109,11 +112,17 @@ class VectorSearchDriver(BaseSearchDriver):
         if bad_chunk_ids:
             self.logger.warning('these bad chunks can not be added: %s' % bad_chunk_ids)
 
-        idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
-        op_name = self.exec.__class__.__name__
-        for c, topks, scs in zip(chunk_pts, idx, dist):
-            for m, s in zip(topks, scs):
-                r = c.topk_results.add()
-                r.match_chunk.chunk_id = m
-                r.score.value = s
-                r.score.op_name = op_name
+        if chunk_pts:
+            try:
+                idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
+                op_name = self.exec.__class__.__name__
+                for c, topks, scs in zip(chunk_pts, idx, dist):
+                    for m, s in zip(topks, scs):
+                        r = c.topk_results.add()
+                        r.match_chunk.chunk_id = m
+                        r.score.value = s
+                        r.score.op_name = op_name
+            except ValueError:
+                pass
+        else:
+            self.logger.warning('no chunks to query, (filter_by: {})'.format(self.req.filter_by))
