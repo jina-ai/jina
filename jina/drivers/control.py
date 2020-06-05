@@ -28,8 +28,12 @@ class ControlReqDriver(BaseDriver):
 class LogInfoDriver(BaseDriver):
     """Log output the request info"""
 
+    def __init__(self, field: str = 'msg', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.field = field
+
     def __call__(self, *args, **kwargs):
-        self.logger.info(self.req)
+        self.logger.info(getattr(self, self.field, 'msg'))
 
 
 class WaitDriver(BaseDriver):
@@ -44,6 +48,21 @@ class ForwardDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         pass
+
+
+class PublishDriver(BaseDriver):
+    """Publish the message to multiple pods
+
+    .. note::
+        used with PUB_BIND port
+    """
+
+    def __init__(self, num_part: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.num_part = num_part
+
+    def __call__(self, *args, **kwargs):
+        self.envelope.num_part.append(self.num_part)
 
 
 class RouteDriver(ControlReqDriver):

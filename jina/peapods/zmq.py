@@ -733,6 +733,7 @@ def add_envelope(req, pod_name, identity) -> 'jina_pb2.Message':
     _add_version(msg.envelope)
     _add_route(msg.envelope, pod_name, identity)
     msg.request.CopyFrom(req)
+    msg.envelope.num_part.append(1)
     return msg
 
 

@@ -1,12 +1,8 @@
-import os
 import unittest
 
-import numpy as np
 import requests
 from jina import JINA_GLOBAL
-from jina.drivers.helper import array2pb
 from jina.enums import FlowOptimizeLevel
-from jina.excepts import BadClient
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
@@ -236,6 +232,36 @@ class MyTestCase(JinaTestCase):
             print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
         with f:
             f.dry_run()
+
+    def test_refactor_num_part(self):
+        f = (Flow().add(name='r1', yaml_path='_logforward', needs='gateway')
+             .add(name='r2', yaml_path='_logforward', needs='gateway')
+             .join(['r1', 'r2']))
+
+        with f:
+            f.index_lines(lines=['abbcs', 'efgh'])
+
+    def test_refactor_num_part_proxy(self):
+        f = (Flow().add(name='r1', yaml_path='_logforward')
+             .add(name='r2', yaml_path='_logforward', needs='r1')
+             .add(name='r3', yaml_path='_logforward', needs='r1')
+             .join(['r2', 'r3']))
+
+        with f:
+            f.index_lines(lines=['abbcs', 'efgh'])
+
+    def test_refactor_num_part_2(self):
+        f = (Flow()
+             .add(name='r1', yaml_path='_logforward', needs='gateway', replicas=3, polling='ALL'))
+
+        with f:
+            f.index_lines(lines=['abbcs', 'efgh'])
+
+        f = (Flow()
+             .add(name='r1', yaml_path='_logforward', needs='gateway', replicas=3))
+
+        with f:
+            f.index_lines(lines=['abbcs', 'efgh'])
 
 
 if __name__ == '__main__':

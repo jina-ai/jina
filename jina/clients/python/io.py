@@ -9,7 +9,7 @@ from typing import List, Union, Iterator
 import numpy as np
 
 
-def input_lines(filepath: str = None, lines: Iterator[str] = None, size: int = None, sampling_rate: float = None,
+def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = None, sampling_rate: float = None,
                 read_mode='r'):
     """ Input function that iterates over list of strings, it can be used in the Flow API
 

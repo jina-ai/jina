@@ -114,6 +114,8 @@ class GatewayPea:
             try:
                 self._request = getattr(msg.request, msg.request.WhichOneof('body'))
                 self._message = msg
+                if msg.envelope.num_part != [1]:
+                    raise NoExplicitMessage
                 self.executor(self.request_type)
                 return msg.request
             except NoExplicitMessage:

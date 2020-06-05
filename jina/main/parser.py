@@ -268,7 +268,7 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
-    gp4.add_argument('--reducing-yaml-path', type=str, default='_forward',
+    gp4.add_argument('--reducing-yaml-path', type=str, default='_merge',
                      help='the executor used for reducing the result from all replicas, '
                           'accepted type follows "--yaml-path"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,

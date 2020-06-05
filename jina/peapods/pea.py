@@ -6,9 +6,8 @@ import multiprocessing
 import os
 import threading
 import time
-from collections import defaultdict
 from queue import Empty
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 
 import zmq
 
@@ -22,7 +21,7 @@ from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWater
 from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2, is_data_request
+from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -128,9 +127,6 @@ class BasePea(metaclass=PeaMeta):
 
         self._request = None
         self._message = None
-        self._prev_requests = None
-        self._prev_messages = None
-        self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
 
         if isinstance(args, argparse.Namespace):
             if args.name:
@@ -156,26 +152,6 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        self._request = getattr(msg.request, msg.request.WhichOneof('body'))
-        self._message = msg
-        req_type = type(self._request)
-
-        if self.args.num_part > 1 and is_data_request(self._request):
-            # do gathering, not for control request, unless it is dryrun
-            req_id = msg.envelope.request_id
-            self._pending_msgs[req_id].append(msg)
-            num_req = len(self._pending_msgs[req_id])
-
-            if num_req == self.args.num_part:
-                self._prev_messages = self._pending_msgs.pop(req_id)
-                self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
-            else:
-                raise NoExplicitMessage
-            self.logger.info(f'collected {num_req}/{self.args.num_part} parts of {req_type.__name__}')
-        else:
-            self._prev_requests = None
-            self._prev_messages = None
-
         self.executor(self.request_type)
         return self
 
@@ -190,14 +166,6 @@ class BasePea(metaclass=PeaMeta):
         return self._request
 
     @property
-    def prev_requests(self) -> List['jina_pb2.Request']:
-        """Get all previous requests that has the same ``request_id``
-
-        This returns ``None`` when ``num_part=1``.
-        """
-        return self._prev_requests
-
-    @property
     def message(self) -> 'jina_pb2.Message':
         """Get the current protobuf message to be processed"""
         return self._message
@@ -205,14 +173,6 @@ class BasePea(metaclass=PeaMeta):
     @property
     def request_type(self) -> str:
         return self._request.__class__.__name__
-
-    @property
-    def prev_messages(self) -> List['jina_pb2.Message']:
-        """Get all previous messages that has the same ``request_id``
-
-        This returns ``None`` when ``num_part=1``.
-        """
-        return self._prev_messages
 
     @property
     def log_iterator(self):
@@ -269,6 +229,8 @@ class BasePea(metaclass=PeaMeta):
         msg_type = msg.request.WhichOneof('body')
         self.logger.info('received "%s" from %s' % (msg_type, routes2str(msg, flag_current=True)))
         add_route(msg.envelope, self.name, self.args.identity)
+        self._request = getattr(msg.request, msg_type)
+        self._message = msg
         return self
 
     def post_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':

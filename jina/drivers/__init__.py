@@ -98,13 +98,7 @@ class BaseDriver(metaclass=DriverType):
         """Get the current request, shortcut to ``self.pea.request``"""
         return self.pea.request
 
-    @property
-    def prev_reqs(self) -> List['jina_pb2.Request']:
-        """Get all previous requests that has the same ``request_id``, shortcut to ``self.pea.prev_requests``
 
-        This returns ``None`` when ``num_part=1``.
-        """
-        return self.pea.prev_requests
 
     @property
     def msg(self) -> 'jina_pb2.Message':
@@ -115,14 +109,6 @@ class BaseDriver(metaclass=DriverType):
     def envelope(self) -> 'jina_pb2.Envelope':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message.envelope
-
-    @property
-    def prev_msgs(self) -> List['jina_pb2.Message']:
-        """Get all previous messages that has the same ``request_id``, shortcut to ``self.pea.prev_messages``
-
-        This returns ``None`` when ``num_part=1``.
-        """
-        return self.pea.prev_messages
 
     @property
     def logger(self) -> 'logging.Logger':
