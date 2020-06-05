@@ -1,6 +1,6 @@
-************************
+*************************
 Jina "Hello, World!" 👋🌍
-************************
+*************************
 
 As a starter, we invite you to try Jina's "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply do:
 

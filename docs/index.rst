@@ -22,25 +22,25 @@ Welcome to Jina Documentations!
    :maxdepth: 2
    :caption: Getting Started
 
-   chapters/helloworld/main
+   chapters/helloworld/index
    chapters/101/.sphinx
    chapters/flow/README
-   chapters/io/main
-   chapters/hub/main
-   chapters/remote/main
-   chapters/dashboard/main
+   chapters/io/index
+   chapters/hub/index
+   chapters/remote/index
+   chapters/dashboard/index
    chapters/cli/exit
 
 .. toctree::
    :maxdepth: 2
    :caption: Developer Reference
 
-   chapters/cli/main
+   chapters/cli/index
    api/jina
    chapters/yaml/yaml
    chapters/simple_exec
-   chapters/proto/main
-   chapters/restapi/main
+   chapters/proto/index
+   chapters/restapi/index
    chapters/envs
    chapters/api_schema
 
@@ -58,7 +58,7 @@ Welcome to Jina Documentations!
    :caption: Contributing
 
    chapters/CONTRIBUTING
-   chapters/jep/main
+   chapters/jep/index
 
 
 .. toctree::

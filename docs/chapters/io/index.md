@@ -9,7 +9,7 @@ In this chapter I will explain the input and output design of Jina.
 - Everything is sent in bytes
 - Use crafter to work with `buffer`
 
-In the [Flow API](../flow/README.md), we highlight that you can use `.index()`, `.search()` and `.train()` to feed index data and search query to a flow:
+In the [Flow API](../flow/index.md), we highlight that you can use `.index()`, `.search()` and `.train()` to feed index data and search query to a flow:
 
 ```python
 with f:

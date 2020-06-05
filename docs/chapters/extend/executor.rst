@@ -155,7 +155,7 @@ Each :class:`Executor` has a core method, which defines the algorithmic behavior
 +----------------------+----------------------------+
 | :class:`BaseIndexer` | :meth:`add`, :meth:`query` |
 +----------------------+----------------------------+
-| :class:`Chunk2DocRanker`  | :meth:`score`              |
+| :class:`BaseRanker`  | :meth:`score`              |
 +----------------------+----------------------------+
 
 

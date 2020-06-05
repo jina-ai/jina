@@ -29,8 +29,8 @@ The Multi-field search is commonly used in practice. Concretely,
 .. highlights::
     as a user, I want to limit the query within some selected fields.
 
-In the following use case, there are two documents and three two fields in each of them, i.e. ``title`` and ``summary``.
-The user wants to query ``painter`` but **only** from the ``title`` field. The expected result will be ``{'doc_id': 11, 'title': 'hackers and painters'}``.
+In the following use case, there are two documents and three two fields in each of them, i.e. `title` and `summary`.
+The user wants to query ``painter`` but **only** from the `title` field. The expected result will be `{'doc_id': 11, 'title': 'hackers and painters'}`.
 
 .. highlight:: json
 .. code-block:: json
@@ -57,7 +57,7 @@ Modify ``jina.proto``
 
 Let's take the following ``Flow`` as an example.
 The ``FieldsMapper`` is a ``Crafter`` that split each ``Document`` into fields and add the  ``field_name`` information for ``Chunks``.
-Afterwards, the ``Chunks`` containing the ``title`` and the ``summary`` information are processed differently in two pathways and stored seperately.
+Afterwards, the ``Chunks`` containing the `title` and the `summary` information are processed differently in two pathways and stored seperately.
 
 .. image:: JEP3-index-design.png
    :align: center
