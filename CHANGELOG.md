@@ -32,6 +32,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -1140,4 +1141,102 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```e6ba1682```](https://github.com/jina-ai/jina/commit/e6ba1682a69a2d40c9198f5789e7866f282f37bb)] __-__ __version__: bumping version to 0.2.1 (*Jina Dev Bot*)
+
+## Release Note (`0.2.2`)
+
+> Release time: 2020-06-05 15:57:30
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Evan Chan,  Han Xiao,  Jina Dev Bot,  redram,  fhaase2,  joaopalotti@gmail.com,  Nan Wang,  YueLiu-jina,  Frederic Haase,  🙇
+
+
+### 🆕 New Features
+
+ - [[```699ac0aa```](https://github.com/jina-ai/jina/commit/699ac0aa895bd7fe9b922c8cc8e76a473c656d89)] __-__ __gateway__: add convert driver to the gateway (*Han Xiao*)
+ - [[```a16277ef```](https://github.com/jina-ai/jina/commit/a16277efbf96362503e9c77a8beab65666103722)] __-__ __flow__: ingest by lines (*Han Xiao*)
+ - [[```d0705377```](https://github.com/jina-ai/jina/commit/d07053774dd9b010bc7542f6dcd20b2ed5e2f957)] __-__ __encoders__: add spectral audio encoders (*redram*)
+ - [[```5475eef0```](https://github.com/jina-ai/jina/commit/5475eef0d8db0458afa64464f78a5b801e8b7d72)] __-__ __logging__: use gevent as logging server (*fhaase2*)
+ - [[```2fa5f458```](https://github.com/jina-ai/jina/commit/2fa5f4587135286a24af193ea7091a4e4ed07cc1)] __-__ __crafters__: update SlidingWindowSegmenter for nlp (*fhaase2*)
+ - [[```401faab7```](https://github.com/jina-ai/jina/commit/401faab7f7f9465264aa20352a237615e9864a34)] __-__ __driver__: add override as an option to the driver (*Han Xiao*)
+ - [[```f1acce32```](https://github.com/jina-ai/jina/commit/f1acce32f78a0b918edeb65853fa338374272201)] __-__ add more tests (*Nan Wang*)
+ - [[```462d28b6```](https://github.com/jina-ai/jina/commit/462d28b610fea6e561ab585660ac3d059f718499)] __-__ fix the index and score drivers (*Nan Wang*)
+ - [[```c380214c```](https://github.com/jina-ai/jina/commit/c380214c5c45d976b37dd2927a9b64d1854d87da)] __-__ __crafters__: fix docstring for SlidingWindowSegmenter (*fhaase2*)
+ - [[```c6ef697b```](https://github.com/jina-ai/jina/commit/c6ef697b5b21805b328228eded0a41d5011dff08)] __-__ __crafters__: add SlidingWindowSegmenter for nlp (*Frederic Haase*)
+ - [[```5ecb5d14```](https://github.com/jina-ai/jina/commit/5ecb5d147122a847ae471d9600773f9ce99bdabb)] __-__ __crafter__: make uri written lazy (*Han Xiao*)
+ - [[```4af675f9```](https://github.com/jina-ai/jina/commit/4af675f92e6b4b67b62a980512262cf6f6cc39cc)] __-__ update protobuf files (*Nan Wang*)
+ - [[```528d644f```](https://github.com/jina-ai/jina/commit/528d644faf8ee489f0b7bc1825024025ece68753)] __-__ update the protobuf files (*Nan Wang*)
+ - [[```ec54bb95```](https://github.com/jina-ai/jina/commit/ec54bb95d8cfa496437a581f3b52c76d825c70c4)] __-__ add a draft for the unittests (*Nan Wang*)
+ - [[```7b919360```](https://github.com/jina-ai/jina/commit/7b919360034d2d713abfbcb3c3faab6be1b4fea9)] __-__ add support forthe multi-field search (*Nan Wang*)
+ - [[```7146c66d```](https://github.com/jina-ai/jina/commit/7146c66de8e9477f9d819b31dd9d73a0a3b14553)] __-__ clean up (*Nan Wang*)
+ - [[```a88c9719```](https://github.com/jina-ai/jina/commit/a88c9719eac68beba3be854ea4b2191366c2da0f)] __-__ update the abstract (*Nan Wang*)
+ - [[```b932c744```](https://github.com/jina-ai/jina/commit/b932c744d66c5299981609bfedcc9120262ed5ac)] __-__ update the flow diagram (*Nan Wang*)
+ - [[```c48cd974```](https://github.com/jina-ai/jina/commit/c48cd974fc4a464a45c750198efd5b6988cd1a08)] __-__ add an example for the Specification (*Nan Wang*)
+ - [[```ece5e21a```](https://github.com/jina-ai/jina/commit/ece5e21a7154355dd305a004c538c42bacfa1b4c)] __-__ refactor the design (*Nan Wang*)
+ - [[```f092fe95```](https://github.com/jina-ai/jina/commit/f092fe953924a2fd4d285683c0f543703b37bb73)] __-__ refactoring the overall design (*Nan Wang*)
+ - [[```1875eaff```](https://github.com/jina-ai/jina/commit/1875eaffbdb01e88c319c5d965520ab2af071adf)] __-__ __client__: add input function sugar (*Han Xiao*)
+ - [[```15cbac1d```](https://github.com/jina-ai/jina/commit/15cbac1dcfcf063e7d088e6750ffe27ddf6ee993)] __-__ __crafters__: add audio crafters (*redram*)
+ - [[```5302c162```](https://github.com/jina-ai/jina/commit/5302c162431127690e2bfc03035a3991e00efb7e)] __-__ fix typos (*Nan Wang*)
+ - [[```11e9e059```](https://github.com/jina-ai/jina/commit/11e9e059fed854042ba9f09023258bd77fc2f6db)] __-__ add the 1st draft for JEP-3 (*Nan Wang*)
+ - [[```9dfe9188```](https://github.com/jina-ai/jina/commit/9dfe9188d8df75cf3fa1220e86d064be1cbd21df)] __-__ __crafter__: add buffer, data_uri, file_path convert (*Han Xiao*)
+ - [[```c2d3e819```](https://github.com/jina-ai/jina/commit/c2d3e8199ff38e85754b45d2fca96b28d72a5f8a)] __-__ __proto__: add mime_type to proto (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```aea4a5b7```](https://github.com/jina-ai/jina/commit/aea4a5b7541daf48e01536717b5fccc179bb8628)] __-__ __gateway__: add message field to gateway (*Han Xiao*)
+ - [[```2e7a4043```](https://github.com/jina-ai/jina/commit/2e7a40438991abd890c0f40ed679bcb0c21e760f)] __-__ __encoder__: fix embeds returns (*Han Xiao*)
+ - [[```59c6175b```](https://github.com/jina-ai/jina/commit/59c6175b543b7f47c84f5c2ed3bfac14548dad67)] __-__ __encoder__: remove np array convert (*Han Xiao*)
+ - [[```39a97c73```](https://github.com/jina-ai/jina/commit/39a97c73ebf6a9e643dc8eea221286181480d75e)] __-__ pb indexer flush (*Han Xiao*)
+ - [[```c48b56fd```](https://github.com/jina-ai/jina/commit/c48b56fdd4e8e3ff280369bcce76df80023aad24)] __-__ __docs__: suggestions for the flow docs (*joaopalotti@gmail.com*)
+ - [[```aaa3a10f```](https://github.com/jina-ai/jina/commit/aaa3a10f181cb35e65ebe21caf7db6961934fa65)] __-__ rename default yaml for pbindex (*Han Xiao*)
+ - [[```4b3753af```](https://github.com/jina-ai/jina/commit/4b3753af08e30ba9ccadd53f2fcd3f191f268f49)] __-__ __docs__: fixed minor typos in jina&#39;s 101 page (*joaopalotti@gmail.com*)
+ - [[```aee8ee91```](https://github.com/jina-ai/jina/commit/aee8ee91aff81b21c1169174cd51ecef82bd179f)] __-__ fix the unittest (*Nan Wang*)
+ - [[```3f395b80```](https://github.com/jina-ai/jina/commit/3f395b80fdaa40f9002dcaf6976d1ba4cbf176a9)] __-__ fix the broken proto (*Nan Wang*)
+ - [[```93a91b57```](https://github.com/jina-ai/jina/commit/93a91b578acd249095e95940d51ff46175143295)] __-__ __flow__: update docstring in flow (*YueLiu-jina*)
+ - [[```5f68014f```](https://github.com/jina-ai/jina/commit/5f68014fb082cfa1d7672ce48768cbbf1ec2b5db)] __-__ clean up the codes (*Nan Wang*)
+ - [[```04b07080```](https://github.com/jina-ai/jina/commit/04b070802c9ebcfd539fec3382dafa36591f1b6a)] __-__ improve the docs on updating protobuf (*Nan Wang*)
+ - [[```5a57f166```](https://github.com/jina-ai/jina/commit/5a57f16666c705247fdb7e8f08f268a20b0aefc0)] __-__ fix unittests (*Nan Wang*)
+ - [[```0c18fdb0```](https://github.com/jina-ai/jina/commit/0c18fdb09cb12c737e8a18fa7c710ebb7b2b18d4)] __-__ fix the unittests (*Nan Wang*)
+ - [[```73d17bac```](https://github.com/jina-ai/jina/commit/73d17bac19956d517a1443b0169507244f439ba3)] __-__ fix the client cli parser (*Nan Wang*)
+ - [[```aa8d5183```](https://github.com/jina-ai/jina/commit/aa8d51839f0a79366e99c3301cc34eadada9c775)] __-__ __crafter__: fix args of the crafter (*Han Xiao*)
+ - [[```8c04c14d```](https://github.com/jina-ai/jina/commit/8c04c14d2960196e1a7e0ee78a72ef4a77c210e5)] __-__ __cli__: update CLI autocomplete (*Han Xiao*)
+ - [[```63a58484```](https://github.com/jina-ai/jina/commit/63a584846594b15cebec93fe5f584e0c0939f805)] __-__ __crafter__: fix type hinting for numeric crafter (*redram*)
+ - [[```3b83bad1```](https://github.com/jina-ai/jina/commit/3b83bad1fd3b6378073e06947b3a56df2955d66c)] __-__ __crafter__: fix length in chunks of jieba crafter (*redram*)
+ - [[```963ea7fb```](https://github.com/jina-ai/jina/commit/963ea7fbcd4b51e6dc0b596feaad2e82e0294cfd)] __-__ __client__: fix mime_type warning (*Han Xiao*)
+ - [[```b7e472e2```](https://github.com/jina-ai/jina/commit/b7e472e22eb2a35e850da000d62b9492e3c0dac0)] __-__ __crafter__: fix content read when doc is pb already (*Han Xiao*)
+ - [[```276e1420```](https://github.com/jina-ai/jina/commit/276e1420bfddbb2f881a7a18659a5d716b3deff9)] __-__ fix typo in tests (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```e28a5ba5```](https://github.com/jina-ai/jina/commit/e28a5ba556e3daf701cde510da1fc5bd2bb62867)] __-__ __driver__: move convert crafter to driver (*Han Xiao*)
+ - [[```66dfe75d```](https://github.com/jina-ai/jina/commit/66dfe75dc9a07bc687202da7ffcdffc279ae5115)] __-__ __proto__: add doc-level uri out of oneof content (*Han Xiao*)
+ - [[```9de7dfd5```](https://github.com/jina-ai/jina/commit/9de7dfd5613b6f304d3f707d2fc2c76338b10e7c)] __-__ make BaseRanker abstract (*Han Xiao*)
+ - [[```36efe799```](https://github.com/jina-ai/jina/commit/36efe79965af82bdcb72709c70d7490a8b5eba24)] __-__ __crafter__: remove unnecessary set (*Han Xiao*)
+ - [[```46d786c6```](https://github.com/jina-ai/jina/commit/46d786c6b30573002ebb04e11c08b9358995fbf3)] __-__ fix formats in JEP-3 (*Nan Wang*)
+ - [[```0d69a09f```](https://github.com/jina-ai/jina/commit/0d69a09f84124ec7cfa2fd0a0610d3c3ba520147)] __-__ merge with master (*Han Xiao*)
+ - [[```a39371f7```](https://github.com/jina-ai/jina/commit/a39371f750a5172dd9a8a3fbb5eb3bf2c941a7b7)] __-__ __crafter__: move mime type detect to driver (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```7a719bc3```](https://github.com/jina-ai/jina/commit/7a719bc334e55868456f220a9d2642e27afd7336)] __-__ __readme__: fix link (*Evan Chan*)
+ - [[```8e9bff43```](https://github.com/jina-ai/jina/commit/8e9bff43d6329679e7e2cfe6f3767f0ef791e284)] __-__ remove whitespace and fix typo  chapter io (*Frederic Haase*)
+ - [[```08ff87dd```](https://github.com/jina-ai/jina/commit/08ff87dda239177fb7396a0511cde7411763a5ed)] __-__ added support to the Portuguese language for 101 (*joaopalotti@gmail.com*)
+ - [[```774e4757```](https://github.com/jina-ai/jina/commit/774e4757522c57eea96eff0e4e13d4bcf59f5ece)] __-__ add google bit model tutorial (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```8dae4456```](https://github.com/jina-ai/jina/commit/8dae445609de447234f0ec891a7571813d97a623)] __-__ add a test for numpy indexing (*Han Xiao*)
+ - [[```79e5f203```](https://github.com/jina-ai/jina/commit/79e5f20328738d5c0ed960c21f79838e0a43cefe)] __-__ add test for unarydriver (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```bd914b82```](https://github.com/jina-ai/jina/commit/bd914b827b0f4ba3b4ac91dc214f3fcea7098e41)] __-__ Revert &#34;feat: add the support for multi-field search&#34; (*Han Xiao*)
+ - [[```d7ad9fde```](https://github.com/jina-ai/jina/commit/d7ad9fde97f02db79233ba93400e0bda74597580)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```788be928```](https://github.com/jina-ai/jina/commit/788be928b68bb8e0ad1d5d1061997c8a09eb0df5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a704586a```](https://github.com/jina-ai/jina/commit/a704586a48adc32c2146b73dfe92b10565b7f1dd)] __-__ __version__: bumping version to 0.2.2 (*Jina Dev Bot*)
+ - [[```b72ad858```](https://github.com/jina-ai/jina/commit/b72ad858744a0314facbaed27491befdb8dcd3c2)] __-__ hotfix release 0.2.0 (*Han Xiao*)
+ - [[```25d5797f```](https://github.com/jina-ai/jina/commit/25d5797fa995bee3966686bcd34434d0a87cc342)] __-__ release 0.2.0 (*Han Xiao*)
+ - [[```ff63c7fc```](https://github.com/jina-ai/jina/commit/ff63c7fc18019332207540f397daf5b950dc106d)] __-__ __version__: bumping version to 0.1.15 (*Jina Dev Bot*)
+ - [[```97403ab2```](https://github.com/jina-ai/jina/commit/97403ab2847f8670b8c888a553a369f057563b14)] __-__ hotfix for pokedex (*Han Xiao*)
 
