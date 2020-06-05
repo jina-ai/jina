@@ -20,7 +20,9 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs, embedding=True)
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs,
+                                                                             self.req.filter_by,
+                                                                             embedding=True)
 
         if no_chunk_docs:
             self.pea.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
@@ -61,24 +63,13 @@ class KVIndexDriver(BaseIndexDriver):
         if self.level == 'doc':
             content = {f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs}
         elif self.level == 'chunk':
-            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks}
+            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks if
+                       (not self.req.filter_by or c.field_name in self.req.filter_by)}
         elif self.level == 'all':
-            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks}
+            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks if
+                       (not self.req.filter_by or c.field_name in self.req.filter_by)}
             content.update({f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs})
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
         if content:
             self.exec_fn(content)
-
-
-class DocKVIndexDriver(KVIndexDriver):
-    """A shortcut of :class:`MergeTopKDriver` with ``level=chunk``"""
-
-    def __init__(self, level: str = 'doc', *args, **kwargs):
-        super().__init__(level, *args, **kwargs)
-
-
-class ChunkKVIndexDriver(KVIndexDriver):
-
-    def __init__(self, level: str = 'chunk', *args, **kwargs):
-        super().__init__(level, *args, **kwargs)

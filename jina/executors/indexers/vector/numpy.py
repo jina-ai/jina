@@ -71,6 +71,8 @@ class NumpyIndexer(BaseVectorIndexer):
                     f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
                     f'did you write to this index twice?')
                 return None
+            if vecs.shape[0] == 0:
+                self.logger.warning(f'an empty index is loaded')
             return vecs
         else:
             return None

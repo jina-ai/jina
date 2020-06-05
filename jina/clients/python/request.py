@@ -6,7 +6,7 @@ import mimetypes
 import os
 import random
 import urllib.parse
-from typing import Iterator, Union
+from typing import Iterator, Union, Tuple, List
 
 import numpy as np
 
@@ -20,7 +20,7 @@ from ...proto import jina_pb2
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
-              mime_type: str = None,
+              mime_type: str = None, filter_by: Union[Tuple[str], List[str], str] = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
 
@@ -47,6 +47,11 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                 raise ValueError('"top_k: %d" is not a valid number' % top_k)
             else:
                 req.search.top_k = top_k
+
+            if filter_by:
+                if isinstance(filter_by, str):
+                    filter_by = [filter_by]
+                req.search.filter_by.extend(filter_by)
 
         for _raw in pi:
             d = getattr(req, str(mode).lower()).docs.add()
