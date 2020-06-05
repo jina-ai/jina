@@ -91,6 +91,9 @@ message Chunk {
 
     // mime type of this chunk, by default it is inherit from the document
     string mime_type = 12;
+
+    // the field name
+    string field_name = 13;
 }
 
 /**
@@ -104,7 +107,7 @@ message Document {
         // the raw binary content of this document, which often represents the original document when comes into jina
         bytes buffer = 3;
 
-       // the ndarray of the image/audio/video document
+        // the ndarray of the image/audio/video document
         NdArray blob = 12;
 
         // a text document
@@ -209,6 +212,7 @@ message Request {
     message TrainRequest {
         repeated Document docs = 1; // a list of Documents to train
         bool flush = 2; // if True then do actual training, otherwise only collect all documents but not do training.
+        repeated string filter_by = 3; // a list of the selected field names to be queried on
     }
 
     /**
@@ -216,6 +220,7 @@ message Request {
      */
     message IndexRequest {
         repeated Document docs = 1; // a list of Documents to index
+        repeated string filter_by = 2; // a list of the selected field names to be queried on
     }
 
     /**
@@ -224,6 +229,7 @@ message Request {
     message SearchRequest {
         repeated Document docs = 1; // a list of Documents to query
         uint32 top_k = 2; // the number of most related results to return
+        repeated string filter_by = 3; // a list of the selected field names to be queried on
     }
 
     /**
