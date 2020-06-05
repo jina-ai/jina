@@ -212,6 +212,7 @@ message Request {
     message TrainRequest {
         repeated Document docs = 1; // a list of Documents to train
         bool flush = 2; // if True then do actual training, otherwise only collect all documents but not do training.
+        repeated string filter_by = 3; // a list of the selected field names to be queried on
     }
 
     /**
@@ -219,6 +220,7 @@ message Request {
      */
     message IndexRequest {
         repeated Document docs = 1; // a list of Documents to index
+        repeated string filter_by = 2; // a list of the selected field names to be queried on
     }
 
     /**
