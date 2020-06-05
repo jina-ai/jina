@@ -169,6 +169,7 @@ class BasePea(metaclass=PeaMeta):
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
             num_req = len(self._pending_msgs[req_id])
+
             if num_req == self.args.num_part:
                 self._prev_messages = self._pending_msgs.pop(req_id)
                 self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]

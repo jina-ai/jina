@@ -29,7 +29,7 @@ if False:
 
 
 def build_required(required_level: 'FlowBuildLevel'):
-    """Annotate a function so that it requires certaidn build level to run.
+    """Annotate a function so that it requires certain build level to run.
 
     :param required_level: required build level to run this function.
 
@@ -71,7 +71,7 @@ class Flow:
 
         More explain on ``optimize_level``:
 
-        As an example, the following flow will generates a 6 Peas,
+        As an example, the following flow will generate 6 Peas,
 
         .. highlight:: python
         .. code-block:: python
@@ -81,6 +81,7 @@ class Flow:
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
         as the head and tail routers are removed.
+        
         """
         self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -268,7 +269,7 @@ class Flow:
 
     def join(self, needs: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
         """
-        Add a blocker to the flow, wait until all peas defined in `needs` completed.
+        Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
         :param needs: list of service names to wait
         :return: the modified flow
@@ -335,7 +336,7 @@ class Flow:
         :return: the current flow (by default)
 
         .. note::
-            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
+            ``inplace=False`` is recommended if you are building the same flow multiple times in a row. e.g.
 
             .. highlight:: python
             .. code-block:: python
@@ -344,7 +345,7 @@ class Flow:
                 with f:
                     f.index()
 
-                with f.build(copy_flow=False) as fl:
+                with f.build(inplace=False) as fl:
                     fl.search()
 
         """
@@ -560,7 +561,7 @@ class Flow:
             with f.build(runtime='thread') as flow:
                 flow.train(bytes_gen=my_reader())
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param output_fn: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
@@ -577,14 +578,13 @@ class Flow:
         :param shuffle: shuffle the the numpy data source beforehand
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_numpy
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn)
 
     def search_numpy(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                    output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                     output_fn: Callable[['jina_pb2.Message'], None] = None,
+                     **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow
 
         :param array: the numpy ndarray data source
@@ -593,10 +593,27 @@ class Flow:
         :param shuffle: shuffle the the numpy data source beforehand
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_numpy
         self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle), output_fn)
+
+    def index_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
+                    sampling_rate: float = None, read_mode='r',
+                    output_fn: Callable[['jina_pb2.Message'], None] = None,
+                    **kwargs):
+        """ Use a list of files as the query source for indexing on the current flow
+
+        :param filepath: a text file that each line contains a document
+        :param lines: a list of strings, each is considered as d document
+        :param size: the maximum number of the documents
+        :param sampling_rate: the sampling rate between [0, 1]
+        :param read_mode: specifies the mode in which the file
+                is opened. 'r' for reading in text mode, 'rb' for reading in binary
+        :param output_fn: the callback function to invoke after indexing
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        from ..clients.python.io import input_lines
+        self._get_client(**kwargs).index(input_lines(filepath, lines, size, sampling_rate, read_mode), output_fn)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -604,7 +621,7 @@ class Flow:
                     **kwargs):
         """ Use a set of files as the index source for indexing on the current flow
 
-        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '*.py', '[*.zip, *.gz]'
+        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
         :param recursive: If recursive is true, the pattern '**' will match any files and
                     zero or more directories and subdirectories.
         :param size: the maximum number of the files
@@ -613,18 +630,17 @@ class Flow:
                 is opened. 'r' for reading in text mode, 'rb' for reading in
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_files
         self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn)
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
-                    size: int = None, sampling_rate: float = None, read_mode: str = None,
-                    output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                     size: int = None, sampling_rate: float = None, read_mode: str = None,
+                     output_fn: Callable[['jina_pb2.Message'], None] = None,
+                     **kwargs):
         """ Use a set of files as the query source for searching on the current flow
 
-        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '*.py', '[*.zip, *.gz]'
+        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
         :param recursive: If recursive is true, the pattern '**' will match any files and
                     zero or more directories and subdirectories.
         :param size: the maximum number of the files
@@ -633,10 +649,27 @@ class Flow:
                 is opened. 'r' for reading in text mode, 'rb' for reading in
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return:
         """
         from ..clients.python.io import input_files
         self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn)
+
+    def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
+                     sampling_rate: float = None, read_mode='r',
+                     output_fn: Callable[['jina_pb2.Message'], None] = None,
+                     **kwargs):
+        """ Use a list of files as the query source for searching on the current flow
+
+        :param filepath: a text file that each line contains a document
+        :param lines: a list of strings, each is considered as d document
+        :param size: the maximum number of the documents
+        :param sampling_rate: the sampling rate between [0, 1]
+        :param read_mode: specifies the mode in which the file
+                is opened. 'r' for reading in text mode, 'rb' for reading in binary
+        :param output_fn: the callback function to invoke after indexing
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        from ..clients.python.io import input_lines
+        self._get_client(**kwargs).search(input_lines(filepath, lines, size, sampling_rate, read_mode), output_fn)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
@@ -672,7 +705,7 @@ class Flow:
 
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
@@ -682,7 +715,7 @@ class Flow:
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None,
                **kwargs):
-        """Do indexing on the current flow
+        """Do searching on the current flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`search`.
 
@@ -713,14 +746,14 @@ class Flow:
             with f.build(runtime='thread') as flow:
                 flow.search(bytes_gen=my_reader())
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in `kwargs`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param output_fn: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).search(input_fn, output_fn)
 
     def dry_run(self, **kwargs):
-        """Send a DRYRUN request to this flow, passing through all pods in this flow
+        """Send a DRYRUN request to this flow, passing through all pods in this flow,
         useful for testing connectivity and debugging"""
         if not self._get_client(**kwargs).dry_run():
             raise FlowConnectivityError('a dry run shows this flow is badly connected due to the network settings')

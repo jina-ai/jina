@@ -36,6 +36,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     try:
         from flask import Flask, Response, jsonify
         from flask_cors import CORS
+        from gevent.pywsgi import WSGIServer
     except ImportError:
         raise ImportError('Flask or its dependencies are not fully installed, '
                           'they are required for serving HTTP requests.'
@@ -48,11 +49,14 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
         default_logger.error(ex)
     JINA_GLOBAL.logserver.address = f'http://{_config["host"]}:{_config["port"]}'
 
-    JINA_GLOBAL.logserver.ready = JINA_GLOBAL.logserver.address + _config['endpoints']['ready']
-    JINA_GLOBAL.logserver.shutdown = JINA_GLOBAL.logserver.address + _config['endpoints']['shutdown']
+    JINA_GLOBAL.logserver.ready = JINA_GLOBAL.logserver.address + \
+        _config['endpoints']['ready']
+    JINA_GLOBAL.logserver.shutdown = JINA_GLOBAL.logserver.address + \
+        _config['endpoints']['shutdown']
 
     app = Flask(__name__)
     CORS(app)
+    server = WSGIServer((_config['host'], _config['port']), app, log=None)
 
     @app.route(_config['endpoints']['log'])
     def get_log():
@@ -93,10 +97,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
 
     @app.route(_config['endpoints']['shutdown'])
     def shutdown():
-        from flask import request
-        if 'werkzeug.server.shutdown' not in request.environ:
-            raise RuntimeError('Not running the development server')
-        request.environ['werkzeug.server.shutdown']()
+        server.stop()
         return 'Server shutting down...'
 
     @app.route(_config['endpoints']['ready'])
@@ -106,10 +107,8 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     os.environ['WERKZEUG_RUN_MAIN'] = 'true'
     log = logging.getLogger('werkzeug')
     log.disabled = True
-
     try:
-        app.logger.disabled = True
-        app.run(port=_config['port'], host=_config['host'])
+        server.serve_forever()
     except Exception as ex:
         default_logger.error(ex)
 

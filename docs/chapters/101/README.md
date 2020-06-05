@@ -43,14 +43,13 @@
 
 
 
-In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc.. A Document is also the input query when searching.
+In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc. A Document is also the input query when searching.
 
 **A Chunk is a small semantic unit of a Document.** It could be a sentence, a 64x64 image patch, a 3 second video clip, a pair of coordinate and address. 
 
-In Jina, a Document is like chocolate bar. Not only because it comes in different formats and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, you also don’t want to grind it into powder; either way you will lose the flavor (i.e. the semantic).
+In Jina, a Document is like a chocolate bar. Not only because it comes in different formats and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, and you also don’t want to grind it into powder; either way, you will lose the flavor (i.e. the semantic).
 
 <br/><br/><br/>
-
 
 <h2 align="center">YAML config</h2>
 

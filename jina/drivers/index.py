@@ -5,7 +5,6 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_chunks
-from typing import Union, List, Tuple
 
 
 class BaseIndexDriver(BaseExecutableDriver):
@@ -19,13 +18,9 @@ class VectorIndexDriver(BaseIndexDriver):
     """Extract chunk-level embeddings and add it to the executor
 
     """
-    def __init__(self, filter_by: Union[List[str], Tuple[str]] = [], *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.filter_by = filter_by
 
     def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
-            extract_chunks(self.req.docs, self.filter_by, embedding=True)
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs, embedding=True)
 
         if no_chunk_docs:
             self.pea.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
@@ -51,7 +46,7 @@ class KVIndexDriver(BaseIndexDriver):
         - C is the number of chunks per query/doc
     """
 
-    def __init__(self, level: str, filter_by: Union[List[str], Tuple[str]] = [], *args, **kwargs):
+    def __init__(self, level: str, *args, **kwargs):
         """
 
         :param level: index level "chunk" or "doc", or "all"
@@ -60,18 +55,15 @@ class KVIndexDriver(BaseIndexDriver):
         """
         super().__init__(*args, **kwargs)
         self.level = level
-        self.filter_by = filter_by
 
     def __call__(self, *args, **kwargs):
         from google.protobuf.json_format import MessageToJson
         if self.level == 'doc':
             content = {f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs}
         elif self.level == 'chunk':
-            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks
-                       if self.filter_by and c.field_name in self.filter_by}
+            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks}
         elif self.level == 'all':
-            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks
-                       if self.filter_by and c.field_name in self.filter_by}
+            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks}
             content.update({f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs})
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
@@ -87,10 +79,8 @@ class DocKVIndexDriver(KVIndexDriver):
 
 
 class ChunkKVIndexDriver(KVIndexDriver):
-    def __init__(self,
-                 level: str = 'chunk', filter_by: Union[str, List[str], Tuple[str]] = None, *args, **kwargs):
+    def __init__(self, level: str = 'chunk', *args, **kwargs):
         super().__init__(level, *args, **kwargs)
-        self.filter_by = filter_by if self.filter_by else []
 
     def __call__(self, *args, **kwargs):
         from google.protobuf.json_format import MessageToJson

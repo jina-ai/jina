@@ -393,6 +393,8 @@ def set_gateway_parser(parser=None):
     gp1.add_argument('--rest-api', action='store_true', default=False,
                      help='use REST-API as the interface instead of gRPC with port number '
                           'set to the value of "port-grpc"')
+    gp1.add_argument('--to-datauri', action='store_true', default=False,
+                     help='always represent the result document with data URI, instead of using buffer/blob/text')
     return parser
 
 
@@ -427,10 +429,9 @@ def set_client_cli_parser(parser=None):
                      help='the starting number of doc_id, the consequent doc_id will increment by one')
     _gp.add_argument('--random-doc-id', action='store_true', default=False,
                      help='randomize the doc_id, if this is set then `first_request_id` is ignored')
+
     gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
-    gp1.add_argument('--filter-by', type=str, nargs='*',
-                     help='field names to query on')
     return parser
 
 

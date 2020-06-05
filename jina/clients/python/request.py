@@ -21,7 +21,6 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
               first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
               mime_type: str = None,
-              filter_by: Union[Iterator[str], str] = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
 
@@ -49,15 +48,6 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
             else:
                 req.search.top_k = top_k
 
-        if filter_by:
-            _filter_by = []
-            if isinstance(filter_by, str):
-                _filter_by.append(filter_by)
-            else:
-                for _field in filter_by:
-                    _filter_by.append(_field)
-            req.search.filter_by.extend(_filter_by)
-
         for _raw in pi:
             d = getattr(req, str(mode).lower()).docs.add()
             if isinstance(_raw, jina_pb2.Document):
@@ -80,6 +70,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                     mime_type = guess_mime(_raw)
                 else:
                     d.text = _raw
+                    mime_type = 'text/plain'
             else:
                 raise TypeError(f'{type(_raw)} type of input is not supported')
 

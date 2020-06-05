@@ -89,12 +89,33 @@ class GatewayPea:
             self.name = args.name or self.__class__.__name__
             self.logger = get_logger(self.name, **vars(args))
             self.executor = BaseExecutor()
+            if args.to_datauri:
+                from ..drivers.convert import All2URI
+                for k in ['SearchRequest', 'IndexRequest', 'TrainRequest']:
+                    self.executor.add_driver(All2URI(), k)
             self.executor.attach(pea=self)
             self.peapods = []
 
-        def recv_callback(self, msg):
+        @property
+        def message(self) -> 'jina_pb2.Message':
+            """Get the current protobuf message to be processed"""
+            return self._message
+
+        @property
+        def request_type(self) -> str:
+            return self._request.__class__.__name__
+
+        @property
+        def request(self) -> 'jina_pb2.Request':
+            """Get the current request body inside the protobuf message"""
+            return self._request
+
+        def handle(self, msg: 'jina_pb2.Message'):
             try:
-                return self.executor(msg.__class__.__name__)
+                self._request = getattr(msg.request, msg.request.WhichOneof('body'))
+                self._message = msg
+                self.executor(self.request_type)
+                return msg.request
             except NoExplicitMessage:
                 self.logger.error('gateway should not receive partial message, it can not do reduce')
             except RequestLoopEnd:
@@ -106,7 +127,7 @@ class GatewayPea:
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
                 await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity))
-                return await zmqlet.recv_message(callback=self.recv_callback)
+                return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
@@ -121,7 +142,7 @@ class GatewayPea:
                             asyncio.create_task(
                                 zmqlet.send_message(
                                     add_envelope(next(request_iterator), 'gateway', zmqlet.args.identity)))
-                            fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.recv_callback)))
+                            fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                         except StopIteration:
                             return True
                     return False
