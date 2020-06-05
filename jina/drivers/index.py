@@ -1,11 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Union, List, Tuple
+
 import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_chunks
-from typing import Union, List, Tuple
 
 
 class BaseIndexDriver(BaseExecutableDriver):
@@ -19,7 +20,8 @@ class VectorIndexDriver(BaseIndexDriver):
     """Extract chunk-level embeddings and add it to the executor
 
     """
-    def __init__(self, filter_by: Union[List[str], Tuple[str]] = [], *args, **kwargs):
+
+    def __init__(self, filter_by: Union[List[str], Tuple[str]] = (), *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filter_by = filter_by
 
@@ -51,7 +53,7 @@ class KVIndexDriver(BaseIndexDriver):
         - C is the number of chunks per query/doc
     """
 
-    def __init__(self, level: str, filter_by: Union[List[str], Tuple[str]] = [], *args, **kwargs):
+    def __init__(self, level: str, filter_by: Union[List[str], Tuple[str]] = (), *args, **kwargs):
         """
 
         :param level: index level "chunk" or "doc", or "all"

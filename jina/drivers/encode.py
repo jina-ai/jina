@@ -1,9 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Union, List, Tuple
+
 from . import BaseExecutableDriver
 from .helper import extract_chunks, array2pb
-from typing import Union, List, Tuple
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
@@ -16,7 +17,8 @@ class BaseEncodeDriver(BaseExecutableDriver):
 class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
-    def __init__(self, filter_by: Union[List[str], Tuple[str]] = [], *args, **kwargs):
+
+    def __init__(self, filter_by: Union[List[str], Tuple[str]] = (), *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.filter_by = filter_by
 
