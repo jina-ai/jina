@@ -161,8 +161,8 @@ class BasePea(metaclass=PeaMeta):
         req_type = type(self._request)
 
         num_part = self.args.num_part
-        if self.request_type == 'SearchRequest':
-            # modify the num_part on the fly for SearchRequest
+        if self.request_type == 'SearchRequest' and self.args.role != PeaRoleType.TAIL:
+            # modify the num_part on the fly for SearchRequest in a non-tail pea
             num_part = min(self.args.num_part, max(len(self.request.filter_by), 1))
         if num_part > 1 and is_data_request(self._request):
             # do gathering, not for control request, unless it is dryrun

@@ -94,9 +94,11 @@ class ChunkKVIndexDriver(KVIndexDriver):
 
     def __call__(self, *args, **kwargs):
         from google.protobuf.json_format import MessageToJson
-        content = {
-            f'c{c.chunk_id}': MessageToJson(c)
-            for d in self.req.docs for c in d.chunks
-            if len(self.filter_by) > 0 and c.field_name in self.filter_by}
+        content = {}
+        for d in self.req.docs:
+            for c in d.chunks:
+                if len(self.filter_by) > 0 and c.field_name not in self.filter_by:
+                    continue
+                content[f'c{c.chunk_id}'] = MessageToJson(c)
         if content:
             self.exec_fn(content)
