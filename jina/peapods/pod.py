@@ -323,8 +323,8 @@ class FlowPod(BasePod):
         elif first_socket_type == SocketType.PUB_BIND:
             print('h1')
             first.tail_args.socket_out = SocketType.PUB_BIND
-            first.tail_args.yaml_path = '- !PublishDriver\nwith: {num_part: %d}' % first.tail_args.num_part
             first.tail_args.num_part += 1
+            first.tail_args.yaml_path = '- !PublishDriver\nwith: {num_part: %d}' % first.tail_args.num_part
             print(first.tail_args.yaml_path)
             second.head_args.socket_in = SocketType.SUB_CONNECT
 
@@ -449,7 +449,7 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
         _tail_args.yaml_path = args.reducing_yaml_path
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
-    _tail_args.num_part = num_part
+    # _tail_args.num_part = num_part
 
     # head and tail never run in docker, reset their image to None
     _tail_args.image = None

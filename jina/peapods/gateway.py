@@ -13,7 +13,7 @@ from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
 from ..enums import ClientMode
-from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType
+from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType, GatewayPartialMessage
 from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
@@ -115,7 +115,7 @@ class GatewayPea:
                 self._request = getattr(msg.request, msg.request.WhichOneof('body'))
                 self._message = msg
                 if msg.envelope.num_part != [1]:
-                    raise NoExplicitMessage
+                    raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
                 self.executor(self.request_type)
                 return msg.request
             except NoExplicitMessage:
@@ -128,7 +128,8 @@ class GatewayPea:
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
-                await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity))
+                await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity,
+                                                       num_part=self.args.num_part))
                 return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
@@ -143,7 +144,8 @@ class GatewayPea:
                         try:
                             asyncio.create_task(
                                 zmqlet.send_message(
-                                    add_envelope(next(request_iterator), 'gateway', zmqlet.args.identity)))
+                                    add_envelope(next(request_iterator), 'gateway', zmqlet.args.identity,
+                                                 num_part=self.args.num_part)))
                             fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                         except StopIteration:
                             return True

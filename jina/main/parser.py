@@ -130,6 +130,7 @@ def set_pea_parser(parser=None):
     from ..helper import random_port, get_random_identity
     from .. import __default_host__
     import os
+    show_all = 'JINA_FULL_CLI' in os.environ
     if not parser:
         parser = set_base_parser()
 
@@ -220,8 +221,9 @@ def set_pea_parser(parser=None):
                      help='the low watermark that enables the sending of a compressed message. '
                           'compression rate (after_size/before_size) lower than this LWM will be considered as successeful '
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
-    gp5.add_argument('--num-part', type=int, default=1,
-                     help='wait until the number of parts of message are all received')
+    gp5.add_argument('--num-part', type=int, default=0,
+                     **(dict(
+                         help='wait until the number of parts of message are all received, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod')
 

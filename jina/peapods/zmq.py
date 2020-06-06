@@ -715,12 +715,13 @@ def _add_route(evlp, pod_name, identity):
     r.pod_id = identity
 
 
-def add_envelope(req, pod_name, identity) -> 'jina_pb2.Message':
+def add_envelope(req, pod_name, identity, num_part=1) -> 'jina_pb2.Message':
     """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
     :param req: the protobuf request
     :param pod_name: the name of the current pod
     :param identity: the identity of the current pod
+    :param num_part: the total parts of the message, 0 and 1 means single part
     :return: the resulted protobuf message
     """
     msg = jina_pb2.Message()
@@ -734,6 +735,8 @@ def add_envelope(req, pod_name, identity) -> 'jina_pb2.Message':
     _add_route(msg.envelope, pod_name, identity)
     msg.request.CopyFrom(req)
     msg.envelope.num_part.append(1)
+    if num_part > 1:
+        msg.envelope.num_part.append(num_part)
     return msg
 
 

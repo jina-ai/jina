@@ -316,7 +316,6 @@ class Flow:
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
-        kwargs['num_part'] = len(needs)
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
 
         op_flow.set_last_pod(pod_name, False)
