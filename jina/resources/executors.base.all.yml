@@ -1,8 +1,8 @@
 !BaseExecutor
 with: {}
 metas:
-  name: merge
+  name: clear
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
-      - !MergeDriver {}
+      *  # replace by drivers

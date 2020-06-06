@@ -172,12 +172,7 @@ class BasePea(metaclass=PeaMeta):
 
     @property
     def request_type(self) -> str:
-        if (type(self._request) == Request.ControlRequest) and (
-                self.request.command == Request.ControlRequest.DRYRUN):
-            # mocking dryrun control request as indexrequest
-            return 'IndexRequest'
-        else:
-            return self._request.__class__.__name__
+        return self._request.__class__.__name__
 
     @property
     def log_iterator(self):

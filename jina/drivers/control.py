@@ -19,6 +19,8 @@ class ControlReqDriver(BaseDriver):
             self.envelope.status = jina_pb2.Envelope.READY
             for k, v in vars(self.pea.args).items():
                 self.req.args[k] = str(v)
+        elif self.req.command == jina_pb2.Request.ControlRequest.DRYRUN:
+            self.envelope.status = jina_pb2.Envelope.READY
         else:
             raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
 
@@ -48,7 +50,7 @@ class ForwardDriver(BaseDriver):
         pass
 
 
-class PublishDriver(BaseDriver):
+class PublishDriver(ControlReqDriver):
     """Publish the message to multiple pods
 
     .. note::
@@ -60,7 +62,10 @@ class PublishDriver(BaseDriver):
         self.num_part = num_part
 
     def __call__(self, *args, **kwargs):
-        self.envelope.num_part.append(self.num_part)
+        if is_data_request(self.req):
+            self.envelope.num_part.append(self.num_part)
+        else:
+            super().__call__(*args, **kwargs)
 
 
 class RouteDriver(ControlReqDriver):

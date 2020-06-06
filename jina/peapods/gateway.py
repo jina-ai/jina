@@ -103,13 +103,7 @@ class GatewayPea:
 
         @property
         def request_type(self) -> str:
-            if (type(self._request) == Request.ControlRequest) and (
-                    self.request.command == Request.ControlRequest.DRYRUN):
-                # mocking dryrun control request as IndexRequest
-                # this is temp fix, later will make dry run as a generl DataRequest
-                return 'IndexRequest'
-            else:
-                return self._request.__class__.__name__
+            return self._request.__class__.__name__
 
         @property
         def request(self) -> 'jina_pb2.Request':

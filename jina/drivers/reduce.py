@@ -4,12 +4,12 @@ __license__ = "Apache-2.0"
 from collections import defaultdict
 from typing import Dict, List
 
-from . import BaseDriver
+from .control import ControlReqDriver
 from ..excepts import NoExplicitMessage
 from ..proto import is_data_request, jina_pb2
 
 
-class BaseReduceDriver(BaseDriver):
+class BaseReduceDriver(ControlReqDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,22 +34,26 @@ class BaseReduceDriver(BaseDriver):
         return self._prev_messages
 
     def __call__(self, *args, **kwargs):
-        req_type = type(self.req).__name__
-        if self.envelope.num_part[-1] > 1 and is_data_request(self.req):
-            req_id = self.envelope.request_id
-            self._pending_msgs[req_id].append(self.msg)
-            num_req = len(self._pending_msgs[req_id])
+        if is_data_request(self.req):
+            if self.envelope.num_part[-1] > 1:
+                req_id = self.envelope.request_id
+                self._pending_msgs[req_id].append(self.msg)
+                num_req = len(self._pending_msgs[req_id])
 
-            self.logger.info(f'collected {num_req}/{self.envelope.num_part[-1]} parts of {req_type}')
+                self.logger.info(f'collected {num_req}/{self.envelope.num_part[-1]} parts of {type(self.req).__name__}')
 
-            if num_req == self.envelope.num_part[-1]:
-                self._prev_messages = self._pending_msgs.pop(req_id)
-                self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
+                if num_req == self.envelope.num_part[-1]:
+                    self._prev_messages = self._pending_msgs.pop(req_id)
+                    self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
+                else:
+                    raise NoExplicitMessage
+
+                self.reduce(*args, **kwargs)
+                self.envelope.num_part.pop(-1)
             else:
-                raise NoExplicitMessage
-
-            self.reduce(*args, **kwargs)
-            self.envelope.num_part.pop(-1)
+                return
+        else:
+            super().__call__(*args, **kwargs)
 
     def reduce(self, *args, **kwargs):
         raise NotImplementedError
@@ -90,7 +94,7 @@ class MergeTopKDriver(MergeDriver):
         super().__init__(*args, **kwargs)
         self.level = level
 
-    def __call__(self, *args, **kwargs):
+    def reduce(self, *args, **kwargs):
         if self.level == 'chunk':
             for _d_id, _doc in enumerate(self.req.docs):
                 for _c_id, _chunk in enumerate(_doc.chunks):
@@ -116,7 +120,7 @@ class MergeTopKDriver(MergeDriver):
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
 
-        super().__call__(*args, **kwargs)
+        super().reduce(*args, **kwargs)
 
 
 class ChunkMergeTopKDriver(MergeTopKDriver):

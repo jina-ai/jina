@@ -325,7 +325,7 @@ class FlowPod(BasePod):
             print('h1')
             first.tail_args.socket_out = SocketType.PUB_BIND
             first.tail_args.num_part += 1
-            first.tail_args.yaml_path = '- !PublishDriver\nwith: {num_part: %d}' % first.tail_args.num_part
+            first.tail_args.yaml_path = '- !!PublishDriver\nwith: {num_part: %d}' % first.tail_args.num_part
             print(first.tail_args.yaml_path)
             second.head_args.socket_in = SocketType.SUB_CONNECT
 
@@ -425,7 +425,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
         print('h2')
         _head_args.socket_out = SocketType.PUB_BIND
         if as_router:
-            _head_args.yaml_path = '- !PublishDriver\nwith: {num_part: %d}' % args.replicas
+            _head_args.yaml_path = '- !!PublishDriver\nwith: {num_part: %d}' % args.replicas
 
     if as_router:
         _head_args.name = args.name or ''
