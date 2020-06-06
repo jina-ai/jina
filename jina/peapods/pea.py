@@ -21,7 +21,7 @@ from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWater
 from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2, Request
+from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -371,12 +371,14 @@ class BasePea(metaclass=PeaMeta):
     def start(self):
         super().start()
         if isinstance(self.args, dict):
-            _timeout = getattr(self.args['peas'][0], 'timeout_ready', 5e3) / 1e3
+            _timeout = getattr(self.args['peas'][0], 'timeout_ready', -1)
         else:
-            _timeout = getattr(self.args, 'timeout_ready', 5e3) / 1e3
+            _timeout = getattr(self.args, 'timeout_ready', -1)
 
-        if _timeout < 0:
+        if _timeout <= 0:
             _timeout = None
+        else:
+            _timeout /= 1e3
 
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():

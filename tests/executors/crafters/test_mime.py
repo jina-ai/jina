@@ -29,23 +29,23 @@ def input_fn3():
 
 class MyTestCase(JinaTestCase):
     def test_dummy_seg(self):
-        f = Flow().add(yaml_path='- !Buffer2URI\nwith: {mimetype: png}')
+        f = Flow().add(yaml_path='- !Buffer2URI | {mimetype: png}')
         with f:
             f.index(input_fn=input_fn(), output_fn=print)
 
-        f = Flow().add(yaml_path='- !Buffer2URI\nwith: {mimetype: png, base64: true}')
+        f = Flow().add(yaml_path='- !Buffer2URI | {mimetype: png, base64: true}')
         with f:
             f.index(input_fn=input_fn(), output_fn=print)
 
     def test_any_file(self):
-        f = Flow().add(yaml_path='- !URI2DataURI\nwith: {base64: true}')
+        f = Flow().add(yaml_path='- !URI2DataURI | {base64: true}')
         with f:
             f.index(input_fn=input_fn2, output_fn=print)
 
     def test_aba(self):
-        f = (Flow().add(yaml_path='- !Buffer2URI\nwith: {mimetype: png}')
+        f = (Flow().add(yaml_path='- !Buffer2URI | {mimetype: png}')
              .add(yaml_path='- !URI2Buffer {}')
-             .add(yaml_path='- !Buffer2URI\nwith: {mimetype: png}'))
+             .add(yaml_path='- !Buffer2URI | {mimetype: png}'))
 
         with f:
             f.index(input_fn=input_fn, output_fn=print)
