@@ -33,8 +33,9 @@ class BasePod:
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        if hasattr(args, 'polling'):
-            args.reducing_yaml_path = '_forward' if args.polling.is_push else '_merge'
+        if hasattr(args, 'polling') and args.polling.is_push:
+            # ONLY reset when it is push
+            args.reducing_yaml_path = '_forward'
         self._args = args
         self.peas_args = self._parse_args(args)
 
