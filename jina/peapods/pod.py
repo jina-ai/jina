@@ -76,8 +76,7 @@ class BasePod:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
-            peas_args['tail'] = _copy_to_tail_args(args,
-                                                   args.replicas if args.polling.is_block else 1)
+            peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
             self.is_head_router = True
             self.is_tail_router = True
@@ -357,7 +356,6 @@ class FlowPod(BasePod):
             # keep the port_out and socket_out of next_arts
             # only reset its input
             pod.head_args = _copy_to_tail_args(pod.head_args,
-                                               self._args.replicas if self._args.polling.is_block else 1,
                                                as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, self.head_args, pod.head_args)
@@ -436,7 +434,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     return _head_args
 
 
-def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
+def _copy_to_tail_args(args, as_router: bool = True):
     """Set the incoming args of the tail router
     """
     print('h3')
@@ -449,7 +447,6 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
         _tail_args.yaml_path = args.reducing_yaml_path
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
-    # _tail_args.num_part = num_part
 
     # head and tail never run in docker, reset their image to None
     _tail_args.image = None

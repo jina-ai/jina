@@ -396,7 +396,7 @@ class Flow:
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
                 elif e_name == 'gateway':
-                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
                         # connect gateway directly to peas only if this is unblock router
                         # as gateway can not block & reduce message
                         s_pod.connect_to_head_of(e_pod)
@@ -406,7 +406,7 @@ class Flow:
                     e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
                     if self.args.optimize_level > FlowOptimizeLevel.NONE and e_pod.is_head_router and not s_pod.is_tail_router:
                         e_pod.connect_to_tail_of(s_pod)
-                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
                         s_pod.connect_to_head_of(e_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
