@@ -169,6 +169,7 @@ class MyTestCase(JinaTestCase):
         with f:
             pass
         self.add_tmpfile('test-docshard-tmp')
+        time.sleep(2)
 
     def test_shards_insufficient_data(self):
         index_docs = 3

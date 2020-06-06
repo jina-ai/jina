@@ -494,7 +494,6 @@ def valid_yaml_path(path: str, to_stream: bool = False):
             _defaults = fp.read()
         path = path.replace('- !!', '- !').replace('\n', '\n        ')  # for indent, I know, its nasty
         path = _defaults.replace('*', path)
-        print(path)
         return io.StringIO(path)
     elif path.isidentifier():
         # possible class name
