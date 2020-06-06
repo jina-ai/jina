@@ -250,6 +250,15 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
 
+    def test_refactor_num_part_proxy_2(self):
+        f = (Flow().add(name='r1', yaml_path='_logforward')
+             .add(name='r2', yaml_path='_logforward', needs='r1', replicas=2)
+             .add(name='r3', yaml_path='_logforward', needs='r1', replicas=3, polling='ALL')
+             .join(['r2', 'r3']))
+
+        with f:
+            f.index_lines(lines=['abbcs', 'efgh'])
+
     def test_refactor_num_part_2(self):
         f = (Flow()
              .add(name='r1', yaml_path='_logforward', needs='gateway', replicas=3, polling='ALL'))
