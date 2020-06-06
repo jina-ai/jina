@@ -21,7 +21,7 @@ from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWater
 from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2
+from ..proto import jina_pb2, Request
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -172,7 +172,12 @@ class BasePea(metaclass=PeaMeta):
 
     @property
     def request_type(self) -> str:
-        return self._request.__class__.__name__
+        if (type(self._request) == Request.ControlRequest) and (
+                self.request.command == Request.ControlRequest.DRYRUN):
+            # mocking dryrun control request as indexrequest
+            return 'IndexRequest'
+        else:
+            return self._request.__class__.__name__
 
     @property
     def log_iterator(self):

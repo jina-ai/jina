@@ -18,7 +18,7 @@ from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 from ..main.parser import set_pea_parser, set_pod_parser
-from ..proto import jina_pb2_grpc, jina_pb2
+from ..proto import jina_pb2_grpc, jina_pb2, Request
 
 
 class GatewayPea:
@@ -103,7 +103,13 @@ class GatewayPea:
 
         @property
         def request_type(self) -> str:
-            return self._request.__class__.__name__
+            if (type(self._request) == Request.ControlRequest) and (
+                    self.request.command == Request.ControlRequest.DRYRUN):
+                # mocking dryrun control request as IndexRequest
+                # this is temp fix, later will make dry run as a generl DataRequest
+                return 'IndexRequest'
+            else:
+                return self._request.__class__.__name__
 
         @property
         def request(self) -> 'jina_pb2.Request':
