@@ -316,7 +316,6 @@ class Flow:
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
-        kwargs['num_part'] = len(needs)
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
 
         op_flow.set_last_pod(pod_name, False)
@@ -397,7 +396,7 @@ class Flow:
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
                 elif e_name == 'gateway':
-                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
                         # connect gateway directly to peas only if this is unblock router
                         # as gateway can not block & reduce message
                         s_pod.connect_to_head_of(e_pod)
@@ -407,7 +406,7 @@ class Flow:
                     e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
                     if self.args.optimize_level > FlowOptimizeLevel.NONE and e_pod.is_head_router and not s_pod.is_tail_router:
                         e_pod.connect_to_tail_of(s_pod)
-                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part == 1:
+                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
                         s_pod.connect_to_head_of(e_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
@@ -597,14 +596,14 @@ class Flow:
         from ..clients.python.io import input_numpy
         self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle), output_fn)
 
-    def index_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
+    def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
                     output_fn: Callable[['jina_pb2.Message'], None] = None,
                     **kwargs):
         """ Use a list of files as the query source for indexing on the current flow
 
-        :param filepath: a text file that each line contains a document
         :param lines: a list of strings, each is considered as d document
+        :param filepath: a text file that each line contains a document
         :param size: the maximum number of the documents
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
@@ -613,7 +612,7 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).index(input_lines(filepath, lines, size, sampling_rate, read_mode), output_fn)
+        self._get_client(**kwargs).index(input_lines(lines, filepath,  size, sampling_rate, read_mode), output_fn)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,

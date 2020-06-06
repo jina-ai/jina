@@ -94,3 +94,7 @@ class GRPCServerError(Exception):
 
 class NoIdleDealer(Exception):
     """All dealers are exhausted no more idle dealer"""
+
+
+class GatewayPartialMessage(Exception):
+    """Gateway receives a multi-part message but it can not handle it"""

@@ -1,13 +1,68 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from . import BaseDriver
+from collections import defaultdict
+from typing import Dict, List
+
+from .control import ControlReqDriver
+from ..excepts import NoExplicitMessage
+from ..proto import is_data_request, jina_pb2
 
 
-class MergeDriver(BaseDriver):
-    """Merge the routes information from multiple envelopes into one """
+class BaseReduceDriver(ControlReqDriver):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._prev_requests = None
+        self._prev_messages = None
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
+
+    @property
+    def prev_reqs(self) -> List['jina_pb2.Request']:
+        """Get all previous requests that has the same ``request_id``, shortcut to ``self.pea.prev_requests``
+
+        This returns ``None`` when ``num_part=1``.
+        """
+        return self._prev_requests
+
+    @property
+    def prev_msgs(self) -> List['jina_pb2.Message']:
+        """Get all previous messages that has the same ``request_id``, shortcut to ``self.pea.prev_messages``
+
+        This returns ``None`` when ``num_part=1``.
+        """
+        return self._prev_messages
 
     def __call__(self, *args, **kwargs):
+        if is_data_request(self.req):
+            if self.envelope.num_part[-1] > 1:
+                req_id = self.envelope.request_id
+                self._pending_msgs[req_id].append(self.msg)
+                num_req = len(self._pending_msgs[req_id])
+
+                self.logger.info(f'collected {num_req}/{self.envelope.num_part[-1]} parts of {type(self.req).__name__}')
+
+                if num_req == self.envelope.num_part[-1]:
+                    self._prev_messages = self._pending_msgs.pop(req_id)
+                    self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
+                else:
+                    raise NoExplicitMessage
+
+                self.reduce(*args, **kwargs)
+                self.envelope.num_part.pop(-1)
+            else:
+                return
+        else:
+            super().__call__(*args, **kwargs)
+
+    def reduce(self, *args, **kwargs):
+        raise NotImplementedError
+
+
+class MergeDriver(BaseReduceDriver):
+    """Merge the routes information from multiple envelopes into one """
+
+    def reduce(self, *args, **kwargs):
         # take unique routes by service identity
         routes = {(r.pod + r.pod_id): r for m in self.prev_msgs for r in m.envelope.routes}
         self.msg.envelope.ClearField('routes')
@@ -39,7 +94,7 @@ class MergeTopKDriver(MergeDriver):
         super().__init__(*args, **kwargs)
         self.level = level
 
-    def __call__(self, *args, **kwargs):
+    def reduce(self, *args, **kwargs):
         if self.level == 'chunk':
             for _d_id, _doc in enumerate(self.req.docs):
                 for _c_id, _chunk in enumerate(_doc.chunks):
@@ -65,7 +120,7 @@ class MergeTopKDriver(MergeDriver):
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
 
-        super().__call__(*args, **kwargs)
+        super().reduce(*args, **kwargs)
 
 
 class ChunkMergeTopKDriver(MergeTopKDriver):

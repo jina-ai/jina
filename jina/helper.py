@@ -489,11 +489,11 @@ def valid_yaml_path(path: str, to_stream: bool = False):
         return io.StringIO(path)
     elif path.startswith('- !'):
         # possible driver YAML content, right now it is only used for debugging
-        with open(resource_filename('jina', '/'.join(('resources', 'executors.base.yml')))) as fp:
+        with open(resource_filename('jina', '/'.join(
+                ('resources', 'executors.base.all.yml' if path.startswith('- !!') else 'executors.base.yml')))) as fp:
             _defaults = fp.read()
-        path = path.replace('\n', '\n        ')  # for indent, I know, its nasty
+        path = path.replace('- !!', '- !').replace('|', '\n        with: ')  # for indent, I know, its nasty
         path = _defaults.replace('*', path)
-        print(path)
         return io.StringIO(path)
     elif path.isidentifier():
         # possible class name

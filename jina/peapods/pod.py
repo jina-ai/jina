@@ -33,6 +33,9 @@ class BasePod:
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
+        if hasattr(args, 'polling') and args.polling.is_push:
+            # ONLY reset when it is push
+            args.reducing_yaml_path = '_forward'
         self._args = args
         self.peas_args = self._parse_args(args)
 
@@ -76,8 +79,7 @@ class BasePod:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
-            peas_args['tail'] = _copy_to_tail_args(args,
-                                                   args.replicas if args.polling.is_block else 1)
+            peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
             self.is_head_router = True
             self.is_tail_router = True
@@ -322,6 +324,8 @@ class FlowPod(BasePod):
             first.tail_args.port_out = second.head_args.port_in
         elif first_socket_type == SocketType.PUB_BIND:
             first.tail_args.socket_out = SocketType.PUB_BIND
+            first.tail_args.num_part += 1
+            first.tail_args.yaml_path = '- !!PublishDriver | {num_part: %d}' % first.tail_args.num_part
             second.head_args.socket_in = SocketType.SUB_CONNECT
 
             first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
@@ -353,7 +357,6 @@ class FlowPod(BasePod):
             # keep the port_out and socket_out of next_arts
             # only reset its input
             pod.head_args = _copy_to_tail_args(pod.head_args,
-                                               self._args.replicas if self._args.polling.is_block else 1,
                                                as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, self.head_args, pod.head_args)
@@ -402,7 +405,8 @@ def _set_peas_args(args, head_args, tail_args):
 
 
 def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
-    """Set the outgoing args of the head router"""
+    """Set the outgoing args of the head router
+    """
 
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = random_port()
@@ -419,7 +423,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     else:
         _head_args.socket_out = SocketType.PUB_BIND
         if as_router:
-            _head_args.yaml_path = '_forward'
+            _head_args.yaml_path = '- !!PublishDriver |  {num_part: %d}' % args.replicas
 
     if as_router:
         _head_args.name = args.name or ''
@@ -430,9 +434,9 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     return _head_args
 
 
-def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
-    """Set the incoming args of the tail router"""
-
+def _copy_to_tail_args(args, as_router: bool = True):
+    """Set the incoming args of the tail router
+    """
     _tail_args = copy.deepcopy(args)
     _tail_args.port_in = random_port()
     _tail_args.port_ctrl = random_port()
@@ -441,7 +445,6 @@ def _copy_to_tail_args(args, num_part: int, as_router: bool = True):
         _tail_args.yaml_path = args.reducing_yaml_path
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
-    _tail_args.num_part = num_part
 
     # head and tail never run in docker, reset their image to None
     _tail_args.image = None

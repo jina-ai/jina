@@ -38,7 +38,8 @@ class GrpcClient:
         )
         self.logger.debug('waiting channel to be ready...')
         try:
-            grpc.channel_ready_future(self._channel).result(timeout=args.timeout_ready / 1000)
+            grpc.channel_ready_future(self._channel).result(
+                timeout=(args.timeout_ready / 1000) if args.timeout_ready > 0 else None)
         except grpc.FutureTimeoutError:
             self.logger.critical('can not connect to the server at %s:%d after %d ms, please double check the '
                                  'ip and grpc port number of the server'
