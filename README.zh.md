@@ -197,6 +197,14 @@ jina hello-world --help
 
 ## 开始
 
+### 从模板开始一个项目
+
+```bash
+pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
+``` 
+
+### 教程
+
 <table>
   <tr>
       <td width="30%">
