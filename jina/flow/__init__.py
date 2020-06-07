@@ -322,7 +322,7 @@ class Flow:
 
         return op_flow
 
-    def build(self, inplace: bool = True) -> 'Flow':
+    def build(self, copy_flow: bool = False) -> 'Flow':
         """
         Build the current flow and make it ready to use
 
@@ -331,11 +331,11 @@ class Flow:
             No need to manually call it since 0.0.8. When using flow with the
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
-        :param inplace: if set to ``False`` then return the copy of the current flow.
+        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :return: the current flow (by default)
 
         .. note::
-            ``inplace=False`` is recommended if you are building the same flow multiple times in a row. e.g.
+            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
 
             .. highlight:: python
             .. code-block:: python
@@ -344,12 +344,12 @@ class Flow:
                 with f:
                     f.index()
 
-                with f.build(inplace=False) as fl:
+                with f.build(copy_flow=True) as fl:
                     fl.search()
 
         """
 
-        op_flow = self if inplace else copy.deepcopy(self)
+        op_flow = copy.deepcopy(self) if copy_flow else self
 
         _pod_edges = set()
 
@@ -457,7 +457,7 @@ class Flow:
         """
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            self.build(inplace=True)
+            self.build(copy_flow=False)
 
         if self.args.logserver:
             self.logger.info('start logserver...')
