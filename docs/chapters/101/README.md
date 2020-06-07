@@ -29,6 +29,8 @@
   <a href="README.de.md">Deutsch</a> •
   <a href="README.ru.md">Русский язык</a> •
   <a href="README.zh.md">中文</a>
+  <a href="README.ar.md">عربية</a>
+
     </td>
     <td>
       <img src="img/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
@@ -45,7 +47,7 @@
 
 In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc. A Document is also the input query when searching.
 
-**A Chunk is a small semantic unit of a Document.** It could be a sentence, a 64x64 image patch, a 3 second video clip, a pair of coordinate and address. 
+**A Chunk is a small semantic unit of a Document.** It could be a sentence, a 64x64 image patch, a 3 second video clip, a pair of coordinate and address.
 
 In Jina, a Document is like a chocolate bar. Not only because it comes in different formats and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, and you also don’t want to grind it into powder; either way, you will lose the flavor (i.e. the semantic).
 
@@ -135,9 +137,9 @@ Pod can be run either on local host or on different computers over a network. 
 <h2 align="center">From Micro to Macro</h2>
 
 
-Jina is a happy family. You can feel the harmony when you use Jina. 
+Jina is a happy family. You can feel the harmony when you use Jina.
 
-You can design at the micro-level and scale that up to the macro-level. YAMLs becomes algorithms, threads become processes, Pods become flows. The patterns and logic always remain the same. This is the beauty of Jina. 
+You can design at the micro-level and scale that up to the macro-level. YAMLs becomes algorithms, threads become processes, Pods become flows. The patterns and logic always remain the same. This is the beauty of Jina.
 
 
 <p align="center">
