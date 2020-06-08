@@ -55,7 +55,7 @@ class GrpcClient:
         self.is_closed = False
 
     def call(self, *args, **kwargs):
-        """Calling the grpc server """
+        """Calling the gRPC server """
         raise NotImplementedError
 
     def __enter__(self):
@@ -89,7 +89,7 @@ class GrpcClient:
         return self
 
     def close(self):
-        """Gracefully shutdown the client and release all grpc-related resources """
+        """Gracefully shutdown the client and release all gRPC-related resources """
         if not self.is_closed:
             self._channel.close()
             self.logger.success(__stop_msg__)
