@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
- 
+
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true  "We fully commit to open-source")](https://jina.ai)
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-hello-world-badge.svg?raw=true  "Run Jina 'Hello, World!' without installing anything")](#jina-hello-world-)
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true  "Jina is licensed under Apache-2.0")](#license)
@@ -59,7 +59,7 @@ Want to build a search system backed by deep learning? You come to the right pla
 
 🧩 **Powerful Extensions, Simple Integration** - New AI model for Jina? Simply write a Python script or build a Docker image. Plugging in new algorithms has never been that easy, as it should be. [Check out Jina Hub (beta)](https://github.com/jina-ai/jina-hub) and find more extensions on different use-cases contributed by the community.
 
-Jina is an open-source project. [We are hiring](https://jobs.jina.ai) AI engineers, full-stack developers, evangelists, PMs to build the next neural search eco-system in open-source. 
+Jina is an open-source project. [We are hiring](https://jobs.jina.ai) AI engineers, full-stack developers, evangelists, PMs to build the next neural search eco-system in open-source.
 
 ## Table of Contents
 
@@ -83,7 +83,7 @@ Jina is an open-source project. [We are hiring](https://jobs.jina.ai) AI enginee
 ## Install
 
 #### Install from PyPi
- 
+
 On Linux/MacOS with Python >= 3.7 installed, simply run this command in your terminal:
 
 ```bash
@@ -92,9 +92,9 @@ pip install jina
 
 To install Jina with extra dependencies, or install it on Raspberry Pi [please refer to the documentations](https://docs.jina.ai).
 
-#### ...or Run with Docker Container 
+#### ...or Run with Docker Container
 
-We provide a universal Docker image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6), simply do: 
+We provide a universal Docker image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6), simply do:
 
 ```bash
 docker run jinaai/jina --help
@@ -138,9 +138,9 @@ And the implementation behind? As simple as it should be:
 <td> <a href="https://github.com/jina-ai/dashboard">Flow in Dashboard</a></td>
 </tr>
 <tr>
-<td> 
+<td>
 
-  
+
 ```python
 from jina.flow import Flow
 
@@ -226,6 +226,7 @@ pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.de.md">Deutsch</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ru.md">Русский язык</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.zh.md">中文</a>
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ar.md">عربية</a>
     </td>
 
   </tr>
@@ -340,9 +341,9 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 </tr>
 
 </table>
-  
 
-## Documentation 
+
+## Documentation
 
 <a href="https://docs.jina.ai/">
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
@@ -357,7 +358,7 @@ The best way to learn Jina in depth is to read our documentation. Documentation 
 - [Environment variables used in Jina](https://docs.jina.ai/chapters/envs.html)
 - ... [and more](https://docs.jina.ai/index.html)
 
-Are you a "Doc"-star? Affirmative? Join us! We welcome all kinds of improvements on the documentation. 
+Are you a "Doc"-star? Affirmative? Join us! We welcome all kinds of improvements on the documentation.
 
 [Documentations for the older versions are archived in here](https://github.com/jina-ai/docs/releases).
 
