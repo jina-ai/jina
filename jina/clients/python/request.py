@@ -85,12 +85,12 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
 
 
 def index(*args, **kwargs):
-    """Generate indexing request"""
+    """Generate a indexing request"""
     yield from _generate(*args, **kwargs)
 
 
 def train(*args, **kwargs):
-    """Generate training request """
+    """Generate a training request """
     yield from _generate(*args, **kwargs)
     req = jina_pb2.Request()
     req.request_id = 1
@@ -99,5 +99,5 @@ def train(*args, **kwargs):
 
 
 def search(*args, **kwargs):
-    """Generate search request """
+    """Generate a searching request """
     yield from _generate(*args, **kwargs)

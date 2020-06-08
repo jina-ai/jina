@@ -30,13 +30,13 @@ class PyClient(GrpcClient):
         from jina.clients import py_client
 
         # to test connectivity
-        py_client(port_grpc='192.168.1.100', host=55555).dry_run()
+        py_client(host='192.168.1.100', port_grpc=55555).dry_run()
 
         # to search
-        py_client(port_grpc='192.168.1.100', host=55555).search(input_fn, output_fn)
+        py_client(host='192.168.1.100', port_grpc=55555).search(input_fn, output_fn)
 
         # to index
-        py_client(port_grpc='192.168.1.100', host=55555).index(input_fn, output_fn)
+        py_client(host='192.168.1.100', port_grpc=55555).index(input_fn, output_fn)
 
     """
 
@@ -44,8 +44,7 @@ class PyClient(GrpcClient):
         """
 
         :param args: args provided by the CLI
-        :param delay: if ``True`` then the client starts sending request after initializing, otherwise one needs to set
-            the :attr:`input_fn` before using :func:`start` or :func:`call`
+
         """
         super().__init__(args)
         self._mode = self.args.mode
@@ -68,7 +67,6 @@ class PyClient(GrpcClient):
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
-        :param input_type: if the input data is in protobuf Document format, or in raw bytes, or data uri
         """
         if hasattr(input_fn, '__call__'):
             input_fn = input_fn()
@@ -141,7 +139,7 @@ class PyClient(GrpcClient):
     @property
     def input_fn(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]:
         """ An iterator of bytes, each element represents a document's raw content,
-        i.e. ``input_fn`` defined int the protobuf
+        i.e. ``input_fn`` defined in the protobuf
         """
         if self._input_fn is not None:
             return self._input_fn
@@ -158,7 +156,7 @@ class PyClient(GrpcClient):
             self._input_fn = bytes_gen
 
     def dry_run(self) -> bool:
-        """Send a DRYRUN request to the server, passing through all pods on the server
+        """Send a DRYRUN request to the server, passing through all pods on the server,
         useful for testing connectivity and debugging
 
         :return: if dry run is successful or not
