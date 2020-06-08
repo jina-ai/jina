@@ -206,7 +206,9 @@ jina hello-world --help
 
 ```bash
 pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
-``` 
+```
+
+With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates in one-line. The command above will create a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
 ### Tutorials
 
