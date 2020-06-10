@@ -40,8 +40,7 @@ class ImageReader(BaseSegmenter):
             raw_img = Image.open(uri)
         else:
             raise ValueError('no value found in "buffer" and "uri"')
-        if raw_img.mode != 'RGB':
-            raw_img = raw_img.convert('RGB')
+        raw_img = raw_img.convert('RGB')
         img = np.array(raw_img).astype('float32')
         if self.channel_axis != -1:
             img = np.moveaxis(img, -1, self.channel_axis)

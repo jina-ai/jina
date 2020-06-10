@@ -141,6 +141,7 @@ class URI2Buffer(BaseConvertDriver):
         super().__init__(target, *args, **kwargs)
 
     def convert(self, d):
+        print(d)
         if urllib.parse.urlparse(d.uri).scheme in {'http', 'https', 'data'}:
             page = urllib.request.Request(d.uri, headers={'User-Agent': 'Mozilla/5.0'})
             tmp = urllib.request.urlopen(page)

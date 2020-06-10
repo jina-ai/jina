@@ -156,6 +156,7 @@ def guess_mime(uri):
     m_type = mimetypes.guess_type(uri)[0]
     # guess when uri points to a remote file
     if not m_type and urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
-        tmp = urllib.request.urlopen(uri)
+        page = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
+        tmp = urllib.request.urlopen(page)
         m_type = tmp.info().get_content_type()
     return m_type
