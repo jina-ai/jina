@@ -39,4 +39,4 @@ lz4:                        optimization, devel, production, network
 gevent:                     http, devel
 python-magic:               http, devel
 librosa:                    audio
-fairseq:                    audio, nlp
+fairseq:                    audio, nlp, py37
