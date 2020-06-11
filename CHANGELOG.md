@@ -35,6 +35,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -1432,4 +1433,32 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```25d5797f```](https://github.com/jina-ai/jina/commit/25d5797fa995bee3966686bcd34434d0a87cc342)] __-__ release 0.2.0 (*Han Xiao*)
  - [[```ff63c7fc```](https://github.com/jina-ai/jina/commit/ff63c7fc18019332207540f397daf5b950dc106d)] __-__ __version__: bumping version to 0.1.15 (*Jina Dev Bot*)
  - [[```97403ab2```](https://github.com/jina-ai/jina/commit/97403ab2847f8670b8c888a553a369f057563b14)] __-__ hotfix for pokedex (*Han Xiao*)
+
+## Release Note (`0.2.5`)
+
+> Release time: 2020-06-11 20:14:36
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```52d0bbe7```](https://github.com/jina-ai/jina/commit/52d0bbe73ff1bc652211ffd1e88f4818b0f32388)] __-__ __indexer__: add binary KVIndexer with better perf (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```86a625d7```](https://github.com/jina-ai/jina/commit/86a625d7cf1814abdb180326d0b059609f3bc27c)] __-__ __leveldb__: fix to new basepbindexer (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```2aa59bd4```](https://github.com/jina-ai/jina/commit/2aa59bd4693d97f64fa30ecf86a34c91c92ddbdb)] __-__ add explain on JINA_BINARY_DELIMITER (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```2ff9bbad```](https://github.com/jina-ai/jina/commit/2ff9bbad79c485aaa46061d05e5be8500c0520a6)] __-__ hotfix improved chunkpbindexer (*Han Xiao*)
+ - [[```352434dd```](https://github.com/jina-ai/jina/commit/352434dd2ffd6db684c23b0c9572a6008b5b2bc1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f43d7563```](https://github.com/jina-ai/jina/commit/f43d7563c7488e5e471328e58e368388892e3d68)] __-__ __version__: bumping version to 0.2.5 (*Jina Dev Bot*)
 
