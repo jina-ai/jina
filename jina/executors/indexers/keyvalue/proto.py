@@ -106,6 +106,8 @@ class BinaryPbIndexer(BasePbIndexer):
     def get_query_handler(self):
         with gzip.open(self.index_abspath, 'rb') as fp:
             tmp = fp.read()
+        if tmp.endswith(__binary_delimiter__):
+            tmp = tmp[:-len(__binary_delimiter__)]
 
         r = {}
         for l in tmp.split(__binary_delimiter__):

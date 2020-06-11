@@ -2,6 +2,7 @@ import time
 import unittest
 
 import requests
+
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
@@ -172,6 +173,10 @@ class MyTestCase(JinaTestCase):
         time.sleep(2)
 
     def test_shards_insufficient_data(self):
+        """THIS IS SUPER IMPORTANT FOR TESTING SHARDS
+
+        IF THIS FAILED, DONT IGNORE IT, DEBUG IT
+        """
         index_docs = 3
         replicas = 4
 

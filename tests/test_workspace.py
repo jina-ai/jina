@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 from jina.executors import BaseExecutor
+from jina.proto import jina_pb2
 from tests import JinaTestCase
 
 
@@ -61,7 +62,7 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(a[0], a['test_meta'])
             self.assertFalse(a[0].is_updated)
             self.assertFalse(a.is_updated)
-            a[0].add(j)
+            a[0].add([jina_pb2.Chunk()])
             self.assertTrue(a[0].is_updated)
             self.assertTrue(a.is_updated)
             self.assertFalse(a[1].is_updated)
