@@ -145,3 +145,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
     If set, then all gpu-related tests will be conducted in the unit test.
 
     :default: unset
+
+.. confval:: JINA_BINARY_DELIMITER
+
+    The delimiter used in :class:`BasePbIndexer`. Often use a delimiter phrase that you can determine does not occur. (Think of the mime message boundaries)
