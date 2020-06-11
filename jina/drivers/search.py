@@ -59,7 +59,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _update_topk_docs(self, d):
         hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
         for tk in d.topk_results:
-            r = self.exec_fn(f'd{tk.match_doc.doc_id}')
+            r = self.exec_fn(tk.match_doc.doc_id)
             if r:
                 sr = ScoredResult()
                 sr.score.CopyFrom(tk.score)
@@ -71,7 +71,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _update_topk_chunks(self, c):
         hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
         for tk in c.topk_results:
-            r = self.exec_fn(f'c{tk.match_chunk.chunk_id}')
+            r = self.exec_fn(tk.match_chunk.chunk_id)
             if r:
                 sr = ScoredResult()
                 sr.score.CopyFrom(tk.score)

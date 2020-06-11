@@ -59,16 +59,11 @@ class KVIndexDriver(BaseIndexDriver):
         self.level = level
 
     def __call__(self, *args, **kwargs):
-        from google.protobuf.json_format import MessageToJson
         if self.level == 'doc':
-            content = {f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs}
+            content = self.req.docs
         elif self.level == 'chunk':
-            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks if
-                       (not self.req.filter_by or c.field_name in self.req.filter_by)}
-        elif self.level == 'all':
-            content = {f'c{c.chunk_id}': MessageToJson(c) for d in self.req.docs for c in d.chunks if
-                       (not self.req.filter_by or c.field_name in self.req.filter_by)}
-            content.update({f'd{d.doc_id}': MessageToJson(d) for d in self.req.docs})
+            content = [c for d in self.req.docs for c in d.chunks if
+                       (not self.req.filter_by or c.field_name in self.req.filter_by)]
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
         if content:

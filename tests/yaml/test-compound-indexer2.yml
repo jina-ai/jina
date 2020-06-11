@@ -3,6 +3,7 @@ components:
   - !BasePbIndexer
     with:
       index_filename: metaproto
+      level: chunk
     metas:
       name: test_meta
   - !NumpyIndexer

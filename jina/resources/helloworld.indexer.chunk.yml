@@ -6,7 +6,7 @@ components:
     metas:
       name: vecidx  # a customized name
       workspace: $HW_WORKDIR
-  - !BasePbIndexer
+  - !ChunkPbIndexer
     with:
       index_filename: chunk.gz
     metas:

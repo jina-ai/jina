@@ -61,11 +61,13 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_TEST_PRETRAINED',
                 'JINA_VCS_VERSION',
                 'JINA_VERSION',
-                'JINA_WARN_UNNAMED',)
+                'JINA_WARN_UNNAMED',
+                'JINA_BINARY_DELIMITER')
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
+__binary_delimiter__ = os.environ.get('JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57').encode()
 
 JINA_GLOBAL = SimpleNamespace()
 JINA_GLOBAL.imported = SimpleNamespace()
