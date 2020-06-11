@@ -48,7 +48,7 @@ class DummyIndexer2(NumpyIndexer):
     # the add() function is simply copied from NumpyIndexer
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         if len(vectors.shape) != 2:
-            raise ValueError('vectors shape %s is not valid, expecting "vectors" to have rank of 2' % vectors.shape)
+            raise ValueError(f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2')
 
         if not self.num_dim:
             self.num_dim = vectors.shape[1]

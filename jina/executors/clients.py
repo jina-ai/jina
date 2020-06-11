@@ -79,7 +79,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
             'Regression': ('regression_pb2', 'RegressionRequest')
         }
         if method_name not in self._method_name_dict:
-            raise ValueError('unknown method name: {}'.format(self.method_name))
+            raise ValueError(f'unknown method name: {self.method_name}')
         self.method_name = method_name
         self.module_name, self.request_name = self._method_name_dict[self.method_name]
 
@@ -88,7 +88,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         Initialize the channel and stub for the gRPC client
 
         """
-        self._channel = grpc.insecure_channel('{}:{}'.format(self.host, self.port))
+        self._channel = grpc.insecure_channel(f'{self.host}:{self.port}')
         from tensorflow_serving.apis import prediction_service_pb2_grpc
         self._stub = prediction_service_pb2_grpc.PredictionServiceStub(self._channel)
 
@@ -117,7 +117,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         """
         _response = getattr(self._stub, self.method_name).future(request, self.timeout)
         if _response.exception():
-            self.logger.error('exception raised in encoding: {}'.format(_response.exception))
+            self.logger.error(f'exception raised in encoding: {_response.exception}')
             raise ValueError
         return self.get_output(_response)
 

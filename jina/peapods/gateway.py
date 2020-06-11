@@ -53,7 +53,7 @@ class GatewayPea:
                      ('grpc.max_receive_message_length', args.max_message_size)])
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
-        self._bind_address = '{0}:{1}'.format(args.host, args.port_grpc)
+        self._bind_address = f'{args.host}:{args.port_grpc}'
         self._server.add_insecure_port(self._bind_address)
 
     def __enter__(self):
@@ -61,7 +61,7 @@ class GatewayPea:
 
     def start(self):
         self._server.start()
-        self.logger.success('gateway is listening at: %s' % self._bind_address)
+        self.logger.success(f'gateway is listening at: {self._bind_address}')
         self._stop_event.clear()
         self.is_ready.set()
         return self

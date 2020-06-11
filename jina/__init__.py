@@ -99,7 +99,7 @@ def import_classes(namespace: str, targets=None,
         if import_once and JINA_GLOBAL.imported.drivers:
             return
     else:
-        raise TypeError('namespace: %s is unrecognized' % namespace)
+        raise TypeError(f'namespace: {namespace} is unrecognized')
 
     from setuptools import find_packages
     import pkgutil
@@ -135,7 +135,7 @@ def import_classes(namespace: str, targets=None,
     elif targets is None:
         targets = {}
     else:
-        raise TypeError('target must be a set, but received %r' % targets)
+        raise TypeError(f'target must be a set, but received {targets!r}')
 
     depend_tree = {}
     import importlib
@@ -176,7 +176,7 @@ def import_classes(namespace: str, targets=None,
             bad_imports.append(m)
 
     if targets:
-        raise ImportError('%s can not be found in jina' % targets)
+        raise ImportError(f'{targets} can not be found in jina')
 
     if show_import_table:
         from .helper import print_load_table, print_dep_tree_rst
@@ -184,7 +184,7 @@ def import_classes(namespace: str, targets=None,
     else:
         if bad_imports:
             from .logging import default_logger
-            default_logger.error('theses modules or classes can not be imported %s' % bad_imports)
+            default_logger.error(f'theses modules or classes can not be imported {bad_imports}')
 
     if namespace == 'jina.executors':
         JINA_GLOBAL.imported.executors = True
@@ -228,19 +228,19 @@ def raise_nofile(nofile_atleast=4096):
         if hard < soft:
             hard = soft
 
-        default_logger.debug('setting soft & hard ulimit -n {} {}'.format(soft, hard))
+        default_logger.debug(f'setting soft & hard ulimit -n {soft} {hard}')
         try:
             res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
         except (ValueError, res.error):
             try:
                 hard = soft
-                default_logger.warning('trouble with max limit, retrying with soft,hard {},{}'.format(soft, hard))
+                default_logger.warning(f'trouble with max limit, retrying with soft,hard {soft},{hard}')
                 res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
             except Exception:
                 default_logger.warning('failed to set ulimit, giving up')
                 soft, hard = res.getrlimit(res.RLIMIT_NOFILE)
 
-    default_logger.debug('ulimit -n soft,hard: {} {}'.format(soft, hard))
+    default_logger.debug(f'ulimit -n soft,hard: {soft} {hard}')
     return soft, hard
 
 

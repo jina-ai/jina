@@ -175,9 +175,9 @@ def set_pea_parser(parser=None):
     gp2.add_argument('--port-out', type=int, default=random_port(),
                      help='port for output data, default a random port between [49152, 65535]')
     gp2.add_argument('--host-in', type=str, default=__default_host__,
-                     help='host address for input, by default it is %s' % __default_host__)
+                     help=f'host address for input, by default it is {__default_host__}')
     gp2.add_argument('--host-out', type=str, default=__default_host__,
-                     help='host address for output, by default it is %s' % __default_host__)
+                     help=f'host address for output, by default it is {__default_host__}')
     gp2.add_argument('--socket-in', type=SocketType.from_string, choices=list(SocketType),
                      default=SocketType.PULL_BIND,
                      help='socket type for input port')
@@ -339,7 +339,7 @@ def _set_grpc_parser(parser=None):
     from .. import __default_host__
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
-                     help='host address of the pea/gateway, by default it is %s.' % __default_host__)
+                     help=f'host address of the pea/gateway, by default it is {__default_host__}.')
     gp1.add_argument('--port-grpc',
                      type=int,
                      default=random_port(),

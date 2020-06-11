@@ -32,7 +32,7 @@ class AudioSegmenter(BaseSegmenter):
                 signal[1, ], frame_length=self.frame_length, hop_length=self.hop_length, axis=0)
             frames = np.concatenate((left_frames, right_frames), axis=0)
         else:
-            raise ValueError('audio signal must be 1D or 2D array: {}'.format(signal))
+            raise ValueError(f'audio signal must be 1D or 2D array: {signal}')
         return frames
 
 

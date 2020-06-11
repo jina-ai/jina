@@ -55,7 +55,7 @@ def as_ndarray(func: Callable, dtype=np.float32):
         if r_type in {'ndarray', 'EagerTensor', 'Tensor', 'list'}:
             return np.array(r, dtype)
         else:
-            raise TypeError('unrecognized type %s: %s' % (r_type, type(r)))
+            raise TypeError(f'unrecognized type {r_type}: {type(r)}')
 
     return arg_wrapper
 
@@ -70,9 +70,9 @@ def require_train(func: Callable):
             if self.is_trained:
                 return func(self, *args, **kwargs)
             else:
-                raise RuntimeError('training is required before calling "%s"' % func.__name__)
+                raise RuntimeError(f'training is required before calling "{func.__name__}"')
         else:
-            raise AttributeError('%r has no attribute "is_trained"' % self)
+            raise AttributeError(f'{self!r} has no attribute "is_trained"')
 
     return arg_wrapper
 

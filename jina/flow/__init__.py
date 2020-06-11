@@ -55,7 +55,7 @@ def build_required(required_level: 'FlowBuildLevel'):
                         'build_level check failed for %r, required level: %s, actual level: %s' % (
                             func, required_level, self._build_level))
             else:
-                raise AttributeError('%r has no attribute "_build_level"' % self)
+                raise AttributeError(f'{self!r} has no attribute "_build_level"')
 
         return arg_wrapper
 
@@ -231,7 +231,7 @@ class Flow:
                 if s == pod_name:
                     raise FlowTopologyError('the income/output of a pod can not be itself')
         else:
-            raise ValueError('endpoint=%s is not parsable' % endpoint)
+            raise ValueError(f'endpoint={endpoint} is not parsable')
         return set(endpoint)
 
     def set_last_pod(self, name: str, copy_flow: bool = True) -> 'Flow':
@@ -245,7 +245,7 @@ class Flow:
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         if name not in op_flow._pod_nodes:
-            raise FlowMissingPodError('%s can not be found in this Flow' % name)
+            raise FlowMissingPodError(f'{name} can not be found in this Flow')
 
         if op_flow._last_changed_pod and name == op_flow._last_changed_pod[-1]:
             pass
@@ -302,7 +302,7 @@ class Flow:
         pod_name = kwargs.get('name', None)
 
         if pod_name in op_flow._pod_nodes:
-            raise FlowTopologyError('name: %s is used in this Flow already!' % pod_name)
+            raise FlowTopologyError(f'name: {pod_name} is used in this Flow already!')
 
         if not pod_name:
             pod_name = '%s%d' % ('pod', op_flow._pod_name_counter)
@@ -310,7 +310,7 @@ class Flow:
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name
-            raise ValueError('name: %s is invalid, please follow the python variable name conventions' % pod_name)
+            raise ValueError(f'name: {pod_name} is invalid, please follow the python variable name conventions')
 
         needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
 
@@ -360,8 +360,8 @@ class Flow:
         for k, p in op_flow._pod_nodes.items():
             for s in p.needs:
                 if s not in op_flow._pod_nodes:
-                    raise FlowMissingPodError('%s is not in this flow, misspelled name?' % s)
-                _pod_edges.add('%s-%s' % (s, k))
+                    raise FlowMissingPodError(f'{s} is not in this flow, misspelled name?')
+                _pod_edges.add(f'{s}-{k}')
 
         for k in _pod_edges:
             s_name, e_name = k.split('-')
@@ -471,7 +471,7 @@ class Flow:
             self.num_pods,
             self.num_peas))
 
-        self.logger.success('flow is now ready for use, current build_level is %s' % self._build_level)
+        self.logger.success(f'flow is now ready for use, current build_level is {self._build_level}')
 
         return self
 
@@ -494,7 +494,7 @@ class Flow:
         self._build_level = FlowBuildLevel.EMPTY
         # time.sleep(1)  # sleep for a while until all resources are safely closed
         self.logger.success(
-            'flow is closed and all resources should be released already, current build level is %s' % self._build_level)
+            f'flow is closed and all resources should be released already, current build level is {self._build_level}')
 
     def __eq__(self, other: 'Flow'):
         """

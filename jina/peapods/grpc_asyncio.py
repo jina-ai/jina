@@ -73,7 +73,7 @@ async def _call_behavior(rpc_event, state, behavior, argument, request_deseriali
     except Exception as e:  # pylint: disable=broad-except
         with state.condition:
             if e not in state.rpc_errors:
-                details = 'Exception calling application: {}'.format(e)
+                details = f'Exception calling application: {e}'
                 _server.logging.exception(details)
                 _server._abort(state, rpc_event.operation_call,
                                _server.cygrpc.StatusCode.unknown, _server._common.encode(details))
@@ -88,7 +88,7 @@ async def _take_response_from_response_iterator(rpc_event, state, response_itera
     except Exception as e:  # pylint: disable=broad-except
         with state.condition:
             if e not in state.rpc_errors:
-                details = 'Exception iterating responses: {}'.format(e)
+                details = f'Exception iterating responses: {e}'
                 _server.logging.exception(details)
                 _server._abort(state, rpc_event.operation_call,
                                _server.cygrpc.StatusCode.unknown, _server._common.encode(details))

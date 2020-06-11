@@ -296,7 +296,7 @@ class FlowPod(BasePod):
         else:
             cmd = 'jina pod'
 
-        return '%s %s' % (cmd, ' '.join(self.cli_args))
+        return f'{cmd} {" ".join(self.cli_args)}'
 
     @staticmethod
     def connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'):
@@ -333,7 +333,7 @@ class FlowPod(BasePod):
                                                      connect_args=second.head_args)  # the hostname of s_pod
             second.head_args.port_in = first.tail_args.port_out
         else:
-            raise NotImplementedError('%r is not supported here' % first_socket_type)
+            raise NotImplementedError(f'{first_socket_type!r} is not supported here')
 
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """

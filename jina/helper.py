@@ -145,7 +145,7 @@ def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size
                 return
             yield chunk
     else:
-        raise TypeError('unsupported type: %s' % type(data))
+        raise TypeError(f'unsupported type: {type(data)}')
 
 
 def _get_yaml():
@@ -184,11 +184,11 @@ def countdown(t: int, logger=None, reason: str = 'I am blocking this thread'):
         sys.stdout.flush()
     while t > 0:
         t -= 1
-        msg = '⏳ %ss left: %s' % (colored('%3d' % t, 'yellow'), reason)
+        msg = f'⏳ {colored("%3d" % t, "yellow")}s left: {reason}'
         if logger:
             logger.info(msg)
         else:
-            sys.stdout.write('\r%s' % msg)
+            sys.stdout.write(f'\r{msg}')
             sys.stdout.flush()
         time.sleep(1)
     sys.stdout.write('\n')
@@ -206,11 +206,11 @@ def load_contrib_module():
         if contrib:
             from .logging import default_logger
             default_logger.info(
-                'find a value in $JINA_CONTRIB_MODULE=%s, will load them as external modules' % contrib)
+                f'find a value in $JINA_CONTRIB_MODULE={contrib}, will load them as external modules')
             for p in contrib.split(','):
                 m = PathImporter.add_modules(p)
                 modules.append(m)
-                default_logger.info('successfully registered %s class, you can now use it via yaml.' % m)
+                default_logger.info(f'successfully registered {m} class, you can now use it via yaml.')
         return modules
 
 
@@ -324,7 +324,7 @@ def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id):
 
 
 def get_random_identity() -> str:
-    return '%010x' % random.getrandbits(40)
+    return f'{random.getrandbits(40):010x}'
 
 
 yaml = _get_yaml()
@@ -461,11 +461,11 @@ def kwargs2list(kwargs: Dict):
         if v is not None:
             if isinstance(v, bool):
                 if v:
-                    args.append('--%s' % k)
+                    args.append(f'--{k}')
             elif isinstance(v, list):  # for nargs
-                args.extend(['--%s' % k, *(str(vv) for vv in v)])
+                args.extend([f'--{k}', *(str(vv) for vv in v)])
             else:
-                args.extend(['--%s' % k, str(v)])
+                args.extend([f'--{k}', str(v)])
     return args
 
 

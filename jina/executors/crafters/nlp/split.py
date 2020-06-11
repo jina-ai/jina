@@ -122,8 +122,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
                     self.min_substring_len, self.window_size))
         if self.window_size <= 0:
             self.logger.warning(
-                'the window_size (={}) should be larger than zero'.format(
-                    self.window_size))
+                f'the window_size (={self.window_size}) should be larger than zero')
         if self.step_size > self.window_size:
             self.logger.warning(
                 'the step_size (={}) should not be larger than the window_size (={})'.format(

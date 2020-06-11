@@ -36,10 +36,10 @@ class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):
             import urllib.request
             download_path, *_ = urllib.request.urlretrieve(self.raw_model_path)
             self.raw_model_path = download_path
-            self.logger.info('download the model at {}'.format(self.raw_model_path))
+            self.logger.info(f'download the model at {self.raw_model_path}')
         if not os.path.exists(self.tmp_model_path):
             self._append_outputs(self.raw_model_path, self.outputs_name, self.tmp_model_path)
-            self.logger.info('save the model with outputs [{}] at {}'.format(self.outputs_name, self.tmp_model_path))
+            self.logger.info(f'save the model with outputs [{self.outputs_name}] at {self.tmp_model_path}')
         self.model = onnxruntime.InferenceSession(self.tmp_model_path, None)
         self.inputs_name = self.model.get_inputs()[0].name
         self.to_device(self.model)

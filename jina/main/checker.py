@@ -59,7 +59,7 @@ class NetworkChecker:
                     else:
                         total_success += 1
                         if args.print_response:
-                            default_logger.info('returns %s' % MessageToJson(r))
+                            default_logger.info(f'returns {MessageToJson(r)}')
                 total_time += tc.duration
                 time.sleep(1)
             if total_success < args.retries:

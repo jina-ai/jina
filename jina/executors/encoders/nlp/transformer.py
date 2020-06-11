@@ -76,13 +76,13 @@ class BaseTransformerEncoder(BaseEncoder):
             elif self.pooling_strategy == 'min':
                 output = reduce_min(_seq_output, _mask_ids_batch)
             else:
-                self.logger.error("pooling strategy not found: {}".format(self.pooling_strategy))
+                self.logger.error(f'pooling strategy not found: {self.pooling_strategy}')
                 raise NotImplementedError
         return output
 
     def __getstate__(self):
         if not os.path.exists(self.model_abspath):
-            self.logger.info("create folder for saving transformer models: {}".format(self.model_abspath))
+            self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
             os.mkdir(self.model_abspath)
         self.model.save_pretrained(self.model_abspath)
         self.tokenizer.save_pretrained(self.model_abspath)
@@ -151,7 +151,7 @@ class BaseTransformerEncoder(BaseEncoder):
             'ctrl': CTRLTokenizer
         }
         if self.model_name not in tokenizer_dict:
-            self.logger.error('{} not in our supports: {}'.format(self.model_name, ','.join(tokenizer_dict.keys())))
+            self.logger.error(f'{self.model_name} not in our supports: {",".join(tokenizer_dict.keys())}')
             raise ValueError
         _tokenizer = tokenizer_dict[self.model_name].from_pretrained(self.tmp_model_path)
         _tokenizer.padding_side = 'right'

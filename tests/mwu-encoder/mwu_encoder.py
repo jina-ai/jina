@@ -11,7 +11,7 @@ class MWUEncoder(BaseEncoder):
         self._greetings = greetings
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
-        self.logger.info('%s %s' % (self._greetings, data))
+        self.logger.info(f'{self._greetings} {data}')
         return np.random.random([data.shape[0], 3])
 
 

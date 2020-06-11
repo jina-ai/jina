@@ -33,4 +33,4 @@ def get_default_reqs(cls_mro: List[type]) -> Dict:
         except FileNotFoundError:
             pass
 
-    raise ValueError('not able to find any default settings along this chain %r' % cls_mro)
+    raise ValueError(f'not able to find any default settings along this chain {cls_mro!r}')

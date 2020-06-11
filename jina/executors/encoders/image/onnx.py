@@ -26,7 +26,7 @@ class OnnxImageEncoder(BaseOnnxEncoder):
         super().__init__(*args, **kwargs)
         self.pool_strategy = pool_strategy
         if pool_strategy not in ('mean', 'max', None):
-            raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
+            raise NotImplementedError(f'unknown pool_strategy: {self.pool_strategy}')
 
     @batching
     @as_ndarray

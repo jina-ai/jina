@@ -55,13 +55,13 @@ class FlairTextEncoder(BaseTextTorchEncoder):
                 elif model_name == 'byte-pair':
                     emb = BytePairEmbeddings(model_id)
             except ValueError:
-                self.logger.error('embedding not found: {}'.format(e))
+                self.logger.error(f'embedding not found: {e}')
                 continue
             if emb is not None:
                 embeddings_list.append(emb)
         if embeddings_list:
             self.model = DocumentPoolEmbeddings(embeddings_list, pooling=self.pooling_strategy)
-            self.logger.info('flair encoder initialized with embeddings: {}'.format(self.embeddings))
+            self.logger.info(f'flair encoder initialized with embeddings: {self.embeddings}')
         else:
             self.logger.error('flair encoder initialization failed.')
 

@@ -67,7 +67,7 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         try:
             return cls[s.upper()]
         except KeyError:
-            raise ValueError('%s is not a valid enum for %s' % (s.upper(), cls))
+            raise ValueError(f'{s.upper()} is not a valid enum for {cls}')
 
     @classmethod
     def to_yaml(cls, representer, data):
