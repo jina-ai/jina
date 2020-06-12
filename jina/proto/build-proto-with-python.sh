@@ -8,8 +8,6 @@ SRC_DIR=./
 SRC_NAME=jina.proto
 VER_FILE=../__init__.py
 
-# set up the plugin path
-
 printf "\e[1;33mgenerating protobuf and grpc python interface\e[0m\n"
 
 python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. ${SRC_NAME}
