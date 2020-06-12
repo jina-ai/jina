@@ -40,7 +40,7 @@ class ImageTorchEncoder(BaseCVTorchEncoder):
         if self.model_name is None:
             self.model_name = 'mobilenet_v2'
         if pool_strategy not in ('mean', 'max', None):
-            raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
+            raise NotImplementedError(f'unknown pool_strategy: {self.pool_strategy}')
         self.pool_strategy = pool_strategy
 
     def post_init(self):

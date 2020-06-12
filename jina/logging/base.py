@@ -109,32 +109,32 @@ class NTLogger:
     def info(self, msg: str, **kwargs):
         """log info-level message"""
         if self.log_level <= LogVerbosity.INFO:
-            sys.stdout.write('I:%s:%s' % (self.context, self._planify(msg)))
+            sys.stdout.write(f'I:{self.context}:{self._planify(msg)}')
 
     def critical(self, msg: str, **kwargs):
         """log critical-level message"""
         if self.log_level <= LogVerbosity.CRITICAL:
-            sys.stdout.write('C:%s:%s' % (self.context, self._planify(msg)))
+            sys.stdout.write(f'C:{self.context}:{self._planify(msg)}')
 
     def debug(self, msg: str, **kwargs):
         """log debug-level message"""
         if self.log_level <= LogVerbosity.DEBUG:
-            sys.stdout.write('D:%s:%s' % (self.context, self._planify(msg)))
+            sys.stdout.write(f'D:{self.context}:{self._planify(msg)}')
 
     def error(self, msg: str, **kwargs):
         """log error-level message"""
         if self.log_level <= LogVerbosity.ERROR:
-            sys.stdout.write('E:%s:%s' % (self.context, self._planify(msg)))
+            sys.stdout.write(f'E:{self.context}:{self._planify(msg)}')
 
     def warning(self, msg: str, **kwargs):
         """log warn-level message"""
         if self.log_level <= LogVerbosity.WARNING:
-            sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
+            sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
     def success(self, msg: str, **kwargs):
         """log success-level message"""
         if self.log_level <= LogVerbosity.SUCCESS:
-            sys.stdout.write('W:%s:%s' % (self.context, self._planify(msg)))
+            sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
 
 def get_logger(context: str, context_len: int = 15,
@@ -212,11 +212,11 @@ def get_logger(context: str, context_len: int = 15,
         logger.addHandler(h)
 
     if os.environ.get('JINA_LOG_FILE') == 'TXT':
-        h = logging.FileHandler('jina-%s.log' % __uptime__, delay=True)
+        h = logging.FileHandler(f'jina-{__uptime__}.log', delay=True)
         h.setFormatter(PlainFormatter(timed_fmt_str))
         logger.addHandler(h)
     elif os.environ.get('JINA_LOG_FILE') == 'JSON':
-        h = logging.FileHandler('jina-%s.json' % __uptime__, delay=True)
+        h = logging.FileHandler(f'jina-{__uptime__}.json', delay=True)
         h.setFormatter(JsonFormatter(timed_fmt_str))
         logger.addHandler(h)
 

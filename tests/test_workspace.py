@@ -13,9 +13,9 @@ class MyTestCase(JinaTestCase):
             a = BaseExecutor.load_config('yaml/test-workspace.yml', True, j)
             a.touch()
             a.save()
-            self.assertTrue(os.path.exists('%s-%s/%s.bin' % (a.name, j, a.name)))
-            self.add_tmpfile('%s-%s/%s.bin' % (a.name, j, a.name))
-            self.add_tmpfile('%s-%s' % (a.name, j))
+            self.assertTrue(os.path.exists(f'{a.name}-{j}/{a.name}.bin'))
+            self.add_tmpfile(f'{a.name}-{j}/{a.name}.bin')
+            self.add_tmpfile(f'{a.name}-{j}')
 
     def test_compound_workspace(self):
         for j in range(3):
@@ -23,13 +23,13 @@ class MyTestCase(JinaTestCase):
             for c in a.components:
                 c.touch()
                 c.save()
-                self.assertTrue(os.path.exists('%s-%s/%s.bin' % (a.name, j, c.name)))
-                self.add_tmpfile('%s-%s/%s.bin' % (a.name, j, c.name))
+                self.assertTrue(os.path.exists(f'{a.name}-{j}/{c.name}.bin'))
+                self.add_tmpfile(f'{a.name}-{j}/{c.name}.bin')
             a.touch()
             a.save()
-            self.assertTrue(os.path.exists('%s-%s/%s.bin' % (a.name, j, a.name)))
-            self.add_tmpfile('%s-%s/%s.bin' % (a.name, j, a.name))
-            self.add_tmpfile('%s-%s' % (a.name, j))
+            self.assertTrue(os.path.exists(f'{a.name}-{j}/{a.name}.bin'))
+            self.add_tmpfile(f'{a.name}-{j}/{a.name}.bin')
+            self.add_tmpfile(f'{a.name}-{j}')
 
     def test_compound_indexer(self):
         all_subspace = set()

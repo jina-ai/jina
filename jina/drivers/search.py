@@ -105,10 +105,10 @@ class VectorSearchDriver(BaseSearchDriver):
                                                                              embedding=True)
 
         if no_chunk_docs:
-            self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
+            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
 
         if bad_chunk_ids:
-            self.logger.warning('these bad chunks can not be added: %s' % bad_chunk_ids)
+            self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
 
         idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
         op_name = self.exec.__class__.__name__

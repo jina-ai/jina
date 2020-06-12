@@ -132,9 +132,9 @@ class BasePea(metaclass=PeaMeta):
             if args.name:
                 self.name = args.name
             if args.role == PeaRoleType.HEAD:
-                self.name = '%s-head' % self.name
+                self.name = f'{self.name}-head'
             elif args.role == PeaRoleType.TAIL:
-                self.name = '%s-tail' % self.name
+                self.name = f'{self.name}-tail'
             elif args.role == PeaRoleType.REPLICA:
                 self.name = '%s-%d' % (self.name, args.replica_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
@@ -227,7 +227,7 @@ class BasePea(metaclass=PeaMeta):
     def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
         msg_type = msg.request.WhichOneof('body')
-        self.logger.info('received "%s" from %s' % (msg_type, routes2str(msg, flag_current=True)))
+        self.logger.info(f'received "{msg_type}" from {routes2str(msg, flag_current=True)}')
         add_route(msg.envelope, self.name, self.args.identity)
         self._request = getattr(msg.request, msg_type)
         self._message = msg
@@ -321,7 +321,7 @@ class BasePea(metaclass=PeaMeta):
         except RequestLoopEnd:
             self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
-            self.logger.error('can not start a executor from %s' % self.args.yaml_path)
+            self.logger.error(f'can not start a executor from {self.args.yaml_path}')
         except MemoryOverHighWatermark:
             self.logger.error(
                 'memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
@@ -337,7 +337,7 @@ class BasePea(metaclass=PeaMeta):
         except zmq.error.ZMQError:
             self.logger.error('zmqlet can not be initiated')
         except Exception as ex:
-            self.logger.error('unknown exception: %s' % str(ex), exc_info=True)
+            self.logger.error(f'unknown exception: {str(ex)}', exc_info=True)
         finally:
             self.loop_teardown()
             self.unset_ready()

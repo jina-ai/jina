@@ -22,10 +22,10 @@ class EncodeDriver(BaseEncodeDriver):
                                                                            embedding=False)
 
         if no_chunk_docs:
-            self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
+            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
 
         if bad_chunk_ids:
-            self.logger.warning('these bad chunks can not be added: %s' % bad_chunk_ids)
+            self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
 
         if chunk_pts:
             try:

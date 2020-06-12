@@ -17,7 +17,7 @@ class MyTestCase(JinaTestCase):
         def _print_messages():
             while True:
                 _event.wait()
-                print('thread: %s' % _event.record)
+                print(f'thread: {_event.record}')
                 print(type(_event.record))
                 _event.clear()
 

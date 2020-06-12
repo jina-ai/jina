@@ -117,7 +117,7 @@ def _log_stream():
     while True:
         try:
             message = __sse_queue__.get()
-            yield 'data: {}\n\n'.format(message.msg)
+            yield f'data: {message.msg}\n\n'
         except EOFError:
             yield 'LOG ENDS\n\n'
             break
@@ -127,7 +127,7 @@ def _profile_stream():
     while True:
         try:
             message = __profile_queue__.get()
-            yield 'data: {}\n\n'.format(message.msg)
+            yield f'data: {message.msg}\n\n'
         except EOFError:
             yield 'PROFILE ENDS\n\n'
             break

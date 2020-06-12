@@ -180,7 +180,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     setattr(self, k, v)
         if not getattr(self, 'name', None):
             _id = str(uuid.uuid4()).split('-')[0]
-            _name = '%s-%s' % (self.__class__.__name__, _id)
+            _name = f'{self.__class__.__name__}-{_id}'
             if self.warn_unnamed:
                 self.logger.warning(
                     'this executor is not named, i will call it "%s". '
@@ -201,7 +201,7 @@ class BaseExecutor(metaclass=ExecutorType):
                         if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
                             setattr(self, k, v)
                         else:
-                            raise ValueError('%s=%s is not expandable or badly referred' % (k, v))
+                            raise ValueError(f'{k}={v} is not expandable or badly referred')
                     else:
                         setattr(self, k, v)
 
@@ -235,7 +235,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
         The file name ends with `.bin`.
         """
-        return self.get_file_from_workspace('%s.bin' % self.name)
+        return self.get_file_from_workspace(f'{self.name}.bin')
 
     @property
     def config_abspath(self) -> str:
@@ -243,7 +243,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
         The file name ends with `.yml`.
         """
-        return self.get_file_from_workspace('%s.yml' % self.name)
+        return self.get_file_from_workspace(f'{self.name}.yml')
 
     @property
     def current_workspace(self) -> str:
@@ -335,7 +335,7 @@ class BaseExecutor(metaclass=ExecutorType):
             pickle.dump(self, fp)
             self._last_snapshot_ts = datetime.now()
 
-        self.logger.success('artifacts of this executor (%s) is persisted to %s' % (self.name, f))
+        self.logger.success(f'artifacts of this executor ({self.name}) is persisted to {f}')
         return True
 
     def save_config(self, filename: str = None) -> bool:
@@ -389,13 +389,13 @@ class BaseExecutor(metaclass=ExecutorType):
                         mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(filename), m) for m in mod]
                         PathImporter.add_modules(*mod)
                     else:
-                        raise TypeError('%r is not acceptable, only str or list are acceptable' % type(mod))
+                        raise TypeError(f'{type(mod)!r} is not acceptable, only str or list are acceptable')
 
                 tmp['metas']['separated_workspace'] = separated_workspace
                 tmp['metas']['replica_id'] = replica_id
 
             else:
-                raise EmptyExecutorYAML('%s is empty? nothing to read from there' % filename)
+                raise EmptyExecutorYAML(f'{filename} is empty? nothing to read from there')
 
             tmp = expand_dict(tmp)
             stream = StringIO()
@@ -417,7 +417,7 @@ class BaseExecutor(metaclass=ExecutorType):
             with open(filename, 'rb') as fp:
                 return pickle.load(fp)
         except EOFError:
-            raise BadPersistantFile('broken file %s can not be loaded' % filename)
+            raise BadPersistantFile(f'broken file {filename} can not be loaded')
 
     def close(self):
         """
@@ -458,7 +458,7 @@ class BaseExecutor(metaclass=ExecutorType):
         load_from_dump = False
         if dump_path:
             obj = cls.load(dump_path)
-            obj.logger.success('restore %s from %s' % (cls.__name__, dump_path))
+            obj.logger.success(f'restore {cls.__name__} from {dump_path}')
             load_from_dump = True
         else:
             cls.init_from_yaml = True
@@ -497,14 +497,14 @@ class BaseExecutor(metaclass=ExecutorType):
             if meta_config.get('separated_workspace', False) is True:
                 if 'replica_id' in meta_config and isinstance(meta_config['replica_id'], int):
                     work_dir = meta_config['replica_workspace']
-                    dump_path = os.path.join(work_dir, '%s.%s' % (meta_config['name'], 'bin'))
+                    dump_path = os.path.join(work_dir, f'{meta_config["name"]}.{"bin"}')
                     if os.path.exists(dump_path):
                         return dump_path
                 else:
                     raise BadWorkspace('separated_workspace=True but replica_id is unset or set to a bad value')
             else:
                 dump_path = os.path.join(meta_config.get('workspace', os.getcwd()),
-                                         '%s.%s' % (meta_config['name'], 'bin'))
+                                         f'{meta_config["name"]}.{"bin"}')
                 if os.path.exists(dump_path):
                     return dump_path
 

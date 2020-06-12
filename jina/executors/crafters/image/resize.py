@@ -30,7 +30,7 @@ class ImageResizer(ImageChunkCrafter):
         if isinstance(target_size, numbers.Number):
             self.output_dim = target_size
         else:
-            raise ValueError('output_dim {} should be an integer'.format(target_size))
+            raise ValueError(f'output_dim {target_size} should be an integer')
         self.how = how
 
     def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> Dict:

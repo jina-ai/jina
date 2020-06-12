@@ -36,7 +36,7 @@ class VideoPaddlehubEncoder(BaseCVPaddlehubEncoder):
         if self.outputs_name is None:
             self.outputs_name = '@HUB_tsn_kinetics400@reduce_mean_0.tmp_0'
         if pool_strategy not in ('mean', 'max', None):
-            raise NotImplementedError('unknown pool_strategy: {}'.format(self.pool_strategy))
+            raise NotImplementedError(f'unknown pool_strategy: {self.pool_strategy}')
 
     def get_inputs_and_outputs_name(self, input_dict, output_dict):
         self.inputs_name = input_dict[0].name

@@ -124,17 +124,17 @@ class Zmqlet:
                                                     use_ipc=self.ctrl_with_ipc)
             else:
                 ctrl_sock, ctrl_addr = _init_socket(ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND)
-            self.logger.debug('control over %s' % (colored(ctrl_addr, 'yellow')))
+            self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
             self.opened_socks.append(ctrl_sock)
 
             in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
                                             self.args.identity)
-            self.logger.debug('input %s:%s' % (self.args.host_in, colored(self.args.port_in, 'yellow')))
+            self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
             self.opened_socks.append(in_sock)
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
                                               self.args.identity)
-            self.logger.debug('output %s:%s' % (self.args.host_out, colored(self.args.port_out, 'yellow')))
+            self.logger.debug(f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}')
             self.opened_socks.append(out_sock)
 
             self.logger.info(
@@ -523,11 +523,11 @@ def _get_random_ipc() -> str:
     try:
         tmp = os.environ['JINA_IPC_SOCK_TMP']
         if not os.path.exists(tmp):
-            raise ValueError('This directory for sockets ({}) does not seems to exist.'.format(tmp))
+            raise ValueError(f'This directory for sockets ({tmp}) does not seems to exist.')
         tmp = os.path.join(tmp, get_random_identity())
     except KeyError:
         tmp = tempfile.NamedTemporaryFile().name
-    return 'ipc://%s' % tmp
+    return f'ipc://{tmp}'
 
 
 def _init_socket(ctx: 'zmq.Context', host: str, port: int,
@@ -561,10 +561,10 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
             # JEP2, if it is bind, then always bind to local
             if host != __default_host__:
                 default_logger.warning(
-                    'host is set from %s to %s as the socket is in BIND type' % (host, __default_host__))
+                    f'host is set from {host} to {__default_host__} as the socket is in BIND type')
                 host = __default_host__
             if port is None:
-                sock.bind_to_random_port('tcp://%s' % host)
+                sock.bind_to_random_port(f'tcp://{host}')
             else:
                 try:
                     sock.bind('tcp://%s:%d' % (host, port))

@@ -65,7 +65,7 @@ class ChunkCraftDriver(BaseCraftDriver):
             d.length = len(_chunks_to_add) + len(d.chunks)
 
         if no_chunk_docs:
-            self.logger.warning('these docs contain no chunk: %s' % no_chunk_docs)
+            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
 
 
 class DocCraftDriver(BaseCraftDriver):

@@ -253,7 +253,7 @@ class CompoundExecutor(BaseExecutor):
         if not getattr(self, 'init_from_yaml', False):
             self._components = comps()
             if not isinstance(self._components, list):
-                raise TypeError('components expect a list of executors, receiving %r' % type(self._components))
+                raise TypeError(f'components expect a list of executors, receiving {type(self._components)!r}')
             # self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
@@ -296,7 +296,7 @@ class CompoundExecutor(BaseExecutor):
                     self.is_updated = True
                 return
         else:
-            raise AttributeError('bad names: %s and %s' % (comp_name, comp_fn_name))
+            raise AttributeError(f'bad names: {comp_name} and {comp_fn_name}')
 
     def _set_routes(self) -> None:
         import inspect
@@ -316,11 +316,11 @@ class CompoundExecutor(BaseExecutor):
                 setattr(self, k, v[0][1])
             elif len(v) > 1:
                 if self.resolve_all:
-                    new_r = '%s_all' % k
+                    new_r = f'{k}_all'
                     fns = self._FnWrapper([vv[1] for vv in v])
                     setattr(self, new_r, fns)
-                    self.logger.debug('function "%s" appears multiple times in %s' % (k, v))
-                    self.logger.debug('a new function "%s" is added to %r by iterating over all' % (new_r, self))
+                    self.logger.debug(f'function "{k}" appears multiple times in {v}')
+                    self.logger.debug(f'a new function "{new_r}" is added to {self!r} by iterating over all')
                     new_routes.append(new_r)
                 else:
                     self.logger.warning(
@@ -328,9 +328,9 @@ class CompoundExecutor(BaseExecutor):
                             k, v))
                     bad_routes.append(k)
         if new_routes:
-            self.logger.debug('new functions added: %r' % new_routes)
+            self.logger.debug(f'new functions added: {new_routes!r}')
         if bad_routes:
-            self.logger.warning('unresolvable functions: %r' % bad_routes)
+            self.logger.warning(f'unresolvable functions: {bad_routes!r}')
 
     def close(self):
         """Close all components and release the resources"""

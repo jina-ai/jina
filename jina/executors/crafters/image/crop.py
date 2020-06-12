@@ -155,7 +155,7 @@ class FiveImageCropper(ImageChunkCrafter):
         elif isinstance(self.target_size, Tuple) and len(self.target_size) == 2:
             target_h, target_w = self.target_size
         else:
-            raise ValueError('target_size should be an integer or a tuple of two integers: {}'.format(self.target_size))
+            raise ValueError(f'target_size should be an integer or a tuple of two integers: {self.target_size}')
         _tl = self._crop_image(raw_img, self.target_size, 0, 0)
         tl = self.restore_channel_axis(np.asarray(_tl))
         _tr = self._crop_image(raw_img, self.target_size, image_width - target_w, 0)
@@ -200,7 +200,7 @@ class SlidingWindowImageCropper(ImageChunkCrafter):
         super().__init__(*args, **kwargs)
         self.target_size = target_size
         if len(strides) != 2:
-            raise ValueError('strides should be a tuple of two integers: {}'.format(strides))
+            raise ValueError(f'strides should be a tuple of two integers: {strides}')
         self.stride_h, self.stride_w = strides
         self.padding = padding
 

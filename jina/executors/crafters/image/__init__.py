@@ -68,7 +68,7 @@ class ImageChunkCrafter(BaseChunkCrafter):
         elif isinstance(target_size, Tuple) and len(target_size) == 2:
             target_h, target_w = target_size
         else:
-            raise ValueError('target_size should be an integer or a tuple of two integers: {}'.format(target_size))
+            raise ValueError(f'target_size should be an integer or a tuple of two integers: {target_size}')
         img = img.resize((target_w, target_h), getattr(Image, how))
         return img
 
@@ -98,7 +98,7 @@ class ImageChunkCrafter(BaseChunkCrafter):
         elif isinstance(target_size, Tuple) and len(target_size) == 2:
             target_h, target_w = target_size
         else:
-            raise ValueError('target_size should be an integer or a tuple of two integers: {}'.format(target_size))
+            raise ValueError(f'target_size should be an integer or a tuple of two integers: {target_size}')
         w_beg = left
         h_beg = top
         if how == 'center':
@@ -109,14 +109,14 @@ class ImageChunkCrafter(BaseChunkCrafter):
             h_beg = np.random.randint(0, img_h - target_h + 1)
         elif how == 'precise':
             assert (w_beg is not None and h_beg is not None)
-            assert (0 <= w_beg <= (img_w - target_w)), 'left must be within [0, {}]: {}'.format(img_w - target_w, w_beg)
-            assert (0 <= h_beg <= (img_h - target_h)), 'top must be within [0, {}]: {}'.format(img_h - target_h, h_beg)
+            assert (0 <= w_beg <= (img_w - target_w)), f'left must be within [0, {img_w - target_w}]: {w_beg}'
+            assert (0 <= h_beg <= (img_h - target_h)), f'top must be within [0, {img_h - target_h}]: {h_beg}'
         else:
-            raise ValueError('unknown input how: {}'.format(how))
+            raise ValueError(f'unknown input how: {how}')
         if not isinstance(w_beg, int):
-            raise ValueError('left must be int number between 0 and {}: {}'.format(img_w, left))
+            raise ValueError(f'left must be int number between 0 and {img_w}: {left}')
         if not isinstance(h_beg, int):
-            raise ValueError('top must be int number between 0 and {}: {}'.format(img_h, top))
+            raise ValueError(f'top must be int number between 0 and {img_h}: {top}')
         w_end = w_beg + target_w
         h_end = h_beg + target_h
         img = img.crop((w_beg, h_beg, w_end, h_end))

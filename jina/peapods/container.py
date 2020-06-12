@@ -40,7 +40,7 @@ class ContainerPea(BasePea):
                 non_defaults['yaml_path'] = '/' + os.path.basename(self.args.yaml_path)
                 _volumes[os.path.abspath(self.args.yaml_path)] = {'bind': non_defaults['yaml_path'], 'mode': 'ro'}
             elif not valid_yaml_path(self.args.yaml_path):
-                raise FileNotFoundError('yaml_path %s is not like a path, please check it' % self.args.yaml_path)
+                raise FileNotFoundError(f'yaml_path {self.args.yaml_path} is not like a path, please check it')
         if self.args.volumes:
             for p in self.args.volumes:
                 Path(os.path.abspath(p)).mkdir(parents=True, exist_ok=True)
