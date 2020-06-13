@@ -37,6 +37,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
         from flask import Flask, Response, jsonify
         from flask_cors import CORS
         from gevent.pywsgi import WSGIServer
+        import gevent
     except ImportError:
         raise ImportError('Flask or its dependencies are not fully installed, '
                           'they are required for serving HTTP requests.'
@@ -57,6 +58,27 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     app = Flask(__name__)
     CORS(app)
     server = WSGIServer((_config['host'], _config['port']), app, log=None)
+
+    def _log_stream():
+        while True:
+            try:
+                gevent.sleep(0)
+                message = __sse_queue__.get()
+                yield f'data: {message.msg}\n\n'
+            except EOFError:
+                yield 'LOG ENDS\n\n'
+                break
+
+    def _profile_stream():
+        while True:
+            try:
+                gevent.sleep(0)
+                message = __profile_queue__.get()
+                yield f'data: {message.msg}\n\n'
+            except EOFError:
+                yield 'PROFILE ENDS\n\n'
+                break
+
 
     @app.route(_config['endpoints']['log'])
     def get_log():
@@ -104,30 +126,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     def is_ready():
         return Response(status=200)
 
-    os.environ['WERKZEUG_RUN_MAIN'] = 'true'
-    log = logging.getLogger('werkzeug')
-    log.disabled = True
     try:
         server.serve_forever()
     except Exception as ex:
         default_logger.error(ex)
-
-
-def _log_stream():
-    while True:
-        try:
-            message = __sse_queue__.get()
-            yield f'data: {message.msg}\n\n'
-        except EOFError:
-            yield 'LOG ENDS\n\n'
-            break
-
-
-def _profile_stream():
-    while True:
-        try:
-            message = __profile_queue__.get()
-            yield f'data: {message.msg}\n\n'
-        except EOFError:
-            yield 'PROFILE ENDS\n\n'
-            break
