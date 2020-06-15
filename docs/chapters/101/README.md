@@ -29,7 +29,7 @@
   <a href="README.ar.md">عربية</a>
     </td>
     <td>
-      <img src="img/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+      <img src="img/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright Jina AI Limited"/>
     </td>
   </tr>
 </table>
@@ -37,6 +37,8 @@
 <h2 align="center">What is Jina?</h2>
 
 Jina is an open-source search framework for any kind of data, powered by AI. It offers a cloud-native neural search service for multiple platforms and architectures, with high performance, and state-of-the-art capabilities.
+
+You can install Jina on your own machine or in the cloud, and getting up and running is easy with our [Hello World](https://docs.jina.ai/chapters/helloworld/index.html) example.
 
 <h2 align="center">Why Use Neural Search?</h2>
 
@@ -60,36 +62,36 @@ Of course, it's not just recipes. Jina can handle all kinds of data, like number
 
 <h2 align="center">How Does Jina Work?</h2>
 
-Here we'll take a look at the big picture of how Jina works, and start diving deeper on each how all the parts work together.
+Let's look at how each part of Jina works from the ground up.
 
 <h3 align="center">Documents & Chunks</h3>
 
 <p align="center">
-  <img  src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+  <img  src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
-When most people think of search, they think of a bar you type words into, like Google. But search is much more than that - there's also voice, videos, music, code, locations, and many other things.
+When most people think of search, they think of a bar you type words into, like Google. But search is much more than that - as well as text, you may want to search for a song, recipe, video, genetic sequence, scientific paper, or location.
 
-In Jina, we call all of these things **documents**. In short, a document is anything you want to search for, and the input query you use when searching.
+In Jina, we call all of these things **Documents**. In short, a Document is anything you want to search for, and the input query you use when searching.
 
-Documents can be huge though - how can we search for the right part? If you search for a pancake recipe, you don't want to get the whole cookbook back! We do this by breaking a document into **chunks**. A chunk is a small semantic unit of a document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates. In our pancake recipe, we can regard the cookbook as the Document and each recipe as a Chunk of the Document. We could also further Chunk the pancake recipe into individual ingredients and each step of the cooking method.
+Documents can be huge though - how can we search for the right part? If you search for a pancake recipe, you don't want to get the whole cookbook back! We do this by breaking a Document into **Chunks**. A Chunk is a small semantic unit of a Document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates. In our pancake recipe, we can regard the cookbook as the Document and each recipe as a Chunk of the Document. We could also further Chunk the pancake recipe into individual ingredients and each step of the cooking method.
 
 You can think of a Document like a chocolate bar. Documents have different formats and ingredients, but you can also break it into chunks any way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, but you don’t want to grind it into powder either; By doing that, you lose the flavor (i.e. the semantics).
 
 <h3 align="center">Executors</h3>
 
 <p align="center">
-<img src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright Jina AI Limited" title="Jina AI Executor Concept, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
-How do we break down a Document into Chunks, and what happens next? **Executors** do all of this hard work, and each represents an algorithmic unit. They do things like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each one has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box.
+How do we break down a Document into Chunks, and what happens next? **Executors** do all of this hard work, and each represents an algorithmic unit. They do things like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each one has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box. The properties of an Executor are stored in a [YAML file](#configuring-jina-with-yaml). They always go hand in hand.
 
-The properties of an Executor are stored in a [YAML file](#configuring-jina-with-yaml). They always go hand in hand.
+In our pancake analogy, Executors would convert pancake recipes into something the neural net can understand, store it on disk, rank which is the best recipe, etc.
 
-<h4 align="center">Executor Families</h4>
+<h4 align="center">The Executor Family</h4>
 
 <p align="center">
-  <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="4" width="80%"/>
+  <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright Jina AI Limited" title="Jina 101 Family of Executor, Copyright Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
 The **Executors** are a big family. Each family member focuses on one important aspect of the search system. Let’s meet:
@@ -100,10 +102,10 @@ The **Executors** are a big family. Each family member focuses on one important 
 
 Got a new algorithm in mind? No problem, this family always welcomes new members!
 
-<h3 align="center">Driver</h3>
+<h3 align="center">Drivers</h3>
 
 <p align="center">
-<img  src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img  src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright Jina AI Limited" title="Jina 101 Driver, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
 Executors do all the hard work, but they're not great at talking to each other. A **Driver** helps them do this by defining how an Executor behaves to network requests. It interprets network traffic into a format the Executor can understand, for example translating Protobuf into a Numpy array.
@@ -111,7 +113,7 @@ Executors do all the hard work, but they're not great at talking to each other. 
 <h3 align="center">Peas</h3>
 
 <p align="center">
-<img  src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img  src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright Jina AI Limited" title="Jina 101 Pea, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
 All healthy families need to communicate, and the Executor clan is no different. They talk to each other via Peas.
@@ -121,7 +123,7 @@ While a Driver translates data for an Executor, A **Pea** wraps an Executor and 
 <h3 align="center">Pods</h3>
 
 <p align="center">
-<img  src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img  src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright Jina AI Limited" title="Jina 101 Pod, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
 So now you've got lots of Peas talking to each other and rolling all over the place. How can you organize them? Nature uses **Pods**, and so do we.
@@ -131,15 +133,15 @@ A Pod is a group of Peas with the same property **Does this mean they perform th
 <h3 align="center">Flow</h3>
 
 <p align="center">
-<img  src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img  src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright Jina AI Limited" title="Jina 101 Flow, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
-Now we've got a garden full of pods, with each pod full of peas. That's a lot to manage! This is where **Flow** comes in. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
+Now we've got a garden full of pods, with each pod full of peas. That's a lot to manage! Say hello to **Flow**!. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
 
 <h3 align="center">Configuring Jina with YAML</h3>
 
 <p align="center">
-<img  src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img  src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright Jina AI Limited" title="Jina 101 YAML Concept, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
 Every part of Jina is configured with YAML files. YAML files offer customization, allowing you to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML file, or save an object into a YAML file.
@@ -153,7 +155,7 @@ You can design at the micro-level and scale up to the macro-level. YAMLs becomes
 <br /><br />
 
 <p align="center">
-  <img src="img/ILLUS11.png?raw=true" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
+  <img src="img/ILLUS11.png?raw=true" alt="Jina 101 All Characters, Copyright Jina AI Limited" title="Jina 101 All Characters, Copyright Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
 <p align="center">
