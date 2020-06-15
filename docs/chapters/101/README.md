@@ -42,7 +42,7 @@ Here we'll take a look at the big picture of how Jina works, and start diving de
 
 <h3 align="center">Documents & Chunks</h3>
 
-<img align="left" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<img src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 When most people think of search, they think of a bar you type words into, like Google. But search is much more than that - there's also voice, videos, music, code, locations, and many other things.
 
@@ -62,7 +62,7 @@ The properties of an Executor are stored in a YAML config. They always go hand i
 
 <br/><br/><br/>
 
-<h3 align="center">Executor Families</h3>
+<h4 align="center">Executor Families</h4>
 
 <p align="center">
   <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
@@ -82,7 +82,7 @@ Got a new algorithm in mind? No problem, this family always welcomes new members
 
 <img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-A **Driver** defines how an Executor behaves to network requests. It interprets network traffic into a format the Executor can understand, for example translating Protobuf into a Numpy array.
+Executors do all the hard work, but they're not great at talking to each other. A **Driver** helps them do this by defining how an Executor behaves to network requests. It interprets network traffic into a format the Executor can understand, for example translating Protobuf into a Numpy array.
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
@@ -94,7 +94,7 @@ A **Driver** defines how an Executor behaves to network requests. It interprets 
 
 All healthy families need to communicate, and the Executor clan is no different. They talk to each other via Peas.
 
-A **Pea** wraps an Executor and lets it exchange data over a network or with other Peas. A Pea can also run in Docker, containing all dependencies and the contextual environment in one place.
+While a Driver translates data for an Executor, A **Pea** wraps an Executor and lets it exchange data over a network or with other Peas. Peas can also run in Docker, containing all dependencies and context in one place.
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
@@ -102,12 +102,9 @@ A **Pea** wraps an Executor and lets it exchange data over a network or with oth
 
 <img align="left" src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-The world is more than just one family though. You may want several families of Executors doing different things, each with their own Pea. These Peas need to be organized - and just like Mother Nature, we do that with **Pods**.
+So now you've got lots of Peas talking to each other and rolling all over the place. How can you organize them? Nature uses **Pods**, and so do we.
 
-A Pod is a group of Peas with the same property <span style="color:ff0000">Does this mean they perform the same task, or are different subtasks of one larger task?</span>, running in parallel on a local host or over the network. A Pod provides a single network interface for its Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds further control, scheduling, and context management to the Peas.
-
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
+A Pod is a group of Peas with the same property **Does this mean they perform the same task, or are different subtasks of one larger task?**, running in parallel on a local host or over the network. A Pod provides a single network interface for its Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds further control, scheduling, and context management to the Peas.
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -116,6 +113,8 @@ A Pod is a group of Peas with the same property <span style="color:ff0000">Does 
 <img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 Now we've got a garden full of pods, with each pod full of peas. That's a lot to manage! This is where **Flow** comes in. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
+
+<br/><br/><br/><br/><br/><br/>
 
 <h3 align="center">Configuring Jina with YAML</h3>
 
