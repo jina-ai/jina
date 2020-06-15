@@ -36,6 +36,28 @@
 
 <h2 align="center">What is Jina?</h2>
 
+Jina is an open-source search framework for any kind of data, powered by AI. It offers a cloud-native neural search service for multiple platforms and architectures, with high performance, and state-of-the-art capabilities.
+
+<h2 align="center">Why Use Neural Search?</h2>
+
+In short, neural search is **less work**.
+
+Let's say you're building a recipe search engine. For each recipe, the search engine needs to know:
+
+* Ingredients
+* Rating
+* Type of cuisine - Chinese, American
+* Type of dish - starter, main, dessert, snack
+* Method to make the food
+
+When a human sees a recipe, we can tell which part is the ingredients and which is the method. If we see the title "Lamb chops with mashed potato", we know it's likely a main and certainly not vegetarian. Most computers aren't that smart.
+
+For a **traditional search engine**, we'd have to write rules so the search engine could decipher each recipe into something structured that it can understand. And if we input a recipe in a slightly different format, it may not understand at all. And if you want to search something different next time? Back to the drawing board!
+
+In a **neural search engine**, we start by feeding it a small list of recipes, labelling the author, ingredients, cuisine type, and so on. Instead of telling our neural network the rules, we just tell it the labels for this small set of data, like you'd teach a toddler animals by showing them pictures of cats and dogs and saying "cat" or "dog". After a while, they'd be able to see a new picture of a cat or dog and say what it is themselves. Our neural net is the same - show it a few labelled recipes, and it can identify recipes it's never seen before, without having to learn any rules.
+
+Of course, it's not just recipes. Jina can handle all kinds of data, like numbers, text, code, coordinates, voice, music, images, videos, genetic samples, and much, much more.
+
 <h2 align="center">How Does Jina Work?</h2>
 
 Here we'll take a look at the big picture of how Jina works, and start diving deeper on each how all the parts work together.
