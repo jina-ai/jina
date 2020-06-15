@@ -151,7 +151,7 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        if msg.envelope.status != jina_pb2.Envelope.Status.ERROR:
+        if msg.envelope.status.code < jina_pb2.Status.ERROR:
             self.executor(self.request_type)
         return self
 
@@ -276,8 +276,8 @@ class BasePea(metaclass=PeaMeta):
             pass
         except (RuntimeError, Exception) as ex:
             # general runtime error and nothing serious, we simply mark the message to error and pass on
-            msg.envelope.status = jina_pb2.Envelope.Status.ERROR
-            msg.envelope.error_message = f'unknown exception: {str(ex)}'
+            msg.envelope.status.code = jina_pb2.Status.ERROR
+            msg.envelope.status.description = f'{self.name}: {str(ex)}'
             return msg
 
     def loop_body(self):
