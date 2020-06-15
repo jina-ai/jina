@@ -17,7 +17,7 @@ from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, UnknownControlCommand, \
     RequestLoopEnd, \
-    DriverNotInstalled, NoDriverForRequest
+    DriverNotInstalled, NoDriverForRequest, PodRunTimeError
 from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
@@ -148,11 +148,16 @@ class BasePea(metaclass=PeaMeta):
     def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
-        this message.
+        this message if its request's  status is not ERROR, else skip handling. In case of run time error from pod, allow
+        message to propagate by letting it pass
 
         :param msg: the message received
         """
-        self.executor(self.request_type)
+        if msg.request.status != jina_pb2.Request.Status.ERROR:
+          try:
+              self.executor(self.request_type)
+          except PodRunTimeError:
+              pass
         return self
 
     @property
@@ -323,8 +328,7 @@ class BasePea(metaclass=PeaMeta):
         except ExecutorFailToLoad:
             self.logger.error(f'can not start a executor from {self.args.yaml_path}')
         except MemoryOverHighWatermark:
-            self.logger.error(
-                'memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
+            self.logger.error('memory usage %d GB is above the high-watermark: %d GB' % (used_memory(), self.args.memory_hwm))
         except UnknownControlCommand as ex:
             self.logger.error(ex, exc_info=True)
         except DriverNotInstalled:
@@ -338,6 +342,8 @@ class BasePea(metaclass=PeaMeta):
             self.logger.error('zmqlet can not be initiated')
         except Exception as ex:
             self.logger.error(f'unknown exception: {str(ex)}', exc_info=True)
+            raise PodRunTimeError(f'Pod Run Time exception: {str(ex)}', exc_info=True)
+
         finally:
             self.loop_teardown()
             self.unset_ready()

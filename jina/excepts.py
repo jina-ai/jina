@@ -28,6 +28,10 @@ class RequestLoopEnd(Exception):
     """The event loop of BasePea ends"""
 
 
+class PodRunTimeError(Exception):
+    """The error propagated by Pods when Executor throws an exception"""
+
+
 class DriverNotInstalled(Exception):
     """Driver is not installed in the BasePea"""
 

@@ -114,6 +114,12 @@ class GatewayPea:
             try:
                 self._request = getattr(msg.request, msg.request.WhichOneof('body'))
                 self._message = msg
+                # Check if pod had thrown a run-time exception by checking request's status and error message
+                if msg.request.status == jina_pb2.Request.Status.ERROR:
+                    error_message = f'pod threw run time exception {msg.request.error_message}'
+                    self.logger.info(error_message)
+                    # extract error message from request, remove envelope, send back request and error message
+                    return msg.request
                 if msg.envelope.num_part != [1]:
                     raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
                 self.executor(self.request_type)
