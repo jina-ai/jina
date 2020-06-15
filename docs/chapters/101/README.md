@@ -1,6 +1,6 @@
 <table>
   <tr>
-    <td width="70%"><h1>Jina 101: First Thing to Learn About Jina</h1>
+    <td width="70%"><h1>Jina 101: First Things to Learn About Jina</h1>
     <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src="../../../.github/badges/twitter-share101.svg?raw=true"
        alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
@@ -39,11 +39,13 @@
 
 <h2 align="center">What is Jina?</h2>
 
-<h2 align="center">Document & Chunk</h2>
+<h2 align="center">How Does Jina Work?</h2>
+
+Here we'll take a look at the big picture of how Jina works, and start diving deeper on each how all the parts work together.
+
+<h3 align="center">Document & Chunk</h3>
 
 <img align="left" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
-
-
 
 In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc. A Document is also the input query when searching.
 
@@ -53,7 +55,7 @@ In Jina, a Document is like a chocolate bar. Not only because it comes in differ
 
 <br/><br/><br/>
 
-<h2 align="center">YAML config</h2>
+<h3 align="center">YAML config</h3>
 
 <img align="right" src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -61,7 +63,7 @@ In Jina, a Document is like a chocolate bar. Not only because it comes in differ
 
 <br/><br/><br/><br/><br/><br/>
 
-<h2 align="center">Executor</h2>
+<h3 align="center">Executor</h3>
 
 <img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -88,7 +90,7 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 <br/><br/>
 
-<h2 align="center">Driver</h2>
+<h3 align="center">Driver</h3>
 
 <img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -98,7 +100,7 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 
 
-<h2 align="center">Pea</h2>
+<h3 align="center">Pea</h3>
 
 <img align="left" src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -110,7 +112,7 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 
 
-<h2 align="center">Pod</h2>
+<h3 align="center">Pod</h3>
 
 <img align="left" src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -122,7 +124,7 @@ Pod can be run either on local host or on different computers over a network. 
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-<h2 align="center">Flow</h2>
+<h3 align="center">Flow</h3>
 
 
 <img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
@@ -134,7 +136,7 @@ Pod can be run either on local host or on different computers over a network. 
 
 
 
-<h2 align="center">From Micro to Macro</h2>
+<h3 align="center">From Micro to Macro</h3>
 
 
 Jina is a happy family. You can feel the harmony when you use Jina.
