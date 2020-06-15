@@ -43,7 +43,7 @@ Here we'll take a look at the big picture of how Jina works, and start diving de
 <h3 align="center">Documents & Chunks</h3>
 
 <p align="center">
-  <img align="center" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+  <img  src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
 When most people think of search, they think of a bar you type words into, like Google. But search is much more than that - there's also voice, videos, music, code, locations, and many other things.
@@ -56,7 +56,9 @@ You can think of a Document like a chocolate bar. Documents have different forma
 
 <h3 align="center">Executors</h3>
 
-<img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<p align="center">
+<img src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+</p>
 
 **Executors** are the worker bees of Jina, and represent an algorithmic unit. They do all the hard work like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each executor has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box.
 
@@ -67,7 +69,7 @@ The properties of an Executor are stored in a YAML config. They always go hand i
 <h4 align="center">Executor Families</h4>
 
 <p align="center">
-  <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
+  <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="4" width="80%"/>
 </p>
 
 The **Executors** are a big family. Each family member focuses on one important aspect of the search system. Let’s meet:
@@ -82,7 +84,9 @@ Got a new algorithm in mind? No problem, this family always welcomes new members
 
 <h3 align="center">Driver</h3>
 
-<img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<p align="center">
+<img  src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+</p>
 
 Executors do all the hard work, but they're not great at talking to each other. A **Driver** helps them do this by defining how an Executor behaves to network requests. It interprets network traffic into a format the Executor can understand, for example translating Protobuf into a Numpy array.
 
@@ -92,7 +96,9 @@ Executors do all the hard work, but they're not great at talking to each other. 
 
 <h3 align="center">Peas</h3>
 
-<img align="left" src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<p align="center">
+<img  src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+</p>
 
 All healthy families need to communicate, and the Executor clan is no different. They talk to each other via Peas.
 
@@ -102,7 +108,9 @@ While a Driver translates data for an Executor, A **Pea** wraps an Executor and 
 
 <h3 align="center">Pods</h3>
 
-<img align="left" src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<p align="center">
+<img  src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+</p>
 
 So now you've got lots of Peas talking to each other and rolling all over the place. How can you organize them? Nature uses **Pods**, and so do we.
 
@@ -112,7 +120,9 @@ A Pod is a group of Peas with the same property **Does this mean they perform th
 
 <h3 align="center">Flow</h3>
 
-<img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<p align="center">
+<img  src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+</p>
 
 Now we've got a garden full of pods, with each pod full of peas. That's a lot to manage! This is where **Flow** comes in. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
 
@@ -120,7 +130,9 @@ Now we've got a garden full of pods, with each pod full of peas. That's a lot to
 
 <h3 align="center">Configuring Jina with YAML</h3>
 
-<img align="right" src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<p align="center">
+<img  src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+</p>
 
 Every part of Jina is configured with YAML files. In our chocolate bar chunking analogy, this would be the recipe for the chocolate bar. It might include:
 
