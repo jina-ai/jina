@@ -6,6 +6,7 @@ import multiprocessing
 import os
 import threading
 import time
+import traceback
 from queue import Empty
 from typing import Dict, Optional, Union
 
@@ -144,6 +145,12 @@ class BasePea(metaclass=PeaMeta):
         else:
             self.logger = get_logger(self.name)
 
+    def __str__(self):
+        r = self.name
+        if self.executor is not None:
+            r += f'({str(self.executor)})'
+        return r
+
     def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
@@ -151,8 +158,7 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        if msg.envelope.status != jina_pb2.Envelope.Status.ERROR:
-            self.executor(self.request_type)
+        self.executor(self.request_type)
         return self
 
     @property
@@ -236,6 +242,9 @@ class BasePea(metaclass=PeaMeta):
     def post_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
         msg.envelope.routes[-1].end_time.GetCurrentTime()
+        self.last_active_time = time.perf_counter()
+        self.save_executor(self.args.dump_interval)
+        self.check_memory_watermark()
         return self
 
     def set_ready(self, *args, **kwargs):
@@ -250,7 +259,10 @@ class BasePea(metaclass=PeaMeta):
 
     def _callback(self, msg):
         # self.is_busy.set()
-        self.pre_hook(msg).handle(msg).post_hook(msg)
+        if msg.envelope.status.code < jina_pb2.Status.ERROR:
+            self.pre_hook(msg).handle(msg).post_hook(msg)
+        else:
+            msg.envelope.status.details.skipped.append(str(self))
         return msg
 
     def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
@@ -261,11 +273,7 @@ class BasePea(metaclass=PeaMeta):
         try:
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
-            msg = self._callback(msg)
-            self.last_active_time = time.perf_counter()
-            self.save_executor(self.args.dump_interval)
-            self.check_memory_watermark()
-            return msg
+            return self._callback(msg)
         except (OSError, zmq.error.ZMQError, KeyboardInterrupt):
             # serious error happen in callback, we need to break the event loop
             raise
@@ -276,8 +284,14 @@ class BasePea(metaclass=PeaMeta):
             pass
         except (RuntimeError, Exception) as ex:
             # general runtime error and nothing serious, we simply mark the message to error and pass on
-            msg.envelope.status = jina_pb2.Envelope.Status.ERROR
-            msg.envelope.error_message = f'unknown exception: {str(ex)}'
+            msg.envelope.status.code = jina_pb2.Status.ERROR
+            msg.envelope.status.description = f'{self} throws {repr(ex)}'
+            msg.envelope.status.details.pod = self.name
+            msg.envelope.status.details.pod_id = self.args.identity
+            msg.envelope.status.details.exception = repr(ex)
+            msg.envelope.status.details.executor = str(getattr(self, 'executor', ''))
+            msg.envelope.status.details.traceback = traceback.format_exc()
+            msg.envelope.status.details.time.GetCurrentTime()
             return msg
 
     def loop_body(self):
@@ -331,20 +345,21 @@ class BasePea(metaclass=PeaMeta):
         except RequestLoopEnd:
             self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
-            self.logger.error(f'can not start a executor from {self.args.yaml_path}')
+            self.logger.critical(f'can not start a executor from {self.args.yaml_path}')
         except MemoryOverHighWatermark:
-            self.logger.error(f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
+            self.logger.critical(
+                f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
         except DriverError as ex:
-            self.logger.error(f'driver error: {str(ex)}')
+            self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except zmq.error.ZMQError:
-            self.logger.error('zmqlet can not be initiated')
+            self.logger.critical('zmqlet can not be initiated')
         except Exception as ex:
-            # this captures the general exception from the following four places:
+            # this captures the general exception from the following places:
             # - self.zmqlet.recv_message
             # - self.zmqlet.send_message
-            self.logger.error(f'unknown exception: {str(ex)}', exc_info=True)
+            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
             self.loop_teardown()
             self.unset_ready()

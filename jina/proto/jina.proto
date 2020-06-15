@@ -174,16 +174,54 @@ message Envelope {
 
     Version version = 6; // version info
 
-    enum Status {
-        SUCCESS = 0; // success
-        ERROR = 1; // error
-        PENDING = 2; // there are pending messages, more messages are followed
-        READY = 3; // ready to use
-    }
-
     Status status = 7; // status info
 
     repeated uint32 num_part = 8; // the number of partial messages
+
+}
+
+message Status {
+
+    enum StatusCode {
+        SUCCESS = 0; // success
+        PENDING = 1; // there are pending messages, more messages are followed
+        READY = 2; // ready to use
+        ERROR = 3; // error
+        ERROR_DUPLICATE = 4; // already a existing pea/pod running
+        ERROR_NOTALLOWED = 5; // not allowed to open pea/pod remotely
+    }
+
+    // status code
+    StatusCode code = 1;
+
+    // error description when the Status of the Envelope is ERROR, else NULL
+    string description = 2;
+
+    message Details {
+        // the name of that problematic peapod
+        string pod = 1;
+
+        // the id of that problematic peapod
+        string pod_id = 2;
+
+        // the name of the executor binded to that peapod (if applicable)
+        string executor = 3;
+
+        // the class name of the exception
+        string exception = 4;
+
+        // the reason of the exception
+        string traceback = 5;
+
+        // the timestamp when error occurs
+        google.protobuf.Timestamp time = 6;
+
+        // skipped peapods in the workflow
+        repeated string skipped = 7;
+    }
+
+    // the details of the error
+    Details details = 3;
 }
 
 /**
@@ -249,17 +287,7 @@ message Request {
         map<string, string> args = 2; // the pea arguments, useful in STATUS
     }
 
-    enum Status {
-        SEND_SUCCESS = 0; // successful send message operation
-        RECEIVE_SUCCESS = 1; // successfull receive message operation
-        ERROR = 2; // error
-        PENDING = 3; // there are pending messages, more messages are followed
-    }
-    
     Status status = 6; // status info
-
-    // error message when the Status of the Request is ERROR
-    string error_message = 7;
 }
 
 message SpawnRequest {
@@ -285,13 +313,6 @@ message SpawnRequest {
         PeaSpawnRequest pea = 1;
         PodSpawnRequest pod = 2; // send a PodSpawnRequest and it will switch to PodDictSpawnRequest as returns
         MutablepodSpawnRequest mutable_pod = 3;
-    }
-
-    enum Status {
-        SUCCESS = 0; // success
-        ERROR_OTHER = 1; // other error
-        ERROR_DUPLICATE = 2; // already a exisiting pea/pod running
-        ERROR_NOTALLOWED = 3; // not allowed to open pea/pod remotely
     }
 
     string log_record = 4; // one line of the log record
