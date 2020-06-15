@@ -20,7 +20,7 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs,
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.docs, self.chunks,
                                                                              self.req.filter_by,
                                                                              embedding=True)
 
@@ -60,10 +60,10 @@ class KVIndexDriver(BaseIndexDriver):
 
     def __call__(self, *args, **kwargs):
         if self.level == 'doc':
-            content = self.req.docs
+            content = self.docs
         elif self.level == 'chunk':
-            content = [c for d in self.req.docs for c in d.chunks if
-                       (not self.req.filter_by or c.field_name in self.req.filter_by)]
+            content = (c for d in self.docs for c in self.chunks(d) if
+                       (not self.req.filter_by or c.field_name in self.req.filter_by))
         else:
             raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
         if content:

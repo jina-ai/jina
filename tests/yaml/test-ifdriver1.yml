@@ -1,0 +1,6 @@
+!BaseExecutor
+requests:
+  on:
+    IndexRequest:
+      - !BaseDriver
+        if: '2 > 1'

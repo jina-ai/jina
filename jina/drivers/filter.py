@@ -11,11 +11,11 @@ class TopKFilterDriver(BaseDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             _topk = [k for k in d.topk_results[:self.req.top_k]]
             d.ClearField('topk_results')
             d.topk_results.extend(_topk)
-            for c in d.chunks:
+            for c in self.chunks(d):
                 _topk = [k for k in c.topk_results[:self.req.top_k]]
                 c.ClearField('topk_results')
                 c.topk_results.extend(_topk)
@@ -37,11 +37,11 @@ class TopKSortDriver(BaseDriver):
         self.descending = descending
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             _sort = sorted(d.topk_results, key=lambda x: x.score.value, reverse=self.descending)
             d.ClearField('topk_results')
             d.topk_results.extend(_sort)
-            for c in d.chunks:
+            for c in self.chunks(d):
                 _sort = sorted(c.topk_results, key=lambda x: x.score.value, reverse=self.descending)
                 c.ClearField('topk_results')
                 c.topk_results.extend(_sort)

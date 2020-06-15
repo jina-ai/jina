@@ -31,20 +31,20 @@ class PruneDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         if self.level == 'chunk':
-            for d in self.req.docs:
-                for c in d.chunks:
+            for d in self.docs:
+                for c in self.chunks(d):
                     for k in self.pruned:
                         c.ClearField(k)
         elif self.level == 'doc':
-            for d in self.req.docs:
+            for d in self.docs:
                 for k in self.pruned:
                     d.ClearField(k)
         elif self.level == 'request':
             for k in self.pruned:
                 self.msg.ClearField(k)
         elif self.level == 'all':
-            for d in self.req.docs:
-                for c in d.chunks:
+            for d in self.docs:
+                for c in self.chunks(d):
                     for k in self.pruned:
                         c.ClearField(k)
                 for k in self.pruned:

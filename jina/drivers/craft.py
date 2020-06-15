@@ -24,12 +24,12 @@ class ChunkCraftDriver(BaseCraftDriver):
     def __call__(self, *args, **kwargs):
         no_chunk_docs = []
 
-        for d in self.req.docs:
-            if not d.chunks:
+        for d in self.docs:
+            if not list(self.chunks(d)):
                 no_chunk_docs.append(d.doc_id)
                 continue
             _chunks_to_add = []
-            for c in d.chunks:
+            for c in self.chunks(d):
                 _args_dict = pb_obj2dict(c, self.exec.required_keys)
                 if 'blob' in self.exec.required_keys:
                     _args_dict['blob'] = pb2array(c.blob)
@@ -60,9 +60,9 @@ class ChunkCraftDriver(BaseCraftDriver):
                                             f'anyway')
                     else:
                         setattr(c, k, v)
-                c.length = len(_chunks_to_add) + len(d.chunks)
+                c.length = len(list(self.chunks(d)))
                 c.chunk_id = random.randint(0, ctypes.c_uint(-1).value)
-            d.length = len(_chunks_to_add) + len(d.chunks)
+            d.length = len(list(self.chunks(d)))
 
         if no_chunk_docs:
             self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
@@ -74,7 +74,7 @@ class DocCraftDriver(BaseCraftDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             _args_dict = pb_obj2dict(d, self.exec.required_keys)
             if 'blob' in self.exec.required_keys:
                 _args_dict['blob'] = pb2array(d.blob)
@@ -100,7 +100,7 @@ class SegmentDriver(BaseCraftDriver):
         self.save_buffer = save_buffer
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             _args_dict = pb_obj2dict(d, self.exec.required_keys)
             if 'blob' in self.exec.required_keys:
                 _args_dict['blob'] = pb2array(d.blob)
@@ -145,7 +145,7 @@ class UnarySegmentDriver(BaseDriver):
         self.random_chunk_id = random_chunk_id
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             c = d.chunks.add()
             c.length = 1
             d_type = d.WhichOneof('content')
