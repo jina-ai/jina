@@ -1,0 +1,5 @@
+!BaseExecutor
+requests:
+  on:
+    IndexRequest:
+      - !FilterDriver {}

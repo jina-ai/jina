@@ -29,7 +29,7 @@ class BaseConvertDriver(BaseDriver):
         self.target = target
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             if getattr(d, self.target) and not self.override:
                 continue
             self.convert(d)
@@ -141,7 +141,6 @@ class URI2Buffer(BaseConvertDriver):
         super().__init__(target, *args, **kwargs)
 
     def convert(self, d):
-        print(d)
         if urllib.parse.urlparse(d.uri).scheme in {'http', 'https', 'data'}:
             page = urllib.request.Request(d.uri, headers={'User-Agent': 'Mozilla/5.0'})
             tmp = urllib.request.urlopen(page)
@@ -168,7 +167,7 @@ class URI2DataURI(URI2Buffer):
 
     def __call__(self, *args, **kwargs):
         super().__call__()
-        for d in self.req.docs:
+        for d in self.docs:
             if d.uri and not self.override:
                 continue
 

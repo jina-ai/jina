@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import ctypes
 import random
+from typing import Dict
 
 from . import BaseExecutableDriver, BaseDriver
 from .helper import array2pb, pb_obj2dict, pb2array
@@ -15,6 +16,22 @@ class BaseCraftDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
+    def set_chunk(self, chunk: 'jina_pb2.Chunk', chunk_info: Dict, new_chunk_id: bool = True):
+        for k, v in chunk_info.items():
+            if k == 'blob':
+                if isinstance(v, jina_pb2.NdArray):
+                    chunk.blob.CopyFrom(v)
+                else:
+                    chunk.blob.CopyFrom(array2pb(v))
+            elif k == 'chunk_id':
+                self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
+                                    f'is it intentional? chunk_id will be override by {self.__class__} '
+                                    f'anyway')
+            else:
+                setattr(chunk, k, v)
+        if new_chunk_id:
+            chunk.chunk_id = random.randint(0, ctypes.c_uint(-1).value)
+
 
 class ChunkCraftDriver(BaseCraftDriver):
     """Craft the chunk-level information on given keys using the executor
@@ -24,45 +41,19 @@ class ChunkCraftDriver(BaseCraftDriver):
     def __call__(self, *args, **kwargs):
         no_chunk_docs = []
 
-        for d in self.req.docs:
-            if not d.chunks:
-                no_chunk_docs.append(d.doc_id)
-                continue
-            _chunks_to_add = []
-            for c in d.chunks:
+        for d in self.docs:
+            for c in self.chunks(d):
                 _args_dict = pb_obj2dict(c, self.exec.required_keys)
                 if 'blob' in self.exec.required_keys:
                     _args_dict['blob'] = pb2array(c.blob)
                 ret = self.exec_fn(**_args_dict)
-                if isinstance(ret, dict):
-                    for k, v in ret.items():
-                        if k == 'blob':
-                            if isinstance(v, jina_pb2.NdArray):
-                                c.blob.CopyFrom(v)
-                            else:
-                                c.blob.CopyFrom(array2pb(v))
-                        else:
-                            setattr(c, k, v)
-                    continue
-                elif isinstance(ret, list):
-                    _chunks_to_add.extend(ret)
-            for c_dict in _chunks_to_add:
-                c = d.chunks.add()
-                for k, v in c_dict.items():
-                    if k == 'blob':
-                        if isinstance(v, jina_pb2.NdArray):
-                            c.blob.CopyFrom(v)
-                        else:
-                            c.blob.CopyFrom(array2pb(v))
-                    elif k == 'chunk_id':
-                        self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
-                                            f'is it intentional? chunk_id will be override by {self.__class__} '
-                                            f'anyway')
-                    else:
-                        setattr(c, k, v)
-                c.length = len(_chunks_to_add) + len(d.chunks)
-                c.chunk_id = random.randint(0, ctypes.c_uint(-1).value)
-            d.length = len(_chunks_to_add) + len(d.chunks)
+                if isinstance(ret, dict):  #: 1-to-1
+                    self.set_chunk(c, ret, new_chunk_id=False)
+                elif isinstance(ret, list):  #: 1-to-many
+                    d.chunks.remove(c)  # remove the current one?
+                    for c_dict in ret:
+                        self.set_chunk(d.chunks.add(), c_dict)
+            d.length = len(list(self.chunks(d)))
 
         if no_chunk_docs:
             self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
@@ -74,7 +65,7 @@ class DocCraftDriver(BaseCraftDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             _args_dict = pb_obj2dict(d, self.exec.required_keys)
             if 'blob' in self.exec.required_keys:
                 _args_dict['blob'] = pb2array(d.blob)
@@ -100,7 +91,7 @@ class SegmentDriver(BaseCraftDriver):
         self.save_buffer = save_buffer
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             _args_dict = pb_obj2dict(d, self.exec.required_keys)
             if 'blob' in self.exec.required_keys:
                 _args_dict['blob'] = pb2array(d.blob)
@@ -108,18 +99,7 @@ class SegmentDriver(BaseCraftDriver):
             if ret:
                 for r in ret:
                     c = d.chunks.add()
-                    for k, v in r.items():
-                        if k == 'blob':
-                            if isinstance(v, jina_pb2.NdArray):
-                                c.blob.CopyFrom(v)
-                            else:
-                                c.blob.CopyFrom(array2pb(v))
-                        elif k == 'chunk_id':
-                            self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
-                                                f'is it intentional? chunk_id will be override by {self.__class__} '
-                                                f'anyway')
-                        else:
-                            setattr(c, k, v)
+                    self.set_chunk(c, r)
                     c.length = len(ret)
                     c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
                         -1).value)
@@ -145,7 +125,7 @@ class UnarySegmentDriver(BaseDriver):
         self.random_chunk_id = random_chunk_id
 
     def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
+        for d in self.docs:
             c = d.chunks.add()
             c.length = 1
             d_type = d.WhichOneof('content')
