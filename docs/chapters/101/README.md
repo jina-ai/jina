@@ -18,9 +18,9 @@
 <a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg?raw=true" alt="Check out jobs@Jina AI">
 </a>
-    <a href="#">
-    <img src="../../../.github/badges/pdf-badge.svg?raw=true" alt="Download PDF version of Jina 101">
-    </a>
+    %%<a href="#">
+    %%<img src="../../../.github/badges/pdf-badge.svg?raw=true" alt="Download PDF version of Jina 101">
+    %%</a>
      <br>
 <a href="README.md">English</a> •
   <a href="README.ja.md">日本語</a> •
@@ -41,9 +41,13 @@
 
 <h2 align="center">How Does Jina Work?</h2>
 
+<p align="center">
+  <img src="img/ILLUS11.png?raw=true" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
+</p>
+
 Here we'll take a look at the big picture of how Jina works, and start diving deeper on each how all the parts work together.
 
-Searching isn't just one task - in a neural search engine we have to go through indexing, searching, and training the search engine.
+%%Searching isn't just one task - in a neural search engine we have to go through indexing, searching, and training the search engine.
 
 <h3 align="center">Documents & Chunks</h3>
 
