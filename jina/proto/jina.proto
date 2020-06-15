@@ -248,6 +248,18 @@ message Request {
 
         map<string, string> args = 2; // the pea arguments, useful in STATUS
     }
+
+    enum Status {
+        SEND_SUCCESS = 0; // successful send message operation
+        RECEIVE_SUCCESS = 1; // successfull receive message operation
+        ERROR = 2; // error
+        PENDING = 3; // there are pending messages, more messages are followed
+    }
+    
+    Status status = 6; // status info
+
+    // error message when the Status of the Request is ERROR
+    string error_message = 7;
 }
 
 message SpawnRequest {
