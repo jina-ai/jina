@@ -43,23 +43,21 @@
 
 Here we'll take a look at the big picture of how Jina works, and start diving deeper on each how all the parts work together.
 
-<h3 align="center">Document & Chunk</h3>
+Searching isn't just one task - in a neural search engine we have to go through indexing, searching, and training the search engine.
+
+<h3 align="center">Documents & Chunks</h3>
 
 <img align="left" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-In Jina, **a Document is anything that you want to search for**: a text document, a short tweet, a code snippet, an image, a video/audio clip, GPS traces of a day etc. A Document is also the input query when searching.
+When most people think of search, they think of a bar you type words into, like Google. But search is much more than that - there's also voice, videos, music, code, locations, and many other things.
 
-**A Chunk is a small semantic unit of a Document.** It could be a sentence, a 64x64 image patch, a 3 second video clip, a pair of coordinate and address.
+In Jina, we call all of these things *documents**. In short, a document is anything you want to search for, and the input query you use when searching.
 
-In Jina, a Document is like a chocolate bar. Not only because it comes in different formats and ingredients, but also you can break it into chunks in the way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, and you also don’t want to grind it into powder; either way, you will lose the flavor (i.e. the semantic).
+Documents can be huge though - how can we search for the right part? If you search for a pancake recipe, you don't want to get the whole cookbook back! We do this by breaking a document into **chunks**. A chunk is a small semantic unit of a document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates.
+
+You can think of a Document like a chocolate bar. Documents have different formats and ingredients, but you can also break it into chunks any way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, but you don’t want to grind it into powder either; By doing that, you lose the flavor (i.e. the semantics).
 
 <br/><br/><br/>
-
-<h3 align="center">YAML config</h3>
-
-<img align="right" src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
-
-**A YAML config is widely used in Jina to describe the properties of an object.** It offers customization, allowing users to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML config, and save an object into a YAML config.
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -67,26 +65,28 @@ In Jina, a Document is like a chocolate bar. Not only because it comes in differ
 
 <img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Executor represents an algorithmic unit in Jina.** Algorithms such as encoding images into vectors, storing vectors on the disk, ranking results, can all be formulated as Executors. Executor provides useful interfaces, enabling AI developers and engineers to concentrate on the algorithm. Features such as persistency, scheduling, chaining, grouping and parallelization come out of the box.
+**Executors** are the worker bees of Jina. They do all the hard algorithmic work like encoding images into vectors, storing vectors on disk, ranking results, and more. All of these are formulated as executors. Each executor has a useful interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box.
+
+%%**Executor represents an algorithmic unit in Jina.** Algorithms such as encoding images into vectors, storing vectors on the disk, ranking results, can all be formulated as Executors. Executor provides useful interfaces, enabling AI developers and engineers to concentrate on the algorithm. Features such as persistency, scheduling, chaining, grouping and parallelization come out of the box.
 
 The properties of an Executor are stored in a YAML config, they always go hand in hand.
 
 <br/><br/><br/>
 
-<h3 align="center">Family of Executors</h3>
+<h3 align="center">Executor Families</h3>
 
 
 <p align="center">
   <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-**Executor is a big family.** Each family member focuses on one important aspect of the search system. Let’s meet:
+The **Executors** are a big family. Each family member focuses on one important aspect of the search system. Let’s meet:
 - **Crafter**: for crafting/segmenting/transforming the Documents and Chunks;
 - **Encoder**: for representing the Chunk as vector;
 - **Indexer**: for saving and retrieving vectors and key-value information from storage;
-- **Ranker**: for sorting the results;
+- **Ranker**: for sorting results;
 
-Having a new algorithm in mind? No problem, this family always welcomes new members!
+Got a new algorithm in mind? No problem, this family always welcomes new members!
 
 <br/><br/>
 
@@ -94,17 +94,19 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 <img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Driver defines how an Executor behaves on network requests.** Driver helps the Executor to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and process (e.g. Numpy array).
+**Driver defines how an Executor behaves on network requests.** Driver interprets network traffic into a format the Executor can understand, for example translating Protobuf into a Numpy array
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 
 
-<h3 align="center">Pea</h3>
+<h3 align="center">Peas</h3>
 
 <img align="left" src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pea wraps an Executor and grants its ability to exchange data over a network.** Pea can send and receive data from other Peas. Pea can also run inside a Docker container, containing all dependencies and the contextual environment in one place.
+All healthy families need to communicate, and the Executor clan is no different. They talk to each other via Peas.
+
+A **Pea** wraps an Executor and lets it exchange data over a network. Each Pea can send and receive data from other Peas. Pea can also run inside a Docker container, containing all dependencies and the contextual environment in one place.
 
 <img align="right" src="img/ILLUS7.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -112,32 +114,42 @@ Having a new algorithm in mind? No problem, this family always welcomes new memb
 
 
 
-<h3 align="center">Pod</h3>
+<h3 align="center">Pods</h3>
 
 <img align="left" src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Pod is a group of Peas with the same property.** Peas are running in parallel inside a Pod. Pod unifies the network interfaces of those Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds more control, scheduling and context management to the Peas.
+The world is more than just one family though. You may want several families of Executors doing different things, each Executor with their own Pea. These peas need to be organized - and just like Mother Nature, we do that with **Pods**.
 
-Pod can be run either on local host or on different computers over a network. 
+A Pod is a group of Peas with the same property, running in parallel. The Pod unifies the network interfaces of those Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds further control, scheduling and context management to the Peas.
+
+Pods can be run on either a local host or different computers over a network.
 
 <img align="right" src="img/ILLUS9.png?raw=true" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-<h3 align="center">Flow</h3>
-
-
-<img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
-
-
-**Flow represents a high-level task**, e.g. indexing, searching, training. It manages the states and context of a group of Pods, orchestrating them to accomplish one task. Flow embraces diversity, whether a Pod is remote or in the Docker container, one Flow rules them all!
 
 <br/><br/><br/><br/><br/><br/>
 
+<h3 align="center">Flow</h3>
 
+<img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+
+Now we've got a garden full of pods, with each pod full of peas. That's a lot to manage! This is where **Flow** comes in. Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
+
+<h3 align="center">Configuring Jina with YAML</h3>
+
+<img align="right" src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+
+We describe the properties of a Document with a YAML file. In our chocolate bar analogy, this would be the recipe for the chocolate bar. It might include:
+
+* The type of chocolate - milk, dark, or white
+* What it's used for - eating, cooking, drinking
+* The size and weight of the bar
+
+YAML files offer customization, allowing you to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML file, or save an object into a YAML file.
 
 <h3 align="center">From Micro to Macro</h3>
-
 
 Jina is a happy family. You can feel the harmony when you use Jina.
 
