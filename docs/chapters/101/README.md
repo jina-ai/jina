@@ -42,7 +42,7 @@ Here we'll take a look at the big picture of how Jina works, and start diving de
 
 <h3 align="center">Documents & Chunks</h3>
 
-<img align="center" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
+<center><img align="center" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/></center>
 
 When most people think of search, they think of a bar you type words into, like Google. But search is much more than that - there's also voice, videos, music, code, locations, and many other things.
 
