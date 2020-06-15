@@ -116,9 +116,9 @@ Executors do all the hard work, but they're not great at talking to each other. 
 <img  src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright Jina AI Limited" title="Jina 101 Pea, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
-All healthy families need to communicate, and the Executor clan is no different. They talk to each other via Peas.
+All healthy families need to communicate, and the Executor clan is no different. They talk to each other via **Peas**.
 
-While a Driver translates data for an Executor, A **Pea** wraps an Executor and lets it exchange data over a network or with other Peas. Peas can also run in Docker, containing all dependencies and context in one place.
+While a Driver translates data for an Executor, A Pea wraps an Executor and lets it exchange data over a network or with other Peas. Peas can also run in Docker, containing all dependencies and context in one place.
 
 <h3 align="center">Pods</h3>
 
@@ -136,7 +136,7 @@ A Pod is a group of Peas with the same property **Does this mean they perform th
 <img  src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright Jina AI Limited" title="Jina 101 Flow, Copyright Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
-Now we've got a garden full of pods, with each pod full of peas. That's a lot to manage! Say hello to **Flow**!. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
+Now we've got a garden full of Pods, with each Pod full of Peas. That's a lot to manage! Say hello to **Flow**!. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
 
 <h3 align="center">Configuring Jina with YAML</h3>
 
@@ -160,7 +160,7 @@ You can design at the micro-level and scale up to the macro-level. YAMLs becomes
 
 <p align="center">
 <a href="../../../README.md#jina-hello-world-">
-    ✨<b>Intrigued? Try our "Hello, World!" and build your neural image search in 1 min. </b>
+    ✨<b>Intrigued? Try our "Hello, World!" and build your neural image search in just one minute. </b>
 </a>
 </p>
 
