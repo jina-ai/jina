@@ -42,7 +42,7 @@ You can install Jina on your own machine or in the cloud, and getting up and run
 
 <h2 align="center">Why Use Neural Search?</h2>
 
-In short, neural search is **less work**.
+In short, neural search is **less work** than traditional search.
 
 Let's say you're building a recipe search engine. For each recipe, the search engine needs to know:
 
