@@ -37,6 +37,7 @@
   </tr>
 </table>
 
+<h2 align="center">What is Jina?</h2>
 
 <h2 align="center">Document & Chunk</h2>
 
