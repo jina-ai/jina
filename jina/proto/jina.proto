@@ -191,9 +191,37 @@ message Status {
         ERROR_NOTALLOWED = 5; // not allowed to open pea/pod remotely
     }
 
+    // status code
     StatusCode code = 1;
+
     // error description when the Status of the Envelope is ERROR, else NULL
     string description = 2;
+
+    message Details {
+        // the name of that problematic peapod
+        string pod = 1;
+
+        // the id of that problematic peapod
+        string pod_id = 2;
+
+        // the name of the executor binded to that peapod (if applicable)
+        string executor = 3;
+
+        // the class name of the exception
+        string exception = 4;
+
+        // the reason of the exception
+        string traceback = 5;
+
+        // the timestamp when error occurs
+        google.protobuf.Timestamp time = 6;
+
+        // skipped peapods in the workflow
+        repeated string skipped = 7;
+    }
+
+    // the details of the error
+    Details details = 3;
 }
 
 /**
