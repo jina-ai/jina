@@ -72,7 +72,7 @@ When most people think of search, they think of a bar you type words into, like 
 
 In Jina, we call all of these things **documents**. In short, a document is anything you want to search for, and the input query you use when searching.
 
-Documents can be huge though - how can we search for the right part? If you search for a pancake recipe, you don't want to get the whole cookbook back! We do this by breaking a document into **chunks**. A chunk is a small semantic unit of a document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates. In our pancake recipe, individual ingredients and each step in the recipe Document may be their own Chunks.
+Documents can be huge though - how can we search for the right part? If you search for a pancake recipe, you don't want to get the whole cookbook back! We do this by breaking a document into **chunks**. A chunk is a small semantic unit of a document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates. In our pancake recipe, we can regard the cookbook as the Document and each recipe as a Chunk of the Document. We could also further Chunk the pancake recipe into individual ingredients and each step of the cooking method.
 
 You can think of a Document like a chocolate bar. Documents have different formats and ingredients, but you can also break it into chunks any way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, but you don’t want to grind it into powder either; By doing that, you lose the flavor (i.e. the semantics).
 
@@ -142,13 +142,7 @@ Now we've got a garden full of pods, with each pod full of peas. That's a lot to
 <img  src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
-Every part of Jina is configured with YAML files. In our chocolate bar chunking analogy, this would be the recipe for the chocolate bar. It might include:
-
-* The type of chocolate - milk, dark, or white
-* What it's used for - eating, cooking, drinking
-* The size and weight of the bar
-
-YAML files offer customization, allowing you to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML file, or save an object into a YAML file.
+Every part of Jina is configured with YAML files. YAML files offer customization, allowing you to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML file, or save an object into a YAML file.
 
 <h3 align="center">From Micro to Macro</h3>
 
