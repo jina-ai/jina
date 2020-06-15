@@ -147,7 +147,7 @@ class BasePea(metaclass=PeaMeta):
     def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
-        this message if its envelope's  status is not ERROR, else skip handling.
+        this message if its envelope's  status is not ERROR, else skip handling of message.
 
         :param msg: the message received
         """
