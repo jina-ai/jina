@@ -64,8 +64,6 @@ You can think of a Document like a chocolate bar. Documents have different forma
 
 The properties of an Executor are stored in a YAML config. They always go hand in hand.
 
-<br/><br/><br/>
-
 <h4 align="center">Executor Families</h4>
 
 <p align="center">
@@ -80,8 +78,6 @@ The **Executors** are a big family. Each family member focuses on one important 
 
 Got a new algorithm in mind? No problem, this family always welcomes new members!
 
-<br/><br/>
-
 <h3 align="center">Driver</h3>
 
 <p align="center">
@@ -89,10 +85,6 @@ Got a new algorithm in mind? No problem, this family always welcomes new members
 </p>
 
 Executors do all the hard work, but they're not great at talking to each other. A **Driver** helps them do this by defining how an Executor behaves to network requests. It interprets network traffic into a format the Executor can understand, for example translating Protobuf into a Numpy array.
-
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
-
 
 <h3 align="center">Peas</h3>
 
@@ -104,8 +96,6 @@ All healthy families need to communicate, and the Executor clan is no different.
 
 While a Driver translates data for an Executor, A **Pea** wraps an Executor and lets it exchange data over a network or with other Peas. Peas can also run in Docker, containing all dependencies and context in one place.
 
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
 <h3 align="center">Pods</h3>
 
 <p align="center">
@@ -116,8 +106,6 @@ So now you've got lots of Peas talking to each other and rolling all over the pl
 
 A Pod is a group of Peas with the same property **Does this mean they perform the same task, or are different subtasks of one larger task?**, running in parallel on a local host or over the network. A Pod provides a single network interface for its Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds further control, scheduling, and context management to the Peas.
 
-<br/><br/><br/><br/><br/><br/>
-
 <h3 align="center">Flow</h3>
 
 <p align="center">
@@ -125,8 +113,6 @@ A Pod is a group of Peas with the same property **Does this mean they perform th
 </p>
 
 Now we've got a garden full of pods, with each pod full of peas. That's a lot to manage! This is where **Flow** comes in. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
-
-<br/><br/><br/><br/><br/><br/>
 
 <h3 align="center">Configuring Jina with YAML</h3>
 
@@ -153,18 +139,16 @@ You can design at the micro-level and scale up to the macro-level. YAMLs becomes
   <img src="img/ILLUS11.png?raw=true" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-<br/><br/><br/><br/>
-
 <p align="center">
 <a href="../../../README.md#jina-hello-world-">
     ✨<b>Intrigued? Try our "Hello, World!" and build your neural image search in 1 min. </b>
 </a>
 </p>
-<br><br><br>
+
 <p align="center">
     ✨<b>Unleash your curiosity and happy searching! </b>🔍
 </p>
-<br><br><br>
+
 <p align="center">
     <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src="../../../.github/badges/twitter-share101.svg?raw=true"
@@ -183,9 +167,6 @@ You can design at the micro-level and scale up to the macro-level. YAMLs becomes
 <a href="https://jobs.jina.ai">
     <img src="../../../.github/badges/jina-corp-badge-hiring.svg?raw=true" alt="Check out jobs@Jina AI">
 </a>
-    <a href="#">
-    <img src="../../../.github/badges/pdf-badge.svg?raw=true" alt="Download PDF version of Jina 101">
-    </a>
 </p>
 <br><br><br>
 
