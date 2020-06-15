@@ -158,8 +158,7 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        if msg.envelope.status.code < jina_pb2.Status.ERROR:
-            self.executor(self.request_type)
+        self.executor(self.request_type)
         return self
 
     @property

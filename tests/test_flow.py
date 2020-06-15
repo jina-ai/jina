@@ -310,6 +310,10 @@ class MyTestCase(JinaTestCase):
         f = (Flow().add(name='r1', yaml_path='_forward')
              .add(name='r2', yaml_path='!DummyCrafter')
              .add(name='r3', yaml_path='!BaseEncoder'))
+
+        with f:
+            f.dry_run()
+
         with f:
             f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
 
