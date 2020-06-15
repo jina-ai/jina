@@ -62,7 +62,7 @@ You can think of a Document like a chocolate bar. Documents have different forma
 
 **Executors** are the worker bees of Jina, and represent an algorithmic unit. They do all the hard work like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each executor has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box.
 
-The properties of an Executor are stored in a YAML config. They always go hand in hand.
+The properties of an Executor are stored in a [YAML file](#configuring-jina-with-yaml). They always go hand in hand.
 
 <h4 align="center">Executor Families</h4>
 
