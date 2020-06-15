@@ -127,6 +127,9 @@ class PyClient(GrpcClient):
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             for resp in self._stub.Call(req_iter):
+                if resp.status.code >= jina_pb2.Status.ERROR:
+                    self.logger.error(f'bad response but you may continue: {resp.status.description}')
+                    self.logger.error(resp.status.details)
                 if callback:
                     try:
                         if self.args.callback_on_body:

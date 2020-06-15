@@ -18,7 +18,7 @@ from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 from ..main.parser import set_pea_parser, set_pod_parser
-from ..proto import jina_pb2_grpc, jina_pb2, Request
+from ..proto import jina_pb2_grpc, jina_pb2
 
 
 class GatewayPea:
@@ -112,13 +112,13 @@ class GatewayPea:
 
         def handle(self, msg: 'jina_pb2.Message'):
             try:
+                msg.request.status.CopyFrom(msg.envelope.status)
                 self._request = getattr(msg.request, msg.request.WhichOneof('body'))
                 self._message = msg
                 if msg.envelope.num_part != [1]:
                     raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
                 self.executor(self.request_type)
                 # as envelope will be dropped when returning to the client
-                msg.request.status.CopyFrom(msg.envelope.status)
                 return msg.request
             except NoExplicitMessage:
                 self.logger.error('gateway should not receive partial message, it can not do reduce. '
