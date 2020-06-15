@@ -80,6 +80,27 @@ class BaseDriver(metaclass=DriverType):
 
     .. note::
         ``if`` accepts a single expression. It can be used for filter doc and chunk
+
+        Usage in YAML:
+
+        .. highlight:: yaml
+        .. code-block:: yaml
+
+            !Encode2
+            requests:
+              on:
+                IndexRequest:
+                  - !EncodeDriver
+                    if: doc.mime_type.startswith('image')
+
+        Usage in Python
+
+        .. highlight:: python
+        .. code-block:: python
+
+            class FilterDriver(PruneDriver):
+                if_expression = 'doc.doc_id % 2 ==0'
+
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
