@@ -37,6 +37,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -1533,4 +1534,44 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```25d5797f```](https://github.com/jina-ai/jina/commit/25d5797fa995bee3966686bcd34434d0a87cc342)] __-__ release 0.2.0 (*Han Xiao*)
  - [[```ff63c7fc```](https://github.com/jina-ai/jina/commit/ff63c7fc18019332207540f397daf5b950dc106d)] __-__ __version__: bumping version to 0.1.15 (*Jina Dev Bot*)
  - [[```97403ab2```](https://github.com/jina-ai/jina/commit/97403ab2847f8670b8c888a553a369f057563b14)] __-__ hotfix for pokedex (*Han Xiao*)
+
+## Release Note (`0.2.7`)
+
+> Release time: 2020-06-15 22:01:52
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Rutuja Surve,  redram,  fhaase2,  🙇
+
+
+### 🆕 New Features
+
+ - [[```0c0c8fef```](https://github.com/jina-ai/jina/commit/0c0c8fefed3fc2005cb1ffd8c589e39d75faabcf)] __-__ __proto__: add details to error status (*Han Xiao*)
+ - [[```08e9ddee```](https://github.com/jina-ai/jina/commit/08e9ddee3fd1facf5b1b0503fb70520ef64511aa)] __-__ __peapod__: add function to propagate error message through workflow (*Rutuja Surve*)
+ - [[```6dcdd488```](https://github.com/jina-ai/jina/commit/6dcdd48862049ed3fe8b0cfe3bb671e6f0b77467)] __-__ add if expr to basedriver (*Han Xiao*)
+ - [[```29aef4e3```](https://github.com/jina-ai/jina/commit/29aef4e30493d84e7332042b3ba674dba47752bf)] __-__ __encoder__: improve wav2vec encoder with signal resampling (*redram*)
+
+### 🐞 Bug fixes
+
+ - [[```46d4f454```](https://github.com/jina-ai/jina/commit/46d4f45458190d9f1e70efc47af5c2acbedffef7)] __-__ __proto__: move status outside of envelope (*Han Xiao*)
+ - [[```633b92bb```](https://github.com/jina-ai/jina/commit/633b92bbb55129a58d85ba37550bb0c4c9d568dc)] __-__ __logging__: profile and log streams non-blocking (*fhaase2*)
+
+### 🚧 Code Refactoring
+
+ - [[```74062a62```](https://github.com/jina-ai/jina/commit/74062a6248c6f7ba0806292fc9f3e204aea430df)] __-__ __except__: reorganize the excepts (*Han Xiao*)
+ - [[```b12f70a3```](https://github.com/jina-ai/jina/commit/b12f70a35394027f172de151380f4a9949de3f07)] __-__ __pea__: improve error catch logic (*Han Xiao*)
+ - [[```aca19304```](https://github.com/jina-ai/jina/commit/aca19304dd322090b82b6b07db5f24af173a591b)] __-__ __pea__: improve error catching logics (*Han Xiao*)
+ - [[```ca83488e```](https://github.com/jina-ai/jina/commit/ca83488e4f9356b75c06f47411bed92c6a3ac495)] __-__ __crafter__: extract set_chunk method (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```09f4c37d```](https://github.com/jina-ai/jina/commit/09f4c37d45462cfc9f237c84ba21e5c6a0a1d601)] __-__ __driver__: add if to docstring (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```9ea6ca96```](https://github.com/jina-ai/jina/commit/9ea6ca96b1d48540b404a7a78c3fe0d08139d217)] __-__ hotfix error catching (*Han Xiao*)
+ - [[```0c573044```](https://github.com/jina-ai/jina/commit/0c573044b9b229b5e6ad1f5688fb9f0b16339e46)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```0fc81f80```](https://github.com/jina-ai/jina/commit/0fc81f809114699a7dd35b13ce0e90b8f944afd8)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```ca6ac545```](https://github.com/jina-ai/jina/commit/ca6ac545937521b1e499e15b7073ee33a3b4b3de)] __-__ __version__: bumping version to 0.2.7 (*Jina Dev Bot*)
 
