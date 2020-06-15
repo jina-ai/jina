@@ -82,7 +82,7 @@ You can think of a Document like a chocolate bar. Documents have different forma
 <img src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 </p>
 
-**Executors** are the worker bees of Jina, and represent an algorithmic unit. They do all the hard work like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each executor has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box.
+How do we break down a Document into Chunks, and what happens next? **Executors** do all of this hard work, and each represents an algorithmic unit. They do things like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each one has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box.
 
 The properties of an Executor are stored in a [YAML file](#configuring-jina-with-yaml). They always go hand in hand.
 
@@ -150,6 +150,7 @@ Jina is one big happy family. You can feel the harmony when you use Jina.
 
 You can design at the micro-level and scale up to the macro-level. YAMLs becomes algorithms, threads become processes, Pods become Flows. The patterns and logic always remain the same. This is the beauty of Jina.
 
+<br /><br />
 
 <p align="center">
   <img src="img/ILLUS11.png?raw=true" alt="Jina 101 All Characters, Copyright by Jina AI Limited" title="Jina 101 All Characters, Copyright by Jina AI Limited" hspace="10" width="80%"/>
