@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 from typing import Tuple
 
 import numpy as np
-import gzip
 
 from .numpy import NumpyIndexer
 
