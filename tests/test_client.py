@@ -88,7 +88,7 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(yaml_path='- !URI2Buffer {}')
 
         def validate_mime_type(req):
-            for d in req.index.docs:
+            for d in req.docs:
                 self.assertEqual(d.mime_type, 'text/x-python')
 
         with f:
@@ -105,7 +105,7 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(yaml_path='yaml/unarycrafter.yml')
 
         def check_non_empty(req, field):
-            for d in req.index.docs:
+            for d in req.docs:
                 self.assertEqual(len(d.chunks), 1)
                 self.assertEqual(d.chunks[0].WhichOneof('content'), field)
 

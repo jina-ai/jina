@@ -17,13 +17,13 @@ class DummySegment(BaseSegmenter):
 class MyTestCase(JinaTestCase):
     def get_chunk_id(self, req):
         id = 0
-        for d in req.index.docs:
+        for d in req.docs:
             for c in d.chunks:
                 self.assertEqual(c.chunk_id, id)
                 id += 1
 
     def collect_chunk_id(self, req):
-        chunk_ids = [c.chunk_id for d in req.index.docs for c in d.chunks]
+        chunk_ids = [c.chunk_id for d in req.docs for c in d.chunks]
         self.assertTrue(len(chunk_ids), len(set(chunk_ids)))
 
     def test_dummy_seg(self):

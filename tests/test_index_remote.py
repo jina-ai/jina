@@ -29,7 +29,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
 
 def get_result(resp):
     n = []
-    for d in resp.search.docs:
+    for d in resp.docs:
         for c in d.chunks:
             n.append([k.match_chunk.chunk_id for k in c.topk_results])
     n = np.array(n)
