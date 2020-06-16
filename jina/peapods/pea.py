@@ -273,7 +273,7 @@ class BasePea(metaclass=PeaMeta):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             return self._callback(msg)
-        except (OSError, zmq.error.ZMQError, KeyboardInterrupt):
+        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
             # serious error happen in callback, we need to break the event loop
             raise
         except NoExplicitMessage:
