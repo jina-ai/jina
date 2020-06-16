@@ -39,12 +39,11 @@ class Sentencizer(BaseSegmenter):
                 self.min_sent_len, self.max_sent_len))
         self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(self.punct_chars)))
 
-    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
 
         :param text: the raw text
-        :param doc_id: the doc id
         :return: a list of chunk dicts with the cropped images
         """
 
@@ -53,11 +52,9 @@ class Sentencizer(BaseSegmenter):
         for idx, s in enumerate(all_sentences):
             if self.min_sent_len <= len(s) <= self.max_sent_len:
                 results.append(dict(
-                    doc_id=doc_id,
                     text=s,
                     offset=idx,
-                    weight=1.0,
-                    length=len(all_sentences)))
+                    weight=1.0))
         return results
 
 
@@ -76,11 +73,10 @@ class JiebaSegmenter(BaseSegmenter):
             raise ValueError('you must choose one of modes to cut the text: accurate, all, search.')
         self.mode = mode
 
-    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the chinese text into words
         :param text: the raw text
-        :param doc_id: the doc id
         :return: a list of chunk dicts
         """
         import jieba
@@ -150,7 +146,7 @@ class SlidingWindowSegmenter(BaseSegmenter):
                 except StopIteration:
                     return
                 d.extend(next(i, None)
-                         for _ in range(step-1))
+                         for _ in range(step - 1))
 
         chunks = [''.join(filter(None, list(chunk))) for chunk in
                   sliding_window(text, self.window_size, self.step_size)]
@@ -161,4 +157,47 @@ class SlidingWindowSegmenter(BaseSegmenter):
                     text=s,
                     offset=idx,
                     weight=1.0))
+        return results
+
+
+class DeepSegmenter(BaseSegmenter):
+    """
+    Designed with ASR outputs in mind, DeepSegment uses BiLSTM + CRF for automatic sentence boundary detection. It significantly outperforms the standard libraries (spacy, nltk, corenlp ..) on imperfect text and performs similarly for perfectly punctuated text.
+
+    Example: 'I am Batman i live in gotham'
+            ->  # ['I am Batman', 'i live in gotham']
+
+    Details: https://github.com/notAI-tech/deepsegment
+    """
+
+    def __init__(self, lang_code: str = 'en', checkpoint_name: str = None, *args, **kwargs):
+        """
+
+        :param lang_code: en - english (Trained on data from various sources); fr - french (Only Tatoeba data); it - italian (Only Tatoeba data)
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+        self.lang_code = lang_code
+        self.checkpoint_name = checkpoint_name
+
+    def post_init(self):
+        from deepsegment import DeepSegment
+        self._segmenter = DeepSegment(self.lang_code, checkpoint_name=self.checkpoint_name)
+
+    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
+        """
+        Split the text into sentences.
+
+        :param text: the raw text
+        :param doc_id: the doc id
+        :return: a list of chunk dicts with the cropped images
+        """
+
+        results = []
+        for idx, s in enumerate(self._segmenter.segment_long(text)):
+            results.append(dict(
+                text=s,
+                offset=idx,
+                weight=1.0))
         return results
