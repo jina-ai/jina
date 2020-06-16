@@ -34,8 +34,9 @@ onnxruntime:                framework, py37
 annoy:                      index
 sklearn:                    framework
 plyvel:                     index
-jieba:                      nlp, preprocess
+jieba:                      nlp, preprocess, craft
 lz4:                        optimization, devel, production, network
 gevent:                     http, devel
 python-magic:               http, devel
 librosa:                    audio
+deepsegment:                nlp, preprocess, craft
