@@ -17,7 +17,7 @@ result_html = []
 
 
 def print_result(resp):
-    for d in resp.search.docs:
+    for d in resp.docs:
         vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
         for kk in d.topk_results:
