@@ -8,28 +8,28 @@ class NoExplicitMessage(Exception):
     """Waiting until all partial messages are received"""
 
 
-class MismatchedVersion(OSError):
+class MismatchedVersion(SystemError):
     """When the jina version info of the incoming message does not match the local jina version"""
 
 
-class ExecutorFailToLoad(OSError):
+class ExecutorFailToLoad(SystemError):
     """When the executor can not be loaded in pea/pod"""
 
 
-class MemoryOverHighWatermark(OSError):
+class MemoryOverHighWatermark(SystemError):
     """When the memory usage is over the defined high water mark"""
 
 
-class RequestLoopEnd(OSError):
+class DriverError(SystemError):
+    """Driver related exceptions"""
+
+
+class RequestLoopEnd(KeyboardInterrupt):
     """The event loop of BasePea ends"""
 
 
 class PodRunTimeError(Exception):
     """The error propagated by Pods when Executor throws an exception"""
-
-
-class DriverError(OSError):
-    """Driver related exceptions"""
 
 
 class DriverNotInstalled(DriverError):
