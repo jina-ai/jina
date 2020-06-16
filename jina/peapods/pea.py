@@ -16,8 +16,7 @@ from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, RequestLoopEnd, \
-    DriverError
+from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError
 from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
@@ -274,7 +273,7 @@ class BasePea(metaclass=PeaMeta):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             return self._callback(msg)
-        except (OSError, zmq.error.ZMQError, KeyboardInterrupt):
+        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
             # serious error happen in callback, we need to break the event loop
             raise
         except NoExplicitMessage:
@@ -342,8 +341,6 @@ class BasePea(metaclass=PeaMeta):
         try:
             self.post_init()
             self.loop_body()
-        except RequestLoopEnd:
-            self.logger.info('break from the event loop')
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.yaml_path}')
         except MemoryOverHighWatermark:
@@ -352,7 +349,7 @@ class BasePea(metaclass=PeaMeta):
         except DriverError as ex:
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
         except KeyboardInterrupt:
-            self.logger.warning('user cancel the process')
+            self.logger.warning('break from the event loop or user cancel the process')
         except zmq.error.ZMQError:
             self.logger.critical('zmqlet can not be initiated')
         except Exception as ex:
