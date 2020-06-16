@@ -13,19 +13,33 @@ class FaissIndexer(NumpyIndexer):
     """Faiss powered vector indexer
 
     For more information about the Faiss supported parameters and installation problems, please consult:
-        - https://github.com/spotify/annoy
         - https://github.com/facebookresearch/faiss
 
     .. note::
         Faiss package dependency is only required at the query time.
     """
 
-    def __init__(self, index_key: str, train_filepath: str, *args, **kwargs):
+    def __init__(self, index_key: str, train_filepath: str = None, *args, **kwargs):
         """
         Initialize an Faiss Indexer
 
         :param index_key: index type supported by ``faiss.index_factory``
-        :param train_filename: the training data
+        :param train_filepath: the training data file path, e.g ``faiss.tgz``. The data file is expected to be a gzip
+            file in which `numpy.ndarray` is streamed as binary bytes.
+
+
+        .. highlight:: python
+        .. code-block:: python
+            # generate a training file
+            import gzip
+            import numpy as np
+            train_filepath = 'faiss_train.tgz'
+            train_data = np.random.rand(10000, 128)
+            with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
+                f.write(train_data.astype('float32'))
+
+            from jina.executors.indexers.vector.faiss import FaissIndexer
+            indexer = FaissIndexer('PCA64,FLAT', train_filepath)
         """
         super().__init__(*args, **kwargs)
         self.index_key = index_key
@@ -64,10 +78,6 @@ class FaissIndexer(NumpyIndexer):
         if self.num_dim != _num_dim:
             raise ValueError('training data should have the same number of features as the index, {} != {}'.format(
                 self.num_dim, _num_dim))
-        if _num_samples < 100 * _num_dim:
-            self.logger.warning(
-                'training sample size (={}) is suggested to be 10 * num_dim (={})'.format(
-                    _num_samples, self.num_dim))
         self._index.train(data)
         self.is_trained = True
 
