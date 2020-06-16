@@ -425,8 +425,6 @@ def set_client_cli_parser(parser=None):
                      help='top_k results returned in the search mode')
     gp1.add_argument('--mime-type', type=str,
                      help='MIME type of the input, useful when input-type is set to BUFFER')
-    gp1.add_argument('--callback-on-body', action='store_true', default=False,
-                     help='callback function works directly on the request body')
     gp1.add_argument('--first-request-id', type=int,
                      default=0,
                      help='the starting number of request id, the consequent request_id will increment by one')

@@ -132,8 +132,8 @@ class PyClient(GrpcClient):
                     self.logger.error(resp.status.details)
                 if callback:
                     try:
-                        if self.args.callback_on_body:
-                            resp = getattr(resp, resp.WhichOneof('body'))
+                        # if self.args.callback_on_body:
+                        resp = getattr(resp, resp.WhichOneof('body'))
                         callback(resp)
                     except Exception as ex:
                         raise BadClient('error in client\'s callback: %s' % ex)
