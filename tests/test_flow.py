@@ -2,7 +2,6 @@ import time
 import unittest
 
 import requests
-
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.executors.crafters import BaseDocCrafter
@@ -316,6 +315,19 @@ class MyTestCase(JinaTestCase):
 
         with f:
             f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+
+    def test_index_text_files(self):
+
+        def validate(req):
+            for d in req.docs:
+                self.assertNotEqual(d.text, '')
+
+        f = (Flow(read_only=True).add(yaml_path='yaml/datauriindex.yml', timeout_ready=-1))
+
+        with f:
+            f.index_files('*.py', output_fn=validate, callback_on_body=True)
+
+        self.add_tmpfile('doc.gzip')
 
 
 if __name__ == '__main__':
