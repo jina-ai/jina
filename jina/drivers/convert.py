@@ -220,7 +220,7 @@ class URI2Text(URI2Buffer):
         super().__init__(target, *args, **kwargs)
 
     def convert(self, d):
-        if d.mime_type == 'text/plain':
+        if d.mime_type.startswith('text/'):
             super().convert(d)
             d.text = d.buffer.decode()
 

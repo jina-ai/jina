@@ -322,12 +322,10 @@ class MyTestCase(JinaTestCase):
             for d in req.docs:
                 self.assertFalse(d.text, '')
 
-        f = (Flow().add(yaml_path='yaml/datauriindex.yml', timeout_ready=-1))
+        f = (Flow(read_only=True).add(yaml_path='yaml/datauriindex.yml', timeout_ready=-1))
 
         with f:
-            f.index_files('../**/*.txt', output_fn=validate, callback_on_body=True)
-
-        self.add_tmpfile('doc.gzip')
+            f.index_files('*.py', output_fn=validate, callback_on_body=True)
 
 
 if __name__ == '__main__':
