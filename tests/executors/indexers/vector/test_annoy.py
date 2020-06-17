@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector.annoy import AnnoyIndexer
+from jina.executors.indexers.vector.ngt import NGTIndexer
 from jina.executors.indexers.vector.nmslib import NmslibIndexer
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from tests import JinaTestCase
@@ -25,6 +26,59 @@ class MyTestCase(JinaTestCase):
             _index.add_item(j, np.random.random((5,)))
         _index.build(4)
         idx1, _ = _index.get_nns_by_vector(np.random.random((5,)), 3, include_distances=True)
+        print(np.array(idx1).shape)
+
+    def test_simple_ngt(self):
+        import ngtpy
+        path='/tmp/ngt-index'
+        dimension,queries,top_k,batch_size,num_batch=10,3,5,8,3
+
+        ngtpy.create(path=path,dimension=dimension,distance_type='L2')
+        _index = ngtpy.Index(path=path)
+        for i in range(num_batch):
+            _index.batch_insert(np.random.random((batch_size,dimension)))
+        _index.save()
+        _index.close()
+        self.assertTrue(os.path.exists(path))
+
+        _index = ngtpy.Index(path=path)
+
+        idx=[]
+        dist=[]
+        for key in np.random.random((queries, dimension)):
+            results = _index.search(key, size=top_k)
+            index_k = []
+            distance_k = []
+            for result in results:
+                index_k.append(result[0])
+                distance_k.append(result[1])
+            idx.append(index_k)
+            dist.append(distance_k)
+
+        idx = np.array(idx)
+        dist = np.array(dist)
+
+        self.assertEqual(idx.shape,dist.shape)
+        self.assertEqual(idx.shape, (queries,top_k))
+
+    def test_ngt_indexer(self):
+        import ngtpy
+        ngtpy.create(path=b'index3', dimension=5, distance_type='L2')
+        _index = ngtpy.Index(path=b'index3')
+        for i in range(3):
+            _index.batch_insert(np.random.random((8, 5)))
+        _index.save()
+        _index.close()
+        _index = ngtpy.Index(path=b'index3')
+
+        idx = []
+        dist = []
+
+
+        print("index shape : ", idx.shape)
+        print("distance shape : ", dist.shape)
+
+
 
     def test_np_indexer(self):
         a = NumpyIndexer(index_filename='np.test.gz')
