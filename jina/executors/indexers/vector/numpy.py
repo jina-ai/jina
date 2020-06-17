@@ -54,7 +54,7 @@ class NumpyIndexer(BaseVectorIndexer):
 
         :return: a numpy ndarray of vectors
         """
-        vecs = self._load_numpy(self.index_abspath)
+        vecs = self._load_gzip(self.index_abspath)
         if vecs is None:
             return vecs
 
@@ -134,7 +134,7 @@ class NumpyIndexer(BaseVectorIndexer):
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_key[idx], dist
 
-    def _load_numpy(self, abspath):
+    def _load_gzip(self, abspath):
         if not path.exists(abspath):
             self.logger.warning('numpy data not found: {}'.format(abspath))
             return None

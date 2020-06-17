@@ -23,21 +23,26 @@ class FaissIndexer(NumpyIndexer):
         Initialize an Faiss Indexer
 
         :param index_key: index type supported by ``faiss.index_factory``
-        :param train_filepath: the training data file path, e.g ``faiss.tgz``. The data file is expected to be a gzip
-            file in which `numpy.ndarray` is streamed as binary bytes.
+        :param train_filepath: the training data file path, e.g ``faiss.tgz`` or `faiss.npy`. The data file is expected
+            to be either `.npy` file from `numpy.save()` or a `.tgz` file from `NumpyIndexer`.
 
 
         .. highlight:: python
         .. code-block:: python
-            # generate a training file
+            # generate a training file in `.tgz`
             import gzip
             import numpy as np
+            from jina.executors.indexers.vector.faiss import FaissIndexer
+
             train_filepath = 'faiss_train.tgz'
             train_data = np.random.rand(10000, 128)
             with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
                 f.write(train_data.astype('float32'))
+            indexer = FaissIndexer('PCA64,FLAT', train_filepath)
 
-            from jina.executors.indexers.vector.faiss import FaissIndexer
+            # generate a training file in `.npy`
+            train_filepath = 'faiss_train'
+            np.save(train_filepath, train_data)
             indexer = FaissIndexer('PCA64,FLAT', train_filepath)
         """
         super().__init__(*args, **kwargs)
@@ -81,4 +86,19 @@ class FaissIndexer(NumpyIndexer):
         self.is_trained = True
 
     def _load_training_data(self, train_filepath):
-        return self._load_numpy(train_filepath)
+        result = None
+        try:
+            result = self._load_gzip(train_filepath)
+            if result is not None:
+                return result
+        except OSError as e:
+            self.logger.info('not a gzippped file, {}'.format(e))
+
+        try:
+            result = np.load(train_filepath)
+            if isinstance(result, np.lib.npyio.NpzFile):
+                self.logger.warning('.npz format is not supported. Please save the array in .npy format.')
+                result = None
+        except Exception as e:
+            self.logger.error('loading training data failed, filepath={}, {}'.format(train_filepath, e))
+        return result
