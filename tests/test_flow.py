@@ -320,12 +320,14 @@ class MyTestCase(JinaTestCase):
 
         def validate(req):
             for d in req.docs:
-                self.assertFalse(d.text, '')
+                self.assertNotEqual(d.text, '')
 
         f = (Flow(read_only=True).add(yaml_path='yaml/datauriindex.yml', timeout_ready=-1))
 
         with f:
             f.index_files('*.py', output_fn=validate, callback_on_body=True)
+
+        self.add_tmpfile('doc.gzip')
 
 
 if __name__ == '__main__':
