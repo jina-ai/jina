@@ -22,6 +22,7 @@ class NGTIndexer(NumpyIndexer):
     def __init__(self, state: str ='index',index_path: str = '/tmp/jina/index',  metric: str = 'L2', *args, **kwargs):
         """
         Initialize an NGT Indexer
+
         :param state: If indexing is already done , no need to index again.
                       Set "index" to index again (If new data has been added)
                       Set "load" to load from pre indexed file
@@ -37,21 +38,24 @@ class NGTIndexer(NumpyIndexer):
         self.state= state
 
     def get_query_handler(self):
-        """Load all vectors (in numpy ndarray) into NGT indexers """
+        """Index all vectors , if already indexed return NGT Index handle """
 
-        vecs = super().get_query_handler()
         import ngtpy
-        if vecs is not None and self.state=='index':
-            ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
-            _index = ngtpy.Index(self.index_path)
-            _index.batch_insert(vecs)
-            _index.save()
-            _index.close()
-            return ngtpy.Index(self.index_path)
+        if self.state=='index':
+            vecs = super().get_query_handler()
+            if vecs is not None:
+                ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
+                _index = ngtpy.Index(self.index_path)
+                _index.batch_insert(vecs)
+                _index.save()
+                _index.close()
+                return ngtpy.Index(self.index_path)
+            else:
+                return None
         elif self.state=='load':
             return ngtpy.Index(self.index_path)
         else:
-            return None
+            raise ValueError('state should either be index or load')
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         if keys.dtype != np.float32:
