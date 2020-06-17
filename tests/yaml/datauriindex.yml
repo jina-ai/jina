@@ -16,6 +16,7 @@ requests:
       - !URI2DataURI
         with:
           override: true
+      - !URI2Text {}
       - !DocPruneDriver {}
       - !KVIndexDriver
         with:
