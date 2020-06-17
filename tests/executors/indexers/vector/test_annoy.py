@@ -61,23 +61,6 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(idx.shape,dist.shape)
         self.assertEqual(idx.shape, (queries,top_k))
 
-    def test_ngt_indexer(self):
-        import ngtpy
-        ngtpy.create(path=b'index3', dimension=5, distance_type='L2')
-        _index = ngtpy.Index(path=b'index3')
-        for i in range(3):
-            _index.batch_insert(np.random.random((8, 5)))
-        _index.save()
-        _index.close()
-        _index = ngtpy.Index(path=b'index3')
-
-        idx = []
-        dist = []
-
-
-        print("index shape : ", idx.shape)
-        print("distance shape : ", dist.shape)
-
 
 
     def test_np_indexer(self):
