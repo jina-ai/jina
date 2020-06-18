@@ -35,7 +35,7 @@ class MyTestCase(JinaTestCase):
         ngtpy.create(path=path,dimension=dimension,distance_type='L2')
         _index = ngtpy.Index(path=path)
         for i in range(num_batch):
-            _index.batch_insert(np.random.random((batch_size,dimension)))
+            _index.batch_insert(np.random.random((batch_size,dimension)),num_threads=4)
         self.assertTrue(os.path.exists(path))
 
 

@@ -18,15 +18,16 @@ class NGTIndexer(NumpyIndexer):
         Quick Install : pip install ngt
     """
 
-    def __init__(self,metric: str = 'L2', *args, **kwargs):
+    def __init__(self,num_threads: int = 2,metric: str = 'L2', *args, **kwargs):
         """
         Initialize an NGT Indexer
-
+        :param num_threads: Number of threads to build index
         :param metric: Should be one of {L1,L2,Hamming,Jaccard,Angle,Normalized Angle,Cosine,Normalized Cosine}
         """
         super().__init__(*args, **kwargs)
         self.metric = metric
         self.index_path='/tmp/ngt-index'
+        self.num_threads=num_threads
 
     def get_query_handler(self):
         """Index all vectors , if already indexed return NGT Index handle """
@@ -36,7 +37,7 @@ class NGTIndexer(NumpyIndexer):
         if vecs is not None:
             ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
             _index = ngtpy.Index(self.index_path)
-            _index.batch_insert(vecs)
+            _index.batch_insert(vecs,num_threads=self.num_threads)
             return _index
         else:
             return None
