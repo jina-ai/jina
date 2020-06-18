@@ -231,7 +231,7 @@ pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/flow/README.html">Use Flow API to Compose Your Search Workflow</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/flow/index.html">Use Flow API to Compose Your Search Workflow</a></h4>
 Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely
 </td>
 <td><h3>🐣</h3></td>
@@ -239,7 +239,7 @@ Learn how to orchestrate Pods to work together: sequentially and in parallel; lo
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/io/main.html">Input and Output Functions in Jina</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
 Learn how the input and output functions work in Jina
 </td>
 <td><h3>🐣</h3></td>
@@ -295,7 +295,7 @@ Learn how to run a Flow remotely and use a local client to connect to it
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
 Learn to run Jina on remote instances and distribute your workflow
 </td>
 <td><h3>🕊</h3></td>
@@ -311,7 +311,7 @@ Learn how to implement your own ideas into Jina's plugin
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/hub/main.html">Run Jina Pod via Docker Container</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/hub/index.html">Run Jina Pod via Docker Container</a></h4>
 Learn how Jina solves complex dependencies easily with Docker container
 </td>
 <td><h3>🕊</h3></td>
@@ -343,10 +343,10 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 
 Jina をより深く学ぶための最良の方法はドキュメントを読むことです。ドキュメントはマスターブランチのプッシュ、マージ、リリースイベントごとに構築されています。以下のトピックについての詳細はドキュメントを参照してください。
 
--   [Jinaのコマンドラインインターフェースの引数の説明](https://docs.jina.ai/chapters/cli/main.html)
+-   [Jinaのコマンドラインインターフェースの引数の説明](https://docs.jina.ai/chapters/cli/index.html)
 -   [Jina Python API インターフェース](https://docs.jina.ai/api/jina.html)
 -   [実行者、ドライバ、フローのための Jina YAML 構文](https://docs.jina.ai/chapters/yaml/yaml.html)
--   [ジナ・プロトバフスキーマ](https://docs.jina.ai/chapters/proto/main.html)
+-   [ジナ・プロトバフスキーマ](https://docs.jina.ai/chapters/proto/index.html)
 -   [Jinaで使用される環境変数](https://docs.jina.ai/chapters/envs.html)
 -   ..[此れ以上](https://docs.jina.ai/index.html)
 
