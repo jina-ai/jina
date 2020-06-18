@@ -4,48 +4,48 @@ __license__ = "Apache-2.0"
 """ This modules defines all kinds of exceptions raised in jina """
 
 
-class MismatchedVersion(Exception):
-    """When the jina version info of the incoming message does not match the local jina version"""
-
-
 class NoExplicitMessage(Exception):
     """Waiting until all partial messages are received"""
 
 
-class ExecutorFailToLoad(Exception):
+class MismatchedVersion(SystemError):
+    """When the jina version info of the incoming message does not match the local jina version"""
+
+
+class ExecutorFailToLoad(SystemError):
     """When the executor can not be loaded in pea/pod"""
 
 
-class MemoryOverHighWatermark(Exception):
+class MemoryOverHighWatermark(SystemError):
     """When the memory usage is over the defined high water mark"""
 
 
-class UnknownControlCommand(Exception):
-    """The control command received can not be recognized"""
+class DriverError(SystemError):
+    """Driver related exceptions"""
 
 
-class RequestLoopEnd(Exception):
+class RequestLoopEnd(KeyboardInterrupt):
     """The event loop of BasePea ends"""
 
 
-class DriverNotInstalled(Exception):
+class PodRunTimeError(Exception):
+    """The error propagated by Pods when Executor throws an exception"""
+
+
+class DriverNotInstalled(DriverError):
     """Driver is not installed in the BasePea"""
 
 
-class BadDriverGroup(Exception):
-    """Driver group can not be found in the map"""
-
-
-class BadDriverMap(Exception):
-    """The YAML driver map is in a bad format"""
-
-
-class NoDriverForRequest(Exception):
+class NoDriverForRequest(DriverError):
     """No matched driver for this request """
 
 
-class UnattachedDriver(Exception):
+class UnattachedDriver(DriverError):
     """Driver is not attached to any BasePea or executor"""
+
+
+class UnknownControlCommand(RuntimeError):
+    """The control command received can not be recognized"""
 
 
 class FlowTopologyError(Exception):
@@ -84,16 +84,8 @@ class BadRequestType(Exception):
     """Bad request type and the pod does not know how to handle """
 
 
-class GRPCGatewayError(Exception):
-    """Some bad thing happens in the grpc gateway side"""
-
-
 class GRPCServerError(Exception):
     """Can not connect to the grpc gateway"""
-
-
-class NoIdleDealer(Exception):
-    """All dealers are exhausted no more idle dealer"""
 
 
 class GatewayPartialMessage(Exception):

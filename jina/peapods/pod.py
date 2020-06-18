@@ -195,11 +195,13 @@ class BasePod:
         # start real peas and accumulate the storage id
         if len(self.peas_args['peas']) > 1:
             start_rep_id = 1
+            role = PeaRoleType.REPLICA
         else:
             start_rep_id = 0
+            role = PeaRoleType.SINGLETON
         for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
             _args.replica_id = idx
-            _args.role = PeaRoleType.REPLICA
+            _args.role = role
             p = Pea(_args, allow_remote=False)
             self.peas.append(p)
             self.stack.enter_context(p)

@@ -211,6 +211,7 @@ class PeaRoleType(BetterEnum):
     HEAD = 1
     TAIL = 2
     SHARD = 3
+    SINGLETON = 4
 
 
 class ClientMode(BetterEnum):

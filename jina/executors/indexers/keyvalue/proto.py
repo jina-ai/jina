@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import gzip
 import json
-from typing import Union, List
+from typing import Union, List, Iterator
 
 from google.protobuf.json_format import Parse
 
@@ -79,7 +79,7 @@ class JsonPbIndexer(BasePbIndexer):
                         r[k] = Parse(v, self._parser())
         return r
 
-    def _add(self, keys: List[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
+    def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
         """Add a JSON-friendly object to the indexer
 
         :param obj: an object can be jsonified
@@ -119,7 +119,7 @@ class BinaryPbIndexer(BasePbIndexer):
                 r[b.doc_id] = b
         return r
 
-    def _add(self, keys: List[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
+    def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
         """Add a object to the indexer
 
         :param obj: an object

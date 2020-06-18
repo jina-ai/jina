@@ -18,7 +18,7 @@ from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 from ..main.parser import set_pea_parser, set_pod_parser
-from ..proto import jina_pb2_grpc, jina_pb2, Request
+from ..proto import jina_pb2_grpc, jina_pb2
 
 
 class GatewayPea:
@@ -112,14 +112,17 @@ class GatewayPea:
 
         def handle(self, msg: 'jina_pb2.Message'):
             try:
+                msg.request.status.CopyFrom(msg.envelope.status)
                 self._request = getattr(msg.request, msg.request.WhichOneof('body'))
                 self._message = msg
                 if msg.envelope.num_part != [1]:
                     raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
                 self.executor(self.request_type)
+                # as envelope will be dropped when returning to the client
                 return msg.request
             except NoExplicitMessage:
-                self.logger.error('gateway should not receive partial message, it can not do reduce')
+                self.logger.error('gateway should not receive partial message, it can not do reduce. '
+                                  'maybe you forget to add .join() as the last step of the flow?')
             except RequestLoopEnd:
                 self.logger.error('event loop end signal should not be raised in the gateway')
             except NoDriverForRequest:
@@ -206,7 +209,8 @@ class GatewayPea:
                 warn_msg = f'the gateway at {self.args.host}:{self.args.port_grpc} ' \
                            f'does not support remote spawn, please restart it with --allow-spawn'
                 request.log_record = warn_msg
-                request.status = jina_pb2.SpawnRequest.ERROR_NOTALLOWED
+                request.status.code = jina_pb2.Status.ERROR_NOTALLOWED
+                request.status.description = warn_msg
                 self.logger.warning(warn_msg)
                 for j in range(1):
                     yield request

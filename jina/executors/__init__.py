@@ -555,3 +555,6 @@ class BaseExecutor(metaclass=ExecutorType):
                     raise UnattachedDriver(d)
         else:
             raise NoDriverForRequest(req_type)
+
+    def __str__(self):
+        return self.__class__.__name__

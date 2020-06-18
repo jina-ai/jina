@@ -2,9 +2,9 @@ import time
 import unittest
 
 import requests
-
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
+from jina.executors.crafters import BaseDocCrafter
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
@@ -280,6 +280,54 @@ class MyTestCase(JinaTestCase):
 
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
+
+    def test_bad_flow(self):
+        def validate(req):
+            self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
+            self.assertEqual(req.status.details.pod, 'r1')
+            self.assertTrue(req.status.details.skipped[0].startswith('r2'))
+            self.assertTrue(req.status.details.skipped[1].startswith('r3'))
+
+        f = (Flow().add(name='r1', yaml_path='!BaseDocCrafter')
+             .add(name='r2', yaml_path='!BaseEncoder')
+             .add(name='r3', yaml_path='!BaseEncoder'))
+        with f:
+            f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+
+    def test_bad_flow_customized(self):
+        def validate(req):
+            self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
+            self.assertEqual(req.status.details.pod, 'r2')
+            self.assertTrue(req.status.details.skipped[0].startswith('r3'))
+            self.assertTrue(len(req.status.details.skipped) == 1)
+            self.assertTrue(req.status.details.exception.startswith('ZeroDivisionError'))
+
+        class DummyCrafter(BaseDocCrafter):
+            def craft(self, *args, **kwargs):
+                return 1 / 0
+
+        f = (Flow().add(name='r1', yaml_path='_forward')
+             .add(name='r2', yaml_path='!DummyCrafter')
+             .add(name='r3', yaml_path='!BaseEncoder'))
+
+        with f:
+            f.dry_run()
+
+        with f:
+            f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+
+    def test_index_text_files(self):
+
+        def validate(req):
+            for d in req.docs:
+                self.assertNotEqual(d.text, '')
+
+        f = (Flow(read_only=True).add(yaml_path='yaml/datauriindex.yml', timeout_ready=-1))
+
+        with f:
+            f.index_files('*.py', output_fn=validate, callback_on_body=True)
+
+        self.add_tmpfile('doc.gzip')
 
 
 if __name__ == '__main__':
