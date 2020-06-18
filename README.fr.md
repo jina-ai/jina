@@ -226,7 +226,7 @@ pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/flow/README.html">Use Flow API to Compose Your Search Workflow</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/flow/index.html">Use Flow API to Compose Your Search Workflow</a></h4>
 Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely
 </td>
 <td><h3>🐣</h3></td>
@@ -235,7 +235,7 @@ Learn how to orchestrate Pods to work together: sequentially and in parallel; lo
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/io/main.html">Input and Output Functions in Jina</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
 Learn how the input and output functions work in Jina
 </td>
 <td><h3>🐣</h3></td>
