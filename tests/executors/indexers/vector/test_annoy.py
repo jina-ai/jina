@@ -42,7 +42,7 @@ class MyTestCase(JinaTestCase):
         idx=[]
         dist=[]
         for key in np.random.random((queries, dimension)):
-            results = _index.search(key, size=top_k)
+            results = _index.search(key, size=top_k,epsilon=0.1)
             index_k = []
             distance_k = []
             for result in results:

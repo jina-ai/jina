@@ -18,16 +18,20 @@ class NGTIndexer(NumpyIndexer):
         Quick Install : pip install ngt
     """
 
-    def __init__(self,num_threads: int = 2,metric: str = 'L2', *args, **kwargs):
+    def __init__(self,num_threads: int = 2,metric: str = 'L2',epsilon: int = 0.1, *args, **kwargs):
         """
         Initialize an NGT Indexer
         :param num_threads: Number of threads to build index
         :param metric: Should be one of {L1,L2,Hamming,Jaccard,Angle,Normalized Angle,Cosine,Normalized Cosine}
+        :param epsilon: Toggle this variable for speed vs recall tradeoff.
+                        Higher value of epsilon means higher recall
+                        but query time will increase with epsilon
         """
         super().__init__(*args, **kwargs)
         self.metric = metric
         self.index_path='/tmp/ngt-index'
         self.num_threads=num_threads
+        self.epsilon=epsilon
 
     def get_query_handler(self):
         """Index all vectors , if already indexed return NGT Index handle """
@@ -50,7 +54,7 @@ class NGTIndexer(NumpyIndexer):
         dist = []
         idx = []
         for key in keys:
-            results = index.search(key, size=top_k)
+            results = index.search(key, size=top_k,epsilon=self.epsilon)
             index_k=[]
             distance_k=[]
             for result in results:
