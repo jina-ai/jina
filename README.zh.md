@@ -230,7 +230,7 @@ pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/flow/README.html">Use Flow API to Compose Your Search Workflow</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/flow/index.html">Use Flow API to Compose Your Search Workflow</a></h4>
 Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely
 </td>
 <td><h3>🐣</h3></td>
@@ -239,7 +239,7 @@ Learn how to orchestrate Pods to work together: sequentially and in parallel; lo
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/io/main.html">Input and Output Functions in Jina</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
 Learn how the input and output functions work in Jina
 </td>
 <td><h3>🐣</h3></td>
@@ -296,7 +296,7 @@ Learn how to run a Flow remotely and use a local client to connect to it
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
 Learn to run Jina on remote instances and distribute your workflow
 </td>
 <td><h3>🕊</h3></td>
@@ -312,7 +312,7 @@ Learn how to implement your own ideas into Jina's plugin
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/hub/main.html">Run Jina Pod via Docker Container</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/hub/index.html">Run Jina Pod via Docker Container</a></h4>
 Learn how Jina solves complex dependencies easily with Docker container
 </td>
 <td><h3>🕊</h3></td>
@@ -344,10 +344,10 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 
 要深入学习Jina，最好的方法就是阅读我们的文档。文档建立在主分支的每个推送、合并和发布事件上。你可以在我们的文档中找到关于以下主题的更多细节。
 
--   [Jina命令行接口参数解释](https://docs.jina.ai/chapters/cli/main.html)
+-   [Jina命令行接口参数解释](https://docs.jina.ai/chapters/cli/index.html)
 -   [Jina Python API接口](https://docs.jina.ai/api/jina.html)
 -   [用于执行器、驱动和流程的Jina YAML语法](https://docs.jina.ai/chapters/yaml/yaml.html)
--   [Jina Protobuf方案](https://docs.jina.ai/chapters/proto/main.html)
+-   [Jina Protobuf方案](https://docs.jina.ai/chapters/proto/index.html)
 -   [Jina中使用的环境变量](https://docs.jina.ai/chapters/envs.html)
 -   ..[以及更多](https://docs.jina.ai/index.html)
 
