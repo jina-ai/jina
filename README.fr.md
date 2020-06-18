@@ -226,7 +226,7 @@ pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/flow/README.html">Use Flow API to Compose Your Search Workflow</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/flow/index.html">Use Flow API to Compose Your Search Workflow</a></h4>
 Learn how to orchestrate Pods to work together: sequentially and in parallel; locally and remotely
 </td>
 <td><h3>🐣</h3></td>
@@ -235,7 +235,7 @@ Learn how to orchestrate Pods to work together: sequentially and in parallel; lo
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/io/main.html">Input and Output Functions in Jina</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
 Learn how the input and output functions work in Jina
 </td>
 <td><h3>🐣</h3></td>
@@ -292,7 +292,7 @@ Learn how to run a Flow remotely and use a local client to connect to it
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/remote/main.html">Distribute Your Workflow Remotely</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
 Learn to run Jina on remote instances and distribute your workflow
 </td>
 <td><h3>🕊</h3></td>
@@ -308,7 +308,7 @@ Learn how to implement your own ideas into Jina's plugin
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/hub/main.html">Run Jina Pod via Docker Container</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/hub/index.html">Run Jina Pod via Docker Container</a></h4>
 Learn how Jina solves complex dependencies easily with Docker container
 </td>
 <td><h3>🕊</h3></td>
@@ -340,10 +340,10 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 
 La meilleure façon d'apprendre Jina en profondeur est de lire notre documentation. La documentation est construite sur chaque événement de poussée, de fusion et de libération de la branche maîtresse. Vous pouvez trouver plus de détails sur les sujets suivants dans notre documentation.
 
--   [Explication des arguments de l'interface en ligne de commande de Jina](https://docs.jina.ai/chapters/cli/main.html)
+-   [Explication des arguments de l'interface en ligne de commande de Jina](https://docs.jina.ai/chapters/cli/index.html)
 -   [Interface API Jina Python](https://docs.jina.ai/api/jina.html)
 -   [Syntaxe Jina YAML pour l'exécuteur, le conducteur et le flux](https://docs.jina.ai/chapters/yaml/yaml.html)
--   [Schéma de Jina Protobuf](https://docs.jina.ai/chapters/proto/main.html)
+-   [Schéma de Jina Protobuf](https://docs.jina.ai/chapters/proto/index.html)
 -   [Variables environnementales utilisées dans Jina](https://docs.jina.ai/chapters/envs.html)
 -   ..[et plus](https://docs.jina.ai/index.html)
 
