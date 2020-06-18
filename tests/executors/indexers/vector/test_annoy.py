@@ -26,7 +26,6 @@ class MyTestCase(JinaTestCase):
             _index.add_item(j, np.random.random((5,)))
         _index.build(4)
         idx1, _ = _index.get_nns_by_vector(np.random.random((5,)), 3, include_distances=True)
-        print(np.array(idx1).shape)
 
     def test_simple_ngt(self):
         import ngtpy
@@ -37,11 +36,8 @@ class MyTestCase(JinaTestCase):
         _index = ngtpy.Index(path=path)
         for i in range(num_batch):
             _index.batch_insert(np.random.random((batch_size,dimension)))
-        _index.save()
-        _index.close()
         self.assertTrue(os.path.exists(path))
 
-        _index = ngtpy.Index(path=path)
 
         idx=[]
         dist=[]
