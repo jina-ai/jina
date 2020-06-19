@@ -52,15 +52,15 @@ You can think of a Document like a chocolate bar. Documents have different forma
 
 <br/><br/><br/>
 
-<h2 align="center">YAML config</h2>
+<h2 align="center">YAML Config</h2>
 
 <img align="right" src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-Every part of Jina is configured with YAML files. YAML files offer customization, allowing you to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML file, or save an object into a YAML file.
+Every part of Jina is configured with **YAML files**. YAML files offer customization, allowing you to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML file, or save an object into a YAML file.
 
 <br/><br/><br/><br/><br/><br/>
 
-<h2 align="center">Executor</h2>
+<h2 align="center">Executors</h2>
 
 <img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -68,7 +68,7 @@ How do we break down a Document into Chunks, and what happens next? **Executors*
 
 <br/><br/><br/>
 
-<h3 align="center">Family of Executors</h3>
+<h3 align="center">The Executor Family</h3>
 
 
 <p align="center">
@@ -85,7 +85,7 @@ Got a new algorithm in mind? No problem, this family always welcomes new members
 
 <br/><br/>
 
-<h2 align="center">Driver</h2>
+<h2 align="center">Drivers</h2>
 
 <img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -95,7 +95,7 @@ Executors do all the hard work, but they're not great at talking to each other. 
 
 
 
-<h2 align="center">Pea</h2>
+<h2 align="center">Peas</h2>
 
 <img align="left" src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -109,7 +109,7 @@ While a Driver translates data for an Executor, A Pea wraps an Executor and lets
 
 
 
-<h2 align="center">Pod</h2>
+<h2 align="center">Pods</h2>
 
 <img align="left" src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
