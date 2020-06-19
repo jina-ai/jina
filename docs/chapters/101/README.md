@@ -24,7 +24,7 @@
      <br>
 <a href="README.md">English</a> •
   <a href="README.ja.md">日本語</a> •
-  <a href="README.fr.md">français</a> •
+  <a href="README.fr.md">Français</a> •
   <a href="README.pt.md">Português</a> •
   <a href="README.de.md">Deutsch</a> •
   <a href="README.ru.md">Русский язык</a> •
@@ -46,7 +46,7 @@ When most people think of search, they think of a bar you type words into, like 
 
 In Jina, we call all of these things **Documents**. In short, a Document is anything you want to search for, and the input query you use when searching.
 
-Documents can be huge though - how can we search for the right part? If you search for a pancake recipe, you don't want to get the whole cookbook back! We do this by breaking a Document into **Chunks**. A Chunk is a small semantic unit of a Document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates. 
+Documents can be huge though - how can we search for the right part? We do this by breaking a Document into **Chunks**. A Chunk is a small semantic unit of a Document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates. 
 
 You can think of a Document like a chocolate bar. Documents have different formats and ingredients, but you can also break it into chunks any way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, but you don’t want to grind it into powder either; By doing that, you lose the flavor (i.e. the semantics).
 
