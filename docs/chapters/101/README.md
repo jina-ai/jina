@@ -127,7 +127,7 @@ A Pod is a group of Peas with the same property, running in parallel on a local 
 <img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 
-Now we've got a garden full of Pods, with each Pod full of Peas. That's a lot to manage! Say hello to **Flow**!. Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
+Now we've got a garden full of Pods, with each Pod full of Peas. That's a lot to manage! Say hello to **Flow**! Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
 
 <br/><br/><br/><br/><br/><br/>
 
