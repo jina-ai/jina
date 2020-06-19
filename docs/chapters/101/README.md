@@ -115,7 +115,7 @@ While a Driver translates data for an Executor, A Pea wraps an Executor and lets
 
 So now you've got lots of Peas talking to each other and rolling all over the place. How can you organize them? Nature uses **Pods**, and so do we.
 
-A Pod is a group of Peas with the same property **Does this mean they perform the same task, or are different subtasks of one larger task?**, running in parallel on a local host or over the network. A Pod provides a single network interface for its Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds further control, scheduling, and context management to the Peas.
+A Pod is a group of Peas with the same property, running in parallel on a local host or over the network. A Pod provides a single network interface for its Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds further control, scheduling, and context management to the Peas.
 
 <img align="right" src="img/ILLUS9.png?raw=true" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
