@@ -28,6 +28,7 @@ paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 Pillow:                     cv
 tensorflow>=2.0:            framework, py37
+tensorflow-hub:             framework, py37
 torchvision:                framework
 onnx:                       framework, py37
 onnxruntime:                framework, py37
