@@ -1,0 +1,11 @@
+!BaseExecutor
+requests:
+  on:
+    IndexRequest:
+      - !PruneDriver
+        with:
+          level: chunk
+          pruned:
+            - buffer
+            - blob
+            - text
