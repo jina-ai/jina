@@ -74,9 +74,17 @@ class JsonPbIndexer(BasePbIndexer):
         with gzip.open(self.index_abspath, 'rt') as fp:
             for l in fp:
                 if l:
-                    tmp = json.loads(l)
-                    for k, v in tmp.items():
-                        r[k] = Parse(v, self._parser())
+                    # JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+                    # Check the response data-body,
+                    # whether actual data is present and a data-dump appears to be well-formatted.
+                    # more details at: https://stackoverflow.com/a/18460958/8339986
+                    try:  # try parsing to dict
+                        l = str(l).strip("'<>() ").replace('\'', '\"')
+                        tmp = json.loads(l)
+                        for k, v in tmp.items():
+                            r[k] = Parse(v, self._parser())
+                    except Exception as ex:
+                        self.logger.error(ex)
         return r
 
     def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
