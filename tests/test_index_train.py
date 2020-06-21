@@ -17,7 +17,7 @@ class MyTestCase(JinaTestCase):
     def test_calling_train_sets_is_trained(self):
         data = np.random.rand(1, 2)
         i = DummyIndexer()
-        # Call train method
+        # Call train method on indexer
         i.train(data)
         # After train was called, is_trained must be true
         self.assertTrue(i.is_trained)
