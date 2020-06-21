@@ -329,6 +329,21 @@ class MyTestCase(JinaTestCase):
 
         self.add_tmpfile('doc.gzip')
 
+    def test_flow_with_publish_driver(self):
+
+        f = (Flow().add(name='r1', yaml_path='yaml/unarycrafter.yml')
+             .add(name='r2', yaml_path='!BaseEncoder')
+             .add(name='r3', yaml_path='!BaseEncoder', needs='r1')
+             .join(needs=['r2', 'r3'])
+             )
+
+        def validate(req):
+            for d in req.docs:
+                self.assertEqual(d.length, 1)
+
+        with f:
+            f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on_body=True)
+
 
 if __name__ == '__main__':
     unittest.main()
