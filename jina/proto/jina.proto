@@ -194,7 +194,7 @@ message Status {
     // status code
     StatusCode code = 1;
 
-    // error description when the Status of the Envelope is ERROR, else NULL
+    // error description of the very first exception
     string description = 2;
 
     message Details {
@@ -216,12 +216,10 @@ message Status {
         // the timestamp when error occurs
         google.protobuf.Timestamp time = 6;
 
-        // skipped peapods in the workflow
-        repeated string skipped = 7;
     }
 
     // the details of the error
-    Details details = 3;
+    repeated Details details = 3;
 }
 
 /**
