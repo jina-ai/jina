@@ -39,6 +39,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -1640,4 +1641,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```fb8a68fa```](https://github.com/jina-ai/jina/commit/fb8a68fa166fa744d46045a48b2e4e043448e42b)] __-__ __version__: bumping version to 0.2.8 (*Jina Dev Bot*)
  - [[```ca6ac545```](https://github.com/jina-ai/jina/commit/ca6ac545937521b1e499e15b7073ee33a3b4b3de)] __-__ __version__: bumping version to 0.2.7 (*Jina Dev Bot*)
  - [[```f92a914e```](https://github.com/jina-ai/jina/commit/f92a914ec260729123ad4783fc4223618db7e6cb)] __-__ update copyright header (*Jina Dev Bot*)
+
+## Release Note (`0.2.9`)
+
+> Release time: 2020-06-21 10:06:44
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  fhaase2,  🙇
+
+
+### 🆕 New Features
+
+ - [[```bf231280```](https://github.com/jina-ai/jina/commit/bf23128094f523bb781ba046dfa14df64cad8ce3)] __-__ __encoders__: add universal sentence encoder (*fhaase2*)
+
+### 🐞 Bug fixes
+
+ - [[```020c92b2```](https://github.com/jina-ai/jina/commit/020c92b26c5c28c149356a603f86c4ecb4e7d100)] __-__ __pea__: fix except handling in pea (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```88a67412```](https://github.com/jina-ai/jina/commit/88a6741245e76186e707e5d1481b9a37273b4034)] __-__ __drivers__: add test for prune driver (*fhaase2*)
+
+### 🍹 Other Improvements
+
+ - [[```94322a8d```](https://github.com/jina-ai/jina/commit/94322a8d50b6e0b666c04ca4a3c43c108fa8bb57)] __-__ hotfix error handling (*Han Xiao*)
+ - [[```ae9832e8```](https://github.com/jina-ai/jina/commit/ae9832e842bcf8436ee6490d6f0a0963f9e8b167)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```cd57b690```](https://github.com/jina-ai/jina/commit/cd57b690a3d4a492475314ad64a90f8da568b352)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```4ab91693```](https://github.com/jina-ai/jina/commit/4ab91693c2d51a35eca3cf6c187034e0568b0ac9)] __-__ __version__: bumping version to 0.2.9 (*Jina Dev Bot*)
 
