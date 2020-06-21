@@ -35,6 +35,7 @@ def as_train_method(func: Callable):
             self.logger.warning('"%s" has been trained already, '
                                 'training it again will override the previous training' % self.__class__.__name__)
         f = func(self, *args, **kwargs)
+        self.is_trained = True
         return f
 
     return arg_wrapper
