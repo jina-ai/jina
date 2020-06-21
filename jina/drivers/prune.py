@@ -52,7 +52,8 @@ class PruneDriver(BaseDriver):
             for k in self.pruned:
                 self.msg.ClearField(k)
         else:
-            raise TypeError(f'level={self.level} is not supported, must choose from "chunk", "doc", "request" or "all" ')
+            raise TypeError(
+                f'level={self.level} is not supported, must choose from "chunk", "doc", "request" or "all" ')
 
 
 class ChunkPruneDriver(PruneDriver):
