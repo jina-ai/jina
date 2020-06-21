@@ -83,7 +83,6 @@ class FaissIndexer(NumpyIndexer):
             raise ValueError('training data should have the same number of features as the index, {} != {}'.format(
                 self.num_dim, _num_dim))
         self._index.train(data)
-        self.is_trained = True
 
     def _load_training_data(self, train_filepath):
         result = None
