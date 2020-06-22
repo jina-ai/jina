@@ -15,7 +15,9 @@ from ..helper import batch_iterator
 
 def as_update_method(func: Callable):
     """Mark the function as the updating function of this executor,
-    calling this function will change the executor so later you can save the change via :func:`save` """
+    calling this function will change the executor so later you can save the change via :func:`save`
+    Will set the is_updated property after function is called.
+    """
 
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
@@ -27,7 +29,9 @@ def as_update_method(func: Callable):
 
 
 def as_train_method(func: Callable):
-    """Mark a function as the training function of this executor """
+    """Mark a function as the training function of this executor.
+    Will set the is_trained property after function is called.
+    """
 
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
@@ -35,6 +39,7 @@ def as_train_method(func: Callable):
             self.logger.warning('"%s" has been trained already, '
                                 'training it again will override the previous training' % self.__class__.__name__)
         f = func(self, *args, **kwargs)
+        self.is_trained = True
         return f
 
     return arg_wrapper
