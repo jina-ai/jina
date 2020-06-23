@@ -70,7 +70,11 @@ def set_hub_build_parser(parser=None):
 
     set_hub_base_parser(parser)
 
-    parser.add_argument('path', type=str, help='path to the directory containing the Dockerfile, manifest.yml')
+    parser.add_argument('path', type=str, help='path to the directory containing '
+                                               'Dockerfile, manifest.yml, README.md'
+                                               'zero or more yaml config, '
+                                               'zero or more Python file. '
+                                               'All files in this directory will be shipped into a Docker image')
     parser.add_argument('--pull', action='store_true', default=False,
                         help='downloads any updates to the FROM image in Dockerfiles')
     parser.add_argument('--push', action='store_true', default=False,
