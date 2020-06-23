@@ -91,5 +91,5 @@ def flow(args):
 
 def hub(args):
     """Start a hub builder for build, push, pull"""
-    from ..hubapi.docker import DockerIO
-    getattr(DockerIO(args), args.hub)()
+    from ..hubapi.docker import HubIO
+    getattr(HubIO(args), args.hub)()

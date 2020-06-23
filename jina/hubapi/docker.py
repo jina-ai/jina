@@ -20,7 +20,16 @@ _repo_prefix = 'jinahub/'
 _label_prefix = 'ai.jina.hub.'
 
 
-class DockerIO:
+class HubIO:
+    """ :class:`HubIO` provides the way to interact with Jina Hub registry.
+    You can use it with CLI to package a directory into a Jina Hub image and publish it to the world.
+
+    Examples:
+        - :command:`jina hub build my_pod/` build the image
+        - :command:`jina hub build my_pod/ --push` build the image and push to the public registry
+        - :command:`jina hub pull jinahub/pod.dummy_mwu_encoder:0.0.6` to download the image
+    """
+
     def __init__(self, args: 'argparse.Namespace'):
         self.logger = get_logger(self.__class__.__name__, **vars(args))
         self.args = args
@@ -32,6 +41,7 @@ class DockerIO:
             raise
 
     def push(self, name: str = None):
+        """A wrapper of docker push """
         name = name or self.args.name
         check_registry(self.args.registry, name, _repo_prefix)
         self._check_docker_image(name)
@@ -43,6 +53,7 @@ class DockerIO:
         self.logger.success(f'🎉 {name} is now published!')
 
     def pull(self):
+        """A wrapper of docker pull """
         check_registry(self.args.registry, self.args.name, _repo_prefix)
         self.login()
         with TimeContext(f'pulling {self.args.name}', self.logger):
@@ -70,6 +81,7 @@ class DockerIO:
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
 
     def login(self):
+        """A wrapper of docker login """
         if self.args.username and self.args.password:
             self._client.login(username=self.args.username, password=self.args.password,
                                registry=self.args.registry)
@@ -78,6 +90,7 @@ class DockerIO:
             self._client.login(**get_default_login(), registry=self.args.registry)
 
     def build(self):
+        """A wrapper of docker build """
         self._check_completeness()
 
         with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger):
