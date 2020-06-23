@@ -40,6 +40,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -1671,4 +1672,34 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ae9832e8```](https://github.com/jina-ai/jina/commit/ae9832e842bcf8436ee6490d6f0a0963f9e8b167)] __-__ update copyright header (*Jina Dev Bot*)
  - [[```cd57b690```](https://github.com/jina-ai/jina/commit/cd57b690a3d4a492475314ad64a90f8da568b352)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```4ab91693```](https://github.com/jina-ai/jina/commit/4ab91693c2d51a35eca3cf6c187034e0568b0ac9)] __-__ __version__: bumping version to 0.2.9 (*Jina Dev Bot*)
+
+## Release Note (`0.2.10`)
+
+> Release time: 2020-06-23 19:36:22
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  fhaase2,  Yue Liu,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1e7d3b6b```](https://github.com/jina-ai/jina/commit/1e7d3b6b6dc7f4a46baabaf70f16d60955f4c0db)] __-__ add password from stdin (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```7a648ea3```](https://github.com/jina-ai/jina/commit/7a648ea3d099d7f2b128bf300ce693001c5a368c)] __-__ __indexer__: is trained set on train call (*fhaase2*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```d0be9f32```](https://github.com/jina-ai/jina/commit/d0be9f32649eaab17627d64405a8d2f46e638b2b)] __-__ delete empty space in a filename (*Yue Liu*)
+
+### 🍹 Other Improvements
+
+ - [[```4a98575a```](https://github.com/jina-ai/jina/commit/4a98575a414a467b82726af6f231e85d35712f6b)] __-__ hotfix add jina hub command (*Han Xiao*)
+ - [[```b18aa902```](https://github.com/jina-ai/jina/commit/b18aa902b91e0252bee03d4b0d5dfe59779aab0c)] __-__ add jina hub command (*Han Xiao*)
+ - [[```f84bca6b```](https://github.com/jina-ai/jina/commit/f84bca6b2efce0458d378ecc058fd629e5939363)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```7764f053```](https://github.com/jina-ai/jina/commit/7764f05356579bd2aab098a342018dee96d5903a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```79b302c9```](https://github.com/jina-ai/jina/commit/79b302c93b01689e82cf4b52f46522eb7497c404)] __-__ __version__: bumping version to 0.2.10 (*Jina Dev Bot*)
 
