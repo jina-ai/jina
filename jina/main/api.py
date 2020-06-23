@@ -87,3 +87,9 @@ def flow(args):
     else:
         from jina.logging import default_logger
         default_logger.critical('start a flow from CLI requires a valid "--yaml-path"')
+
+
+def hub(args):
+    """Start a hub builder for build, push, pull"""
+    from ..hubapi.docker import DockerIO
+    getattr(DockerIO(args), args.hub)()

@@ -50,7 +50,7 @@ def write_html(html_path):
 
 
 def download_data(targets):
-    with ProgressBar(task_name='download fashion-mnist') as t:
+    with ProgressBar(task_name='download fashion-mnist', batch_unit='') as t:
         for v in targets.values():
             if not os.path.exists(v['filename']):
                 urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update(1))
