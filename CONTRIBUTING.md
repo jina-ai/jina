@@ -61,7 +61,8 @@ For branches, commits, and PRs we follow some basic naming conventions:
 * Be descriptive
 * Use all lower-case
 * Limit punctuation
-* Include one of our specified types
+* Include one of our specified [types](#types)
+* Short (under 70 characters is best)
 * In general, follow the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary) guidelines
 
 ### Types
