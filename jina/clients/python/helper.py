@@ -20,7 +20,7 @@ class ProgressBar:
                 do_busy()
     """
 
-    def __init__(self, bar_len: int = 20, task_name: str = '', logger=None):
+    def __init__(self, bar_len: int = 20, task_name: str = '', batch_unit: str = 'batch', logger=None):
         """
 
         :param bar_len: total length of the bar
@@ -30,6 +30,7 @@ class ProgressBar:
         self.task_name = task_name
         self.num_docs = 0
         self.logger = logger
+        self.batch_unit = batch_unit
 
     def update(self, progress: int = None, *args, **kwargs) -> None:
         """ Increment the progress bar by one unit
@@ -45,14 +46,15 @@ class ProgressBar:
             self.num_docs += progress
 
         sys.stdout.write(
-            '{:>10} [{:<{}}] 📃 {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f}/s {:6d} batch'.format(
+            '{:>10} [{:<{}}] 📃 {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f}/s {:6d} {:>10}'.format(
                 colored(self.task_name, 'cyan'),
                 colored('=' * num_bars, 'green'),
                 self.bar_len + 9,
                 self.num_docs,
                 elapsed,
                 self.num_docs / elapsed,
-                self.num_reqs
+                self.num_reqs,
+                self.batch_unit
             ))
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
