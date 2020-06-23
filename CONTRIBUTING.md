@@ -109,14 +109,7 @@ docs-add-cloud-section-33
 
 A good commit message helps us track Jina's development. A Pull Request with a bad commit message will be *rejected* automatically in the CI pipeline.
 
-A good commit message should:
-
-* Stick to our naming format (outlined below)
-* Be short
-* Be all lower-case
-* Not use too much punctuation
-
-Specifically, your commit message should follow the [Conventional Commits format]: `type(scope?): subject`:
+Commit messages should stick to our [naming conventions](#naming-conventions) outlined above, and use the format `type(scope?): subject`:
 
 * `type` is one of the [types above](#types).
 * `scope` is optional, and represents the module your commit is working on.
