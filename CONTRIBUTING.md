@@ -98,11 +98,6 @@ docs-add-cloud-section-33
 
 > Bad examples:
 >
-```text
-FIXAWESOME123
-NEW-test-1
-mybranch-1
-``` 
 
 | Branch name     | Feedback                                              |
 | ---             | ---                                                   |
