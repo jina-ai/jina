@@ -34,7 +34,7 @@ pygments_style = 'rainbow_dash'
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     # 'canonical_url': '',
-    'analytics_id': 'UA-164627626-3',  #  Provided by Google in your dashboard
+    'analytics_id': 'UA-164627626-3',  # Provided by Google in your dashboard
     'logo_only': True,
     'display_version': True,
     # 'prev_next_buttons_location': 'bottom',
@@ -56,7 +56,6 @@ html_css_files = ['main.css']
 htmlhelp_basename = slug
 html_show_sourcelink = False
 
-
 latex_documents = [(master_doc, f'{slug}.tex', project, author, 'manual')]
 man_pages = [(master_doc, slug, project, [author], 1)]
 texinfo_documents = [(master_doc, slug, project, author, slug, project, 'Miscellaneous')]
@@ -74,8 +73,23 @@ extensions = [
     'sphinx_rtd_theme',
     'recommonmark',
     'sphinx_markdown_tables',
-    'sphinx_copybutton'
+    'sphinx_copybutton',
+    'notfound.extension',
 ]
+
+# -- Custom 404 page
+
+# sphinx-notfound-page
+# https://github.com/readthedocs/sphinx-notfound-page
+notfound_context = {
+    'title': 'Page Not Found',
+    'body': '''
+<h1>Page Not Found</h1>
+<p>Sorry, we couldn't find that page.</p>
+<p>Try using the search box or go to the homepage.</p>
+''',
+}
+notfound_no_urls_prefix = True
 
 apidoc_module_dir = '../jina/'
 apidoc_output_dir = 'api'

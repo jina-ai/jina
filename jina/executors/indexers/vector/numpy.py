@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import gzip
 from typing import Tuple, Optional
+from os import path
 
 import numpy as np
 from jina.executors.indexers import BaseVectorIndexer
@@ -53,14 +54,9 @@ class NumpyIndexer(BaseVectorIndexer):
 
         :return: a numpy ndarray of vectors
         """
-        try:
-            if self.num_dim and self.dtype:
-                with gzip.open(self.index_abspath, 'rb') as fp:
-                    vecs = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
-        except EOFError:
-            self.logger.error(
-                f'{self.index_abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
-            return None
+        vecs = self._load_gzip(self.index_abspath)
+        if vecs is None:
+            return vecs
 
         if self.key_bytes and self.key_dtype:
             self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
@@ -137,6 +133,20 @@ class NumpyIndexer(BaseVectorIndexer):
         idx = dist.argsort(axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_key[idx], dist
+
+    def _load_gzip(self, abspath):
+        if not path.exists(abspath):
+            self.logger.warning('numpy data not found: {}'.format(abspath))
+            return None
+        result = None
+        try:
+            if self.num_dim and self.dtype:
+                with gzip.open(abspath, 'rb') as fp:
+                    result = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
+        except EOFError:
+            self.logger.error(
+                f'{self.index_abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
+        return result
 
 
 def _ext_arrs(A, B):

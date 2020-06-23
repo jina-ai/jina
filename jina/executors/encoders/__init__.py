@@ -21,7 +21,7 @@ class BaseEncoder(BaseExecutor):
     """
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
-        pass
+        raise NotImplementedError
 
 
 class BaseNumericEncoder(BaseEncoder):
@@ -32,7 +32,7 @@ class BaseNumericEncoder(BaseEncoder):
         :param data: a `B x ([T] x D)` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
         """
-        pass
+        raise NotImplementedError
 
 
 class BaseImageEncoder(BaseNumericEncoder):
@@ -62,7 +62,7 @@ class BaseTextEncoder(BaseEncoder):
         :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
         :return: an ndarray of `B x D`
         """
-        pass
+        raise NotImplementedError
 
 
 class PipelineEncoder(CompoundExecutor):
