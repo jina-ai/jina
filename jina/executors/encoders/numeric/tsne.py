@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 from .. import BaseNumericEncoder
-from ...decorators import batching, require_train
+from ...decorators import batching
 
 
 class TSNEEncoder(BaseNumericEncoder):
