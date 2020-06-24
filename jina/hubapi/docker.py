@@ -3,6 +3,8 @@ __license__ = "Apache-2.0"
 
 import glob
 import tempfile
+import urllib.parse
+import webbrowser
 from typing import Dict
 
 from .checker import *
@@ -55,6 +57,15 @@ class HubIO:
                 self.logger.debug(line)
         self.logger.success(f'🎉 {name} is now published!')
 
+        share_link = f'https://api.jina.ai/hub/?jh={urllib.parse.quote_plus(name)}'
+
+        try:
+            webbrowser.open(share_link, new=2)
+        except:
+            pass
+        finally:
+            self.logger.info(f'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!')
+
     def pull(self):
         """A wrapper of docker pull """
         check_registry(self.args.registry, self.args.name, _repo_prefix)
@@ -85,7 +96,7 @@ class HubIO:
 
     def login(self):
         """A wrapper of docker login """
-        password = self.args.password or self.args.password_stdin.read()
+        password = self.args.password or (self.args.password_stdin and self.args.password_stdin.read())
         if self.args.username and password:
             self._client.login(username=self.args.username, password=password,
                                registry=self.args.registry)
