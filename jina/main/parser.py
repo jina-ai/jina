@@ -58,11 +58,10 @@ def set_hub_base_parser(parser=None):
     import sys
     parser.add_argument('--username', type=str, help='the registry username')
     _gp = parser.add_mutually_exclusive_group()
-    _gp.add_argument('--password-stdin',  type=argparse.FileType('r'), default=(None if sys.stdin.isatty() else sys.stdin),
-                        help='take the password from stdin')
-    _gp.add_argument('--password', type=str,
-                     default=(None if sys.stdin.isatty() else sys.stdin),
-                     help='the plaintext password')
+    _gp.add_argument('--password-stdin', type=argparse.FileType('r'),
+                     default=sys.stdin,
+                     help='take the password from stdin')
+    _gp.add_argument('--password', type=str, help='the plaintext password')
     parser.add_argument('--registry', type=str, default='https://index.docker.io/v1/',
                         help='the URL to the registry, e.g. https://index.docker.io/v1/')
 
