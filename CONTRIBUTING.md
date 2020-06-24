@@ -17,6 +17,10 @@ In this guide we're going to go through how the steps for each kind of contribut
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Before you Start
+
+Make sure you've read through our [README](./README.md), [Jina 101](./docs/chapters/101), and [example tutorials](https://github.com/jina-ai/examples) so you have a good understanding of what Jina is and how it works.
+
 ## Bugs and Issues
 
 ### Submitting Issues
