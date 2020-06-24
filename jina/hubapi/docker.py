@@ -45,7 +45,7 @@ class HubIO:
             self.logger.critical('requires "docker" dependency, please install it via "pip install jina[docker]"')
             raise
 
-    def push(self, name: str = None):
+    def push(self, name: str = None, readme_path: str = None):
         """A wrapper of docker push """
         name = name or self.args.name
         check_registry(self.args.registry, name, _repo_prefix)
@@ -57,6 +57,22 @@ class HubIO:
                 self.logger.debug(line)
         self.logger.success(f'🎉 {name} is now published!')
 
+        if False and readme_path:
+            # unfortunately Docker Hub Personal Access Tokens cannot be used as they are not supported by the API
+            _volumes = {os.path.dirname(os.path.abspath(readme_path)): {'bind': '/workspace'}}
+            _env = get_default_login()
+            _env = {
+                'DOCKERHUB_USERNAME': _env['username'],
+                'DOCKERHUB_PASSWORD': _env['password'],
+                'DOCKERHUB_REPOSITORY': name.split(':')[0],
+                'README_FILEPATH': '/workspace/README.md',
+            }
+
+            self._client.containers.run('peterevans/dockerhub-description:2.1',
+                                        auto_remove=True,
+                                        volumes=_volumes,
+                                        environment=_env)
+
         share_link = f'https://api.jina.ai/hub/?jh={urllib.parse.quote_plus(name)}'
 
         try:
@@ -64,7 +80,8 @@ class HubIO:
         except:
             pass
         finally:
-            self.logger.info(f'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!')
+            self.logger.info(
+                f'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!')
 
     def pull(self):
         """A wrapper of docker pull """
@@ -119,7 +136,7 @@ class HubIO:
             f'🎉 built {image.tags[0]} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
 
         if self.args.push:
-            self.push(image.tags[0])
+            self.push(image.tags[0], self.readme_path)
 
     def _check_completeness(self):
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
