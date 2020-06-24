@@ -113,7 +113,11 @@ class HubIO:
 
     def login(self):
         """A wrapper of docker login """
-        password = self.args.password or (self.args.password_stdin and self.args.password_stdin.read())
+        try:
+            password = self.args.password or (self.args.password_stdin and self.args.password_stdin.read())
+        except ValueError:
+            password = ''
+
         if self.args.username and password:
             self._client.login(username=self.args.username, password=password,
                                registry=self.args.registry)
