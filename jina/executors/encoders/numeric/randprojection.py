@@ -22,7 +22,6 @@ class RandomGaussianEncoder(BaseNumericEncoder):
         """
         super().__init__(*args, **kwargs)
         self.output_dim = output_dim
-        self.model = None
 
     def post_init(self):
         from sklearn.random_projection import GaussianRandomProjection
@@ -52,7 +51,6 @@ class RandomSparseEncoder(BaseNumericEncoder):
         """
         super().__init__(*args, **kwargs)
         self.output_dim = output_dim
-        self.model = None
 
     def post_init(self):
         from sklearn.random_projection import SparseRandomProjection
