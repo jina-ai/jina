@@ -25,8 +25,8 @@ class FeatureAgglomerationEncoder(BaseNumericEncoder):
         self.model = None
 
     def post_init(self):
-        from sklearn import cluster
-        self.model = cluster.FeatureAgglomeration(n_clusters=self.output_dim)
+        from sklearn.cluster import FeatureAgglomeration
+        self.model = FeatureAgglomeration(n_clusters=self.output_dim)
 
     @batching
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
