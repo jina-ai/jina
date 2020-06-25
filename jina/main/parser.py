@@ -271,7 +271,7 @@ def set_pea_parser(parser=None):
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=0,
                      **(dict(
-                         help='wait until the number of parts of message are all received, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
+                         help='the number of replicated message sent to the next Pod, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod')
 

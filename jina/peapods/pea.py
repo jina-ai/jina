@@ -241,6 +241,8 @@ class BasePea(metaclass=PeaMeta):
     def post_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
         msg.envelope.routes[-1].end_time.GetCurrentTime()
+        if self.args.num_part > 1:
+            msg.envelope.num_part.append(self.args.num_part)
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
