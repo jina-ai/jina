@@ -173,7 +173,7 @@ def set_flow_parser(parser=None):
 
 
 def set_pea_parser(parser=None):
-    from ..enums import SocketType, PeaRoleType
+    from ..enums import SocketType, PeaRoleType, OnErrorSkip
     from ..helper import random_port, get_random_identity
     from .. import __default_host__
     import os
@@ -273,6 +273,9 @@ def set_pea_parser(parser=None):
                          help='the number of replicated message sent to the next Pod, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod')
+    gp5.add_argument('--skip-on-error', type=OnErrorSkip.from_string, choices=list(OnErrorSkip),
+                     default=OnErrorSkip.NONE,
+                     help='skip strategy on error message. ')
 
     gp6 = add_arg_group(parser, 'pea EXPERIMENTAL arguments')
     gp6.add_argument('--memory-hwm', type=int, default=-1,
@@ -442,8 +445,8 @@ def set_gateway_parser(parser=None):
     gp1.add_argument('--rest-api', action='store_true', default=False,
                      help='use REST-API as the interface instead of gRPC with port number '
                           'set to the value of "port-grpc"')
-    gp1.add_argument('--to-datauri', action='store_true', default=False,
-                     help='always represent the result document with data URI, instead of using buffer/blob/text')
+    # gp1.add_argument('--to-datauri', action='store_true', default=False,
+    #                  help='always represent the result document with data URI, instead of using buffer/blob/text')
     return parser
 
 
