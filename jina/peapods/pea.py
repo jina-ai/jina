@@ -15,7 +15,7 @@ import zmq
 from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
-from ..enums import PeaRoleType
+from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError
 from ..executors import BaseExecutor
 from ..logging import get_logger
@@ -157,7 +157,8 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        self.executor(self.request_type)
+        if msg.envelope.status.code == jina_pb2.Status.ERROR and self.args.skip_on_error < OnErrorSkip.HANDLE:
+            self.executor(self.request_type)
         return self
 
     @property
@@ -259,7 +260,8 @@ class BasePea(metaclass=PeaMeta):
         self.logger.success(__stop_msg__)
 
     def _callback(self, msg):
-        self.pre_hook(msg).handle(msg).post_hook(msg)
+        if msg.envelope.status.code == jina_pb2.Status.ERROR and self.args.skip_on_error < OnErrorSkip.CALLBACK:
+            self.pre_hook(msg).handle(msg).post_hook(msg)
         return msg
 
     def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:

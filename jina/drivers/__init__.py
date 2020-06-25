@@ -7,6 +7,7 @@ from typing import Callable, Iterator
 
 import ruamel.yaml.constructor
 
+from ..enums import OnErrorSkip
 from ..executors.compound import CompoundExecutor
 from ..helper import yaml
 from ..proto import jina_pb2
@@ -253,7 +254,10 @@ class BaseExecutableDriver(BaseDriver):
     @property
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
-        return self._exec_fn
+        if self.envelope.status.code == jina_pb2.Status.ERROR and self.pea.args.skip_on_error < OnErrorSkip.EXECUTOR:
+            return self._exec_fn
+        else:
+            return lambda *args, **kwargs: None
 
     def attach(self, executor: 'AnyExecutor', *args, **kwargs):
         """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
