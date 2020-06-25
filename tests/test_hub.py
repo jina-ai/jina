@@ -4,6 +4,7 @@ from tests import JinaTestCase
 
 
 class MyTestCase(JinaTestCase):
+
     def test_hub_build_pull(self):
         args = set_hub_build_parser().parse_args(['./hub-mwu', '--pull', '--push'])
         HubIO(args).build()

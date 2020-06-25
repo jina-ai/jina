@@ -327,7 +327,6 @@ class FlowPod(BasePod):
         elif first_socket_type == SocketType.PUB_BIND:
             first.tail_args.socket_out = SocketType.PUB_BIND
             first.tail_args.num_part += 1
-            first.tail_args.yaml_path = '- !!PublishDriver | {num_part: %d}' % first.tail_args.num_part
             second.head_args.socket_in = SocketType.SUB_CONNECT
 
             first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
@@ -424,8 +423,9 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
                 _head_args.yaml_path = '_route'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
+        _head_args.num_part = args.replicas
         if as_router:
-            _head_args.yaml_path = '- !!PublishDriver |  {num_part: %d}' % args.replicas
+            _head_args.yaml_path = '_forward'
 
     if as_router:
         _head_args.name = args.name or ''
