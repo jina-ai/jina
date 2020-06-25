@@ -21,6 +21,7 @@ from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
+from ..enums import SocketType
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -197,6 +198,10 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.args.replica_id)
+                if self.args.socket_out == SocketType.PUB_BIND:
+                    from ..drivers.control import PublishDriver
+                    for k in ['SearchRequest', 'IndexRequest', 'TrainRequest']:
+                        self.executor.add_driver(PublishDriver(self.args.num_part), k)
                 self.executor.attach(pea=self)
                 # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:

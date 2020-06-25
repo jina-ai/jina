@@ -297,8 +297,8 @@ class MyTestCase(JinaTestCase):
     def test_flow_with_publish_driver(self):
 
         f = (Flow().add(name='r1', yaml_path='yaml/unarycrafter.yml')
-             .add(name='r2', yaml_path='!BaseEncoder')
-             .add(name='r3', yaml_path='!BaseEncoder', needs='r1')
+             .add(name='r2', yaml_path='!OneHotTextEncoder')
+             .add(name='r3', yaml_path='!OneHotTextEncoder', needs='r1')
              .join(needs=['r2', 'r3'])
              )
 

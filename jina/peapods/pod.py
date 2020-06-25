@@ -327,7 +327,6 @@ class FlowPod(BasePod):
         elif first_socket_type == SocketType.PUB_BIND:
             first.tail_args.socket_out = SocketType.PUB_BIND
             first.tail_args.num_part += 1
-            first.tail_args.yaml_path = '- !!PublishDriver | {num_part: %d}' % first.tail_args.num_part
             second.head_args.socket_in = SocketType.SUB_CONNECT
 
             first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
