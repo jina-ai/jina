@@ -42,6 +42,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -1755,4 +1756,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```94322a8d```](https://github.com/jina-ai/jina/commit/94322a8d50b6e0b666c04ca4a3c43c108fa8bb57)] __-__ hotfix error handling (*Han Xiao*)
  - [[```fb8a68fa```](https://github.com/jina-ai/jina/commit/fb8a68fa166fa744d46045a48b2e4e043448e42b)] __-__ __version__: bumping version to 0.2.8 (*Jina Dev Bot*)
  - [[```9ea6ca96```](https://github.com/jina-ai/jina/commit/9ea6ca96b1d48540b404a7a78c3fe0d08139d217)] __-__ hotfix error catching (*Han Xiao*)
+
+## Release Note (`0.3.1`)
+
+> Release time: 2020-06-25 21:38:52
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Alex C-G,  🙇
+
+
+### 🆕 New Features
+
+ - [[```012e9e13```](https://github.com/jina-ai/jina/commit/012e9e136b5e8a42995954ca2a16e9e359c4a394)] __-__ __peapods__: add error skipping strategy (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```bed4f556```](https://github.com/jina-ai/jina/commit/bed4f556a0cd3b5b93177acef532746d017611dc)] __-__ __driver__: remove pub driver with post_hook (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```2fd88767```](https://github.com/jina-ai/jina/commit/2fd88767d7c29b560eeb0d92a16f4e752f290bb7)] __-__ __readme__: wording improvement (*Alex C-G*)
+ - [[```767dddb4```](https://github.com/jina-ai/jina/commit/767dddb443aa0c63e15cd3848288c9f981cd9eb4)] __-__ __code-of-conduct__: initial commit (*Alex C-G*)
+
+### 🍹 Other Improvements
+
+ - [[```0db4bd9f```](https://github.com/jina-ai/jina/commit/0db4bd9fee7c6403b93de5a72fd652e76c275a35)] __-__ hotfix publish driver (*Han Xiao*)
+ - [[```358bfec1```](https://github.com/jina-ai/jina/commit/358bfec1c327a24624461bfdbcf79ed54346e0b6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```49de8711```](https://github.com/jina-ai/jina/commit/49de87113b665341c588329f9c54ba2f379b4ebd)] __-__ __version__: the next version will be 0.3.1 (*Jina Dev Bot*)
 
