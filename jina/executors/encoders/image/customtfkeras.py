@@ -30,7 +30,7 @@ class CustomImageKerasEncoder(BaseCVTFEncoder):
         model = tf.keras.models.load_model(self.model_path)
         model.trainable = False
         self.model = tf.keras.Model(inputs=model.input,
-                                    outputs=model.get_layer(layer_name).output)
+                                    outputs=model.get_layer(self.layer_name).output)
 
 
     @batching
