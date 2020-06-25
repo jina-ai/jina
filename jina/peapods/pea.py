@@ -157,7 +157,7 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        if msg.envelope.status.code == jina_pb2.Status.ERROR and self.args.skip_on_error < OnErrorSkip.HANDLE:
+        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.HANDLE:
             self.executor(self.request_type)
         return self
 
@@ -260,7 +260,7 @@ class BasePea(metaclass=PeaMeta):
         self.logger.success(__stop_msg__)
 
     def _callback(self, msg):
-        if msg.envelope.status.code == jina_pb2.Status.ERROR and self.args.skip_on_error < OnErrorSkip.CALLBACK:
+        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
             self.pre_hook(msg).handle(msg).post_hook(msg)
         return msg
 
