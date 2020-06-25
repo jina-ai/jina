@@ -257,11 +257,7 @@ class BasePea(metaclass=PeaMeta):
         self.logger.success(__stop_msg__)
 
     def _callback(self, msg):
-        # self.is_busy.set()
-        if msg.envelope.status.code < jina_pb2.Status.ERROR:
-            self.pre_hook(msg).handle(msg).post_hook(msg)
-        else:
-            msg.envelope.status.details.skipped.append(str(self))
+        self.pre_hook(msg).handle(msg).post_hook(msg)
         return msg
 
     def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
@@ -284,13 +280,15 @@ class BasePea(metaclass=PeaMeta):
         except (RuntimeError, Exception) as ex:
             # general runtime error and nothing serious, we simply mark the message to error and pass on
             msg.envelope.status.code = jina_pb2.Status.ERROR
-            msg.envelope.status.description = f'{self} throws {repr(ex)}'
-            msg.envelope.status.details.pod = self.name
-            msg.envelope.status.details.pod_id = self.args.identity
-            msg.envelope.status.details.exception = repr(ex)
-            msg.envelope.status.details.executor = str(getattr(self, 'executor', ''))
-            msg.envelope.status.details.traceback = traceback.format_exc()
-            msg.envelope.status.details.time.GetCurrentTime()
+            if not msg.envelope.status.description:
+                msg.envelope.status.description = f'{self} throws {repr(ex)}'
+            d = msg.envelope.status.details.add()
+            d.pod = self.name
+            d.pod_id = self.args.identity
+            d.exception = repr(ex)
+            d.executor = str(getattr(self, 'executor', ''))
+            d.traceback = traceback.format_exc()
+            d.time.GetCurrentTime()
             return msg
 
     def loop_body(self):

@@ -28,15 +28,10 @@ class EncodeDriver(BaseEncodeDriver):
             self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
 
         if chunk_pts:
-            try:
-                embeds = self.exec_fn(contents)
-                if len(chunk_pts) != embeds.shape[0]:
-                    self.logger.error(
-                        'mismatched %d chunks and a %s shape embedding, '
-                        'the first dimension must be the same' % (len(chunk_pts), embeds.shape))
-                for c, emb in zip(chunk_pts, embeds):
-                    c.embedding.CopyFrom(array2pb(emb))
-            except Exception as ex:
-                self.logger.error(ex, exc_info=True)
-                self.logger.warning('encoder driver throws an exception, '
-                                    'the sequel pipeline may not work properly')
+            embeds = self.exec_fn(contents)
+            if len(chunk_pts) != embeds.shape[0]:
+                self.logger.error(
+                    'mismatched %d chunks and a %s shape embedding, '
+                    'the first dimension must be the same' % (len(chunk_pts), embeds.shape))
+            for c, emb in zip(chunk_pts, embeds):
+                c.embedding.CopyFrom(array2pb(emb))

@@ -46,7 +46,7 @@ function git_commit {
     git config --local user.name "Jina Dev Bot"
     git tag "v$RELEASE_VER" -m "$(cat ./CHANGELOG.tmp)"
     git add $INIT_FILE ./CHANGELOG.md
-    git commit -m "chore(version): bumping version to $NEXT_VER"
+    git commit -m "chore(version): the next version will be $NEXT_VER"
 }
 
 

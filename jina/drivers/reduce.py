@@ -44,7 +44,8 @@ class BaseReduceDriver(ControlReqDriver):
 
                 if num_req == self.envelope.num_part[-1]:
                     self._prev_messages = self._pending_msgs.pop(req_id)
-                    self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in self._prev_messages]
+                    self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in
+                                           self._prev_messages]
                 else:
                     raise NoExplicitMessage
 
