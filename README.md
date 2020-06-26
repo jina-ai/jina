@@ -43,39 +43,16 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Install [![PyPI](https://img.shields.io/pypi/v/jina?color=%23099cec&label=PyPI%20package&logo=pypi&logoColor=white)](https://pypi.org/project/jina/) [![Docker](https://github.com/jina-ai/jina/blob/master/.github/badges/docker-badge.svg?raw=true  "Jina is multi-arch ready, can run on different architectures")](https://hub.docker.com/r/jinaai/jina/tags) [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&label=Docker%20Image&logo=docker&logoColor=white&sort=semver)](https://hub.docker.com/r/jinaai/jina/tags)
+## Quick Start [![PyPI](https://img.shields.io/pypi/v/jina?color=%23099cec&label=PyPI%20package&logo=pypi&logoColor=white)](https://pypi.org/project/jina/) [![Docker](https://github.com/jina-ai/jina/blob/master/.github/badges/docker-badge.svg?raw=true  "Jina is multi-arch ready, can run on different architectures")](https://hub.docker.com/r/jinaai/jina/tags) [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&label=Docker%20Image&logo=docker&logoColor=white&sort=semver)](https://hub.docker.com/r/jinaai/jina/tags)
 
-With pip:
-
-```bash
-pip install jina
-```
-
-To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai).
-
-With Docker:
-
-```bash
-docker run jinaai/jina --help
-```
+* Install with pip: `pip install jina`
+* Install with Docker: `docker run jinaai/jina --help`
+* [Install with extra dependencies, or on Raspberry Pi](https://docs.jina.ai).
 
 ## Try it Out
 
-<p align="center">
-  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
-</p>
-
-If you installed Jina with `pip`:
-
-```bash
-jina hello-world
-```
-
-Or if you used Docker:
-
-```bash
-docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
-```
+* Try it in pip: `jina hello-world`
+* Try it in Docker: `docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html` (replace "open" with "xdg-open" on Linux)
 
 <details>
 <summary>Click here to see console output</summary>
@@ -87,6 +64,8 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 </details>  
 
 The Docker image downloads Fashion-MNIST training and test data and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and it'll eventually open a webpage and show results like this:
+
+## How Does It Work?
 
 As for the implementation behind it? It's as simple as can be:
 
