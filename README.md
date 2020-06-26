@@ -23,14 +23,10 @@
 <p align="center">
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
-  <a href="https://learn.jina.ai">Examples</a> •
   <a href="https://github.com/jina-ai/jina-hub">Hub</a> •
   <a href="https://dashboard.jina.ai">Dashboard</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
-
 </p>
-
-Want to build a search system backed by deep learning? You've come to the right place!
 
 **Jina** is cloud-native neural search, powered by the state-of-the-art AI and deep learning. It has **long-term supported** from a full-time, [venture-backed team](https://jina.ai).
 
