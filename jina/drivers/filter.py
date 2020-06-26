@@ -12,13 +12,9 @@ class TopKFilterDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         for d in self.docs:
-            _topk = [k for k in d.topk_results[:self.req.top_k]]
-            d.ClearField('topk_results')
-            d.topk_results.extend(_topk)
+            del d.topk_results[self.req.top_k:]
             for c in self.chunks(d):
-                _topk = [k for k in c.topk_results[:self.req.top_k]]
-                c.ClearField('topk_results')
-                c.topk_results.extend(_topk)
+                del c.topk_results[self.req.top_k:]
 
 
 class TopKSortDriver(BaseDriver):

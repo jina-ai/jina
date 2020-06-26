@@ -52,6 +52,49 @@ def set_logger_parser(parser=None):
     return parser
 
 
+def set_hub_base_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+    parser.add_argument('--username', type=str, help='the registry username')
+    # _gp = parser.add_mutually_exclusive_group()
+    # _gp.add_argument('--password-stdin', type=argparse.FileType('r'),
+    #                  default=(sys.stdin if sys.stdin.isatty() else None),
+    #                  help='take the password from stdin')
+    parser.add_argument('--password', type=str, help='the plaintext password')
+    parser.add_argument('--registry', type=str, default='https://index.docker.io/v1/',
+                        help='the URL to the registry, e.g. https://index.docker.io/v1/')
+
+    return parser
+
+
+def set_hub_build_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    set_hub_base_parser(parser)
+
+    parser.add_argument('path', type=str, help='path to the directory containing '
+                                               'Dockerfile, manifest.yml, README.md'
+                                               'zero or more yaml config, '
+                                               'zero or more Python file. '
+                                               'All files in this directory will be shipped into a Docker image')
+    parser.add_argument('--pull', action='store_true', default=False,
+                        help='downloads any updates to the FROM image in Dockerfiles')
+    parser.add_argument('--push', action='store_true', default=False,
+                        help='push the built image to the registry')
+    return parser
+
+
+def set_hub_pushpull_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    set_hub_base_parser(parser)
+
+    parser.add_argument('name', type=str, help='the name of the image.')
+    return parser
+
+
 def set_hw_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -130,7 +173,7 @@ def set_flow_parser(parser=None):
 
 
 def set_pea_parser(parser=None):
-    from ..enums import SocketType, PeaRoleType
+    from ..enums import SocketType, PeaRoleType, OnErrorSkip
     from ..helper import random_port, get_random_identity
     from .. import __default_host__
     import os
@@ -227,9 +270,12 @@ def set_pea_parser(parser=None):
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=0,
                      **(dict(
-                         help='wait until the number of parts of message are all received, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
+                         help='the number of replicated message sent to the next Pod, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod')
+    gp5.add_argument('--skip-on-error', type=OnErrorSkip.from_string, choices=list(OnErrorSkip),
+                     default=OnErrorSkip.NONE,
+                     help='skip strategy on error message. ')
 
     gp6 = add_arg_group(parser, 'pea EXPERIMENTAL arguments')
     gp6.add_argument('--memory-hwm', type=int, default=-1,
@@ -399,8 +445,8 @@ def set_gateway_parser(parser=None):
     gp1.add_argument('--rest-api', action='store_true', default=False,
                      help='use REST-API as the interface instead of gRPC with port number '
                           'set to the value of "port-grpc"')
-    gp1.add_argument('--to-datauri', action='store_true', default=False,
-                     help='always represent the result document with data URI, instead of using buffer/blob/text')
+    # gp1.add_argument('--to-datauri', action='store_true', default=False,
+    #                  help='always represent the result document with data URI, instead of using buffer/blob/text')
     return parser
 
 
@@ -477,6 +523,29 @@ def get_main_parser():
         sp.add_parser('check', help='check the import status all executors and drivers',
                       description='Check the import status all executors and drivers',
                       formatter_class=_chf))
+
+    pp = sp.add_parser('hub', help='build, push, pull Jina Hub images',
+                       description='Build, push, pull Jina Hub images',
+                       formatter_class=_chf)
+
+    spp = pp.add_subparsers(dest='hub',
+                            description='use "%(prog)-8s [sub-command] --help" '
+                                        'to get detailed information about each sub-command', required=True)
+
+    set_hub_build_parser(
+        spp.add_parser('build', help='build a directory into Jina hub image',
+                       description='Build a directory into Jina hub image',
+                       formatter_class=_chf))
+
+    set_hub_pushpull_parser(
+        spp.add_parser('push', help='push an image to the Jina hub registry',
+                       description='Push an image to the Jina hub registry',
+                       formatter_class=_chf))
+
+    set_hub_pushpull_parser(
+        spp.add_parser('pull', help='pull an image from the Jina hub registry to local',
+                       description='Pull an image to the Jina hub registry to local',
+                       formatter_class=_chf))
 
     set_pea_parser(sp.add_parser('pea',
                                  description='Start a Jina pea. '

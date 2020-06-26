@@ -214,6 +214,17 @@ class Text2URI(URI2DataURI):
         d.uri = self.make_datauri(d.mime_type, d.text, binary=False)
 
 
+class URI2Text(URI2Buffer):
+
+    def __init__(self, target='text', *args, **kwargs):
+        super().__init__(target, *args, **kwargs)
+
+    def convert(self, d):
+        if d.mime_type.startswith('text/'):
+            super().convert(d)
+            d.text = d.buffer.decode()
+
+
 class All2URI(Text2URI, Buffer2URI):
 
     def convert(self, d):

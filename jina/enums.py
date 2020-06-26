@@ -222,3 +222,14 @@ class ClientMode(BetterEnum):
     SEARCH = 1
     TRAIN = 2
 
+
+class OnErrorSkip(BetterEnum):
+    """ The level of error handling
+
+    """
+
+    NONE = 0
+    EXECUTOR = 1
+    DRIVER = 2
+    HANDLE = 3
+    CALLBACK = 4

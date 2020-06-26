@@ -14,7 +14,6 @@ from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
 from ..enums import ClientMode
 from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType, GatewayPartialMessage
-from ..executors import BaseExecutor
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 from ..main.parser import set_pea_parser, set_pod_parser
@@ -88,12 +87,12 @@ class GatewayPea:
             self.args = args
             self.name = args.name or self.__class__.__name__
             self.logger = get_logger(self.name, **vars(args))
-            self.executor = BaseExecutor()
-            if args.to_datauri:
-                from ..drivers.convert import All2URI
-                for k in ['SearchRequest', 'IndexRequest', 'TrainRequest']:
-                    self.executor.add_driver(All2URI(), k)
-            self.executor.attach(pea=self)
+            # self.executor = BaseExecutor()
+            # if args.to_datauri:
+            #     from ..drivers.convert import All2URI
+            #     for k in ['SearchRequest', 'IndexRequest', 'TrainRequest']:
+            #         self.executor.add_driver(All2URI(), k)
+            # self.executor.attach(pea=self)
             self.peapods = []
 
         @property
@@ -117,8 +116,8 @@ class GatewayPea:
                 self._message = msg
                 if msg.envelope.num_part != [1]:
                     raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
-                self.executor(self.request_type)
-                # as envelope will be dropped when returning to the client
+                # self.executor(self.request_type)
+                # envelope will be dropped when returning to the client
                 return msg.request
             except NoExplicitMessage:
                 self.logger.error('gateway should not receive partial message, it can not do reduce. '
