@@ -165,34 +165,23 @@ jina hello-world --help
 
 [Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
 
-## Getting Started
+## Build your own Project
 
-### Start a project from the template
+With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
 ```bash
 pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 ```
 
-With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
-
-### Documentation
-
-
 ### Status
 
-| Build Type    | Status                                                                                                                                                                |
-| ---           | ---                                                                                                                                                                   |
-| CI            | [![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)                                          |
-| CD            | [![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)                            |
-| Release cycle | [![Release Cycle](https://github.com/jina-ai/jina/workflows/Release%20Cycle/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+Cycle%22) |
-| Release CD    | [![Release CD](https://github.com/jina-ai/jina/workflows/Release%20CD/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+CD%22)          |
-| API schema    | [![API Schema](https://github.com/jina-ai/jina/workflows/API%20Schema/badge.svg)](https://api.jina.ai/)                                                               |
+[![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)                                          
+[![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)                            
+[![Release Cycle](https://github.com/jina-ai/jina/workflows/Release%20Cycle/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+Cycle%22) 
+[![Release CD](https://github.com/jina-ai/jina/workflows/Release%20CD/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+CD%22)          
+[![API Schema](https://github.com/jina-ai/jina/workflows/API%20Schema/badge.svg)](https://api.jina.ai/)                                                               
 
 ## Documentation
-
-<a href="https://docs.jina.ai/">
-<img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
-</a>
 
 The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release of the master branch. 
 
