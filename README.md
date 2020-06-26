@@ -3,6 +3,11 @@
 </p>
 
 <p align="center">
+  <img src="https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true">
+  <img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true">
+  <img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true">
+</p>  
+  
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true  "We fully commit to open-source")](https://jina.ai)
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true  "Jina is licensed under Apache-2.0")](#license)
 [![Python 3.7 3.8](https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true  "Jina supports Python 3.7 and above")](https://pypi.org/project/jina/)
