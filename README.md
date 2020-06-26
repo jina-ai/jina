@@ -18,7 +18,7 @@
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://github.com/jina-ai/jina-hub">Hub</a> •
   <a href="https://dashboard.jina.ai">Dashboard</a> •
-  <a href="https://jobs.jina.ai">We are Hiring</a>
+  <a href="https://jobs.jina.ai">Jobs</a>
 </p>
 
 **Jina** is cloud-native neural search, powered by the state-of-the-art AI and deep learning. It has **long-term supported** from a full-time, [venture-backed team](https://jina.ai).
