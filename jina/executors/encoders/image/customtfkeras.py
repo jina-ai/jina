@@ -15,6 +15,8 @@ class CustomImageKerasEncoder(BaseCVTFEncoder):
     Internally, :class:`CustomImageKerasEncoder` wraps any custom tf.keras model not part of models from `tensorflow.keras.applications`.
     https://www.tensorflow.org/api_docs/python/tf/keras/applications
     """
+    
+     def __init__(self, model_path: str, layer_name: str, *args, **kwargs):
 
         """
         :param model_path: the path where the model is stored.
