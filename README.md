@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true">
-  <img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true">
-  <img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true">
+  <a href="https://jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true"></a>
+  <a href="https://github.com/jina-ai/jina/tree/docs-readme-revamp#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true"></a>
+  <a href="https://raw.githubusercontent.com/jina-ai/jina/master/.github/badges/python-badge.svg"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true"></a>
 </p>  
   
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true  "We fully commit to open-source")](https://jina.ai)
