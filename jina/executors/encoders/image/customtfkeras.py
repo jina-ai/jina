@@ -41,4 +41,6 @@ class CustomImageKerasEncoder(BaseCVTFEncoder):
         :param data: a `B x (Channel x Height x Width)` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
         """
+        if self.channel_axis != -1:
+            data = np.moveaxis(data, self.channel_axis, -1)
         return self.model(data)
