@@ -293,6 +293,7 @@ class BasePea(metaclass=PeaMeta):
             d.executor = str(getattr(self, 'executor', ''))
             d.traceback = traceback.format_exc()
             d.time.GetCurrentTime()
+            self.logger.error(ex, exc_info=True)
             return msg
 
     def loop_body(self):
