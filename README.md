@@ -25,8 +25,6 @@
 * **Easy System Engineering** - One-stop solution that frees you from handcrafting and gluing packages, libraries and databases. 
 * **Powerful Extensions** - Extensions are just Python scripts or Docker images. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) to find out more.
 
-[![We are hiring](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-corp-badge-hiring.svg?raw=true  "We are hiring full-time position at Jina")](https://jobs.jina.ai)
-Jina is an open-source project. [We are hiring](https://jobs.jina.ai) AI engineers, full-stack developers, evangelists, and PMs to build the next neural search eco-system in open-source.
 
 ## Contents
 
@@ -199,6 +197,10 @@ We welcome all kinds of contributions from the open-source community, individual
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
 - [Twitter](https://twitter.com/JinaAI_) - follow us and interact using `#JinaSearch` hashtag
 - [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source!
+
+## Join Us [![We are hiring](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-corp-badge-hiring.svg?raw=true "We are hiring full-time position at Jina")](https://jobs.jina.ai)
+
+Jina is an open-source project. [We are hiring](https://jobs.jina.ai) AI engineers, full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open-source.
 
 ## Roadmap
 
