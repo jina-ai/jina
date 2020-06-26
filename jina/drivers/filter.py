@@ -11,9 +11,18 @@ class TopKFilterDriver(BaseDriver):
     """
 
     def __call__(self, *args, **kwargs):
+        # keep to topk docs
         for d in self.docs:
             del d.topk_results[self.req.top_k:]
+
+            topk_doc_id = {md.match_doc.doc_id for md in d.topk_results}
+            # keep only the chunks that hit the topk docs
             for c in self.chunks(d):
+                for idx, mc in enumerate(c.topk_results):
+                    if mc.match_chunk.doc_id not in topk_doc_id:
+                        del c.topk_results[idx]
+
+                # if it's still > k
                 del c.topk_results[self.req.top_k:]
 
 
@@ -34,10 +43,6 @@ class TopKSortDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         for d in self.docs:
-            _sort = sorted(d.topk_results, key=lambda x: x.score.value, reverse=self.descending)
-            d.ClearField('topk_results')
-            d.topk_results.extend(_sort)
+            d.topk_results.sort(key=lambda x: x.score.value, reverse=self.descending)
             for c in self.chunks(d):
-                _sort = sorted(c.topk_results, key=lambda x: x.score.value, reverse=self.descending)
-                c.ClearField('topk_results')
-                c.topk_results.extend(_sort)
+                c.topk_results.sort(key=lambda x: x.score.value, reverse=self.descending)
