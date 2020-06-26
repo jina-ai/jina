@@ -11,16 +11,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jina-ai/jina">English</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.ja.md">日本語</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.fr.md">français</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.de.md">Deutsch</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.ru.md">Русский язык</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.zh.md">中文</a>
-</p>
-
-
-<p align="center">
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://github.com/jina-ai/jina-hub">Hub</a> •
