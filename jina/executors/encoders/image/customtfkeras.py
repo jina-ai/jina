@@ -23,6 +23,7 @@ class CustomImageKerasEncoder(BaseCVTFEncoder):
         super().__init__(*args, **kwargs)
         self.model_path = model_path
         self.layer_name = layer_name
+        self.channel_axis = channel_axis
 
     def post_init(self):
         self.to_device()
