@@ -26,6 +26,7 @@ class CustomImageKerasEncoder(BaseCVTFEncoder):
         self.layer_name = layer_name
 
     def post_init(self):
+        self.to_device()
         import tensorflow as tf
         model = tf.keras.models.load_model(self.model_path)
         model.trainable = False
