@@ -64,6 +64,10 @@ docker run jinaai/jina --help
 
 ## Try it Out
 
+<p align="center">
+  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
+</p>
+
 If you installed Jina with `pip`:
 
 ```bash
@@ -86,10 +90,6 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 </details>  
 
 The Docker image downloads Fashion-MNIST training and test data and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and it'll eventually open a webpage and show results like this:
-
-<p align="center">
-  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
-</p>
 
 As for the implementation behind it? It's as simple as can be:
 
