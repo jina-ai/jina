@@ -6,7 +6,6 @@
 
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true  "We fully commit to open-source")](https://jina.ai)
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true  "Jina is licensed under Apache-2.0")](#license)
-[![We are hiring](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-corp-badge-hiring.svg?raw=true  "We are hiring full-time position at Jina")](https://jobs.jina.ai)
 [![Python 3.7 3.8](https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true  "Jina supports Python 3.7 and above")](https://pypi.org/project/jina/)
 </p>
 
@@ -27,6 +26,7 @@
 * **Easy System Engineering** - One-stop solution that frees you from handcrafting and gluing packages, libraries and databases. 
 * **Powerful Extensions** - Extensions are just Python scripts or Docker images. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) to find out more.
 
+[![We are hiring](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-corp-badge-hiring.svg?raw=true  "We are hiring full-time position at Jina")](https://jobs.jina.ai)
 Jina is an open-source project. [We are hiring](https://jobs.jina.ai) AI engineers, full-stack developers, evangelists, and PMs to build the next neural search eco-system in open-source.
 
 ## Contents
