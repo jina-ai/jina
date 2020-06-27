@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import re
+import string
 from collections import deque
 from itertools import islice
 from typing import Dict, List
@@ -18,8 +19,9 @@ class Sentencizer(BaseSegmenter):
 
     def __init__(self,
                  min_sent_len: int = 1,
-                 max_sent_len: int = 1e5,
+                 max_sent_len: int = 512,
                  punct_chars: str = None,
+                 uniform_weight: bool = True,
                  *args, **kwargs):
         """
 
@@ -31,13 +33,14 @@ class Sentencizer(BaseSegmenter):
         self.min_sent_len = min_sent_len
         self.max_sent_len = max_sent_len
         self.punct_chars = punct_chars
+        self.uniform_weight = uniform_weight
         if not punct_chars:
             self.punct_chars = ['!', '.', '?', '։', '؟', '۔', '܀', '܁', '܂', '‼', '‽', '⁇', '⁈', '⁉', '⸮', '﹖', '﹗',
                                 '！', '．', '？', '｡', '。', '\n']
         if self.min_sent_len > self.max_sent_len:
             self.logger.warning('the min_sent_len (={}) should be smaller or equal to the max_sent_len (={})'.format(
                 self.min_sent_len, self.max_sent_len))
-        self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(self.punct_chars)))
+        self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(self.punct_chars))))
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
@@ -47,14 +50,22 @@ class Sentencizer(BaseSegmenter):
         :return: a list of chunk dicts with the cropped images
         """
 
-        all_sentences = self._slit_pat.findall(text)
         results = []
-        for idx, s in enumerate(all_sentences):
-            if self.min_sent_len <= len(s) <= self.max_sent_len:
+        ret = [(m.group(0), m.start(), m.end()) for m in
+               re.finditer(self._slit_pat, text)]
+        if not ret:
+            ret = [(text, 0, len(text))]
+        for ci, (r, s, e) in enumerate(ret):
+            f = ''.join(filter(lambda x: x in string.printable, r))
+            f = re.sub('\n+', ' ', f).strip()
+            f = f[:self.max_sent_len]
+            if len(f) > self.min_sent_len:
                 results.append(dict(
-                    text=s,
-                    offset=idx,
-                    weight=1.0))
+                    text=f,
+                    offset=ci,
+                    weight=1.0 if self.uniform_weight else len(f) / len(text),
+                    location=[s, e]
+                ))
         return results
 
 

@@ -1,6 +1,7 @@
 import unittest
 
 from jina.executors.crafters.nlp.split import Sentencizer, JiebaSegmenter, SlidingWindowSegmenter
+from jina.flow import Flow
 from tests import JinaTestCase
 
 
@@ -41,7 +42,18 @@ class MyTestCase(JinaTestCase):
         sentencizer = Sentencizer()
         text = '  This ,  text is...  . Amazing !!'
         chunks = [i['text'] for i in sentencizer.craft(text, 0)]
-        self.assertListEqual(chunks, ["This ,  text is", "Amazing"])
+        locs = [i['location'] for i in sentencizer.craft(text, 0)]
+        self.assertListEqual(chunks, ["This ,  text is...", "Amazing"])
+        self.assertEqual(text[locs[0][0]:locs[0][1]], '  This ,  text is...')
+        self.assertEqual(text[locs[1][0]:locs[1][1]], ' Amazing')
+
+        def validate(req):
+            self.assertEqual(req.docs[0].chunks[0].text, 'This ,  text is...')
+            self.assertEqual(req.docs[0].chunks[1].text, 'Amazing')
+
+        f = Flow().add(yaml_path='!Sentencizer')
+        with f:
+            f.index_lines(['  This ,  text is...  . Amazing !!'], output_fn=validate, callback_on_body=True)
 
     def test_sentencier_cn(self):
         sentencizer = Sentencizer()

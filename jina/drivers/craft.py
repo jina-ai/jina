@@ -27,6 +27,9 @@ class BaseCraftDriver(BaseExecutableDriver):
                 self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
                                     f'is it intentional? chunk_id will be override by {self.__class__} '
                                     f'anyway')
+            elif isinstance(v, list) or isinstance(v, tuple):
+                chunk.ClearField(k)
+                getattr(chunk, k).extend(v)
             else:
                 setattr(chunk, k, v)
         if new_chunk_id:
@@ -84,11 +87,10 @@ class SegmentDriver(BaseCraftDriver):
     """
 
     def __init__(
-            self, first_chunk_id: int = 0, random_chunk_id: bool = True, save_buffer: bool = False, *args, **kwargs):
+            self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.first_chunk_id = first_chunk_id
         self.random_chunk_id = random_chunk_id
-        self.save_buffer = save_buffer
 
     def __call__(self, *args, **kwargs):
         for d in self.docs:
@@ -107,8 +109,6 @@ class SegmentDriver(BaseCraftDriver):
                     c.mime_type = d.mime_type
                     self.first_chunk_id += 1
                 d.length = len(ret)
-                if self.save_buffer:
-                    d.meta_info = d.buffer
             else:
                 self.logger.warning('doc %d gives no chunk' % d.doc_id)
 
