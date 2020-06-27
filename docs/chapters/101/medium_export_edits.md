@@ -60,13 +60,13 @@ Or, expressed in JSON as key-value pairs:
 Each of these key-value pairs can be thought of as a symbol, hence the name *symbolic search*. When a user inputs a search query, the system breaks it down into symbols, and matches these symbols with the symbols from the products in its database.
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png" width="400">
+<img src="https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png" width="200">
 </p>
 
 But what if a user types nikke instead of nike, or searches shirts (with an s) rather than shirt? There are so many rules in language, and people break them all the time. To get effective symbols (i.e. knowing that nikke *really* means {"brand": "nike"}), you need to define lots of rules and chain them together in a complex pipeline:
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png" width="400">
+<img src="https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png" width="800">
 </p>
 
 Doing that for every kind of product takes *forever* and there are always things that fall between the cracks. And if you want to localize for other languages? You’ll have to go through it all over again.
@@ -84,7 +84,7 @@ All of these need to be specified by humans, meaning a lot of hard work, knowled
 **It’s Fragile: **Text is complicated: If a user types in red nikke sneaker man a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and pipelines can have major issues
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png" width=400>
+<img src="https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png" width=200>
 </p>
 
 * Every component in the chain has an output that is fed as input into the next component along. So a problem early on in the process and break the whole system
