@@ -22,7 +22,9 @@ As an example, just look at the stratospheric growth in Google queries — and t
 
 In short, search is *huge*. In this article we’re going to look at the reigning champ of search methods, symbolic search, and the plucky upstart contender, neural search.
 
-![](https://cdn-images-1.medium.com/max/2000/1*HhqWzCFeEj88Acp9rYHmRQ.png)
+<center>
+<img src="https://cdn-images-1.medium.com/max/2000/1*HhqWzCFeEj88Acp9rYHmRQ.png" width=50%>
+</center>
 
 **Note:** This article is based on a [post by Han Xiao](https://hanxiao.io/2018/01/10/Build-Cross-Lingual-End-to-End-Product-Search-using-Tensorflow/) with his permission. Check there if you want a more technical introduction to neural search.
 
