@@ -71,9 +71,11 @@ But what if a user types nikke instead of nike, or searches shirts (with an s) r
 
 Doing that for every kind of product takes *forever* and there are always things that fall between the cracks. And if you want to localize for other languages? You’ll have to go through it all over again.
 
-## Drawbacks of Symbolic Search
+### Drawbacks of Symbolic Search
 
-**You Have to Explain Every. Little. Thing: **Our example search query above was red nikke sneaker man. But what if our searcher is British? A Brit would type red nikke trainer man. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching LV handbag? The system would have to be told LV stands for Louis Vuitton.
+#### You Have to Explain Every. Little. Thing
+
+Our example search query above was red nikke sneaker man. But what if our searcher is British? A Brit would type red nikke trainer man. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching LV handbag? The system would have to be told LV stands for Louis Vuitton.
 
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2000/1*Rj7d48EOct-6SRB_Yhjy4g.png" width=400>
@@ -81,7 +83,9 @@ Doing that for every kind of product takes *forever* and there are always things
 
 All of these need to be specified by humans, meaning a lot of hard work, knowledge, and attention to detail is needed.
 
-**It’s Fragile: **Text is complicated: If a user types in red nikke sneaker man a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and pipelines can have major issues
+#### It’s Fragile
+
+Text is complicated: If a user types in red nikke sneaker man a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and pipelines can have major issues
 
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png" width=200>
@@ -159,11 +163,7 @@ Why would we want to train for irrelevant products? Because we also want to know
 
 We’re basically doing the inverse of the above training. We’re showing the system a Harley Davidson motorcycle and telling us that it is *not* red nike sneakers. (For an interesting example of what happens if you *don't* do this, see [this tweet from Janelle Shane](https://twitter.com/janellecshane/status/1088223417365454848))
 
-<iframe src="https://medium.com/media/9eff7c56edde74f6b43c031e42941fcc" frameborder=0></iframe>
-
-
-
-## Does It Work Though?
+## Does Jina Work Though?
 
 A search “works” if it understands and returns quality results for:
 
@@ -262,10 +262,10 @@ So, how does neural search compare to the reigning champ that is symbolic search
 
 We’re not trying to choose between Team Symbolic and Team Neural. Both approaches have their own advantages and complement each other pretty well. So a better question to ask is: Which is right for your organization?
 
-## Try Neural Search Yourself
+## Try Jina Yourself
 
-![](https://cdn-images-1.medium.com/max/2000/0*n27u8HMyBgIiiKHW.gif)
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/0*n27u8HMyBgIiiKHW.gif">
+</p>
 
-There’s no better way to test-drive a new technology than by diving in and playing with it. For neural search a great starting point is [Jina](https://github.com/jina-ai/jina/), a cloud-native neural search framework. It provides pre-trained Docker images and [jinabox.js](https://github.com/jina-ai/jinabox.js/), an easy-to-use front-end for searching text, images, audio, or video. There’s no product search example (yet), but you *can* search for more light-hearted things like lines from South Park or your favorite Pokémon.
-
-**Disclaimer:** The writer of this piece is Jina’s Open Source Evangelist and resident caffeine addict.
+There’s no better way to test-drive Jina technology than by diving in and playing with it. We provide pre-trained Docker images and [jinabox.js](https://github.com/jina-ai/jinabox.js/), an easy-to-use front-end for searching text, images, audio, or video. There’s no product search example (yet), but you *can* search for more light-hearted things like lines from South Park or your favorite Pokémon.
