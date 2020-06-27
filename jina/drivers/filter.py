@@ -18,7 +18,8 @@ class TopKFilterDriver(BaseDriver):
             topk_doc_id = {md.match_doc.doc_id for md in d.topk_results}
             # keep only the chunks that hit the topk docs
             for c in self.chunks(d):
-                for idx, mc in enumerate(c.topk_results):
+                # delete in reverse so that idx won't be messed up
+                for idx, mc in reversed(list(enumerate(c.topk_results))):
                     if mc.match_chunk.doc_id not in topk_doc_id:
                         del c.topk_results[idx]
 
