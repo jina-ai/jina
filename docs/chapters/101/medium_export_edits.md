@@ -30,22 +30,18 @@ In short, search is *huge*. In this article we’re going to look at the reignin
 
 ## Symbolic Search: Rules are Rules
 
-Google is a huge general-purpose search engine. Other companies can’t just adapt it to their needs and plug it into their systems. Instead, they use solutions like [Elastic](http://elastic.co/) and [Apache Solr](https://lucene.apache.org/solr/), symbolic search systems that let developers write the rules and create the pipelines for searching products, people, messages, or whatever the company needs.
+Google is a huge general-purpose search engine. Other companies can’t just adapt it to their needs and plug it into their systems. Instead, they use solutions like [Elastic](http://elastic.co/) and [Apache Solr](https://lucene.apache.org/solr/), symbolic search systems that let developers write the rules and create the pipelines for searching products, people, messages, or whatever the company needs. 
 
-![Colourpop, a popular Shopify store](https://cdn-images-1.medium.com/max/3716/1*o6NN3Oz2JQqX6c0zL_H8vg.png)*Colourpop, a popular Shopify store*
+Take [Shopify](http://www.shopify.com) for example. They use Elastic to index and search through millions of products across hundreds of categories. This couldn’t be done out-of-the-box or with a general purpose search engine like Google. They have to take Elastic and write specific rules and pipelines to index, filter, sort, and rank products by a variety of criteria, and convert this data into symbols that the system can understand. Hence the name, *symbolic search*. Here's *Colourpop*, a popular Shopify store:
 
-Take [Shopify](http://www.shopify.com) for example. They use Elastic to index and search through millions of products across hundreds of categories. This couldn’t be done out-of-the-box or with a general purpose search engine like Google. They have to take Elastic and write specific rules and pipelines to index, filter, sort, and rank products by a variety of criteria, and convert this data into symbols that the system can understand. Hence the name, *symbolic search.*
+<img src="https://cdn-images-1.medium.com/max/3716/1*o6NN3Oz2JQqX6c0zL_H8vg.png">
 
 You and I know that if you search for red nike sneakers you want, well, red Nike sneakers. Those are just words to a typical search system though. Sure, if you type them in you'll hopefully get what you asked for, but what if those sneakers are tagged as *trainers*? Or even tagged as *scarlet* for that matter? In cases like this, a developer needs to write rules:
 
 * **Red** is a color
-
 * **Scarlet** is a synonym of red
-
 * **Nike** is a brand
-
 * **Sneakers** are a type of footwear
-
 * Another name for sneakers is **trainers**
 
 Or, expressed in JSON as key-value pairs:
@@ -61,11 +57,11 @@ Or, expressed in JSON as key-value pairs:
 
 Each of these key-value pairs can be thought of as a symbol, hence the name *symbolic search*. When a user inputs a search query, the system breaks it down into symbols, and matches these symbols with the symbols from the products in its database.
 
-![](https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png)
+<img src="https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png">
 
 But what if a user types nikke instead of nike, or searches shirts (with an s) rather than shirt? There are so many rules in language, and people break them all the time. To get effective symbols (i.e. knowing that nikke *really* means {"brand": "nike"}), you need to define lots of rules and chain them together in a complex pipeline:
 
-![](https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png)
+<img src="https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png">
 
 Doing that for every kind of product takes *forever* and there are always things that fall between the cracks. And if you want to localize for other languages? You’ll have to go through it all over again.
 
@@ -73,13 +69,13 @@ Doing that for every kind of product takes *forever* and there are always things
 
 **You Have to Explain Every. Little. Thing: **Our example search query above was red nikke sneaker man. But what if our searcher is British? A Brit would type red nikke trainer man. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching LV handbag? The system would have to be told LV stands for Louis Vuitton.
 
-![](https://cdn-images-1.medium.com/max/2000/1*Rj7d48EOct-6SRB_Yhjy4g.png)
+<img src="https://cdn-images-1.medium.com/max/2000/1*Rj7d48EOct-6SRB_Yhjy4g.png">
 
 All of these need to be specified by humans, meaning a lot of hard work, knowledge, and attention to detail is needed.
 
 **It’s Fragile: **Text is complicated: If a user types in red nikke sneaker man a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and pipelines can have major issues
 
-![](https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png)
+<img src="https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png">
 
 * Every component in the chain has an output that is fed as input into the next component along. So a problem early on in the process and break the whole system
 
@@ -93,7 +89,7 @@ All of these need to be specified by humans, meaning a lot of hard work, knowled
 
 An easier method would be train your search system on existing data. Instead of writing a rule that says if you type sportswear return sneakers, shorts, leotards, sweatbands, etc, what about just showing your system the inputs and outputs that worked before, and let it learn from those?
 
-![](https://cdn-images-1.medium.com/max/2000/1*IJtC-DHQ9Nb6YMzc9fi5Gg.png)
+<img src="https://cdn-images-1.medium.com/max/2000/1*IJtC-DHQ9Nb6YMzc9fi5Gg.png">
 
 That’s the idea behind neural search systems like [Jina](http://www.jina.ai). You can take the search log from an existing system and use it to train a new, more flexible system which then learns from later user interactions to create a better user experience and more accurate results.
 
@@ -113,7 +109,7 @@ A neural search system is only as good as its training data, so a diverse set of
 
 When we’re training our neural system, we’re showing it a set of labelled data from your existing search logs. An example would be the search query red nike sneakers and a list of the products returned by the search. These products could include images, ratings, description text, and so on. Over time the neural network gets a feel for the products as it adjusts its internal weights and biases. 
 
-![](https://cdn-images-1.medium.com/max/2000/1*ORPPlJNdkL4w0ImmOZ3JRA.png)
+<img src="https://cdn-images-1.medium.com/max/2000/1*ORPPlJNdkL4w0ImmOZ3JRA.png">
 
 After this we'll test it on *different* sets of data from your search logs and ask it to give us the right results. This testing includes:
 
@@ -127,7 +123,7 @@ If it fails, then it adjusts its weights and biases to improve next time. Over t
 
 And if you want to train your system in another language? Just gather the data to throw at it for training. No need to teach it all the rules of Spnaish, French, or Klingon.
 
-![](https://cdn-images-1.medium.com/max/2000/1*0XpG6posaNKgrnUqyMQzEw.png)
+<img src="https://cdn-images-1.medium.com/max/2000/1*0XpG6posaNKgrnUqyMQzEw.png">
 
 In a sense we’re bootstrapping the neural search system with an existing symbolic search system. With enough training data we don’t have to write rules or pipelines — these can just be picked up and learnt on-the-fly by the neural network.
 
@@ -135,7 +131,7 @@ In a sense we’re bootstrapping the neural search system with an existing symbo
 
 **Is this red Nike sneakers?**
 
-![](https://cdn-images-1.medium.com/max/3540/1*lpU_ag8URqUkgJfOJ5mpuA.png)
+<img src="https://cdn-images-1.medium.com/max/3540/1*lpU_ag8URqUkgJfOJ5mpuA.png">
 
 Why would we want to train for irrelevant products? Because we also want to know what *not* to show in our search results. We can get this data in a couple of ways:
 
@@ -163,23 +159,23 @@ Anyway, less talking, more searching:
 
     🇬🇧 nike
 
-![](https://cdn-images-1.medium.com/max/2612/1*oNKektGb38R6-MpA4pc-YA.png)
+<img src="https://cdn-images-1.medium.com/max/2612/1*oNKektGb38R6-MpA4pc-YA.png">
 
     🇩🇪 nike schwarz (different language)
 
-![](https://cdn-images-1.medium.com/max/2594/1*0YJWA5fvYZ1Dl_N2mh3lGA.png)
+<img src="https://cdn-images-1.medium.com/max/2594/1*0YJWA5fvYZ1Dl_N2mh3lGA.png">
 
     🇬🇧 addidsa (misspelled brand)
 
-![](https://cdn-images-1.medium.com/max/2608/1*mEwmzGm0gxGkaUca4w10Yg.png)
+<img src="https://cdn-images-1.medium.com/max/2608/1*mEwmzGm0gxGkaUca4w10Yg.png">
 
     🇬🇧 addidsa trosers (misspelled brand and category)
 
-![](https://cdn-images-1.medium.com/max/2600/1*4BrUhReTod8Gbo_2ESrNBw.png)
+<img src="https://cdn-images-1.medium.com/max/2600/1*4BrUhReTod8Gbo_2ESrNBw.png">
 
     🇬🇧 🇩🇪 kleider flowers (mixed languages)
 
-![](https://cdn-images-1.medium.com/max/2604/1*acWqat542AohmX4TJUPq_g.png)
+<img src="https://cdn-images-1.medium.com/max/2604/1*acWqat542AohmX4TJUPq_g.png">
 
 So, as you can see, neural search does pretty well!
 
@@ -187,7 +183,7 @@ So, as you can see, neural search does pretty well!
 
 So, how does neural search compare to the reigning champ that is symbolic search? Let’s take a look at the pro’s and cons of each:
 
-![I too wish Medium supported tables](https://cdn-images-1.medium.com/max/2000/1*yXtMVXx8K6HrSlm2PaGoUQ.png)*I too wish Medium supported tables*
+![I too wish Medium supported tables](https://cdn-images-1.medium.com/max/2000/1*yXtMVXx8K6HrSlm2PaGoUQ.png">*I too wish Medium supported tables*
 
 We’re not trying to choose between Team Symbolic and Team Neural. Both approaches have their own advantages and complement each other pretty well. So a better question to ask is: Which is right for your organization?
 
