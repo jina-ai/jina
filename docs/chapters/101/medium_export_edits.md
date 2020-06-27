@@ -211,7 +211,7 @@ So, as you can see, neural search does pretty well!
 
 So, how does neural search compare to the reigning champ that is symbolic search? Let’s take a look at the pro’s and cons of each:
 
-<table>
+<table width="100%">
   <thead>
     <tr>
       <th scope="col">
@@ -257,15 +257,14 @@ So, how does neural search compare to the reigning champ that is symbolic search
         <li>Needs lots of data</li>
       </td>
     </tr>
-
-![I too wish Medium supported tables](https://cdn-images-1.medium.com/max/2000/1*yXtMVXx8K6HrSlm2PaGoUQ.png">
-</p>*I too wish Medium supported tables*
+  </tbody>
+</table>
 
 We’re not trying to choose between Team Symbolic and Team Neural. Both approaches have their own advantages and complement each other pretty well. So a better question to ask is: Which is right for your organization?
 
 ## Try Neural Search Yourself
 
-![Gotta catch ’em all](https://cdn-images-1.medium.com/max/2000/0*n27u8HMyBgIiiKHW.gif)*Gotta catch ’em all*
+![](https://cdn-images-1.medium.com/max/2000/0*n27u8HMyBgIiiKHW.gif)
 
 There’s no better way to test-drive a new technology than by diving in and playing with it. For neural search a great starting point is [Jina](https://github.com/jina-ai/jina/), a cloud-native neural search framework. It provides pre-trained Docker images and [jinabox.js](https://github.com/jina-ai/jinabox.js/), an easy-to-use front-end for searching text, images, audio, or video. There’s no product search example (yet), but you *can* search for more light-hearted things like lines from South Park or your favorite Pokémon.
 
