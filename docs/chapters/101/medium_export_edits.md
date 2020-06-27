@@ -17,7 +17,7 @@ Search is big business, and getting bigger every day. Whereas just a few years a
 As an example, just look at the stratospheric growth in Google queries — and that’s only until 2012!
 
 <p align="center">
-![](https://cdn-images-1.medium.com/max/2000/1*aYnGqTncE7DZLnb7ZlsA9A.png)
+<img src="https://cdn-images-1.medium.com/max/2000/1*aYnGqTncE7DZLnb7ZlsA9A.png">
 </center>
 
 In short, search is *huge*. In this article we’re going to look at the reigning champ of search methods, symbolic search, and the plucky upstart contender, neural search.
