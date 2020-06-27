@@ -97,6 +97,9 @@ message Chunk {
 
     // a map of tags
     map<string, string> tags = 14;
+
+    // the position of the chunk, could be start and end index of a string; could be x,y coordinate of a image; could be timestamp of an audio clip
+    repeated uint32 location = 15;
 }
 
 /**
