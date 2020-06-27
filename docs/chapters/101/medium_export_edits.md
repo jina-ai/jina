@@ -100,7 +100,7 @@ All of these need to be specified by humans, meaning a lot of hard work, knowled
 An easier method would be train your search system on existing data. Instead of writing a rule that says if you type sportswear return sneakers, shorts, leotards, sweatbands, etc, what about just showing your system the inputs and outputs that worked before, and let it learn from those?
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/2000/1*IJtC-DHQ9Nb6YMzc9fi5Gg.png" width="400">
+<img src="https://cdn-images-1.medium.com/max/2000/1*IJtC-DHQ9Nb6YMzc9fi5Gg.png" width="250">
 </p>
 
 That’s the idea behind neural search systems like [Jina](http://www.jina.ai). You can take the search log from an existing system and use it to train a new, more flexible system which then learns from later user interactions to create a better user experience and more accurate results.
@@ -138,7 +138,7 @@ If it fails, then it adjusts its weights and biases to improve next time. Over t
 And if you want to train your system in another language? Just gather the data to throw at it for training. No need to teach it all the rules of Spnaish, French, or Klingon.
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/2000/1*0XpG6posaNKgrnUqyMQzEw.png" width="400">
+<img src="https://cdn-images-1.medium.com/max/2000/1*0XpG6posaNKgrnUqyMQzEw.png" width="250">
 </p>
 
 In a sense we’re bootstrapping the neural search system with an existing symbolic search system. With enough training data we don’t have to write rules or pipelines — these can just be picked up and learnt on-the-fly by the neural network.
@@ -148,7 +148,7 @@ In a sense we’re bootstrapping the neural search system with an existing symbo
 **Is this red Nike sneakers?**
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/3540/1*lpU_ag8URqUkgJfOJ5mpuA.png" width="400">
+<img src="https://cdn-images-1.medium.com/max/3540/1*lpU_ag8URqUkgJfOJ5mpuA.png">
 </p>
 
 Why would we want to train for irrelevant products? Because we also want to know what *not* to show in our search results. We can get this data in a couple of ways:
