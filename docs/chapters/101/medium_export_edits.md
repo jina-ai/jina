@@ -211,6 +211,53 @@ So, as you can see, neural search does pretty well!
 
 So, how does neural search compare to the reigning champ that is symbolic search? Let’s take a look at the pro’s and cons of each:
 
+<table>
+  <thead>
+    <tr>
+      <th scope="col">
+      </th>
+      <th scope="col">
+        Pro's
+      </th>
+      <th scope="col">
+        Cons
+      </th>
+    </tr>
+  <thead>
+  <tbody>
+    <tr>
+      <th scope="row">
+        Symbolic Search
+      </th>
+      <td>
+        <li>Efficient querying</li>
+        <li>Easy to implement</li>
+        <li>Interpretable results</li>
+        <li>Off-the-shelf packages</li>
+      </td>
+      <td>
+        <li>Fragile</li>
+        <li>Hard-coded rules</li>
+        <li>Maintenance costs</li>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Neural Search
+      </th>
+      <td>
+        <li>Automatic</li>
+        <li>Resilient to noise</li>
+        <li>Scales easily</li>
+        <li>Little domain knowledge needed</li>
+      </td>
+      <td>
+        <li>Less efficient querying</li>
+        <li>Hard to add rules</li>
+        <li>Needs lots of data</li>
+      </td>
+    </tr>
+
 ![I too wish Medium supported tables](https://cdn-images-1.medium.com/max/2000/1*yXtMVXx8K6HrSlm2PaGoUQ.png">
 </p>*I too wish Medium supported tables*
 
