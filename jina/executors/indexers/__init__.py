@@ -86,6 +86,8 @@ class BaseIndexer(BaseExecutor):
             self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
                                 'If you are indexing data from scratch then it is fine. '
                                 'If you are querying data then the index file must be empty or broken.')
+        else:
+            self.logger.info(f'indexer size: {self.size}')
         return self._query_handler
 
     @property
@@ -127,6 +129,7 @@ class BaseIndexer(BaseExecutor):
 
     def close(self):
         """Close all file-handlers and release all resources. """
+        self.logger.info(f'indexer size: {self.size}')
         self.flush()
         call_obj_fn(self._write_handler, 'close')
         call_obj_fn(self._query_handler, 'close')
