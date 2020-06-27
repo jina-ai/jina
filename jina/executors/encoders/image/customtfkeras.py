@@ -16,7 +16,7 @@ class CustomImageKerasEncoder(BaseCVTFEncoder):
     https://www.tensorflow.org/api_docs/python/tf/keras/applications
     """
     
-     def __init__(self, model_path: str, layer_name: str, *args, **kwargs):
+    def __init__(self, model_path: str, layer_name: str, channel_axis: int = -1, *args, **kwargs):
 
         """
         :param model_path: the path where the model is stored.
