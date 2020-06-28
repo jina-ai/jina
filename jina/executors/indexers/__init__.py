@@ -44,7 +44,7 @@ class BaseIndexer(BaseExecutor):
                  *args, **kwargs):
         """
 
-        :param index_filename: the name of the file to store the index, when not given metas.name is used.
+        :param index_filename: the name of the file for storing the index, when not given metas.name is used.
         :param args:
         :param kwargs:
         """

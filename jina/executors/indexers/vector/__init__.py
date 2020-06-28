@@ -35,11 +35,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self._raw_ndarray = None
 
         if ref_indexer:
+            # copy the header info of the binary file
             self.num_dim = ref_indexer.num_dim
             self.dtype = ref_indexer.dtype
             self.compress_level = ref_indexer.compress_level
             self.key_bytes = ref_indexer.key_bytes
             self.key_dtype = ref_indexer.key_dtype
+            # point to the ref_indexer.index_filename
+            # so that later in `post_init()` it will load from the referred index_filename
             self.index_filename = ref_indexer.index_filename
 
     def get_add_handler(self):
