@@ -15,6 +15,7 @@ class RandomGaussianEncoder(BaseNumericEncoder):
 
     def __init__(self,
                  output_dim: int,
+                 random_state: int,
                  *args,
                  **kwargs):
         """
@@ -22,10 +23,11 @@ class RandomGaussianEncoder(BaseNumericEncoder):
         """
         super().__init__(*args, **kwargs)
         self.output_dim = output_dim
+        self.random_state = random_state
 
     def post_init(self):
         from sklearn.random_projection import GaussianRandomProjection
-        self.model = GaussianRandomProjection(n_components=self.output_dim)
+        self.model = GaussianRandomProjection(n_components=self.output_dim, random_state=self.random_state)
 
     @batching
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
@@ -44,6 +46,7 @@ class RandomSparseEncoder(BaseNumericEncoder):
 
     def __init__(self,
                  output_dim: int,
+                 random_state: int,
                  *args,
                  **kwargs):
         """
@@ -51,10 +54,11 @@ class RandomSparseEncoder(BaseNumericEncoder):
         """
         super().__init__(*args, **kwargs)
         self.output_dim = output_dim
+        self.random_state = random_state
 
     def post_init(self):
         from sklearn.random_projection import SparseRandomProjection
-        self.model = SparseRandomProjection(n_components=self.output_dim)
+        self.model = SparseRandomProjection(n_components=self.output_dim, random_state=self.random_state)
 
     @batching
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
