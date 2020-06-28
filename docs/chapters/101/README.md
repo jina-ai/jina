@@ -1,4 +1,4 @@
-# What is Jina and Neural Search?
+# Jina 101: What is Jina and Neural Search?
 
 ## TLDR
 
@@ -260,3 +260,7 @@ We’re not trying to choose between Team Symbolic and Team Neural. Both approac
 </p>
 
 There’s no better way to test-drive Jina technology than by diving in and playing with it. We provide pre-trained Docker images and [jinabox.js](https://github.com/jina-ai/jinabox.js/), an easy-to-use front-end for searching text, images, audio, or video. There’s no product search example (yet), but you *can* search for more light-hearted things like lines from South Park or your favorite Pokémon.
+
+## Next Steps
+
+Move on to [Jina 102](../102) to find out more about the nuts and bolts of the Jina family, including Documents, Chunks, Executors, Peas, and more!
