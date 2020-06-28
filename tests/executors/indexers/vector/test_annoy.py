@@ -2,16 +2,18 @@ import os
 import unittest
 
 import numpy as np
+
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector.annoy import AnnoyIndexer
 from jina.executors.indexers.vector.nmslib import NmslibIndexer
 from jina.executors.indexers.vector.numpy import NumpyIndexer
+from jina.executors.indexers.vector.vector import VectorIndexer
 from tests import JinaTestCase
 
 # fix the seed here
 np.random.seed(500)
 retr_idx = None
-vec_idx = np.random.randint(0, high=100, size=[1, 10])
+vec_idx = np.random.randint(0, high=100, size=[10])
 vec = np.random.random([10, 10])
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 
@@ -104,6 +106,39 @@ class MyTestCase(JinaTestCase):
             np.testing.assert_almost_equal(retr_idx, idx)
         self.assertEqual(idx.shape, dist.shape)
         self.assertEqual(idx.shape, (10, 4))
+        self.add_tmpfile(a.index_abspath, a.save_abspath)
+
+    def test_vector_indexer(self):
+        a = VectorIndexer(backend='numpy', index_filename='np.test.gz')
+        a.add(vec_idx, vec)
+        size_a = a.size
+        a.save_config()
+        a.save()
+        a.close()
+
+        with open(a.config_abspath, 'r') as fp:
+            lines = fp.readlines()
+
+        with open(a.config_abspath, 'w') as fp:
+            for l in lines:
+                l = l.replace('backend: numpy', 'backend: annoy')
+                fp.write(l)
+
+        b = BaseIndexer.load_config(a.config_abspath)
+        self.assertEqual(type(b).__name__, 'VectorIndexer')
+        size_b = b.size
+        self.assertEqual(size_a, size_b)
+
+        idx, dist = b.query(query, top_k=4)
+        print(idx, dist)
+        global retr_idx
+        if retr_idx is None:
+            retr_idx = idx
+        else:
+            np.testing.assert_almost_equal(retr_idx, idx)
+        self.assertEqual(idx.shape, dist.shape)
+        self.assertEqual(idx.shape, (10, 4))
+
         self.add_tmpfile(a.index_abspath, a.save_abspath)
 
 

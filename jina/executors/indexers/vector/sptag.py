@@ -5,10 +5,10 @@ from typing import Tuple
 
 import numpy as np
 
-from .numpy import NumpyIndexer
+from . import BaseNumpyIndexer
 
 
-class SptagIndexer(NumpyIndexer):
+class SptagIndexer(BaseNumpyIndexer):
     """SPTAG powered vector indexer
 
     For SPTAG installation and python API usage, please consult:
@@ -38,21 +38,17 @@ class SptagIndexer(NumpyIndexer):
         self.space = dist_calc_method
         self.num_threads = num_threads
 
-    def get_query_handler(self):
-        vecs = super().get_query_handler()
-        if vecs is not None:
-            import SPTAG
+    def build_advanced_index(self, vecs: 'np.ndarray'):
+        import SPTAG
 
-            _index = SPTAG.AnnIndex(self.method, 'Float', vecs.shape[1])
+        _index = SPTAG.AnnIndex(self.method, 'Float', vecs.shape[1])
 
-            # Set the thread number to speed up the build procedure in parallel
-            _index.SetBuildParam("NumberOfThreads", str(self.num_threads))
-            _index.SetBuildParam("DistCalcMethod", self.method)
+        # Set the thread number to speed up the build procedure in parallel
+        _index.SetBuildParam("NumberOfThreads", str(self.num_threads))
+        _index.SetBuildParam("DistCalcMethod", self.method)
 
-            if _index.Build(vecs, vecs.shape[0]):
-                return _index
-        else:
-            return None
+        if _index.Build(vecs, vecs.shape[0]):
+            return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         if keys.dtype != np.float32:
