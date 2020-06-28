@@ -8,7 +8,7 @@ import numpy as np
 from tests import JinaTestCase
 from jina.flow import Flow
 
-concurrency = 50
+concurrency = 20
 
 
 class MyTestCase(JinaTestCase):
