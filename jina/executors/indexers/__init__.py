@@ -52,7 +52,6 @@ class BaseIndexer(BaseExecutor):
         :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
         :param vectors: vector representations in B x D
         """
-        pass
 
     def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
@@ -67,7 +66,7 @@ class BaseIndexer(BaseExecutor):
         :return: a tuple of two ndarray.
             The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
         """
-        pass
+        raise NotImplementedError
 
     @property
     def index_abspath(self) -> str:
@@ -234,4 +233,3 @@ class ChunkIndexer(CompoundExecutor):
           ControlRequest:
             - !ControlReqDriver {}
     """
-

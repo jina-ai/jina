@@ -2,6 +2,7 @@ import os
 import unittest
 
 import numpy as np
+
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector.annoy import AnnoyIndexer
 from jina.executors.indexers.vector.nmslib import NmslibIndexer
@@ -104,6 +105,17 @@ class MyTestCase(JinaTestCase):
             np.testing.assert_almost_equal(retr_idx, idx)
         self.assertEqual(idx.shape, dist.shape)
         self.assertEqual(idx.shape, (10, 4))
+        self.add_tmpfile(a.index_abspath, a.save_abspath)
+
+    def test_rename_numpy_indexer(self):
+        a = NumpyIndexer(index_filename='np.test.gz')
+        a.add(vec_idx, vec)
+        a.save_config()
+        a.save()
+        a.close()
+
+        b = BaseIndexer.load_config(a.config_abspath)
+        self.assertEqual(type(b).__name__, 'NaiveIndexer')
         self.add_tmpfile(a.index_abspath, a.save_abspath)
 
 
