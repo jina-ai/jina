@@ -40,8 +40,14 @@ class BaseIndexer(BaseExecutor):
     """
 
     def __init__(self,
-                 index_filename: str,
+                 index_filename: str = None,
                  *args, **kwargs):
+        """
+
+        :param index_filename: the name of the file to store the index, when not given metas.name is used.
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
         self._size = 0
@@ -55,6 +61,7 @@ class BaseIndexer(BaseExecutor):
 
     def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
+        self.index_filename = self.index_filename or self.name
         self._query_handler = None
         self._write_handler = None
 

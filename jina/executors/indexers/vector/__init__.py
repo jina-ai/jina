@@ -15,15 +15,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     def __init__(self,
                  compress_level: int = 1,
+                 ref_indexer: 'BaseNumpyIndexer' = None,
                  *args, **kwargs):
         """
         :param compress_level: The compresslevel argument is an integer from 0 to 9 controlling the
                         level of compression; 1 is fastest and produces the least compression,
                         and 9 is slowest and produces the most compression. 0 is no compression
                         at all. The default is 9.
-
-        .. note::
-            Metrics other than `cosine` and `euclidean` requires ``scipy`` installed.
+        :param ref_indexer: Bootstrap the current indexer from a ``ref_indexer``. This enables user to switch
+                            the query algorithm at the query time.
 
         """
         super().__init__(*args, **kwargs)
@@ -32,6 +32,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.compress_level = compress_level
         self.key_bytes = b''
         self.key_dtype = None
+        self._raw_ndarray = None
+
+        if ref_indexer:
+            self.num_dim = ref_indexer.num_dim
+            self.dtype = ref_indexer.dtype
+            self.compress_level = ref_indexer.compress_level
+            self.key_bytes = ref_indexer.key_bytes
+            self.key_dtype = ref_indexer.key_dtype
+            self.index_filename = ref_indexer.index_filename
 
     def get_add_handler(self):
         """Open a binary gzip file for adding new vectors
@@ -105,21 +114,26 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     @property
     def raw_ndarray(self):
-        vecs = self._load_gzip(self.index_abspath)
-        if vecs is None:
-            return vecs
-
-        if self.key_bytes and self.key_dtype:
-            self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
-
-        if self.int2ext_key is not None and vecs is not None and vecs.ndim == 2:
-            if self.int2ext_key.shape[0] != vecs.shape[0]:
-                self.logger.error(
-                    f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
-                    f'did you write to this index twice?')
+        if self._raw_ndarray is None:
+            vecs = self._load_gzip(self.index_abspath)
+            if vecs is None:
                 return None
-            if vecs.shape[0] == 0:
-                self.logger.warning(f'an empty index is loaded')
-            return vecs
+
+            if self.key_bytes and self.key_dtype:
+                self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+
+            if self.int2ext_key is not None and vecs is not None and vecs.ndim == 2:
+                if self.int2ext_key.shape[0] != vecs.shape[0]:
+                    self.logger.error(
+                        f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
+                        f'did you write to this index twice? or did you forget to save indexer?')
+                    return None
+                if vecs.shape[0] == 0:
+                    self.logger.warning(f'an empty index is loaded')
+
+                self._raw_ndarray = vecs
+                return self._raw_ndarray
+            else:
+                return None
         else:
-            return None
+            return self._raw_ndarray
