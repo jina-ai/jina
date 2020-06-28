@@ -61,7 +61,8 @@ class NaiveIndexer(BaseNumpyIndexer):
         return vecs
 
 
-NumpyIndexer = NaiveIndexer
+class NumpyIndexer(NaiveIndexer):
+    """Depreciated, will be removed in the future"""
 
 
 def _ext_arrs(A, B):
