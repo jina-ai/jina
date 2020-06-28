@@ -127,9 +127,7 @@ When we’re training our neural system, we’re showing it a set of labelled da
 After this we'll test it on *different* sets of data from your search logs and ask it to give us the right results. This testing includes:
 
 * Showing just the product and the system guesses the search query
-
 * Showing just the search query and the system guesses the right products to return
-
 * Letting the system produce matching products and search queries of its own
 
 If it fails, then it adjusts its weights and biases to improve next time. Over time it gets better and better at understanding the concept of red nike sneakers, black chanel dress, or harley davidson motorcycle, all without having to understand the symbols that define them. No symbols means no rules for you to define, an easier experience for developers and better results for end-users.
@@ -153,7 +151,6 @@ In a sense we’re bootstrapping the neural search system with an existing symbo
 Why would we want to train for irrelevant products? Because we also want to know what *not* to show in our search results. We can get this data in a couple of ways:
 
 * Randomly sampling all products: It’s easy to do and not a bad idea in practice, but we have to hope we don’t catch any of the products that we *do* want to show.
-
 * Collect products that often come up in results but get no clicks. This means coordinating lots of teams to ensure these really *are* uninteresting to users, and not because users would have to scroll down to see them, etc.
 
 We’re basically doing the inverse of the above training. We’re showing the system a Harley Davidson motorcycle and telling us that it is *not* red nike sneakers. (For an interesting example of what happens if you *don't* do this, see [this tweet from Janelle Shane](https://twitter.com/janellecshane/status/1088223417365454848))
@@ -163,7 +160,6 @@ We’re basically doing the inverse of the above training. We’re showing the s
 A search “works” if it understands and returns quality results for:
 
 * **Simple queries:** Like searching ‘red’, ‘nike’, or ‘sneakers’
-
 * **Compound queries:** Like ‘red nike sneakers’
 
 If it can’t even do those, there’s no point in checking for fancy things like spell-checking and ability to work in different languages.
