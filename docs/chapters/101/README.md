@@ -1,221 +1,262 @@
-## What is Jina and Neural Search?
+# What is Jina and Neural Search?
 
-Jina is a search framework powered by neural networks. Classic search frameworks like Apache Solr or Elastic need strict rules and a fragile pipeline to achieve results. Jina, on the other hand, leverages the power of machine learning to train the search engine for better results.
+## TLDR
 
-Let's take product search as an example use case: You need a system that matches a search query with a set of products in your store. A good product search can understand user queries in any language, retrieve as many relevant products as possible, and finally present the result as a list with the preferred products at the top, and irrelevant products at the bottom.
+### What is Neural Search?
 
-## Classic Symbolic Searching
+In short, neural search is a new approach to retrieving information. Instead of telling a machine a set of rules to understand what data is what, neural search uses does the same thing with a neural network. This means developers don't have to write every little rule, saving them time and headaches, and the system trains itself to get better as it goes along.
 
-Not all searches are equal: For text searches like Google, these products would be structured data, often defined by a list of key-value pairs, a set of pictures, and some unstructured text. Developers use similar solutions for full-text like Apache Solr and Elastic.
+### What is Jina?
 
-Fundamentally, these are symbolic information retrieval (IR) systems, using words as symbols. If we want quality search results, we have to ensure search queries and the documents being searched are mapped to a common string space.
- 
-* What are the symbols in "symbolic"? The words? Tokenized words?
-* How is IR different from search? Are the terms more-or-less interchangeable?
-* What's an example of a string space? What does it look like?
-
-These classic search frameworks perform three tasks. In our product search context, these are:
- 
-* **Indexing**: Storing products in a database with attributes as keys, like brand, color, category
-* **Parsing**: Extracting attribute words from the search query. For example red sneakers -> {"color": "red", "category": "sneakers"}
-* **Matching**: Filtering the product database by the parsed attributes
-
-If no attributes match the query, the system falls back to matching the exact search sting. While parsing and matching have to be performed for each search query, indexing can be done less frequently.
-
-Most existing open-source search frameworks follow this approach, except with more sophisticated algorithms for each step. This lets many businesses build their own product search and serve millions of customers.
-
-### Disadvantages of Symbolic Search
-
-#### You have to explain every little thing to the system
-
-Our example search query above was `red nikke sneaker man`. But what if our searcher is British? A Brit would type `red nikke trainer man`. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching `LV handbag`? The system would have to be told `LV` stands for `Louis Vuitton`.
-
-All of these need to be specified by humans, meaning a lot of hard work, knowledge, and attention to detail is needed.
-
-#### Fragility
-
-Text is complicated: If a user types in "red nikke sneaker man" a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (category) for men (sub-category). You can think of this process as a chain of components, one each for recognizing color, brand, etc, and for spelling correction, tokenization, etc
-
-This approach has several drawbacks:
-
-* Every component in the chain has an output that is fed as input into the next component along. So a problem early on in the process and break the whole system
-* Some components may take inputs from multiple predecessors. That means you have to introduce more mechanisms to stop them blocking each other
-* It's difficult to improve overall search quality. Just improving one or two components may lead to no improvement in actual search results
-* If you want to search in another language, you have to rewrite all the language-dependent components in the pipeline, which increases maintenance cost
-
-## Jina's Neural Search
-
-By using machine learning, Jina:
-
-* Removes this fragile pipeline to make the system more resilient and scalable
-* Finds a better way to represent the underlying semantics of products and search queries
-
-### How Do We Train Jina?
-
-Machine learning systems like neural search have to be trained, and we can do that using an existing log of search queries. This log should contain what products users interacted with by clicking, adding to a wishlist, or purchasing. You may already have this information in your system. After cleaning and processing it, you can get accurate associations. We could also use other data like comments, reviews, or crowdsourced annotations.
-
-A neural search system is only as good as its training data, so a diverse set of training materials results in a system that can make better decisions and not just mimic a classic search system. On the other hand, if your only data source is what you got from a classic system, your neural search system will be inevitably biased. For example, if the classic system just returned zero results when a user typed `nikke`, instead of correcting to `Nike`, then your system will do the same.
-
-In a sense we're bootstrapping our neural search system with an existing symbolic search system. With enough training data we don't have to write rules or functions - these can just be picked up and learnt by the neural network.
-
-#### Training for Irrelevance
-
-Why would we want irrelevant products? Because we also want to know what *not* to show in our search results. We can get this data in a couple of ways:
-
-* Randomly sampling all products: It's easy to do and not a bad idea in practice, but we have to hope we don't catch any of the products we *do* want to show.
-* Collect products that often come up in results but get no clicks. This means coordination between lots of teams to ensure these really *are* uninteresting to users, and not because users would have scroll down to see them, etc.
-
-### Does It Work Though?
-
-We can call a search "working" if it understands and returns quality results for:
-
-* Simple queries: Like searching 'red', 'nike', or 'sneakers'
-* Compound queries: Like 'red nike sneakers'
-
-If it can't even do those well, there's no point in checking for fancy things like spell-checking and ability to work in different languages.
-
-Anyway, less talking, more showing:
-
-## Jina vs Classic Search
-
-So, how does Jina compare to the reigning champ that is symbolic search? Let's take a look at the pro's and cons of each:
-
-|       | Symbolic search               | Neural search                      |
-| ---   | ---                           | ---                                |
-| Pro's | * Efficient querying          | * Automatic                        |
-|       | * Easy to implement           | * Resilient to noise               |
-|       | * Interpretable results       | * Scales easily                    |
-|       | * Many off-the-shelf packages | * Not much domain knowledge needed |
-| Cons  | * Fragile                     | * Less efficient querying          |
-|       | * Hard-coded rules            | * Hard to add rules                |
-|       | * High maintenance cost       | * Requires lots and lots of data   |
-
-We're not trying to choose between Team Symbolic and Team Neural. Both approaches have their own advantages and complement each other pretty well. So a better question to ask is: How can we combine them in a way that we can enjoy all the advantages of both?
-
----
+Jina is our approach to neural search. It's cloud-native, so it can be deployed in containers, and it offers anything-to-anything search. Text-to-text, image-to-image, video-to-video, or whatever else you can feed it.
 
 ## Background
 
-Product search is one of the key components in an online retail store. Essentially, you need a system that matches a text query with a set of products in your store. A good product search can understand user’s query in any language, retrieve as many relevant products as possible, and finally present the result as a list, in which the preferred products should be at the top, and the irrelevant products should be at the bottom.
+Search is big business, and getting bigger every day. Whereas just a few years ago, searching meant typing something into a textbox (ah, those heady days of Yahoo! and Altavista), nowadays search encompasses text, voice, music, photos, videos, products, and so much more. Just before the turn of the millennium there were just 3.5 million Google searches per day. Today (according to the top result for search term 2020 google searches per day) that figure could be as high as 5 billion and rising, more than 1,000 times more. That’s not to mention all the billions of Tinder profiles, Amazon products, and Spotify songs searched by millions of people every day from their phones, computers, and virtual assistants.
 
-> OK. Very clear
+As an example, just look at the stratospheric growth in Google queries — and that’s only until 2012!
 
-Unlike text retrieval (e.g. Google web search), products are structured data. A product is often described by a list of key-value pairs, a set of pictures and some free text. In the developers’ world, Apache Solr and Elasticsearch are known as de-facto solutions for full-text search, making them a top contender for building e-commerce product search.
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*aYnGqTncE7DZLnb7ZlsA9A.png">
+</p>
 
-> But not all searches are equal: For text searches like Google, these products would be structured data, often defined by a list of key-value pairs, a set of pictures, and some unstructured text. Developers use similar solutions for full-text like Apache Solr and Elastic.
+In short, search is *huge*. In this article we’re going to look at the reigning champ of search methods, symbolic search, and the plucky upstart contender, neural search.
 
-At the core, Solr/Elasticsearch is a symbolic information retrieval (IR) system. Mapping query and document to a common string space is crucial to the search quality. This mapping process is an NLP pipeline implemented with Lucene Analyzer. In this post, I will reveal some drawbacks of such a symbolic-pipeline approach, and then present an end-to-end way to build a product search system from query logs using Tensorflow. This deep learning based system is less prone to spelling errors, leverages underlying semantics better, and scales out to multiple languages much easier.
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*HhqWzCFeEj88Acp9rYHmRQ.png" width="400">
+</center>
 
-> Fundamentally, Solr and Elastic are symbolic information retrieval (IR) systems. For quality search results, search queries and the documents being searched must be mapped to a common string space. This process is a Natural Language Programming (NLP) pipeline implemented with Lucene Analyzer.
-> * What are the symbols in "symbolic"? The words? Tokenized words?
-> * How is IR different from search? Are the terms more-or-less interchangeable?
-> * What's an example of a string space? What does it look like?
+**Note:** This article is based on a [post by Han Xiao](https://hanxiao.io/2018/01/10/Build-Cross-Lingual-End-to-End-Product-Search-using-Tensorflow/) with his permission. Check there if you want a more technical introduction to neural search.
 
-Table of Content
+## Symbolic Search: Rules are Rules
 
-    Recap Symbolic Approach for Product Search
-        Symbolic IR System
-    Pain points of Symbolic IR System
-        1. NLP Pipeline is Fragile and doesn’t Scale Out to Multiple Languages
-        2. Symbolic System does not Understand Semantics without Hard Coding
-    Neural IR System
-        End-to-End Model Training
-        Where Do Query-Product Pairs Come From?
-        What about Negative Query-Product Pairs?
-    Symbolic vs. Neural IR System
-    Neural Network Architecture
-        Query Encoder
-        Image Encoder
-        Attribute Encoder
-        Metric & Loss Layer
-        Inference
-    Training and Evaluation Scheme
-    Qualitative Results
-    Summary
+Google is a huge general-purpose search engine. Other companies can’t just adapt it to their needs and plug it into their systems. Instead, they use solutions like [Elastic](http://elastic.co/) and [Apache Solr](https://lucene.apache.org/solr/), symbolic search systems that let developers write the rules and create the pipelines for searching products, people, messages, or whatever the company needs. 
 
-## Recap Symbolic Approach for Product Search
+Take [Shopify](http://www.shopify.com) for example. They use Elastic to index and search through millions of products across hundreds of categories. This couldn’t be done out-of-the-box or with a general purpose search engine like Google. They have to take Elastic and write specific rules and pipelines to index, filter, sort, and rank products by a variety of criteria, and convert this data into symbols that the system can understand. Hence the name, *symbolic search*. Here's *Colourpop*, a popular Shopify store:
 
-Let’s first do a short review of the classic approach. Typically, an information retrieval system can be divided into three tasks: indexing, parsing and matching. As an example, the next figure illustrates a simple product search system:
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/3716/1*o6NN3Oz2JQqX6c0zL_H8vg.png">
+</p>
 
-    indexing: storing products in a database with attributes as keys, e.g. brand, color, category;
-    parsing: extracting attribute terms from the input query, e.g. red shirt -> {"color": "red", "category": "shirt"};
-    matching: filtering the product database by attributes.
-  
-> Classic search frameworks perform three tasks. In a product search context, these would cover
-> * Indexing: Storing products in a database with attributes as keys, like brand, color, category
-> * Parsing: Extracting attribute words from the search query. For example red shirt -> {"color": "red", "category": "shirt"}
-> * Matching: Filtering the product database by the parsed attributes
+You and I know that if you search for red nike sneakers you want, well, red Nike sneakers. Those are just words to a typical search system though. Sure, if you type them in you'll hopefully get what you asked for, but what if those sneakers are tagged as *trainers*? Or even tagged as *scarlet* for that matter? In cases like this, a developer needs to write rules:
 
-If there is no attribute found in the query, then the system fallbacks to exact string matching, i.e. searching every possible occurrence in the database. Note that, parsing, and matching must be done for each incoming query, whereas indexing can be done less frequently depending on the stock update speed.
+* **Red** is a color
+* **Scarlet** is a synonym of red
+* **Nike** is a brand
+* **Sneakers** are a type of footwear
+* Another name for sneakers is **trainers**
 
-> If no attributes match the query, the system falls back to matching the exact search sting. While parsing and matching have to be performed for each search query, indexing can be done less frequently.
+Or, expressed in JSON as key-value pairs:
 
-Many existing solutions such as Apache Solr and Elasticsearch follow this simple idea, except they employ more sophisticated algorithms (e.g. Lucene) for these three tasks. Thanks to these open-source projects many e-commerce businesses are able to build product search on their own and serve millions of requests from customers.
-Symbolic IR System
+    {
+    "color": "red",
+    "color_synonyms": ["scarlet"],
+    "brand": "nike",
+    "type": "sneaker",
+    "type_synonyms": ["trainers"],
+    "category": "footwear"
+    }
 
-> Most existing open-source search frameworks follow this approach, except with more sophisticated algorithms for each step. This lets many businesses build their own product search and serve millions of customers
+Each of these key-value pairs can be thought of as a symbol, hence the name *symbolic search*. When a user inputs a search query, the system breaks it down into symbols, and matches these symbols with the symbols from the products in its database.
 
-Note, at the core, Solr/Elasticsearch is a symbolic IR system that relies on the effective string representation of the query and product. By parsing or indexing, the system knows which tokens in the query or product description are important. These tokens are the primitive building blocks for matching. Extracting important tokens from the original text is usually implemented as a NLP pipeline, consisting of tokenization, lemmatization, spelling correction, acronym/synonym replacement, named-entity recognition and query expansion.
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png" width="200">
+</p>
 
-> In this classic approach of symbolic IR system, both the query and product must be represented by strings, so the system will know which tokens are important when parsing or indexing. This is usually done as an NLP pipeline, which covers tokenization, spelling correction, etc.
+But what if a user types nikke instead of nike, or searches shirts (with an s) rather than shirt? There are so many rules in language, and people break them all the time. To get effective symbols (i.e. knowing that nikke *really* means {"brand": "nike"}), you need to define lots of rules and chain them together in a complex pipeline:
 
-Formally, given a query q∈Qq\in \mathcal{Q}q∈Q and a product p∈Pp\in\mathcal{P}p∈P, one can think the NLP pipeline as a predefined function that maps from Q\mathcal{Q}Q or P\mathcal{P}P to a common string space S\mathcal{S}S, i.e. f:Q↦Sf: \mathcal{Q}\mapsto \mathcal{S}f:Q↦S or g:P↦Sg: \mathcal{P}\mapsto \mathcal{S}g:P↦S, respectively. For the matching task, we just need a metric m:S×S↦[0,+∞)m: \mathcal{S} \times \mathcal{S} \mapsto [0, +\infty)m:S×S↦[0,+∞) and then evaluate m(f(q),g(p))m\left(f(q),g(p)\right)m(f(q),g(p)), as illustrated in the figure below.
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png" width="800">
+</p>
 
-#### You have to explain every little thing to the system
+Doing that for every kind of product takes *forever* and there are always things that fall between the cracks. And if you want to localize for other languages? You’ll have to go through it all over again.
 
-Our example search query was `red nikke sneaker man`. But what if our searcher is British? A Brit would type `red nikke trainer man`. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what if someone searches `LV handbag`? The system would have to be told `LV` stands for `Louis Vuitton`.
+### Drawbacks of Symbolic Search
 
-All of these rules need to be specified by humans, meaning a lot of hard work, knowledge, and attention to detail is needed. And some things will always fall between the cracks!
+#### You Have to Explain Every. Little. Thing
 
-## Jina's Neural Search
+Our example search query above was red nikke sneaker man. But what if our searcher is British? A Brit would type red nikke trainer man. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching LV handbag? The system would have to be told LV stands for Louis Vuitton.
 
-By using machine learning, Jina:
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*Rj7d48EOct-6SRB_Yhjy4g.png" width=400>
+</p>
 
-* Removes this fragile pipeline to make the system more resilient and scalable
+All of these need to be specified by humans, meaning a lot of hard work, knowledge, and attention to detail is needed.
+
+#### It’s Fragile
+
+Text is complicated: If a user types in red nikke sneaker man a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and pipelines can have major issues
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png" width=200>
+</p>
+
+* Every component in the chain has an output that is fed as input into the next component along. So a problem early on in the process and break the whole system
+* Some components may take inputs from multiple predecessors. That means you have to introduce more mechanisms to stop them blocking each other
+* It’s difficult to improve overall search quality. Just improving one or two components may lead to no improvement in actual search results
+* If you want to search in another language, you have to rewrite all the language-dependent components in the pipeline, which increases maintenance cost
+
+## Neural Search: Train, Don’t Explain
+
+An easier method would be train your search system on existing data. Instead of writing a rule that says if you type sportswear return sneakers, shorts, leotards, sweatbands, etc, what about just showing your system the inputs and outputs that worked before, and let it learn from those?
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*IJtC-DHQ9Nb6YMzc9fi5Gg.png" width="250">
+</p>
+
+That’s the idea behind neural search systems like [Jina](http://www.jina.ai). You can take the search log from an existing system and use it to train a new, more flexible system which then learns from later user interactions to create a better user experience and more accurate results.
+
+Compared to symbolic search, neural search:
+ 
+* Removes the fragile pipeline, making the system more resilient and scalable
 * Finds a better way to represent the underlying semantics of products and search queries
+* Learns as it goes along, so improves over time
 
-### How Do We Train Jina?
+## How Do We Train Neural Search?
 
-Machine learning systems like neural search have to be trained, and we can do that using an existing log of search queries. This log should contain what products users interacted with by clicking, adding to a wishlist, or purchasing. You may already have this information in your system. After cleaning and processing it, you can get accurate associations. We could also use other data like comments, reviews, or crowdsourced annotations.
+Machine learning systems like neural search have to be trained, and we can do that using an existing log of search queries. This log should contain what products users interacted with by clicking, adding to a wishlist, or purchasing. You may already have this information in your system. After cleaning and processing it, you can get accurate associations. You could also use other data like user comments, reviews, or crowdsourced annotations.
 
-A neural search system is only as good as its training data, so a diverse set of training materials means a system that makes better decisions and not just mimic a classic search system. On the other hand, if your only data source is what you got from a classic system, your neural search system will be inevitably biased. For example, if the classic system just returned zero results when a user typed `nikke`, instead of correcting to `Nike`, then your system will do the same.
+A neural search system is only as good as its training data, so a diverse set of training materials results in a system that can make better decisions and not just mimic a classic search system. On the other hand, if your only data source is what you got from a more rigid classic system, your neural search system will be inevitably biased. For example, if the classic system just returned zero results when a user typed nikke, instead of correcting to nike, then your system will do the same.
 
-In a sense we're bootstrapping our neural search system with an existing symbolic search system. With enough training data we don't have to write rules or functions - these can just be picked up and learnt by the neural network.
+When we’re training our neural system, we’re showing it a set of labelled data from your existing search logs. An example would be the search query red nike sneakers and a list of the products returned by the search. These products could include images, ratings, description text, and so on. Over time the neural network gets a feel for the products as it adjusts its internal weights and biases. 
 
-#### Training for Irrelevance
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*ORPPlJNdkL4w0ImmOZ3JRA.png" width="400">
+</p>
 
-Why would we want irrelevant products? Because we also want to know what *not* to show in our search results. We can get this data in a couple of ways:
+After this we'll test it on *different* sets of data from your search logs and ask it to give us the right results. This testing includes:
 
-* Randomly sampling all products: It's easy to do and not a bad idea in practice, but we have to hope we don't catch any of the products we *do* want to show.
-* Collect products that often come up in results but get no clicks. This means coordination between lots of teams to ensure these really *are* uninteresting to users, and not because users would have scroll down to see them, etc.
+* Showing just the product and the system guesses the search query
+* Showing just the search query and the system guesses the right products to return
+* Letting the system produce matching products and search queries of its own
 
-### Does It Work Though?
+If it fails, then it adjusts its weights and biases to improve next time. Over time it gets better and better at understanding the concept of red nike sneakers, black chanel dress, or harley davidson motorcycle, all without having to understand the symbols that define them. No symbols means no rules for you to define, an easier experience for developers and better results for end-users.
 
-We can call a search "working" if it understands and returns quality results for:
+And if you want to train your system in another language? Just gather the data to throw at it for training. No need to teach it all the rules of Spnaish, French, or Klingon.
 
-* Simple queries: Like searching 'red', 'nike', or 'sneakers'
-* Compound queries: Like 'red nike sneakers'
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/1*0XpG6posaNKgrnUqyMQzEw.png" width="250">
+</p>
 
-If it can't even do those well, there's no point in checking for fancy things like spell-checking and ability to work in different languages.
+In a sense we’re bootstrapping the neural search system with an existing symbolic search system. With enough training data we don’t have to write rules or pipelines — these can just be picked up and learnt on-the-fly by the neural network.
 
-Anyway, less talking, more showing:
+### Training for Irrelevance
 
-**Insert pics here of product search**
+**Is this red Nike sneakers?**
 
-## Jina vs Classic Search
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/3540/1*lpU_ag8URqUkgJfOJ5mpuA.png">
+</p>
 
-So, how does Jina compare to the reigning champ that is symbolic search? Let's take a look at the pro's and cons of each:
+Why would we want to train for irrelevant products? Because we also want to know what *not* to show in our search results. We can get this data in a couple of ways:
 
-**Note: I'll improve table layout in final version**
+* Randomly sampling all products: It’s easy to do and not a bad idea in practice, but we have to hope we don’t catch any of the products that we *do* want to show.
+* Collect products that often come up in results but get no clicks. This means coordinating lots of teams to ensure these really *are* uninteresting to users, and not because users would have to scroll down to see them, etc.
 
-|       | Symbolic search               | Neural search                      |
-| ---   | ---                           | ---                                |
-| Pro's | * Efficient querying          | * Automatic                        |
-|       | * Easy to implement           | * Resilient to noise               |
-|       | * Interpretable results       | * Scales easily                    |
-|       | * Many off-the-shelf packages | * Not much domain knowledge needed |
-| Cons  | * Fragile                     | * Less efficient querying          |
-|       | * Hard-coded rules            | * Hard to add rules                |
-|       | * High maintenance cost       | * Requires lots and lots of data   |
+We’re basically doing the inverse of the above training. We’re showing the system a Harley Davidson motorcycle and telling us that it is *not* red nike sneakers. (For an interesting example of what happens if you *don't* do this, see [this tweet from Janelle Shane](https://twitter.com/janellecshane/status/1088223417365454848))
 
-We're not trying to choose between Team Symbolic and Team Neural. Both approaches have their own advantages and complement each other pretty well. So a better question to ask is: How can we combine them in a way that we can enjoy all the advantages of both?
+## Does Jina Work Though?
+
+A search “works” if it understands and returns quality results for:
+
+* **Simple queries:** Like searching ‘red’, ‘nike’, or ‘sneakers’
+* **Compound queries:** Like ‘red nike sneakers’
+
+If it can’t even do those, there’s no point in checking for fancy things like spell-checking and ability to work in different languages.
+
+Anyway, less talking, more searching:
+
+    🇬🇧 nike
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2612/1*oNKektGb38R6-MpA4pc-YA.png">
+</p>
+
+    🇩🇪 nike schwarz (different language)
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2594/1*0YJWA5fvYZ1Dl_N2mh3lGA.png">
+</p>
+
+    🇬🇧 addidsa (misspelled brand)
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2608/1*mEwmzGm0gxGkaUca4w10Yg.png">
+</p>
+
+    🇬🇧 addidsa trosers (misspelled brand and category)
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2600/1*4BrUhReTod8Gbo_2ESrNBw.png">
+</p>
+
+    🇬🇧 🇩🇪 kleider flowers (mixed languages)
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2604/1*acWqat542AohmX4TJUPq_g.png">
+</p>
+
+So, as you can see, neural search does pretty well!
+
+## Comparing Symbolic and Neural Search
+
+So, how does neural search compare to the reigning champ that is symbolic search? Let’s take a look at the pro’s and cons of each:
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th scope="col">
+      </th>
+      <th scope="col">
+        Pro's
+      </th>
+      <th scope="col">
+        Cons
+      </th>
+    </tr>
+  <thead>
+  <tbody>
+    <tr>
+      <th scope="row">
+        Symbolic Search
+      </th>
+      <td>
+        <li>Efficient querying</li>
+        <li>Easy to implement</li>
+        <li>Interpretable results</li>
+        <li>Off-the-shelf packages</li>
+      </td>
+      <td>
+        <li>Fragile</li>
+        <li>Hard-coded rules</li>
+        <li>Maintenance costs</li>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Neural Search
+      </th>
+      <td>
+        <li>Automatic</li>
+        <li>Resilient to noise</li>
+        <li>Scales easily</li>
+        <li>Little domain knowledge needed</li>
+      </td>
+      <td>
+        <li>Less efficient querying</li>
+        <li>Hard to add rules</li>
+        <li>Needs lots of data</li>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+We’re not trying to choose between Team Symbolic and Team Neural. Both approaches have their own advantages and complement each other pretty well. So a better question to ask is: Which is right for your organization?
+
+## Try Jina Yourself
+
+<p align="center">
+<img src="https://cdn-images-1.medium.com/max/2000/0*n27u8HMyBgIiiKHW.gif">
+</p>
+
+There’s no better way to test-drive Jina technology than by diving in and playing with it. We provide pre-trained Docker images and [jinabox.js](https://github.com/jina-ai/jinabox.js/), an easy-to-use front-end for searching text, images, audio, or video. There’s no product search example (yet), but you *can* search for more light-hearted things like lines from South Park or your favorite Pokémon.
