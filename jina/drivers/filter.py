@@ -14,7 +14,6 @@ class TopKFilterDriver(BaseDriver):
         # keep to topk docs
         for d in self.docs:
             del d.topk_results[self.req.top_k:]
-
             topk_doc_id = {md.match_doc.doc_id for md in d.topk_results}
             # keep only the chunks that hit the topk docs
             for c in self.chunks(d):

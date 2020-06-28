@@ -81,13 +81,12 @@ class BaseIndexer(BaseExecutor):
         """A readable and indexable object, could be dict, map, list, numpy array etc. """
         if self._query_handler is None and os.path.exists(self.index_abspath):
             self._query_handler = self.get_query_handler()
+            self.logger.info(f'indexer size: {self.size}')
 
         if self._query_handler is None:
             self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
                                 'If you are indexing data from scratch then it is fine. '
                                 'If you are querying data then the index file must be empty or broken.')
-        else:
-            self.logger.info(f'indexer size: {self.size}')
         return self._query_handler
 
     @property
