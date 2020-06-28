@@ -92,11 +92,8 @@ Text is complicated: If a user types in red nikke sneaker man a classic search s
 </p>
 
 * Every component in the chain has an output that is fed as input into the next component along. So a problem early on in the process and break the whole system
-
 * Some components may take inputs from multiple predecessors. That means you have to introduce more mechanisms to stop them blocking each other
-
 * It’s difficult to improve overall search quality. Just improving one or two components may lead to no improvement in actual search results
-
 * If you want to search in another language, you have to rewrite all the language-dependent components in the pipeline, which increases maintenance cost
 
 ## Neural Search: Train, Don’t Explain
@@ -110,11 +107,9 @@ An easier method would be train your search system on existing data. Instead of 
 That’s the idea behind neural search systems like [Jina](http://www.jina.ai). You can take the search log from an existing system and use it to train a new, more flexible system which then learns from later user interactions to create a better user experience and more accurate results.
 
 Compared to symbolic search, neural search:
-
+ 
 * Removes the fragile pipeline, making the system more resilient and scalable
-
 * Finds a better way to represent the underlying semantics of products and search queries
-
 * Learns as it goes along, so improves over time
 
 ## How Do We Train Neural Search?
