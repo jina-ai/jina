@@ -56,6 +56,8 @@ class NumericTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(encoder.save_abspath))
         encoder_loaded = BaseExecutor.load(encoder.save_abspath)
         encoded_data_test = encoder_loaded.encode(test_data)
+        print(encoded_data_test.shape)
+        print(encoded_data_control.shape)
         np.testing.assert_array_equal(
             encoded_data_test, encoded_data_control)
 

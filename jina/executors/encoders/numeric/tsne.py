@@ -15,6 +15,7 @@ class TSNEEncoder(BaseNumericEncoder):
 
     def __init__(self,
                  output_dim: int,
+                 random_state: int,
                  *args,
                  **kwargs):
         """
@@ -22,10 +23,11 @@ class TSNEEncoder(BaseNumericEncoder):
         """
         super().__init__(*args, **kwargs)
         self.output_dim = output_dim
+        self.random_state = random_state
 
     def post_init(self):
         from sklearn.manifold import TSNE
-        self.model = TSNE(n_components=self.output_dim)
+        self.model = TSNE(n_components=self.output_dim, random_state=self.random_state)
 
     @batching
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
