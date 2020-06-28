@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 import numpy as np
 
 from .. import BaseNumericEncoder
@@ -51,7 +48,7 @@ class FastICAEncoder(BaseNumericEncoder):
             self.logger.warning(
                 'the batch size (={}) is suggested to be 5 * num_features(={}) to provide a balance between '
                 'approximation accuracy and memory consumption.'.format(num_samples, num_features))
-        self.model._fit(data)
+        self.model.fit(data)
         self.is_trained = True
 
     @require_train
