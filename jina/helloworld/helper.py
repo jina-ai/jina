@@ -49,7 +49,12 @@ def write_html(html_path):
         f'🤩 Intrigued? Play with "jina hello-world --help" and learn more about Jina at {colored_url}')
 
 
-def download_data(targets):
+def download_data(targets, download_proxy=None):
+    opener = urllib.request.build_opener()
+    if download_proxy:
+        proxy = urllib.request.ProxyHandler({'http': download_proxy, 'https': download_proxy})
+        opener.add_handler(proxy)
+    urllib.request.install_opener(opener)
     with ProgressBar(task_name='download fashion-mnist', batch_unit='') as t:
         for v in targets.values():
             if not os.path.exists(v['filename']):
