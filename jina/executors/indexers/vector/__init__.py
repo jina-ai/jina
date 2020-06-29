@@ -33,6 +33,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.key_bytes = b''
         self.key_dtype = None
         self._raw_ndarray = None
+        self._ref_index_abspath = None
 
         if ref_indexer:
             # copy the header info of the binary file
@@ -44,7 +45,16 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
-            self.index_filename = ref_indexer.index_filename
+            self._ref_index_abspath = ref_indexer.index_abspath
+
+    @property
+    def index_abspath(self) -> str:
+        """Get the file path of the index storage
+
+        Use index_abspath
+
+        """
+        return getattr(self, '_ref_index_abspath', None) or self.get_file_from_workspace(self.index_filename)
 
     def get_add_handler(self):
         """Open a binary gzip file for adding new vectors
@@ -113,7 +123,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                     result = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
         except EOFError:
             self.logger.error(
-                f'{self.index_abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
+                f'{abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
         return result
 
     @property
