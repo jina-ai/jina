@@ -219,7 +219,7 @@ class MyTestCase(JinaTestCase):
         with f:
             f.dry_run()
             from jina.clients import py_client
-            py_client(port_grpc=f.port_grpc, host=f.host).dry_run()
+            py_client(port_expose=f.port_expose, host=f.host).dry_run()
 
     def test_dry_run_with_two_pathways_diverging_at_gateway(self):
         f = (Flow().add(name='r2', yaml_path='_forward')

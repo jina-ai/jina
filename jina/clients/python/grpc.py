@@ -30,7 +30,7 @@ class GrpcClient:
         self.logger.debug('setting up grpc insecure channel...')
         # A gRPC channel provides a connection to a remote gRPC server.
         self._channel = grpc.insecure_channel(
-            '%s:%d' % (args.host, args.port_grpc),
+            '%s:%d' % (args.host, args.port_expose),
             options={
                 'grpc.max_send_message_length': -1,
                 'grpc.max_receive_message_length': -1,
@@ -43,15 +43,15 @@ class GrpcClient:
         except grpc.FutureTimeoutError:
             self.logger.critical('can not connect to the server at %s:%d after %d ms, please double check the '
                                  'ip and grpc port number of the server'
-                                 % (args.host, args.port_grpc, args.timeout_ready))
-            raise GRPCServerError('can not connect to the server at %s:%d' % (args.host, args.port_grpc))
+                                 % (args.host, args.port_expose, args.timeout_ready))
+            raise GRPCServerError('can not connect to the server at %s:%d' % (args.host, args.port_expose))
 
             # create new stub
         self.logger.debug('create new stub...')
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
 
         # attache response handler
-        self.logger.success('connected to the gateway at %s:%d!' % (self.args.host, self.args.port_grpc))
+        self.logger.success('connected to the gateway at %s:%d!' % (self.args.host, self.args.port_expose))
         self.is_closed = False
 
     def call(self, *args, **kwargs):

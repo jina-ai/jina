@@ -520,8 +520,8 @@ class Flow:
     def _get_client(self, **kwargs):
         kwargs.update(self._common_kwargs)
         from ..clients import py_client
-        if 'port_grpc' not in kwargs:
-            kwargs['port_grpc'] = self.port_grpc
+        if 'port_expose' not in kwargs:
+            kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
         return py_client(**kwargs)
@@ -777,8 +777,8 @@ class Flow:
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def port_grpc(self):
-        return self._pod_nodes['gateway'].port_grpc
+    def port_expose(self):
+        return self._pod_nodes['gateway'].port_expose
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
@@ -791,7 +791,7 @@ class Flow:
     def block(self):
         """Block the process until user hits KeyboardInterrupt """
         try:
-            self.logger.success(f'flow is started at {self.host}:{self.port_grpc}, '
+            self.logger.success(f'flow is started at {self.host}:{self.port_expose}, '
                                 f'you can now use client to send request!')
             threading.Event().wait()
         except KeyboardInterrupt:

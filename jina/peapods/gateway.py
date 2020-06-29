@@ -52,7 +52,7 @@ class GatewayPea:
                      ('grpc.max_receive_message_length', args.max_message_size)])
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
-        self._bind_address = f'{args.host}:{args.port_grpc}'
+        self._bind_address = f'{args.host}:{args.port_expose}'
         self._server.add_insecure_port(self._bind_address)
 
     def __enter__(self):
@@ -205,7 +205,7 @@ class GatewayPea:
                         yield request
                 self.peapods.remove(p)
             else:
-                warn_msg = f'the gateway at {self.args.host}:{self.args.port_grpc} ' \
+                warn_msg = f'the gateway at {self.args.host}:{self.args.port_expose} ' \
                            f'does not support remote spawn, please restart it with --allow-spawn'
                 request.log_record = warn_msg
                 request.status.code = jina_pb2.Status.ERROR_NOTALLOWED
@@ -283,7 +283,7 @@ class RESTGatewayPea(BasePea):
         # app.logger.disabled = True
 
         # app.run('0.0.0.0', 5000)
-        server = WSGIServer((self.args.host, self.args.port_grpc), app, log=None)
+        server = WSGIServer((self.args.host, self.args.port_expose), app, log=None)
 
         def close(*args, **kwargs):
             server.stop()
