@@ -41,6 +41,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self.compress_level = ref_indexer.compress_level
             self.key_bytes = ref_indexer.key_bytes
             self.key_dtype = ref_indexer.key_dtype
+            self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
             self.index_filename = ref_indexer.index_filename

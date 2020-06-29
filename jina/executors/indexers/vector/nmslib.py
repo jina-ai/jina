@@ -47,8 +47,8 @@ class NmslibIndexer(BaseNumpyIndexer):
         return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        if keys.dtype != np.float32:
-            raise ValueError('vectors should be ndarray of float32')
+        # if keys.dtype != np.float32:
+        #     raise ValueError('vectors should be ndarray of float32')
         ret = self.query_handler.knnQueryBatch(keys, k=top_k, num_threads=self.num_threads)
         idx, dist = zip(*ret)
         return self.int2ext_key[np.array(idx)], np.array(dist)
