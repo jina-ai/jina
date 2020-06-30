@@ -49,7 +49,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 
 ## Making Your First Submission 
 
-0. Associate your local git config with your github account, which you can follow [the steps](#associate-with-github-account).
+0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
 1. Fork the Jina repo and clone onto your computer.
 2. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 3. Work on this branch to do the fix/improvement.
