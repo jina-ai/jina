@@ -51,8 +51,8 @@ class SptagIndexer(BaseNumpyIndexer):
             return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        if keys.dtype != np.float32:
-            raise ValueError('vectors should be ndarray of float32')
+        # if keys.dtype != np.float32:
+        #     raise ValueError('vectors should be ndarray of float32')
 
         ret = self.query_handler.Search(keys, top_k)
         idx, dist = zip(*ret)
