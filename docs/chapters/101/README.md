@@ -101,12 +101,16 @@ Text is complicated: As we explained above, if a user types in `red nikke sneake
 
 An easier way would be a search system trained on existing data. If you train a system on enough different scenarios beforehand (i.e. a pre-trained model), it develops a generalized ability to find outputs that match inputs, whether they're [flowers](https://github.com/jina-ai/examples/tree/master/flower-search), [lines from South Park](https://github.com/jina-ai/examples/tree/master/southpark-search), or [Pokémon](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit). You can plug this model directly into your system and start indexing and searching right away.
 
+<details>
+<summary>See the code</summary>
 ```python
+from jina.flow import Flow
 f = (Flow()
         .add(name='my-encoder', image='jinaai/hub.examples.my_encoder',
              volumes='./abc', yaml_path='hub/examples/mwu-encoder/mwu_encoder_ext.yml', 
              port_in=55555, port_out=55556)
 ```
+</details>
 
 This way, you don't need to waste hours writing endless rules for your use case. Instead, just include a line in your code to download the model you want from an "app store" (like the upcoming [Jina Hub](https://github.com/jina-ai/jina-hub/)), and get going.
 
