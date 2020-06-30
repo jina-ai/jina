@@ -103,6 +103,7 @@ An easier way would be a search system trained on existing data. If you train a 
 
 <details>
 <summary>See the code</summary>
+
 ```python
 from jina.flow import Flow
 f = (Flow()
@@ -110,6 +111,7 @@ f = (Flow()
              volumes='./abc', yaml_path='hub/examples/mwu-encoder/mwu_encoder_ext.yml', 
              port_in=55555, port_out=55556)
 ```
+
 </details>
 
 This way, you don't need to waste hours writing endless rules for your use case. Instead, just include a line in your code to download the model you want from an "app store" (like the upcoming [Jina Hub](https://github.com/jina-ai/jina-hub/)), and get going.
