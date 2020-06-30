@@ -230,7 +230,7 @@ We’re not trying to choose between Team Symbolic and Team Neural. Both approac
 <img src="https://cdn-images-1.medium.com/max/2000/0*n27u8HMyBgIiiKHW.gif">
 </p>
 
-There’s no better way to test-drive Jina than by diving in and playing with it. We provide pre-trained Docker images and [jinabox.js](https://github.com/jina-ai/jinabox.js/), an easy-to-use front-end for searching text, images, audio, or video. There’s no product search example (yet), but you *can* search for more light-hearted things like [animated gifs](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search) or [entries from the Urban Dictionary](https://github.com/jina-ai/examples/tree/master/urbandict-search).
+There’s no better way to test-drive Jina than by diving in and playing with it. We provide pre-trained Docker images and [jinabox.js](https://github.com/jina-ai/jinabox.js/), an easy-to-use front-end for searching text, images, audio, or video. There’s no product search example (yet), but you *can* search for more light-hearted things like [your favorite Pokémon](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit) or [lines from South Park](https://github.com/jina-ai/examples/tree/master/southpark-search).
 
 ## Next Steps
 
