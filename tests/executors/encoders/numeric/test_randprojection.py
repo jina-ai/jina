@@ -9,7 +9,7 @@ class MyTestCaseGaussian(NumericTestCase):
     def _get_encoder(self):
         self.input_dim = 28
         self.target_output_dim = 2
-        self.random_state = 2020
+        self.random_state = 2020 # Random State is necessary for reproducible results
         encoder = RandomGaussianEncoder(output_dim=self.target_output_dim, random_state=self.random_state)
         return encoder
 
@@ -17,7 +17,7 @@ class MyTestCaseSparse(NumericTestCase):
     def _get_encoder(self):
         self.input_dim = 28
         self.target_output_dim = 2
-        self.random_state = 2020
+        self.random_state = 2020 # Random State is necessary for reproducible results
         encoder = RandomSparseEncoder(output_dim=self.target_output_dim, random_state=self.random_state)
         return encoder
 
