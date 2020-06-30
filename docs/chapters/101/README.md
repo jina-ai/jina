@@ -4,7 +4,7 @@
 
 ### What is Neural Search?
 
-In short, neural search is a new approach to retrieving information. Instead of telling a machine a set of rules to understand what data is what, neural search uses does the same thing with a neural network. This means developers don't have to write every little rule, saving them time and headaches, and the system trains itself to get better as it goes along.
+In short, neural search is a new approach to retrieving information. Instead of telling a machine a set of rules to understand what data is what, neural search uses does the same thing with a pre-trained neural network. This means developers don't have to write every little rule, saving them time and headaches, and the system trains itself to get better as it goes along.
 
 ### What is Jina?
 
@@ -12,9 +12,9 @@ Jina is our approach to neural search. It's cloud-native, so it can be deployed 
 
 ## Background
 
-Search is big business, and getting bigger every day. Whereas just a few years ago, searching meant typing something into a textbox (ah, those heady days of Yahoo! and Altavista), nowadays search encompasses text, voice, music, photos, videos, products, and so much more. Just before the turn of the millennium there were just 3.5 million Google searches per day. Today (according to the top result for search term 2020 google searches per day) that figure could be as high as 5 billion and rising, more than 1,000 times more. That’s not to mention all the billions of Tinder profiles, Amazon products, and Spotify songs searched by millions of people every day from their phones, computers, and virtual assistants.
+Search is big business, and getting bigger every day. Just a few years ago, searching meant typing something into a textbox (ah, those heady days of Yahoo! and Altavista). Now search encompasses text, voice, music, photos, videos, products, and so much more. Just before the turn of the millennium there were just 3.5 million Google searches per day. Today (according to the top result for search term 2020 google searches per day) that figure could be as high as 5 billion and rising, more than 1,000 times more. That’s not to mention all the billions of Tinder profiles, Amazon products, and Spotify songs searched by millions of people every day from their phones, computers, and virtual assistants.
 
-As an example, just look at the stratospheric growth in Google queries — and that’s only until 2012!
+Just look at the stratospheric growth in Google queries — and that’s only until 2012!
 
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2000/1*aYnGqTncE7DZLnb7ZlsA9A.png">
@@ -30,12 +30,12 @@ In short, search is *huge*. In this article we’re going to look at the reignin
 
 ## Symbolic Search: Rules are Rules
 
-Google is a huge general-purpose search engine. Other companies can’t just adapt it to their needs and plug it into their systems. Instead, they use solutions like [Elastic](http://elastic.co/) and [Apache Solr](https://lucene.apache.org/solr/), symbolic search systems that let developers write the rules and create the pipelines for searching products, people, messages, or whatever the company needs. 
+Google is a huge general-purpose search engine. Other companies can’t just adapt it to their needs and plug it into their systems. Instead, they use frameworks like [Elastic](http://elastic.co/) and [Apache Solr](https://lucene.apache.org/solr/), symbolic search systems that let developers write the rules and create pipelines for searching products, people, messages, or whatever the company needs. 
 
-Take [Shopify](http://www.shopify.com) for example. They use Elastic to index and search through millions of products across hundreds of categories. This couldn’t be done out-of-the-box or with a general purpose search engine like Google. They have to take Elastic and write specific rules and pipelines to index, filter, sort, and rank products by a variety of criteria, and convert this data into symbols that the system can understand. Hence the name, *symbolic search*. Here's *Colourpop*, a popular Shopify store:
+Let's take [Shopify](http://www.shopify.com) for example. They use Elastic to index and search through millions of products across hundreds of categories. This couldn’t be done out-of-the-box or with a general purpose search engine like Google. They have to take Elastic and write specific rules and pipelines to index, filter, sort, and rank products by a variety of criteria, and convert this data into symbols that the system can understand. Hence the name, *symbolic search*. Here's *Greats*, a popular Shopify store for sneakers:
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/3716/1*o6NN3Oz2JQqX6c0zL_H8vg.png">
+<img src="images/shopify.png">
 </p>
 
 You and I know that if you search for red nike sneakers you want, well, red Nike sneakers. Those are just words to a typical search system though. Sure, if you type them in you'll hopefully get what you asked for, but what if those sneakers are tagged as *trainers*? Or even tagged as *scarlet* for that matter? In cases like this, a developer needs to write rules:
@@ -75,7 +75,7 @@ Doing that for every kind of product takes *forever* and there are always things
 
 #### You Have to Explain Every. Little. Thing
 
-Our example search query above was red nikke sneaker man. But what if our searcher is British? A Brit would type red nikke trainer man. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching LV handbag? The system would have to be told LV stands for Louis Vuitton.
+Our example search query above was `red nikke sneaker man`. But what if our searcher is British? A Brit would type `red nikke trainer man`. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching `LV handbag`? The system would have to be told `LV` stands for `Louis Vuitton`.
 
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2000/1*Rj7d48EOct-6SRB_Yhjy4g.png" width=400>
@@ -96,64 +96,21 @@ Text is complicated: If a user types in red nikke sneaker man a classic search s
 * It’s difficult to improve overall search quality. Just improving one or two components may lead to no improvement in actual search results
 * If you want to search in another language, you have to rewrite all the language-dependent components in the pipeline, which increases maintenance cost
 
-## Neural Search: Train, Don’t Explain
+## Neural Search: (Pre-)Train, Don’t Explain
 
-An easier method would be train your search system on existing data. Instead of writing a rule that says if you type sportswear return sneakers, shorts, leotards, sweatbands, etc, what about just showing your system the inputs and outputs that worked before, and let it learn from those?
+An easier method would be a search system trained on existing data. If you train a system on enough different scenarios beforehand (i.e. a pretrained model), it develops a generalized ability to find outputs that match inputs. You can plug this model directly into your system and start indexing and searching right away.
+
+This way, you don't need to waste hours writing copious amounts of rules for different use cases. Instead, just include a line in your code to download the model you want from an "app store" (like the upcoming [Jina Hub](https://github.com/jina-ai/jina-hub/)), and get going.
 
 <p align="center">
-<img src="https://cdn-images-1.medium.com/max/2000/1*IJtC-DHQ9Nb6YMzc9fi5Gg.png" width="250">
+<img src="https://raw.githubusercontent.com/jina-ai/jina-hub/master/.github/.README_images/hub-demo.gif">
 </p>
 
-That’s the idea behind neural search systems like [Jina](http://www.jina.ai). You can take the search log from an existing system and use it to train a new, more flexible system which then learns from later user interactions to create a better user experience and more accurate results.
-
 Compared to symbolic search, neural search:
- 
+
 * Removes the fragile pipeline, making the system more resilient and scalable
 * Finds a better way to represent the underlying semantics of products and search queries
 * Learns as it goes along, so improves over time
-
-## How Do We Train Neural Search?
-
-Machine learning systems like neural search have to be trained, and we can do that using an existing log of search queries. This log should contain what products users interacted with by clicking, adding to a wishlist, or purchasing. You may already have this information in your system. After cleaning and processing it, you can get accurate associations. You could also use other data like user comments, reviews, or crowdsourced annotations.
-
-A neural search system is only as good as its training data, so a diverse set of training materials results in a system that can make better decisions and not just mimic a classic search system. On the other hand, if your only data source is what you got from a more rigid classic system, your neural search system will be inevitably biased. For example, if the classic system just returned zero results when a user typed nikke, instead of correcting to nike, then your system will do the same.
-
-When we’re training our neural system, we’re showing it a set of labelled data from your existing search logs. An example would be the search query red nike sneakers and a list of the products returned by the search. These products could include images, ratings, description text, and so on. Over time the neural network gets a feel for the products as it adjusts its internal weights and biases. 
-
-<p align="center">
-<img src="https://cdn-images-1.medium.com/max/2000/1*ORPPlJNdkL4w0ImmOZ3JRA.png" width="400">
-</p>
-
-After this we'll test it on *different* sets of data from your search logs and ask it to give us the right results. This testing includes:
-
-* Showing just the product and the system guesses the search query
-* Showing just the search query and the system guesses the right products to return
-* Letting the system produce matching products and search queries of its own
-
-If it fails, then it adjusts its weights and biases to improve next time. Over time it gets better and better at understanding the concept of red nike sneakers, black chanel dress, or harley davidson motorcycle, all without having to understand the symbols that define them. No symbols means no rules for you to define, an easier experience for developers and better results for end-users.
-
-And if you want to train your system in another language? Just gather the data to throw at it for training. No need to teach it all the rules of Spnaish, French, or Klingon.
-
-<p align="center">
-<img src="https://cdn-images-1.medium.com/max/2000/1*0XpG6posaNKgrnUqyMQzEw.png" width="250">
-</p>
-
-In a sense we’re bootstrapping the neural search system with an existing symbolic search system. With enough training data we don’t have to write rules or pipelines — these can just be picked up and learnt on-the-fly by the neural network.
-
-### Training for Irrelevance
-
-**Is this red Nike sneakers?**
-
-<p align="center">
-<img src="https://cdn-images-1.medium.com/max/3540/1*lpU_ag8URqUkgJfOJ5mpuA.png">
-</p>
-
-Why would we want to train for irrelevant products? Because we also want to know what *not* to show in our search results. We can get this data in a couple of ways:
-
-* Randomly sampling all products: It’s easy to do and not a bad idea in practice, but we have to hope we don’t catch any of the products that we *do* want to show.
-* Collect products that often come up in results but get no clicks. This means coordinating lots of teams to ensure these really *are* uninteresting to users, and not because users would have to scroll down to see them, etc.
-
-We’re basically doing the inverse of the above training. We’re showing the system a Harley Davidson motorcycle and telling us that it is *not* red nike sneakers. (For an interesting example of what happens if you *don't* do this, see [this tweet from Janelle Shane](https://twitter.com/janellecshane/status/1088223417365454848))
 
 ## Does Jina Work Though?
 
