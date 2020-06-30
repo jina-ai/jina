@@ -35,7 +35,7 @@ def hello_world(args):
     }
 
     # download the data
-    download_data(targets)
+    download_data(targets, args.download_proxy)
 
     # this envs are referred in index and query flow YAMLs
     os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
