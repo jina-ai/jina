@@ -18,7 +18,7 @@ class NGTIndexer(NumpyIndexer):
         Quick Install : pip install ngt
     """
 
-    def __init__(self,num_threads: int = 2,metric: str = 'L2',epsilon: int = 0.1, *args, **kwargs):
+    def __init__(self, num_threads: int = 2, metric: str = 'L2', epsilon: int = 0.1, *args, **kwargs):
         """
         Initialize an NGT Indexer
         :param num_threads: Number of threads to build index
@@ -30,9 +30,9 @@ class NGTIndexer(NumpyIndexer):
 
         super().__init__(*args, **kwargs)
         self.metric = metric
-        self.index_path='index'
-        self.num_threads=num_threads
-        self.epsilon=epsilon
+        self.index_path = 'index'
+        self.num_threads = num_threads
+        self.epsilon = epsilon
 
     def get_query_handler(self):
         """Index all vectors , if already indexed return NGT Index handle """
@@ -42,7 +42,7 @@ class NGTIndexer(NumpyIndexer):
         if vecs is not None:
             ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
             _index = ngtpy.Index(self.index_path)
-            _index.batch_insert(vecs,num_threads=self.num_threads)
+            _index.batch_insert(vecs, num_threads=self.num_threads)
             return _index
         else:
             return None
@@ -51,14 +51,14 @@ class NGTIndexer(NumpyIndexer):
         if keys.dtype != np.float32:
             raise ValueError('vectors should be ndarray of float32')
 
-        index=self.query_handler
+        index = self.query_handler
         dist = []
         idx = []
         for key in keys:
-            results = index.search(key, size=top_k,epsilon=self.epsilon)
-            index_k=[]
-            distance_k=[]
-            [(index_k.append(result[0]),distance_k.append(result[1])) for result in results]
+            results = index.search(key, size=top_k, epsilon=self.epsilon)
+            index_k = []
+            distance_k = []
+            [(index_k.append(result[0]), distance_k.append(result[1])) for result in results]
             idx.append(index_k)
             dist.append(distance_k)
 
