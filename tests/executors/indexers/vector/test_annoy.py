@@ -38,16 +38,13 @@ class MyTestCase(JinaTestCase):
             _index.batch_insert(np.random.random((batch_size,dimension)),num_threads=4)
         self.assertTrue(os.path.exists(path))
 
-
         idx=[]
         dist=[]
         for key in np.random.random((queries, dimension)):
             results = _index.search(key, size=top_k,epsilon=0.1)
             index_k = []
             distance_k = []
-            for result in results:
-                index_k.append(result[0])
-                distance_k.append(result[1])
+            [(index_k.append(result[0]),distance_k.append(result[1])) for result in results]
             idx.append(index_k)
             dist.append(distance_k)
 

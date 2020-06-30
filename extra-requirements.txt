@@ -41,4 +41,4 @@ gevent:                     http, devel
 python-magic:               http, devel
 librosa:                    audio
 deepsegment:                nlp, preprocess, craft
-ngt:                        index
+ngt:                        index, py37

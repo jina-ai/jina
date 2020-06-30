@@ -27,9 +27,10 @@ class NGTIndexer(NumpyIndexer):
                         Higher value of epsilon means higher recall
                         but query time will increase with epsilon
         """
+
         super().__init__(*args, **kwargs)
         self.metric = metric
-        self.index_path='/tmp/ngt-index'
+        self.index_path='index'
         self.num_threads=num_threads
         self.epsilon=epsilon
 
@@ -57,9 +58,7 @@ class NGTIndexer(NumpyIndexer):
             results = index.search(key, size=top_k,epsilon=self.epsilon)
             index_k=[]
             distance_k=[]
-            for result in results:
-                index_k.append(result[0])
-                distance_k.append(result[1])
+            [(index_k.append(result[0]),distance_k.append(result[1])) for result in results]
             idx.append(index_k)
             dist.append(distance_k)
 
