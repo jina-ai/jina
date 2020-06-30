@@ -65,7 +65,7 @@ Each of these key-value pairs can be thought of as a symbol, hence the name *sym
 <img src="https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png" width="200">
 </p>
 
-But what if a user types `nikke` instead of `nike`, or searches `shirts` (with an `s`) rather than `shirt`? There are so many rules in language, and people break them all the time. To get effective symbols (i.e. knowing that `nikke` really means {"brand": "nike"}), you need to define lots of rules and chain them together in a complex pipeline:
+But what if a user types `nikke` instead of `nike`, or searches `shirts` (with an `s`) rather than `shirt`? There are so many rules in language, and people break them all the time. To get effective symbols (i.e. knowing that `nikke` really means `{"brand": "nike"}`), you need to define lots of rules and chain them together in a complex pipeline:
 
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png" width="800">
