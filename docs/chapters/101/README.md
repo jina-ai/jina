@@ -48,6 +48,7 @@ You and I know that if you search for red nike sneakers you want, well, red Nike
 
 Or, expressed in JSON as key-value pairs:
 
+```json
     {
     "color": "red",
     "color_synonyms": ["scarlet"],
@@ -56,6 +57,7 @@ Or, expressed in JSON as key-value pairs:
     "type_synonyms": ["trainers"],
     "category": "footwear"
     }
+```
 
 Each of these key-value pairs can be thought of as a symbol, hence the name *symbolic search*. When a user inputs a search query, the system breaks it down into symbols, and matches these symbols with the symbols from the products in its database.
 
@@ -63,13 +65,10 @@ Each of these key-value pairs can be thought of as a symbol, hence the name *sym
 <img src="https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png" width="200">
 </p>
 
-But what if a user types nikke instead of nike, or searches shirts (with an s) rather than shirt? There are so many rules in language, and people break them all the time. To get effective symbols (i.e. knowing that nikke *really* means {"brand": "nike"}), you need to define lots of rules and chain them together in a complex pipeline:
-
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png" width="800">
 </p>
 
-Doing that for every kind of product takes *forever* and there are always things that fall between the cracks. And if you want to localize for other languages? You’ll have to go through it all over again.
 
 ### Drawbacks of Symbolic Search
 
@@ -77,15 +76,15 @@ Doing that for every kind of product takes *forever* and there are always things
 
 Our example search query above was `red nikke sneaker man`. But what if our searcher is British? A Brit would type `red nikke trainer man`. We would have to explain to our system that sneakers and trainers are just the same thing with different names. Or what is someone is searching `LV handbag`? The system would have to be told `LV` stands for `Louis Vuitton`.
 
+Doing that for every kind of product takes *forever* and there are always things that fall between the cracks. And if you want to localize for other languages? You’ll have to go through it all over again. That means a lot of hard work, knowledge, and attention to detail.
+
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2000/1*Rj7d48EOct-6SRB_Yhjy4g.png" width=400>
 </p>
 
-All of these need to be specified by humans, meaning a lot of hard work, knowledge, and attention to detail is needed.
-
 #### It’s Fragile
 
-Text is complicated: If a user types in red nikke sneaker man a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and pipelines can have major issues
+Text is complicated: If a user types in `red nikke sneaker man` a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and these pipelines can have major issues.
 
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png" width=200>
@@ -94,11 +93,11 @@ Text is complicated: If a user types in red nikke sneaker man a classic search s
 * Every component in the chain has an output that is fed as input into the next component along. So a problem early on in the process and break the whole system
 * Some components may take inputs from multiple predecessors. That means you have to introduce more mechanisms to stop them blocking each other
 * It’s difficult to improve overall search quality. Just improving one or two components may lead to no improvement in actual search results
-* If you want to search in another language, you have to rewrite all the language-dependent components in the pipeline, which increases maintenance cost
+* If you want to search in another language, you have to rewrite all the language-dependent components in the pipeline, increasing maintenance cost
 
 ## Neural Search: (Pre-)Train, Don’t Explain
 
-An easier method would be a search system trained on existing data. If you train a system on enough different scenarios beforehand (i.e. a pretrained model), it develops a generalized ability to find outputs that match inputs. You can plug this model directly into your system and start indexing and searching right away.
+An easier method would be a search system trained on existing data. If you train a system on enough different scenarios beforehand (i.e. a pretrained model), it develops a generalized ability to find outputs that match inputs, whether they're [flowers](https://github.com/jina-ai/examples/tree/master/flower-search), [lines from South Park](https://github.com/jina-ai/examples/tree/master/southpark-search), or [Pokémon](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit). You can plug this model directly into your system and start indexing and searching right away.
 
 This way, you don't need to waste hours writing copious amounts of rules for different use cases. Instead, just include a line in your code to download the model you want from an "app store" (like the upcoming [Jina Hub](https://github.com/jina-ai/jina-hub/)), and get going.
 
