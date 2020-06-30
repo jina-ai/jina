@@ -65,6 +65,8 @@ Each of these key-value pairs can be thought of as a symbol, hence the name *sym
 <img src="https://cdn-images-1.medium.com/max/2000/1*W_XwT1buVRA6w1zc1pNWEg.png" width="200">
 </p>
 
+But what if a user types `nikke` instead of `nike`, or searches `shirts` (with an `s`) rather than `shirt`? There are so many rules in language, and people break them all the time. To get effective symbols (i.e. knowing that `nikke` really means {"brand": "nike"}), you need to define lots of rules and chain them together in a complex pipeline:
+
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2366/1*x17BoteKGOT08Jzb9xl0xA.png" width="800">
 </p>
@@ -84,7 +86,7 @@ Doing that for every kind of product takes *forever* and there are always things
 
 #### It’s Fragile
 
-Text is complicated: If a user types in `red nikke sneaker man` a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This has to be interpreted to symbols via the pipeline, and these pipelines can have major issues.
+Text is complicated: As we explained above, if a user types in `red nikke sneaker man` a classic search system has to recognize that they're searching for a red (color) Nike (brand with corrected spelling) sneaker (type) for men (sub-type). This is done by interpreting the search string and product details to symbols via the pipeline, and these pipelines can have major issues.
 
 <p align="center">
 <img src="https://cdn-images-1.medium.com/max/2000/1*YOqh7rNFLOlTmeLSqikK0Q.png" width=200>
