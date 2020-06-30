@@ -99,9 +99,9 @@ Text is complicated: As we explained above, if a user types in `red nikke sneake
 
 ## Neural Search: (Pre-)Train, Don’t Explain
 
-An easier method would be a search system trained on existing data. If you train a system on enough different scenarios beforehand (i.e. a pretrained model), it develops a generalized ability to find outputs that match inputs, whether they're [flowers](https://github.com/jina-ai/examples/tree/master/flower-search), [lines from South Park](https://github.com/jina-ai/examples/tree/master/southpark-search), or [Pokémon](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit). You can plug this model directly into your system and start indexing and searching right away.
+An easier way would be a search system trained on existing data. If you train a system on enough different scenarios beforehand (i.e. a pretrained model), it develops a generalized ability to find outputs that match inputs, whether they're [flowers](https://github.com/jina-ai/examples/tree/master/flower-search), [lines from South Park](https://github.com/jina-ai/examples/tree/master/southpark-search), or [Pokémon](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit). You can plug this model directly into your system and start indexing and searching right away.
 
-This way, you don't need to waste hours writing endless amounts of rules for your particular use case. Instead, just include a line in your code to download the model you want from an "app store" (like the upcoming [Jina Hub](https://github.com/jina-ai/jina-hub/)), and get going.
+This way, you don't need to waste hours writing endless rules for your use case. Instead, just include a line in your code to download the model you want from an "app store" (like the upcoming [Jina Hub](https://github.com/jina-ai/jina-hub/)), and get going.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/jina-ai/jina-hub/master/.github/.README_images/hub-demo.gif">
