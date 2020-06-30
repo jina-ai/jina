@@ -108,7 +108,7 @@ An easier way would be a search system trained on existing data. If you train a 
 from jina.flow import Flow
 f = (Flow()
         .add(name='my-encoder', image='jinaai/hub.examples.my_encoder',
-             volumes='./abc', yaml_path='hub/examples/mwu-encoder/mwu_encoder_ext.yml', 
+             volumes='./abc', yaml_path='hub/examples/my_encoder/my_encoder_ext.yml', 
              port_in=55555, port_out=55556)
 ```
 
