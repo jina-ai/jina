@@ -32,7 +32,7 @@ In short, search is *huge*. In this article we’re going to look at the reignin
 
 Google is a huge general-purpose search engine. Other companies can’t just adapt it to their needs and plug it into their systems. Instead, they use frameworks like [Elastic](http://elastic.co/) and [Apache Solr](https://lucene.apache.org/solr/), symbolic search systems that let developers write the rules and create pipelines for searching products, people, messages, or whatever the company needs. 
 
-Let's take [Shopify](http://www.shopify.com) for example. They use Elastic to index and search through millions of products across hundreds of categories. This couldn’t be done out-of-the-box or with a general purpose search engine like Google. They have to take Elastic and write specific rules and pipelines to index, filter, sort, and rank products by a variety of criteria, and convert this data into symbols that the system can understand. Hence the name, *symbolic search*. Here's *Greats*, a popular Shopify store for sneakers:
+Let's take [Shopify](http://www.shopify.com) for example. They use Elastic to index and search through millions of products across hundreds of categories. This couldn’t be done out-of-the-box or with a general purpose search engine like Google. They have to take Elastic and write specific rules and pipelines to index, filter, sort, and rank products by a variety of criteria, and convert this data into symbols that the system can understand. Hence the name, *symbolic search*. Here's *[Greats](http://www.greats.com)*, a popular Shopify store for sneakers:
 
 <p align="center">
 <img src="images/shopify.png">
