@@ -566,7 +566,7 @@ class Flow:
         """
         self._get_client(**kwargs).train(input_fn, output_fn)
 
-    def index_numpy(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
+    def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                     output_fn: Callable[['jina_pb2.Message'], None] = None,
                     **kwargs):
         """Using numpy ndarray as the index source for the current flow
@@ -600,7 +600,7 @@ class Flow:
                     sampling_rate: float = None, read_mode='r',
                     output_fn: Callable[['jina_pb2.Message'], None] = None,
                     **kwargs):
-        """ Use a list of files as the query source for indexing on the current flow
+        """ Use a list of lines as the index source for indexing on the current flow
 
         :param lines: a list of strings, each is considered as d document
         :param filepath: a text file that each line contains a document

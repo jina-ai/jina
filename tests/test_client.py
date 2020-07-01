@@ -110,7 +110,7 @@ class MyTestCase(JinaTestCase):
                 self.assertEqual(d.chunks[0].WhichOneof('content'), field)
 
         with f:
-            f.index_numpy(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
+            f.index_ndarray(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
 
         with f:
             f.index(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
