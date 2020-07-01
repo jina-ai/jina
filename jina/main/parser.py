@@ -390,6 +390,10 @@ def _set_grpc_parser(parser=None):
                      type=int,
                      default=random_port(),
                      help='host port of the gateway, "port-grpc" alias will be removed in future versions')
+    gp1.add_argument('--port-grpc', '--port-expose',
+                     type=int,
+                     default=random_port(),
+                     help='host port of the gateway, "port-grpc" alias will be removed in future versions')
     gp1.add_argument('--max-message-size', type=int, default=-1,
                      help='maximum send and receive size for grpc server in bytes, -1 means unlimited')
     gp1.add_argument('--proxy', action='store_true', default=False,
