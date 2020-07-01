@@ -390,7 +390,7 @@ def _set_grpc_parser(parser=None):
                      type=int,
                      default=random_port(),
                      help='host port of the gateway, "port-grpc" alias will be removed in future versions')
-    gp1.add_argument('--port-grpc', '--port-expose',
+    gp1.add_argument('--port-grpc',
                      type=int,
                      default=random_port(),
                      help='host port of the gateway, "port-grpc" alias will be removed in future versions')
