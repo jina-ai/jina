@@ -386,14 +386,10 @@ def _set_grpc_parser(parser=None):
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
                      help=f'host address of the pea/gateway, by default it is {__default_host__}.')
-    gp1.add_argument('--port-expose',
+    gp1.add_argument('--port-expose', '--port-grpc'
                      type=int,
                      default=random_port(),
-                     help='host port of the gateway')
-    gp1.add_argument('--port-grpc',
-                     type=int,
-                     default=random_port(),
-                     help='depreciated, use port-expose instead')
+                     help='host port of the gateway, "port-grpc" alias will be removed in future versions')
     gp1.add_argument('--max-message-size', type=int, default=-1,
                      help='maximum send and receive size for grpc server in bytes, -1 means unlimited')
     gp1.add_argument('--proxy', action='store_true', default=False,
