@@ -35,7 +35,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(indexer.save_abspath, indexer.index_abspath)
 
     def test_add_query(self):
-        indexer = LeveldbIndexer(index_filename='leveldb.db')
+        indexer = LeveldbIndexer(level='doc', index_filename='leveldb.db')
         self.run_test(indexer)
 
     def test_load_yaml(self):
