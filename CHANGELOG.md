@@ -44,6 +44,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -87,6 +88,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.3.0`)](#release-note-030)
 - [Release Note (`0.3.1`)](#release-note-031)
 - [Release Note (`0.3.2`)](#release-note-032)
+- [Release Note (`0.3.3`)](#release-note-033)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1802,4 +1804,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```60000083```](https://github.com/jina-ai/jina/commit/60000083c57a6cf17f77fc50e6fc496089516f13)] __-__ __version__: the next version will be 0.3.2 (*Jina Dev Bot*)
+
+## Release Note (`0.3.3`)
+
+> Release time: 2020-06-30 00:25:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Morry Wang,  fhaase2,  Jina Dev Bot,  BingHo1013,  🙇
+
+
+### 🆕 New Features
+
+ - [[```7e592805```](https://github.com/jina-ai/jina/commit/7e592805cef3fd1fef8b93783a5f569a7e555dd9)] __-__ __helloworld__: add cli arg &#39;download-proxy&#39; (*Morry Wang*)
+ - [[```5ac225e8```](https://github.com/jina-ai/jina/commit/5ac225e809adf266837ac372f56b80e19b59353b)] __-__ __indexer__: allow user switch indexer in query time (*Han Xiao*)
+ - [[```6158ce3d```](https://github.com/jina-ai/jina/commit/6158ce3d188c50163e8d4d2595b52e5232ad483a)] __-__ __indexer__: add size (*Han Xiao*)
+ - [[```66bef2c1```](https://github.com/jina-ai/jina/commit/66bef2c1ff30caff5306d91da63020bed1d93d1b)] __-__ __proto__: add location info to chunk (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```f67fdf1b```](https://github.com/jina-ai/jina/commit/f67fdf1bb3ff8b7c6aeae532bb6c09389ab6496a)] __-__ __indexer__: fix ref_indexer in ChunkIndexer (*Han Xiao*)
+ - [[```11f80552```](https://github.com/jina-ai/jina/commit/11f8055285753ae28deb7593bfaf2ed571d68270)] __-__ __indexer__: fix index size logging (*Han Xiao*)
+ - [[```487f5bad```](https://github.com/jina-ai/jina/commit/487f5badf922973b2ba2cfa901817ab1ed930362)] __-__ __driver__: fix del in topkfilter (*Han Xiao*)
+ - [[```e4c5aca4```](https://github.com/jina-ai/jina/commit/e4c5aca4b85068f31b0ddc284b00924305f6241a)] __-__ __driver__: topkfilter now remove irrelevant chunks (*Han Xiao*)
+ - [[```ea8c1fec```](https://github.com/jina-ai/jina/commit/ea8c1fecd52359e1abbe59f62d8399e0e8505feb)] __-__ __driver__: move topkfilter to ranker (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```1b67d379```](https://github.com/jina-ai/jina/commit/1b67d3794d7335210d9e8e533edeabd7760ab9e8)] __-__ __indexer__: abstract rw ndarray from numpyindexer (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```0e4c4c1e```](https://github.com/jina-ai/jina/commit/0e4c4c1e17ffa7ea99b563dc280e7de23ce69cad)] __-__ __gateway__: concurrency test for rest gateway (*fhaase2*)
+
+### 🍹 Other Improvements
+
+ - [[```29bbb28b```](https://github.com/jina-ai/jina/commit/29bbb28b935067f2241c3cab35483c1ce3fcbc2c)] __-__ hotfix feature wrap indexer (*Han Xiao*)
+ - [[```57600153```](https://github.com/jina-ai/jina/commit/576001536ced8ae411e9c7a29873cf989563ddae)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```d985f4d6```](https://github.com/jina-ai/jina/commit/d985f4d66a71d4926a35216f68022a840bfdf74a)] __-__ Delete 1500x667 new.gif (*BingHo1013*)
+ - [[```a4618512```](https://github.com/jina-ai/jina/commit/a4618512623e2422ceed564071273344446fe182)] __-__ update readme gif (*BingHo1013*)
+ - [[```6e3ece22```](https://github.com/jina-ai/jina/commit/6e3ece22d7c58819ebdf4fe792ac5ea0a29dc8f1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```80100ca2```](https://github.com/jina-ai/jina/commit/80100ca22196d03c731c796c4e42246e35694023)] __-__ __version__: the next version will be 0.3.3 (*Jina Dev Bot*)
+ - [[```0db4bd9f```](https://github.com/jina-ai/jina/commit/0db4bd9fee7c6403b93de5a72fd652e76c275a35)] __-__ hotfix publish driver (*Han Xiao*)
 

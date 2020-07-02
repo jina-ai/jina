@@ -64,8 +64,8 @@ class FaissIndexer(BaseNumpyIndexer):
         return self._index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        if keys.dtype != np.float32:
-            raise ValueError('vectors should be ndarray of float32')
+        # if keys.dtype != np.float32:
+        #     raise ValueError('vectors should be ndarray of float32')
         dist, ids = self.query_handler.search(keys, top_k)
         return self.int2ext_key[ids], dist
 

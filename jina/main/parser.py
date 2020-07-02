@@ -111,6 +111,8 @@ def set_hw_parser(parser=None):
                     default=resource_filename('jina',
                                               '/'.join(('resources', 'logserver.default.yml'))),
                     help='the yaml config of the log server')
+    gp.add_argument('--download-proxy', type=str,
+                    help='specify the proxy when downloading sample data')
     gp = add_arg_group(parser, 'scalability arguments')
     gp.add_argument('--shards', type=int,
                     default=2,
