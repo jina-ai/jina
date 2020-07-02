@@ -3,12 +3,12 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseCVTFEncoder
+from .tfkeras import KerasImageEncoder
 from ...decorators import batching, as_ndarray
 
 
 
-class CustomImageKerasEncoder(BaseCVTFEncoder):
+class CustomKerasImageEncoder(KerasImageEncoder):
     """
     :class:`CustomImageKerasEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -34,15 +34,3 @@ class CustomImageKerasEncoder(BaseCVTFEncoder):
         model.trainable = False
         self.model = tf.keras.Model(inputs=model.input,
                                     outputs=model.get_layer(self.layer_name).output)
-
-
-    @batching
-    @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        """
-        :param data: a `B x (Channel x Height x Width)` numpy ``ndarray``, `B` is the size of the batch
-        :return: a `B x D` numpy ``ndarray``, `D` is the output dimension
-        """
-        if self.channel_axis != -1:
-            data = np.moveaxis(data, self.channel_axis, -1)
-        return self.model(data)
