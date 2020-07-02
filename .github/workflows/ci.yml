@@ -65,7 +65,7 @@ jobs:
           # make sure docker exist
           docker ps
           jina check
-          cd tests && python -m unittest *.py -v
+          python -m unittest -v
         #      run: |
         #        pip install pytest
         #        pip install pytest-cov
