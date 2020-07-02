@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from jina.executors.crafters.numeric.io import ArrayReader
+from jina.executors.crafters.numeric.io import ArrayStringReader
 from tests import JinaTestCase
 
 
@@ -11,7 +11,7 @@ class MyTestCase(JinaTestCase):
         sample_array = np.random.rand(size).astype('float32')
         text = ','.join([str(x) for x in sample_array])
 
-        reader = ArrayReader()
+        reader = ArrayStringReader()
         crafted_chunk = reader.craft(text, 0)
 
         np.testing.assert_array_equal(crafted_chunk['blob'], sample_array)
