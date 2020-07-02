@@ -43,7 +43,7 @@ class ArrayStringReader(BaseDocCrafter):
             self.logger.error(
                 f'Data type mismatch. Cannot convert input to {self.as_type}.')
 
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=_array)
+        return dict(doc_id=doc_id, weight=1., blob=_array)
 
 
 class ArrayBytesReader(BaseDocCrafter):
@@ -69,14 +69,8 @@ class ArrayBytesReader(BaseDocCrafter):
         :param doc_id: the doc id
         :return: a chunk dict with the numpy array
         """
-        #bytes_length = len(buffer)
-        #data_size_bytes = 8 if self.as_type == 'float64' else 'float32'
-        #array_length = int(bytes_length / data_size_bytes)
-
-        # ensure it is properly integer
         try:
-            array = np.frombuffer(buffer, self.as_type)
-            print(array)
+            _array = np.frombuffer(buffer, self.as_type)
         except TypeError:
             self.logger.error(
                 f'Data type {self.as_type} is not understood. '
@@ -85,4 +79,4 @@ class ArrayBytesReader(BaseDocCrafter):
             self.logger.error(
                 f'Data type mismatch. Cannot convert input to {self.as_type}.')
 
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=array)
+        return dict(doc_id=doc_id, weight=1., blob=_array)
