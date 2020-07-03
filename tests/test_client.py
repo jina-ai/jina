@@ -2,6 +2,8 @@ import time
 
 import numpy as np
 import requests
+import os
+
 from jina.clients import py_client
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files, input_numpy
@@ -12,6 +14,8 @@ from jina.main.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MyTestCase(JinaTestCase):
@@ -102,7 +106,7 @@ class MyTestCase(JinaTestCase):
         print(type(array2pb(np.random.random([100, 4, 2]))))
 
     def test_unary_driver(self):
-        f = Flow().add(yaml_path='yaml/unarycrafter.yml')
+        f = Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/unarycrafter.yml'))
 
         def check_non_empty(req, field):
             for d in req.index.docs:

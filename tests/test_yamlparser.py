@@ -9,16 +9,19 @@ from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
 class MyTestCase(JinaTestCase):
 
     def test_yaml_expand(self):
-        with open('yaml/test-expand.yml') as fp:
+        with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
             a = yaml.load(fp)
         b = expand_dict(a)
         print(b)
 
     def test_yaml_expand2(self):
-        with open('yaml/test-expand2.yml') as fp:
+        with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
             a = yaml.load(fp)
         os.environ['ENV1'] = 'a'
         b = expand_dict(a)
@@ -30,7 +33,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(b['components'][1]['metas']['name_shortcut'], 'test_numpy')
 
     def test_yaml_expand3(self):
-        with open('yaml/test-expand3.yml') as fp:
+        with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
             a = yaml.load(fp)
         b = expand_dict(a)
         print(b)
@@ -46,7 +49,7 @@ class MyTestCase(JinaTestCase):
         self.assertTrue(isinstance(a.components, list))
 
     def test_yaml_fill(self):
-        with open('yaml/test-expand2.yml') as fp:
+        with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
             a = yaml.load(fp)
         print(fill_metas_with_defaults(a))
 
@@ -75,7 +78,7 @@ class MyTestCase(JinaTestCase):
         self.assertIsNotNone(_defaults)
 
     def test_joint_indexer(self):
-        b = BaseExecutor.load_config('yaml/test-joint.yml')
+        b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
         print(b[0].name)
         print(type(b[0]))
         print(b._drivers['SearchRequest'][0]._executor_name)

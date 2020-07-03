@@ -1,3 +1,5 @@
+import os
+
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -32,6 +34,7 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=random_docs(10), output_fn=self.get_chunk_id)
 
     def test_dummy_seg_random(self):
-        f = Flow().add(yaml_path='../../yaml/dummy-seg-random.yml')
+        cur_dir = os.path.dirname(os.path.abspath(__file__))
+        f = Flow().add(yaml_path=os.path.join(cur_dir, '../../yaml/dummy-seg-random.yml'))
         with f:
             f.index(input_fn=random_docs(10), output_fn=self.collect_chunk_id)

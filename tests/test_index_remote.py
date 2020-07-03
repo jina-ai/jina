@@ -13,6 +13,8 @@ from jina.peapods.pod import GatewayPod
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
     c_id = 0
@@ -92,7 +94,7 @@ class MyTestCase(JinaTestCase):
         t.daemon = True
         t.start()
 
-        f = Flow().add(yaml_path='yaml/test-index.yml',
+        f = Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/test-index.yml'),
                        replicas=3, separated_workspace=True,
                        host='localhost', port_expose=f_args.port_expose)
 
@@ -117,7 +119,7 @@ class MyTestCase(JinaTestCase):
         t.start()
 
         f = (Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY)
-             .add(yaml_path='yaml/test-index.yml',
+             .add(yaml_path=os.path.join(cur_dir, 'yaml/test-index.yml'),
                   replicas=3, separated_workspace=True,
                   host='192.168.31.76', port_expose=44444))
 

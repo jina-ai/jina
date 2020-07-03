@@ -2,6 +2,7 @@ import time
 import unittest
 
 import requests
+import os
 
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
@@ -13,6 +14,8 @@ from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto import jina_pb2
 from tests import JinaTestCase
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
@@ -100,14 +103,14 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=bytes_fn)
 
     def test_load_flow_from_yaml(self):
-        with open('yaml/test-flow.yml') as fp:
+        with open(os.path.join(cur_dir, 'yaml/test-flow.yml')) as fp:
             a = Flow.load_config(fp)
-            with open('yaml/swarm-out.yml', 'w') as fp, a:
+            with open(os.path.join(cur_dir, 'yaml/swarm-out.yml'), 'w') as fp, a:
                 a.to_swarm_yaml(fp)
-            self.add_tmpfile('yaml/swarm-out.yml')
+            self.add_tmpfile(os.path.join(cur_dir, 'yaml/swarm-out.yml'))
 
     def test_flow_identical(self):
-        with open('yaml/test-flow.yml') as fp:
+        with open(os.path.join(cur_dir, 'yaml/test-flow.yml')) as fp:
             a = Flow.load_config(fp)
 
         b = (Flow()
@@ -126,7 +129,7 @@ class MyTestCase(JinaTestCase):
 
     def test_dryrun(self):
         f = (Flow()
-             .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
+             .add(name='dummyEncoder', yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder.yml')))
 
         with f:
             f.dry_run()
@@ -140,13 +143,13 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_no_container(self):
         f = (Flow()
-             .add(name='dummyEncoder', yaml_path='mwu-encoder/mwu_encoder.yml'))
+             .add(name='dummyEncoder', yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder.yml')))
 
         with f:
             f.index(input_fn=random_docs(10))
 
     def test_flow_yaml_dump(self):
-        f = Flow(logserver_config='yaml/test-server-config.yml',
+        f = Flow(logserver_config=os.path.join(cur_dir, 'yaml/test-server-config.yml'),
                  optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
                  no_gateway=True)
         f.save_config('test1.yml')
@@ -157,14 +160,14 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile('test1.yml')
 
     def test_flow_log_server(self):
-        f = Flow.load_config('yaml/test_log_server.yml')
+        f = Flow.load_config(os.path.join(cur_dir, 'yaml/test_log_server.yml'))
         with f:
             self.assertTrue(hasattr(JINA_GLOBAL.logserver, 'ready'))
             a = requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
             self.assertEqual(a.status_code, 200)
 
     def test_shards(self):
-        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=3, separated_workspace=True)
+        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=3, separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(1000), random_doc_id=False)
         with f:
@@ -189,7 +192,7 @@ class MyTestCase(JinaTestCase):
                 self.assertIsNotNone(d.match_doc.weight)
                 self.assertEqual(d.match_doc.meta_info, b'hello world')
 
-        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas, separated_workspace=True)
+        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas, separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(index_docs), random_doc_id=False)
 
@@ -197,7 +200,7 @@ class MyTestCase(JinaTestCase):
         with f:
             pass
         time.sleep(2)
-        f = Flow().add(name='doc_pb', yaml_path='yaml/test-docpb.yml', replicas=replicas,
+        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
                        separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
         with f:
             f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
@@ -287,7 +290,7 @@ class MyTestCase(JinaTestCase):
             for d in req.docs:
                 self.assertNotEqual(d.text, '')
 
-        f = (Flow(read_only=True).add(yaml_path='yaml/datauriindex.yml', timeout_ready=-1))
+        f = (Flow(read_only=True).add(yaml_path=os.path.join(cur_dir, 'yaml/datauriindex.yml'), timeout_ready=-1))
 
         with f:
             f.index_files('*.py', output_fn=validate, callback_on_body=True)
@@ -296,7 +299,7 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_with_publish_driver(self):
 
-        f = (Flow().add(name='r1', yaml_path='yaml/unarycrafter.yml')
+        f = (Flow().add(name='r1', yaml_path=os.path.join(cur_dir, 'yaml/unarycrafter.yml'))
              .add(name='r2', yaml_path='!OneHotTextEncoder')
              .add(name='r3', yaml_path='!OneHotTextEncoder', needs='r1')
              .join(needs=['r2', 'r3']))
