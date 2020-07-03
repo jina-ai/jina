@@ -11,7 +11,7 @@ class MyTestCase(JinaImageTestCase):
         tmp_fn = os.path.join(crafter.current_workspace, 'test.jpeg')
         img_size = 50
         self.create_test_image(tmp_fn, size=img_size)
-        test_chunk, *_ = crafter.craft(tmp_fn, doc_id=0)
+        test_chunk, *_ = crafter.craft(buffer=None, uri=tmp_fn, doc_id=0)
         self.assertEqual(test_chunk['blob'].shape, (img_size, img_size, 3))
         self.add_tmpfile(tmp_fn)
 
