@@ -9,6 +9,10 @@ from concurrent import futures
 
 from grpc import _server
 
+from ..helper import is_uvloop_used, use_uvloop
+
+use_uvloop()
+
 
 def _loop_mgr(loop: asyncio.AbstractEventLoop):
     asyncio.set_event_loop(loop)
@@ -35,6 +39,7 @@ class AsyncioExecutor(futures.Executor):
             self._loop = loop or asyncio.get_event_loop()
         except RuntimeError:
             self._loop = asyncio.new_event_loop()
+        is_uvloop_used(self._loop)
         self._thread = threading.Thread(target=_loop_mgr, args=(self._loop,),
                                         daemon=True)
         self._thread.start()
