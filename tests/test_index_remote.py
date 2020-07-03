@@ -94,7 +94,7 @@ class MyTestCase(JinaTestCase):
 
         f = Flow().add(yaml_path='yaml/test-index.yml',
                        replicas=3, separated_workspace=True,
-                       host='localhost', port_grpc=f_args.port_grpc)
+                       host='localhost', port_expose=f_args.port_expose)
 
         with f:
             f.index(input_fn=random_docs(1000))
@@ -119,7 +119,7 @@ class MyTestCase(JinaTestCase):
         f = (Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY)
              .add(yaml_path='yaml/test-index.yml',
                   replicas=3, separated_workspace=True,
-                  host='192.168.31.76', port_grpc=44444))
+                  host='192.168.31.76', port_expose=44444))
 
         with f:
             f.index(input_fn=random_docs(1000))

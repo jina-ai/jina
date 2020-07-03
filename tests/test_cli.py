@@ -59,7 +59,7 @@ class MyTestCase(JinaTestCase):
         # run it!
         with f:
             py_client(host=f.host,
-                      port_grpc=f.port_grpc,
+                      port_expose=f.port_expose,
                       ).index(input_numpy(targets['index']['data']), batch_size=args.index_batch_size)
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')

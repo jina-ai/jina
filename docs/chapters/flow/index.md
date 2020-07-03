@@ -84,11 +84,11 @@ This will run `p2` in a Docker container equipped with image `jinaai/hub.executo
 
 #### Add a Remote Pod into the Flow
 
-To run a Pod remotely, simply specify the `host` and `port_grpc` arguments. For example,
+To run a Pod remotely, simply specify the `host` and `port_expose` arguments. For example,
 
 ```python
 f = (Flow().add(name='p1')
-           .add(name='p2', host='192.168.0.100', port_grpc=53100)
+           .add(name='p2', host='192.168.0.100', port_expose=53100)
            .add(name='p3'))
 ```
 
@@ -104,7 +104,7 @@ A very useful pattern is to combine the above two features together:
 ```python
 
 f = (Flow().add(name='p1')
-           .add(name='p2', host='192.168.0.100', port_grpc=53100,
+           .add(name='p2', host='192.168.0.100', port_expose=53100,
                 image='jinaai/hub.executors.encoders.bidaf:latest')
            .add(name='p3'))
 ```

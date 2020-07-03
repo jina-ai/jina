@@ -229,7 +229,7 @@ f = Flow().add(image='{{image_name}}', yaml_path='my.yml')</code></pre>
             <p class="mb-1">Use this image remotely in Flow API</p>
             <pre class="example"><code class="python">from jina.flow import Flow
 # assuming you have a running gateway on 192.168.0.123:45678
-f = Flow().add(image='{{image_name}}', host='192.168.0.123', port_grpc=45678)</code></pre>
+f = Flow().add(image='{{image_name}}', host='192.168.0.123', port_expose=45678)</code></pre>
         </div>
         <div id="third">
             <div class="icon big">
