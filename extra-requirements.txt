@@ -32,6 +32,7 @@ tensorflow-hub:             framework, py37
 torchvision:                framework
 onnx:                       framework, py37
 onnxruntime:                framework, py37
+GPUtil:                     framework
 annoy:                      index
 sklearn:                    framework
 plyvel:                     index

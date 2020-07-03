@@ -25,11 +25,13 @@ class BaseFrameworkExecutor(BaseExecutor):
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
         try:
+            import GPUtil
+            self.on_gpu = True if len(GPUtil.getGPUs()) > 0 else False
             if self.framework == 'tensorflow':
                 import tensorflow as tf
                 cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
                 gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-                if self.on_gpu and len(gpus) > 0:
+                if self.on_gpu:
                     cpus.append(gpus[0])
                 return cpus
             elif self.framework == 'paddlepaddle':
