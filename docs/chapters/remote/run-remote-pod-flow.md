@@ -32,7 +32,7 @@ GatewayPea@8233[W]:SECURITY ALERT! this gateway allows SpawnRequest from remote 
 GatewayPea@8233[C]:gateway is listening at: 0.0.0.0:41851
 ```
 
-After it reaches to `gateway is listening`, the remote Jina is ready. The port number is important for the local to connect to it. In this example we write down `41851`. If you want to have fixed port number everytime, please use `--port-grpc` to specify it. More information can be found [in the documentation](/tba).
+After it reaches to `gateway is listening`, the remote Jina is ready. The port number is important for the local to connect to it. In this example we write down `41851`. If you want to have fixed port number everytime, please use `--port-expose` to specify it. More information can be found [in the documentation](/tba).
 
 ### 2. Build a Simple Index Flow 
 
@@ -49,7 +49,7 @@ from jina.enums import FlowOptimizeLevel
 f = (Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY)
      .add(yaml_path='yaml/test-index.yml',
           replicas=3, separated_workspace=True,
-          host='192.168.31.76', port_grpc=41851))
+          host='192.168.31.76', port_expose=41851))
 ```
 
 Note that `yaml/test-index.yml` should exist on the remote `192.168.31.76`, not at local.

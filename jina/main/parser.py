@@ -388,10 +388,10 @@ def _set_grpc_parser(parser=None):
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
                      help=f'host address of the pea/gateway, by default it is {__default_host__}.')
-    gp1.add_argument('--port-grpc',
+    gp1.add_argument('--port-expose', '--port-grpc',
                      type=int,
                      default=random_port(),
-                     help='host port of the grpc gateway')
+                     help='host port of the gateway, "port-grpc" alias will be removed in future versions')
     gp1.add_argument('--max-message-size', type=int, default=-1,
                      help='maximum send and receive size for grpc server in bytes, -1 means unlimited')
     gp1.add_argument('--proxy', action='store_true', default=False,
@@ -446,7 +446,7 @@ def set_gateway_parser(parser=None):
                      help='accept the spawn requests sent from other remote Jina')
     gp1.add_argument('--rest-api', action='store_true', default=False,
                      help='use REST-API as the interface instead of gRPC with port number '
-                          'set to the value of "port-grpc"')
+                          'set to the value of "port-expose"')
     # gp1.add_argument('--to-datauri', action='store_true', default=False,
     #                  help='always represent the result document with data URI, instead of using buffer/blob/text')
     return parser

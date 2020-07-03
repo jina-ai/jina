@@ -12,7 +12,7 @@ class GRPCService(BasePea):
     def load_executor(self):
         super().load_executor()
         self.channel = grpc.insecure_channel(
-            f'{self.args.host}:{self.args.port_grpc}',
+            f'{self.args.host}:{self.args.port_expose}',
             options=[('grpc.max_send_message_length', self.args.max_message_size),
                      ('grpc.max_receive_message_length', self.args.max_message_size)])
 

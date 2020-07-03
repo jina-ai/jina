@@ -27,7 +27,7 @@ POST a SearchRequest
    curl -X POST -d '{"top_k": 5, "data": ["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC"]}
    ' -v -i 'http://0.0.0.0:5555/api/search'
 
-Remarks on POST :command:`:<port_grpc>/api/<mode>`
+Remarks on POST :command:`:<port_expose>/api/<mode>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``<mode>`` should be one of ``index``, ``train`` and ``search``
@@ -38,7 +38,7 @@ Remarks on POST :command:`:<port_grpc>/api/<mode>`
    ``top_k``, ``batch_size``, ``first_doc_id``. The full list can be
    `found in here <../cli/jina-client.html#client-specific%20arguments>`_. Please note that not all arguments are supported on
    the REST API level at the moment.
--  The REST endpoint will be served at ``port_grpc``
+-  The REST endpoint will be served at ``port_expose``
 
 Switching from gRPC gateway to REST gateway
 -------------------------------------------
