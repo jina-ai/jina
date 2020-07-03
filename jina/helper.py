@@ -573,3 +573,22 @@ def is_url(text):
         r'(?::\d+)?'  # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return url_pat.match(text) is not None
+
+
+def use_uvloop():
+    if 'JINA_UVLOOP' in os.environ:
+        try:
+            import asyncio
+            import uvloop
+            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        except (ModuleNotFoundError, ImportError):
+            from .logging import default_logger
+            default_logger.error('JINA_UVLOOP is enabled but you did not install uvloop. Try "pip install uvloop"')
+
+
+def is_uvloop_used(loop=None):
+    if loop is None:
+        import asyncio
+        loop = asyncio.get_event_loop()
+    from .logging import default_logger
+    default_logger.info(f'using {loop.__class__} as event loop')
