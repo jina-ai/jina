@@ -37,8 +37,7 @@ def build_image():
     if not built:
         import docker
         client = docker.from_env()
-        print(os.path.dirname(__file__))
-        client.images.build(path='mwu-encoder/', tag=img_name)
+        client.images.build(path=os.path.join(cur_dir, 'mwu-encoder/'), tag=img_name)
         client.close()
 
 

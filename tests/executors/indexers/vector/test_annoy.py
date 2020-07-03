@@ -14,6 +14,7 @@ retr_idx = None
 vec_idx = np.random.randint(0, high=100, size=[10])
 vec = np.random.random([10, 10])
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MyTestCase(JinaTestCase):
@@ -25,7 +26,7 @@ class MyTestCase(JinaTestCase):
         a.save()
         a.close()
 
-        b = BaseIndexer.load_config('annoy-wrap.yml')
+        b = BaseIndexer.load_config(os.path.join(cur_dir, 'annoy-wrap.yml'))
         idx, dist = b.query(query, top_k=4)
         print(idx, dist)
         global retr_idx
@@ -36,7 +37,7 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(idx.shape, dist.shape)
         self.assertEqual(idx.shape, (10, 4))
 
-        c = BaseIndexer.load_config('nmslib-wrap.yml')
+        c = BaseIndexer.load_config(os.path.join(cur_dir, 'nmslib-wrap.yml'))
         idx, dist = c.query(query, top_k=4)
         print(idx, dist)
         if retr_idx is None:
