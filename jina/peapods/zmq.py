@@ -15,7 +15,7 @@ import zmq.asyncio
 from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
-from ..helper import colored, get_random_identity, get_readable_size
+from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..logging import default_logger, profile_logger
 from ..logging.base import get_logger
 from ..proto import jina_pb2, is_data_request
@@ -24,6 +24,8 @@ if False:
     # fix type-hint complain for sphinx and flake
     import argparse
     import logging
+
+use_uvloop()
 
 
 class Zmqlet:
