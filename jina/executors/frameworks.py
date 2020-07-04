@@ -1,6 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import subprocess
+
 from . import BaseExecutor
 
 
@@ -24,6 +26,13 @@ class BaseFrameworkExecutor(BaseExecutor):
             In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
+        if self.on_gpu:
+            try:
+                cuda_version = subprocess.check_output(['nvcc', '--version']).decode()
+                self.logger.success(f'CUDA compiler version: {cuda_version}')
+            except OSError:
+                self.logger.warning('on_gpu=True, but you dont have CUDA compatible GPU, i will reset on_gpu=False ')
+                self.on_gpu = False
         try:
             if self.framework == 'tensorflow':
                 import tensorflow as tf
