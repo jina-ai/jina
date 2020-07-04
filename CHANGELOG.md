@@ -46,6 +46,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -1905,4 +1906,42 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```80100ca2```](https://github.com/jina-ai/jina/commit/80100ca22196d03c731c796c4e42246e35694023)] __-__ __version__: the next version will be 0.3.3 (*Jina Dev Bot*)
  - [[```60000083```](https://github.com/jina-ai/jina/commit/60000083c57a6cf17f77fc50e6fc496089516f13)] __-__ __version__: the next version will be 0.3.2 (*Jina Dev Bot*)
  - [[```0db4bd9f```](https://github.com/jina-ai/jina/commit/0db4bd9fee7c6403b93de5a72fd652e76c275a35)] __-__ hotfix publish driver (*Han Xiao*)
+
+## Release Note (`0.3.5`)
+
+> Release time: 2020-07-04 17:33:55
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Anish Pawar,  Anish,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a793a1e4```](https://github.com/jina-ai/jina/commit/a793a1e467b70de8921e1b6f7a72984aa9f83bef)] __-__ __executor__: add image custom keras (*Anish*)
+
+### 🐞 Bug fixes
+
+ - [[```9890883a```](https://github.com/jina-ai/jina/commit/9890883a0d3bc8cda364bda5f4152eff110a3005)] __-__ __gpu__: auto degrade when gpu not available (*Han Xiao*)
+ - [[```4fd2ff2a```](https://github.com/jina-ai/jina/commit/4fd2ff2aceab00e97e82c7d4a2e835fe9a16d23c)] __-__ __executor__: fix init (*Anish*)
+ - [[```ca23ea7a```](https://github.com/jina-ai/jina/commit/ca23ea7a2e22a42b4d24a84a5bab41cd03c2308a)] __-__ __executor__: fix encode axis (*Anish*)
+ - [[```f46e678e```](https://github.com/jina-ai/jina/commit/f46e678e8155e4ff7dcab29a8ff1d019a3f94b80)] __-__ __executor__: add device support (*Anish*)
+
+### 🚧 Code Refactoring
+
+ - [[```29315644```](https://github.com/jina-ai/jina/commit/29315644a93f569ea5ce06920fee8f023f96722c)] __-__ __executor__: change imports (*Anish Pawar*)
+ - [[```505bacb4```](https://github.com/jina-ai/jina/commit/505bacb46161e8d16fb497909cc4e77a217f05e8)] __-__ __executor__: var name custom keras (*Anish*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b988e6e4```](https://github.com/jina-ai/jina/commit/b988e6e4de374cb661eecbee33b20f65ec5fc708)] __-__ __executor__: add custom keras test (*Anish Pawar*)
+
+### 🍹 Other Improvements
+
+ - [[```c4e07596```](https://github.com/jina-ai/jina/commit/c4e075968c84393b9bebea4c746395c4ff20a593)] __-__ hotfix prep for new zmq feature (*Han Xiao*)
+ - [[```6a10ab4d```](https://github.com/jina-ai/jina/commit/6a10ab4d18984143d49e1347483da0e6c3e87bb9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5a4195aa```](https://github.com/jina-ai/jina/commit/5a4195aae688b5ab7ba5dd400845121e565ba4bd)] __-__ __version__: the next version will be 0.3.5 (*Jina Dev Bot*)
+ - [[```49de8711```](https://github.com/jina-ai/jina/commit/49de87113b665341c588329f9c54ba2f379b4ebd)] __-__ __version__: the next version will be 0.3.1 (*Jina Dev Bot*)
+ - [[```4ceb5fde```](https://github.com/jina-ai/jina/commit/4ceb5fde70d3dcd87af8784a3a3a690b5c6ad69e)] __-__ hotfix password stdin (*Han Xiao*)
 
