@@ -5,6 +5,8 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def random_docs(num_docs):
     for j in range(num_docs):
@@ -34,13 +36,11 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=random_docs(10), output_fn=self.collect_chunk_id)
 
     def test_dummy_seg_random(self):
-        cur_dir = os.path.dirname(os.path.abspath(__file__))
         f = Flow().add(yaml_path=os.path.join(cur_dir, '../../yaml/dummy-seg-random.yml'))
         with f:
             f.index(input_fn=random_docs(10), output_fn=self.collect_chunk_id)
 
     def test_dummy_seg_not_random(self):
-        cur_dir = os.path.dirname(os.path.abspath(__file__))
         f = Flow().add(yaml_path=os.path.join(cur_dir, '../../yaml/dummy-seg-not-random.yml'))
         with f:
             f.index(input_fn=random_docs(10), output_fn=self.get_chunk_id)
