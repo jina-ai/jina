@@ -14,7 +14,9 @@ class BaseFrameworkExecutor(BaseExecutor):
 
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        import GPUtil
         self.model_name = model_name
+        self.on_gpu = True if GPUtil.getGPUs() else False
 
     @property
     def device(self):
@@ -25,8 +27,6 @@ class BaseFrameworkExecutor(BaseExecutor):
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
         try:
-            import GPUtil
-            self.on_gpu = True if len(GPUtil.getGPUs()) > 0 else False
             if self.framework == 'tensorflow':
                 import tensorflow as tf
                 cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
@@ -45,6 +45,7 @@ class BaseFrameworkExecutor(BaseExecutor):
         except Exception:
             self.logger.error(f'error when setting devices "on_gpu={self.on_gpu}"')
             raise
+
 
     def to_device(self, *args, **kwargs):
         """Put the model on specified device (``on_gpu``) and returns the device context"""
