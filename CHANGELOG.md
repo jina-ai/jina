@@ -45,6 +45,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -89,6 +90,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.3.1`)](#release-note-031)
 - [Release Note (`0.3.2`)](#release-note-032)
 - [Release Note (`0.3.3`)](#release-note-033)
+- [Release Note (`0.3.4`)](#release-note-034)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1846,5 +1848,61 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a4618512```](https://github.com/jina-ai/jina/commit/a4618512623e2422ceed564071273344446fe182)] __-__ update readme gif (*BingHo1013*)
  - [[```6e3ece22```](https://github.com/jina-ai/jina/commit/6e3ece22d7c58819ebdf4fe792ac5ea0a29dc8f1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```80100ca2```](https://github.com/jina-ai/jina/commit/80100ca22196d03c731c796c4e42246e35694023)] __-__ __version__: the next version will be 0.3.3 (*Jina Dev Bot*)
+ - [[```0db4bd9f```](https://github.com/jina-ai/jina/commit/0db4bd9fee7c6403b93de5a72fd652e76c275a35)] __-__ hotfix publish driver (*Han Xiao*)
+
+## Release Note (`0.3.4`)
+
+> Release time: 2020-07-03 15:57:20
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  fhaase2,  Jina Dev Bot,  Nan Wang,  hanxiao,  BingHo1013,  Andrey Vasnetsov,  Morry Wang,  coolmian,  JamesTang616,  🙇
+
+
+### 🆕 New Features
+
+ - [[```7abe42ad```](https://github.com/jina-ai/jina/commit/7abe42ad39bf112e84a6ec0a4de554a604882ebc)] __-__ __peapods__: add uvloop as an alternative event loop (*Han Xiao*)
+ - [[```6af3f1fb```](https://github.com/jina-ai/jina/commit/6af3f1fb782c0d5f99b2a16a7572b1b0ea28d730)] __-__ rename port grpc (*fhaase2*)
+ - [[```7e592805```](https://github.com/jina-ai/jina/commit/7e592805cef3fd1fef8b93783a5f569a7e555dd9)] __-__ __helloworld__: add cli arg &#39;download-proxy&#39; (*Morry Wang*)
+ - [[```5ac225e8```](https://github.com/jina-ai/jina/commit/5ac225e809adf266837ac372f56b80e19b59353b)] __-__ __indexer__: allow user switch indexer in query time (*Han Xiao*)
+ - [[```7cb893a7```](https://github.com/jina-ai/jina/commit/7cb893a78a7655797cef3f12d0c507e940c9825a)] __-__ __encoder__: add fastica to numeric encoders (*JamesTang616*)
+ - [[```6158ce3d```](https://github.com/jina-ai/jina/commit/6158ce3d188c50163e8d4d2595b52e5232ad483a)] __-__ __indexer__: add size (*Han Xiao*)
+ - [[```66bef2c1```](https://github.com/jina-ai/jina/commit/66bef2c1ff30caff5306d91da63020bed1d93d1b)] __-__ __proto__: add location info to chunk (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```d535c5ec```](https://github.com/jina-ai/jina/commit/d535c5ec472f10d7656547593eb171d19f9c1483)] __-__ __flow__: fix the mismatched arguments (*Nan Wang*)
+ - [[```ab123027```](https://github.com/jina-ai/jina/commit/ab1230279309f0bac2559aeb5c67edce89c9fb73)] __-__ __docs__: correct the mismatched parameter value (*coolmian*)
+ - [[```11f80552```](https://github.com/jina-ai/jina/commit/11f8055285753ae28deb7593bfaf2ed571d68270)] __-__ __indexer__: fix index size logging (*Han Xiao*)
+ - [[```487f5bad```](https://github.com/jina-ai/jina/commit/487f5badf922973b2ba2cfa901817ab1ed930362)] __-__ __driver__: fix del in topkfilter (*Han Xiao*)
+ - [[```e4c5aca4```](https://github.com/jina-ai/jina/commit/e4c5aca4b85068f31b0ddc284b00924305f6241a)] __-__ __driver__: topkfilter now remove irrelevant chunks (*Han Xiao*)
+ - [[```ea8c1fec```](https://github.com/jina-ai/jina/commit/ea8c1fecd52359e1abbe59f62d8399e0e8505feb)] __-__ __driver__: move topkfilter to ranker (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```1b67d379```](https://github.com/jina-ai/jina/commit/1b67d3794d7335210d9e8e533edeabd7760ab9e8)] __-__ __indexer__: abstract rw ndarray from numpyindexer (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```f2f523e1```](https://github.com/jina-ai/jina/commit/f2f523e153ee912596c8cc04216cfba1a1b2fcc5)] __-__ __io__: add shortcut to flow io (*hanxiao*)
+ - [[```d5d23395```](https://github.com/jina-ai/jina/commit/d5d23395e74e11ac4989e91cbeef86652f1aabb2)] __-__ __readme__: improve russian readme (*Andrey Vasnetsov*)
+ - [[```f18fcfe8```](https://github.com/jina-ai/jina/commit/f18fcfe8db605b9ec3a029954b1405403d429603)] __-__ __contributing__: instructions for github association (*Morry Wang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```ee84d174```](https://github.com/jina-ai/jina/commit/ee84d174e30dc7f4f9d56550605c673c1c2526bc)] __-__ use image built from pr in tests (*fhaase2*)
+
+### 🍹 Other Improvements
+
+ - [[```76980af4```](https://github.com/jina-ai/jina/commit/76980af4ea2b9ea699524d3f6e5043c3481cfdd5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```61d243f8```](https://github.com/jina-ai/jina/commit/61d243f86c16eae60ede43c3a2bb6ccda764196c)] __-__ fix link (*Han Xiao*)
+ - [[```7bdea9c7```](https://github.com/jina-ai/jina/commit/7bdea9c774a7659b19419df79f64c3014bebdd5c)] __-__ update readme gif banner (*BingHo1013*)
+ - [[```f9dca5b2```](https://github.com/jina-ai/jina/commit/f9dca5b2b7bf8da3b53614909024aac7d88dd59f)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```19e0f3fa```](https://github.com/jina-ai/jina/commit/19e0f3fadbe7d8a20999740ec239c0a51b98f356)] __-__ __version__: the next version will be 0.3.4 (*Jina Dev Bot*)
+ - [[```9016b4d4```](https://github.com/jina-ai/jina/commit/9016b4d40edda3dfefed1565a601a87ab28eb23a)] __-__ update readme gif (*BingHo1013*)
+ - [[```d985f4d6```](https://github.com/jina-ai/jina/commit/d985f4d66a71d4926a35216f68022a840bfdf74a)] __-__ Delete 1500x667 new.gif (*BingHo1013*)
+ - [[```80100ca2```](https://github.com/jina-ai/jina/commit/80100ca22196d03c731c796c4e42246e35694023)] __-__ __version__: the next version will be 0.3.3 (*Jina Dev Bot*)
+ - [[```60000083```](https://github.com/jina-ai/jina/commit/60000083c57a6cf17f77fc50e6fc496089516f13)] __-__ __version__: the next version will be 0.3.2 (*Jina Dev Bot*)
  - [[```0db4bd9f```](https://github.com/jina-ai/jina/commit/0db4bd9fee7c6403b93de5a72fd652e76c275a35)] __-__ hotfix publish driver (*Han Xiao*)
 
