@@ -16,7 +16,7 @@ class BaseFrameworkExecutor(BaseExecutor):
         super().__init__(*args, **kwargs)
         import GPUtil
         self.model_name = model_name
-        self.on_gpu = True if GPUtil.getGPUs() else False
+        self.on_gpu = True if self.on_gpu and GPUtil.getGPUs() else False
 
     @property
     def device(self):
