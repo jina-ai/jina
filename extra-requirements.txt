@@ -42,3 +42,4 @@ python-magic:               http, devel
 librosa:                    audio
 deepsegment:                nlp, preprocess, craft
 uvloop:                     devel, optimization
+tornado:                    devel, optimization
