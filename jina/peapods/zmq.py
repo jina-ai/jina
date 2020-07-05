@@ -31,7 +31,11 @@ use_uvloop()
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
-    has three sockets for input, output and control. `Zmqlet` is one of the key components in :class:`jina.peapods.pea.BasePea`.
+    has three sockets for input, output and control.
+
+    .. warning::
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
     def __init__(self, args: 'argparse.Namespace', logger: 'logging.Logger' = None):
@@ -281,16 +285,26 @@ class AsyncZmqlet(Zmqlet):
 
 
 class ZmqStreamlet(Zmqlet):
-    """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
-    has three sockets for input, output and control. `Zmqlet` is one of the key components in :class:`jina.peapods.pea.BasePea`.
+    """A :class:`ZmqStreamlet` object can send/receive data to/from ZeroMQ stream and invoke callback function. It
+    has three sockets for input, output and control.
+
+    .. warning::
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
     def register_pollin(self):
         use_uvloop()
         import asyncio
         asyncio.set_event_loop(asyncio.new_event_loop())
-        import tornado.ioloop
-        self.io_loop = tornado.ioloop.IOLoop.current()
+        try:
+            import tornado.ioloop
+            self.io_loop = tornado.ioloop.IOLoop.current()
+        except (ModuleNotFoundError, ImportError):
+            self.logger.error('Since v0.3.6 Jina requires "tornado" as a base dependency, '
+                              'we use its I/O event loop for non-blocking sockets. '
+                              'Please try reinstall via "pip install -U jina" to include this dependency')
+            raise
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
