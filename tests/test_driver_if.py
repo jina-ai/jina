@@ -73,4 +73,4 @@ class MyTestCase(JinaTestCase):
              .add(name='encode2', yaml_path=os.path.join(cur_dir, 'yaml/test-if-encode2.yml'), needs='gateway')
              .join(['encode1', 'encode2']))
         with f:
-            f.index(input_fn, output_fn=print, callback_on_body=True)
+            f.index(input_fn, callback_on_body=True)

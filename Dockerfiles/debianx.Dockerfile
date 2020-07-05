@@ -17,10 +17,11 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.title="Jina" \
       org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology"
 
-# python3-scipy
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    python3-numpy python3-zmq python3-protobuf python3-grpcio && \
-    if [ -n "$INSTALL_DEV" ]; then apt-get install --no-install-recommends -y gcc libc-dev python3-gevent libmagic1; fi && \
+ENV JINA_BUILD_BASE_DEP="python3-numpy python3-zmq python3-protobuf python3-grpcio python3-tornado"
+ENV JINA_BUILD_DEVEL_DEP="gcc libc-dev python3-gevent libmagic1 python3-uvloop"
+
+RUN apt-get update && apt-get install --no-install-recommends -y $JINA_BUILD_BASE_DEP && \
+    if [ -n "$INSTALL_DEV" ]; then apt-get install --no-install-recommends -y $JINA_BUILD_DEVEL_DEP; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages

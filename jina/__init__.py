@@ -63,7 +63,7 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_VERSION',
                 'JINA_WARN_UNNAMED',
                 'JINA_BINARY_DELIMITER',
-                'JINA_UVLOOP')
+                'JINA_DISABLE_UVLOOP')
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
