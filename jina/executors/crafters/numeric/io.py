@@ -50,7 +50,6 @@ class ArrayBytesReader(BaseDocCrafter):
     """
     :class:`ArrayBytesReader` convert a byte stream into a numpy array and save to the Chunk.
         The size of the vectors is provided in the constructor so that the numpy array can be interpreted properly
-        'TODO: Is it necessary? Shouldn't they come doc by doc? how are batches of documents split'
     """
 
     def __init__(self, as_type: str = 'float32', *args, **kwargs):
@@ -58,7 +57,6 @@ class ArrayBytesReader(BaseDocCrafter):
         :param as_type: type of number
         """
         super().__init__(*args, **kwargs)
-        # self.vector_dim = vector_dim
         self.as_type = as_type
 
     def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> Dict:
@@ -69,14 +67,5 @@ class ArrayBytesReader(BaseDocCrafter):
         :param doc_id: the doc id
         :return: a chunk dict with the numpy array
         """
-        try:
-            _array = np.frombuffer(buffer, self.as_type)
-        except TypeError:
-            self.logger.error(
-                f'Data type {self.as_type} is not understood. '
-                f'Please refer to the list of data types from Numpy.')
-        except ValueError:
-            self.logger.error(
-                f'Data type mismatch. Cannot convert input to {self.as_type}.')
-
+        _array = np.frombuffer(buffer, self.as_type)
         return dict(doc_id=doc_id, weight=1., blob=_array)
