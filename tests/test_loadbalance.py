@@ -9,6 +9,8 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
+os.environ['JINA_LOG_VERBOSITY'] = 'DEBUG'
+
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
     c_id = 0
@@ -45,7 +47,7 @@ class MyTestCase(JinaTestCase):
             yaml_path='SlowWorker',
             replicas=10)
         with f:
-            f.index(input_fn=random_docs(100), batch_size=10)
+            f.index(input_fn=random_docs(500), batch_size=10)
 
     def test_roundrobin(self):
         f = Flow(runtime='process').add(
@@ -53,4 +55,4 @@ class MyTestCase(JinaTestCase):
             yaml_path='SlowWorker',
             replicas=10, scheduling=SchedulerType.ROUND_ROBIN)
         with f:
-            f.index(input_fn=random_docs(100), batch_size=10)
+            f.index(input_fn=random_docs(500), batch_size=10)
