@@ -316,6 +316,8 @@ class ZmqStreamlet(Zmqlet):
         if not self.is_closed:
             super().close()
             self.io_loop.stop()
+            # Replace handle events function, to skip
+            # None event ofter closed sockets
             self.in_sock._handle_events = lambda *args, **kwargs: None
             self.out_sock._handle_events = lambda *args, **kwargs: None
             self.ctrl_sock._handle_events = lambda *args, **kwargs: None
