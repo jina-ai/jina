@@ -1,6 +1,7 @@
 from typing import Any
 
 import numpy as np
+import os
 
 from jina.drivers.helper import array2pb
 from jina.drivers.prune import PruneDriver
@@ -9,6 +10,8 @@ from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class FilterDriver(PruneDriver):
@@ -46,7 +49,7 @@ def input_fn():
 class MyTestCase(JinaTestCase):
 
     def test_driver_save_load(self):
-        id = BaseExecutor.load_config('yaml/test-ifdriver1.yml')
+        id = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-ifdriver1.yml'))
         id.save_config('tmp.yml')
         id = BaseExecutor.load_config('tmp.yml')
         self.assertEqual(id._drivers['IndexRequest'][0].if_expression, '2 > 1')
@@ -60,14 +63,14 @@ class MyTestCase(JinaTestCase):
                 else:
                     self.assertNotEqual(d.text, '')
 
-        f = (Flow().add(yaml_path='yaml/test-ifdriver2.yml'))
+        f = (Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/test-ifdriver2.yml')))
         with f:
             f.index_lines(['a', 'b', 'c'], output_fn=validate, callback_on_body=True)
 
     def test_mime_encode(self):
         # TODO: what is the merge strateg for join() here?
-        f = (Flow().add(name='encode1', yaml_path='yaml/test-if-encode1.yml')
-             .add(name='encode2', yaml_path='yaml/test-if-encode2.yml', needs='gateway')
+        f = (Flow().add(name='encode1', yaml_path=os.path.join(cur_dir, 'yaml/test-if-encode1.yml'))
+             .add(name='encode2', yaml_path=os.path.join(cur_dir, 'yaml/test-if-encode2.yml'), needs='gateway')
              .join(['encode1', 'encode2']))
         with f:
             f.index(input_fn, output_fn=print, callback_on_body=True)

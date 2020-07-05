@@ -22,7 +22,7 @@ class PyClient(GrpcClient):
     use the python interface :func:`jina.clients.py_client` to start :class:`PyClient` if you
     want to use it in Python.
 
-    Assuming a Flow is "standby" on 192.168.1.100, with port_grpc at 55555.
+    Assuming a Flow is "standby" on 192.168.1.100, with port_expose at 55555.
 
     .. highlight:: python
     .. code-block:: python
@@ -30,13 +30,13 @@ class PyClient(GrpcClient):
         from jina.clients import py_client
 
         # to test connectivity
-        py_client(host='192.168.1.100', port_grpc=55555).dry_run()
+        py_client(host='192.168.1.100', port_expose=55555).dry_run()
 
         # to search
-        py_client(host='192.168.1.100', port_grpc=55555).search(input_fn, output_fn)
+        py_client(host='192.168.1.100', port_expose=55555).search(input_fn, output_fn)
 
         # to index
-        py_client(host='192.168.1.100', port_grpc=55555).index(input_fn, output_fn)
+        py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
 
     """
 

@@ -1,4 +1,5 @@
 import unittest
+import os
 
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
@@ -10,11 +11,13 @@ from jina.peapods import Pod
 from pkg_resources import resource_filename
 from tests import JinaTestCase
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 class MyTestCase(JinaTestCase):
 
     def test_load_yaml1(self):
-        with open('yaml/test-driver.yml', encoding='utf8') as fp:
+        with open(os.path.join(cur_dir, 'yaml/test-driver.yml'), encoding='utf8') as fp:
             a = yaml.load(fp)
 
         self.assertTrue(isinstance(a[0], KVSearchDriver))
@@ -33,23 +36,23 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile('test_driver.yml')
 
     def test_load_cust_with_driver(self):
-        a = BaseExecutor.load_config('mwu-encoder/mwu_encoder_driver.yml')
+        a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
         self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
-        p = set_pod_parser().parse_args(['--yaml-path', 'mwu-encoder/mwu_encoder_driver.yml'])
+        p = set_pod_parser().parse_args(['--yaml-path', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
         with Pod(p):
             # will print a cust msg from the driver when terminate
             pass
 
     def test_pod_new_api_from_kwargs(self):
-        a = BaseExecutor.load_config('mwu-encoder/mwu_encoder_driver.yml')
+        a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
         self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
 
-        with Pod(yaml_path='mwu-encoder/mwu_encoder_driver.yml'):
+        with Pod(yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
             # will print a cust msg from the driver when terminate
             pass
 
     def test_load_yaml2(self):
-        a = BaseExecutor.load_config('yaml/test-exec-with-driver.yml')
+        a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-exec-with-driver.yml'))
         self.assertEqual(len(a._drivers), 2)
         # should be able to auto fill in ControlRequest
         self.assertTrue('ControlRequest' in a._drivers)

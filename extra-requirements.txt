@@ -16,7 +16,7 @@
 # 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
 # 4. Tag `all` is reserved for representing all packages
 
-scipy:                      numeric, index
+scipy==1.4.1:               numeric, index
 flask:                      http, sse, devel
 flask_cors:                 http, sse, devel
 nmslib:                     index
@@ -27,7 +27,7 @@ flair:                      nlp, encode
 paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 Pillow:                     cv
-tensorflow>=2.0:            framework, py37
+tensorflow>=2.0:            framework
 tensorflow-hub:             framework, py37
 torchvision:                framework
 onnx:                       framework, py37
@@ -39,5 +39,7 @@ jieba:                      nlp, preprocess, craft
 lz4:                        optimization, devel, production, network
 gevent:                     http, devel
 python-magic:               http, devel
-librosa:                    audio
+librosa==0.7.2:             audio
+numba<=0.48:                audio
 deepsegment:                nlp, preprocess, craft
+uvloop:                     devel, optimization

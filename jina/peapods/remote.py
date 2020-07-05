@@ -83,7 +83,7 @@ class MutablePodSpawnHelper(PodSpawnHelper):
                 if not isinstance(k, list):
                     k = [k]
                 if not inited:
-                    # any pea will do, we just need its host and port_grpc
+                    # any pea will do, we just need its host and port_expose
                     super().__init__(k[0])
                     inited = True
                 for kk in k:

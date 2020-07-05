@@ -43,7 +43,7 @@ class MyTestCase(JinaTestCase):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
             ['--host', 'localhost', '--replicas', '3',
-             '--port-grpc', str(f_args.port_grpc)])
+             '--port-expose', str(f_args.port_expose)])
 
         def start_gateway():
             with GatewayPod(f_args):
@@ -60,7 +60,7 @@ class MyTestCase(JinaTestCase):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
             ['--host', 'localhost', '--replicas', '3',
-             '--port-grpc', str(f_args.port_grpc), '--runtime', 'process'])
+             '--port-expose', str(f_args.port_expose), '--runtime', 'process'])
 
         def start_spawn():
             PodSpawnHelper(p_args).start()
@@ -83,7 +83,7 @@ class MyTestCase(JinaTestCase):
         def start_client(d):
             print('im running %d' % d)
             p_args = set_pea_parser().parse_args(
-                ['--host', 'localhost', '--name', 'testpea%d' % d, '--port-grpc', str(f_args.port_grpc)])
+                ['--host', 'localhost', '--name', 'testpea%d' % d, '--port-expose', str(f_args.port_expose)])
             PeaSpawnHelper(p_args).start()
 
         t = Process(target=start_gateway)
@@ -109,7 +109,7 @@ class MyTestCase(JinaTestCase):
     def test_customized_pod(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
-            ['--host', 'localhost', '--replicas', '3', '--port-grpc', str(f_args.port_grpc)])
+            ['--host', 'localhost', '--replicas', '3', '--port-expose', str(f_args.port_expose)])
         p = BasePod(p_args)
 
         def start_gateway():
@@ -126,7 +126,7 @@ class MyTestCase(JinaTestCase):
     def test_customized_pod2(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
-            ['--host', 'localhost', '--replicas', '3', '--port-grpc', str(f_args.port_grpc)])
+            ['--host', 'localhost', '--replicas', '3', '--port-expose', str(f_args.port_expose)])
         p = BasePod(p_args)
 
         def start_gateway():
@@ -144,7 +144,7 @@ class MyTestCase(JinaTestCase):
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_remote_pea2(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
-        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-grpc', str(f_args.port_grpc)])
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-expose', str(f_args.port_expose)])
 
         def start_gateway():
             with GatewayPod(f_args):
@@ -161,7 +161,7 @@ class MyTestCase(JinaTestCase):
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_remote_pod2(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
-        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-grpc', str(f_args.port_grpc)])
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-expose', str(f_args.port_expose)])
 
         def start_gateway():
             with GatewayPod(f_args):
@@ -178,7 +178,7 @@ class MyTestCase(JinaTestCase):
     def test_remote_pea(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
 
-        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-grpc', str(f_args.port_grpc)])
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-expose', str(f_args.port_expose)])
 
         def start_gateway():
             with GatewayPod(f_args):

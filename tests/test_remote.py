@@ -42,7 +42,7 @@ class MyTestCase(JinaTestCase):
     def test_remote_not_allowed(self):
         f_args = set_gateway_parser().parse_args([])
 
-        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-grpc', str(f_args.port_grpc)])
+        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-expose', str(f_args.port_expose)])
         with GatewayPod(f_args):
             PeaSpawnHelper(p_args).start()
 
