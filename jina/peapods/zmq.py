@@ -317,10 +317,13 @@ class ZmqStreamlet(Zmqlet):
             super().close()
             self.io_loop.stop()
             # Replace handle events function, to skip
-            # None event ofter closed sockets
-            self.in_sock._handle_events = lambda *args, **kwargs: None
-            self.out_sock._handle_events = lambda *args, **kwargs: None
-            self.ctrl_sock._handle_events = lambda *args, **kwargs: None
+            # None event after sockets are closed.
+            if hasattr(self.in_sock, '_handle_events'):
+                self.in_sock._handle_events = lambda *args, **kwargs: None
+            if hasattr(self.out_sock, '_handle_events'):
+                self.out_sock._handle_events = lambda *args, **kwargs: None
+            if hasattr(self.ctrl_sock, '_handle_events'):
+                self.ctrl_sock._handle_events = lambda *args, **kwargs: None
 
 
     def pause_pollin(self):
