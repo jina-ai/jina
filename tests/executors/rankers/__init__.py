@@ -36,6 +36,8 @@ class RankerTestCase(JinaTestCase):
         return np.array(match_idx), query_chunk_meta, match_chunk_meta
 
     def test_ranker(self):
+        if self.ranker is None:
+            return
         match_idx, query_chunk_meta, match_chunk_meta = self.create_data()
         doc_idx = self.ranker.score(np.array(match_idx), query_chunk_meta, match_chunk_meta)
         # check the matched docs are in descending order of the scores

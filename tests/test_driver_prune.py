@@ -1,11 +1,12 @@
 import numpy as np
+import os
 
 from tests import JinaTestCase
 from jina.proto.jina_pb2 import Document
 from jina.drivers.helper import array2pb
-from jina.drivers.prune import PruneDriver
 from jina.flow import Flow
-from jina.executors import BaseExecutor
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def input_fn():
@@ -27,7 +28,7 @@ class MyTestCase(JinaTestCase):
         f = (
             Flow().add(
                 name='prune',
-                yaml_path='yaml/test-prune-driver.yml'))
+                yaml_path=os.path.join(cur_dir, 'yaml/test-prune-driver.yml')))
 
         def test_pruned(resp):
             for d in resp.docs:

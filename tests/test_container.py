@@ -10,6 +10,8 @@ from jina.peapods.pea import BasePea
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
     c_id = 0
@@ -35,8 +37,7 @@ def build_image():
     if not built:
         import docker
         client = docker.from_env()
-        print(os.path.dirname(__file__))
-        client.images.build(path='mwu-encoder/', tag=img_name)
+        client.images.build(path=os.path.join(cur_dir, 'mwu-encoder/'), tag=img_name)
         client.close()
 
 
@@ -63,7 +64,7 @@ class MyTestCase(JinaTestCase):
 
     def test_simple_container_with_ext_yaml(self):
         args = set_pea_parser().parse_args(['--image', img_name,
-                                            '--yaml-path', './mwu-encoder/mwu_encoder_ext.yml'])
+                                            '--yaml-path', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml')])
         print(args)
 
         with ContainerPea(args):
@@ -78,7 +79,8 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_with_one_container_ext_yaml(self):
         f = (Flow()
-             .add(name='dummyEncoder', image=img_name, yaml_path='./mwu-encoder/mwu_encoder_ext.yml'))
+             .add(name='dummyEncoder', image=img_name,
+                  yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml')))
 
         with f:
             f.index(input_fn=random_docs(10))
@@ -87,7 +89,7 @@ class MyTestCase(JinaTestCase):
         f = (Flow()
              .add(name='dummyEncoder',
                   image=img_name,
-                  yaml_path='./mwu-encoder/mwu_encoder_ext.yml',
+                  yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml'),
                   replicas=3))
 
         with f:
@@ -133,12 +135,13 @@ class MyTestCase(JinaTestCase):
 
     def test_container_volume(self):
         f = (Flow()
-             .add(name='dummyEncoder', image=img_name, volumes='./abc', yaml_path='mwu-encoder/mwu_encoder_upd.yml'))
+             .add(name='dummyEncoder', image=img_name, volumes='./abc',
+                  yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_upd.yml')))
 
         with f:
             f.index(input_fn=random_docs(10))
 
-        out_file = './abc/ext-mwu-encoder.bin'
+        out_file = 'abc/ext-mwu-encoder.bin'
         self.assertTrue(os.path.exists(out_file))
         self.add_tmpfile(out_file, './abc')
 

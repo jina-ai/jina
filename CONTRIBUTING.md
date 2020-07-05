@@ -185,7 +185,7 @@ Locally you can do unittest via:
 
 ```bash
 pip install ".[match-py-ver]"
-cd tests && python -m unittest *.py -v
+python -m unittest -v
 ```
 
 When you add an executor or a driver, you may introduce new dependencies to Jina. You can verify the dependencies via:
