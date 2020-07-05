@@ -62,10 +62,11 @@ class Zmqlet:
         self.msg_recv = 0
         self.msg_sent = 0
         self.is_closed = False
+        self.opened_socks = []  # this must be here for `close()`
         self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self.init_sockets()
         self.register_pollin()
 
-        self.opened_socks = [self.in_sock, self.out_sock, self.ctrl_sock]
+        self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
         if self.in_sock_type == zmq.DEALER:
             self.send_idle()
 
