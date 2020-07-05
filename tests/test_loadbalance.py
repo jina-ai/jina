@@ -2,6 +2,7 @@ import os
 import time
 
 import numpy as np
+
 from jina.drivers.helper import array2pb
 from jina.enums import SchedulerType
 from jina.executors.crafters import BaseDocCrafter
@@ -47,7 +48,7 @@ class MyTestCase(JinaTestCase):
             yaml_path='SlowWorker',
             replicas=10)
         with f:
-            f.index(input_fn=random_docs(500), batch_size=10)
+            f.index(input_fn=random_docs(100), batch_size=10)
 
     def test_roundrobin(self):
         f = Flow(runtime='process').add(
@@ -55,4 +56,4 @@ class MyTestCase(JinaTestCase):
             yaml_path='SlowWorker',
             replicas=10, scheduling=SchedulerType.ROUND_ROBIN)
         with f:
-            f.index(input_fn=random_docs(500), batch_size=10)
+            f.index(input_fn=random_docs(100), batch_size=10)
