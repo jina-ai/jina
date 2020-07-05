@@ -11,6 +11,7 @@ from typing import Tuple
 
 import zmq
 import zmq.asyncio
+from zmq.eventloop.zmqstream import ZMQStream
 
 from .. import __default_host__
 from ..enums import SocketType
@@ -24,7 +25,6 @@ if False:
     # fix type-hint complain for sphinx and flake
     import argparse
     import logging
-    from zmq.eventloop.zmqstream import ZMQStream
 
 use_uvloop()
 
@@ -312,7 +312,7 @@ class ZmqStreamlet(Zmqlet):
 
     def start(self, callback: Callable[['jina_pb2.Message'], None]):
         def _callback(msg, sock_type):
-            msg, num_bytes = _prepare_recv_msg(sock_type, msg, **self.send_recv_kwargs)
+            msg, num_bytes = _prepare_recv_msg(sock_type, msg, self.args.check_version)
             self.bytes_recv += num_bytes
             self.msg_recv += 1
 
