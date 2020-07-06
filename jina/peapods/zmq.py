@@ -6,11 +6,12 @@ import os
 import sys
 import tempfile
 import time
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Union
 from typing import Tuple
 
 import zmq
 import zmq.asyncio
+from zmq.eventloop.zmqstream import ZMQStream
 
 from .. import __default_host__
 from ..enums import SocketType
@@ -30,7 +31,11 @@ use_uvloop()
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
-    has three sockets for input, output and control. `Zmqlet` is one of the key components in :class:`jina.peapods.pea.BasePea`.
+    has three sockets for input, output and control.
+
+    .. warning::
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
     def __init__(self, args: 'argparse.Namespace', logger: 'logging.Logger' = None):
@@ -52,19 +57,25 @@ class Zmqlet:
                 args.compress_hwm = -1  # disable the compression
         self.send_recv_kwargs = vars(args)
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
-        self.opened_socks = []
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0
         self.msg_sent = 0
+        self.is_closed = False
+        self.opened_socks = []  # this must be here for `close()`
         self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self.init_sockets()
+        self.register_pollin()
+
+        self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
+        if self.in_sock_type == zmq.DEALER:
+            self.send_idle()
+
+    def register_pollin(self):
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
-        if self.out_sock.type == zmq.ROUTER:
+        if self.out_sock_type == zmq.ROUTER:
             self.poller.register(self.out_sock, zmq.POLLIN)
-        if self.in_sock.type == zmq.DEALER:
-            self.send_idle()
 
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """
@@ -127,23 +138,25 @@ class Zmqlet:
             else:
                 ctrl_sock, ctrl_addr = _init_socket(ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND)
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
-            self.opened_socks.append(ctrl_sock)
 
             in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
                                             self.args.identity)
             self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
-            self.opened_socks.append(in_sock)
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
                                               self.args.identity)
             self.logger.debug(f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}')
-            self.opened_socks.append(out_sock)
 
             self.logger.info(
                 'input %s (%s) \t output %s (%s)\t control over %s (%s)' %
                 (colored(in_addr, 'yellow'), self.args.socket_in,
                  colored(out_addr, 'yellow'), self.args.socket_out,
                  colored(ctrl_addr, 'yellow'), SocketType.PAIR_BIND))
+
+            self.in_sock_type = in_sock.type
+            self.out_sock_type = out_sock.type
+            self.ctrl_sock_type = ctrl_sock.type
+
             return ctx, in_sock, out_sock, ctrl_sock
         except zmq.error.ZMQError as ex:
             self.close()
@@ -161,10 +174,12 @@ class Zmqlet:
 
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
-        self.close_sockets()
-        if hasattr(self, 'ctx'):
-            self.ctx.term()
-        self.print_stats()
+        if not self.is_closed:
+            self.close_sockets()
+            if hasattr(self, 'ctx'):
+                self.ctx.term()
+            self.print_stats()
+            self.is_closed = True
 
     def print_stats(self):
         """Print out the network stats of of itself """
@@ -195,7 +210,7 @@ class Zmqlet:
         self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
-        if o_sock == self.out_sock and self.in_sock.type == zmq.DEALER:
+        if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
             self.send_idle(msg)
 
     def send_idle(self, msg: Optional['jina_pb2.Message'] = None):
@@ -270,6 +285,76 @@ class AsyncZmqlet(Zmqlet):
         return self
 
 
+class ZmqStreamlet(Zmqlet):
+    """A :class:`ZmqStreamlet` object can send/receive data to/from ZeroMQ stream and invoke callback function. It
+    has three sockets for input, output and control.
+
+    .. warning::
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        It requires :mod:`tornado` and :mod:`uvloop` to be installed.
+    """
+
+    def register_pollin(self):
+        use_uvloop()
+        import asyncio
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        try:
+            import tornado.ioloop
+            self.io_loop = tornado.ioloop.IOLoop.current()
+        except (ModuleNotFoundError, ImportError):
+            self.logger.error('Since v0.3.6 Jina requires "tornado" as a base dependency, '
+                              'we use its I/O event loop for non-blocking sockets. '
+                              'Please try reinstall via "pip install -U jina" to include this dependency')
+            raise
+        self.in_sock = ZMQStream(self.in_sock, self.io_loop)
+        self.out_sock = ZMQStream(self.out_sock, self.io_loop)
+        self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
+        self.in_sock.stop_on_recv()
+
+    def close(self):
+        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
+        if not self.is_closed:
+            super().close()
+            self.io_loop.stop()
+            # Replace handle events function, to skip
+            # None event after sockets are closed.
+            if hasattr(self.in_sock, '_handle_events'):
+                self.in_sock._handle_events = lambda *args, **kwargs: None
+            if hasattr(self.out_sock, '_handle_events'):
+                self.out_sock._handle_events = lambda *args, **kwargs: None
+            if hasattr(self.ctrl_sock, '_handle_events'):
+                self.ctrl_sock._handle_events = lambda *args, **kwargs: None
+
+
+    def pause_pollin(self):
+        """Remove :attr:`in_sock` from the poller """
+        self.in_sock.stop_on_recv()
+
+    def resume_pollin(self):
+        """Put :attr:`in_sock` back to the poller """
+        self.in_sock.on_recv(self._in_sock_callback)
+
+    def start(self, callback: Callable[['jina_pb2.Message'], None]):
+        def _callback(msg, sock_type):
+            msg, num_bytes = _prepare_recv_msg(sock_type, msg, self.args.check_version)
+            self.bytes_recv += num_bytes
+            self.msg_recv += 1
+
+            msg = callback(msg)
+
+            if msg:
+                self.send_message(msg)
+
+        self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
+        self.in_sock.on_recv(self._in_sock_callback)
+        self.ctrl_sock.on_recv(lambda x: _callback(x, self.ctrl_sock_type))
+        if self.out_sock_type == zmq.ROUTER:
+            self.out_sock.on_recv(lambda x: _callback(x, self.out_sock_type))
+        self.io_loop.start()
+        self.io_loop.clear_current()
+        self.io_loop.close(all_fds=True)
+
+
 def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int):
     """Send a control message to a specific address and wait for the response
 
@@ -295,7 +380,7 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
         return r
 
 
-def send_message(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
+def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message', timeout: int = -1,
                  array_in_pb: bool = False, compress_hwm: int = -1, compress_lwm: float = 1., **kwargs) -> int:
     """Send a protobuf message to a socket
 
@@ -307,6 +392,7 @@ def send_message(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
     :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
+    num_bytes = 0
     try:
         _msg, num_bytes = _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout)
 
@@ -318,10 +404,6 @@ def send_message(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
                 sock, timeout))
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
-    except asyncio.CancelledError:
-        default_logger.error('all gateway tasks are cancelled')
-    except Exception as ex:
-        raise ex
     finally:
         try:
             sock.setsockopt(zmq.SNDTIMEO, -1)
@@ -408,7 +490,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
 
         msg_data = sock.recv_multipart()
 
-        return _prepare_recv_msg(sock, msg_data, check_version)
+        return _prepare_recv_msg(sock.type, msg_data, check_version)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -442,7 +524,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
 
         msg_data = await sock.recv_multipart()
 
-        return _prepare_recv_msg(sock, msg_data, check_version)
+        return _prepare_recv_msg(sock.type, msg_data, check_version)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -490,11 +572,11 @@ def _prepare_send_msg(client_id, bodies: List[bytes], compress_hwm: int, compres
     return msg, num_bytes
 
 
-def _prepare_recv_msg(sock, msg_data, check_version: bool):
-    if sock.type == zmq.DEALER:
+def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
+    if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
         msg_data = [' '] + msg_data
-    elif sock.type == zmq.ROUTER:
+    elif sock_type == zmq.ROUTER:
         # the router appends dealer id when receive it, we need to remove it
         msg_data.pop(0)
 

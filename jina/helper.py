@@ -576,17 +576,19 @@ def is_url(text):
 
 
 def use_uvloop():
-    if 'JINA_UVLOOP' in os.environ:
+    if 'JINA_DISABLE_UVLOOP' not in os.environ:
         try:
             import asyncio
             import uvloop
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         except (ModuleNotFoundError, ImportError):
             from .logging import default_logger
-            default_logger.error('JINA_UVLOOP is enabled but you did not install uvloop. Try "pip install uvloop"')
+            default_logger.error(
+                'Since v0.3.6 jina uses uvloop to manage events and sockets, it often yields 20% speedup'
+                'you did not install uvloop. Try "pip install uvloop"')
 
 
-def is_uvloop_used(loop=None):
+def show_ioloop_backend(loop=None):
     if loop is None:
         import asyncio
         loop = asyncio.get_event_loop()

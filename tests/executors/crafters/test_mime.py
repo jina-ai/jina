@@ -31,16 +31,16 @@ class MyTestCase(JinaTestCase):
     def test_dummy_seg(self):
         f = Flow().add(yaml_path='- !Buffer2URI | {mimetype: png}')
         with f:
-            f.index(input_fn=input_fn(), output_fn=print)
+            f.index(input_fn=input_fn)
 
         f = Flow().add(yaml_path='- !Buffer2URI | {mimetype: png, base64: true}')
         with f:
-            f.index(input_fn=input_fn(), output_fn=print)
+            f.index(input_fn=input_fn)
 
     def test_any_file(self):
         f = Flow().add(yaml_path='- !URI2DataURI | {base64: true}')
         with f:
-            f.index(input_fn=input_fn2, output_fn=print)
+            f.index(input_fn=input_fn2)
 
     def test_aba(self):
         f = (Flow().add(yaml_path='- !Buffer2URI | {mimetype: png}')
@@ -48,26 +48,26 @@ class MyTestCase(JinaTestCase):
              .add(yaml_path='- !Buffer2URI | {mimetype: png}'))
 
         with f:
-            f.index(input_fn=input_fn, output_fn=print)
+            f.index(input_fn=input_fn)
 
     def test_pathURI2Buffer(self):
         f = (Flow().add(yaml_path='- !URI2Buffer {}')
              .add(yaml_path='- !Buffer2URI {}'))
 
         with f:
-            f.index(input_fn=input_fn3, output_fn=print)
+            f.index(input_fn=input_fn3)
 
     def test_text2datauri(self):
         f = (Flow().add(yaml_path='- !Text2URI {}'))
 
         with f:
-            f.index_lines(lines=['abc', '123', 'hello, world'], output_fn=print)
+            f.index_lines(lines=['abc', '123', 'hello, world'])
 
     def test_gateway_dataui(self):
         f = (Flow().add(yaml_path='_forward'))
 
         with f:
-            f.index_lines(lines=['abc', '123', 'hello, world'], output_fn=print)
+            f.index_lines(lines=['abc', '123', 'hello, world'])
     # def test_dummy_seg_random(self):
     #     f = Flow().add(yaml_path='../../yaml/dummy-seg-random.yml')
     #     with f:
