@@ -12,9 +12,9 @@ class MyTestCase(JinaTestCase):
         text = ','.join([str(x) for x in sample_array])
 
         reader = ArrayReader()
-        crafted_chunk = reader.craft(text, 0)
+        crafted_doc = reader.craft(text, 0)
 
-        np.testing.assert_array_equal(crafted_chunk['blob'], sample_array)
+        np.testing.assert_array_equal(crafted_doc['blob'], sample_array)
 
 
 if __name__ == '__main__':

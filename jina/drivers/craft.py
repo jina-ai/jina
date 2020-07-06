@@ -75,7 +75,13 @@ class DocCraftDriver(BaseCraftDriver):
             ret = self.exec_fn(**_args_dict)
             if ret:
                 for k, v in ret.items():
-                    setattr(d, k, v)
+                    if k == 'blob':
+                        if isinstance(v, jina_pb2.NdArray):
+                            d.blob.CopyFrom(v)
+                        else:
+                            d.blob.CopyFrom(array2pb(v))
+                    else:
+                        setattr(d, k, v)
 
 
 class SegmentDriver(BaseCraftDriver):
