@@ -204,7 +204,10 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
         }
         _model = model_dict[self.model_name].from_pretrained(pretrained_model_name_or_path=self.tmp_model_path)
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            _model.resize_token_embeddings(len(self.tokenizer))
+            try:
+                _model.resize_token_embeddings(len(self.tokenizer))
+            except NotImplementedError:
+                self.logger.warn(f'Model {self.model_name} does not implement resize_token_embeddings')
         return _model
 
     def get_session(self):
@@ -240,7 +243,10 @@ class TransformerTorchEncoder(BaseTransformerEncoder, BaseTextTorchEncoder):
         }
         _model = model_dict[self.model_name].from_pretrained(self.tmp_model_path)
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            _model.resize_token_embeddings(len(self.tokenizer))
+            try:
+                _model.resize_token_embeddings(len(self.tokenizer))
+            except NotImplementedError:
+                self.logger.warn(f'Model {self.model_name} does not implement resize_token_embeddings')
         self.to_device(_model)
         return _model
 
