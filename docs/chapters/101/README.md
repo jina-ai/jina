@@ -37,6 +37,7 @@
   </tr>
 </table>
 
+Want a general introduction to neural search and how it's different to regular old symbolic search? [Check out our explainer blog post](https://medium.com/@jina_ai/what-is-jina-and-neural-search-7a9e166608ab) to learn more!
 
 <h2 align="center">Document & Chunk</h2>
 
