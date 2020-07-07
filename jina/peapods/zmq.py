@@ -314,6 +314,8 @@ class ZmqStreamlet(Zmqlet):
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
         if not self.is_closed:
+            for s in self.opened_socks:
+                s.flush()
             super().close()
             self.io_loop.stop()
             # Replace handle events function, to skip
@@ -324,7 +326,6 @@ class ZmqStreamlet(Zmqlet):
                 self.out_sock._handle_events = lambda *args, **kwargs: None
             if hasattr(self.ctrl_sock, '_handle_events'):
                 self.ctrl_sock._handle_events = lambda *args, **kwargs: None
-
 
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """

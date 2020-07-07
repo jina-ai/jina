@@ -276,14 +276,15 @@ class BasePea(metaclass=PeaMeta):
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # serious error happen in callback, we need to break the event loop
             self.zmqlet.send_message(msg)
-            # force the ctrl message send immediately
-            self.zmqlet.ctrl_sock.flush()
             # note, the logger can only be put on the second last line before `close`, as when
             # `close` is called, the callback is unregistered and everything after `close` can not be reached
             # some black magic in eventloop i guess?
             self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
 
             self.zmqlet.close()
+        except MemoryOverHighWatermark:
+            self.logger.critical(
+                f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
         except NoExplicitMessage:
             # silent and do not propagate message anymore
             # 1. wait partial message to be finished
@@ -339,9 +340,8 @@ class BasePea(metaclass=PeaMeta):
             self.loop_body()
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.yaml_path}')
-        except MemoryOverHighWatermark:
-            self.logger.critical(
-                f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
+        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
+            pass
         except DriverError as ex:
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
         except zmq.error.ZMQError:
