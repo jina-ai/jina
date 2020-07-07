@@ -163,8 +163,43 @@ class MyTestCase(JinaTestCase):
         f = Flow.load_config(os.path.join(cur_dir, 'yaml/test_log_server.yml'))
         with f:
             self.assertTrue(hasattr(JINA_GLOBAL.logserver, 'ready'))
-            a = requests.get(JINA_GLOBAL.logserver.ready, timeout=5)
+
+            # Ready endpoint
+            a = requests.get(
+                JINA_GLOBAL.logserver.address +
+                '/status/ready',
+                timeout=5)
             self.assertEqual(a.status_code, 200)
+
+            # YAML endpoint
+            a = requests.get(
+                JINA_GLOBAL.logserver.address +
+                '/data/yaml',
+                timeout=5)
+            self.assertTrue(a.text.startswith('!Flow'))
+            self.assertEqual(a.status_code, 200)
+
+            # Pod endpoint
+            a = requests.get(
+                JINA_GLOBAL.logserver.address +
+                '/data/api/pod',
+                timeout=5)
+            self.assertTrue('pod' in a.json())
+            self.assertEqual(a.status_code, 200)
+
+            # Shutdown endpoint
+            a = requests.get(
+                JINA_GLOBAL.logserver.address +
+                '/action/shutdown',
+                timeout=5)
+            self.assertEqual(a.status_code, 200)
+
+            # Check ready endpoint after shutdown, check if server stopped
+            with self.assertRaises(requests.exceptions.ConnectionError):
+                a = requests.get(
+                    JINA_GLOBAL.logserver.address +
+                    '/status/ready',
+                    timeout=5)
 
     def test_shards(self):
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=3, separated_workspace=True)
