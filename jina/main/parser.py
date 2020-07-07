@@ -170,7 +170,7 @@ def set_flow_parser(parser=None):
                     help='type of the output')
     gp.add_argument('--output-path', type=argparse.FileType('w', encoding='utf8'),
                     help='output path of the flow')
-    gp.add_argument('--skip-dryrun', action='store_true', default=False,
+    gp.add_argument('--skip-dry-run', action='store_true', default=False,
                     help='skip dry run (connectivity test) of when starting the flow')
 
     return parser

@@ -471,7 +471,7 @@ class Flow:
             self.num_pods,
             self.num_peas))
 
-        if not self.args.skip_dryrun:
+        if not self.args.skip_dry_run:
             self.dry_run()
 
         self.logger.success(f'flow is now ready for use, current build_level is {self._build_level}')

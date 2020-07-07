@@ -3,12 +3,13 @@ import subprocess
 import unittest
 from pathlib import Path
 
+from pkg_resources import resource_filename
+
 from jina.clients import py_client
 from jina.clients.python.io import input_numpy
 from jina.flow import Flow
 from jina.helloworld import download_data
 from jina.main.parser import set_hw_parser
-from pkg_resources import resource_filename
 from tests import JinaTestCase
 
 
@@ -61,6 +62,23 @@ class MyTestCase(JinaTestCase):
             py_client(host=f.host,
                       port_expose=f.port_expose,
                       ).index(input_numpy(targets['index']['data']), batch_size=args.index_batch_size)
+
+    def test_helloworld_flow_dry_run(self):
+        args = set_hw_parser().parse_args([])
+
+        os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
+        os.environ['SHARDS'] = str(args.shards)
+        os.environ['REPLICAS'] = str(args.replicas)
+        os.environ['HW_WORKDIR'] = args.workdir
+        os.environ['WITH_LOGSERVER'] = str(args.logserver)
+
+        # run it!
+        with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml')))):
+            pass
+
+        # run it!
+        with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml')))):
+            pass
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     @unittest.skipIf('HTTP_PROXY' not in os.environ, 'skipped. '
