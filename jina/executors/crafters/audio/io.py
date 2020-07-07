@@ -35,4 +35,4 @@ class AudioReader(BaseDocCrafter):
         import librosa
         signal, orig_sr = librosa.load(uri, sr=self.sample_rate, mono=False)
 
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=signal)
+        return dict(doc_id=doc_id, weight=1., blob=signal)

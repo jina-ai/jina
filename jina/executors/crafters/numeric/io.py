@@ -9,7 +9,7 @@ from jina.executors.crafters import BaseDocCrafter
 
 class ArrayReader(BaseDocCrafter):
     """
-    :class:`ArrayReader` convert the string of numbers into a numpy array and save to the Chunk.
+    :class:`ArrayReader` convert the string of numbers into a numpy array and save to the Document.
         Numbers are split on the provided delimiter, default is comma (,)
     """
 
@@ -28,7 +28,7 @@ class ArrayReader(BaseDocCrafter):
 
         :param text: the raw text
         :param doc_id: the doc id
-        :return: a chunk dict with the numpy array
+        :return: a dod dict with the numpy array
         """
         _string = text.split(self.delimiter)
         _array = np.array(_string)
@@ -43,4 +43,4 @@ class ArrayReader(BaseDocCrafter):
             self.logger.error(
                 f'Data type mismatch. Cannot convert input to {self.as_type}.')
 
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=_array)
+        return dict(doc_id=doc_id, weight=1., blob=_array)
