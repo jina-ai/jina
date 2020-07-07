@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import time
 from typing import Iterator, Callable, Union
 
 from . import request
@@ -171,9 +172,12 @@ class PyClient(GrpcClient):
             req.control.command = jina_pb2.Request.ControlRequest.DRYRUN
             yield req
 
+        before = time.perf_counter()
         for resp in self._stub.Call(req_gen()):
-            self.logger.info(resp)
-            return True
+            if resp.status.code < jina_pb2.Status.ERROR:
+                self.logger.info(
+                    f'dry run takes {time.perf_counter() - before:.3f}s, this flow has a good connectivity')
+                return True
 
         return False
 
