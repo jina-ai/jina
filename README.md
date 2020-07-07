@@ -68,10 +68,12 @@ Jina is an easier way to build neural search in the cloud. It has **long-term su
 
 - [Install](#install)
 - [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Getting Started](#getting-started)
+- [Build your own Project](#build-your-own-project)
+- [Tutorials](#tutorials)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Community](#community)
+- [Join Us](#join-us)
 - [Roadmap](#roadmap)
 - [License](#license)
 
