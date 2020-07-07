@@ -12,7 +12,7 @@ from typing import Dict, Optional, Union
 
 import zmq
 
-from .zmq import send_ctrl_message, Zmqlet
+from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
@@ -272,10 +272,19 @@ class BasePea(metaclass=PeaMeta):
         try:
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
-            return self._callback(msg)
-        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
+            self.zmqlet.send_message(self._callback(msg))
+        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # serious error happen in callback, we need to break the event loop
-            raise
+            self.zmqlet.send_message(msg)
+            # note, the logger can only be put on the second last line before `close`, as when
+            # `close` is called, the callback is unregistered and everything after `close` can not be reached
+            # some black magic in eventloop i guess?
+            self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
+
+            self.zmqlet.close()
+        except MemoryOverHighWatermark:
+            self.logger.critical(
+                f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
         except NoExplicitMessage:
             # silent and do not propagate message anymore
             # 1. wait partial message to be finished
@@ -293,7 +302,8 @@ class BasePea(metaclass=PeaMeta):
             d.executor = str(getattr(self, 'executor', ''))
             d.traceback = traceback.format_exc()
             d.time.GetCurrentTime()
-            return msg
+            self.logger.error(ex, exc_info=True)
+            self.zmqlet.send_message(msg)
 
     def loop_body(self):
         """The body of the request loop
@@ -305,19 +315,9 @@ class BasePea(metaclass=PeaMeta):
         """
         self.load_plugins()
         self.load_executor()
-        self.zmqlet = Zmqlet(self.args, logger=self.logger)
+        self.zmqlet = ZmqStreamlet(self.args, logger=self.logger)
         self.set_ready()
-
-        while True:
-            # t_loop_start = time.perf_counter()
-            msg = self.zmqlet.recv_message(callback=self.msg_callback)
-            # t_callback = time.perf_counter()
-
-            if msg:
-                self.zmqlet.send_message(msg)
-                # self.is_busy.clear()
-            # t_loop_end = time.perf_counter()
-            # self.logger.info(f'handle {(t_callback - t_loop_start) / (t_loop_end - t_loop_start):2.2f}')
+        self.zmqlet.start(self.msg_callback)
 
     def load_plugins(self):
         if self.args.py_modules:
@@ -331,11 +331,6 @@ class BasePea(metaclass=PeaMeta):
                 self.save_executor(dump_interval=0)
             self.executor.close()
         if hasattr(self, 'zmqlet'):
-            if self.request_type == 'ControlRequest' and \
-                    self.request.command == jina_pb2.Request.ControlRequest.TERMINATE:
-                # the last message is a terminate request
-                # return it and tells the client everything is now closed.
-                self.zmqlet.send_message(self.message)
             self.zmqlet.close()
 
     def run(self):
@@ -345,13 +340,10 @@ class BasePea(metaclass=PeaMeta):
             self.loop_body()
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.yaml_path}')
-        except MemoryOverHighWatermark:
-            self.logger.critical(
-                f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
+        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
+            pass
         except DriverError as ex:
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
-        except KeyboardInterrupt:
-            self.logger.warning('break from the event loop or user cancel the process')
         except zmq.error.ZMQError:
             self.logger.critical('zmqlet can not be initiated')
         except Exception as ex:

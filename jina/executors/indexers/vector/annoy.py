@@ -5,10 +5,10 @@ from typing import Tuple
 
 import numpy as np
 
-from .numpy import NumpyIndexer
+from . import BaseNumpyIndexer
 
 
-class AnnoyIndexer(NumpyIndexer):
+class AnnoyIndexer(BaseNumpyIndexer):
     """Annoy powered vector indexer
 
     For more information about the Annoy supported parameters, please consult:
@@ -31,22 +31,18 @@ class AnnoyIndexer(NumpyIndexer):
         self.metric = metric
         self.n_trees = n_trees
 
-    def get_query_handler(self):
-        vecs = super().get_query_handler()
-        if vecs is not None:
-            from annoy import AnnoyIndex
-            _index = AnnoyIndex(self.num_dim, self.metric)
-            vecs = vecs.astype(np.float32)
-            for idx, v in enumerate(vecs):
-                _index.add_item(idx, v)
-            _index.build(self.n_trees)
-            return _index
-        else:
-            return None
+    def build_advanced_index(self, vecs: 'np.ndarray'):
+        from annoy import AnnoyIndex
+        _index = AnnoyIndex(self.num_dim, self.metric)
+        vecs = vecs.astype(np.float32)
+        for idx, v in enumerate(vecs):
+            _index.add_item(idx, v)
+        _index.build(self.n_trees)
+        return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        if keys.dtype != np.float32:
-            raise ValueError('vectors should be ndarray of float32')
+        # if keys.dtype != np.float32:
+        #     raise ValueError('vectors should be ndarray of float32')
         all_idx = []
         all_dist = []
         for k in keys:

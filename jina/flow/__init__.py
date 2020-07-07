@@ -520,8 +520,8 @@ class Flow:
     def _get_client(self, **kwargs):
         kwargs.update(self._common_kwargs)
         from ..clients import py_client
-        if 'port_grpc' not in kwargs:
-            kwargs['port_grpc'] = self.port_grpc
+        if 'port_expose' not in kwargs:
+            kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
         return py_client(**kwargs)
@@ -566,7 +566,7 @@ class Flow:
         """
         self._get_client(**kwargs).train(input_fn, output_fn)
 
-    def index_numpy(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
+    def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                     output_fn: Callable[['jina_pb2.Message'], None] = None,
                     **kwargs):
         """Using numpy ndarray as the index source for the current flow
@@ -600,7 +600,7 @@ class Flow:
                     sampling_rate: float = None, read_mode='r',
                     output_fn: Callable[['jina_pb2.Message'], None] = None,
                     **kwargs):
-        """ Use a list of files as the query source for indexing on the current flow
+        """ Use a list of lines as the index source for indexing on the current flow
 
         :param lines: a list of strings, each is considered as d document
         :param filepath: a text file that each line contains a document
@@ -668,7 +668,7 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).search(input_lines(filepath, lines, size, sampling_rate, read_mode), output_fn)
+        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
@@ -777,8 +777,8 @@ class Flow:
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def port_grpc(self):
-        return self._pod_nodes['gateway'].port_grpc
+    def port_expose(self):
+        return self._pod_nodes['gateway'].port_expose
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
@@ -791,7 +791,7 @@ class Flow:
     def block(self):
         """Block the process until user hits KeyboardInterrupt """
         try:
-            self.logger.success(f'flow is started at {self.host}:{self.port_grpc}, '
+            self.logger.success(f'flow is started at {self.host}:{self.port_expose}, '
                                 f'you can now use client to send request!')
             threading.Event().wait()
         except KeyboardInterrupt:

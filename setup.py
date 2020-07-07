@@ -37,6 +37,7 @@ base_dep = [
     'protobuf',
     'grpcio',
     'ruamel.yaml>=0.15.89',
+    'tornado>=5.1.0'
 ]
 
 

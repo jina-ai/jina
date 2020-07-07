@@ -149,3 +149,9 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 .. confval:: JINA_BINARY_DELIMITER
 
     The delimiter used in :class:`BasePbIndexer`. Often use a delimiter phrase that you can determine does not occur. (Think of the mime message boundaries)
+
+.. confval:: JINA_DISABLE_UVLOOP
+
+    ``uvloop`` is ultra fast implementation of the asyncio event loop on top of libuv. Since Jina 0.3.6, Jina relies on ``uvloop`` to manage the sockets and streams.
+
+    :default: unset

@@ -47,6 +47,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            sudo apt-get install libsndfile1
+          fi
           python -m pip install --upgrade pip
           pip install .[match-py-ver]
       - name: Lint with flake8
@@ -65,7 +68,8 @@ jobs:
           # make sure docker exist
           docker ps
           jina check
-          cd tests && python -m unittest *.py -v
+          export JINA_LOG_VERBOSITY="ERROR"
+          python -m unittest -v
         #      run: |
         #        pip install pytest
         #        pip install pytest-cov

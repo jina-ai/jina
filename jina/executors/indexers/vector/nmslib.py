@@ -5,10 +5,10 @@ from typing import Tuple
 
 import numpy as np
 
-from .numpy import NumpyIndexer
+from . import BaseNumpyIndexer
 
 
-class NmslibIndexer(NumpyIndexer):
+class NmslibIndexer(BaseNumpyIndexer):
     """nmslib powered vector indexer
 
     For documentation and explanation of each parameter, please refer to
@@ -39,20 +39,16 @@ class NmslibIndexer(NumpyIndexer):
         self.print_progress = print_progress
         self.num_threads = num_threads
 
-    def get_query_handler(self):
-        vecs = super().get_query_handler()
-        if vecs is not None:
-            import nmslib
-            _index = nmslib.init(method=self.method, space=self.space)
-            _index.addDataPointBatch(vecs.astype(np.float32))
-            _index.createIndex({'post': 2}, print_progress=self.print_progress)
-            return _index
-        else:
-            return None
+    def build_advanced_index(self, vecs: 'np.ndarray'):
+        import nmslib
+        _index = nmslib.init(method=self.method, space=self.space)
+        _index.addDataPointBatch(vecs.astype(np.float32))
+        _index.createIndex({'post': 2}, print_progress=self.print_progress)
+        return _index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        if keys.dtype != np.float32:
-            raise ValueError('vectors should be ndarray of float32')
+        # if keys.dtype != np.float32:
+        #     raise ValueError('vectors should be ndarray of float32')
         ret = self.query_handler.knnQueryBatch(keys, k=top_k, num_threads=self.num_threads)
         idx, dist = zip(*ret)
         return self.int2ext_key[np.array(idx)], np.array(dist)

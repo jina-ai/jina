@@ -59,8 +59,39 @@ class MyTestCase(JinaTestCase):
         # run it!
         with f:
             py_client(host=f.host,
-                      port_grpc=f.port_grpc,
+                      port_expose=f.port_expose,
                       ).index(input_numpy(targets['index']['data']), batch_size=args.index_batch_size)
+
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
+    @unittest.skipIf('HTTP_PROXY' not in os.environ, 'skipped. '
+                                                     'Set os env `HTTP_PROXY` if you want run test at your local env.')
+    def test_download_proxy(self):
+        import urllib.request
+        # first test no proxy
+        args = set_hw_parser().parse_args([])
+
+        opener = urllib.request.build_opener()
+        if args.download_proxy:
+            proxy = urllib.request.ProxyHandler({'http': args.download_proxy, 'https': args.download_proxy})
+            opener.add_handler(proxy)
+        urllib.request.install_opener(opener)
+        # head check
+        req = urllib.request.Request(args.index_data_url, method="HEAD")
+        response = urllib.request.urlopen(req, timeout=5)
+        self.assertEqual(response.status, 200)
+
+        # test with proxy
+        args = set_hw_parser().parse_args(["--download-proxy", os.getenv("HTTP_PROXY")])
+
+        opener = urllib.request.build_opener()
+        if args.download_proxy:
+            proxy = urllib.request.ProxyHandler({'http': args.download_proxy, 'https': args.download_proxy})
+            opener.add_handler(proxy)
+        urllib.request.install_opener(opener)
+        # head check
+        req = urllib.request.Request(args.index_data_url, method="HEAD")
+        response = urllib.request.urlopen(req, timeout=5)
+        self.assertEqual(response.status, 200)
 
 
 if __name__ == '__main__':

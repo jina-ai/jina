@@ -40,8 +40,14 @@ class BaseIndexer(BaseExecutor):
     """
 
     def __init__(self,
-                 index_filename: str,
+                 index_filename: str = None,
                  *args, **kwargs):
+        """
+
+        :param index_filename: the name of the file for storing the index, when not given metas.name is used.
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
         self._size = 0
@@ -52,10 +58,10 @@ class BaseIndexer(BaseExecutor):
         :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
         :param vectors: vector representations in B x D
         """
-        pass
 
     def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
+        self.index_filename = self.index_filename or self.name
         self._query_handler = None
         self._write_handler = None
 
@@ -67,7 +73,7 @@ class BaseIndexer(BaseExecutor):
         :return: a tuple of two ndarray.
             The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
         """
-        pass
+        raise NotImplementedError
 
     @property
     def index_abspath(self) -> str:
@@ -81,6 +87,7 @@ class BaseIndexer(BaseExecutor):
         """A readable and indexable object, could be dict, map, list, numpy array etc. """
         if self._query_handler is None and os.path.exists(self.index_abspath):
             self._query_handler = self.get_query_handler()
+            self.logger.info(f'indexer size: {self.size}')
 
         if self._query_handler is None:
             self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
@@ -127,6 +134,7 @@ class BaseIndexer(BaseExecutor):
 
     def close(self):
         """Close all file-handlers and release all resources. """
+        self.logger.info(f'indexer size: {self.size}')
         self.flush()
         call_obj_fn(self._write_handler, 'close')
         call_obj_fn(self._query_handler, 'close')
@@ -232,4 +240,3 @@ class ChunkIndexer(CompoundExecutor):
           ControlRequest:
             - !ControlReqDriver {}
     """
-

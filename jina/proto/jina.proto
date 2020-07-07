@@ -94,6 +94,12 @@ message Chunk {
 
     // the field name
     string field_name = 13;
+
+    // a map of tags
+    map<string, string> tags = 14;
+
+    // the position of the chunk, could be start and end index of a string; could be x,y coordinate of a image; could be timestamp of an audio clip
+    repeated uint32 location = 15;
 }
 
 /**
@@ -134,6 +140,9 @@ message Document {
 
     // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
     string uri = 9;
+
+    // a map of tags
+    map<string, string> tags = 11;
 }
 
 /**

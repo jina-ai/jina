@@ -5,10 +5,10 @@ from typing import Tuple
 
 import numpy as np
 
-from .numpy import NumpyIndexer
+from . import BaseNumpyIndexer
 
 
-class FaissIndexer(NumpyIndexer):
+class FaissIndexer(BaseNumpyIndexer):
     """Faiss powered vector indexer
 
     For more information about the Faiss supported parameters and installation problems, please consult:
@@ -49,16 +49,10 @@ class FaissIndexer(NumpyIndexer):
         self.index_key = index_key
         self.train_filepath = train_filepath
 
-    def get_query_handler(self):
+    def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
+
         import faiss
-        _index_data = super().get_query_handler()
-        if _index_data is None:
-            self.logger.warning('loading indexing data failed.')
-            return None
-        if _index_data.ndim != 2:
-            self.logger.warning('the index data should be 2D tensor, {} != 2'.format(_index_data.ndim))
-            return None
         self._index = faiss.index_factory(self.num_dim, self.index_key)
         if not self.is_trained:
             _train_data = self._load_training_data(self.train_filepath)
@@ -66,12 +60,12 @@ class FaissIndexer(NumpyIndexer):
                 self.logger.warning('loading training data failed.')
                 return None
             self.train(_train_data)
-        self._index.add(_index_data.astype('float32'))
+        self._index.add(vecs.astype('float32'))
         return self._index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        if keys.dtype != np.float32:
-            raise ValueError('vectors should be ndarray of float32')
+        # if keys.dtype != np.float32:
+        #     raise ValueError('vectors should be ndarray of float32')
         dist, ids = self.query_handler.search(keys, top_k)
         return self.int2ext_key[ids], dist
 

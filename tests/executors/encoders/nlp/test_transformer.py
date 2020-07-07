@@ -20,5 +20,21 @@ class TfTestCase(NlpTestCase):
             metas=metas)
 
 
+class XLNetPytorchTestCase(NlpTestCase):
+    def _get_encoder(self, metas):
+        return TransformerTorchEncoder(
+            model_name='xlnet-base-cased',
+            pooling_strategy='cls',
+            metas=metas)
+
+
+class XLNetTFTestCase(NlpTestCase):
+    def _get_encoder(self, metas):
+        return TransformerTFEncoder(
+            model_name='xlnet-base-cased',
+            pooling_strategy='cls',
+            metas=metas)
+
+
 if __name__ == '__main__':
     unittest.main()
