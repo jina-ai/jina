@@ -50,7 +50,6 @@ Want to build a search system backed by deep learning? You've come to the right 
 
 Jina is an easier way to build neural search in the cloud. It has **long-term support** from a full-time, [venture-backed team](https://jina.ai).
 
-
 🌌 **Universal Search** - Large-scale indexing and querying of any kind on multiple platforms and architectures.
 
 🚀 **High Performance ** - Scale out your VideoBERT, Xception, word tokenizer, image segmenter, and database to handle billions of data points. Features like async, replicas, and sharding come out-of-the-box.
@@ -90,7 +89,7 @@ pip install jina
 
 To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai).
 
-#### ...or Run with a Docker Container
+#### ...or Run in a Docker Container
 
 We provide a universal Docker image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6). Simply run:
 
@@ -185,8 +184,6 @@ pods:
 </tr>
 </table>
 
-
-
 All the big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards. They all happened in just one minute!
 
 Intrigued? Play with different options:
@@ -205,7 +202,7 @@ pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 
 With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
-### Tutorials
+## Tutorials
 
 <table>
   <tr>
@@ -338,7 +335,6 @@ Share your extensions with engineers around the globe on Jina Hub
 </tr>
 
 </table>
-
 
 ## Documentation
 
