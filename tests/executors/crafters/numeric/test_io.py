@@ -14,6 +14,7 @@ class MyTestCase(JinaTestCase):
         reader = ArrayStringReader()
         crafted_doc = reader.craft(text, 0)
 
+        self.assertEqual(crafted_doc['blob'].shape[0], size)
         np.testing.assert_array_equal(crafted_doc['blob'], sample_array)
 
     def test_bytes_reader(self):
@@ -24,6 +25,7 @@ class MyTestCase(JinaTestCase):
         reader = ArrayBytesReader()
         crafted_doc = reader.craft(array_bytes, 0)
 
+        self.assertEqual(crafted_doc['blob'].shape[0], size)
         np.testing.assert_array_equal(crafted_doc['blob'], sample_array)
 
     def test_bytes_reader_int_type(self):
@@ -34,6 +36,7 @@ class MyTestCase(JinaTestCase):
         reader = ArrayBytesReader(as_type='int')
         crafted_doc = reader.craft(array_bytes, 0)
 
+        self.assertEqual(crafted_doc['blob'].shape[0], size)
         np.testing.assert_array_equal(crafted_doc['blob'], sample_array)
 
     def test_bytes_reader_wrong_type(self):

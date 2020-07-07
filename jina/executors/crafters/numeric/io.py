@@ -9,7 +9,7 @@ from jina.executors.crafters import BaseDocCrafter
 
 class ArrayStringReader(BaseDocCrafter):
     """
-    :class:`ArrayStringReader` convert the string of numbers into a numpy array and save to the Chunk.
+    :class:`ArrayStringReader` convertsthe string of numbers into a numpy array and save to the Document.
         Numbers are split on the provided delimiter, default is comma (,)
     """
 
@@ -28,7 +28,7 @@ class ArrayStringReader(BaseDocCrafter):
 
         :param text: the raw text
         :param doc_id: the doc id
-        :return: a chunk dict with the numpy array
+        :return: a dod dict with the numpy array
         """
         _string = text.split(self.delimiter)
         _array = np.array(_string)
@@ -48,7 +48,7 @@ class ArrayStringReader(BaseDocCrafter):
 
 class ArrayBytesReader(BaseDocCrafter):
     """
-    :class:`ArrayBytesReader` convert a byte stream into a numpy array and save to the Chunk.
+    :class:`ArrayBytesReader` converts a byte stream into a numpy array and save to the Document.
         The size of the vectors is provided in the constructor so that the numpy array can be interpreted properly
     """
 
