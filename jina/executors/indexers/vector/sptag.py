@@ -25,7 +25,7 @@ class SptagIndexer(BaseNumpyIndexer):
                  num_threads: int = 1,
                  *args, **kwargs):
         """
-        Initialize an NmslibIndexer
+        Initialize an SptagIndexer
 
         :param dist_calc_method: the distance type, currently SPTAG only support Cosine and L2 distances.
         :param method: The index method to use, index Algorithm type (e.g. BKT, KDT), required.
