@@ -581,7 +581,7 @@ class Flow:
         from ..clients.python.io import input_numpy
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn)
 
-    def search_numpy(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
+    def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                      output_fn: Callable[['jina_pb2.Message'], None] = None,
                      **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow

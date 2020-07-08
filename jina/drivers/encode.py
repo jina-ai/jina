@@ -35,3 +35,13 @@ class EncodeDriver(BaseEncodeDriver):
                     'the first dimension must be the same' % (len(chunk_pts), embeds.shape))
             for c, emb in zip(chunk_pts, embeds):
                 c.embedding.CopyFrom(array2pb(emb))
+
+
+class UnaryEncodeDriver(EncodeDriver):
+    """The :class:`UnaryEncodeDriver` extracts the chunk-level content from documents and copies
+        the same content to the embedding
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._method_name = None
+        self._exec_fn = lambda x: x
