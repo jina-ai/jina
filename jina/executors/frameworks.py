@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import subprocess
+from abc import abstractmethod
 
 from . import BaseExecutor
 
@@ -9,23 +10,17 @@ from . import BaseExecutor
 class BaseFrameworkExecutor(BaseExecutor):
     """
     :class:`BaseFrameworkExecutor` is the base class for the executors using other frameworks internally, including
-        `tensorflow`, `pytorch`, `onnx`, and, `paddlepaddle`.
+        `tensorflow`, `pytorch`, `onnx`, `faiss` and `paddlepaddle`.
 
     """
-    framework = None
 
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
 
-    @property
-    def device(self):
-        """Set the device on which the exectuor will be running.
-
-        ..notes:
-            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
-            please use the environment variable `CUDA_VISIBLE_DEVICES`.
-        """
+    def post_init(self):
+        super().post_init()
+        self._device = None
         if self.on_gpu:
             try:
                 cuda_version = subprocess.check_output(['nvcc', '--version']).decode()
@@ -33,25 +28,29 @@ class BaseFrameworkExecutor(BaseExecutor):
             except OSError:
                 self.logger.warning('on_gpu=True, but you dont have CUDA compatible GPU, i will reset on_gpu=False ')
                 self.on_gpu = False
-        try:
-            if self.framework == 'tensorflow':
-                import tensorflow as tf
-                cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
-                gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-                if self.on_gpu and len(gpus) > 0:
-                    cpus.append(gpus[0])
-                return cpus
-            elif self.framework == 'paddlepaddle':
-                import paddle.fluid as fluid
-                return fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
-            elif self.framework == 'pytorch':
-                import torch
-                return torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
-            elif self.framework == 'onnx':
-                return ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
-        except Exception:
-            self.logger.error(f'error when setting devices "on_gpu={self.on_gpu}"')
-            raise
+
+    @property
+    def device(self):
+        """Set the device on which the executor will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
+
+        if self._device is not None:
+            return self._device
+        else:
+            try:
+                self._device = self.get_device()
+                return self._device
+            except Exception:
+                self.logger.error(f'error when setting devices "on_gpu={self.on_gpu}"')
+                raise
+
+    @abstractmethod
+    def get_device(self):
+        pass
 
     def to_device(self, *args, **kwargs):
         """Put the model on specified device (``on_gpu``) and returns the device context"""
@@ -88,7 +87,9 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
 
     """
 
-    framework = 'pytorch'
+    def get_device(self):
+        import torch
+        return torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
 
     def to_device(self, model, *args, **kwargs):
         model.to(self.device)
@@ -125,7 +126,9 @@ class BasePaddleExecutor(BaseFrameworkExecutor):
                 return feature_map
     """
 
-    framework = 'paddlepaddle'
+    def get_device(self):
+        import paddle.fluid as fluid
+        return fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
 
     def to_device(self):
         import paddle.fluid as fluid
@@ -159,7 +162,13 @@ class BaseTFExecutor(BaseFrameworkExecutor):
                 return self.model(data)
     """
 
-    framework = 'tensorflow'
+    def get_device(self):
+        import tensorflow as tf
+        cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
+        gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
+        if self.on_gpu and len(gpus) > 0:
+            cpus.append(gpus[0])
+        return cpus
 
     def to_device(self):
         import tensorflow as tf
@@ -198,7 +207,26 @@ class BaseOnnxExecutor(BaseFrameworkExecutor):
                 return np.concatenate(results, axis=0)
 
     """
-    framework = 'onnx'
+
+    def get_device(self):
+        return ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
 
     def to_device(self, model, *args, **kwargs):
         model.set_providers(self.device)
+
+
+class BaseFaissExecutor(BaseFrameworkExecutor):
+    """
+    :class:`BaseFaissExecutor` implements the base class for the executors using :mod:`faiss` library. The common
+        setups go into this class.
+    """
+
+    def get_device(self):
+        import faiss
+        # For now, consider only one GPU, do not distribute the index
+        return faiss.StandardGpuResources() if self.on_gpu else None
+
+    def to_device(self, index, *args, **kwargs):
+        import faiss
+        device = self.device
+        return faiss.index_cpu_to_gpu(device, 0, index, None) if device is not None else index
