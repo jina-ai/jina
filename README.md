@@ -52,7 +52,7 @@ Jina is an easier way to build neural search in the cloud. It has **long-term su
 
 🌌 **Universal Search** - Large-scale indexing and querying of any kind on multiple platforms and architectures.
 
-🚀 **High Performance ** - Scale out your VideoBERT, Xception, word tokenizer, image segmenter, and database to handle billions of data points. Features like async, replicas, and sharding come out-of-the-box.
+🚀 **High Performance** - Scale out your VideoBERT, Xception, word tokenizer, image segmenter, and database to handle billions of data points. Features like async, replicas, and sharding come out-of-the-box.
 
 🐣 **Easy System Engineering** - One-stop solution that frees you from handcrafting and gluing packages, libraries and databases.
 
