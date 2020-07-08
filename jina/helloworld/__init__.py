@@ -62,7 +62,7 @@ def hello_world(args):
     f = Flow.load_config(args.query_yaml_path)
     # run it!
     with f:
-        f.search_numpy(targets['query']['data'], shuffle=True, size=args.num_query,
+        f.search_ndarray(targets['query']['data'], shuffle=True, size=args.num_query,
                        output_fn=print_result, top_k=args.top_k, batch_size=args.query_batch_size)
 
     # write result to html

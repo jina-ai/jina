@@ -3,16 +3,7 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..executors.crafters import BaseSegmenter
 from ..executors.encoders import BaseImageEncoder
-
-
-class MySegmenter(BaseSegmenter):
-    """Simple Segementer used in :command:`jina hello-world`,
-    each doc contains only one chunk """
-
-    def craft(self, blob, *args, **kwargs):
-        return [dict(blob=blob)]
 
 
 class MyEncoder(BaseImageEncoder):
