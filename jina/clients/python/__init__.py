@@ -160,24 +160,34 @@ class PyClient(GrpcClient):
         else:
             self._input_fn = bytes_gen
 
-    def dry_run(self) -> bool:
-        """Send a DRYRUN request to the server, passing through all pods on the server,
-        useful for testing connectivity and debugging
+    def dry_run(self, as_request: str) -> bool:
+        """A dry run request is a Search/Index/Train Request with empty content.
+        Useful for testing connectivity and debugging the connectivity of the server/flow
 
+        :param as_request: send the dry run request as one of 'index', 'search', 'train' request
         :return: if dry run is successful or not
         """
 
         def req_gen():
             req = jina_pb2.Request()
-            req.control.command = jina_pb2.Request.ControlRequest.DRYRUN
+            if as_request == 'train':
+                req.train.CopyFrom(jina_pb2.Request.TrainRequest())
+            elif as_request == 'index':
+                req.index.CopyFrom(jina_pb2.Request.IndexRequest())
+            elif as_request == 'search':
+                req.search.CopyFrom(jina_pb2.Request.SearchRequest())
+            else:
+                raise ValueError(f'as_request={as_request} is not supported, must be one of "train", "search", "index"')
             yield req
 
         before = time.perf_counter()
         for resp in self._stub.Call(req_gen()):
             if resp.status.code < jina_pb2.Status.ERROR:
                 self.logger.info(
-                    f'dry run takes {time.perf_counter() - before:.3f}s, this flow has a good connectivity')
+                    f'dry run of {as_request} takes {time.perf_counter() - before:.3f}s, this flow has a good connectivity')
                 return True
+            else:
+                self.logger.error(resp.status)
 
         return False
 
@@ -185,16 +195,22 @@ class PyClient(GrpcClient):
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = ClientMode.TRAIN
         self.input_fn = input_fn
+        if not self.args.skip_dry_run:
+            self.dry_run(as_request='train')
         self.start(output_fn, **kwargs)
 
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = ClientMode.SEARCH
         self.input_fn = input_fn
+        if not self.args.skip_dry_run:
+            self.dry_run(as_request='search')
         self.start(output_fn, **kwargs)
 
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
         self.mode = ClientMode.INDEX
         self.input_fn = input_fn
+        if not self.args.skip_dry_run:
+            self.dry_run(as_request='index')
         self.start(output_fn, **kwargs)

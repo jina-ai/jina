@@ -114,7 +114,7 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'],
         if not has_chunk:
             no_chunk_docs.append(d.doc_id)
 
-    contents = np.stack(_contents) if len(_contents) > 0 else None
+    contents = np.stack(_contents) if _contents else None
     return contents, chunk_pts, no_chunk_docs, bad_chunk_ids
 
 
