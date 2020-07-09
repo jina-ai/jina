@@ -36,6 +36,7 @@ jobs:
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION --build-arg INSTALL_DEV \
             -t jinaai/jina:devel -t jinaai/jina:${{env.JINA_VERSION}} \
             --file ./Dockerfiles/debianx.Dockerfile .
+          ./perf_tracker.sh
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
