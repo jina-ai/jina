@@ -6,9 +6,10 @@ from typing import Tuple
 import numpy as np
 
 from . import BaseNumpyIndexer
+from ...frameworks import BaseFaissExecutor
 
 
-class FaissIndexer(BaseNumpyIndexer):
+class FaissIndexer(BaseNumpyIndexer, BaseFaissExecutor):
     """Faiss powered vector indexer
 
     For more information about the Faiss supported parameters and installation problems, please consult:
@@ -49,11 +50,15 @@ class FaissIndexer(BaseNumpyIndexer):
         self.index_key = index_key
         self.train_filepath = train_filepath
 
+    def post_init(self):
+        super(BaseNumpyIndexer, self).post_init()
+        super(BaseFaissExecutor, self).post_init()
+
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
 
         import faiss
-        self._index = faiss.index_factory(self.num_dim, self.index_key)
+        self._index = self.to_device(index=faiss.index_factory(self.num_dim, self.index_key))
         if not self.is_trained:
             _train_data = self._load_training_data(self.train_filepath)
             if _train_data is None:
