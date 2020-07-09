@@ -111,11 +111,12 @@ class VectorSearchDriver(BaseSearchDriver):
         if bad_chunk_ids:
             self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
 
-        idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
-        op_name = self.exec.__class__.__name__
-        for c, topks, scs in zip(chunk_pts, idx, dist):
-            for m, s in zip(topks, scs):
-                r = c.topk_results.add()
-                r.match_chunk.chunk_id = m
-                r.score.value = s
-                r.score.op_name = op_name
+        if embed_vecs is not None:
+            idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
+            op_name = self.exec.__class__.__name__
+            for c, topks, scs in zip(chunk_pts, idx, dist):
+                for m, s in zip(topks, scs):
+                    r = c.topk_results.add()
+                    r.match_chunk.chunk_id = m
+                    r.score.value = s
+                    r.score.op_name = op_name

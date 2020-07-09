@@ -138,10 +138,10 @@ class BaseDriver(metaclass=DriverType):
 
         Always use ``self.docs`` instead of ``self.req.docs`` to access filtered docs
         """
-        if 'doc' not in self.if_expression:
+        if 'doc' not in self.if_expression and hasattr(self.req, 'docs'):
             yield from self.req.docs
         else:
-            for doc in self.req.docs:
+            for doc in getattr(self.req, 'docs', []):
                 if eval(self.compiled_if):
                     yield doc
 

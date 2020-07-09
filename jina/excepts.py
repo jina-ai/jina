@@ -16,11 +16,11 @@ class ExecutorFailToLoad(SystemError):
     """When the executor can not be loaded in pea/pod"""
 
 
-class MemoryOverHighWatermark(SystemError):
+class MemoryOverHighWatermark(Exception):
     """When the memory usage is over the defined high water mark"""
 
 
-class DriverError(SystemError):
+class DriverError(Exception):
     """Driver related exceptions"""
 
 

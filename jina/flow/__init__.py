@@ -16,7 +16,7 @@ from ruamel.yaml import StringIO
 
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
-from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError, FlowConnectivityError
+from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
@@ -754,8 +754,8 @@ class Flow:
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow,
         useful for testing connectivity and debugging"""
-        if not self._get_client(**kwargs).dry_run():
-            raise FlowConnectivityError('a dry run shows this flow is badly connected due to the network settings')
+        self.logger.warning('calling dry_run() on a flow is depreciated, it will be removed in the future version. '
+                            'calling index(), search(), train() will trigger a dry_run()')
 
     @build_required(FlowBuildLevel.GRAPH)
     def to_swarm_yaml(self, path: TextIO):

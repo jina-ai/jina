@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import asyncio
 import os
 import threading
+import traceback
 
 import grpc
 from google.protobuf.json_format import MessageToJson
@@ -13,7 +14,7 @@ from .pea import BasePea
 from .zmq import AsyncZmqlet, add_envelope
 from .. import __stop_msg__
 from ..enums import ClientMode
-from ..excepts import NoExplicitMessage, RequestLoopEnd, NoDriverForRequest, BadRequestType, GatewayPartialMessage
+from ..excepts import NoDriverForRequest, BadRequestType, GatewayPartialMessage
 from ..helper import use_uvloop
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
@@ -121,14 +122,21 @@ class GatewayPea:
                     raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
                 # self.executor(self.request_type)
                 # envelope will be dropped when returning to the client
-                return msg.request
-            except NoExplicitMessage:
-                self.logger.error('gateway should not receive partial message, it can not do reduce. '
-                                  'maybe you forget to add .join() as the last step of the flow?')
-            except RequestLoopEnd:
-                self.logger.error('event loop end signal should not be raised in the gateway')
             except NoDriverForRequest:
                 # remove envelope and send back the request
+                pass
+            except Exception as ex:
+                msg.envelope.status.code = jina_pb2.Status.ERROR
+                if not msg.envelope.status.description:
+                    msg.envelope.status.description = f'{self} throws {repr(ex)}'
+                d = msg.envelope.status.details.add()
+                d.pod = self.name
+                d.pod_id = self.args.identity
+                d.exception = repr(ex)
+                d.executor = str(getattr(self, 'executor', ''))
+                d.traceback = traceback.format_exc()
+                d.time.GetCurrentTime()
+            finally:
                 return msg.request
 
         async def CallUnary(self, request, context):
