@@ -20,21 +20,24 @@ class MyTestCase(JinaTestCase):
         return d
 
     def run_test(self, indexer):
-        data = {
-            'd1': MessageToJson(self._create_Document(1, 'cat', 0.1, 3)),
-            'd2': MessageToJson(self._create_Document(2, 'dog', 0.2, 3)),
-            'd3': MessageToJson(self._create_Document(3, 'bird', 0.3, 3)),
-        }
-        indexer.add(data)
-        indexer.save()
-        indexer.close()
-        self.assertTrue(os.path.exists(indexer.index_abspath))
+        with indexer as idx:
+            data = {
+                'd1': MessageToJson(self._create_Document(1, 'cat', 0.1, 3)),
+                'd2': MessageToJson(self._create_Document(2, 'dog', 0.2, 3)),
+                'd3': MessageToJson(self._create_Document(3, 'bird', 0.3, 3)),
+            }
+            idx.add(data)
+            idx.save()
+            save_abspath = idx.save_abspath
+            index_abspath = idx.index_abspath
+        self.assertTrue(os.path.exists(index_abspath))
 
-        searcher = BaseIndexer.load(indexer.save_abspath)
-        doc = searcher.query('d2')
-        self.assertEqual(doc.doc_id, 2)
-        self.assertEqual(doc.length, 3)
-        self.add_tmpfile(indexer.save_abspath, indexer.index_abspath)
+        with BaseIndexer.load(save_abspath) as searcher:
+            doc = searcher.query('d2')
+            self.assertEqual(doc.doc_id, 2)
+            self.assertEqual(doc.length, 3)
+
+        self.add_tmpfile(save_abspath, index_abspath)
 
     def test_add_query(self):
         indexer = LeveldbIndexer(level='doc', index_filename='leveldb.db')
