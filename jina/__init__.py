@@ -7,7 +7,7 @@ __version__ = '0.3.7'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.45'
+__proto_version__ = '0.0.46'
 
 import platform
 import sys

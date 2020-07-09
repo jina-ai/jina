@@ -6,9 +6,10 @@ from typing import Tuple
 import numpy as np
 
 from . import BaseNumpyIndexer
+from ...frameworks import BaseFaissExecutor
 
 
-class FaissIndexer(BaseNumpyIndexer):
+class FaissIndexer(BaseNumpyIndexer, BaseFaissExecutor):
     """Faiss powered vector indexer
 
     For more information about the Faiss supported parameters and installation problems, please consult:
@@ -53,6 +54,10 @@ class FaissIndexer(BaseNumpyIndexer):
         self.distance = distance
         self.nprobe = nprobe
 
+    def post_init(self):
+        super(BaseNumpyIndexer, self).post_init()
+        super(BaseFaissExecutor, self).post_init()
+
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
         import faiss
@@ -62,7 +67,8 @@ class FaissIndexer(BaseNumpyIndexer):
         if self.distance not in {'inner_product', 'l2'}:
             self.logger.warning('Invalid distance metric for Faiss index construction. Defaulting to l2 distance')
 
-        self._index = faiss.index_factory(self.num_dim, self.index_key, metric)
+        self._index = self.to_device(index=faiss.index_factory(self.num_dim, self.index_key, metric))
+
         if not self.is_trained:
             _train_data = self._load_training_data(self.train_filepath)
             if _train_data is None:

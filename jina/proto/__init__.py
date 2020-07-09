@@ -14,5 +14,4 @@ def is_data_request(req: 'Request') -> bool:
     DRY_RUN is a ControlRequest but considered as data request
     """
     req_type = type(req)
-    return req_type != Request.ControlRequest or (req_type == Request.ControlRequest
-                                                  and req.command == Request.ControlRequest.DRYRUN)
+    return req_type != Request.ControlRequest
