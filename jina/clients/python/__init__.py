@@ -164,7 +164,7 @@ class PyClient(GrpcClient):
         """A dry run request is a Search/Index/Train Request with empty content.
         Useful for testing connectivity and debugging the connectivity of the server/flow
 
-        :param as_request: send the dry run request as one of 'index', 'search', 'train' request
+        :param as_request: send the dry run request as one of 'index', 'search', 'train', 'control' request
         :return: if dry run is successful or not
         """
 
@@ -176,8 +176,11 @@ class PyClient(GrpcClient):
                 req.index.CopyFrom(jina_pb2.Request.IndexRequest())
             elif as_request == 'search':
                 req.search.CopyFrom(jina_pb2.Request.SearchRequest())
+            elif as_request == 'control':
+                req.control.CopyFrom(jina_pb2.Request.ControlRequest())
             else:
-                raise ValueError(f'as_request={as_request} is not supported, must be one of "train", "search", "index"')
+                raise ValueError(
+                    f'as_request={as_request} is not supported, must be one of "train", "search", "index", "control"')
             yield req
 
         before = time.perf_counter()
