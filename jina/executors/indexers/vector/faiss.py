@@ -18,7 +18,7 @@ class FaissIndexer(BaseNumpyIndexer):
         Faiss package dependency is only required at the query time.
     """
 
-    def __init__(self, index_key: str, train_filepath: str = None, *args, **kwargs):
+    def __init__(self, index_key: str, train_filepath: str = None, nprobe=1, *args, **kwargs):
         """
         Initialize an Faiss Indexer
 
@@ -48,6 +48,7 @@ class FaissIndexer(BaseNumpyIndexer):
         super().__init__(*args, **kwargs)
         self.index_key = index_key
         self.train_filepath = train_filepath
+        self.nprobe = nprobe
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
@@ -61,6 +62,7 @@ class FaissIndexer(BaseNumpyIndexer):
                 return None
             self.train(_train_data)
         self._index.add(vecs.astype('float32'))
+        self._index.nprobe = self.nprobe
         return self._index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
