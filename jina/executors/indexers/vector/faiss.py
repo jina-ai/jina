@@ -18,14 +18,16 @@ class FaissIndexer(BaseNumpyIndexer):
         Faiss package dependency is only required at the query time.
     """
 
-    def __init__(self, index_key: str, train_filepath: str = None, nprobe=1, *args, **kwargs):
+    def __init__(self, index_key: str, train_filepath: str = None,
+                 distance: str = 'l2', nprobe: int = 1, *args, **kwargs):
         """
         Initialize an Faiss Indexer
 
         :param index_key: index type supported by ``faiss.index_factory``
         :param train_filepath: the training data file path, e.g ``faiss.tgz`` or `faiss.npy`. The data file is expected
             to be either `.npy` file from `numpy.save()` or a `.tgz` file from `NumpyIndexer`.
-
+        :param distance: 'l2' or 'inner_product' accepted. Determines which distances to optimize by FAISS
+        :param nprobe: Number of clusters to consider at search time.
 
         .. highlight:: python
         .. code-block:: python
@@ -48,13 +50,19 @@ class FaissIndexer(BaseNumpyIndexer):
         super().__init__(*args, **kwargs)
         self.index_key = index_key
         self.train_filepath = train_filepath
+        self.distance = distance
         self.nprobe = nprobe
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """
-
         import faiss
-        self._index = faiss.index_factory(self.num_dim, self.index_key)
+        metric = faiss.METRIC_L2
+        if self.distance == 'inner_product':
+            metric = faiss.METRIC_INNER_PRODUCT
+        if self.distance not in {'inner_product', 'l2'}:
+            self.logger.warning('Invalid distance metric for Faiss index construction. Defaulting to l2 distance')
+
+        self._index = faiss.index_factory(self.num_dim, self.index_key, metric)
         if not self.is_trained:
             _train_data = self._load_training_data(self.train_filepath)
             if _train_data is None:
@@ -66,8 +74,6 @@ class FaissIndexer(BaseNumpyIndexer):
         return self._index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        # if keys.dtype != np.float32:
-        #     raise ValueError('vectors should be ndarray of float32')
         dist, ids = self.query_handler.search(keys, top_k)
         return self.int2ext_key[ids], dist
 
