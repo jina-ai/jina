@@ -286,7 +286,6 @@ message Request {
         enum Command {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
-            DRYRUN = 2; // passing this pod without take any action, and send the request to the next pod
             IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
         }
         Command command = 1; // the control command
