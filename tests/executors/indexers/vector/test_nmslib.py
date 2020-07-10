@@ -28,7 +28,6 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load(a.save_abspath) as b:
             idx, dist = b.query(query, top_k=4)
-            print(idx, dist)
             global retr_idx
             if retr_idx is None:
                 retr_idx = idx

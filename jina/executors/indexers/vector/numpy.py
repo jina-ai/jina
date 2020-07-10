@@ -53,7 +53,7 @@ class NaiveIndexer(BaseNumpyIndexer):
         elif self.metric == 'cosine':
             dist = _cosine(keys, self.query_handler)
 
-        idx = dist.argsort(axis=1)[:, :top_k]
+        idx = np.argpartition(dist, kth=top_k, axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_key[idx], dist
 
