@@ -29,7 +29,6 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load_config(os.path.join(cur_dir, 'annoy-wrap.yml')) as b:
             idx, dist = b.query(query, top_k=4)
-            print(idx, dist)
             global retr_idx
             if retr_idx is None:
                 retr_idx = idx
@@ -40,7 +39,6 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load_config(os.path.join(cur_dir, 'nmslib-wrap.yml')) as c:
             idx, dist = c.query(query, top_k=4)
-            print(idx, dist)
             if retr_idx is None:
                 retr_idx = idx
             else:
@@ -64,7 +62,6 @@ class MyTestCase(JinaTestCase):
             self.assertTrue(os.path.exists(a.index_abspath))
             index_abspath = a.index_abspath
             save_abspath = a.save_abspath
-            # a.query(np.array(np.random.random([10, 5]), dtype=np.float32), top_k=4)
 
         with BaseIndexer.load(save_abspath) as b:
             idx, dist = b.query(query, top_k=4)
