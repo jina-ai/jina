@@ -33,7 +33,7 @@ And,
       greetings: hello there!
     metas:
       name: my-mwu-encoder
-      py_modules: mwu_encoder.py
+      py_modules: mwu.py
       workspace: ./
 
 

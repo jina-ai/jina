@@ -115,6 +115,6 @@ Current JEPs
 .. toctree::
    :maxdepth: 1
 
-   jep-1/main
-   jep-2/main
-   jep-3/main
+   jep-1/index
+   jep-2/index
+   jep-3/index

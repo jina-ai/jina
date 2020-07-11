@@ -1,13 +1,14 @@
 # Input and Output Functions in Jina
 
-In this chapter I will explain the input and output design of Jina.
+In this chapter I will explain the input and output functions for Jina Flow API.
 
 
 ## Input Function
 
 ### TLDR;
-- Everything is sent in bytes
-- Use crafter to work with `buffer`
+- By default, everything is sent in buffer
+- Use crafter to handle the input
+- Shortcuts such as `index_lines`, `index_ndarray` and `index_files` are available for you to input predefined format. 
 
 In the [Flow API](../flow/index.md), we highlight that you can use `.index()`, `.search()` and `.train()` to feed index data and search query to a flow:
 
@@ -35,7 +36,15 @@ def input_fn():
 input_fn = (b'look! i am a Document!' for _ in range(10))
 ```
 
-### Why in bytes?
+### Shortcuts
+
+| Function | Description | 
+| --- | --- |
+| `index_files`, `search_files` | Using a list of files as the index/query source for the current flow |
+| `index_lines`, `search_lines` | Using a list of lines as the index/query source for the current flow |
+| `index_ndarray`, `search_ndarray` | Using Numpy `ndarray` as the index/query source for the current flow | 
+
+### Why in bytes/buffer?
 
 Some users may wonder why we use bytes instead of some Python native objects as the input. There are two reasons behind: 
 

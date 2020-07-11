@@ -59,9 +59,9 @@ class BasePod:
         return self.peas_args['peas'][0].name
 
     @property
-    def port_grpc(self) -> int:
+    def port_expose(self) -> int:
         """Get the grpc port number """
-        return self.peas_args['peas'][0].port_grpc
+        return self.peas_args['peas'][0].port_expose
 
     @property
     def host(self) -> str:

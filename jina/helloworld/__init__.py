@@ -35,7 +35,7 @@ def hello_world(args):
     }
 
     # download the data
-    download_data(targets)
+    download_data(targets, args.download_proxy)
 
     # this envs are referred in index and query flow YAMLs
     os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
@@ -52,7 +52,7 @@ def hello_world(args):
     f = Flow.load_config(args.index_yaml_path)
     # run it!
     with f:
-        f.index_numpy(targets['index']['data'], batch_size=args.index_batch_size)
+        f.index_ndarray(targets['index']['data'], batch_size=args.index_batch_size)
 
     # wait for couple of seconds
     countdown(8, reason=colored('behold! im going to switch to query mode', 'cyan',

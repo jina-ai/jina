@@ -49,6 +49,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 
 ## Making Your First Submission 
 
+0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
 1. Fork the Jina repo and clone onto your computer.
 2. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 3. Work on this branch to do the fix/improvement.
@@ -60,7 +61,26 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 
 **Note:** If you're just fixing a typo or grammatical issue, you can go straight to a pull request.
 
-What happens after the merge? [Understand the developement stage and release cycles here.](RELEASE.md)
+### Associate with github account
+
+- Confirm username and email on [your profile page](https://github.com/settings/profile).
+- Set git config on your computer.
+
+```shell
+git config user.name "YOUR GITHUB NAME"
+git config user.email "YOUR GITHUB EMAIL"
+```
+
+- (Optional) Reset the commit author if you made commits before you set the git config.
+
+```shell
+git checkout YOUR-WORKED-BRANCH
+git commit --amend --author="YOUR-GITHUB-NAME <YOUR-GITHUB-EMAIL>" --no-edit
+git log  # to confirm the change is effective
+git push --force
+```
+
+What happens after the merge? [Understand the development stage and release cycles here.](RELEASE.md)
 
 ## Naming Conventions
 
@@ -165,7 +185,7 @@ Locally you can do unittest via:
 
 ```bash
 pip install ".[match-py-ver]"
-cd tests && python -m unittest *.py -v
+python -m unittest -v
 ```
 
 When you add an executor or a driver, you may introduce new dependencies to Jina. You can verify the dependencies via:

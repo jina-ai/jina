@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import gzip
 import json
-from typing import Union, List, Iterator
+from typing import Union, Iterator
 
 from google.protobuf.json_format import Parse
 
@@ -77,6 +77,7 @@ class JsonPbIndexer(BasePbIndexer):
                     tmp = json.loads(l)
                     for k, v in tmp.items():
                         r[k] = Parse(v, self._parser())
+                        self._size += 1
         return r
 
     def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
@@ -91,6 +92,7 @@ class JsonPbIndexer(BasePbIndexer):
         else:
             raise NotImplementedError
         json.dump(keys, self.write_handler)
+        self._size += len(keys)
         self.write_handler.write('\n')
 
 
@@ -115,8 +117,10 @@ class BinaryPbIndexer(BasePbIndexer):
             b.ParseFromString(l)
             if self.level == 'chunk':
                 r[b.chunk_id] = b
+                self._size += 1
             elif self.level == 'doc':
                 r[b.doc_id] = b
+                self._size += 1
         return r
 
     def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
@@ -126,6 +130,7 @@ class BinaryPbIndexer(BasePbIndexer):
         """
         for k in keys:
             self.write_handler.write(k.SerializeToString() + __binary_delimiter__)
+            self._size += 1
 
 
 class ChunkPbIndexer(BinaryPbIndexer):

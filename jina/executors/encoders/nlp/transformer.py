@@ -20,6 +20,7 @@ class BaseTransformerEncoder(BaseEncoder):
                  pooling_strategy: str = 'mean',
                  max_length: int = 64,
                  model_path: str = 'transformer',
+                 truncation_strategy: str = 'longest_first',
                  *args, **kwargs):
         """
 
@@ -31,6 +32,8 @@ class BaseTransformerEncoder(BaseEncoder):
         :param max_length: the max length to truncate the tokenized sequences to.
         :param model_path: the path of the encoder model. If a valid path is given, the encoder will be loaded from the
             given path.
+        :param truncation_strategy: select truncation strategy. Supported strategies include 'only_first', 'only_second',
+            'longest_first' and 'do_not_truncate'. Defaults to 'longest_first'.
 
         ..warning::
             `model_path` is a relative path in the executor's workspace.
@@ -41,6 +44,7 @@ class BaseTransformerEncoder(BaseEncoder):
         self.pooling_strategy = pooling_strategy
         self.max_length = max_length
         self.raw_model_path = model_path
+        self.truncation_strategy = truncation_strategy
 
     @batching
     @as_ndarray
@@ -54,7 +58,10 @@ class BaseTransformerEncoder(BaseEncoder):
         mask_ids_batch = []
         for c_idx in range(data.shape[0]):
             token_ids = self.tokenizer.encode(
-                data[c_idx], pad_to_max_length=True, max_length=self.max_length)
+                data[c_idx],
+                pad_to_max_length=True,
+                max_length=self.max_length,
+                truncation=self.truncation_strategy)
             mask_ids = [0 if t == self.tokenizer.pad_token_id else 1 for t in token_ids]
             token_ids_batch.append(token_ids)
             mask_ids_batch.append(mask_ids)
@@ -197,7 +204,10 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
         }
         _model = model_dict[self.model_name].from_pretrained(pretrained_model_name_or_path=self.tmp_model_path)
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            _model.resize_token_embeddings(len(self.tokenizer))
+            try:
+                _model.resize_token_embeddings(len(self.tokenizer))
+            except NotImplementedError:
+                self.logger.warn(f'Model {self.model_name} does not implement resize_token_embeddings')
         return _model
 
     def get_session(self):
@@ -233,7 +243,10 @@ class TransformerTorchEncoder(BaseTransformerEncoder, BaseTextTorchEncoder):
         }
         _model = model_dict[self.model_name].from_pretrained(self.tmp_model_path)
         if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            _model.resize_token_embeddings(len(self.tokenizer))
+            try:
+                _model.resize_token_embeddings(len(self.tokenizer))
+            except NotImplementedError:
+                self.logger.warn(f'Model {self.model_name} does not implement resize_token_embeddings')
         self.to_device(_model)
         return _model
 

@@ -7,6 +7,8 @@ from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.keyvalue.leveldb import LeveldbIndexer
 from tests import JinaTestCase
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 class MyTestCase(JinaTestCase):
     def _create_Document(self, doc_id, text, weight, length):
@@ -35,12 +37,12 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(indexer.save_abspath, indexer.index_abspath)
 
     def test_add_query(self):
-        indexer = LeveldbIndexer(index_filename='leveldb.db')
+        indexer = LeveldbIndexer(level='doc', index_filename='leveldb.db')
         self.run_test(indexer)
 
     def test_load_yaml(self):
         from jina.executors import BaseExecutor
-        indexer = BaseExecutor.load_config('../../../yaml/test-leveldb.yml')
+        indexer = BaseExecutor.load_config(os.path.join(cur_dir, '../../../yaml/test-leveldb.yml'))
         self.run_test(indexer)
 
 

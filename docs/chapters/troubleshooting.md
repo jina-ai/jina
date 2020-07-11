@@ -23,7 +23,7 @@ from jina.flow import Flow
 f = Flow().add(...)
 
 with f:
-    f.index(input_fn, output_fn=print)
+    f.index(input_fn)
 ```
 
 which prints out the protobuf message directly in the console after each request. 

@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.3.2'
+__version__ = '0.3.7'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.43'
+__proto_version__ = '0.0.45'
 
 import platform
 import sys
@@ -62,7 +62,8 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_VCS_VERSION',
                 'JINA_VERSION',
                 'JINA_WARN_UNNAMED',
-                'JINA_BINARY_DELIMITER')
+                'JINA_BINARY_DELIMITER',
+                'JINA_DISABLE_UVLOOP')
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'

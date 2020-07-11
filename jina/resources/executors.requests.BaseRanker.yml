@@ -4,4 +4,4 @@ on:
   SearchRequest:
     - !ChunkPruneDriver {}  # embedding info on chunk is used and no need anymore
     - !Chunk2DocRankDriver {}
-    - !DocPruneDriver {}  # no need on chunk-level info anymore
+    - !TopKFilterDriver {}
