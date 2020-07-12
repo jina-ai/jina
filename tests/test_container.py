@@ -141,9 +141,11 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index(input_fn=random_docs(10))
 
-        out_file = os.path.join(cur_dir, 'abc/ext-mwu-encoder.bin')
+        # out_file = os.path.join(cur_dir, 'abc/ext-mwu-encoder.bin')
+        out_file = 'abc/ext-mwu-encoder.bin'
         self.assertTrue(os.path.exists(out_file))
-        self.add_tmpfile(out_file, os.path.join(cur_dir, './abc'))
+        # self.add_tmpfile(out_file, os.path.join(cur_dir, './abc'))
+        self.add_tmpfile(out_file, './abc')
 
     def test_container_ping(self):
         a4 = set_pea_parser().parse_args(['--image', img_name])
