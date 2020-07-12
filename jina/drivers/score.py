@@ -23,11 +23,11 @@ class Chunk2DocRankDriver(BaseRankDriver):
     def __call__(self, *args, **kwargs):
         exec = self.exec
 
-        for d in self.docs:  # d is a query in this context, i.e. for each query, compute separately
+        for d in self.req.docs:  # d is a query in this context, i.e. for each query, compute separately
             match_idx = []
             query_chunk_meta = {}
             match_chunk_meta = {}
-            for c in self.chunks(d):
+            for c in d.chunks:
                 for k in c.topk_results:
                     match_idx.append((k.match_chunk.doc_id, k.match_chunk.chunk_id, c.chunk_id, k.score.value))
                     query_chunk_meta[c.chunk_id] = pb_obj2dict(c, exec.required_keys)

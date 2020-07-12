@@ -97,18 +97,18 @@ class MergeTopKDriver(MergeDriver):
 
     def reduce(self, *args, **kwargs):
         if self.level == 'chunk':
-            for _d_id, _doc in enumerate(self.docs):
+            for _d_id, _doc in enumerate(self.req.docs):
                 for _c_id, _chunk in enumerate(_doc.chunks):
                     _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].chunks[_c_id].topk_results]
                     _chunk.ClearField('topk_results')
                     _chunk.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
         elif self.level == 'doc':
-            for _d_id, _doc in enumerate(self.docs):
+            for _d_id, _doc in enumerate(self.req.docs):
                 _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
                 _doc.ClearField('topk_results')
                 _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
         elif self.level == 'all':
-            for _d_id, _doc in enumerate(self.docs):
+            for _d_id, _doc in enumerate(self.req.docs):
                 _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
                 _doc.ClearField('topk_results')
                 _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
