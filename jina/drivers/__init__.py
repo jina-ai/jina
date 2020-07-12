@@ -96,7 +96,7 @@ class BaseDriver(metaclass=DriverType):
         self.attached = True
 
     def chunks(self, d):
-        for c in d:
+        for c in d.chunks:
             yield c
 
     @property
