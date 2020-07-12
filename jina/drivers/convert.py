@@ -29,7 +29,7 @@ class BaseConvertDriver(BaseDriver):
         self.target = target
 
     def __call__(self, *args, **kwargs):
-        for d in self.docs:
+        for d in self.req.docs:
             if getattr(d, self.target) and not self.override:
                 continue
             self.convert(d)
@@ -167,7 +167,7 @@ class URI2DataURI(URI2Buffer):
 
     def __call__(self, *args, **kwargs):
         super().__call__()
-        for d in self.docs:
+        for d in self.req.docs:
             if d.uri and not self.override:
                 continue
 
