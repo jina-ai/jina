@@ -6,6 +6,7 @@ from os.path import dirname
 
 
 class JinaTestCase(unittest.TestCase):
+    timeout = 30
 
     def setUp(self) -> None:
         self.tmp_files = []

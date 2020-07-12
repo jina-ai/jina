@@ -71,6 +71,7 @@ jobs:
           export JINA_LOG_VERBOSITY="ERROR"
           pip install pytest
           pip install pytest-xdist
+          pip install pytest-timeout
           pytest -n 1 -v
         #      run: |
         #        pip install pytest

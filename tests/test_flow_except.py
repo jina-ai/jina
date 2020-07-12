@@ -4,6 +4,7 @@ from jina.executors.crafters import BaseDocCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
+import pytest
 
 
 class DummyCrafter(BaseDocCrafter):
@@ -12,7 +13,7 @@ class DummyCrafter(BaseDocCrafter):
 
 
 class MyTestCase(JinaTestCase):
-
+    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_bad_flow(self):
         def validate(req):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
@@ -27,6 +28,7 @@ class MyTestCase(JinaTestCase):
         #     f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
         #     f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
 
+    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_bad_flow_customized(self):
         def validate(req):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
@@ -45,6 +47,7 @@ class MyTestCase(JinaTestCase):
         #     f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
         #     f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
 
+    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_except_with_replicas(self):
         def validate(req):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
