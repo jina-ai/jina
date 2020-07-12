@@ -20,7 +20,8 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.docs, self.chunks,
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.docs,
+                                                                             self._chunks,
                                                                              self.req.filter_by,
                                                                              embedding=True)
 
