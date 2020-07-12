@@ -132,6 +132,16 @@ class BaseExecutor(metaclass=ExecutorType):
         self._drivers = {}  # type: Dict[str, List['BaseDriver']]
         self._attached_pea = None
 
+    def _check_on_gpu(self):
+        if self.on_gpu:
+            try:
+                cuda_version = subprocess.check_output(['nvcc', '--version']).decode()
+                self.logger.success(f'CUDA compiler version: {cuda_version}')
+            except OSError:
+                self.logger.warning(
+                    'on_gpu=True, but you dont have CUDA compatible GPU, i will reset on_gpu=False ')
+                self.on_gpu = False
+
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
         with TimeContext('post initiating, this may take some time', self.logger):
             if fill_in_metas:
@@ -146,6 +156,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 self._fill_requests(_requests)
 
             _before = set(list(vars(self).keys()))
+            self._check_on_gpu()
             self.post_init()
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
