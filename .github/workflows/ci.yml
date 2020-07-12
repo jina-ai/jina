@@ -69,7 +69,9 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          python -m unittest -v
+          pip install pytest
+          pip install pytest-xdist
+          pytest -n 1 -v
         #      run: |
         #        pip install pytest
         #        pip install pytest-cov
