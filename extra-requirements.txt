@@ -39,6 +39,9 @@ jieba:                      nlp, preprocess, craft
 lz4:                        optimization, devel, production, network
 gevent:                     http, devel
 python-magic:               http, devel
+librosa:                    audio
+deepsegment:                nlp, preprocess, craft
+ngt:                        index, py37
 librosa==0.7.2:             audio
 numba<=0.48:                audio
 deepsegment:                nlp, preprocess, craft
