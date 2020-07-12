@@ -79,33 +79,9 @@ class BaseDriver(metaclass=DriverType):
     A :class:`BaseDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.BasePea` before using. This is done by
     :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
 
-    .. note::
-        ``if`` accepts a single expression. It can be used for filter doc and chunk
-
-        Usage in YAML:
-
-        .. highlight:: yaml
-        .. code-block:: yaml
-
-            !Encode2
-            requests:
-              on:
-                IndexRequest:
-                  - !EncodeDriver
-                    if: doc.mime_type.startswith('image')
-
-        Usage in Python
-
-        .. highlight:: python
-        .. code-block:: python
-
-            class FilterDriver(PruneDriver):
-                if_expression = 'doc.doc_id % 2 ==0'
-
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    if_expression = ''
 
     def __init__(self, *args, **kwargs):
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
@@ -120,42 +96,6 @@ class BaseDriver(metaclass=DriverType):
         self.pea = pea
         self.attached = True
 
-    @property
-    def compiled_if(self):
-        """Get the bytecode of the if expression, faster for :func:`eval` """
-        if self._compiled_if:
-            return self._compiled_if
-        elif self.if_expression:
-            self._compiled_if = compile(self.if_expression, '<string>', 'eval')
-            return self._compiled_if
-
-    def _test_eval_if(self):
-        return eval(self.compiled_if)
-
-    @property
-    def docs(self):
-        """Get all docs in the request, filtered by ``if`` when the expression contains ``doc``
-
-        Always use ``self.docs`` instead of ``self.req.docs`` to access filtered docs
-        """
-        if 'doc' not in self.if_expression and hasattr(self.req, 'docs'):
-            yield from self.req.docs
-        else:
-            for doc in getattr(self.req, 'docs', []):
-                if eval(self.compiled_if):
-                    yield doc
-
-    def chunks(self, d) -> Iterator['jina_pb2.Chunk']:
-        """Get all chunks in the document ``d``, filtered by ``if`` when the expression contains ``chunk``
-
-        Always use ``self.chunks(d)`` instead of ``d.chunks`` to access filtered chunks
-        """
-        if 'chunk' not in self.if_expression:
-            yield from d.chunks
-        else:
-            for chunk in d.chunks:
-                if eval(self.compiled_if):
-                    yield chunk
 
     @property
     def req(self) -> 'jina_pb2.Request':
@@ -187,8 +127,6 @@ class BaseDriver(metaclass=DriverType):
         r = {}
         if a:
             r['with'] = a
-        if getattr(data, 'if_expression'):
-            r['if'] = data.if_expression
         return r
 
     @classmethod
@@ -208,8 +146,6 @@ class BaseDriver(metaclass=DriverType):
             constructor, node, deep=True)
 
         obj = cls(**data.get('with', {}))
-        # priority YAML if > class member
-        obj.if_expression = data.get('if', getattr(obj, 'if_expression', ''))
         return obj
 
     def __eq__(self, other):
