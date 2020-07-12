@@ -44,8 +44,8 @@ class ChunkCraftDriver(BaseCraftDriver):
     def __call__(self, *args, **kwargs):
         no_chunk_docs = []
 
-        for d in self.docs:
-            for c in self.chunks(d):
+        for d in self.req.docs:
+            for c in d.chunks:
                 _args_dict = pb_obj2dict(c, self.exec.required_keys)
                 if 'blob' in self.exec.required_keys:
                     _args_dict['blob'] = pb2array(c.blob)
@@ -56,7 +56,7 @@ class ChunkCraftDriver(BaseCraftDriver):
                     d.chunks.remove(c)  # remove the current one?
                     for c_dict in ret:
                         self.set_chunk(d.chunks.add(), c_dict)
-            d.length = len(list(self.chunks(d)))
+            d.length = len(d.chunks)
 
         if no_chunk_docs:
             self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
@@ -68,7 +68,7 @@ class DocCraftDriver(BaseCraftDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        for d in self.docs:
+        for d in self.req.docs:
             _args_dict = pb_obj2dict(d, self.exec.required_keys)
             if 'blob' in self.exec.required_keys:
                 _args_dict['blob'] = pb2array(d.blob)
@@ -99,7 +99,7 @@ class SegmentDriver(BaseCraftDriver):
         self.random_chunk_id = random_chunk_id
 
     def __call__(self, *args, **kwargs):
-        for d in self.docs:
+        for d in self.req.docs:
             _args_dict = pb_obj2dict(d, self.exec.required_keys)
             if 'blob' in self.exec.required_keys:
                 _args_dict['blob'] = pb2array(d.blob)
@@ -131,7 +131,7 @@ class UnarySegmentDriver(BaseDriver):
         self.random_chunk_id = random_chunk_id
 
     def __call__(self, *args, **kwargs):
-        for d in self.docs:
+        for d in self.req.docs:
             c = d.chunks.add()
             c.length = 1
             d_type = d.WhichOneof('content')
