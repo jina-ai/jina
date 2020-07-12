@@ -34,7 +34,6 @@ class MyTestCase(JinaTestCase):
 
         ngtpy.create(path=path, dimension=dimension, distance_type='L2')
         _index = ngtpy.Index(path=path)
-        print('NGT Type: ', type(_index))
         for i in range(num_batch):
             _index.batch_insert(np.random.random((batch_size, dimension)), num_threads=4)
         self.assertTrue(os.path.exists(path))
@@ -65,7 +64,6 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load(save_abspath) as b:
             idx, dist = b.query(query, top_k=4)
-            print(idx, dist)
             global retr_idx
             if retr_idx is None:
                 retr_idx = idx

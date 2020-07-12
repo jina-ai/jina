@@ -29,7 +29,6 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load_config(os.path.join(cur_dir, 'annoy-wrap.yml')) as b:
             idx, dist = b.query(query, top_k=4)
-            print(idx, dist)
             global retr_idx
             if retr_idx is None:
                 retr_idx = idx
@@ -40,7 +39,6 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load_config(os.path.join(cur_dir, 'nmslib-wrap.yml')) as c:
             idx, dist = c.query(query, top_k=4)
-            print(idx, dist)
             if retr_idx is None:
                 retr_idx = idx
             else:
@@ -64,7 +62,6 @@ class MyTestCase(JinaTestCase):
             self.assertTrue(os.path.exists(a.index_abspath))
             index_abspath = a.index_abspath
             save_abspath = a.save_abspath
-            # a.query(np.array(np.random.random([10, 5]), dtype=np.float32), top_k=4)
 
         with BaseIndexer.load(save_abspath) as b:
             idx, dist = b.query(query, top_k=4)
@@ -76,6 +73,22 @@ class MyTestCase(JinaTestCase):
                 np.testing.assert_almost_equal(retr_idx, idx)
             self.assertEqual(idx.shape, dist.shape)
             self.assertEqual(idx.shape, (10, 4))
+
+        self.add_tmpfile(index_abspath, save_abspath)
+
+    def test_annoy_indexer_with_no_search_k(self):
+        with AnnoyIndexer(index_filename='annoy.test.gz', search_k=0) as a:
+            a.add(vec_idx, vec)
+            a.save()
+            self.assertTrue(os.path.exists(a.index_abspath))
+            index_abspath = a.index_abspath
+            save_abspath = a.save_abspath
+
+        with BaseIndexer.load(save_abspath) as b:
+            idx, dist = b.query(query, top_k=4)
+            # search_k is 0, so no tree is searched for
+            self.assertEqual(idx.shape, dist.shape)
+            self.assertEqual(idx.shape, (10, 0))
 
         self.add_tmpfile(index_abspath, save_abspath)
 
