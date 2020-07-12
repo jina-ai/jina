@@ -149,7 +149,7 @@ class URI2Buffer(BaseConvertDriver):
             with open(d.uri, 'rb') as fp:
                 d.buffer = fp.read()
         else:
-            raise FileNotFoundError(f'{d.uri} is not a URL or a valid local path,\n{d}')
+            raise FileNotFoundError(f'{d.uri} is not a URL or a valid local path')
 
 
 class URI2DataURI(URI2Buffer):
