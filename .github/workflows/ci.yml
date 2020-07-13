@@ -72,7 +72,7 @@ jobs:
           pip install pytest
           pip install pytest-xdist
           pip install pytest-timeout
-          pytest -n 1 -v
+          pytest -n 1 --tiemout=60 -v
         #      run: |
         #        pip install pytest
         #        pip install pytest-cov
