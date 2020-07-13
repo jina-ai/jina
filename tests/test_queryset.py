@@ -2,8 +2,8 @@ import os
 
 import numpy as np
 
-from jina.drivers.filter.queryset.lookup import QuerySet, Q
 from jina.drivers.helper import array2pb
+from jina.drivers.querylang.queryset.lookup import QuerySet, Q
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 

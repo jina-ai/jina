@@ -4,9 +4,9 @@ from .. import BaseDriver
 from ...proto import jina_pb2
 
 
-class BaseFilterDriver(BaseDriver):
+class BaseQueryLangDriver(BaseDriver):
     """
-    :class:`BaseFilterDriver` adds native data querying capabilities to Jina,
+    :class:`BaseQueryLangDriver` adds native data querying capabilities to Jina,
 
     The following Standard Query Operator to be implemented
     - filter/where: filter the doc/chunk by its attributes
@@ -36,6 +36,8 @@ class BaseFilterDriver(BaseDriver):
                 _d.CopyFrom(d)
             # remove old ones
             del self.req.docs[:len_before]
+        else:
+            raise ValueError(f'do not support {type(filtered)} return type')
 
     def parse(self, raw_filter):
         raise NotImplementedError
@@ -52,13 +54,13 @@ class BaseFilterDriver(BaseDriver):
         raise NotImplementedError
 
 
-class GraphQLDriver(BaseFilterDriver):
+class GraphQLDriver(BaseQueryLangDriver):
     """
     GraphQL as in-memory filter
     """
 
 
-class CythonFilterDriver(BaseFilterDriver):
+class CythonFilterDriver(BaseQueryLangDriver):
     """
     Cython implementation of the in-memory proto filter
     """

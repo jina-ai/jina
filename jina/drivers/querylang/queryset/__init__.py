@@ -1,7 +1,7 @@
-from .. import BaseFilterDriver
+from .. import BaseQueryLangDriver
 
 
-class QuerySetDriver(BaseFilterDriver):
+class QuerySetDriver(BaseQueryLangDriver):
     """
     A QuerySet represents a collection of objects from your database.
     It can have zero, one or many filters. Filters narrow down the query results
