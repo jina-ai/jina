@@ -91,7 +91,7 @@ class HubIO:
             image = self._client.images.pull(self.args.name)
         if isinstance(image, list):
             image = image[0]
-        image_tag = image.tags[0] if len(image.tags) > 0 else ""
+        image_tag = image.tags[0] if image.tags else ""
         self.logger.success(
             f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
 
