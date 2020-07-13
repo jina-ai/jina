@@ -1,6 +1,7 @@
 import os
 import time
 import unittest
+import pytest
 
 import requests
 from time import sleep
@@ -281,6 +282,7 @@ class MyTestCase(JinaTestCase):
         with f:
             f.dry_run()
 
+    @pytest.mark.skip()
     def test_refactor_num_part(self):
         sleep(3)
         f = (Flow().add(name='r1', yaml_path='_logforward', needs='gateway')
