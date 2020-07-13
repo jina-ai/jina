@@ -62,7 +62,7 @@ class MyTestCase(JinaTestCase):
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
 
-    @pytest.mark.skip()
+    @pytest.mark.skip('this tests hang up for unknown reason on github')
     def test_quant(self):
         for j in ('fp32', 'fp16', 'uint8'):
             self.f1(j)

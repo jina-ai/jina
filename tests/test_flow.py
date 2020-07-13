@@ -282,7 +282,7 @@ class MyTestCase(JinaTestCase):
         with f:
             f.dry_run()
 
-    @pytest.mark.skip()
+    @pytest.mark.skip('this leads to zmq address conflicts on github')
     def test_refactor_num_part(self):
         sleep(3)
         f = (Flow().add(name='r1', yaml_path='_logforward', needs='gateway')
