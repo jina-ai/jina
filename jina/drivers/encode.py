@@ -17,7 +17,7 @@ class EncodeDriver(BaseEncodeDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs, self.chunks,
+        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs,
                                                                            self.req.filter_by,
                                                                            embedding=False)
 

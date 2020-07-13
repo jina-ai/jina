@@ -21,13 +21,6 @@ class BaseFrameworkExecutor(BaseExecutor):
     def post_init(self):
         super().post_init()
         self._device = None
-        if self.on_gpu:
-            try:
-                cuda_version = subprocess.check_output(['nvcc', '--version']).decode()
-                self.logger.success(f'CUDA compiler version: {cuda_version}')
-            except OSError:
-                self.logger.warning('on_gpu=True, but you dont have CUDA compatible GPU, i will reset on_gpu=False ')
-                self.on_gpu = False
 
     @property
     def device(self):
@@ -38,7 +31,7 @@ class BaseFrameworkExecutor(BaseExecutor):
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
 
-        if self._device is not None:
+        if getattr(self, '_device', None):
             return self._device
         else:
             try:
