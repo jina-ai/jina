@@ -12,7 +12,7 @@ class BaseFilterDriver(BaseDriver):
     - filter/where: filter the doc/chunk by its attributes
     - select: select attributes to include in the results
     - limit/take/slicing: take the first k doc/chunk
-    - sort: sort the doc/chunk
+    - sort/order_by: sort the doc/chunk
     - reverse: reverse the list of collections
     """
 
