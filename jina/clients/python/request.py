@@ -48,10 +48,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
             else:
                 req.search.top_k = top_k
 
-            if filter_by:
-                if isinstance(filter_by, str):
-                    filter_by = [filter_by]
-                req.search.filter_by.extend(filter_by)
+
 
         for _raw in pi:
             d = getattr(req, str(mode).lower()).docs.add()
@@ -82,7 +79,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
             if mime_type:
                 d.mime_type = mime_type
 
-            d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
+            d.id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
             d.weight = 1.0
             first_doc_id += 1
         yield req

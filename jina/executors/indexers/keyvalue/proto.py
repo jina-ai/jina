@@ -115,12 +115,8 @@ class BinaryPbIndexer(BasePbIndexer):
         for l in tmp.split(__binary_delimiter__):
             b = self._parser()
             b.ParseFromString(l)
-            if self.level == 'chunk':
-                r[b.chunk_id] = b
-                self._size += 1
-            elif self.level == 'doc':
-                r[b.doc_id] = b
-                self._size += 1
+            r[b.id] = b
+            self._size += 1
         return r
 
     def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):

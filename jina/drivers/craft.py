@@ -111,12 +111,12 @@ class SegmentDriver(BaseCraftDriver):
                     c.length = len(ret)
                     c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
                         -1).value)
-                    c.doc_id = d.doc_id
+                    c.parent_id = d.id
                     c.mime_type = d.mime_type
                     self.first_chunk_id += 1
                 d.length = len(ret)
             else:
-                self.logger.warning('doc %d gives no chunk' % d.doc_id)
+                self.logger.warning(f'doc {d.id} gives no chunk')
 
 
 class UnarySegmentDriver(BaseDriver):
@@ -141,7 +141,7 @@ class UnarySegmentDriver(BaseDriver):
                 setattr(c, d_type, getattr(d, d_type))
             c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
                 -1).value)
-            c.doc_id = d.doc_id
+            c.parent_id = d.id
             c.mime_type = d.mime_type
             self.first_chunk_id += 1
             d.length = 1

@@ -1,10 +1,10 @@
 import os
 import time
 import unittest
-import pytest
-
-import requests
 from time import sleep
+
+import pytest
+import requests
 
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
@@ -15,23 +15,9 @@ from jina.main.parser import set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto import jina_pb2
-from tests import JinaTestCase
+from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-    c_id = 0
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            c.chunk_id = c_id
-            c.doc_id = j
-            c_id += 1
-        d.meta_info = b'hello world'
-        yield d
 
 
 def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
@@ -204,7 +190,8 @@ class MyTestCase(JinaTestCase):
                     timeout=5)
 
     def test_shards(self):
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=3, separated_workspace=True)
+        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=3,
+                       separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(1000), random_doc_id=False)
         with f:
@@ -229,7 +216,8 @@ class MyTestCase(JinaTestCase):
                 self.assertIsNotNone(d.match_doc.weight)
                 self.assertEqual(d.match_doc.meta_info, b'hello world')
 
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas, separated_workspace=True)
+        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
+                       separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(index_docs), random_doc_id=False)
 

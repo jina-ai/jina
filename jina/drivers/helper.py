@@ -5,7 +5,7 @@ import mimetypes
 import os
 import urllib.parse
 import urllib.request
-from typing import Dict, Any, Iterable, Tuple, Union, List, Callable
+from typing import Dict, Any, Iterable, Tuple
 
 import numpy as np
 
@@ -71,7 +71,6 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
 
 
 def extract_chunks(docs: Iterable['jina_pb2.Document'],
-                   filter_by: Union[Tuple[str], List[str]],
                    embedding: bool) -> Tuple:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
@@ -79,7 +78,6 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'],
     :param embedding: an indicator of extracting embedding or not.
                     If ``True`` then all chunk-level embedding are extracted.
                     If ``False`` then ``text``, ``buffer``, ``blob`` info of each chunks are extracted
-    :param filter_by: a list of service names to wait
     :return: A tuple of four pieces:
 
             - a numpy ndarray of extracted info
@@ -101,17 +99,15 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'],
         has_chunk = False
         for c in d.chunks:
             _c = _extract_fn(c)
-            if filter_by and (c.field_name not in filter_by):
-                continue
 
             if _c is not None:
                 _contents.append(_c)
                 chunk_pts.append(c)
                 has_chunk = True
             else:
-                bad_chunk_ids.append((d.doc_id, c.chunk_id))
+                bad_chunk_ids.append((d.id, c.id))
         if not has_chunk:
-            no_chunk_docs.append(d.doc_id)
+            no_chunk_docs.append(d.id)
 
     contents = np.stack(_contents) if _contents else None
     return contents, chunk_pts, no_chunk_docs, bad_chunk_ids

@@ -1,8 +1,9 @@
 import os
 import unittest
 
-import jina.proto.jina_pb2 as jina_pb2
 from google.protobuf.json_format import MessageToJson
+
+import jina.proto.jina_pb2 as jina_pb2
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.keyvalue.leveldb import LeveldbIndexer
 from tests import JinaTestCase
@@ -13,7 +14,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class MyTestCase(JinaTestCase):
     def _create_Document(self, doc_id, text, weight, length):
         d = jina_pb2.Document()
-        d.doc_id = doc_id
+        d.id = doc_id
         d.buffer = text.encode('utf8')
         d.weight = weight
         d.length = length

@@ -59,7 +59,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _update_topk_docs(self, d):
         hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
         for tk in d.topk_results:
-            r = self.exec_fn(tk.match_doc.doc_id)
+            r = self.exec_fn(tk.match_doc.id)
             if r:
                 sr = ScoredResult()
                 sr.score.CopyFrom(tk.score)
@@ -102,7 +102,6 @@ class VectorSearchDriver(BaseSearchDriver):
 
     def __call__(self, *args, **kwargs):
         embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs,
-                                                                             self.req.filter_by,
                                                                              embedding=True)
 
         if no_chunk_docs:

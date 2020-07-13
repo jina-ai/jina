@@ -46,60 +46,8 @@ message ScoredResult {
         repeated Score operands = 4; // the score can be nested
     }
 
-    oneof body {
-        Chunk match_chunk = 1; // the matched chunk
-        Document match_doc = 2; // the matched document
-    }
+    Document match = 1; // the matched document
     Score score = 3; // the score of this match
-}
-
-/**
- * Represents a Chunk
- */
-message Chunk {
-    uint32 doc_id = 1; // the document ID of this chunk, universally unique
-    uint32 chunk_id = 2; // the chunk ID, universally unique
-
-    oneof content {
-        // the original text of the chunk (only apply to the text document)
-        string text = 3;
-
-        // the original ndarray of the chunk (apply to the image/audio/video document)
-        NdArray blob = 4;
-
-        // raw bytes of chunk
-        bytes buffer = 5;
-    }
-
-    // the embedding array of this chunk
-    NdArray embedding = 6;
-
-    // the offset of this chunk in the current document
-    uint32 offset = 7;
-
-    // the weight of this chunk
-    float weight = 8;
-
-    // the total number of chunks in the current document
-    uint32 length = 9;
-
-    // some binary meta information of this chunk in bytes
-    bytes meta_info = 10;
-
-    // the top-k matched chunks
-    repeated ScoredResult topk_results = 11;
-
-    // mime type of this chunk, by default it is inherit from the document
-    string mime_type = 12;
-
-    // the field name
-    string field_name = 13;
-
-    // a map of tags
-    map<string, string> tags = 14;
-
-    // the position of the chunk, could be start and end index of a string; could be x,y coordinate of a image; could be timestamp of an audio clip
-    repeated uint32 location = 15;
 }
 
 /**
@@ -107,7 +55,16 @@ message Chunk {
  */
 message Document {
     // The unique document ID
-    uint32 doc_id = 1;
+    uint32 id = 1;
+
+    // the depth of the level
+    uint32 level_depth = 14;
+
+    // the name of the level
+    string level_name = 15;
+
+    // the parent id from the previous level
+    uint32 parent_id = 16;
 
     oneof content {
         // the raw binary content of this document, which often represents the original document when comes into jina
@@ -121,7 +78,7 @@ message Document {
     }
 
     // list of the chunks of this document
-    repeated Chunk chunks = 4;
+    repeated Document chunks = 4;
 
     // the weight of this document
     float weight = 5;
@@ -129,10 +86,10 @@ message Document {
     // total number of chunks in this document
     uint32 length = 6;
 
-    // some binary meta information of this chunk in bytes
+    // some binary meta information of this Doc in bytes
     bytes meta_info = 7;
 
-    // the top-k matched chunks
+    // the top-k matched Docs on the same level
     repeated ScoredResult topk_results = 8;
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
@@ -143,6 +100,15 @@ message Document {
 
     // a map of tags
     map<string, string> tags = 11;
+
+    // the position of the doc, could be start and end index of a string; could be x,y coordinate of a image; could be timestamp of an audio clip
+    repeated uint32 location = 17;
+
+    // the offset of this doc in the previous level document
+    uint32 offset = 18;
+
+    // the embedding array of this doc
+    NdArray embedding = 19;
 }
 
 /**
