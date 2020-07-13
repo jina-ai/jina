@@ -3,7 +3,6 @@ import time
 import unittest
 
 import requests
-import pytest
 
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
@@ -211,7 +210,6 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile('test-docshard-tmp')
         time.sleep(2)
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_shards_insufficient_data(self):
         """THIS IS SUPER IMPORTANT FOR TESTING SHARDS
 
@@ -245,7 +243,6 @@ class MyTestCase(JinaTestCase):
         time.sleep(2)
         self.add_tmpfile('test-docshard-tmp')
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_py_client(self):
         f = (Flow().add(name='r1', yaml_path='_forward')
              .add(name='r2', yaml_path='_forward')
@@ -262,7 +259,6 @@ class MyTestCase(JinaTestCase):
             from jina.clients import py_client
             py_client(port_expose=f.port_expose, host=f.host).dry_run(as_request='index')
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_dry_run_with_two_pathways_diverging_at_gateway(self):
         f = (Flow().add(name='r2', yaml_path='_forward')
              .add(name='r3', yaml_path='_forward', needs='gateway')
@@ -272,7 +268,6 @@ class MyTestCase(JinaTestCase):
         with f:
             f.dry_run()
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_dry_run_with_two_pathways_diverging_at_non_gateway(self):
         f = (Flow().add(name='r1', yaml_path='_forward')
              .add(name='r2', yaml_path='_forward')
@@ -285,7 +280,6 @@ class MyTestCase(JinaTestCase):
         with f:
             f.dry_run()
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_refactor_num_part(self):
         f = (Flow().add(name='r1', yaml_path='_logforward', needs='gateway')
              .add(name='r2', yaml_path='_logforward', needs='gateway')
@@ -294,7 +288,6 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_refactor_num_part_proxy(self):
         f = (Flow().add(name='r1', yaml_path='_logforward')
              .add(name='r2', yaml_path='_logforward', needs='r1')
@@ -304,7 +297,6 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_refactor_num_part_proxy_2(self):
         f = (Flow().add(name='r1', yaml_path='_logforward')
              .add(name='r2', yaml_path='_logforward', needs='r1', replicas=2)
@@ -314,7 +306,6 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_refactor_num_part_2(self):
         f = (Flow()
              .add(name='r1', yaml_path='_logforward', needs='gateway', replicas=3, polling='ALL'))
@@ -328,7 +319,6 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_index_text_files(self):
 
         def validate(req):
@@ -342,7 +332,6 @@ class MyTestCase(JinaTestCase):
 
         self.add_tmpfile('doc.gzip')
 
-    @pytest.mark.timeout(JinaTestCase.timeout)
     def test_flow_with_publish_driver(self):
 
         f = (Flow().add(name='r1', yaml_path=os.path.join(cur_dir, 'yaml/unarycrafter.yml'))

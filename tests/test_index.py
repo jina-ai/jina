@@ -174,13 +174,6 @@ class MyTestCase(JinaTestCase):
             self.assertTrue(os.path.exists(f'test2-{j + 1}/test2.bin'))
             self.assertTrue(os.path.exists(f'test2-{j + 1}/tmp2'))
             self.add_tmpfile(f'test2-{j + 1}/test2.bin', f'test2-{j + 1}/tmp2', f'test2-{j + 1}')
-            # self.assertTrue(os.path.exists(
-            #     os.path.join(cur_dir, f'test2-{j + 1}/test2.bin')))
-            # self.assertTrue(os.path.exists(
-            #     os.path.join(cur_dir, f'test2-{j + 1}/tmp2')))
-            # self.add_tmpfile(
-            #     os.path.join(cur_dir, f'test2-{j + 1}/test2.bin'),
-            #     os.path.join(cur_dir, f'test2-{j + 1}/tmp2', f'test2-{j + 1}'))
 
         time.sleep(3)
         with f:
