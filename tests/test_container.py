@@ -1,6 +1,7 @@
 import os
 import time
 from sys import platform
+import pytest
 
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
@@ -133,6 +134,7 @@ class MyTestCase(JinaTestCase):
             f.dry_run()
             f.index(input_fn=random_docs(1000))
 
+    @pytest.mark.skip()
     def test_container_volume(self):
         time.sleep(5)
         f = (Flow()
