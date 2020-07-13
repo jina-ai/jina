@@ -3,6 +3,7 @@ import time
 import unittest
 
 import requests
+from time import sleep
 
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
@@ -281,6 +282,7 @@ class MyTestCase(JinaTestCase):
             f.dry_run()
 
     def test_refactor_num_part(self):
+        sleep(3)
         f = (Flow().add(name='r1', yaml_path='_logforward', needs='gateway')
              .add(name='r2', yaml_path='_logforward', needs='gateway')
              .join(['r1', 'r2']))

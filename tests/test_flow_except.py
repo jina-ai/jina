@@ -12,7 +12,7 @@ class DummyCrafter(BaseDocCrafter):
 
 
 class MyTestCase(JinaTestCase):
-    
+
     def test_bad_flow(self):
         def validate(req):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
