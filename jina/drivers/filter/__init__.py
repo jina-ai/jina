@@ -4,9 +4,9 @@ from .. import BaseDriver
 from ...proto import jina_pb2
 
 
-class BaseIntegratedQueryDriver(BaseDriver):
+class BaseFilterDriver(BaseDriver):
     """
-    :class:`BaseIntegratedQueryDriver` adds native data querying capabilities to Jina,
+    :class:`BaseFilterDriver` adds native data querying capabilities to Jina,
 
     The following Standard Query Operator to be implemented
     - filter/where: filter the doc/chunk by its attributes
@@ -52,24 +52,13 @@ class BaseIntegratedQueryDriver(BaseDriver):
         raise NotImplementedError
 
 
-class QuerySetDriver(BaseIntegratedQueryDriver):
-    """
-    A QuerySet represents a collection of objects from your database.
-    It can have zero, one or many filters. Filters narrow down the query results
-    based on the given parameters.
-
-    In SQL terms, a QuerySet equates to a SELECT statement,
-    and a filter is a limiting clause such as WHERE or LIMIT.
-    """
-
-
-class GraphQLDriver(BaseIntegratedQueryDriver):
+class GraphQLDriver(BaseFilterDriver):
     """
     GraphQL as in-memory filter
     """
 
 
-class CythonFilterDriver(BaseIntegratedQueryDriver):
+class CythonFilterDriver(BaseFilterDriver):
     """
     Cython implementation of the in-memory proto filter
     """
