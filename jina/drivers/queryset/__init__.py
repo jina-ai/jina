@@ -4,7 +4,18 @@ from .. import BaseDriver
 from ...proto import jina_pb2
 
 
-class BaseFilterDriver(BaseDriver):
+class BaseIntegratedQueryDriver(BaseDriver):
+    """
+    :class:`BaseIntegratedQueryDriver` adds native data querying capabilities to Jina,
+
+    The following Standard Query Operator to be implemented
+    - filter/where: filter the doc/chunk by its attributes
+    - select: select attributes to include in the results
+    - limit/take/slicing: take the first k doc/chunk
+    - sort: sort the doc/chunk
+    - reverse: reverse the list of collections
+    """
+
     def __init__(self, raw_filter=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if raw_filter:
@@ -41,7 +52,7 @@ class BaseFilterDriver(BaseDriver):
         raise NotImplementedError
 
 
-class QuerySetDriver(BaseFilterDriver):
+class QuerySetDriver(BaseIntegratedQueryDriver):
     """
     A QuerySet represents a collection of objects from your database.
     It can have zero, one or many filters. Filters narrow down the query results
@@ -52,13 +63,13 @@ class QuerySetDriver(BaseFilterDriver):
     """
 
 
-class GraphQLDriver(BaseFilterDriver):
+class GraphQLDriver(BaseIntegratedQueryDriver):
     """
     GraphQL as in-memory filter
     """
 
 
-class CythonFilterDriver(BaseFilterDriver):
+class CythonFilterDriver(BaseIntegratedQueryDriver):
     """
     Cython implementation of the in-memory proto filter
     """
