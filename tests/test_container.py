@@ -134,6 +134,7 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=random_docs(1000))
 
     def test_container_volume(self):
+        time.sleep(5)
         f = (Flow()
              .add(name='dummyEncoder', image=img_name, volumes='./abc',
                   yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_upd.yml')))
