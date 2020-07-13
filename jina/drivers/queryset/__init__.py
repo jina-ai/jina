@@ -18,9 +18,13 @@ class BaseFilterDriver(BaseDriver):
             # filter is done in-place.
             pass
         elif isinstance(filtered, Iterator):
+            # count length before
+            len_before = len(self.req.docs)
             for d in filtered:
                 _d = self.req.docs.add()
                 _d.CopyFrom(d)
+            # remove old ones
+            del self.req.docs[:len_before]
 
     def parse(self, raw_filter):
         raise NotImplementedError
