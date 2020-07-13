@@ -95,10 +95,6 @@ class BaseDriver(metaclass=DriverType):
         self.pea = pea
         self.attached = True
 
-    def chunks(self, d):
-        for c in d.chunks:
-            yield c
-
     @property
     def req(self) -> 'jina_pb2.Request':
         """Get the current request, shortcut to ``self.pea.request``"""
