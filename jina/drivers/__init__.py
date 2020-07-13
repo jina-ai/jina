@@ -86,7 +86,6 @@ class BaseDriver(metaclass=DriverType):
     def __init__(self, *args, **kwargs):
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
         self.pea = None  # type: 'BasePea'
-        self._compiled_if = None
 
     def attach(self, pea: 'BasePea', *args, **kwargs):
         """Attach this driver to a :class:`jina.peapods.pea.BasePea`
@@ -95,7 +94,6 @@ class BaseDriver(metaclass=DriverType):
         """
         self.pea = pea
         self.attached = True
-
 
     @property
     def req(self) -> 'jina_pb2.Request':
