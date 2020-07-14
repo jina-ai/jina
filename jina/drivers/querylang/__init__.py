@@ -10,7 +10,7 @@ class BaseQueryLangDriver(BaseDriver):
 
     The following Standard Query Operator to be implemented
     - filter/where: filter the doc/chunk by its attributes
-    - select: select attributes to include in the results
+    - select/exclude: select attributes to include in the results
     - limit/take/slicing: take the first k doc/chunk
     - sort/order_by: sort the doc/chunk
     - reverse: reverse the list of collections

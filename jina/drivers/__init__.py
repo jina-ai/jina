@@ -179,11 +179,12 @@ class BaseRecursiveDriver(BaseDriver):
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         """ Apply function works on each doc, one by one, modify the doc in-place """
-        raise NotImplementedError
 
     def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        """ Apply function works on a list of docs, modify the docs in-place """
-        pass
+        """ Apply function works on a list of docs, modify the docs in-place
+
+        Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
+        """
 
     def __call__(self, *args, **kwargs):
         if self.recursion_order == 'post':

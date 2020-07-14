@@ -5,6 +5,9 @@ from typing import Tuple
 
 from . import BaseRecursiveDriver
 
+if False:
+    from ..proto import jina_pb2
+
 
 class PruneDriver(BaseRecursiveDriver):
     """Clean some fields from the chunk-level protobuf to reduce the total size of the request
@@ -20,7 +23,6 @@ class PruneDriver(BaseRecursiveDriver):
         """
 
         :param pruned: the pruned field names in tuple
-        :param level: index level "chunk", "doc", "request" or "all"
         """
         super().__init__(*args, **kwargs)
         if isinstance(pruned, str):
