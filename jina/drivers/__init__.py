@@ -161,7 +161,14 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, depth_range: Tuple[int] = (0, 1), order: str = 'post', *args, **kwargs):
+    def __init__(self, depth_range: Tuple[int] = (0, 0), order: str = 'post', *args, **kwargs):
+        """
+
+        :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
+        :param order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]

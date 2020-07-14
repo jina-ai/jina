@@ -73,4 +73,4 @@ class MyTestCase(JinaTestCase):
     # def test_dummy_seg_random(self):
     #     f = Flow().add(yaml_path='../../yaml/dummy-seg-random.yml')
     #     with f:
-    #         f.index(input_fn=random_docs(10), output_fn=self.collect_chunk_id)
+    #         f.index(input_fn=random_docs(10), output_fn=self.validate)
