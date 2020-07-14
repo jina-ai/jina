@@ -1,6 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Iterable
+
 import numpy as np
 
 from . import BaseExecutableDriver
@@ -16,12 +18,10 @@ class BaseIndexDriver(BaseExecutableDriver):
 
 class VectorIndexDriver(BaseIndexDriver):
     """Extract chunk-level embeddings and add it to the executor
-
     """
 
-    def __call__(self, *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs,
-                                                                             embedding=True)
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(docs, embedding=True)
 
         if no_chunk_docs:
             self.pea.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
@@ -35,34 +35,7 @@ class VectorIndexDriver(BaseIndexDriver):
 
 class KVIndexDriver(BaseIndexDriver):
     """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
-
-    Number of key-value pairs depends on the ``level``
-
-         - ``level=chunk``: D x C
-         - ``level=doc``: D
-         - ``level=all``: D x C + D
-
-    where:
-        - D is the number of queries
-        - C is the number of chunks per query/doc
     """
 
-    def __init__(self, level: str, *args, **kwargs):
-        """
-
-        :param level: index level "chunk" or "doc", or "all"
-        :param args:
-        :param kwargs:
-        """
-        super().__init__(*args, **kwargs)
-        self.level = level
-
-    def __call__(self, *args, **kwargs):
-        if self.level == 'doc':
-            content = self.req.docs
-        elif self.level == 'chunk':
-            content = (c for d in self.req.docs for c in d.chunks)
-        else:
-            raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
-        if content:
-            self.exec_fn(content)
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        self.exec_fn(docs)
