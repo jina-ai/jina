@@ -18,9 +18,11 @@ class SimpleCounter(BaseCounter):
 
 
 class RandomUintCounter(BaseCounter):
-    def __init__(self, max_val=ctypes.c_uint(-1).value, *args, **kwargs):
+    def __init__(self, max_val: int = ctypes.c_uint(-1).value):
         super().__init__()
         self.max_val = max_val
+        if self.seed:
+            random.seed(self.seed)
 
     def __next__(self):
         return random.randint(0, self.max_val)

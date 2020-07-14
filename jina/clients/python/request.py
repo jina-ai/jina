@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import mimetypes
 import os
 import urllib.parse
-from typing import Iterator, Union
+from typing import Iterator, Union, Tuple, List
 
 import numpy as np
 
@@ -17,12 +17,13 @@ from ...proto import jina_pb2
 
 
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
-              mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
-              mime_type: str = None,
+              first_doc_id: int = 0, first_request_id: int = 0,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
+              mime_type: str = None, filter_by: Union[Tuple[str], List[str], str] = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
-    doc_counter = RandomUintCounter()
-    req_counter = SimpleCounter()
+    doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
+    req_counter = SimpleCounter(first_request_id)
 
     try:
         import magic
