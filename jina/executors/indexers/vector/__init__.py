@@ -71,7 +71,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
-        self.validate_key_vector_shapes(keys, vectors)
+        self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.key_bytes += keys.tobytes()
         self.key_dtype = keys.dtype.name
