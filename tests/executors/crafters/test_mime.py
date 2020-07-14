@@ -1,4 +1,5 @@
 import glob
+import os
 
 from jina.flow import Flow
 from tests import JinaTestCase
@@ -20,7 +21,8 @@ def input_fn2(pattern='../../*.*'):
 
 
 def input_fn3():
-    for g in ['test_mime.py',  # local file
+    for g in [
+              os.path.abspath(__file__),  # local file
               'https://github.com/jina-ai/jina/raw/master/.github/1500%D1%85667.gif?raw=true',
               'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC',
               'https://cdn.bulbagarden.net/upload/thumb/2/21/001Bulbasaur.png/240px-001Bulbasaur.png']:
