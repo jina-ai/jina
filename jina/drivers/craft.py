@@ -5,7 +5,7 @@ from typing import Dict, Set, List
 
 from . import BaseExecutableDriver
 from .helper import array2pb, pb_obj2dict
-from ..counter import RandomUintCounter
+from ..counter import RandomUintCounter, SimpleCounter
 from ..proto import jina_pb2
 
 
@@ -42,7 +42,8 @@ class SegmentDriver(BaseCraftDriver):
     """Segment document into chunks using the executor
     """
 
-    def __init__(self, level_names: List[str] = None, *args, **kwargs):
+    def __init__(self, first_chunk_id: int = 0,
+                 random_chunk_id: bool = True, level_names: List[str] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if isinstance(level_names, list) and (self._depth_end - self._depth_start + 1) != len(self.level_names):
             self.level_names = level_names
@@ -53,7 +54,8 @@ class SegmentDriver(BaseCraftDriver):
 
         # for adding new chunks, preorder is safer
         self.recursion_order = 'pre'
-        self.counter = RandomUintCounter()
+        self._counter = RandomUintCounter() if random_chunk_id else SimpleCounter(first_chunk_id)
+        self._protected_fields = {'length', 'id', 'parent_id', 'level_depth', 'mime_type'}
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         _args_dict = pb_obj2dict(doc, self.exec.required_keys)
@@ -61,9 +63,9 @@ class SegmentDriver(BaseCraftDriver):
         if ret:
             for r in ret:
                 c = doc.chunks.add()
-                self.set_doc_attr(c, r, {'length', 'id', 'parent_id', 'level_depth', 'mime_type'})
+                self.set_doc_attr(c, r, self._protected_fields)
                 c.length = len(ret)
-                c.id = next(self.counter)
+                c.id = next(self._counter)
                 c.parent_id = doc.id
                 c.level_depth = doc.level_depth + 1
                 c.mime_type = doc.mime_type
