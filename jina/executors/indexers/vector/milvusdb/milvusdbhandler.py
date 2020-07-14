@@ -1,4 +1,6 @@
 import numpy as np
+from functools import reduce
+import operator
 from milvus import Milvus, IndexType, MetricType, Status
 
 
@@ -42,7 +44,7 @@ class MilvusDBHandler:
         def __exit__(self, exc_type, exc_val, exc_tb):
             self.client.flush([self.collection_name])
 
-        def insert(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
+        def insert(self, keys: list, vectors: 'np.ndarray'):
             status, _ = self.client.insert(collection_name=self.collection_name, records=vectors, ids=keys)
             if not status.OK():
                 # TODO: Should I raise?
@@ -76,7 +78,7 @@ class MilvusDBHandler:
 
     def insert(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
         with MilvusDBHandler.MilvusDBInserter(self.milvus_client, self.collection_name) as db:
-            db.insert(keys, vectors)
+            db.insert(reduce(operator.concat, keys.tolist()), vectors)
 
     def build_index(self, index_type: str, index_params: dict):
         type = IndexType.FLAT
@@ -88,7 +90,7 @@ class MilvusDBHandler:
             # TODO: Should I raise?
             print('Creating index failed: {}'.format(status))
 
-    def search(self, query_vectors: 'np.ndarray', top_k: int, search_params: dict):
+    def search(self, query_vectors: 'np.ndarray', top_k: int, search_params: dict=None):
         status, results = self.milvus_client.search(collection_name=self.collection_name,
                                                     query_records=query_vectors, top_k=top_k, params=search_params)
         if not status.OK():

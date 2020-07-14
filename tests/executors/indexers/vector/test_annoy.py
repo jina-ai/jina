@@ -4,7 +4,6 @@ import unittest
 import numpy as np
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector.annoy import AnnoyIndexer
-from jina.executors.indexers.vector.nmslib import NmslibIndexer
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from tests import JinaTestCase
 

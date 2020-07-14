@@ -6,7 +6,7 @@ from typing import Tuple
 import numpy as np
 
 from . import BaseVectorIndexer
-from .milvus import MilvusDBHandler
+from .milvusdb.milvusdbhandler import MilvusDBHandler
 
 
 class MilvusIndexer(BaseVectorIndexer):
@@ -39,4 +39,4 @@ class MilvusIndexer(BaseVectorIndexer):
 
     def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         dist, ids = self.query_handler.search(vectors, top_k, *args, **kwargs)
-        return ids, dist
+        return np.array(ids), np.array(dist)
