@@ -1,12 +1,11 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import ctypes
-import random
 from typing import Dict, Set, List
 
 from . import BaseExecutableDriver
 from .helper import array2pb, pb_obj2dict
+from ..counter import RandomUintCounter
 from ..proto import jina_pb2
 
 
@@ -54,6 +53,7 @@ class SegmentDriver(BaseCraftDriver):
 
         # for adding new chunks, preorder is safer
         self.recursion_order = 'pre'
+        self.counter = RandomUintCounter()
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         _args_dict = pb_obj2dict(doc, self.exec.required_keys)
@@ -63,7 +63,7 @@ class SegmentDriver(BaseCraftDriver):
                 c = doc.chunks.add()
                 self.set_doc_attr(c, r, {'length', 'id', 'parent_id', 'level_depth', 'mime_type'})
                 c.length = len(ret)
-                c.id = random.randint(0, ctypes.c_uint(-1).value)
+                c.id = next(self.counter)
                 c.parent_id = doc.id
                 c.level_depth = doc.level_depth + 1
                 c.mime_type = doc.mime_type
