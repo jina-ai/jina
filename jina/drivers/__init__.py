@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Iterator
+from typing import Callable, Tuple
 
 import ruamel.yaml.constructor
 
@@ -157,6 +157,53 @@ class BaseDriver(metaclass=DriverType):
             del d['pea']
         d['attached'] = False
         return d
+
+
+class BaseRecursiveDriver(BaseDriver):
+
+    def __init__(self, depth_range: Tuple[int] = (0, 1), order: str = 'post', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._depth_start = depth_range[0]
+        self._depth_end = depth_range[1]
+        if order in {'post', 'pre'}:
+            self._order = order
+        else:
+            raise AttributeError('can only accept oder={"pre", "post"}')
+
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        """ Apply function works on every doc, modify the doc in-place """
+        raise NotImplementedError
+
+    def __call__(self, *args, **kwargs):
+        if self._order == 'post':
+            _wrap = self._postorder_apply
+        elif self._order == 'pre':
+            _wrap = self._preorder_apply
+        else:
+            raise ValueError(f'{self._order}')
+        _wrap(self, *args, **kwargs)
+
+    def _postorder_apply(self, *args, **kwargs):
+        def _traverse(docs):
+            if docs:
+                for d in docs:
+                    if d.level_depth < self._depth_end:
+                        _traverse(d.chunks)
+                    if d.level_depth >= self._depth_start:
+                        self.apply(d, *args, **kwargs)
+
+        _traverse(self.req.docs)
+
+    def _preorder_apply(self, *args, **kwargs):
+        def _traverse(docs):
+            if docs:
+                for d in docs:
+                    if d.level_depth >= self._depth_start:
+                        self.apply(d, *args, **kwargs)
+                    if d.level_depth < self._depth_end:
+                        _traverse(d.chunks)
+
+        _traverse(self.req.docs)
 
 
 class BaseExecutableDriver(BaseDriver):
