@@ -203,7 +203,10 @@ class BaseRecursiveDriver(BaseDriver):
                         _traverse(d.chunks)
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
-                self.apply_all(docs, *args, **kwargs)
+
+                # check first doc if in the required depth range
+                if docs[0].level_depth >= self._depth_start:
+                    self.apply_all(docs, *args, **kwargs)
 
         _traverse(self.req.docs)
 
@@ -211,7 +214,10 @@ class BaseRecursiveDriver(BaseDriver):
         """often useful when you grow new structure, e.g. segment """
         def _traverse(docs):
             if docs:
-                self.apply_all(docs, *args, **kwargs)
+                # check first doc if in the required depth range
+                if docs[0].level_depth >= self._depth_start:
+                    self.apply_all(docs, *args, **kwargs)
+
                 for d in docs:
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
