@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple
 
-from . import BaseRecursiveDriver
+from .. import BaseRecursiveDriver
 
 if False:
-    from ..proto import jina_pb2
+    from ...proto import jina_pb2
 
 
-class PruneDriver(BaseRecursiveDriver):
+class ExcludeDriver(BaseRecursiveDriver):
     """Clean some fields from the chunk-level protobuf to reduce the total size of the request
 
     For example,
@@ -19,51 +19,48 @@ class PruneDriver(BaseRecursiveDriver):
         - "request" level is often useful when the proceeding Pods require only a signal, not the full message.
     """
 
-    def __init__(self, pruned: Tuple, *args, **kwargs):
+    def __init__(self, keys: Tuple, *args, **kwargs):
         """
 
-        :param pruned: the pruned field names in tuple
+        :param keys: the pruned field names in tuple
         """
         super().__init__(*args, **kwargs)
-        if isinstance(pruned, str):
-            self.pruned = (pruned,)
+        if isinstance(keys, str):
+            self.keys = {keys, }
         else:
-            self.pruned = pruned
+            self.keys = set(keys)
 
         # for deleting field in a recursive structure, postorder is safer
         self.recursion_order = 'post'
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        for k in self.pruned:
+        for k in self.keys:
             doc.ClearField(k)
 
 
-class ChunkPruneDriver(PruneDriver):
-    """Clean some fields from the chunk-level protobuf to reduce the total size of the request
-
-    Removed fields are ``embedding``, ``buffer``, ``blob``, ``text``.
-    """
-
-    def __init__(self, pruned=('embedding', 'buffer', 'blob', 'text'), *args, **kwargs):
-        super().__init__(pruned, *args, **kwargs)
+class SelectDriver(ExcludeDriver):
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        for k in doc.DESCRIPTOR.fields_by_name.keys():
+            if k not in self.keys:
+                doc.ClearField(k)
 
 
-class DocPruneDriver(PruneDriver):
-    """Clean some fields from the doc-level protobuf to reduce the total size of request
+# ChunkPruneDriver: pruned=('embedding', 'buffer', 'blob', 'text')
+# DocPruneDriver: pruned=('chunks', 'buffer')
 
-    Removed fields are ``chunks``, ``buffer``
-    """
-
-    def __init__(self, pruned=('chunks', 'buffer'), *args, **kwargs):
-        super().__init__(pruned, *args, **kwargs)
-
-
-class ReqPruneDriver(PruneDriver):
+class ReqExcludeDriver(ExcludeDriver):
     """Clean up request from the protobuf message to reduce the total size of the message
 
         This is often useful when the proceeding Pods require only a signal, not the full message.
     """
 
     def __call__(self, *args, **kwargs):
-        for k in self.pruned:
+        for k in self.keys:
             self.msg.ClearField(k)
+
+
+class ReqSelectDriver(ReqExcludeDriver):
+    def __call__(self, *args, **kwargs):
+        for k in self.msg.DESCRIPTOR.fields_by_name.keys():
+            if k not in self.keys:
+                self.msg.ClearField(k)
