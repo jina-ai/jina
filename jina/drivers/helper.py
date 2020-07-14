@@ -145,7 +145,10 @@ def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     :param obj: a protobuf object
     :param keys: an iterable of keys for extraction
     """
-    return {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
+    ret = {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
+    if 'blob' in ret:
+        ret['blob'] = pb2array(obj.blob)
+    return ret
 
 
 def guess_mime(uri):

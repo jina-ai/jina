@@ -29,7 +29,7 @@ class PruneDriver(BaseRecursiveDriver):
             self.pruned = pruned
 
         # for deleting field in a recursive structure, postorder is safer
-        self._order = 'post'
+        self.recursion_order = 'post'
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in self.pruned:

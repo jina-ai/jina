@@ -166,7 +166,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]
         if order in {'post', 'pre'}:
-            self._order = order
+            self.recursion_order = order
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
 
@@ -175,12 +175,12 @@ class BaseRecursiveDriver(BaseDriver):
         raise NotImplementedError
 
     def __call__(self, *args, **kwargs):
-        if self._order == 'post':
+        if self.recursion_order == 'post':
             _wrap = self._postorder_apply
-        elif self._order == 'pre':
+        elif self.recursion_order == 'pre':
             _wrap = self._preorder_apply
         else:
-            raise ValueError(f'{self._order}')
+            raise ValueError(f'{self.recursion_order}')
         _wrap(self, *args, **kwargs)
 
     def _postorder_apply(self, *args, **kwargs):
@@ -208,7 +208,7 @@ class BaseRecursiveDriver(BaseDriver):
         _traverse(self.req.docs)
 
 
-class BaseExecutableDriver(BaseDriver):
+class BaseExecutableDriver(BaseRecursiveDriver):
     """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.pea.BasePea` and :class:`jina.executors.BaseExecutor`
         It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
         finally it returns the message back to :class:`jina.peapods.pea.BasePea`.
