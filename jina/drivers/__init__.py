@@ -184,6 +184,7 @@ class BaseRecursiveDriver(BaseDriver):
         _wrap(self, *args, **kwargs)
 
     def _postorder_apply(self, *args, **kwargs):
+        """often useful when you delete a recursive structure """
         def _traverse(docs):
             if docs:
                 for d in docs:
@@ -195,6 +196,7 @@ class BaseRecursiveDriver(BaseDriver):
         _traverse(self.req.docs)
 
     def _preorder_apply(self, *args, **kwargs):
+        """often useful when you grow new structure, e.g. segment """
         def _traverse(docs):
             if docs:
                 for d in docs:
