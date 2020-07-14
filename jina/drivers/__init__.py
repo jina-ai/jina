@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Iterable
 
 import ruamel.yaml.constructor
 
@@ -178,8 +178,12 @@ class BaseRecursiveDriver(BaseDriver):
             raise AttributeError('can only accept oder={"pre", "post"}')
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        """ Apply function works on every doc, modify the doc in-place """
+        """ Apply function works on each doc, one by one, modify the doc in-place """
         raise NotImplementedError
+
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        """ Apply function works on a list of docs, modify the docs in-place """
+        pass
 
     def __call__(self, *args, **kwargs):
         if self.recursion_order == 'post':
@@ -199,6 +203,7 @@ class BaseRecursiveDriver(BaseDriver):
                         _traverse(d.chunks)
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
+                self.apply_all(docs, *args, **kwargs)
 
         _traverse(self.req.docs)
 
@@ -206,6 +211,7 @@ class BaseRecursiveDriver(BaseDriver):
         """often useful when you grow new structure, e.g. segment """
         def _traverse(docs):
             if docs:
+                self.apply_all(docs, *args, **kwargs)
                 for d in docs:
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
