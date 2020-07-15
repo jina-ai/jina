@@ -594,3 +594,15 @@ def show_ioloop_backend(loop=None):
         loop = asyncio.get_event_loop()
     from .logging import default_logger
     default_logger.info(f'using {loop.__class__} as event loop')
+
+
+def rsetattr(obj, attr: str, val):
+    pre, _, post = attr.rpartition('.')
+    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+
+def rgetattr(obj, attr: str, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+
+    return functools.reduce(_getattr, [obj] + attr.split('.'))

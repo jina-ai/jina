@@ -1,48 +1,37 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from .. import BaseDriver
+from typing import Iterable
+
+from .. import BaseRecursiveDriver
+from ...helper import rgetattr
 
 
-class TopKFilterDriver(BaseDriver):
+class SortQL(BaseRecursiveDriver):
     """Restrict the size of the ``topk_results`` to ``k`` (given by the request)
 
     This driver works on both chunk and doc level
     """
 
-    def __call__(self, *args, **kwargs):
-        # keep to topk docs
-        for d in self.req.docs:
-            del d.topk_results[self.req.top_k:]
-            topk_doc_id = {md.match.id for md in d.topk_results}
-            # keep only the chunks that hit the topk docs
-            for c in d.chunks:
-                # delete in reverse so that idx won't be messed up
-                for idx, mc in reversed(list(enumerate(c.topk_results))):
-                    if mc.match.id not in topk_doc_id:
-                        del c.topk_results[idx]
+    def __init__(self, field: str, reverse: bool = False, *args, **kwargs):
+        """
 
-                # if it's still > k
-                del c.topk_results[self.req.top_k:]
+        :param reverse: sort the value from big to small
+        """
+
+        super().__init__(*args, **kwargs)
+        self.reverse = reverse
+        self.field = field
+
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        docs.sort(keys=lambda x: rgetattr(x, self.field), reverse=self.reverse)
 
 
-class TopKSortDriver(BaseDriver):
+class SortResultQL(SortQL):
     """Sort the ``topk_results``
 
     This driver works on both chunk and doc level
     """
 
-    def __init__(self, descending: bool = False, *args, **kwargs):
-        """
-
-        :param descending: sort the value from big to small
-        """
-
-        super().__init__(*args, **kwargs)
-        self.descending = descending
-
-    def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
-            d.topk_results.sort(key=lambda x: x.score.value, reverse=self.descending)
-            for c in d.chunks:
-                c.topk_results.sort(key=lambda x: x.score.value, reverse=self.descending)
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        doc.topk_results.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)
