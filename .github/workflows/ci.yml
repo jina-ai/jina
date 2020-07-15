@@ -72,7 +72,9 @@ jobs:
           pip install pytest
           pip install pytest-xdist
           pip install pytest-timeout
-          pytest -n 1 --timeout=60 -v
+          pip install pytest-cov
+          pytest --cov=jina -n 1 --timeout=60 -v
+          bash <(curl -s https://codecov.io/bash) -t 478b04d9-9648-44ae-b1f3-dc6b3c6769ff
         #      run: |
         #        pip install pytest
         #        pip install pytest-cov
