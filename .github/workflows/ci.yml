@@ -73,13 +73,29 @@ jobs:
           pip install pytest-xdist
           pip install pytest-timeout
           pip install pytest-cov
-          pytest --cov=jina -n 1 --timeout=60 -v
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v
         timeout-minutes: 15
-
+      - name: Upload coverage result from unit-test
+        uses: actions/upload-artifact@v1
+        with:
+          name: codecoverage
+          path: coverage.xml
+  codecov:
+    needs: unit-test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+    steps:
+      - name: Download coverage result from unit-test
+        uses: actions/download-artifact@v1
+        with:
+          name: codecoverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          file: ./coverage.xml
+          file: ./codecoverage/coverage.xml
           env_vars: OS,PYTHON
           name: codecov
           fail_ci_if_error: true
