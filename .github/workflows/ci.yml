@@ -74,11 +74,12 @@ jobs:
           pip install pytest-timeout
           pip install pytest-cov
           pytest --cov=jina -n 1 --timeout=60 -v
-          bash <(curl -s https://codecov.io/bash) -t bbc820d0-871d-404d-be0c-0d250febecc5
-
-        #      run: |
-        #        pip install pytest
-        #        pip install pytest-cov
-        #        cd tests && pytest *.py --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov=com --cov-report=xml --cov-report=html
-        #      shell: bash
         timeout-minutes: 15
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: true
