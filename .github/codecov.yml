@@ -1,0 +1,6 @@
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+        target: auto  # auto compares coverage to the previous base commit
