@@ -41,8 +41,8 @@ class JinaRPCServicer(object):
       """Pass in a Request and a filled Request with matches will be returned.
       """
       context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
 
   def CallUnary(self, request, context):
     # missing associated documentation comment in .proto file

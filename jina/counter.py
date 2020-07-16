@@ -12,6 +12,10 @@ class BaseCounter(Iterator):
 
 
 class SimpleCounter(BaseCounter):
+    def __init__(self, seed: int = 0):
+        super().__init__(seed)
+        self.seed = seed - 1
+
     def __next__(self):
         self.seed += 1
         return self.seed
