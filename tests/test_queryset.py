@@ -18,7 +18,7 @@ class MyTestCase(JinaTestCase):
 
     def test_chunks_filter(self):
         s = random_docs(10)
-        ss = QuerySet(s).filter(chunks__0__id=4)
+        ss = QuerySet(s).filter(id=4)
         ssr = list(ss)
         self.assertEqual(len(ssr), 1)
         for d in ssr:
@@ -31,7 +31,6 @@ class MyTestCase(JinaTestCase):
         ssr = list(ss)
         self.assertEqual(len(ssr), 1)
         for d in ssr:
-            self.assertTrue(3 < d.id < 5)
             self.assertEqual(len(d.chunks), 5)
 
     # def test_chunk_select_filter(self):

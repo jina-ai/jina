@@ -10,4 +10,8 @@ on:
           - blob
           - text
     - !Chunk2DocRankDriver {}
-    - !TopKFilterDriver {}
+    - !SliceMatchesQL
+      with:
+        depth_range: [0, 1]  # prune root and 1st level
+        start: 0
+        end: k
