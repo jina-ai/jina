@@ -30,7 +30,6 @@ jobs:
         with:
           repo-token: "${{ secrets.JINA_DEV_BOT }}"
 
-
   unit-test:
     needs: commit-lint
     runs-on: ${{ matrix.os }}
@@ -54,15 +53,17 @@ jobs:
           pip install .[match-py-ver]
       - name: Lint with flake8
         run: |
-          pip install flake8
+          #pip install flake8
+          ls -l
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          # flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test docker install
         run: |
-          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          ls -l
+          #docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          #docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Test with pytest
         run: |
           # make sure docker exist
@@ -73,13 +74,14 @@ jobs:
           pip install pytest-xdist
           pip install pytest-timeout
           pip install pytest-cov
-          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/executors/crafters/numeric/
         timeout-minutes: 15
       - name: Upload coverage result from unit-test
         uses: actions/upload-artifact@v1
         with:
-          name: codecoverage
-          path: coverage.xml
+          name: codecoverage-${{ matrix.python-version }}
+          path: ./coverage.xml
+
   codecov:
     needs: unit-test
     runs-on: ubuntu-latest
@@ -91,11 +93,16 @@ jobs:
       - name: Download coverage result from unit-test
         uses: actions/download-artifact@v1
         with:
-          name: codecoverage
+          name: codecoverage-${{ matrix.python-version }}
+      - name: Check what is in this folder
+        run: |
+          ls -l
+          ls -l codecoverage-3.7
+          cat codecoverage-3.7/coverage.xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          file: ./codecoverage/coverage.xml
+          file: codecoverage-${{ matrix.python-version }}/coverage.xml
           env_vars: OS,PYTHON
           name: codecov
           fail_ci_if_error: true
