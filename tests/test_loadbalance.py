@@ -17,11 +17,11 @@ class SlowWorker(BaseDocCrafter):
         self.is_slow = os.getpid() % 2 != 0
         self.logger.warning('im a slow worker')
 
-    def craft(self, doc_id, *args, **kwargs):
+    def craft(self, id, *args, **kwargs):
         if self.is_slow:
             self.logger.warning('slowly doing')
             time.sleep(1)
-        return {'doc_id': doc_id}
+        return {'id': id}
 
 
 class MyTestCase(JinaTestCase):

@@ -4,8 +4,16 @@ on:
   SearchRequest:
     - !VectorSearchDriver {}
   IndexRequest:
-    - !DocPruneDriver
+    - !ExcludeQL
       with:
-        pruned: buffer
+        fields:
+          - buffer
+          - chunks
     - !VectorIndexDriver {}
-    - !ChunkPruneDriver {}
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+          - buffer
+          - blob
+          - text

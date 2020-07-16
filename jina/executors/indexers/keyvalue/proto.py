@@ -19,17 +19,11 @@ class BasePbIndexer(BaseKVIndexer):
     flush_on_add = True  #: When set to true, the indexer is flushed on every add, it is safer but slower
     mode = 't'  #: r/w mode, `t` for text, `b` for binary
 
-    def __init__(self, index_filename: str, level: str, *args, **kwargs):
+    def __init__(self, index_filename: str, *args, **kwargs):
         super().__init__(index_filename, *args, **kwargs)
-        self.level = level
 
     def post_init(self):
-        if self.level == 'chunk':
-            self._parser = jina_pb2.Chunk
-        elif self.level == 'doc':
-            self._parser = jina_pb2.Document
-        else:
-            raise NotImplementedError(f'{self.level} is not supported!')
+        self._parser = jina_pb2.Document
         super().post_init()
 
     def get_add_handler(self):

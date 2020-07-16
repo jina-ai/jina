@@ -10,7 +10,7 @@ class MyTestCase(JinaTestCase):
 
     def test_docs_filter(self):
         s = random_docs(10)
-        ss = QuerySet(s).filter(doc_id__lt=5, doc_id__gt=3)
+        ss = QuerySet(s).filter(id__lt=5, id__gt=3)
         ssr = list(ss)
         self.assertEqual(len(ssr), 1)
         for d in ssr:
@@ -18,7 +18,7 @@ class MyTestCase(JinaTestCase):
 
     def test_chunks_filter(self):
         s = random_docs(10)
-        ss = QuerySet(s).filter(chunks__0__doc_id__exact=4)
+        ss = QuerySet(s).filter(chunks__0__id=4)
         ssr = list(ss)
         self.assertEqual(len(ssr), 1)
         for d in ssr:
@@ -27,7 +27,7 @@ class MyTestCase(JinaTestCase):
 
     def test_nested_chunks_filter(self):
         s = random_docs(10)
-        ss = QuerySet(s).filter(Q(chunks__filter=Q(doc_id__lt=5, doc_id__gt=3)))
+        ss = QuerySet(s).filter(Q(chunks__filter=Q(id__lt=5, id__gt=3)))
         ssr = list(ss)
         self.assertEqual(len(ssr), 1)
         for d in ssr:

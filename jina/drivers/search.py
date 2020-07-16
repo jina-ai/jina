@@ -35,16 +35,6 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def __init__(self, level: str, *args, **kwargs):
-        """
-
-        :param level: index level "chunk" or "doc", or "all"
-        :param args:
-        :param kwargs:
-        """
-        super().__init__(*args, **kwargs)
-        self.level = level
-
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
         for tk in doc.topk_results:

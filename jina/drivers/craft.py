@@ -9,7 +9,7 @@ from ..counter import RandomUintCounter, SimpleCounter
 from ..proto import jina_pb2
 
 
-class BaseCraftDriver(BaseExecutableDriver):
+class CraftDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
@@ -38,7 +38,7 @@ class BaseCraftDriver(BaseExecutableDriver):
                 setattr(doc, k, v)
 
 
-class SegmentDriver(BaseCraftDriver):
+class SegmentDriver(CraftDriver):
     """Segment document into chunks using the executor
     """
 
