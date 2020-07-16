@@ -5,6 +5,9 @@ metas:
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
-      - !ReqPruneDriver {}
-    ControlRequest:
-      - !ControlReqDriver {}
+      - !ExcludeReqQL
+        with:
+          fields:
+            - request
+      ControlRequest:
+        - !ControlReqDriver {}
