@@ -6,6 +6,9 @@ from typing import Iterable
 from .. import BaseRecursiveDriver
 from ...helper import rgetattr
 
+if False:
+    from ...proto import jina_pb2
+
 
 class SortQL(BaseRecursiveDriver):
     """Restrict the size of the ``topk_results`` to ``k`` (given by the request)
