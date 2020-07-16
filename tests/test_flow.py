@@ -211,9 +211,9 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(len(req.docs[0].matches), index_docs)
 
             for d in req.docs[0].matches:
-                self.assertTrue(hasattr(d.match_doc, 'weight'))
-                self.assertIsNotNone(d.match_doc.weight)
-                self.assertEqual(d.match_doc.meta_info, b'hello world')
+                self.assertTrue(hasattr(d.match, 'weight'))
+                self.assertIsNotNone(d.match.weight)
+                self.assertEqual(d.match.meta_info, b'hello world')
 
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
                        separated_workspace=True)

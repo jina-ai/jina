@@ -4,9 +4,6 @@ with:
   logserver: $WITH_LOGSERVER
   compress_hwm: 1024
 pods:
-  chunk_seg:
-    yaml_path: $RESOURCE_DIR/helloworld.crafter.yml
-    replicas: $REPLICAS
   encode:
     yaml_path: $RESOURCE_DIR/helloworld.encoder.yml
     replicas: $REPLICAS

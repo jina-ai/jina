@@ -1,4 +1,4 @@
-!DocPbIndexer
+!BinaryPbIndexer
 with:
   index_filename: doc.gzip
 metas:
