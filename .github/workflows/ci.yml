@@ -96,7 +96,6 @@ jobs:
           name: codecoverage-${{ matrix.python-version }}
       - name: Check what is in this folder
         run: |
-          ls -l
           ls -l codecoverage-3.7
           cat codecoverage-3.7/coverage.xml
       - name: Upload coverage to Codecov
