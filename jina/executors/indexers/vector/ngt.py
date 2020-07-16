@@ -4,10 +4,10 @@ __license__ = "Apache-2.0"
 from typing import Tuple
 
 import numpy as np
-from .numpy import NumpyIndexer
+from .numpy import BaseNumpyIndexer
 
 
-class NGTIndexer(NumpyIndexer):
+class NGTIndexer(BaseNumpyIndexer):
     """NGT powered vector indexer
 
     For more information about the NGT supported parameters and installation problems, please consult:
@@ -34,11 +34,8 @@ class NGTIndexer(NumpyIndexer):
         self.num_threads = num_threads
         self.epsilon = epsilon
 
-    def get_query_handler(self):
-        """Index all vectors , if already indexed return NGT Index handle """
-
+    def build_advanced_index(self, vecs: 'np.ndarray'):
         import ngtpy
-        vecs = super().get_query_handler()
         if vecs is not None:
             ngtpy.create(path=self.index_path, dimension=self.num_dim, distance_type=self.metric)
             _index = ngtpy.Index(self.index_path)
