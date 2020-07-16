@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
-from .helper import extract_chunks
+from .helper import extract_docs
 from ..proto.jina_pb2 import ScoredResult
 
 if False:
@@ -37,15 +37,15 @@ class KVSearchDriver(BaseSearchDriver):
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
-        for tk in doc.topk_results:
+        for tk in doc.matches:
             r = self.exec_fn(tk.match.id)
             if r:
                 sr = ScoredResult()
                 sr.score.CopyFrom(tk.score)
                 sr.match.CopyFrom(r)
                 hit_sr.append(sr)
-        doc.ClearField('topk_results')
-        doc.topk_results.extend(hit_sr)
+        doc.ClearField('matches')
+        doc.matches.extend(hit_sr)
 
 
 # DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc
@@ -57,8 +57,8 @@ class VectorSearchDriver(BaseSearchDriver):
     """
 
     def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(docs,
-                                                                             embedding=True)
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
+                                                                           embedding=True)
 
         if no_chunk_docs:
             self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
@@ -71,7 +71,7 @@ class VectorSearchDriver(BaseSearchDriver):
             op_name = self.exec.__class__.__name__
             for c, topks, scs in zip(chunk_pts, idx, dist):
                 for m, s in zip(topks, scs):
-                    r = c.topk_results.add()
+                    r = c.matches.add()
                     r.match.id = m
                     r.score.value = s
                     r.score.op_name = op_name

@@ -2,4 +2,4 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   [SearchRequest, TrainRequest, IndexRequest]:
-    - !ChunkCraftDriver {}
+    - !CraftDriver {}

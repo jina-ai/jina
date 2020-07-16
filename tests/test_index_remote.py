@@ -4,7 +4,6 @@ import time
 import unittest
 
 import numpy as np
-
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from jina.flow import Flow
@@ -19,7 +18,7 @@ def get_result(resp):
     n = []
     for d in resp.search.docs:
         for c in d.chunks:
-            n.append([k.match_chunk.chunk_id for k in c.topk_results])
+            n.append([k.match_chunk.chunk_id for k in c.matches])
     n = np.array(n)
     # each chunk should return a list of top-100
     np.testing.assert_equal(n.shape[0], 5)

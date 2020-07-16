@@ -38,9 +38,9 @@ class JinaRPCServicer(object):
   """
 
   def Call(self, request_iterator, context):
-    """Pass in a Request and a filled Request with topk_results will be returned.
-    """
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      """Pass in a Request and a filled Request with matches will be returned.
+      """
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 

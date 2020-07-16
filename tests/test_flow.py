@@ -5,7 +5,6 @@ from time import sleep
 
 import pytest
 import requests
-
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
@@ -24,7 +23,7 @@ def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
     for j in range(num_docs):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
-            dd = d.topk_results.add()
+            dd = d.matches.add()
             dd.match_doc.doc_id = k
         yield d
 
@@ -209,9 +208,9 @@ class MyTestCase(JinaTestCase):
 
         def validate(req):
             self.assertEqual(len(req.docs), 1)
-            self.assertEqual(len(req.docs[0].topk_results), index_docs)
+            self.assertEqual(len(req.docs[0].matches), index_docs)
 
-            for d in req.docs[0].topk_results:
+            for d in req.docs[0].matches:
                 self.assertTrue(hasattr(d.match_doc, 'weight'))
                 self.assertIsNotNone(d.match_doc.weight)
                 self.assertEqual(d.match_doc.meta_info, b'hello world')
@@ -326,14 +325,14 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_with_publish_driver(self):
 
-        f = (Flow().add(name='r1', yaml_path=os.path.join(cur_dir, 'yaml/unarycrafter.yml'))
+        f = (Flow()
              .add(name='r2', yaml_path='!OneHotTextEncoder')
-             .add(name='r3', yaml_path='!OneHotTextEncoder', needs='r1')
+             .add(name='r3', yaml_path='!OneHotTextEncoder', needs='gateway')
              .join(needs=['r2', 'r3']))
 
         def validate(req):
             for d in req.docs:
-                self.assertEqual(d.length, 1)
+                self.assertIsNotNone(d.embedding)
 
         with f:
             f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on_body=True)

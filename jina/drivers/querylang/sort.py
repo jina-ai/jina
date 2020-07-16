@@ -11,7 +11,7 @@ if False:
 
 
 class SortQL(BaseRecursiveDriver):
-    """Restrict the size of the ``topk_results`` to ``k`` (given by the request)
+    """Restrict the size of the ``matches`` to ``k`` (given by the request)
 
     This driver works on both chunk and doc level
     """
@@ -30,11 +30,11 @@ class SortQL(BaseRecursiveDriver):
         docs.sort(keys=lambda x: rgetattr(x, self.field), reverse=self.reverse)
 
 
-class SortResultQL(SortQL):
-    """Sort the ``topk_results``
+class SortMatchesQL(SortQL):
+    """Sort the ``matches``
 
     This driver works on both chunk and doc level
     """
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        doc.topk_results.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)
+        doc.matches.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)

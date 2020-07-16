@@ -123,22 +123,6 @@ class BinaryPbIndexer(BasePbIndexer):
             self._size += 1
 
 
-class ChunkPbIndexer(BinaryPbIndexer):
-    """Shortcut for :class:`BasePbIndexer` equipped with ``requests.on`` for storing chunk-level protobuf info,
-     differ with :class:`DocPbIndexer` in ``requests.on`` """
-
-    def __init__(self, index_filename: str, level: str = 'chunk', *args, **kwargs):
-        super().__init__(index_filename, level, *args, **kwargs)
-
-
-class DocPbIndexer(BinaryPbIndexer):
-    """Shortcut for :class:`BasePbIndexer` equipped with ``requests.on`` for storing doc-level protobuf info,
-    differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
-
-    def __init__(self, index_filename: str, level: str = 'doc', *args, **kwargs):
-        super().__init__(index_filename, level, *args, **kwargs)
-
-
-class DataURIPbIndexer(DocPbIndexer):
+class DataURIPbIndexer(BinaryPbIndexer):
     """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,
     differ with :class:`ChunkPbIndexer` only in ``requests.on`` """

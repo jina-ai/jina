@@ -56,7 +56,6 @@ class MyTestCase(JinaTestCase):
 
         f = (Flow().add(name='r1', yaml_path='_forward')
              .add(name='r2', yaml_path='!DummyCrafter', replicas=3)
-             .add(yaml_path='- !UnarySegmentDriver {}')
              .add(name='r3', yaml_path='!BaseEncoder'))
 
         with f:

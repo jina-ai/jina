@@ -2,12 +2,11 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
+    - !KVSearchDriver {}
+  IndexRequest:
     - !ExcludeQL
       with:
         fields:
-          - embedding
+          - chunks  # we don't want to save nested structure
           - buffer
-          - blob
-          - text
-    - !Chunk2DocRankDriver {}
-    - !TopKFilterDriver {}
+    - !KVIndexDriver {}

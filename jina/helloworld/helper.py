@@ -20,7 +20,7 @@ def print_result(resp):
     for d in resp.search.docs:
         vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
-        for kk in d.topk_results:
+        for kk in d.matches:
             kmi = kk.match_doc.uri
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
             # k['score']['explained'] = json.loads(kk.score.explained)

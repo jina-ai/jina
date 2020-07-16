@@ -80,12 +80,12 @@ Adapt Index-Flow Pods
 During index time, most parts of the ``Flow`` stay the same as before.
 
 To make the ``Encoder`` only encode the ``Chunks`` whose ``field_name`` meet the selected fields, a new argument, ``filter_by``, is introduced to specify which fields will be encoded.
-To do so, we need adapt ``EncodeDriver`` and the ``extract_chunks()``.
+To do so, we need adapt ``EncodeDriver`` and the ``extract_docs()``.
 
 .. highlight:: python
 .. code-block:: python
 
-    def extract_chunks(
+    def extract_docs(
             docs: Iterable['jina_pb2.Document'],
             filter_by: Union[str, Tuple[str], List[str]],
             embedding: bool) -> Tuple:
@@ -106,7 +106,7 @@ To do so, we need adapt ``EncodeDriver`` and the ``extract_chunks()``.
             if self._request.__class__.__name__ == 'SearchRequest':
                 filter_by = self.req.filter_by
             contents, chunk_pts, no_chunk_docs, bad_chunk_ids = \
-                extract_chunks(self.req.docs, self.filter_by, embedding=False)
+                extract_docs(self.req.docs, self.filter_by, embedding=False)
 
 
 In order to make the ``Indexer`` only index the ``Chunks`` whose ``field_name`` meet the selected fields, we need to adapt the ``VectorIndexDriver`` as well.
@@ -121,7 +121,7 @@ In order to make the ``Indexer`` only index the ``Chunks`` whose ``field_name`` 
 
         def __call__(self, *args, **kwargs):
             embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
-                extract_chunks(self.req.docs, self.filter_by, embedding=True)
+                extract_docs(self.req.docs, self.filter_by, embedding=True)
 
 
 The same change goes for the ``ChunkKVIndexDriver``.
@@ -173,7 +173,7 @@ Furthermore, the ``VectorSearchDriver`` and the ``KVSearchDriver`` also need to 
     class VectorSearchDriver(BaseSearchDriver):
         def __call__(self, *args, **kwargs):
             embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = \
-                extract_chunks(self.req.docs, self.req.filter_by, embedding=True)
+                extract_docs(self.req.docs, self.req.filter_by, embedding=True)
             ...
 
 

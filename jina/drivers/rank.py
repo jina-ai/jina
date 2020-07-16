@@ -30,7 +30,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}
         match_chunk_meta = {}
         for c in doc.chunks:
-            for k in c.topk_results:
+            for k in c.matches:
                 match_idx.append((k.match.id, k.match.parent_id, c.id, k.score.value))
                 query_chunk_meta[c.id] = pb_obj2dict(c, self.exec.required_keys)
                 match_chunk_meta[k.match.id] = pb_obj2dict(k.match, self.exec.required_keys)
@@ -43,7 +43,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
             doc_idx = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             for _d in doc_idx:
-                r = doc.topk_results.add()
+                r = doc.matches.add()
                 r.match.id = int(_d[0])
                 r.score.value = _d[1]
                 r.score.op_name = exec.__class__.__name__

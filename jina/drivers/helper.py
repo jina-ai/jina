@@ -70,8 +70,8 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     return blob
 
 
-def extract_chunks(docs: Iterable['jina_pb2.Document'],
-                   embedding: bool) -> Tuple:
+def extract_docs(docs: Iterable['jina_pb2.Document'],
+                 embedding: bool) -> Tuple:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents
@@ -95,19 +95,14 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'],
     else:
         _extract_fn = lambda c: c.text or c.buffer or (c.blob and pb2array(c.blob))
 
-    for d in docs:
-        has_chunk = False
-        for c in d.chunks:
-            _c = _extract_fn(c)
+    for c in docs:
+        _c = _extract_fn(c)
 
-            if _c is not None:
-                _contents.append(_c)
-                chunk_pts.append(c)
-                has_chunk = True
-            else:
-                bad_chunk_ids.append((d.id, c.id))
-        if not has_chunk:
-            no_chunk_docs.append(d.id)
+        if _c is not None:
+            _contents.append(_c)
+            chunk_pts.append(c)
+        else:
+            bad_chunk_ids.append((c.id, c.parent_id))
 
     contents = np.stack(_contents) if _contents else None
     return contents, chunk_pts, no_chunk_docs, bad_chunk_ids

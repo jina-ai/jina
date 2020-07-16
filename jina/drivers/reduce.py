@@ -88,6 +88,6 @@ class MergeTopKDriver(MergeDriver):
 
     def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         for _d_id, _doc in enumerate(docs):
-            _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
-            _doc.ClearField('topk_results')
-            _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
+            _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].matches]
+            _doc.ClearField('matches')
+            _doc.matches.extend(sorted(_flat_topk, key=lambda x: x.score.value))

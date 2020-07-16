@@ -10,7 +10,7 @@ if False:
 
 
 class SliceQL(BaseRecursiveDriver):
-    """Restrict the size of the ``topk_results`` to ``k`` (given by the request)
+    """Restrict the size of the ``matches`` to ``k`` (given by the request)
 
     This driver works on both chunk and doc level
     """
@@ -37,10 +37,10 @@ class SliceQL(BaseRecursiveDriver):
             del docs[self.end:]
 
 
-class SliceResultsQL(SliceQL):
+class SliceMatchesQL(SliceQL):
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        if self.start <= 0 and (self.end is None or self.end >= len(doc.topk_results)):
+        if self.start <= 0 and (self.end is None or self.end >= len(doc.matches)):
             pass
         else:
-            del doc.topk_results[:self.start]
-            del doc.topk_results[self.end:]
+            del doc.matches[:self.start]
+            del doc.matches[self.end:]

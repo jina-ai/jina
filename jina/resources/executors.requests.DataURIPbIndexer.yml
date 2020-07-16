@@ -2,17 +2,12 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    - !KVSearchDriver
-      with:
-        level: doc
+    - !KVSearchDriver {}
   IndexRequest:
     - !Buffer2URI {}
-    - !PruneDriver
+    - !ExcludeQL
       with:
-        level: doc
-        pruned:
-          - chunks
+        fields:
+          - chunks  # we don't want to save nested structure
           - buffer
-    - !KVIndexDriver
-      with:
-        level: doc
+    - !KVIndexDriver {}

@@ -168,7 +168,7 @@ def print_html(resp):
     for d in resp.search.docs:
         vi = 'data:image/png;base64,' + d.meta_info.decode()
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
-        for kk in d.topk_results:
+        for kk in d.matches:
             kmi = 'data:image/png;base64,' + kk.match_doc.meta_info.decode()
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
             # k['score']['explained'] = json.loads(kk.score.explained)

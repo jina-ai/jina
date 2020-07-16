@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
-from .helper import extract_chunks, array2pb
+from .helper import extract_docs, array2pb
 
 if False:
     from ..proto import jina_pb2
@@ -22,8 +22,8 @@ class EncodeDriver(BaseEncodeDriver):
     """
 
     def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(docs,
-                                                                           embedding=False)
+        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
+                                                                         embedding=False)
 
         if no_chunk_docs:
             self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')

@@ -6,7 +6,7 @@ from typing import Iterable
 import numpy as np
 
 from . import BaseExecutableDriver
-from .helper import extract_chunks
+from .helper import extract_docs
 
 
 class BaseIndexDriver(BaseExecutableDriver):
@@ -21,7 +21,7 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(docs, embedding=True)
+        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs, embedding=True)
 
         if no_chunk_docs:
             self.pea.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
@@ -30,7 +30,7 @@ class VectorIndexDriver(BaseIndexDriver):
             self.pea.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
 
         if chunk_pts:
-            self.exec_fn(np.array([c.chunk_id for c in chunk_pts]), np.stack(embed_vecs))
+            self.exec_fn(np.array([c.id for c in chunk_pts]), np.stack(embed_vecs))
 
 
 class KVIndexDriver(BaseIndexDriver):

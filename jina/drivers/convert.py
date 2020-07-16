@@ -29,7 +29,9 @@ class BaseConvertDriver(BaseRecursiveDriver):
         self.target = target
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        if not (getattr(doc, self.target) or self.override):
+        if getattr(doc, self.target) and not self.override:
+            pass
+        else:
             self.convert(doc)
 
     def convert(self, d):

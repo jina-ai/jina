@@ -16,7 +16,11 @@ requests:
         with:
           override: true
       - !URI2Text {}
-      - !DocPruneDriver {}
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks
       - !KVIndexDriver
         with:
           level: doc

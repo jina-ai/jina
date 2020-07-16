@@ -90,7 +90,7 @@ message Document {
     bytes meta_info = 7;
 
     // the top-k matched Docs on the same level
-    repeated ScoredResult topk_results = 8;
+    repeated ScoredResult matches = 8;
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
     string mime_type = 10;
@@ -295,7 +295,7 @@ message SpawnRequest {
  * jina gRPC service.
  */
 service JinaRPC {
-    // Pass in a Request and a filled Request with topk_results will be returned.
+    // Pass in a Request and a filled Request with matches will be returned.
     rpc Call (stream Request) returns (stream Request) {
     }
 
