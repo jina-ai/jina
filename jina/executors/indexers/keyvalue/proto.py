@@ -42,7 +42,7 @@ class BasePbIndexer(BaseKVIndexer):
     def query(self, key: int) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
         """ Find the protobuf chunk/doc using id
 
-        :param key: ``chunk_id`` or ``doc_id``
+        :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
         if self.query_handler is not None and key in self.query_handler:
@@ -79,12 +79,7 @@ class JsonPbIndexer(BasePbIndexer):
 
         :param obj: an object can be jsonified
         """
-        if self.level == 'chunk':
-            keys = {k.chunk_id: k for k in keys}
-        elif self.level == 'doc':
-            keys = {k.doc_id: k for k in keys}
-        else:
-            raise NotImplementedError
+        keys = {k.id: k for k in keys}
         json.dump(keys, self.write_handler)
         self._size += len(keys)
         self.write_handler.write('\n')

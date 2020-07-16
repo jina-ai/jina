@@ -16,16 +16,15 @@ class AudioMonophoner(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def craft(self, blob: np.ndarray, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, blob: np.ndarray, *args, **kwargs) -> Dict:
         """
         Reads the `ndarray` of the audio signal, makes the audio signal monophonic and saves the `ndarray` of the
         monophonic signal in the `blob` of the Document.
 
         :param blob: the ndarray of the audio signal
-        :param doc_id: the id of the Document
         :return: a Document dict with the monophonic audio signal
         """
         import librosa
         signal_mono = librosa.to_mono(blob)
 
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=signal_mono)
+        return dict(offset=0, weight=1., blob=signal_mono)

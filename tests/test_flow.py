@@ -24,7 +24,7 @@ def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
             dd = d.matches.add()
-            dd.match_doc.doc_id = k
+            dd.match.id = k
         yield d
 
 
@@ -192,7 +192,7 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=3,
                        separated_workspace=True)
         with f:
-            f.index(input_fn=random_docs(1000), random_doc_id=False)
+            f.index(input_fn=random_docs(1000), randomize_id=False)
         with f:
             pass
         self.add_tmpfile('test-docshard-tmp')
@@ -218,7 +218,7 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
                        separated_workspace=True)
         with f:
-            f.index(input_fn=random_docs(index_docs), random_doc_id=False)
+            f.index(input_fn=random_docs(index_docs), randomize_id=False)
 
         time.sleep(2)
         with f:
@@ -227,7 +227,7 @@ class MyTestCase(JinaTestCase):
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
                        separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
         with f:
-            f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
+            f.search(input_fn=random_queries(1, index_docs), randomize_id=False, output_fn=validate,
                      callback_on_body=True)
         time.sleep(2)
         self.add_tmpfile('test-docshard-tmp')

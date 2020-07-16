@@ -18,7 +18,7 @@ def get_result(resp):
     n = []
     for d in resp.search.docs:
         for c in d.chunks:
-            n.append([k.match_chunk.chunk_id for k in c.matches])
+            n.append([k.match.id for k in c.matches])
     n = np.array(n)
     # each chunk should return a list of top-100
     np.testing.assert_equal(n.shape[0], 5)

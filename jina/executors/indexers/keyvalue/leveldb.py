@@ -5,7 +5,6 @@ import json
 from typing import Union
 
 from google.protobuf.json_format import Parse
-
 from jina.executors.indexers.keyvalue.proto import BasePbIndexer
 from jina.executors.indexers.keyvalue.proto import jina_pb2
 
@@ -50,7 +49,7 @@ class LeveldbIndexer(BasePbIndexer):
     def query(self, key: str, *args, **kwargs) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
         """Find the protobuf chunk/doc using id
 
-        :param key: ``chunk_id`` or ``doc_id``
+        :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
         v = self.query_handler.get(key.encode('utf8'))

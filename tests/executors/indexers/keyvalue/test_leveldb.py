@@ -1,9 +1,8 @@
 import os
 import unittest
 
-from google.protobuf.json_format import MessageToJson
-
 import jina.proto.jina_pb2 as jina_pb2
+from google.protobuf.json_format import MessageToJson
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.keyvalue.leveldb import LeveldbIndexer
 from tests import JinaTestCase
@@ -35,7 +34,7 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load(save_abspath) as searcher:
             doc = searcher.query('d2')
-            self.assertEqual(doc.doc_id, 2)
+            self.assertEqual(doc.id, 2)
             self.assertEqual(doc.length, 3)
 
         self.add_tmpfile(save_abspath, index_abspath)

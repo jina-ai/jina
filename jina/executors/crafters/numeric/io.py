@@ -22,12 +22,11 @@ class ArrayStringReader(BaseCrafter):
         self.delimiter = delimiter
         self.as_type = as_type
 
-    def craft(self, text: str, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, text: str, *args, **kwargs) -> Dict:
         """
         Split string into numbers and convert to numpy array
 
         :param text: the raw text
-        :param doc_id: the doc id
         :return: a dod dict with the numpy array
         """
         _string = text.split(self.delimiter)
@@ -43,7 +42,7 @@ class ArrayStringReader(BaseCrafter):
             self.logger.error(
                 f'Data type mismatch. Cannot convert input to {self.as_type}.')
 
-        return dict(doc_id=doc_id, weight=1., blob=_array)
+        return dict(weight=1., blob=_array)
 
 
 class ArrayBytesReader(BaseCrafter):
@@ -59,13 +58,12 @@ class ArrayBytesReader(BaseCrafter):
         super().__init__(*args, **kwargs)
         self.as_type = as_type
 
-    def craft(self, buffer: bytes, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, buffer: bytes, *args, **kwargs) -> Dict:
         """
         Split string into numbers and convert to numpy array
 
         :param buffer: the bytes representing the array
-        :param doc_id: the doc id
         :return: a chunk dict with the numpy array
         """
         _array = np.frombuffer(buffer, self.as_type)
-        return dict(doc_id=doc_id, weight=1., blob=_array)
+        return dict(weight=1., blob=_array)

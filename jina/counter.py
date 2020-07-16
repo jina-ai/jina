@@ -14,10 +14,9 @@ class BaseCounter(Iterator):
 class SimpleCounter(BaseCounter):
     def __init__(self, seed: int = 0):
         super().__init__(seed)
-        self.seed = seed - 1
 
     def __next__(self):
-        self.seed += 1
+        self.seed += 1  # note the first number starts with 1 and zero is reserved
         return self.seed
 
 
@@ -29,4 +28,4 @@ class RandomUintCounter(BaseCounter):
             random.seed(self.seed)
 
     def __next__(self):
-        return random.randint(0, self.max_val)
+        return random.randint(1, self.max_val)  # zero is reserved

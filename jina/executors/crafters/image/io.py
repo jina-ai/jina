@@ -23,14 +23,13 @@ class ImageReader(BaseCrafter):
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
 
-    def craft(self, buffer: bytes, uri: str, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, buffer: bytes, uri: str, *args, **kwargs) -> Dict:
         """
         Read the image from the given file path that specified in `buffer` and save the `ndarray` of the image in
             the `blob` of the document.
 
         :param buffer: the image in raw bytes
         :param uri: the image file path
-        :param doc_id: the id of the Document
 
         """
         from PIL import Image

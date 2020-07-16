@@ -34,19 +34,17 @@ class ImageCropper(ImageChunkCrafter):
         self.height = height
         self.width = width
 
-    def craft(self, blob: 'np.ndarray', chunk_id, doc_id, *args, **kwargs) -> Dict:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Crop the input image array.
 
         :param blob: the ndarray of the image
-        :param chunk_id: the chunk id
-        :param doc_id: the doc id
         :returns: a chunk dict with the cropped image
         """
         raw_img = self.load_image(blob)
         _img = self._crop_image(raw_img, (self.width, self.height), self.left, self.top)
         img = self.restore_channel_axis(np.asarray(_img))
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, weight=1., blob=img.astype('float32'))
 
 
 class CenterImageCropper(ImageChunkCrafter):
@@ -67,19 +65,17 @@ class CenterImageCropper(ImageChunkCrafter):
         super().__init__(*args, **kwargs)
         self.target_size = target_size
 
-    def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Crop the input image array.
 
         :param blob: the ndarray of the image
-        :param chunk_id: the chunk id
-        :param doc_id: the doc id
         :return: a chunk dict with the cropped image
         """
         raw_img = self.load_image(blob)
         _img = self._crop_image(raw_img, self.target_size, how='center')
         img = self.restore_channel_axis(np.asarray(_img))
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, weight=1., blob=img.astype('float32'))
 
 
 class RandomImageCropper(ImageChunkCrafter):
@@ -103,13 +99,11 @@ class RandomImageCropper(ImageChunkCrafter):
         self.target_size = target_size
         self.num_pathes = num_patches
 
-    def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.
 
         :param blob: the ndarray of the image
-        :param chunk_id: the chunk id
-        :param doc_id: the doc id
         :return: a list of chunk dicts with the cropped images
         """
         raw_img = self.load_image(blob)
@@ -118,7 +112,7 @@ class RandomImageCropper(ImageChunkCrafter):
             _img = self._crop_image(raw_img, self.target_size, how='random')
             img = self.restore_channel_axis(np.asarray(_img))
             result.append(
-                dict(doc_id=doc_id, offset=0, weight=1., blob=np.asarray(img).astype('float32')))
+                dict(offset=0, weight=1., blob=np.asarray(img).astype('float32')))
         return result
 
 
@@ -139,13 +133,11 @@ class FiveImageCropper(ImageChunkCrafter):
         super().__init__(*args, **kwargs)
         self.target_size = target_size
 
-    def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.
 
         :param blob: the ndarray of the image with the color channel at the last axis
-        :param chunk_id: the chunk id
-        :param doc_id: the doc id
         :return: a list of five chunk dicts with the cropped images
         """
         raw_img = self.load_image(blob)
@@ -167,11 +159,11 @@ class FiveImageCropper(ImageChunkCrafter):
         _center = self._crop_image(raw_img, self.target_size, how='center')
         center = self.restore_channel_axis(np.asarray(_center))
         return [
-            dict(doc_id=doc_id, offset=0, weight=1., blob=tl.astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=tr.astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=bl.astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=br.astype('float32')),
-            dict(doc_id=doc_id, offset=0, weight=1., blob=center.astype('float32')),
+            dict(offset=0, weight=1., blob=tl.astype('float32')),
+            dict(offset=0, weight=1., blob=tr.astype('float32')),
+            dict(offset=0, weight=1., blob=bl.astype('float32')),
+            dict(offset=0, weight=1., blob=br.astype('float32')),
+            dict(offset=0, weight=1., blob=center.astype('float32')),
         ]
 
 
@@ -204,13 +196,11 @@ class SlidingWindowImageCropper(ImageChunkCrafter):
         self.stride_h, self.stride_w = strides
         self.padding = padding
 
-    def craft(self, blob: 'np.ndarray', chunk_id, doc_id, *args, **kwargs) -> List[Dict]:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array with a sliding window.
 
         :param blob: the ndarray of the image with the color channel at the last axis
-        :param chunk_id: the chunk id
-        :param doc_id: the doc id
         :return: a list of chunk dicts with the cropped images.
         """
         raw_img = np.copy(blob)
@@ -238,7 +228,7 @@ class SlidingWindowImageCropper(ImageChunkCrafter):
         results = []
         for _blob in expanded_img:
             blob = self.restore_channel_axis(_blob)
-            results.append(dict(doc_id=doc_id, offset=0, weight=1.0, blob=blob.astype('float32')))
+            results.append(dict(offset=0, weight=1.0, blob=blob.astype('float32')))
         return results
 
     def _expand_img(self, img: 'np.ndarray') -> 'np.ndarray':

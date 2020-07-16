@@ -39,18 +39,16 @@ class ImageNormalizer(ImageChunkCrafter):
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
 
-    def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
 
         :param blob: the ndarray of the image with the color channel at the last axis
-        :param chunk_id: the chunk id
-        :param doc_id: the doc id
         :return: a chunk dict with the normalized image
         """
         raw_img = self.load_image(blob)
         _img = self._normalize(raw_img)
         img = self.restore_channel_axis(_img)
-        return dict(doc_id=doc_id, offset=0, weight=1., blob=img)
+        return dict(offset=0, weight=1., blob=img)
 
     def _normalize(self, img):
         img = self._resize_short(img, target_size=self.resize_dim)

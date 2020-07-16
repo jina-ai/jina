@@ -135,11 +135,10 @@ class SlidingWindowSegmenter(BaseSegmenter):
                 'the step_size (={}) should not be larger than the window_size (={})'.format(
                     self.window_size, self.step_size))
 
-    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into overlapping chunks
         :param text: the raw text in string format
-        :param doc_id: the doc id
         :return: a list of chunk dicts
         """
 
@@ -196,12 +195,11 @@ class DeepSegmenter(BaseSegmenter):
         from deepsegment import DeepSegment
         self._segmenter = DeepSegment(self.lang_code, checkpoint_name=self.checkpoint_name)
 
-    def craft(self, text: str, doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
 
         :param text: the raw text
-        :param doc_id: the doc id
         :return: a list of chunk dicts with the cropped images
         """
 
