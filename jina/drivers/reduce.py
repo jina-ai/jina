@@ -2,14 +2,14 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Iterable
 
-from .control import ControlReqDriver
+from . import BaseRecursiveDriver
 from ..excepts import NoExplicitMessage
-from ..proto import is_data_request, jina_pb2
+from ..proto import jina_pb2
 
 
-class BaseReduceDriver(ControlReqDriver):
+class BaseReduceDriver(BaseRecursiveDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,30 +34,25 @@ class BaseReduceDriver(ControlReqDriver):
         return self._prev_messages
 
     def __call__(self, *args, **kwargs):
-        if is_data_request(self.req):
-            if self.envelope.num_part[-1] > 1:
-                req_id = self.envelope.request_id
-                self._pending_msgs[req_id].append(self.msg)
-                num_req = len(self._pending_msgs[req_id])
+        if self.envelope.num_part[-1] > 1:
+            req_id = self.envelope.request_id
+            self._pending_msgs[req_id].append(self.msg)
+            num_req = len(self._pending_msgs[req_id])
 
-                self.logger.info(f'collected {num_req}/{self.envelope.num_part[-1]} parts of {type(self.req).__name__}')
+            self.logger.info(f'collected {num_req}/{self.envelope.num_part[-1]} parts of {type(self.req).__name__}')
 
-                if num_req == self.envelope.num_part[-1]:
-                    self._prev_messages = self._pending_msgs.pop(req_id)
-                    self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in
-                                           self._prev_messages]
-                else:
-                    raise NoExplicitMessage
-
-                self.reduce(*args, **kwargs)
-                self.envelope.num_part.pop(-1)
+            if num_req == self.envelope.num_part[-1]:
+                self._prev_messages = self._pending_msgs.pop(req_id)
+                self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in
+                                       self._prev_messages]
             else:
-                return
-        else:
-            super().__call__(*args, **kwargs)
+                raise NoExplicitMessage
+
+            self.reduce(*args, **kwargs)
+            self.envelope.num_part.pop(-1)
 
     def reduce(self, *args, **kwargs):
-        raise NotImplementedError
+        super().__call__(*args, **kwargs)
 
 
 class MergeDriver(BaseReduceDriver):
@@ -87,52 +82,12 @@ class MergeTopKDriver(MergeDriver):
         - R is the number of shards (i.e. ``--replicas``)
     """
 
-    def __init__(self, level: str, *args, **kwargs):
-        """
-
-        :param level: merge level "chunk" or "doc", or "all"
-        """
-        super().__init__(*args, **kwargs)
-        self.level = level
-
     def reduce(self, *args, **kwargs):
-        if self.level == 'chunk':
-            for _d_id, _doc in enumerate(self.req.docs):
-                for _c_id, _chunk in enumerate(_doc.chunks):
-                    _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].chunks[_c_id].topk_results]
-                    _chunk.ClearField('topk_results')
-                    _chunk.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
-        elif self.level == 'doc':
-            for _d_id, _doc in enumerate(self.req.docs):
-                _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
-                _doc.ClearField('topk_results')
-                _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
-        elif self.level == 'all':
-            for _d_id, _doc in enumerate(self.req.docs):
-                _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
-                _doc.ClearField('topk_results')
-                _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
-
-                for _c_id, _chunk in enumerate(_doc.chunks):
-                    _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].chunks[_c_id].topk_results]
-                    _chunk.ClearField('topk_results')
-                    _chunk.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
-
-        else:
-            raise TypeError(f'level={self.level} is not supported, must choose from "chunk" or "doc" ')
-
+        BaseRecursiveDriver.__call__(self, *args, **kwargs)
         super().reduce(*args, **kwargs)
 
-
-class ChunkMergeTopKDriver(MergeTopKDriver):
-    """A shortcut to :class:`MergeTopKDriver` with ``level=chunk``"""
-
-    def __init__(self, level: str = 'chunk', *args, **kwargs):
-        super().__init__(level, *args, **kwargs)
-
-
-class DocMergeTopKDriver(MergeTopKDriver):
-    """A shortcut to :class:`MergeTopKDriver` with ``level=doc``"""
-
-    def __init__(self, level: str = 'doc', *args, **kwargs):
-        super().__init__(level, *args, **kwargs)
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        for _d_id, _doc in enumerate(docs):
+            _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].topk_results]
+            _doc.ClearField('topk_results')
+            _doc.topk_results.extend(sorted(_flat_topk, key=lambda x: x.score.value))
