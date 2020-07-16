@@ -172,10 +172,10 @@ class Flow:
 
     @classmethod
     def load_config(cls: Type['Flow'], filename: Union[str, TextIO]) -> 'Flow':
-        """Build an executor from a YAML file.
+        """Build a Flow object from a YAML file.
 
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
-        :return: an executor object
+        :return: a Flow object
         """
         yaml.register_class(Flow)
         if not filename: raise FileNotFoundError
@@ -209,10 +209,6 @@ class Flow:
                 obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
 
         obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
-
-        # if node.tag in {'!CompoundExecutor'}:
-        #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
-
         return obj, data
 
     @staticmethod
@@ -231,7 +227,7 @@ class Flow:
                 if s == pod_name:
                     raise FlowTopologyError('the income/output of a pod can not be itself')
         else:
-            raise ValueError(f'endpoint={endpoint} is not parsable')
+            raise ValueError(f'endpoint={endpoint} cannot be parsed')
         return set(endpoint)
 
     def set_last_pod(self, name: str, copy_flow: bool = True) -> 'Flow':
@@ -239,7 +235,8 @@ class Flow:
         Set a pod as the last pod in the flow, useful when modifying the flow.
 
         :param name: the name of the existing pod
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it,
+        then return, otherwise, do in-line modification
         :return: a (new) flow object with modification
         """
         op_flow = copy.deepcopy(self) if copy_flow else self
@@ -292,7 +289,8 @@ class Flow:
 
         :param needs: the name of the pod(s) that this pod receives data from.
                            One can also use 'pod.Gateway' to indicate the connection with the gateway.
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it,
+         then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the pod CLI supports
         :return: a (new) flow object with modification
         """
@@ -331,7 +329,8 @@ class Flow:
             No need to manually call it since 0.0.8. When using flow with the
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it,
+         then return, otherwise, do in-line modification
         :return: the current flow (by default)
 
         .. note::
@@ -396,7 +395,8 @@ class Flow:
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
                 elif e_name == 'gateway':
-                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
+                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and \
+                            s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
                         # connect gateway directly to peas only if this is unblock router
                         # as gateway can not block & reduce message
                         s_pod.connect_to_head_of(e_pod)
@@ -404,9 +404,11 @@ class Flow:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
                 else:
                     e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
-                    if self.args.optimize_level > FlowOptimizeLevel.NONE and e_pod.is_head_router and not s_pod.is_tail_router:
+                    if self.args.optimize_level > FlowOptimizeLevel.NONE and \
+                            e_pod.is_head_router and not s_pod.is_tail_router:
                         e_pod.connect_to_tail_of(s_pod)
-                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
+                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and\
+                            s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
                         s_pod.connect_to_head_of(e_pod)
                     else:
                         FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)

@@ -108,16 +108,11 @@ class BasePea(metaclass=PeaMeta):
         super().__init__()
         self.args = args
         self.name = self.__class__.__name__  #: this is the process name
-        self.daemon = True
 
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
         self.is_shutdown.clear()
-
-        # self.is_busy = _get_event(self)
-        # # label the pea as busy until the loop body start
-        # self.is_busy.set()
 
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
@@ -135,7 +130,7 @@ class BasePea(metaclass=PeaMeta):
             elif args.role == PeaRoleType.TAIL:
                 self.name = f'{self.name}-tail'
             elif args.role == PeaRoleType.REPLICA:
-                self.name = '%s-%d' % (self.name, args.replica_id)
+                self.name = f'{self.name}-{args.replica_id}'
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
             if not args.log_with_own_name and args.name:
                 # everything in this Pea (process) will use the same name for display the log
@@ -153,7 +148,7 @@ class BasePea(metaclass=PeaMeta):
     def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
-        this message if its envelope's  status is not ERROR, else skip handling of message.
+        this message if its envelope's status is not ERROR, else skip handling of message.
 
         :param msg: the message received
         """
@@ -199,7 +194,6 @@ class BasePea(metaclass=PeaMeta):
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
-                # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:
                 raise ExecutorFailToLoad
         else:
