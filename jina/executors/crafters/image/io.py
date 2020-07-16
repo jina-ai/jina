@@ -6,10 +6,10 @@ from typing import Dict
 
 import numpy as np
 
-from .. import BaseDocCrafter
+from .. import BaseCrafter
 
 
-class ImageReader(BaseDocCrafter):
+class ImageReader(BaseCrafter):
     """
     :class:`ImageReader` loads the image from the given file path and save the `ndarray` of the image in the Document.
     """

@@ -2,14 +2,14 @@ import os
 import time
 
 from jina.enums import SchedulerType
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from tests import JinaTestCase, random_docs
 
 os.environ['JINA_LOG_VERBOSITY'] = 'DEBUG'
 
 
-class SlowWorker(BaseDocCrafter):
+class SlowWorker(BaseCrafter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

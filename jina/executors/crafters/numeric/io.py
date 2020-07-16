@@ -4,10 +4,10 @@ __license__ = "Apache-2.0"
 from typing import Dict
 
 import numpy as np
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 
 
-class ArrayStringReader(BaseDocCrafter):
+class ArrayStringReader(BaseCrafter):
     """
     :class:`ArrayStringReader` convertsthe string of numbers into a numpy array and save to the Document.
         Numbers are split on the provided delimiter, default is comma (,)
@@ -46,7 +46,7 @@ class ArrayStringReader(BaseDocCrafter):
         return dict(doc_id=doc_id, weight=1., blob=_array)
 
 
-class ArrayBytesReader(BaseDocCrafter):
+class ArrayBytesReader(BaseCrafter):
     """
     :class:`ArrayBytesReader` converts a byte stream into a numpy array and save to the Document.
         The size of the vectors is provided in the constructor so that the numpy array can be interpreted properly

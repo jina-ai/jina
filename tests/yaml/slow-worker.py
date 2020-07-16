@@ -1,10 +1,10 @@
 import os
 import time
 
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 
 
-class SlowWorker(BaseDocCrafter):
+class SlowWorker(BaseCrafter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

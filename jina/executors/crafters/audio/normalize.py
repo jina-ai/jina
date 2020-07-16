@@ -2,11 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Dict
+
 import numpy as np
-from .. import BaseDocCrafter
+
+from .. import BaseCrafter
 
 
-class AudioNormalizer(BaseDocCrafter):
+class AudioNormalizer(BaseCrafter):
     """
     :class:`AudioNormalizer` normalizes the audio signal on doc-level.
     """

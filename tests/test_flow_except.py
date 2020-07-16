@@ -1,12 +1,12 @@
 import unittest
 
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
 
-class DummyCrafter(BaseDocCrafter):
+class DummyCrafter(BaseCrafter):
     def craft(self, *args, **kwargs):
         return 1 / 0
 
@@ -18,7 +18,7 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
             self.assertEqual(req.status.details[0].pod, 'r1')
 
-        f = (Flow().add(name='r1', yaml_path='!BaseDocCrafter')
+        f = (Flow().add(name='r1', yaml_path='!BaseCrafter')
              .add(name='r2', yaml_path='!BaseEncoder')
              .add(name='r3', yaml_path='!BaseEncoder'))
 

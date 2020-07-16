@@ -2,10 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Dict
-from .. import BaseDocCrafter
+
+from .. import BaseCrafter
 
 
-class AudioReader(BaseDocCrafter):
+class AudioReader(BaseCrafter):
     """
     :class:`AudioReader` reads and resamples the audio signal on doc-level.
     """
