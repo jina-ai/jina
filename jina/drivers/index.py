@@ -8,6 +8,8 @@ import numpy as np
 from . import BaseExecutableDriver
 from .helper import extract_docs
 
+if False:
+    from ..proto import jina_pb2
 
 class BaseIndexDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """

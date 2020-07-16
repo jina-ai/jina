@@ -13,6 +13,8 @@ import numpy as np
 from . import BaseRecursiveDriver
 from .helper import guess_mime, array2pb, pb2array
 
+if False:
+    from ..proto import jina_pb2
 
 class BaseConvertDriver(BaseRecursiveDriver):
 
