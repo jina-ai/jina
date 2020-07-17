@@ -53,17 +53,15 @@ jobs:
           pip install .[match-py-ver]
       - name: Lint with flake8
         run: |
-          #pip install flake8
-          ls -l
+          pip install flake8
           # stop the build if there are Python syntax errors or undefined names
-          # flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          # flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test docker install
         run: |
-          ls -l
-          #docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          #docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Test with pytest
         run: |
           # make sure docker exist
@@ -74,7 +72,7 @@ jobs:
           pip install pytest-xdist
           pip install pytest-timeout
           pip install pytest-cov
-          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/executors/crafters/numeric/
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v
         timeout-minutes: 15
       - name: Upload coverage result from unit-test
         uses: actions/upload-artifact@v1
@@ -90,14 +88,11 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.7]
     steps:
+      - uses: actions/checkout@v2
       - name: Download coverage result from unit-test
         uses: actions/download-artifact@v1
         with:
           name: codecoverage-${{ matrix.python-version }}
-      - name: Check what is in this folder
-        run: |
-          ls -l codecoverage-3.7
-          cat codecoverage-3.7/coverage.xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
