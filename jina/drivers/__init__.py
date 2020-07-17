@@ -193,39 +193,46 @@ class BaseRecursiveDriver(BaseDriver):
             _wrap = self._preorder_apply
         else:
             raise ValueError(f'{self.recursion_order}')
-        _wrap(self, *args, **kwargs)
 
-    def _postorder_apply(self, *args, **kwargs):
+        if getattr(self, 'prev_reqs', None):
+            for r in self.prev_reqs:
+                _wrap(r.docs, *args, **kwargs)
+        else:
+            _wrap(self.req.docs, *args, **kwargs)
+
+    def _postorder_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
-        def _traverse(docs):
-            if docs:
-                for d in docs:
+
+        def _traverse(_docs):
+            if _docs:
+                for d in _docs:
                     if d.level_depth < self._depth_end:
                         _traverse(d.chunks)
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
 
                 # check first doc if in the required depth range
-                if docs[0].level_depth >= self._depth_start:
-                    self.apply_all(docs, *args, **kwargs)
+                if _docs[0].level_depth >= self._depth_start:
+                    self.apply_all(_docs, *args, **kwargs)
 
-        _traverse(self.req.docs)
+        _traverse(docs)
 
-    def _preorder_apply(self, *args, **kwargs):
+    def _preorder_apply(self, docs, *args, **kwargs):
         """often useful when you grow new structure, e.g. segment """
-        def _traverse(docs):
-            if docs:
-                # check first doc if in the required depth range
-                if docs[0].level_depth >= self._depth_start:
-                    self.apply_all(docs, *args, **kwargs)
 
-                for d in docs:
+        def _traverse(_docs):
+            if _docs:
+                # check first doc if in the required depth range
+                if _docs[0].level_depth >= self._depth_start:
+                    self.apply_all(_docs, *args, **kwargs)
+
+                for d in _docs:
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
                     if d.level_depth < self._depth_end:
                         _traverse(d.chunks)
 
-        _traverse(self.req.docs)
+        _traverse(docs)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

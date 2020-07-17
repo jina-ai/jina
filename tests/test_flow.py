@@ -225,7 +225,7 @@ class MyTestCase(JinaTestCase):
             pass
         time.sleep(2)
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
-                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
+                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk')
         with f:
             f.search(input_fn=random_queries(1, index_docs), randomize_id=False, output_fn=validate,
                      callback_on_body=True)

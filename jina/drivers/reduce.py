@@ -2,14 +2,14 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Dict, List, Iterable
+from typing import Dict, List
 
 from . import BaseRecursiveDriver
 from ..excepts import NoExplicitMessage
 from ..proto import jina_pb2
 
 
-class BaseReduceDriver(BaseRecursiveDriver):
+class ReduceDriver(BaseRecursiveDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,13 +52,8 @@ class BaseReduceDriver(BaseRecursiveDriver):
             self.envelope.num_part.pop(-1)
 
     def reduce(self, *args, **kwargs):
-        super().__call__(*args, **kwargs)
-
-
-class MergeDriver(BaseReduceDriver):
-    """Merge the routes information from multiple envelopes into one """
-
-    def reduce(self, *args, **kwargs):
+        """ Reduce the message from all requests by merging their envelopes
+        """
         # take unique routes by service identity
         routes = {(r.pod + r.pod_id): r for m in self.prev_msgs for r in m.envelope.routes}
         self.msg.envelope.ClearField('routes')
@@ -66,28 +61,17 @@ class MergeDriver(BaseReduceDriver):
             sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
 
 
-class MergeTopKDriver(MergeDriver):
-    """Merge the topk results from multiple messages into one and sorted
-
-    Useful in indexer sharding (i.e. ``--replicas > 1``)
-
-    Complexity depends on the level:
-         - ``level=chunk``: D x C x K x R
-         - ``level=doc``: D x K x R
-
-    where:
-        - D is the number of queries
-        - C is the number of chunks per query
-        - K is the top-k
-        - R is the number of shards (i.e. ``--replicas``)
-    """
+class ReduceDocsDriver(ReduceDriver):
+    """ Reduce docs from all requests into one request """
 
     def reduce(self, *args, **kwargs):
+        self.doc_pointers = {}
         BaseRecursiveDriver.__call__(self, *args, **kwargs)
         super().reduce(*args, **kwargs)
 
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        for _d_id, _doc in enumerate(docs):
-            _flat_topk = [k for r in self.prev_reqs for k in r.docs[_d_id].matches]
-            _doc.ClearField('matches')
-            _doc.matches.extend(sorted(_flat_topk, key=lambda x: x.score.value))
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        if doc.id not in self.doc_pointers:
+            self.doc_pointers[doc.id] = doc
+        else:
+            self.doc_pointers[doc.id].chunks.extend(doc.chunks)
+            self.doc_pointers[doc.id].matches.extend(doc.matches)
