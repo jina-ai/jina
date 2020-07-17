@@ -44,3 +44,6 @@ class SliceMatchesQL(SliceQL):
         else:
             del doc.matches[:self.start]
             del doc.matches[self.end:]
+
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        pass

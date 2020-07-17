@@ -38,3 +38,6 @@ class SortMatchesQL(SortQL):
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         doc.matches.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)
+
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        pass

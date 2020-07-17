@@ -36,16 +36,13 @@ class KVSearchDriver(BaseSearchDriver):
     """
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
+        # hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
         for tk in doc.matches:
             r = self.exec_fn(tk.match.id)
             if r:
-                sr = ScoredResult()
-                sr.score.CopyFrom(tk.score)
-                sr.match.CopyFrom(r)
-                hit_sr.append(sr)
-        doc.ClearField('matches')
-        doc.matches.extend(hit_sr)
+                tk.match.CopyFrom(r)
+            else:
+                del tk
 
 
 # DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc

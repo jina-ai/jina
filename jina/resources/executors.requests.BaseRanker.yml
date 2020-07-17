@@ -9,7 +9,9 @@ on:
           - buffer
           - blob
           - text
-    - !Chunk2DocRankDriver {}
+    - !SortMatchesQL
+      with:
+        field: 'score.value'
     - !SliceMatchesQL
       with:
         depth_range: [0, 1]  # prune root and 1st level
