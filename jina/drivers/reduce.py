@@ -71,7 +71,7 @@ class ReduceDocsDriver(ReduceDriver):
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         if doc.id not in self.doc_pointers:
-            self.doc_pointers[doc.id] = doc
+            self.doc_pointers[doc.id] = doc  # what? why is this deep copy?
         else:
             self.doc_pointers[doc.id].chunks.extend(doc.chunks)
             self.doc_pointers[doc.id].matches.extend(doc.matches)
