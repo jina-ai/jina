@@ -71,13 +71,15 @@ jobs:
           pip install pytest
           pip install pytest-xdist
           pip install pytest-timeout
-          pytest tests/unit -n 1 --timeout=60 -v
-        #      run: |
-        #        pip install pytest
-        #        pip install pytest-cov
-        #        cd tests && pytest *.py --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov=com --cov-report=xml --cov-report=html
-        #      shell: bash
+          pip install pytest-cov
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/unit
+          mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 15
+      - name: Upload coverage result from unit-test
+        uses: actions/upload-artifact@v1
+        with:
+          name: unit-test-codecoverage-${{ matrix.python-version }}
+          path: ./unit-test-coverage.xml
 
   integration-test:
     needs: commit-lint
@@ -106,5 +108,44 @@ jobs:
           pip install pytest
           pip install pytest-xdist
           pip install pytest-timeout
-          pytest tests/integration -n 1 --timeout=60 -v
+          pip install pytest-cov
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/integration
+          mv coverage.xml integration-test-coverage.xml
         timeout-minutes: 15
+      - name: Upload coverage result from integration-test
+        uses: actions/upload-artifact@v1
+        with:
+          name: integration-test-codecoverage-${{ matrix.python-version }}
+          path: ./integration-test-coverage.xml
+
+  codecov:
+    needs: [unit-test, integration-test]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download coverage result from unit-test
+        uses: actions/download-artifact@v1
+        with:
+          name: unit-test-codecoverage-${{ matrix.python-version }}
+      - name: Download coverage result from integration-test
+        uses: actions/download-artifact@v1
+        with:
+          name: integration-test-codecoverage-${{ matrix.python-version }}
+      - name: Upload coverage from unit-test to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: unit-test-codecoverage-${{ matrix.python-version }}/unit-test-coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: true
+      - name: Upload coverage from integration-test to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: integration-test-codecoverage-${{ matrix.python-version }}/integration-test-coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: true
