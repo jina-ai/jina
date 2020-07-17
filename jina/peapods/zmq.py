@@ -200,7 +200,6 @@ class Zmqlet:
         # choose output sock
 
         _req = getattr(msg.request, msg.request.WhichOneof('body'))
-        _req_type = type(_req)
 
         if is_data_request(_req):
             o_sock = self.out_sock

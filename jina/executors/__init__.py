@@ -410,6 +410,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 raise EmptyExecutorYAML(f'{filename} is empty? nothing to read from there')
 
             tmp = expand_dict(tmp)
+            print(f'JOAN tmp {tmp}')
             stream = StringIO()
             yaml.dump(tmp, stream)
             tmp_s = stream.getvalue().strip().replace('__tag: ', '!')

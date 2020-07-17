@@ -122,6 +122,8 @@ class BasePea(metaclass=PeaMeta):
 
         self._request = None
         self._message = None
+        self._tail = None
+        self._head = None
 
         if isinstance(args, argparse.Namespace):
             if args.name:
@@ -190,6 +192,7 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(self.args.yaml_path,
                                                          self.args.separated_workspace, self.args.replica_id)
+                print(f'JOAN pea {self} loads executor {self.executor}')
                 self.executor.attach(pea=self)
                 # self.logger = get_logger('%s(%s)' % (self.name, self.executor.name), **vars(self.args))
             except FileNotFoundError:
@@ -307,6 +310,7 @@ class BasePea(metaclass=PeaMeta):
         """
         self.load_plugins()
         self.load_executor()
+        print(f'{self.name} Pea is starting a zmqlet with args {self.args}')
         self.zmqlet = ZmqStreamlet(self.args, logger=self.logger)
         self.set_ready()
         self.zmqlet.start(self.msg_callback)
@@ -398,3 +402,9 @@ class BasePea(metaclass=PeaMeta):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+
+class ConcretePea(BasePea):
+
+    def __init__(self, args: Union['argparse.Namespace', Dict]):
+        super().__init__(args)

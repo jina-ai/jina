@@ -37,6 +37,13 @@ class BasePod:
         if hasattr(args, 'polling') and args.polling.is_push:
             # ONLY reset when it is push
             args.reducing_yaml_path = '_forward'
+        if not hasattr(args, 'replicas'):
+            args.replicas = 1
+
+        if args.replicas > 1:
+            self.is_head_router = True
+            self.is_tail_router = True
+
         self._args = args
         self.peas_args = self._parse_args(args)
 
@@ -76,14 +83,12 @@ class BasePod:
             'peas': []
         }
 
-        if getattr(args, 'replicas', 1) > 1:
+        if args.replicas > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
-            self.is_head_router = True
-            self.is_tail_router = True
         else:
             peas_args['peas'] = [args]
 
@@ -309,27 +314,21 @@ class FlowPod(BasePod):
         :param second: the second BasePod
         :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
         """
-        if first_socket_type == SocketType.PUSH_BIND:
-            first.tail_args.socket_out = SocketType.PUSH_BIND
-            second.head_args.socket_in = SocketType.PULL_CONNECT
+        first.tail_args.socket_out = first_socket_type
+        second.head_args.socket_in = first.tail_args.socket_out.paired
 
+        if first_socket_type == SocketType.PUSH_BIND:
             first.tail_args.host_out = __default_host__
             second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
                                                      connect_args=second.head_args)
             second.head_args.port_in = first.tail_args.port_out
         elif first_socket_type == SocketType.PUSH_CONNECT:
-            first.tail_args.socket_out = SocketType.PUSH_CONNECT
-            second.head_args.socket_in = SocketType.PULL_BIND
-
             first.tail_args.host_out = _fill_in_host(connect_args=first.tail_args,
                                                      bind_args=second.head_args)
             second.head_args.host_in = __default_host__
             first.tail_args.port_out = second.head_args.port_in
         elif first_socket_type == SocketType.PUB_BIND:
-            first.tail_args.socket_out = SocketType.PUB_BIND
             first.tail_args.num_part += 1
-            second.head_args.socket_in = SocketType.SUB_CONNECT
-
             first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
             second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
                                                      connect_args=second.head_args)  # the hostname of s_pod
@@ -362,9 +361,9 @@ class FlowPod(BasePod):
                                                as_router=False)
             # update peas to receive from it
             self.peas_args['peas'] = _set_peas_args(self._args, self.head_args, pod.head_args)
-            # remove the head node
+            # remove the tail node
             self.peas_args['tail'] = None
-            # head is no longer a router anymore
+            # tail is no longer a router anymore
             self.is_tail_router = False
             self.deducted_tail = pod.head_args
         else:

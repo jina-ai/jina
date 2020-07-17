@@ -6,7 +6,7 @@ import os
 import tempfile
 import threading
 import time
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
@@ -322,6 +322,9 @@ class Flow:
 
         return op_flow
 
+    def _connect_nodes(self, start_pod: 'BasePod', end_pod: 'BasePod'):
+        pass
+
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
         Build the current flow and make it ready to use
@@ -357,11 +360,39 @@ class Flow:
             op_flow._add_gateway(needs={op_flow._last_changed_pod[-1]})
 
         # direct all income peas' output to the current service
+        print('_pod_nodes')
+        print(op_flow._pod_nodes)
+        _outgoing_map = defaultdict(list)
         for k, p in op_flow._pod_nodes.items():
             for s in p.needs:
                 if s not in op_flow._pod_nodes:
                     raise FlowMissingPodError(f'{s} is not in this flow, misspelled name?')
+                _outgoing_map[s].append(p)
                 _pod_edges.add(f'{s}-{k}')
+        print('outgoing map')
+        print(_outgoing_map)
+
+        _outgoing_idx = dict.fromkeys(_outgoing_map.keys(), 0)
+        stack = deque()
+        stack.append('gateway')
+        while stack:
+            start_node_name = stack.pop()
+            start_node = op_flow._pod_nodes[start_node_name]
+            end_node_idx = _outgoing_idx[start_node_name]
+            if end_node_idx < len(_outgoing_map[start_node_name]):
+                # else, you are back to the gateway
+                end_node_name = _outgoing_map[start_node_name][end_node_idx]
+                end_node = op_flow._pod_nodes[end_node_name]
+                first_socket_type = SocketType.PUSH_CONNECT
+                if len(_outgoing_map[start_node_name]) > 1:
+                    first_socket_type = SocketType.PUB_BIND
+                else:
+                    first_socket_type = SocketType.PUSH_CONNECT
+                FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
+                stack.append(end_node_name)
+                if end_node_idx + 1 < len(_outgoing_map[start_node_name]):
+                    stack.append(start_node_name)
+                    _outgoing_idx[start_node_name] = end_node_idx + 1
 
         for k in _pod_edges:
             s_name, e_name = k.split('-')
@@ -371,6 +402,10 @@ class Flow:
             s_pod = op_flow._pod_nodes[s_name]
             e_pod = op_flow._pod_nodes[e_name]
 
+            print(f'start pod {s_pod.name}')
+            print(f'end pod {e_pod.name}')
+            print(f'edges_with_same_start {edges_with_same_start}')
+            print(f'edges_with_same_end {edges_with_same_end}')
             # Rule
             # if a node has multiple income/outgoing peas,
             # then its socket_in/out must be PULL_BIND or PUB_BIND
@@ -567,8 +602,8 @@ class Flow:
         self._get_client(**kwargs).train(input_fn, output_fn)
 
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                    output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                      output_fn: Callable[['jina_pb2.Message'], None] = None,
+                      **kwargs):
         """Using numpy ndarray as the index source for the current flow
 
         :param array: the numpy ndarray data source
@@ -582,8 +617,8 @@ class Flow:
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn)
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                     output_fn: Callable[['jina_pb2.Message'], None] = None,
-                     **kwargs):
+                       output_fn: Callable[['jina_pb2.Message'], None] = None,
+                       **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow
 
         :param array: the numpy ndarray data source
@@ -612,7 +647,7 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).index(input_lines(lines, filepath,  size, sampling_rate, read_mode), output_fn)
+        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
