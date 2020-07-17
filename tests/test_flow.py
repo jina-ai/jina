@@ -5,6 +5,7 @@ from time import sleep
 
 import pytest
 import requests
+
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel
 from jina.flow import Flow
@@ -225,7 +226,7 @@ class MyTestCase(JinaTestCase):
             pass
         time.sleep(2)
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
-                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk')
+                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_docs')
         with f:
             f.search(input_fn=random_queries(1, index_docs), randomize_id=False, output_fn=validate,
                      callback_on_body=True)
