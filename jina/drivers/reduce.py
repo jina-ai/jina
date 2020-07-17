@@ -7,7 +7,7 @@ from typing import Dict, List
 from . import BaseRecursiveDriver
 from ..excepts import NoExplicitMessage
 from ..proto import jina_pb2
-
+from copy import copy
 
 class ReduceDriver(BaseRecursiveDriver):
 
@@ -71,7 +71,7 @@ class ReduceDocsDriver(ReduceDriver):
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         if doc.id not in self.doc_pointers:
-            self.doc_pointers[doc.id] = doc  # what? why is this deep copy?
+            self.doc_pointers[doc.id] = copy(doc)  # force a shallow copy
         else:
             self.doc_pointers[doc.id].chunks.extend(doc.chunks)
             self.doc_pointers[doc.id].matches.extend(doc.matches)
