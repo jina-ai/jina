@@ -115,10 +115,6 @@ class BasePea(metaclass=PeaMeta):
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
         self.is_shutdown.clear()
 
-        # self.is_busy = _get_event(self)
-        # # label the pea as busy until the loop body start
-        # self.is_busy.set()
-
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
 
@@ -130,10 +126,6 @@ class BasePea(metaclass=PeaMeta):
         if isinstance(args, argparse.Namespace):
             if args.name:
                 self.name = args.name
-            if args.role == PeaRoleType.HEAD:
-                self.name = f'{self.name}-head'
-            elif args.role == PeaRoleType.TAIL:
-                self.name = f'{self.name}-tail'
             elif args.role == PeaRoleType.REPLICA:
                 self.name = '%s-%d' % (self.name, args.replica_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)

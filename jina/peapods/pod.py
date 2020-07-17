@@ -11,7 +11,8 @@ from typing import Set, Dict, List, Callable, Union
 
 from . import Pea
 from .gateway import GatewayPea, RESTGatewayPea
-from .pea import BasePea
+from .head_pea import HeadPea
+from .tail_pea import TailPea
 from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args
@@ -183,12 +184,12 @@ class BasePod:
         self.stack = ExitStack()
         # start head and tail
         if self.peas_args['head']:
-            p = BasePea(self.peas_args['head'])
+            p = HeadPea(self.peas_args['head'])
             self.peas.append(p)
             self.stack.enter_context(p)
 
         if self.peas_args['tail']:
-            p = BasePea(self.peas_args['tail'])
+            p = TailPea(self.peas_args['tail'])
             self.peas.append(p)
             self.stack.enter_context(p)
 

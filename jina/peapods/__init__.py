@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Dict, Union
 
 from .. import __default_host__
+from ..enums import PeaRoleType
 from ..logging import default_logger
 
 if False:
@@ -34,6 +35,12 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
     elif args.image:
         from .container import ContainerPea
         return ContainerPea(args)
+    elif args.role == PeaRoleType.HEAD:
+        from .head_pea import HeadPea
+        return HeadPea(args)
+    elif args.role == PeaRoleType.TAIL:
+        from .tail_pea import TailPea
+        return TailPea(args)
     else:
         from .pea import BasePea
         return BasePea(args)
