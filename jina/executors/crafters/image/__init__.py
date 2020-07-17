@@ -73,7 +73,7 @@ class ImageChunkCrafter(BaseChunkCrafter):
         return img
 
     @staticmethod
-    def _crop_image(img, target_size: Union[Tuple[int], int], top: int = None, left: int = None, how: str = 'precise'):
+    def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, left: int = None, how: str = 'precise'):
         """
         Crop the input :py:mod:`PIL` image.
 
