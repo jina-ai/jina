@@ -58,6 +58,26 @@ class BaseIndexer(BaseExecutor):
         :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
         :param vectors: vector representations in B x D
         """
+        raise NotImplementedError
+
+    def _validate_key_vector_shapes(self, keys, vectors):
+        if len(vectors.shape) != 2:
+            raise ValueError(f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2')
+
+        if not getattr(self, 'num_dim', None):
+            self.num_dim = vectors.shape[1]
+            self.dtype = vectors.dtype.name
+        elif self.num_dim != vectors.shape[1]:
+            raise ValueError(
+                f'vectors shape {vectors.shape} does not match with indexers\'s dim: {self.num_dim}')
+        elif self.dtype != vectors.dtype.name:
+            raise TypeError(
+                f'vectors\' dtype {vectors.dtype.name} does not match with indexers\'s dtype: {self.dtype}')
+        elif keys.shape[0] != vectors.shape[0]:
+            raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
+        elif self.key_dtype != keys.dtype.name:
+            raise TypeError(
+                f'keys\' dtype {keys.dtype.name} does not match with indexers keys\'s dtype: {self.key_dtype}')
 
     def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """

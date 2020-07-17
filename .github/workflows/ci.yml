@@ -30,7 +30,6 @@ jobs:
         with:
           repo-token: "${{ secrets.JINA_DEV_BOT }}"
 
-
   unit-test:
     needs: commit-lint
     runs-on: ${{ matrix.os }}
@@ -72,10 +71,40 @@ jobs:
           pip install pytest
           pip install pytest-xdist
           pip install pytest-timeout
-          pytest -n 1 --timeout=60 -v
+          pytest tests/unit -n 1 --timeout=60 -v
         #      run: |
         #        pip install pytest
         #        pip install pytest-cov
         #        cd tests && pytest *.py --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov=com --cov-report=xml --cov-report=html
         #      shell: bash
+        timeout-minutes: 15
+
+  integration-test:
+    needs: commit-lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
+        python-version: [3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[match-py-ver]
+      - name: Test with pytest
+        run: |
+          # make sure docker exist
+          docker ps
+          jina check
+          export JINA_LOG_VERBOSITY="ERROR"
+          pip install pytest
+          pip install pytest-xdist
+          pip install pytest-timeout
+          pytest tests/integration -n 1 --timeout=60 -v
         timeout-minutes: 15
