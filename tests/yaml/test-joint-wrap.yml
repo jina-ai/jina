@@ -1,4 +1,4 @@
-!ChunkIndexer
+!CompoundIndexer
 components:
   - !AnnoyIndexer
     with:

@@ -1,4 +1,4 @@
-!ChunkIndexer
+!CompoundIndexer
 metas:
   workspace: $TMP_WORKSPACE
 components:

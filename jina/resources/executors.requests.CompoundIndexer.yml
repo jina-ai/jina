@@ -9,7 +9,6 @@ on:
           - embedding
           - buffer
           - blob
-          - text
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer

@@ -2,12 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
+from copy import copy
 from typing import Dict, List
 
 from . import BaseRecursiveDriver
 from ..excepts import NoExplicitMessage
 from ..proto import jina_pb2
-from copy import copy
+
 
 class ReduceDriver(BaseRecursiveDriver):
 

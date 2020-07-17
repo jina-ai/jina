@@ -163,7 +163,7 @@ class BaseKVIndexer(BaseIndexer):
     """
 
 
-class ChunkIndexer(CompoundExecutor):
+class CompoundIndexer(CompoundExecutor):
     """A Frequently used pattern for combining A :class:`BaseVectorIndexer` and :class:`BaseKVIndexer`.
     It will be equipped with predefined ``requests.on`` behaviors:
 

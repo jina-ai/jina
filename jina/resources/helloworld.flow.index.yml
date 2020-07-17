@@ -7,13 +7,6 @@ pods:
     yaml_path: $RESOURCE_DIR/helloworld.encoder.yml
     replicas: $REPLICAS
   chunk_idx:
-    yaml_path: $RESOURCE_DIR/helloworld.indexer.chunk.yml
+    yaml_path: $RESOURCE_DIR/helloworld.indexer.yml
     replicas: $SHARDS
     separated_workspace: true
-  doc_idx:
-    yaml_path: $RESOURCE_DIR/helloworld.indexer.doc.yml
-    needs: gateway
-  join_all:
-    yaml_path: _merge
-    needs: [doc_idx, chunk_idx]
-    read_only: true
