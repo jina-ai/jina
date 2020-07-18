@@ -7,7 +7,7 @@ import requests
 from time import sleep
 
 from jina import JINA_GLOBAL
-from jina.enums import FlowOptimizeLevel
+from jina.enums import FlowOptimizeLevel, SocketType
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
@@ -43,7 +43,7 @@ def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
         yield d
 
 
-class MyTestCase(JinaTestCase):
+class FlowTestCase(JinaTestCase):
 
     def test_ping(self):
         a1 = set_pea_parser().parse_args([])
@@ -76,6 +76,41 @@ class MyTestCase(JinaTestCase):
 
         with f:
             f.dry_run()
+
+        self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+        self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r1'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['r1'].tail_args.socket_out, SocketType.PUB_BIND)
+
+        self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
+        self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r3'].head_args.socket_in, SocketType.SUB_CONNECT)
+        self.assertEqual(f._pod_nodes['r3'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r4'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['r4'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r5'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['r5'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r6'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['r6'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r8'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['r8'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r9'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['r9'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['r10'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['r10'].tail_args.socket_out, SocketType.PUSH_BIND)
+
+        for name, node in f._pod_nodes.items():
+            self.assertEqual(node.peas_args['peas'][0], node.head_args)
+            self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+
         f.save_config('tmp.yml')
         Flow.load_config('tmp.yml')
 
@@ -104,6 +139,16 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=bytes_fn)
             f.index(input_fn=bytes_fn)
 
+        self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+        self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+        self.assertEqual(f._pod_nodes['pod0'].head_args.socket_in, SocketType.PULL_BIND)
+        self.assertEqual(f._pod_nodes['pod0'].tail_args.socket_out, SocketType.PUSH_BIND)
+
+        for name, node in f._pod_nodes.items():
+            self.assertEqual(node.peas_args['peas'][0], node.head_args)
+            self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+
     def test_load_flow_from_yaml(self):
         with open(os.path.join(cur_dir, 'yaml/test-flow.yml')) as fp:
             a = Flow.load_config(fp)
@@ -127,7 +172,36 @@ class MyTestCase(JinaTestCase):
 
         self.assertEqual(a, b)
         self.assertEqual(a, c)
+
         self.add_tmpfile('test2.yml')
+
+        with a as f:
+            self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['chunk_seg'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['chunk_seg'].head_args.socket_out, SocketType.ROUTER_BIND)
+            for arg in f._pod_nodes['chunk_seg'].peas_args['peas']:
+                self.assertEqual(arg.socket_in, SocketType.DEALER_CONNECT)
+                self.assertEqual(arg.socket_out, SocketType.PUSH_CONNECT)
+            self.assertEqual(f._pod_nodes['chunk_seg'].tail_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['chunk_seg'].tail_args.socket_out, SocketType.PUB_BIND)
+
+            self.assertEqual(f._pod_nodes['wqncode1'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['wqncode1'].head_args.socket_out, SocketType.ROUTER_BIND)
+            for arg in f._pod_nodes['wqncode1'].peas_args['peas']:
+                self.assertEqual(arg.socket_in, SocketType.DEALER_CONNECT)
+                self.assertEqual(arg.socket_out, SocketType.PUSH_CONNECT)
+            self.assertEqual(f._pod_nodes['wqncode1'].tail_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['wqncode1'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['encode2'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['encode2'].head_args.socket_out, SocketType.ROUTER_BIND)
+            for arg in f._pod_nodes['encode2'].peas_args['peas']:
+                self.assertEqual(arg.socket_in, SocketType.DEALER_CONNECT)
+                self.assertEqual(arg.socket_out, SocketType.PUSH_CONNECT)
+            self.assertEqual(f._pod_nodes['encode2'].tail_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['encode2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
 
     def test_dryrun(self):
         f = (Flow()
@@ -204,7 +278,8 @@ class MyTestCase(JinaTestCase):
                     timeout=5)
 
     def test_shards(self):
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=3, separated_workspace=True)
+        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=3,
+                       separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(1000), random_doc_id=False)
         with f:
@@ -229,7 +304,8 @@ class MyTestCase(JinaTestCase):
                 self.assertIsNotNone(d.match_doc.weight)
                 self.assertEqual(d.match_doc.meta_info, b'hello world')
 
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas, separated_workspace=True)
+        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
+                       separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(index_docs), random_doc_id=False)
 
@@ -261,13 +337,60 @@ class MyTestCase(JinaTestCase):
             from jina.clients import py_client
             py_client(port_expose=f.port_expose, host=f.host).dry_run(as_request='index')
 
+        with f:
+            self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r1'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r1'].tail_args.socket_out, SocketType.PUB_BIND)
+
+            self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r3'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r3'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r4'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r4'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r5'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r5'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r6'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r6'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r8'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r8'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r9'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r9'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r10'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r10'].tail_args.socket_out, SocketType.PUSH_BIND)
+
+            for name, node in f._pod_nodes.items():
+                self.assertEqual(node.peas_args['peas'][0], node.head_args)
+                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+
     def test_dry_run_with_two_pathways_diverging_at_gateway(self):
         f = (Flow().add(name='r2', yaml_path='_forward')
              .add(name='r3', yaml_path='_forward', needs='gateway')
              .join(['r2', 'r3']))
-        for p in f.build():
-            print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
+
         with f:
+            self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUB_BIND)
+
+            self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r3'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r3'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            for name, node in f._pod_nodes.items():
+                self.assertEqual(node.peas_args['peas'][0], node.head_args)
+                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+
             f.dry_run()
 
     def test_dry_run_with_two_pathways_diverging_at_non_gateway(self):
@@ -276,10 +399,22 @@ class MyTestCase(JinaTestCase):
              .add(name='r3', yaml_path='_forward', needs='r1')
              .join(['r2', 'r3']))
 
-        a = f.build()
-        for p in a:
-            print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
         with f:
+            self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r1'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r3'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r3'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            for name, node in f._pod_nodes.items():
+                self.assertEqual(node.peas_args['peas'][0], node.head_args)
+                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
             f.dry_run()
 
     @pytest.mark.skip('this leads to zmq address conflicts on github')
@@ -290,6 +425,19 @@ class MyTestCase(JinaTestCase):
              .join(['r1', 'r2']))
 
         with f:
+            self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r1'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            for name, node in f._pod_nodes.items():
+                self.assertEqual(node.peas_args['peas'][0], node.head_args)
+                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+
             f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy(self):
@@ -299,6 +447,22 @@ class MyTestCase(JinaTestCase):
              .join(['r2', 'r3']))
 
         with f:
+            self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r1'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r3'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r3'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            for name, node in f._pod_nodes.items():
+                self.assertEqual(node.peas_args['peas'][0], node.head_args)
+                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+
             f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy_2(self):
@@ -336,7 +500,7 @@ class MyTestCase(JinaTestCase):
 
         self.add_tmpfile('doc.gzip')
 
-    def test_flow_with_publish_driver(self):
+    def test_flow_with_unary_segment_driver(self):
 
         f = (Flow().add(name='r1', yaml_path=os.path.join(cur_dir, 'yaml/unarycrafter.yml'))
              .add(name='r2', yaml_path='!OneHotTextEncoder')
@@ -348,6 +512,22 @@ class MyTestCase(JinaTestCase):
                 self.assertEqual(d.length, 1)
 
         with f:
+            self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r1'].head_args.socket_in, SocketType.PULL_BIND)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            self.assertEqual(f._pod_nodes['r3'].head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(f._pod_nodes['r3'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+
+            for name, node in f._pod_nodes.items():
+                self.assertEqual(node.peas_args['peas'][0], node.head_args)
+                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+
             f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on_body=True)
 
 
