@@ -106,13 +106,27 @@ def _optimize(op_flow, outgoing_map: dict[list], pod_edges: set([str, str])) -> 
                 end_node_name = outgoing_map[start_node_name][end_node_idx]
                 print(f'end_node {end_node_name}')
                 end_node = op_flow._pod_nodes[end_node_name]
-                edges_with_same_start = [ed for ed in _pod_edges if ed.startswith(start_node_name)]
-                edges_with_same_end = [ed for ed in _pod_edges if ed.endswith(end_node_name)]
+                edges_with_same_start = [ed for ed in pod_edges if ed.startswith(start_node_name)]
+                edges_with_same_end = [ed for ed in pod_edges if ed.endswith(end_node_name)]
                 if len(edges_with_same_start) > 1 or len(edges_with_same_end) > 1:
-                    op_flow.logger.info(f'Connection betweem {start_node_name} and {end_node_name} cannot be optimized')
+                    op_flow.logger.info(f'Connection between {start_node_name} and {end_node_name} cannot be optimized')
                 else:
-
-
+                    if end_node.is_head_router and start_node_name == 'gateway':
+                        op_flow.logger.info(
+                            f'Node {end_node_name} connects to tail of {start_node_name}')
+                        end_node.connect_to_tail_of(start_node)
+                    elif start_node.is_tail_router and end_node_name == 'gateway' and start_node.tail_args.num_part <= 1:
+                        op_flow.logger.info(
+                            f'Node {start_node_name} connects to head of {end_node_name}')
+                        start_node.connect_to_head_of(end_node)
+                    elif end_node.is_head_router and not start_node.is_tail_router:
+                        op_flow.logger.info(
+                            f'Node {end_node_name} connects to tail of {start_node_name}')
+                        end_node.connect_to_tail_of(start_node)
+                    elif start_node.is_tail_router and start_node.tail_args.num_part <= 1:
+                        op_flow.logger.info(
+                            f'Node {start_node_name} connects to head of {end_node_name}')
+                        start_node.connect_to_head_of(end_node)
                 stack.append(end_node_name)
                 if end_node_idx + 1 < len(outgoing_map[start_node_name]):
                     stack.append(start_node_name)

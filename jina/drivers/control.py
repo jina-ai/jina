@@ -48,24 +48,6 @@ class ForwardDriver(BaseDriver):
         pass
 
 
-class PublishDriver(ControlReqDriver):
-    """Publish the message to multiple pods
-
-    .. note::
-        used with PUB_BIND port
-    """
-
-    def __init__(self, num_part: int, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.num_part = num_part
-
-    def __call__(self, *args, **kwargs):
-        if is_data_request(self.req):
-            self.envelope.num_part.append(self.num_part)
-        else:
-            super().__call__(*args, **kwargs)
-
-
 class RouteDriver(ControlReqDriver):
     """A simple load balancer forward message to the next available pea
 
