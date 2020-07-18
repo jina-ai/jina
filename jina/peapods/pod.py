@@ -350,7 +350,7 @@ class FlowPod(BasePod):
             self.is_head_router = False
             self.deducted_head = pod.tail_args
         else:
-            raise ValueError('the current pod has no head router, deduct the head is confusing')
+            raise ValueError('the current pod has no head router, deducting the head is confusing')
 
     def connect_to_head_of(self, pod: 'BasePod'):
         """Eliminate the tail node by connecting next_args node directly to peas """
@@ -367,7 +367,7 @@ class FlowPod(BasePod):
             self.is_tail_router = False
             self.deducted_tail = pod.head_args
         else:
-            raise ValueError('the current pod has no tail router, deduct the tail is confusing')
+            raise ValueError('the current pod has no tail router, deducting the tail is confusing')
 
     def start(self):
         if self._args.host == __default_host__:

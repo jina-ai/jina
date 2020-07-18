@@ -62,6 +62,64 @@ def build_required(required_level: 'FlowBuildLevel'):
     return __build_level
 
 
+def _build_pod_connections(op_flow: 'Flow', outgoing_map: dict[list]) -> 'Flow':
+    _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
+    stack = deque()
+    stack.append('gateway')
+    op_flow.logger.info('Traversing dependency graph:')
+    while stack:
+        start_node_name = stack.pop()
+        print(f'start_node {start_node_name}')
+        start_node = op_flow._pod_nodes[start_node_name]
+        end_node_idx = _outgoing_idx[start_node_name]
+        if end_node_idx < len(outgoing_map[start_node_name]):
+            # else, you are back to the gateway
+            end_node_name = outgoing_map[start_node_name][end_node_idx]
+            print(f'end_node {end_node_name}')
+            end_node = op_flow._pod_nodes[end_node_name]
+            first_socket_type = SocketType.PUSH_CONNECT
+            if len(outgoing_map[start_node_name]) > 1:
+                first_socket_type = SocketType.PUB_BIND
+            elif end_node_name == 'gateway':
+                first_socket_type = SocketType.PUSH_BIND
+            op_flow.logger.info(f'Connect {start_node_name} with {end_node_name}')
+            FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
+            stack.append(end_node_name)
+            if end_node_idx + 1 < len(outgoing_map[start_node_name]):
+                stack.append(start_node_name)
+            _outgoing_idx[start_node_name] = end_node_idx + 1
+    return op_flow
+
+
+def _optimize(op_flow, outgoing_map: dict[list], pod_edges: set([str, str])) -> 'Flow':
+    if op_flow.args.optimize_level > FlowOptimizeLevel.NONE:
+        _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
+        stack = deque()
+        stack.append('gateway')
+        while stack:
+            start_node_name = stack.pop()
+            print(f'start_node {start_node_name}')
+            start_node = op_flow._pod_nodes[start_node_name]
+            end_node_idx = _outgoing_idx[start_node_name]
+            if end_node_idx < len(outgoing_map[start_node_name]):
+                # else, you are back to the gateway
+                end_node_name = outgoing_map[start_node_name][end_node_idx]
+                print(f'end_node {end_node_name}')
+                end_node = op_flow._pod_nodes[end_node_name]
+                edges_with_same_start = [ed for ed in _pod_edges if ed.startswith(start_node_name)]
+                edges_with_same_end = [ed for ed in _pod_edges if ed.endswith(end_node_name)]
+                if len(edges_with_same_start) > 1 or len(edges_with_same_end) > 1:
+                    op_flow.logger.info(f'Connection betweem {start_node_name} and {end_node_name} cannot be optimized')
+                else:
+
+
+                stack.append(end_node_name)
+                if end_node_idx + 1 < len(outgoing_map[start_node_name]):
+                    stack.append(start_node_name)
+                _outgoing_idx[start_node_name] = end_node_idx + 1
+    return op_flow
+
+
 class Flow:
     def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
         """Initialize a flow object
@@ -322,9 +380,6 @@ class Flow:
 
         return op_flow
 
-    def _connect_nodes(self, start_pod: 'BasePod', end_pod: 'BasePod'):
-        pass
-
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
         Build the current flow and make it ready to use
@@ -363,36 +418,34 @@ class Flow:
         print('_pod_nodes')
         print(op_flow._pod_nodes)
         _outgoing_map = defaultdict(list)
-        for k, p in op_flow._pod_nodes.items():
-            for s in p.needs:
-                if s not in op_flow._pod_nodes:
-                    raise FlowMissingPodError(f'{s} is not in this flow, misspelled name?')
-                _outgoing_map[s].append(p)
-                _pod_edges.add(f'{s}-{k}')
+        for end, pod in op_flow._pod_nodes.items():
+            for start in pod.needs:
+                if start not in op_flow._pod_nodes:
+                    raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
+                _outgoing_map[start].append(end)
+                _pod_edges.add([start, end])
         print('outgoing map')
         print(_outgoing_map)
 
-        _outgoing_idx = dict.fromkeys(_outgoing_map.keys(), 0)
-        stack = deque()
-        stack.append('gateway')
-        while stack:
-            start_node_name = stack.pop()
-            start_node = op_flow._pod_nodes[start_node_name]
-            end_node_idx = _outgoing_idx[start_node_name]
-            if end_node_idx < len(_outgoing_map[start_node_name]):
-                # else, you are back to the gateway
-                end_node_name = _outgoing_map[start_node_name][end_node_idx]
-                end_node = op_flow._pod_nodes[end_node_name]
-                first_socket_type = SocketType.PUSH_CONNECT
-                if len(_outgoing_map[start_node_name]) > 1:
-                    first_socket_type = SocketType.PUB_BIND
-                else:
-                    first_socket_type = SocketType.PUSH_CONNECT
-                FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
-                stack.append(end_node_name)
-                if end_node_idx + 1 < len(_outgoing_map[start_node_name]):
-                    stack.append(start_node_name)
-                    _outgoing_idx[start_node_name] = end_node_idx + 1
+        op_flow = _build_pod_connections(op_flow, _outgoing_map)
+        op_flow = _optimize(op_flow, _outgoing_map, _pod_edges)
+        op_flow._build_level = FlowBuildLevel.GRAPH
+        return op_flow
+
+    def old_build(self, copy_flow: bool = False) -> 'Flow':
+        op_flow = copy.deepcopy(self) if copy_flow else self
+
+        _pod_edges = set()
+
+        if 'gateway' not in op_flow._pod_nodes:
+            op_flow._add_gateway(needs={op_flow._last_changed_pod[-1]})
+
+        # direct all income peas' output to the current service
+        for end, pod in op_flow._pod_nodes.items():
+            for start in pod.needs:
+                if start not in op_flow._pod_nodes:
+                    raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
+                _pod_edges.add(f'{start}-{end}')
 
         for k in _pod_edges:
             s_name, e_name = k.split('-')
