@@ -37,10 +37,8 @@ class BasePod:
         if hasattr(args, 'polling') and args.polling.is_push:
             # ONLY reset when it is push
             args.reducing_yaml_path = '_forward'
-        if not hasattr(args, 'replicas'):
-            args.replicas = 1
 
-        if args.replicas > 1:
+        if getattr(args, 'replicas', 1) > 1:
             self.is_head_router = True
             self.is_tail_router = True
 
@@ -83,7 +81,7 @@ class BasePod:
             'peas': []
         }
 
-        if args.replicas > 1:
+        if getattr(args, 'replicas', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
