@@ -62,7 +62,7 @@ class ReduceDriver(BaseRecursiveDriver):
             sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
 
 
-class ReduceDocsDriver(ReduceDriver):
+class ReduceAllDriver(ReduceDriver):
     """ Reduce docs from all requests into one request """
 
     def reduce(self, *args, **kwargs):

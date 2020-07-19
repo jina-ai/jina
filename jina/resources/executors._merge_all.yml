@@ -5,7 +5,7 @@ metas:
 requests:
   on:
     [SearchRequest]:
-      - !ReduceDocsDriver {}
+      - !ReduceAllDriver {}
       - !SortMatchesQL
         with:
           field: 'score.value'
