@@ -1,0 +1,18 @@
+!ImageReader
+with:
+  channel_axis: $COLOR_CHANNEL_AXIS
+requests:
+  on:
+    IndexRequest:
+      - !SegmentDriver
+        with:
+          method: craft
+          save_buffer: True
+    SearchRequest:
+      - !URI2Buffer {}
+      - !SegmentDriver
+        with:
+          method: craft
+          save_buffer: True
+    ControlRequest:
+      - !ControlReqDriver {}

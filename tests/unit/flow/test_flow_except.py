@@ -11,7 +11,7 @@ class DummyCrafter(BaseDocCrafter):
         return 1 / 0
 
 
-class MyTestCase(JinaTestCase):
+class FlowExceptTestCase(JinaTestCase):
 
     def test_bad_flow(self):
         def validate(req):

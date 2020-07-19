@@ -1,0 +1,19 @@
+!Flow
+with:
+  read_only: true
+pods:
+  crafter:
+    yaml_path: yaml/craft.yml
+    replicas: 4
+  encoder:
+    yaml_path: yaml/encode.yml
+    replicas: 4
+  faiss_indexer:
+    replicas: 1
+    timeout_ready: 10000
+    yaml_path: yaml/index-chunk.yml
+    volumes: './workspace'
+  ranker:
+    yaml_path: MinRanker
+  doc_indexer:
+    yaml_path: yaml/index-doc.yml

@@ -1,0 +1,32 @@
+!Flow
+metas:
+  prefetch: 10
+pods:
+  loader:
+    yaml_path: yaml/craft-load.yml
+    replicas: 4
+    read_only: true
+  flipper:
+    yaml_path: yaml/craft-flip.yml
+    replicas: 4
+    read_only: true
+  normalizer:
+    yaml_path: yaml/craft-normalize.yml
+    replicas: 4
+    read_only: true
+  encoder:
+    image: yaml/encoder.yml
+    replicas: 4
+    timeout_ready: 600000
+    read_only: true
+  chunk_indexer:
+    yaml_path: yaml/index-chunk.yml
+    replicas: 1
+    separated_workspace: true
+  doc_indexer:
+    yaml_path: yaml/index-doc.yml
+    needs: loader
+  join_all:
+    yaml_path: _merge
+    needs: [doc_indexer, chunk_indexer]
+    read_only: true
