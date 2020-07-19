@@ -7,7 +7,7 @@ pods:
   encode:
     yaml_path: $RESOURCE_DIR/helloworld.encoder.yml
     replicas: $REPLICAS
-  chunk_idx:
+  index:
     yaml_path: $RESOURCE_DIR/helloworld.indexer.yml
     replicas: $SHARDS
     separated_workspace: true
