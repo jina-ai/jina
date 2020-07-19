@@ -300,7 +300,7 @@ class FlowTestCase(JinaTestCase):
             pass
         time.sleep(2)
         f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, 'yaml/test-docpb.yml'), replicas=replicas,
-                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_docs')
+                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_all')
         with f:
             f.search(input_fn=random_queries(1, index_docs), randomize_id=False, output_fn=validate,
                      callback_on_body=True)
@@ -499,10 +499,7 @@ class FlowTestCase(JinaTestCase):
 
         with f:
             self.assertEqual(f._pod_nodes['gateway'].head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUSH_CONNECT)
-
-            self.assertEqual(f._pod_nodes['r1'].head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
+            self.assertEqual(f._pod_nodes['gateway'].tail_args.socket_out, SocketType.PUB_BIND)
 
             self.assertEqual(f._pod_nodes['r2'].head_args.socket_in, SocketType.SUB_CONNECT)
             self.assertEqual(f._pod_nodes['r2'].tail_args.socket_out, SocketType.PUSH_CONNECT)
