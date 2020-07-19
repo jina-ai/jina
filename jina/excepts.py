@@ -90,3 +90,7 @@ class GRPCServerError(Exception):
 
 class GatewayPartialMessage(Exception):
     """Gateway receives a multi-part message but it can not handle it"""
+
+
+class MilvusDBException(Exception):
+    """Any time Milvus client returns Status not OK"""

@@ -24,7 +24,7 @@ Welcome to Jina Documentations!
 
    chapters/helloworld/index
    chapters/101/.sphinx
-   chapters/flow/README
+   chapters/flow/index
    chapters/io/index
    chapters/hub/index
    chapters/remote/index
