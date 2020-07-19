@@ -13,4 +13,10 @@ requests:
             - buffer
             - chunks
     SearchRequest:
+      - !Blob2PngURI {}
       - !EncodeDriver {}
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks
