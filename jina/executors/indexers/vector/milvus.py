@@ -6,7 +6,6 @@ from typing import Tuple
 import numpy as np
 
 from . import BaseVectorIndexer
-from .milvusdb.milvusdbhandler import MilvusDBHandler
 
 
 class MilvusIndexer(BaseVectorIndexer):
@@ -22,6 +21,7 @@ class MilvusIndexer(BaseVectorIndexer):
         self.index_params = index_params
 
     def post_init(self):
+        from .milvusdb.milvusdbhandler import MilvusDBHandler
         super().post_init()
         self.milvus = MilvusDBHandler(self.host, self.port, self.collection_name)
 
