@@ -1,0 +1,32 @@
+!Flow
+with:
+  read_only: true  # better add this in the query time
+  rest_api: true
+  port_expose: 5555
+pods:
+  loader:
+    yaml_path: yaml/craft-load.yml
+    read_only: true
+    replicas: 4
+  flipper:
+    yaml_path: yaml/craft-flip.yml
+    replicas: 4
+    read_only: true
+  normalizer:
+    yaml_path: yaml/craft-normalize.yml
+    read_only: true
+    replicas: 4
+  encoder:
+    timeout_ready: 600000
+    replicas: 4
+    read_only: true
+  chunk_indexer:
+    yaml_path: yaml/index-chunk.yml
+    separated_workspace: true
+    polling: all
+    replicas: 1
+    reducing_yaml_path: _merge_topk_chunks
+  ranker:
+    yaml_path: MinRanker
+  doc_indexer:
+    yaml_path: yaml/index-doc.yml

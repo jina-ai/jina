@@ -1,0 +1,11 @@
+!ImageFlipper
+metas:
+  py_modules: customized_executors.py
+with:
+  channel_axis: $COLOR_CHANNEL_AXIS
+requests:
+  on:
+    [SearchRequest, IndexRequest]:
+      - !ChunkCraftDriver
+        with:
+          method: craft

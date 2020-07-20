@@ -1,0 +1,11 @@
+!ImageTorchEncoder
+with:
+  pool_strategy: mean
+  model_name: mobilenet_v2
+  img_shape: 96
+requests:
+  on:
+    [SearchRequest, IndexRequest, TrainRequest]:
+      - !EncodeDriver
+        with:
+          method: encode
