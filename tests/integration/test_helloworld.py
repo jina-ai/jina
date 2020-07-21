@@ -3,6 +3,7 @@ import subprocess
 import unittest
 from pathlib import Path
 
+import pytest
 from pkg_resources import resource_filename
 
 from jina.clients import py_client
@@ -18,6 +19,7 @@ class MyTestCase(JinaTestCase):
     def test_helloworld(self):
         subprocess.check_call(['jina', 'hello-world'])
 
+    @pytest.mark.timeout(360)
     def test_helloworld_py(self):
         from jina.main.parser import set_hw_parser
         from jina.helloworld import hello_world
