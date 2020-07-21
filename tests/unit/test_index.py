@@ -4,6 +4,7 @@ import time
 import unittest
 
 import numpy as np
+
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from jina.flow import Flow
@@ -170,7 +171,7 @@ class MyTestCase(JinaTestCase):
 
         def validate(req, indexer_name):
             self.assertTrue(req.status.code < jina_pb2.Status.ERROR)
-            self.assertEqual(req.search.docs[0].chunks[0].matches[0].score.op_name, indexer_name)
+            self.assertEqual(req.search.docs[0].matches[0].score.op_name, indexer_name)
 
         with f:
             f.index(random_docs(100))
@@ -184,6 +185,8 @@ class MyTestCase(JinaTestCase):
 
         with g:
             g.search(random_docs(10), output_fn=lambda x: validate(x, 'AnnoyIndexer'))
+
+        self.add_tmpfile('vec.gz', 'vecidx.bin', 'chunk.gz', 'chunkidx.bin')
 
 
 if __name__ == '__main__':
