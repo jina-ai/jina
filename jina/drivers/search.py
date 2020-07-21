@@ -5,7 +5,6 @@ from typing import Iterable
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
-from ..proto.jina_pb2 import ScoredResult
 
 if False:
     from ..proto import jina_pb2
@@ -36,13 +35,17 @@ class KVSearchDriver(BaseSearchDriver):
     """
 
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        # hit_sr = []  #: hited scored results, not some search may not ends with result. especially in shards
-        for tk in doc.matches:
+        miss_idx = []  #: missed hit results, not some search may not ends with result. especially in shards
+        for idx, tk in enumerate(doc.matches):
             r = self.exec_fn(tk.match.id)
             if r:
                 tk.match.CopyFrom(r)
             else:
-                del tk
+                miss_idx.append(idx)
+
+        # delete non-exit matches in reverse
+        for j in reversed(miss_idx):
+            del doc.matches[j]
 
 
 # DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc

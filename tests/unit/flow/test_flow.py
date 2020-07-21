@@ -25,7 +25,7 @@ def random_queries(num_docs, chunks_per_doc=5, embed_dim=10):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
             dd = d.matches.add()
-            dd.match.id = k
+            dd.match.id = k + 1  # 1-indexed
         yield d
 
 
