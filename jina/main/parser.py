@@ -188,21 +188,20 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string')
     gp0.add_argument('--uses', type=str, default='BaseExecutor',
-                     help='the yaml config of the executor, it could be '
+                     help='the config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '
                           '> one of "_clear", "_route", "_forward", "_logforward", "_merge" '
-                          '> the content of YAML config (must starts with "!")')  # pod(no use) -> pea
+                          '> the content of YAML config (must starts with "!")'
+                          '> a docker image')  # pod(no use) -> pea
     gp0.add_argument('--py-modules', type=str, nargs='*',
                      help='the customized python modules need to be imported before loading the'
                           ' executor')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
-    gp1.add_argument('--image', type=str,
-                     help='the name of the docker image that this pea runs with. it is also served as an indicator '
-                          'of containerization. '
-                          'when this and --uses are both given then the docker image '
-                          'is used and its original yaml configuration is replaced by the given --uses')
+    gp1.add_argument('--uses-internal', type=str, default='BaseExecutor',
+                     help='The executor config that is passed to the docker image if a docker image is used in uses. '
+                          'It cannot be another docker image ')
     gp1.add_argument('--entrypoint', type=str,
                      help='the entrypoint command overrides the ENTRYPOINT in docker image. '
                           'when not set then the docker image ENTRYPOINT takes effective.')

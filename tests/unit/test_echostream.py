@@ -25,7 +25,7 @@ class MyTestCase(JinaTestCase):
             '--port-out', '12346',
             '--socket-in', 'PULL_BIND',
             '--socket-out', 'PUSH_BIND',
-            '--yaml-path', '_logforward',
+            '--uses', '_logforward',
             '--timeout-ctrl', '-1'
         ])
 

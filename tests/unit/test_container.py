@@ -54,7 +54,7 @@ class MyTestCase(JinaTestCase):
         build_image()
 
     def test_simple_container(self):
-        args = set_pea_parser().parse_args(['--image', img_name])
+        args = set_pea_parser().parse_args(['--uses', img_name])
         print(args)
 
         with ContainerPea(args):
@@ -64,8 +64,8 @@ class MyTestCase(JinaTestCase):
         ContainerPea(args).start().close()
 
     def test_simple_container_with_ext_yaml(self):
-        args = set_pea_parser().parse_args(['--image', img_name,
-                                            '--yaml-path', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml')])
+        args = set_pea_parser().parse_args(['--uses', img_name,
+                                            '--uses-internal', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml')])
         print(args)
 
         with ContainerPea(args):
@@ -149,7 +149,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(out_file, './abc')
 
     def test_container_ping(self):
-        a4 = set_pea_parser().parse_args(['--image', img_name])
+        a4 = set_pea_parser().parse_args(['--uses', img_name])
         a5 = set_ping_parser().parse_args(['0.0.0.0', str(a4.port_ctrl), '--print-response'])
 
         # test with container

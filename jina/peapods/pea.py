@@ -21,6 +21,7 @@ from ..executors import BaseExecutor
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
+from ..helper import valid_docker_image
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -188,7 +189,7 @@ class BasePea(metaclass=PeaMeta):
         """
         if self.args.uses:
             try:
-                self.executor = BaseExecutor.load_config(self.args.uses,
+                self.executor = BaseExecutor.load_config(self.args.uses_internal if valid_docker_image(self.args.uses) else self.args.uses,
                                                          self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:

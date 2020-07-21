@@ -37,8 +37,9 @@ class ContainerPea(BasePea):
         if self.args.uses_internal:
             if os.path.exists(self.args.uses_internal):
                 # external YAML config, need to be volumed into the container
-                non_defaults['uses_internal'] = '/' + os.path.basename(self.args.uses_internal)
-                _volumes[os.path.abspath(self.args.uses_internal)] = {'bind': non_defaults['uses_internal'], 'mode': 'ro'}
+                # uses takes value from uses_internal
+                non_defaults['uses'] = '/' + os.path.basename(self.args.uses_internal)
+                _volumes[os.path.abspath(self.args.uses_internal)] = {'bind': non_defaults['uses'], 'mode': 'ro'}
             elif not valid_yaml_path(self.args.uses_internal):
                 raise FileNotFoundError(f'yaml_path {self.args.uses_internal} is not like a path, please check it')
         if self.args.volumes:
