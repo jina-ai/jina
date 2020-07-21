@@ -18,11 +18,10 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def get_result(resp):
     n = []
     for d in resp.search.docs:
-        for c in d.chunks:
-            n.append([k.match.id for k in c.matches])
+        n.append([k.match.id for k in d.matches])
     n = np.array(n)
-    # each chunk should return a list of top-100
-    np.testing.assert_equal(n.shape[0], 5)
+    # each doc should return a list of top-100
+    np.testing.assert_equal(n.shape[0], 2)
     np.testing.assert_equal(n.shape[1], 100)
 
 
@@ -164,7 +163,7 @@ class MyTestCase(JinaTestCase):
 
         time.sleep(3)
         with f:
-            f.search(input_fn=random_docs(1), output_fn=get_result, top_k=100)
+            f.search(input_fn=random_docs(2), output_fn=get_result, top_k=100)
 
     def test_chunk_joint_idx(self):
         f = Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/test-joint.yml'))
