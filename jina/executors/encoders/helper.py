@@ -48,8 +48,8 @@ def prune_mask(mask, cls_pos='head'):
         mask_row[0, 0] = 1
         result = np.tile(mask_row, (mask.shape[0], 1))
     elif cls_pos == 'tail':
-        for num_tokens in np.sum(mask, axis=1).tolist():
-            result[:, num_tokens - 1] = 1
+        for row_index, num_tokens in enumerate(np.sum(mask, axis=1).tolist()):
+            result[row_index, num_tokens - 1] = 1
     else:
         raise NotImplementedError
     return result

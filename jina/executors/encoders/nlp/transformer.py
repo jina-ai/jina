@@ -2,13 +2,32 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-
+from typing import Optional
 import numpy as np
 
 from .. import BaseEncoder
 from ..frameworks import BaseTextTFEncoder, BaseTextTorchEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
+from jina.logging.base import get_logger
+
+logger = get_logger("transformer_encoder")
+
+
+def auto_reduce(model_outputs, mask_2d, model_name):
+    """
+    Automatically creates a sentence embedding from its token embeddings.
+        * For BERT-like models (BERT, RoBERTa, DistillBERT, Electra ...) uses embedding of first token
+        * For XLM and XLNet models uses embedding of last token
+        * Assumes that other models are language-model like and uses embedding of last token
+    """
+    if "bert" in model_name or "electra" in model_name:
+        return reduce_cls(model_outputs, mask_2d)
+    if "xlnet" in model_name:
+        return reduce_cls(model_outputs, mask_2d, cls_pos="tail")
+    logger.warning("Using embedding of a last token as a sequence embedding. "
+                   "If that's not desirable, change `pooling_strategy`")
+    return reduce_cls(model_outputs, mask_2d, cls_pos="tail")
 
 
 class BaseTransformerEncoder(BaseEncoder):
@@ -17,61 +36,65 @@ class BaseTransformerEncoder(BaseEncoder):
     """
 
     def __init__(self,
-                 pooling_strategy: str = 'mean',
-                 max_length: int = 64,
-                 model_path: str = 'transformer',
+                 pretrained_model_name_or_path: str = 'bert-base-uncased',
+                 pooling_strategy: str = 'auto',
+                 max_length: Optional[int] = None,
                  truncation_strategy: str = 'longest_first',
+                 model_save_path: Optional[str] = None,
                  *args, **kwargs):
         """
-
-        :param model_name: the name of the model. Supported models include 'bert-base-uncased', 'openai-gpt', 'gpt2',
-            'xlm-mlm-enfr-1024', 'distilbert-base-cased', 'roberta-base', 'xlm-roberta-base', 'flaubert-base-cased',
-            'camembert-base', 'ctrl'.
+        :param pretrained_model_name_or_path: Either:
+            - a string with the `shortcut name` of a pre-trained model to load from cache or download, e.g.: ``bert-base-uncased``.
+            - a string with the `identifier name` of a pre-trained model that was user-uploaded to Hugging Face S3, e.g.: ``dbmdz/bert-base-german-cased``.
+            - a path to a `directory` containing model weights saved using :func:`~transformers.PreTrainedModel.save_pretrained`, e.g.: ``./my_model_directory/``.
+            - a path or url to a `tensorflow index checkpoint file` (e.g. `./tf_model/model.ckpt.index`). In this case, ``from_tf`` should be set to True and a configuration object should be provided as ``config`` argument.
+            This loading path is slower than converting the TensorFlow
+            checkpoint in a PyTorch model using the provided conversion scripts and loading the PyTorch model afterwards.
         :param pooling_strategy: the strategy to merge the word embeddings into the chunk embedding. Supported
-            strategies include 'cls', 'mean', 'max', 'min'.
+            strategies include 'auto', 'cls', 'mean', 'max', 'min'.
         :param max_length: the max length to truncate the tokenized sequences to.
-        :param model_path: the path of the encoder model. If a valid path is given, the encoder will be loaded from the
-            given path.
-        :param truncation_strategy: select truncation strategy. Supported strategies include 'only_first', 'only_second',
-            'longest_first' and 'do_not_truncate'. Defaults to 'longest_first'.
+        :param model_save_path: the path of the encoder model. If a valid path is given, the encoder will be saved to the given path
+        :param truncation_strategy: select truncation strategy. Supported values
+            * `True` or `'longest_first'` (default): truncate to a max length specified in `max_length` or to the max acceptable input length for the model if no length is provided (`max_length=None`).
+            * `'only_first'`:  This will only truncate the first sequence of a pair if a pair of sequences (or a batch of pairs) is provided
+            * `'only_second'`: This will only truncate the second sequence of a pair if a pair of sequences (or a batch of pairs) is provided
+            * `False` or `'do_not_truncate'`: No truncation (i.e. can output batch with sequences length greater than the model max admissible input size)
 
         ..warning::
-            `model_path` is a relative path in the executor's workspace.
+            `model_save_path` should be relative to executor's workspace
         """
         super().__init__(*args, **kwargs)
-        if self.model_name is None:
-            self.model_name = 'bert-base-uncased'
+        self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.pooling_strategy = pooling_strategy
         self.max_length = max_length
-        self.raw_model_path = model_path
+        self.model_save_path = model_save_path
         self.truncation_strategy = truncation_strategy
 
     @batching
     @as_ndarray
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-
         :param data: a 1d array of string type in size `B`
         :return: an ndarray in size `B x D`
         """
-        token_ids_batch = []
-        mask_ids_batch = []
-        for c_idx in range(data.shape[0]):
-            token_ids = self.tokenizer.encode(
-                data[c_idx],
-                pad_to_max_length=True,
-                max_length=self.max_length,
-                truncation=self.truncation_strategy)
-            mask_ids = [0 if t == self.tokenizer.pad_token_id else 1 for t in token_ids]
-            token_ids_batch.append(token_ids)
-            mask_ids_batch.append(mask_ids)
-        token_ids_batch = self.array2tensor(token_ids_batch)
-        mask_ids_batch = self.array2tensor(mask_ids_batch)
+        try:
+            ids_info = self.tokenizer.batch_encode_plus(data,
+                                                        max_length=self.max_length,
+                                                        truncation=self.truncation_strategy,
+                                                        padding=True)
+        except ValueError:
+            self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            self.model.resize_token_embeddings(len(self.tokenizer))
+            ids_info = self.tokenizer.batch_encode_plus(data, max_length=self.max_length, padding=True)
+        token_ids_batch = self.array2tensor(ids_info['input_ids'])
+        mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
         with self.session():
             seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
             _seq_output = self.tensor2array(seq_output)
-            if self.pooling_strategy == 'cls':
+            if self.pooling_strategy == 'auto':
+                output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
+            elif self.pooling_strategy == 'cls':
                 if hasattr(self._tokenizer, 'cls_token') and len(extra_output) > 0:
                     output = self.tensor2array(extra_output[0])
                 else:
@@ -88,20 +111,19 @@ class BaseTransformerEncoder(BaseEncoder):
         return output
 
     def __getstate__(self):
-        if not os.path.exists(self.model_abspath):
-            self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
-            os.mkdir(self.model_abspath)
-        self.model.save_pretrained(self.model_abspath)
-        self.tokenizer.save_pretrained(self.model_abspath)
+        if self.model_save_path:
+            if not os.path.exists(self.model_abspath):
+                self.logger.info(f'create folder for saving transformer models: {self.model_abspath}')
+                os.mkdir(self.model_abspath)
+            self.model.save_pretrained(self.model_abspath)
+            self.tokenizer.save_pretrained(self.model_abspath)
         return super().__getstate__()
 
     def post_init(self):
         self._model = None
         self._tensor_func = None
         self._sess_func = None
-        self.tmp_model_path = self.model_abspath if os.path.exists(self.model_abspath) else self.model_name
         self._tokenizer = self.get_tokenizer()
-        self.cls_pos = 'tail' if self.model_name == 'xlnet-base-cased' else 'head'
 
     def array2tensor(self, array):
         return self.tensor_func(array)
@@ -112,9 +134,8 @@ class BaseTransformerEncoder(BaseEncoder):
     @property
     def model_abspath(self) -> str:
         """Get the file path of the encoder model storage
-
         """
-        return self.get_file_from_workspace(self.raw_model_path)
+        return self.get_file_from_workspace(self.model_save_path)
 
     @property
     def model(self):
@@ -141,36 +162,9 @@ class BaseTransformerEncoder(BaseEncoder):
         return self._tokenizer
 
     def get_tokenizer(self):
-        from transformers import BertTokenizer, OpenAIGPTTokenizer, GPT2Tokenizer, \
-            XLNetTokenizer, XLMTokenizer, DistilBertTokenizer, RobertaTokenizer, XLMRobertaTokenizer, \
-            FlaubertTokenizer, CamembertTokenizer, CTRLTokenizer
-        tokenizer_dict = {
-            'bert-base-uncased': BertTokenizer,
-            'openai-gpt': OpenAIGPTTokenizer,
-            'gpt2': GPT2Tokenizer,
-            'xlnet-base-cased': XLNetTokenizer,
-            'xlm-mlm-enfr-1024': XLMTokenizer,
-            'distilbert-base-cased': DistilBertTokenizer,
-            'roberta-base': RobertaTokenizer,
-            'xlm-roberta-base': XLMRobertaTokenizer,
-            'flaubert-base-cased': FlaubertTokenizer,
-            'camembert-base': CamembertTokenizer,
-            'ctrl': CTRLTokenizer
-        }
-        if self.model_name not in tokenizer_dict:
-            self.logger.error(f'{self.model_name} not in our supports: {",".join(tokenizer_dict.keys())}')
-            raise ValueError
-        _tokenizer = tokenizer_dict[self.model_name].from_pretrained(self.tmp_model_path)
-        _tokenizer.padding_side = 'right'
-        if self.model_name in ('openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024', 'xlnet-base-cased'):
-            _tokenizer.pad_token = '<PAD>'
+        from transformers import AutoTokenizer
+        _tokenizer = AutoTokenizer.from_pretrained(self.pretrained_model_name_or_path)
         return _tokenizer
-
-    def get_cls_pos(self):
-        return 'tail' if self.model_name == 'xlnet-base-cased' else 'head'
-
-    def get_tmp_model_path(self):
-        return self.model_abspath if os.path.exists(self.model_abspath) else self.model_name
 
     def get_model(self):
         raise NotImplementedError
@@ -188,26 +182,8 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
     """
 
     def get_model(self):
-        from transformers import TFBertModel, TFOpenAIGPTModel, TFGPT2Model, TFXLNetModel, TFXLMModel, \
-            TFDistilBertModel, TFRobertaModel, TFXLMRobertaModel, TFCamembertModel, TFCTRLModel
-        model_dict = {
-            'bert-base-uncased': TFBertModel,
-            'openai-gpt': TFOpenAIGPTModel,
-            'gpt2': TFGPT2Model,
-            'xlnet-base-cased': TFXLNetModel,
-            'xlm-mlm-enfr-1024': TFXLMModel,
-            'distilbert-base-cased': TFDistilBertModel,
-            'roberta-base': TFRobertaModel,
-            'xlm-roberta-base': TFXLMRobertaModel,
-            'camembert-base': TFCamembertModel,
-            'ctrl': TFCTRLModel
-        }
-        _model = model_dict[self.model_name].from_pretrained(pretrained_model_name_or_path=self.tmp_model_path)
-        if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            try:
-                _model.resize_token_embeddings(len(self.tokenizer))
-            except NotImplementedError:
-                self.logger.warn(f'Model {self.model_name} does not implement resize_token_embeddings')
+        from transformers import TFAutoModelForPreTraining
+        _model = TFAutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
         return _model
 
     def get_session(self):
@@ -226,27 +202,8 @@ class TransformerTorchEncoder(BaseTransformerEncoder, BaseTextTorchEncoder):
     """
 
     def get_model(self):
-        from transformers import BertModel, OpenAIGPTModel, GPT2Model, XLNetModel, XLMModel, DistilBertModel, \
-            RobertaModel, XLMRobertaModel, FlaubertModel, CamembertModel, CTRLModel
-        model_dict = {
-            'bert-base-uncased': BertModel,
-            'openai-gpt': OpenAIGPTModel,
-            'gpt2': GPT2Model,
-            'xlnet-base-cased': XLNetModel,
-            'xlm-mlm-enfr-1024': XLMModel,
-            'distilbert-base-cased': DistilBertModel,
-            'roberta-base': RobertaModel,
-            'xlm-roberta-base': XLMRobertaModel,
-            'flaubert-base-cased': FlaubertModel,
-            'camembert-base': CamembertModel,
-            'ctrl': CTRLModel
-        }
-        _model = model_dict[self.model_name].from_pretrained(self.tmp_model_path)
-        if self.model_name in ('xlnet-base-cased', 'openai-gpt', 'gpt2', 'xlm-mlm-enfr-1024'):
-            try:
-                _model.resize_token_embeddings(len(self.tokenizer))
-            except NotImplementedError:
-                self.logger.warn(f'Model {self.model_name} does not implement resize_token_embeddings')
+        from transformers import AutoModelForPreTraining
+        _model = AutoModelForPreTraining.from_pretrained(self.pretrained_model_name_or_path)
         self.to_device(_model)
         return _model
 
