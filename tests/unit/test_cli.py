@@ -22,10 +22,11 @@ class MyTestCase(JinaTestCase):
             subprocess.check_call(['jina', j, '--help'])
         subprocess.check_call(['jina'])
 
-    @pytest.mark.timeout(180)
+    # @pytest.mark.timeout(180)
     def test_helloworld(self):
         subprocess.check_call(['jina', 'hello-world'])
 
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_helloworld_py(self):
         from jina.main.parser import set_hw_parser
         from jina.helloworld import hello_world
