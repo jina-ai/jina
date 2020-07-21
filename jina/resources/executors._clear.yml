@@ -9,5 +9,5 @@ requests:
         with:
           fields:
             - request
-      ControlRequest:
-        - !ControlReqDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}
