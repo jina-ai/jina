@@ -42,7 +42,7 @@ class MilvusDBHandler:
                 - https://github.com/milvus-io/milvus/
         """
 
-        def __init__(self, client: 'Milvus', collection_name: str):
+        def __init__(self, client, collection_name: str):
             self.logger = get_logger(self.__class__.__name__)
             self.client = client
             self.collection_name = collection_name
@@ -51,7 +51,7 @@ class MilvusDBHandler:
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            self.logger.info(f'Seding flush command to Milvus Server for collection: {self.collection_name}')
+            self.logger.info(f'Sending flush command to Milvus Server for collection: {self.collection_name}')
             self.client.flush([self.collection_name])
 
         def insert(self, keys: list, vectors: 'np.ndarray'):
