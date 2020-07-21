@@ -250,6 +250,19 @@
     }
   </script>
 
+  <!-- Search box becomes active when you press the slash(/) key anywhere on the page-->
+  <script>
+    const body = document.querySelector('body');
+    const searchBox = document.querySelector('form').querySelector('input[type="text"]');
+
+    body.addEventListener('keyup', event => {
+      event.preventDefault()
+      if (event.key === '/') {
+        searchBox.focus();
+      }
+    });
+  </script>
+
   {# Do not conflict with RTD insertion of analytics script #}
   {% if not READTHEDOCS %}
     {% if theme_analytics_id %}
