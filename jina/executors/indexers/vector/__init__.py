@@ -71,27 +71,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
-        if len(vectors.shape) != 2:
-            raise ValueError(f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2')
-
-        if not self.num_dim:
-            self.num_dim = vectors.shape[1]
-            self.dtype = vectors.dtype.name
-        elif self.num_dim != vectors.shape[1]:
-            raise ValueError(
-                "vectors' shape [%d, %d] does not match with indexers's dim: %d" %
-                (vectors.shape[0], vectors.shape[1], self.num_dim))
-        elif self.dtype != vectors.dtype.name:
-            raise TypeError(
-                "vectors' dtype %s does not match with indexers's dtype: %s" %
-                (vectors.dtype.name, self.dtype))
-        elif keys.shape[0] != vectors.shape[0]:
-            raise ValueError('number of key %d not equal to number of vectors %d' % (keys.shape[0], vectors.shape[0]))
-        elif self.key_dtype != keys.dtype.name:
-            raise TypeError(
-                "keys' dtype %s does not match with indexers keys's dtype: %s" %
-                (keys.dtype.name, self.key_dtype))
-
+        self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.key_bytes += keys.tobytes()
         self.key_dtype = keys.dtype.name

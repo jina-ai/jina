@@ -6,7 +6,7 @@ import os
 import tempfile
 import threading
 import time
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
@@ -60,6 +60,82 @@ def build_required(required_level: 'FlowBuildLevel'):
         return arg_wrapper
 
     return __build_level
+
+
+def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]], func: Callable[['Flow', str, str], None]) -> 'Flow':
+    _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
+    stack = deque()
+    stack.append('gateway')
+    op_flow.logger.info('Traversing dependency graph:')
+    while stack:
+        start_node_name = stack.pop()
+        end_node_idx = _outgoing_idx[start_node_name]
+        if end_node_idx < len(outgoing_map[start_node_name]):
+            # else, you are back to the gateway
+            end_node_name = outgoing_map[start_node_name][end_node_idx]
+            func(op_flow, start_node_name, end_node_name)
+            stack.append(end_node_name)
+            if end_node_idx + 1 < len(outgoing_map[start_node_name]):
+                stack.append(start_node_name)
+            _outgoing_idx[start_node_name] = end_node_idx + 1
+    return op_flow
+
+
+def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
+    def _build_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
+        # Rule
+        # if a node has multiple income/outgoing peas,
+        # then its socket_in/out must be PULL_BIND or PUB_BIND
+        # otherwise it should be different than its income
+        # i.e. income=BIND => this=CONNECT, income=CONNECT => this = BIND
+        #
+        # when a socket is BIND, then host must NOT be set, aka default host 0.0.0.0
+        # host_in and host_out is only set when corresponding socket is CONNECT
+        start_node = flow._pod_nodes[start_node_name]
+        end_node = flow._pod_nodes[end_node_name]
+        first_socket_type = SocketType.PUSH_CONNECT
+        if len(outgoing_map[start_node_name]) > 1:
+            first_socket_type = SocketType.PUB_BIND
+        elif end_node_name == 'gateway':
+            first_socket_type = SocketType.PUSH_BIND
+        flow.logger.info(f'Connect {start_node_name} with {end_node_name}')
+        FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
+
+    return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
+
+
+def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str, str}) -> 'Flow':
+    def _optimize_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
+        start_node = flow._pod_nodes[start_node_name]
+        end_node = flow._pod_nodes[end_node_name]
+        edges_with_same_start = [ed for ed in pod_edges if ed.startswith(start_node_name)]
+        edges_with_same_end = [ed for ed in pod_edges if ed.endswith(end_node_name)]
+        if len(edges_with_same_start) > 1 or len(edges_with_same_end) > 1:
+            flow.logger.info(f'Connection between {start_node_name} and {end_node_name} cannot be optimized')
+        else:
+            if end_node.is_head_router and start_node_name == 'gateway':
+                flow.logger.info(
+                    f'Node {end_node_name} connects to tail of {start_node_name}')
+                end_node.connect_to_tail_of(start_node)
+            elif start_node.is_tail_router and end_node_name == 'gateway' and start_node.tail_args.num_part <= 1:
+                # connect gateway directly to peas only if this is unblock router
+                # as gateway can not block & reduce message
+                flow.logger.info(
+                    f'Node {start_node_name} connects to head of {end_node_name}')
+                start_node.connect_to_head_of(end_node)
+            elif end_node.is_head_router and not start_node.is_tail_router:
+                flow.logger.info(
+                    f'Node {end_node_name} connects to tail of {start_node_name}')
+                end_node.connect_to_tail_of(start_node)
+            elif start_node.is_tail_router and start_node.tail_args.num_part <= 1:
+                flow.logger.info(
+                    f'Node {start_node_name} connects to head of {end_node_name}')
+                start_node.connect_to_head_of(end_node)
+
+    if op_flow.args.optimize_level > FlowOptimizeLevel.NONE:
+        return _traverse_graph(op_flow, outgoing_map, _optimize_two_connections)
+    else:
+        return op_flow
 
 
 class Flow:
@@ -265,8 +341,6 @@ class Flow:
         kwargs['name'] = 'gateway'
         self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
-        # self.set_last_pod(pod_name, False)
-
     def join(self, needs: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
@@ -356,66 +430,17 @@ class Flow:
         if 'gateway' not in op_flow._pod_nodes:
             op_flow._add_gateway(needs={op_flow._last_changed_pod[-1]})
 
-        # direct all income peas' output to the current service
-        for k, p in op_flow._pod_nodes.items():
-            for s in p.needs:
-                if s not in op_flow._pod_nodes:
-                    raise FlowMissingPodError(f'{s} is not in this flow, misspelled name?')
-                _pod_edges.add(f'{s}-{k}')
+        # construct a map with a key a start node and values an array of its end nodes
+        _outgoing_map = defaultdict(list)
+        for end, pod in op_flow._pod_nodes.items():
+            for start in pod.needs:
+                if start not in op_flow._pod_nodes:
+                    raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
+                _outgoing_map[start].append(end)
+                _pod_edges.add(Tuple[start, end])
 
-        for k in _pod_edges:
-            s_name, e_name = k.split('-')
-            edges_with_same_start = [ed for ed in _pod_edges if ed.startswith(s_name)]
-            edges_with_same_end = [ed for ed in _pod_edges if ed.endswith(e_name)]
-
-            s_pod = op_flow._pod_nodes[s_name]
-            e_pod = op_flow._pod_nodes[e_name]
-
-            # Rule
-            # if a node has multiple income/outgoing peas,
-            # then its socket_in/out must be PULL_BIND or PUB_BIND
-            # otherwise it should be different than its income
-            # i.e. income=BIND => this=CONNECT, income=CONNECT => this = BIND
-            #
-            # when a socket is BIND, then host must NOT be set, aka default host 0.0.0.0
-            # host_in and host_out is only set when corresponding socket is CONNECT
-
-            if len(edges_with_same_start) > 1 and len(edges_with_same_end) == 1:
-                FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUB_BIND)
-            elif len(edges_with_same_start) == 1 and len(edges_with_same_end) > 1:
-                FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
-            elif len(edges_with_same_start) == 1 and len(edges_with_same_end) == 1:
-                # in this case, either side can be BIND
-                # we prefer gateway to be always CONNECT so that multiple clients can connect to it
-                # check if either node is gateway
-                # this is the only place where gateway appears
-                if s_name == 'gateway':
-                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and e_pod.is_head_router:
-                        # connect gateway directly to peas
-                        e_pod.connect_to_tail_of(s_pod)
-                    else:
-                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
-                elif e_name == 'gateway':
-                    if self.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
-                        # connect gateway directly to peas only if this is unblock router
-                        # as gateway can not block & reduce message
-                        s_pod.connect_to_head_of(e_pod)
-                    else:
-                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_BIND)
-                else:
-                    e_pod.head_args.socket_in = s_pod.tail_args.socket_out.paired
-                    if self.args.optimize_level > FlowOptimizeLevel.NONE and e_pod.is_head_router and not s_pod.is_tail_router:
-                        e_pod.connect_to_tail_of(s_pod)
-                    elif self.args.optimize_level > FlowOptimizeLevel.NONE and s_pod.is_tail_router and s_pod.tail_args.num_part <= 1:
-                        s_pod.connect_to_head_of(e_pod)
-                    else:
-                        FlowPod.connect(s_pod, e_pod, first_socket_type=SocketType.PUSH_CONNECT)
-            else:
-                raise FlowTopologyError('found %d edges start with %s and %d edges end with %s, '
-                                        'this type of topology is ambiguous and should not exist, '
-                                        'i can not determine the socket type' % (
-                                            len(edges_with_same_start), s_name, len(edges_with_same_end), e_name))
-
+        op_flow = _build_flow(op_flow, _outgoing_map)
+        op_flow = _optimize_flow(op_flow, _outgoing_map, _pod_edges)
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 
@@ -489,10 +514,7 @@ class Flow:
         """Close the flow and release all resources associated to it. """
         if hasattr(self, '_pod_stack'):
             self._pod_stack.close()
-        # if hasattr(self, 'sse_logger') and self.sse_logger.is_alive():
-        #     self.sse_logger.stop()
         self._build_level = FlowBuildLevel.EMPTY
-        # time.sleep(1)  # sleep for a while until all resources are safely closed
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
 
@@ -567,8 +589,8 @@ class Flow:
         self._get_client(**kwargs).train(input_fn, output_fn)
 
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                    output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                      output_fn: Callable[['jina_pb2.Message'], None] = None,
+                      **kwargs):
         """Using numpy ndarray as the index source for the current flow
 
         :param array: the numpy ndarray data source
@@ -582,8 +604,8 @@ class Flow:
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn)
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                     output_fn: Callable[['jina_pb2.Message'], None] = None,
-                     **kwargs):
+                       output_fn: Callable[['jina_pb2.Message'], None] = None,
+                       **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow
 
         :param array: the numpy ndarray data source
@@ -612,7 +634,7 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).index(input_lines(lines, filepath,  size, sampling_rate, read_mode), output_fn)
+        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,

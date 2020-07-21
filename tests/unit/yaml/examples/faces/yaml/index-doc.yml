@@ -1,0 +1,6 @@
+!DocPbIndexer
+with:
+  index_filename: doc.gzip
+metas:
+  name: docIndexer
+  workspace: $TMP_WORKSPACE

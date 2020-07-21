@@ -1,0 +1,12 @@
+!ImageNormalizer
+with:
+  target_size: 160
+  img_mean: [0.485, 0.456, 0.406]
+  img_std: [0.229, 0.224, 0.225]
+  channel_axis: $COLOR_CHANNEL_AXIS
+requests:
+  on:
+    [SearchRequest, IndexRequest, TrainRequest]:
+      - !ChunkCraftDriver
+        with:
+          method: craft
