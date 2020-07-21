@@ -18,11 +18,11 @@ from ...proto import jina_pb2
 
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
-              randomize_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
-              mime_type: str = None, filter_by: Union[Tuple[str], List[str], str] = None,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
+              mime_type: str = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
-    doc_counter = RandomUintCounter() if randomize_id else SimpleCounter(first_doc_id)
+    doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
     req_counter = SimpleCounter(first_request_id)
 
     try:
