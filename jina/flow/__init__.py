@@ -648,7 +648,7 @@ class Flow:
         :param size: the maximum number of the files
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
-                is opened. 'r' for reading in text mode, 'rb' for reading in
+                is opened. 'r' for reading in text mode, 'rb' for reading in binary mode
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
