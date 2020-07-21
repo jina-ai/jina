@@ -20,7 +20,7 @@ __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
-           'colored', 'kwargs2list', 'valid_yaml_path']
+           'colored', 'kwargs2list', 'valid_yaml_path', 'valid_docker_image']
 
 
 def deprecated_alias(**aliases):
@@ -501,6 +501,11 @@ def valid_yaml_path(path: str, to_stream: bool = False):
     else:
         raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
                                 ' or a valid file path, or a supported class name.' % path)
+
+
+def valid_docker_image(image: str):
+    # TODO: Think a better way, it is a little dangerous
+    return image.startsWith('jinaai/')
 
 
 def get_parsed_args(kwargs, parser, parser_name: str = None):

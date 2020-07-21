@@ -49,7 +49,7 @@ def hello_world(args):
 
     # now comes the real work
     # load index flow from a YAML file
-    f = Flow.load_config(args.index_yaml_path)
+    f = Flow.load_config(args.index_uses)
     # run it!
     with f:
         f.index_ndarray(targets['index']['data'], batch_size=args.index_batch_size)
@@ -59,7 +59,7 @@ def hello_world(args):
                                 attrs=['underline', 'bold', 'reverse']))
 
     # now load query flow from another YAML file
-    f = Flow.load_config(args.query_yaml_path)
+    f = Flow.load_config(args.query_uses)
     # run it!
     with f:
         f.search_ndarray(targets['query']['data'], shuffle=True, size=args.num_query,

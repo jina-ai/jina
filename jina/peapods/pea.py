@@ -183,12 +183,12 @@ class BasePea(metaclass=PeaMeta):
                 pass
 
     def load_executor(self):
-        """Load the executor to this BasePea, specified by ``exec_yaml_path`` CLI argument.
+        """Load the executor to this BasePea, specified by ``uses`` CLI argument.
 
         """
-        if self.args.yaml_path:
+        if self.args.uses:
             try:
-                self.executor = BaseExecutor.load_config(self.args.yaml_path,
+                self.executor = BaseExecutor.load_config(self.args.uses,
                                                          self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
@@ -330,7 +330,7 @@ class BasePea(metaclass=PeaMeta):
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:
-            self.logger.critical(f'can not start a executor from {self.args.yaml_path}')
+            self.logger.critical(f'can not start a executor from {self.args.uses}')
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
             pass
         except DriverError as ex:

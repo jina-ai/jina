@@ -13,7 +13,7 @@ from ..logging import get_logger
 class ContainerPea(BasePea):
     """A BasePea that wraps another "dockerized" BasePea
 
-    It requires a non-empty valid ``args.image``.
+    It requires a docker-corresponding valid ``args.uses``.
     """
 
     def post_init(self):
@@ -25,22 +25,22 @@ class ContainerPea(BasePea):
         # this prevent setting containerPea twice
         from ..main.parser import set_pea_parser
         non_defaults = get_non_defaults_args(self.args, set_pea_parser(),
-                                             taboo={'image', 'entrypoint', 'volumes', 'pull_latest'})
+                                             taboo={'uses', 'entrypoint', 'volumes', 'pull_latest'})
 
         if self.args.pull_latest:
-            self.logger.warning(f'pulling {self.args.image}, this could take a while. if you encounter '
+            self.logger.warning(f'pulling {self.args.uses}, this could take a while. if you encounter '
                                 f'timeout error due to pulling takes to long, then please set '
                                 f'"timeout-ready" to a larger value.')
-            self._client.images.pull(self.args.image)
+            self._client.images.pull(self.args.uses)
 
         _volumes = {}
-        if self.args.yaml_path:
-            if os.path.exists(self.args.yaml_path):
+        if self.args.uses_internal:
+            if os.path.exists(self.args.uses_internal):
                 # external YAML config, need to be volumed into the container
-                non_defaults['yaml_path'] = '/' + os.path.basename(self.args.yaml_path)
-                _volumes[os.path.abspath(self.args.yaml_path)] = {'bind': non_defaults['yaml_path'], 'mode': 'ro'}
-            elif not valid_yaml_path(self.args.yaml_path):
-                raise FileNotFoundError(f'yaml_path {self.args.yaml_path} is not like a path, please check it')
+                non_defaults['uses_internal'] = '/' + os.path.basename(self.args.uses_internal)
+                _volumes[os.path.abspath(self.args.uses_internal)] = {'bind': non_defaults['uses_internal'], 'mode': 'ro'}
+            elif not valid_yaml_path(self.args.uses_internal):
+                raise FileNotFoundError(f'yaml_path {self.args.uses_internal} is not like a path, please check it')
         if self.args.volumes:
             for p in self.args.volumes:
                 Path(os.path.abspath(p)).mkdir(parents=True, exist_ok=True)
@@ -60,7 +60,7 @@ class ContainerPea(BasePea):
             net_mode = None
 
         _args = kwargs2list(non_defaults)
-        self._container = self._client.containers.run(self.args.image, _args,
+        self._container = self._client.containers.run(self.args.uses, _args,
                                                       detach=True, auto_remove=True,
                                                       ports={'%d/tcp' % v: v for v in
                                                              _expose_port},

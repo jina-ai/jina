@@ -32,7 +32,7 @@ ac_table = {
     'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check',
                  'hub', 'pea', 'log', 'client', 'export-api'], 'completions': {
         'hello-world': ['--help', '--workdir', '--logserver', '--logserver-config', '--shards', '--replicas',
-                        '--index-yaml-path', '--index-data-url', '--index-batch-size', '--query-yaml-path',
+                        '--index-uses', '--index-data-url', '--index-batch-size', '--query-uses',
                         '--query-data-url', '--query-batch-size', '--num-query', '--top-k'],
         'pod': ['--help', '--name', '--identity', '--yaml-path', '--py-modules', '--image', '--entrypoint',
                 '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in',
