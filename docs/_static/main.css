@@ -366,8 +366,9 @@ a:hover {
 }
 
 .doc-searchbox input[type=text] {
+    width: 100%;
     outline: none;
-    padding: 10px;
+    padding: 10px 15px;
     border: 1px solid #009999;
     border-radius: 20px;
     -webkit-transition: box-shadow .5s ease;
@@ -382,19 +383,20 @@ a:hover {
 }
 
 .nav-bar-header {
-    display: table-row;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .wy-breadcrumbs {
-    display: table-cell;
+    flex-basis: 500px;
     font-size: 1.3rem;
     vertical-align: middle;
 }
 
 .nav-bar-search {
-    display: table-cell;
-    width: 10%;
     vertical-align: middle;
+    flex-basis: 250px;
 }
 
 
