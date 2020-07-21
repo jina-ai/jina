@@ -1,5 +1,6 @@
 import os
 import time
+import unittest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -19,6 +20,7 @@ def random_queries(num_docs, chunks_per_doc=5):
 
 class FlowTestCase(JinaTestCase):
 
+    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_shards_insufficient_data(self):
         """THIS IS SUPER IMPORTANT FOR TESTING SHARDS
 

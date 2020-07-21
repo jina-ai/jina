@@ -16,6 +16,7 @@ from tests import JinaTestCase
 
 class MyTestCase(JinaTestCase):
 
+    @pytest.mark.timeout(360)
     def test_helloworld(self):
         subprocess.check_call(['jina', 'hello-world'])
 
