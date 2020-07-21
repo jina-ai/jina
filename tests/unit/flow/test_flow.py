@@ -14,13 +14,9 @@ from jina.main.parser import set_pea_parser, set_ping_parser
 from jina.main.parser import set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
-from jina.proto import jina_pb2
 from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-
 
 
 class FlowTestCase(JinaTestCase):
@@ -282,8 +278,6 @@ class FlowTestCase(JinaTestCase):
             pass
         self.add_tmpfile('test-docshard-tmp')
         time.sleep(2)
-
-
 
     def test_py_client(self):
         f = (Flow().add(name='r1', yaml_path='_forward')
