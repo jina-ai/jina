@@ -118,8 +118,6 @@ class MyTestCase(JinaTestCase):
         f1 = Flow(fa1).add(yaml_path='_forward', replicas=3)
         f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='_forward', replicas=3)
 
-        # f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='_forward', replicas=3)
-
         def start_client(fl):
             fl.index(input_fn=random_docs(10))
 
@@ -135,6 +133,7 @@ class MyTestCase(JinaTestCase):
             time.sleep(5)
 
         with f2:
+            # no optimization can be made because we ignored the gateway
             self.assertEqual(f2.num_peas, 6)
             t1 = mp.Process(target=start_client, args=(f2,))
             t1.daemon = True
@@ -145,8 +144,6 @@ class MyTestCase(JinaTestCase):
             t2.start()
             time.sleep(5)
 
-        # with f3.build() as fl3:
-        #     self.assertEqual(fl3.num_peas, 4)
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):
