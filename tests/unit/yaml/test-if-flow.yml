@@ -1,7 +1,7 @@
 !Flow
 pods:
   encode1:
-    yaml_path: test-if-encode1.yml
+    uses: test-if-encode1.yml
   encode2:
-    yaml_path: test-if-encode2.yml
+    uses: test-if-encode2.yml
     needs: gateway

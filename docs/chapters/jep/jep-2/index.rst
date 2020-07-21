@@ -111,7 +111,7 @@ Let's look at the following example:
 .. highlight:: python
 .. code-block:: python
 
-    f = (Flow().add(name='p1', yaml_path='./encode.yml', image='jina-encoder:cv-blah')  # -> p1 runs in the container
+    f = (Flow().add(name='p1', uses='./encode.yml', image='jina-encoder:cv-blah')  # -> p1 runs in the container
                 .add(name='p2'))
 
 All keyword arguments of `p1` now forward to ``jina-encoder:cv-blah``. So instead of running process/thread in

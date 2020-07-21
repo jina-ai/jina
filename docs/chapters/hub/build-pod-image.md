@@ -4,7 +4,7 @@
 
 Instead of 
 ```bash
-jina pod --yaml-path hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
+jina pod --uses hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
 ```
 
 After this tutorial, you can use the Pod image via:
@@ -18,7 +18,7 @@ from jina.flow import Flow
 
 f = (Flow()
         .add(name='my-encoder', image='jinaai/hub.examples.mwu_encoder', port_in=55555, port_out=55556)
-        .add(name='my-indexer', yaml_path='indexer.yml'))
+        .add(name='my-indexer', uses='indexer.yml'))
 ```
 
 ... or use the Pod image via Jina CLI
@@ -90,7 +90,7 @@ FROM jinaai/jina:devel
 
 ADD *.py mwu_encoder.yml ./
 
-ENTRYPOINT ["jina", "pod", "--yaml-path", "mwu_encoder.yml"]
+ENTRYPOINT ["jina", "pod", "--uses", "mwu_encoder.yml"]
 ```
 
 Let's now look at these three lines one by one.
@@ -125,7 +125,7 @@ In this example, our dummy `MWUEncoder` does not require extra data files.
 
 > 
 ```Dockerfile
-ENTRYPOINT ["jina", "pod", "--yaml-path", "mwu_encoder.yml"]
+ENTRYPOINT ["jina", "pod", "--uses", "mwu_encoder.yml"]
 ``` 
 
 The last step is to specify the entrypoint of this image, usually via `jina pod`.
@@ -138,7 +138,7 @@ docker run jinaai/hub.examples.mwu_encoder
  
 It is equal to:
 ```bash
-jina pod --yaml-path hub/example/mwu_encoder.yml
+jina pod --uses hub/example/mwu_encoder.yml
 ```
 
 Any followed key-value arguments after `docker run jinaai/hub.examples.mwu_encoder` will be passed to `jina pod`. For example,
@@ -149,13 +149,13 @@ docker run jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
  
 It is equal to:
 ```bash
-jina pod --yaml-path hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
+jina pod --uses hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
 ```
 
 One can also override the internal YAML config by giving an out-of-docker external YAML config via:
 
 ```bash
-docker run $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml-path /ext.yml
+docker run $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --uses /ext.yml
 ```
 
 

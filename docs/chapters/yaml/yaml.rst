@@ -8,7 +8,7 @@ Jina configurations use YAML syntax, and must have either a ``.yml`` or ``.yaml`
 :class:`Executor` YAML Syntax
 -----------------------------
 
-All executors defined in :mod:`jina.executors` can be loaded from a YAML config via :func:`jina.executors.BaseExecutor.load_config` or via the CLI :command:`jina pod --exec_yaml-path`.
+All executors defined in :mod:`jina.executors` can be loaded from a YAML config via :func:`jina.executors.BaseExecutor.load_config` or via the CLI :command:`jina pod --exec_uses`.
 
 The executor YAML config follows the syntax below.
 
@@ -157,7 +157,7 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
 :class:`Driver` YAML Sytanx
 ---------------------------
 
-:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.BasePod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the BasePod via CLI (``jina pod --driver_yaml-path --driver-group``).
+:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.BasePod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the BasePod via CLI (``jina pod --driver_uses --driver-group``).
 
 .. highlight:: yaml
 .. code-block:: yaml
@@ -253,17 +253,17 @@ The flows given by the following Python code and the YAML config are identical.
 .. highlight:: python
 .. code-block:: python
 
-    f = (Flow(driver_yaml_path='my-driver.yml')
+    f = (Flow(uses='my-driver.yml')
          .add(name='chunk_seg', driver_group='segment',
-              exec_yaml_path='preprocess/gif2chunk.yml',
+              uses='preprocess/gif2chunk.yml',
               replicas=3)
          .add(name='doc_idx', driver_group='index-meta-doc',
-              exec_yaml_path='index/doc.yml')
+              uses='index/doc.yml')
          .add(name='tf_encode', driver_group='encode',
-              exec_yaml_path='encode/encode.yml',
+              uses='encode/encode.yml',
               replicas=3, needs='chunk_seg')
          .add(name='chunk_idx', driver_group='index-chunk-and-meta',
-              exec_yaml_path='index/npvec.yml')
+              uses='index/npvec.yml')
          .join(['doc_idx', 'chunk_idx'])
          )
 
@@ -272,23 +272,23 @@ The flows given by the following Python code and the YAML config are identical.
 
     !Flow  # my-flow.yml
     with:
-      driver_yaml_path: my-driver.yml
+      driver_uses: my-driver.yml
     pods:
       chunk_seg:
         driver_group: segment
-        exec_yaml_path: preprocess/gif2chunk.yml
+        exec_uses: preprocess/gif2chunk.yml
         replicas: 3
       doc_idx:
         driver_group: index-meta-doc
-        exec_yaml_path: index/doc.yml
+        exec_uses: index/doc.yml
       tf_encode:
         driver_group: encode
-        exec_yaml_path: encode/encode.yml
+        exec_uses: encode/encode.yml
         needs: chunk_seg
         replicas: 3
       chunk_idx:
         driver_group: index-chunk-and-meta
-        exec_yaml_path: index/npvec.yml
+        exec_uses: index/npvec.yml
       join_all:
         driver_group: merge
         needs: [doc_idx, chunk_idx]

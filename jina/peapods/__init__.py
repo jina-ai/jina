@@ -33,7 +33,7 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
     if args.host != __default_host__:
         from .remote import RemotePea
         return RemotePea(args)
-    elif valid_docker_image(args.uses):
+    elif args.uses and valid_docker_image(args.uses):
         from .container import ContainerPea
         return ContainerPea(args)
     elif args.role == PeaRoleType.HEAD:

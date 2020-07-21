@@ -154,7 +154,7 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
     from pkg_resources import resource_filename
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
@@ -187,7 +187,7 @@ def set_pea_parser(parser=None):
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string')
-    gp0.add_argument('--yaml-path', type=str, default='BaseExecutor',
+    gp0.add_argument('--uses', type=str, default='BaseExecutor',
                      help='the yaml config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '
@@ -201,8 +201,8 @@ def set_pea_parser(parser=None):
     gp1.add_argument('--image', type=str,
                      help='the name of the docker image that this pea runs with. it is also served as an indicator '
                           'of containerization. '
-                          'when this and --yaml-path are both given then the docker image '
-                          'is used and its original yaml configuration is replaced by the given --yaml-path')
+                          'when this and --uses are both given then the docker image '
+                          'is used and its original yaml configuration is replaced by the given --uses')
     gp1.add_argument('--entrypoint', type=str,
                      help='the entrypoint command overrides the ENTRYPOINT in docker image. '
                           'when not set then the docker image ENTRYPOINT takes effective.')
@@ -321,9 +321,9 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
-    gp4.add_argument('--reducing-yaml-path', type=str, default='_merge',
+    gp4.add_argument('--uses-reducing', type=str, default='_merge',
                      help='the executor used for reducing the result from all replicas, '
-                          'accepted type follows "--yaml-path"')
+                          'accepted type follows "--uses"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
 

@@ -45,9 +45,9 @@ will override `read_only` attribute of all Pods in `f` to `True`.
 To add a Pod to Flow, simply call `.add()`. For example,
 
 ```python
-f = (Flow().add(name='p1', yaml_path='mypod1.yml')
-           .add(name='p2', yaml_path='mypod2.yml', timeout_ready=50000)
-           .add(name='p3', yaml_path='mypod3.yml', read_only=True))
+f = (Flow().add(name='p1', uses='mypod1.yml')
+           .add(name='p2', uses='mypod2.yml', timeout_ready=50000)
+           .add(name='p3', uses='mypod3.yml', read_only=True))
 ``` 
 
 This will create a sequential workflow 
@@ -61,7 +61,7 @@ The input of a Pod is the output of the last Pod in sequential order. The gatewa
 
 All accepted arguments follow the command line interface of `Pod`, which can be found in `jina pod --help`. Just remember to replace the dash `-` to underscore `_` in the name of the argument when referring to it in Python.
 
-Besides the file path, in Flow API `yaml_path` can accept other types:
+Besides the file path, in Flow API `uses` can accept other types:
 
 | Type | Example | Remark |
 | --- | --- | --- |
@@ -256,22 +256,22 @@ with:
   logserver: true
 pods:
   chunk_seg:
-    yaml_path: craft/index-craft.yml
+    uses: craft/index-craft.yml
     replicas: $REPLICAS
     read_only: true
   doc_idx:
-    yaml_path: index/doc.yml
+    uses: index/doc.yml
   tf_encode:
-    yaml_path: encode/encode.yml
+    uses: encode/encode.yml
     needs: chunk_seg
     replicas: $REPLICAS
     read_only: true
   chunk_idx:
-    yaml_path: index/chunk.yml
+    uses: index/chunk.yml
     replicas: $SHARDS
     separated_workspace: true
   join_all:
-    yaml_path: _merge
+    uses: _merge
     needs: [doc_idx, chunk_idx]
     read_only: true
 ```
@@ -290,7 +290,7 @@ f = Flow.load_config('myflow.yml')
 The following command will start a flow from the console and hold it for client to connect.
 
 ```bash
-jina flow --yaml-path myflow.yml
+jina flow --uses myflow.yml
 ``` 
 
 

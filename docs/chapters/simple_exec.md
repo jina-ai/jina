@@ -1,4 +1,4 @@
-# Built-in Simple Executors and Reserved `yaml-path` in Jina
+# Built-in Simple Executors and Reserved `uses` in Jina
 
 
 ## What is Simple Executor?
@@ -51,14 +51,14 @@ def join(self, needs: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
     """
     if len(needs) <= 1:
         raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-    return self.add(name='joiner', yaml_path='_merge', needs=needs, *args, **kwargs)
+    return self.add(name='joiner', uses='_merge', needs=needs, *args, **kwargs)
 
 ```
 
 
-## What are the reserved `yaml-path`?
+## What are the reserved `uses`?
 
-To help users quickly use these patterns, we reserved the following keywords for the `yaml-path`. They all start with underscore.
+To help users quickly use these patterns, we reserved the following keywords for the `uses`. They all start with underscore.
 
 | Reserved Name | Description |
 | --- | --- |
@@ -74,6 +74,6 @@ To help users quickly use these patterns, we reserved the following keywords for
 
 ## How to use built-in Simple Executors?
 
-You can directly use this executor by specifying `--yaml-path=_clear`, or use it in `--reducing-yaml-path` after collecting results from replicas.
+You can directly use this executor by specifying `--uses=_clear`, or use it in `--uses-reducing` after collecting results from replicas.
 
-Where ever you need to use `yaml-path` in Jina, you can take any one from the table to fill in.
+Where ever you need to use `uses` in Jina, you can take any one from the table to fill in.

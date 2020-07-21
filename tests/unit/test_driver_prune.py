@@ -28,7 +28,7 @@ class MyTestCase(JinaTestCase):
         f = (
             Flow().add(
                 name='prune',
-                yaml_path=os.path.join(cur_dir, 'yaml/test-prune-driver.yml')))
+                uses=os.path.join(cur_dir, 'yaml/test-prune-driver.yml')))
 
         def test_pruned(resp):
             for d in resp.docs:

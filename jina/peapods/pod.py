@@ -410,6 +410,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = random_port()
     _head_args.port_out = random_port()
+    _head_args.uses = None
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
@@ -439,6 +440,7 @@ def _copy_to_tail_args(args, as_router: bool = True):
     _tail_args.port_in = random_port()
     _tail_args.port_ctrl = random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
+    _tail_args.uses = None
     if as_router:
         _tail_args.uses = args.uses_reducing
         _tail_args.name = args.name or ''
@@ -452,7 +454,7 @@ def _fill_in_host(bind_args, connect_args):
 
     bind_local = (bind_args.host == '0.0.0.0')
     conn_local = (connect_args.host == '0.0.0.0')
-    conn_docker = (connect_args.uses is not None and valid_docker_image(connect_args.uses))
+    conn_docker = (getattr(connect_args, 'uses', None) is not None and valid_docker_image(connect_args.uses))
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
     if platform == "linux" or platform == "linux2":
         local_host = '0.0.0.0'

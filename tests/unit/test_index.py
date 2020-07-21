@@ -87,7 +87,7 @@ class MyTestCase(JinaTestCase):
             print(d)
 
     def test_simple_route(self):
-        f = Flow().add(yaml_path='_forward')
+        f = Flow().add(uses='_forward')
         with f:
             f.index(input_fn=random_docs(10))
 
@@ -115,10 +115,10 @@ class MyTestCase(JinaTestCase):
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route_replicas(self):
         fa1 = set_flow_parser().parse_args(['--optimize-level', str(FlowOptimizeLevel.NONE)])
-        f1 = Flow(fa1).add(yaml_path='_forward', replicas=3)
-        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(yaml_path='_forward', replicas=3)
+        f1 = Flow(fa1).add(uses='_forward', replicas=3)
+        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(uses='_forward', replicas=3)
 
-        # f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(yaml_path='_forward', replicas=3)
+        # f3 = Flow(optimize_level=FlowOptimizeLevel.FULL).add(uses='_forward', replicas=3)
 
         def start_client(fl):
             fl.index(input_fn=random_docs(10))
@@ -150,7 +150,7 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):
-        f = Flow().add(yaml_path='_forward')
+        f = Flow().add(uses='_forward')
 
         def start_client(fl):
             fl.index(input_fn=random_docs(10))
@@ -166,7 +166,7 @@ class MyTestCase(JinaTestCase):
             time.sleep(5)
 
     def test_index(self):
-        f = Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/test-index.yml'), replicas=3, separated_workspace=True)
+        f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), replicas=3, separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(1000))
 
@@ -180,7 +180,7 @@ class MyTestCase(JinaTestCase):
             f.search(input_fn=random_docs(1), output_fn=get_result, top_k=100)
 
     def test_chunk_joint_idx(self):
-        f = Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/test-joint.yml'))
+        f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml'))
 
         def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
             c_id = 0
@@ -201,12 +201,12 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index(random_docs(100))
 
-        g = Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/test-joint.yml'))
+        g = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml'))
 
         with g:
             g.search(random_docs(10), output_fn=lambda x: validate(x, 'NumpyIndexer'))
 
-        g = Flow(timeout_ready=-1).add(yaml_path=os.path.join(cur_dir, 'yaml/test-joint-wrap.yml'))
+        g = Flow(timeout_ready=-1).add(uses=os.path.join(cur_dir, 'yaml/test-joint-wrap.yml'))
 
         with g:
             g.search(random_docs(10), output_fn=lambda x: validate(x, 'AnnoyIndexer'))

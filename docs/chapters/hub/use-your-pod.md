@@ -16,7 +16,7 @@ One can mount a host path to the container via `--volumes` or `-v`. For example,
 
 ```bash
 # assuming $pwd is the root dir of this repo 
-docker run --rm -v $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --yaml-path /ext.yml
+docker run --rm -v $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --uses /ext.yml
 ```
 
 ```text
@@ -62,7 +62,7 @@ from jina.flow import Flow
 
 f = (Flow()
         .add(name='my-encoder', image='jinaai/hub.examples.mwu_encoder',
-             volumes='./abc', yaml_path='hub/examples/mwu-encoder/mwu_encoder_ext.yml', 
+             volumes='./abc', uses='hub/examples/mwu-encoder/mwu_encoder_ext.yml', 
              port_in=55555, port_out=55556)
-        .add(name='my-indexer', yaml_path='indexer.yml'))
+        .add(name='my-indexer', uses='indexer.yml'))
 ```

@@ -73,15 +73,15 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_with_one_container_pod(self):
         f = (Flow()
-             .add(name='dummyEncoder', image=img_name))
+             .add(name='dummyEncoder', uses=img_name))
 
         with f:
             f.index(input_fn=random_docs(10))
 
     def test_flow_with_one_container_ext_yaml(self):
         f = (Flow()
-             .add(name='dummyEncoder', image=img_name,
-                  yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml')))
+             .add(name='dummyEncoder', uses=img_name,
+                  uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml')))
 
         with f:
             f.index(input_fn=random_docs(10))
@@ -89,8 +89,8 @@ class MyTestCase(JinaTestCase):
     def test_flow_with_replica_container_ext_yaml(self):
         f = (Flow()
              .add(name='dummyEncoder',
-                  image=img_name,
-                  yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml'),
+                  uses=img_name,
+                  uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml'),
                   replicas=3))
 
         with f:
@@ -100,9 +100,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo1(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:test-pip', yaml_path='_logforward', entrypoint='jina pod')
-             .add(name='d2', image='jinaai/jina:test-pip', yaml_path='_logforward', entrypoint='jina pod')
-             .add(name='d3', image='jinaai/jina:test-pip', yaml_path='_logforward',
+             .add(name='d1', uses='jinaai/jina:test-pip', uses_internal='_logforward', entrypoint='jina pod')
+             .add(name='d2', uses='jinaai/jina:test-pip', uses_internal='_logforward', entrypoint='jina pod')
+             .add(name='d3', uses='jinaai/jina:test-pip', uses_internal='_logforward',
                   needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2']))
 
@@ -111,9 +111,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo_mixed(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:test-pip', yaml_path='_logforward', entrypoint='jina pod')
-             .add(name='d2', yaml_path='_logforward')
-             .add(name='d3', image='jinaai/jina:test-pip', yaml_path='_logforward',
+             .add(name='d1', uses='jinaai/jina:test-pip', uses_internal='_logforward', entrypoint='jina pod')
+             .add(name='d2', uses='_logforward')
+             .add(name='d3', uses='jinaai/jina:test-pip', uses_internal='_logforward',
                   needs='d1', entrypoint='jina pod')
              .join(['d3', 'd2'])
              )
@@ -123,9 +123,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo_replicas(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:test-pip', entrypoint='jina pod', yaml_path='_forward', replicas=3)
-             .add(name='d2', yaml_path='_forward', replicas=3)
-             .add(name='d3', image='jinaai/jina:test-pip', entrypoint='jina pod', yaml_path='_forward',
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', replicas=3)
+             .add(name='d2', uses='_forward', replicas=3)
+             .add(name='d3', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward',
                   needs='d1')
              .join(['d3', 'd2'])
              )
@@ -138,8 +138,8 @@ class MyTestCase(JinaTestCase):
     def test_container_volume(self):
         time.sleep(5)
         f = (Flow()
-             .add(name='dummyEncoder', image=img_name, volumes='./abc',
-                  yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_upd.yml')))
+             .add(name='dummyEncoder', uses=img_name, volumes='./abc',
+                  uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_upd.yml')))
 
         with f:
             f.index(input_fn=random_docs(10))
@@ -161,16 +161,16 @@ class MyTestCase(JinaTestCase):
 
     def test_tail_host_docker2local_replicas(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:test-pip', entrypoint='jina pod', yaml_path='_forward', replicas=3)
-             .add(name='d2', yaml_path='_forward'))
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', replicas=3)
+             .add(name='d2', uses='_forward'))
         with f:
             self.assertEqual(getattr(f._pod_nodes['d1'].peas_args['tail'], 'host_out'), defaulthost)
             f.dry_run()
 
     def test_tail_host_docker2local(self):
         f = (Flow()
-             .add(name='d1', image='jinaai/jina:test-pip', entrypoint='jina pod', yaml_path='_forward')
-             .add(name='d2', yaml_path='_forward'))
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward')
+             .add(name='d2', uses='_forward'))
         with f:
             self.assertEqual(getattr(f._pod_nodes['d1'].tail_args, 'host_out'), localhost)
             f.dry_run()

@@ -505,7 +505,7 @@ def valid_yaml_path(path: str, to_stream: bool = False):
 
 def valid_docker_image(image: str):
     # TODO: Think a better way, it is a little dangerous
-    return image.startsWith('jinaai/')
+    return image.startswith('jinaai/')
 
 
 def get_parsed_args(kwargs, parser, parser_name: str = None):
