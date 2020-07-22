@@ -127,7 +127,7 @@ class BasePea(metaclass=PeaMeta):
         if isinstance(args, argparse.Namespace):
             if args.name:
                 self.name = args.name
-            elif args.role == PeaRoleType.REPLICA:
+            if args.role == PeaRoleType.REPLICA:
                 self.name = '%s-%d' % (self.name, args.replica_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
             if not args.log_with_own_name and args.name:
