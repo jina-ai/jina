@@ -45,7 +45,7 @@ class FlowExceptTestCase(JinaTestCase):
             f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
             f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
 
-    def test_except_with_replicas(self):
+    def test_except_with_parallel(self):
         def validate(req):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
             self.assertEqual(len(req.status.details), 2)
@@ -55,7 +55,7 @@ class FlowExceptTestCase(JinaTestCase):
             self.assertTrue(req.status.details[1].exception.startswith('NotImplementedError'))
 
         f = (Flow().add(name='r1', uses='_forward')
-             .add(name='r2', uses='!DummyCrafter', replicas=3)
+             .add(name='r2', uses='!DummyCrafter', parallel=3)
              .add(name='r3', uses='!BaseEncoder'))
 
         with f:

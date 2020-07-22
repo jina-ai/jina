@@ -157,7 +157,7 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(uses='forward', replicas=3)
+            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(uses='forward', parallel=3)
 
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
@@ -512,7 +512,7 @@ class Flow:
 
     @property
     def num_peas(self) -> int:
-        """Get the number of peas (replicas count) in this flow"""
+        """Get the number of peas (parallel count) in this flow"""
         return sum(v.num_peas for v in self._pod_nodes.values())
 
     def close(self):
@@ -797,7 +797,7 @@ class Flow:
         for k, v in self._pod_nodes.items():
             swarm_yml['services'][k] = {
                 'command': v.to_cli_command(),
-                'deploy': {'replicas': 1}
+                'deploy': {'parallel': 1}
             }
 
         yaml.dump(swarm_yml, path)

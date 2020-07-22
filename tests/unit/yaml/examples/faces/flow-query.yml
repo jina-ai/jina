@@ -7,24 +7,24 @@ pods:
   loader:
     uses: yaml/craft-load.yml
     read_only: true
-    replicas: 4
+    parallel: 4
   flipper:
     uses: yaml/craft-flip.yml
-    replicas: 4
+    parallel: 4
     read_only: true
   normalizer:
     uses: yaml/craft-normalize.yml
     read_only: true
-    replicas: 4
+    parallel: 4
   encoder:
     timeout_ready: 600000
-    replicas: 4
+    parallel: 4
     read_only: true
   chunk_indexer:
     uses: yaml/index-chunk.yml
     separated_workspace: true
     polling: all
-    replicas: 1
+    parallel: 1
     uses_reducing: _merge_topk_chunks
   ranker:
     uses: MinRanker

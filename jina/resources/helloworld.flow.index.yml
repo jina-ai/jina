@@ -5,8 +5,8 @@ with:
 pods:
   encode:
     uses: $RESOURCE_DIR/helloworld.encoder.yml
-    replicas: $REPLICAS
+    parallel: $PARALLEL
   index:
     uses: $RESOURCE_DIR/helloworld.indexer.yml
-    replicas: $SHARDS
+    shards: $SHARDS
     separated_workspace: true

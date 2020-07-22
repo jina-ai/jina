@@ -83,7 +83,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. confval:: separated_workspace
 
-        whether to isolate the data of the replicas of this executor. If ``True``, then each replica works in its own
+        whether to isolate the data of the parallel of this executor. If ``True``, then each replica works in its own
         workspace specified in :attr:`replica_workspace`
 
         :type: bool
