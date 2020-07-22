@@ -290,7 +290,7 @@ f = Flow.load_config('myflow.yml')
 The following command will start a flow from the console and hold it for client to connect.
 
 ```bash
-jina flow --uses myflow.yml
+jina flow --yaml-path myflow.yml
 ``` 
 
 

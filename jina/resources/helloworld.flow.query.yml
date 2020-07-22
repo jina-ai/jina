@@ -8,7 +8,7 @@ pods:
     uses: $RESOURCE_DIR/helloworld.encoder.yml
     replicas: $REPLICAS
   index:
-    yaml_path: $RESOURCE_DIR/helloworld.indexer.yml
+    uses: $RESOURCE_DIR/helloworld.indexer.yml
     replicas: $SHARDS
     separated_workspace: true
     polling: all
