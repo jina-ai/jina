@@ -17,7 +17,7 @@ class TfIdfRanker(Chunk2DocRanker):
         as the naive ``document-frequency``. Please refer to the functions for the details of calculating ``tf`` and
         ``idf``.
     """
-    required_keys = {'length', 'doc_id'}
+    required_keys = {'length', 'id'}
 
     def __init__(self, threshold=0.1, *args, **kwargs):
         """

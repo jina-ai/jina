@@ -1,15 +1,14 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import ctypes
 import mimetypes
 import os
-import random
 import urllib.parse
 from typing import Iterator, Union, Tuple, List
 
 import numpy as np
 
+from ...counter import RandomUintCounter, SimpleCounter
 from ...drivers.helper import array2pb, guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator
@@ -20,9 +19,11 @@ from ...proto import jina_pb2
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
-              mime_type: str = None, filter_by: Union[Tuple[str], List[str], str] = None,
+              mime_type: str = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
+    doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
+    req_counter = SimpleCounter(first_request_id)
 
     try:
         import magic
@@ -40,18 +41,13 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
 
     for pi in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
-        req.request_id = first_request_id
+        req.request_id = next(req_counter)
 
         if mode == ClientMode.SEARCH:
             if top_k <= 0:
                 raise ValueError('"top_k: %d" is not a valid number' % top_k)
             else:
                 req.search.top_k = top_k
-
-            if filter_by:
-                if isinstance(filter_by, str):
-                    filter_by = [filter_by]
-                req.search.filter_by.extend(filter_by)
 
         for _raw in pi:
             d = getattr(req, str(mode).lower()).docs.add()
@@ -82,11 +78,9 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
             if mime_type:
                 d.mime_type = mime_type
 
-            d.doc_id = first_doc_id if not random_doc_id else random.randint(0, ctypes.c_uint(-1).value)
+            d.id = next(doc_counter)
             d.weight = 1.0
-            first_doc_id += 1
         yield req
-        first_request_id += 1
 
 
 def index(*args, **kwargs):

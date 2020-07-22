@@ -1,147 +1,74 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import ctypes
-import random
-from typing import Dict
+from typing import Dict, Set, List
 
-from . import BaseExecutableDriver, BaseDriver
-from .helper import array2pb, pb_obj2dict, pb2array
+from . import BaseExecutableDriver
+from .helper import array2pb, pb_obj2dict
+from ..counter import RandomUintCounter, SimpleCounter
 from ..proto import jina_pb2
 
 
-class BaseCraftDriver(BaseExecutableDriver):
+class CraftDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def set_chunk(self, chunk: 'jina_pb2.Chunk', chunk_info: Dict, new_chunk_id: bool = True):
-        for k, v in chunk_info.items():
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        ret = self.exec_fn(**pb_obj2dict(doc, self.exec.required_keys))
+        if ret:
+            self.set_doc_attr(doc, ret)
+
+    def set_doc_attr(self, doc: 'jina_pb2.Document', doc_info: Dict, protected_keys: Set = None):
+        for k, v in doc_info.items():
             if k == 'blob':
                 if isinstance(v, jina_pb2.NdArray):
-                    chunk.blob.CopyFrom(v)
+                    doc.blob.CopyFrom(v)
                 else:
-                    chunk.blob.CopyFrom(array2pb(v))
-            elif k == 'chunk_id':
-                self.logger.warning(f'you are assigning a chunk_id in in {self.exec.__class__}, '
-                                    f'is it intentional? chunk_id will be override by {self.__class__} '
+                    doc.blob.CopyFrom(array2pb(v))
+            elif isinstance(protected_keys, dict) and k in protected_keys:
+                self.logger.warning(f'you are assigning a {k} in in {self.exec.__class__}, '
+                                    f'is it intentional? {k} will be override by {self.__class__} '
                                     f'anyway')
             elif isinstance(v, list) or isinstance(v, tuple):
-                chunk.ClearField(k)
-                getattr(chunk, k).extend(v)
+                doc.ClearField(k)
+                getattr(doc, k).extend(v)
             else:
-                setattr(chunk, k, v)
-        if new_chunk_id:
-            chunk.chunk_id = random.randint(0, ctypes.c_uint(-1).value)
+                setattr(doc, k, v)
 
 
-class ChunkCraftDriver(BaseCraftDriver):
-    """Craft the chunk-level information on given keys using the executor
-
-    """
-
-    def __call__(self, *args, **kwargs):
-        no_chunk_docs = []
-
-        for d in self.req.docs:
-            for c in d.chunks:
-                _args_dict = pb_obj2dict(c, self.exec.required_keys)
-                if 'blob' in self.exec.required_keys:
-                    _args_dict['blob'] = pb2array(c.blob)
-                ret = self.exec_fn(**_args_dict)
-                if isinstance(ret, dict):  #: 1-to-1
-                    self.set_chunk(c, ret, new_chunk_id=False)
-                elif isinstance(ret, list):  #: 1-to-many
-                    d.chunks.remove(c)  # remove the current one?
-                    for c_dict in ret:
-                        self.set_chunk(d.chunks.add(), c_dict)
-            d.length = len(d.chunks)
-
-        if no_chunk_docs:
-            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
-
-
-class DocCraftDriver(BaseCraftDriver):
-    """Craft the doc-level information on given keys using the executor
-
-    """
-
-    def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
-            _args_dict = pb_obj2dict(d, self.exec.required_keys)
-            if 'blob' in self.exec.required_keys:
-                _args_dict['blob'] = pb2array(d.blob)
-            ret = self.exec_fn(**_args_dict)
-            if ret:
-                for k, v in ret.items():
-                    if k == 'blob':
-                        if isinstance(v, jina_pb2.NdArray):
-                            d.blob.CopyFrom(v)
-                        else:
-                            d.blob.CopyFrom(array2pb(v))
-                    else:
-                        setattr(d, k, v)
-
-
-class SegmentDriver(BaseCraftDriver):
+class SegmentDriver(CraftDriver):
     """Segment document into chunks using the executor
-
-    .. note::
-        ``chunk_id`` is auto-assign incrementally or randomly depends on ``first_chunk_id`` and ``random_chunk_id``.
-        no need to self-assign it in your segmenter
     """
 
-    def __init__(
-            self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
+    def __init__(self, first_chunk_id: int = 0,
+                 random_chunk_id: bool = True, level_names: List[str] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.first_chunk_id = first_chunk_id
-        self.random_chunk_id = random_chunk_id
+        if isinstance(level_names, list) and (self._depth_end - self._depth_start + 1) != len(self.level_names):
+            self.level_names = level_names
+        elif level_names is None:
+            pass
+        else:
+            raise ValueError(f'bad level names: {level_names}, the length of it should match the recursive depth + 1')
 
-    def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
-            _args_dict = pb_obj2dict(d, self.exec.required_keys)
-            if 'blob' in self.exec.required_keys:
-                _args_dict['blob'] = pb2array(d.blob)
-            ret = self.exec_fn(**_args_dict)
-            if ret:
-                for r in ret:
-                    c = d.chunks.add()
-                    self.set_chunk(c, r)
-                    c.length = len(ret)
-                    c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
-                        -1).value)
-                    c.doc_id = d.doc_id
-                    c.mime_type = d.mime_type
-                    self.first_chunk_id += 1
-                d.length = len(ret)
-            else:
-                self.logger.warning('doc %d gives no chunk' % d.doc_id)
+        # for adding new chunks, preorder is safer
+        self.recursion_order = 'pre'
+        self._counter = RandomUintCounter() if random_chunk_id else SimpleCounter(first_chunk_id)
+        self._protected_fields = {'length', 'id', 'parent_id', 'level_depth', 'mime_type'}
 
-
-class UnarySegmentDriver(BaseDriver):
-    """ The :class:`UnarySegmentDriver` copies whatever ``content`` set in the doc level to the chunk level, hence
-    creates a single-chunk document
-    """
-
-    def __init__(
-            self, first_chunk_id: int = 0, random_chunk_id: bool = True, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.first_chunk_id = first_chunk_id
-        self.random_chunk_id = random_chunk_id
-
-    def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
-            c = d.chunks.add()
-            c.length = 1
-            d_type = d.WhichOneof('content')
-            if d_type in {'blob'}:
-                getattr(c, d_type).CopyFrom(getattr(d, d_type))
-            else:
-                setattr(c, d_type, getattr(d, d_type))
-            c.chunk_id = self.first_chunk_id if not self.random_chunk_id else random.randint(0, ctypes.c_uint(
-                -1).value)
-            c.doc_id = d.doc_id
-            c.mime_type = d.mime_type
-            self.first_chunk_id += 1
-            d.length = 1
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        _args_dict = pb_obj2dict(doc, self.exec.required_keys)
+        ret = self.exec_fn(**_args_dict)
+        if ret:
+            for r in ret:
+                c = doc.chunks.add()
+                self.set_doc_attr(c, r, self._protected_fields)
+                c.length = len(ret)
+                c.id = next(self._counter)
+                c.parent_id = doc.id
+                c.level_depth = doc.level_depth + 1
+                c.mime_type = doc.mime_type
+            doc.length = len(ret)
+        else:
+            self.logger.warning(f'doc {doc.id} at level {doc.level_depth} gives no chunk')

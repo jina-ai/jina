@@ -19,17 +19,11 @@ class BasePbIndexer(BaseKVIndexer):
     flush_on_add = True  #: When set to true, the indexer is flushed on every add, it is safer but slower
     mode = 't'  #: r/w mode, `t` for text, `b` for binary
 
-    def __init__(self, index_filename: str, level: str, *args, **kwargs):
+    def __init__(self, index_filename: str, *args, **kwargs):
         super().__init__(index_filename, *args, **kwargs)
-        self.level = level
 
     def post_init(self):
-        if self.level == 'chunk':
-            self._parser = jina_pb2.Chunk
-        elif self.level == 'doc':
-            self._parser = jina_pb2.Document
-        else:
-            raise NotImplementedError(f'{self.level} is not supported!')
+        self._parser = jina_pb2.Document
         super().post_init()
 
     def get_add_handler(self):
@@ -48,7 +42,7 @@ class BasePbIndexer(BaseKVIndexer):
     def query(self, key: int) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
         """ Find the protobuf chunk/doc using id
 
-        :param key: ``chunk_id`` or ``doc_id``
+        :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
         if self.query_handler is not None and key in self.query_handler:
@@ -85,12 +79,7 @@ class JsonPbIndexer(BasePbIndexer):
 
         :param obj: an object can be jsonified
         """
-        if self.level == 'chunk':
-            keys = {k.chunk_id: k for k in keys}
-        elif self.level == 'doc':
-            keys = {k.doc_id: k for k in keys}
-        else:
-            raise NotImplementedError
+        keys = {k.id: k for k in keys}
         json.dump(keys, self.write_handler)
         self._size += len(keys)
         self.write_handler.write('\n')
@@ -115,12 +104,8 @@ class BinaryPbIndexer(BasePbIndexer):
         for l in tmp.split(__binary_delimiter__):
             b = self._parser()
             b.ParseFromString(l)
-            if self.level == 'chunk':
-                r[b.chunk_id] = b
-                self._size += 1
-            elif self.level == 'doc':
-                r[b.doc_id] = b
-                self._size += 1
+            r[b.id] = b
+            self._size += 1
         return r
 
     def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
@@ -133,22 +118,6 @@ class BinaryPbIndexer(BasePbIndexer):
             self._size += 1
 
 
-class ChunkPbIndexer(BinaryPbIndexer):
-    """Shortcut for :class:`BasePbIndexer` equipped with ``requests.on`` for storing chunk-level protobuf info,
-     differ with :class:`DocPbIndexer` in ``requests.on`` """
-
-    def __init__(self, index_filename: str, level: str = 'chunk', *args, **kwargs):
-        super().__init__(index_filename, level, *args, **kwargs)
-
-
-class DocPbIndexer(BinaryPbIndexer):
-    """Shortcut for :class:`BasePbIndexer` equipped with ``requests.on`` for storing doc-level protobuf info,
-    differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
-
-    def __init__(self, index_filename: str, level: str = 'doc', *args, **kwargs):
-        super().__init__(index_filename, level, *args, **kwargs)
-
-
-class DataURIPbIndexer(DocPbIndexer):
+class DataURIPbIndexer(BinaryPbIndexer):
     """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,
     differ with :class:`ChunkPbIndexer` only in ``requests.on`` """

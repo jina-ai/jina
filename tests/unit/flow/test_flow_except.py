@@ -1,12 +1,12 @@
 import unittest
 
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
 
-class DummyCrafter(BaseDocCrafter):
+class DummyCrafter(BaseCrafter):
     def craft(self, *args, **kwargs):
         return 1 / 0
 
@@ -18,7 +18,7 @@ class FlowExceptTestCase(JinaTestCase):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
             self.assertEqual(req.status.details[0].pod, 'r1')
 
-        f = (Flow().add(name='r1', uses='!BaseDocCrafter')
+        f = (Flow().add(name='r1', uses='!BaseCrafter')
              .add(name='r2', uses='!BaseEncoder')
              .add(name='r3', uses='!BaseEncoder'))
 
@@ -56,7 +56,6 @@ class FlowExceptTestCase(JinaTestCase):
 
         f = (Flow().add(name='r1', uses='_forward')
              .add(name='r2', uses='!DummyCrafter', replicas=3)
-             .add(uses='- !UnarySegmentDriver {}')
              .add(name='r3', uses='!BaseEncoder'))
 
         with f:

@@ -1,9 +1,8 @@
+import os
 import time
 
 import numpy as np
 import requests
-import os
-
 from jina.clients import py_client
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files, input_numpy
@@ -76,8 +75,8 @@ class MyTestCase(JinaTestCase):
             j = a.json()
             self.assertTrue('index' in j)
             self.assertEqual(len(j['index']['docs']), 2)
-            self.assertEqual(j['index']['docs'][0]['docId'], 5)
-            self.assertEqual(j['index']['docs'][1]['docId'], 6)
+            self.assertEqual(j['index']['docs'][0]['id'], 6)  # doc zero is reserved
+            self.assertEqual(j['index']['docs'][1]['id'], 7)
             self.assertEqual(j['index']['docs'][0]['uri'],
                              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
             self.assertEqual(a.status_code, 200)
@@ -104,20 +103,3 @@ class MyTestCase(JinaTestCase):
         PyClient.check_input(['asda', 'dsadas asdasd'])
 
         print(type(array2pb(np.random.random([100, 4, 2]))))
-
-    def test_unary_driver(self):
-        f = Flow().add(uses=os.path.join(cur_dir, 'yaml/unarycrafter.yml'))
-
-        def check_non_empty(req, field):
-            for d in req.index.docs:
-                self.assertEqual(len(d.chunks), 1)
-                self.assertEqual(d.chunks[0].WhichOneof('content'), field)
-
-        with f:
-            f.index_ndarray(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
-
-        with f:
-            f.index(np.random.random([10, 4, 2]), output_fn=lambda x: check_non_empty(x, 'blob'))
-
-        with f:
-            f.index(['asda', 'dsadas asdasd'], output_fn=lambda x: check_non_empty(x, 'text'))

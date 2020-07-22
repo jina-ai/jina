@@ -4,36 +4,21 @@ import time
 import unittest
 
 import numpy as np
-from jina.drivers.helper import array2pb
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
 from jina.peapods.pod import GatewayPod
-from jina.proto import jina_pb2
-from tests import JinaTestCase
+from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-    c_id = 0
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
-            c.chunk_id = c_id
-            c.doc_id = j
-            c_id += 1
-        yield d
 
 
 def get_result(resp):
     n = []
     for d in resp.search.docs:
         for c in d.chunks:
-            n.append([k.match_chunk.chunk_id for k in c.topk_results])
+            n.append([k.match.id for k in c.matches])
     n = np.array(n)
     # each chunk should return a list of top-100
     np.testing.assert_equal(n.shape[0], 5)

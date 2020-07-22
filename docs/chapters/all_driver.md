@@ -13,7 +13,7 @@ This version of Jina includes 35 Drivers.
          - `ChunkMergeTopKDriver`
          - `DocMergeTopKDriver`
    - `BaseExecutableDriver`
-      - `BaseCraftDriver`
+      - `CraftDriver`
          - `ChunkCraftDriver`
          - `DocCraftDriver`
          - `SegmentDriver`
@@ -43,7 +43,7 @@ This version of Jina includes 35 Drivers.
 
 | Class | Module |
 | --- | --- |
-| `BaseCraftDriver` | `jina.drivers.index` |
+| `CraftDriver` | `jina.drivers.index` |
 | `BaseDriver` |   |
 | `BaseEncodeDriver` | `jina.drivers.index` |
 | `BaseExecutableDriver` | `jina.drivers.control` |

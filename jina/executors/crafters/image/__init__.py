@@ -5,10 +5,10 @@ from typing import Tuple, Union
 
 import numpy as np
 
-from .. import BaseChunkCrafter
+from .. import BaseCrafter
 
 
-class ImageChunkCrafter(BaseChunkCrafter):
+class ImageChunkCrafter(BaseCrafter):
     """
     :class:`ImageChunkCrafter` provides the basic functions for processing image data on chunk-level.
 

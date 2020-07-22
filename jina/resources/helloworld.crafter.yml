@@ -1,8 +1,0 @@
-!BaseExecutor
-requests:
-  on:
-    [IndexRequest, SearchRequest]:
-      - !UnarySegmentDriver {}
-      - !Blob2PngURI {}
-    ControlRequest:
-      - !ControlReqDriver {}

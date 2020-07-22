@@ -1,12 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import numpy as np
-from functools import reduce
 import operator
-from milvus import Milvus, IndexType
-from jina.logging.base import get_logger
+from functools import reduce
+
+import numpy as np
+
 from jina.excepts import MilvusDBException
+from jina.logging.base import get_logger
 
 
 class MilvusDBHandler:
@@ -17,16 +18,20 @@ class MilvusDBHandler:
             - https://github.com/milvus-io/milvus/
     """
 
-    index_types_map = {
-        'Flat': IndexType.FLAT,
-        'IVF,Flat': IndexType.IVFLAT,
-        'IVF,SQ8': IndexType.IVF_SQ8,
-        'RNSG': IndexType.RNSG,
-        'IVF,SQ8H': IndexType.IVF_SQ8H,
-        'IVF,PQ': IndexType.IVF_PQ,
-        'HNSW': IndexType.IVF_PQ,
-        'Annoy': IndexType.ANNOY
-    }
+    @staticmethod
+    def get_index_type(index_type):
+        from milvus import IndexType
+
+        return {
+            'Flat': IndexType.FLAT,
+            'IVF,Flat': IndexType.IVFLAT,
+            'IVF,SQ8': IndexType.IVF_SQ8,
+            'RNSG': IndexType.RNSG,
+            'IVF,SQ8H': IndexType.IVF_SQ8H,
+            'IVF,PQ': IndexType.IVF_PQ,
+            'HNSW': IndexType.IVF_PQ,
+            'Annoy': IndexType.ANNOY
+        }.get(index_type, IndexType.FLAT)
 
     class MilvusDBInserter:
         """Milvus DB Inserter
@@ -37,7 +42,7 @@ class MilvusDBHandler:
                 - https://github.com/milvus-io/milvus/
         """
 
-        def __init__(self, client: 'Milvus', collection_name: str):
+        def __init__(self, client, collection_name: str):
             self.logger = get_logger(self.__class__.__name__)
             self.client = client
             self.collection_name = collection_name
@@ -46,7 +51,7 @@ class MilvusDBHandler:
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            self.logger.info(f'Seding flush command to Milvus Server for collection: {self.collection_name}')
+            self.logger.info(f'Sending flush command to Milvus Server for collection: {self.collection_name}')
             self.client.flush([self.collection_name])
 
         def insert(self, keys: list, vectors: 'np.ndarray'):
@@ -76,6 +81,7 @@ class MilvusDBHandler:
         self.close()
 
     def connect(self):
+        from milvus import Milvus
         if self.milvus_client is None or not self.milvus_client.server_status()[0].OK():
             self.logger.info(f'Setting connection to Milvus Server at {self.host}:{self.port}')
             self.milvus_client = Milvus(self.host, self.port)
@@ -90,9 +96,7 @@ class MilvusDBHandler:
             db.insert(reduce(operator.concat, keys.tolist()), vectors)
 
     def build_index(self, index_type: str, index_params: dict):
-        type = IndexType.FLAT
-        if index_type in MilvusDBHandler.index_types_map.keys():
-            type = MilvusDBHandler.index_types_map[index_type]
+        type = self.get_index_type(index_type)
 
         self.logger.info(f'Creating index of type: {index_type} at'
                          f' Milvus Server. collection: {self.collection_name} with index params: {index_params}')

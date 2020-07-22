@@ -5,10 +5,18 @@ metas:
 requests:
   on:
     IndexRequest:
+      - !Blob2PngURI {}
       - !EncodeDriver {}
-      - !DocPruneDriver
+      - !ExcludeQL
         with:
-          pruned:
-            - meta_info
+          fields:
+            - buffer
+            - chunks
     SearchRequest:
+      - !Blob2PngURI {}
       - !EncodeDriver {}
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks

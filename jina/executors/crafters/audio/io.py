@@ -2,10 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Dict
-from .. import BaseDocCrafter
+
+from .. import BaseCrafter
 
 
-class AudioReader(BaseDocCrafter):
+class AudioReader(BaseCrafter):
     """
     :class:`AudioReader` reads and resamples the audio signal on doc-level.
     """
@@ -20,7 +21,7 @@ class AudioReader(BaseDocCrafter):
         super().__init__(*args, **kwargs)
         self.sample_rate = target_sample_rate
 
-    def craft(self, uri: str, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, uri: str, *args, **kwargs) -> Dict:
         """
         Decodes the given audio file, resamples the signal and saves the `ndarray` of the signal in the `blob` of the
         Document.
@@ -29,10 +30,9 @@ class AudioReader(BaseDocCrafter):
         , PVF, XI, HTK, SDS, AVR, WAVEX, SD2, CAF, WVE, MPC2K, RF64.
 
         :param uri: the audio file path.
-        :param doc_id: the id of the Document
         :return: a Document dict with the decoded audio signal
         """
         import librosa
         signal, orig_sr = librosa.load(uri, sr=self.sample_rate, mono=False)
 
-        return dict(doc_id=doc_id, weight=1., blob=signal)
+        return dict(weight=1., blob=signal)

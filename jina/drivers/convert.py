@@ -10,11 +10,13 @@ import zlib
 
 import numpy as np
 
-from . import BaseDriver
+from . import BaseRecursiveDriver
 from .helper import guess_mime, array2pb, pb2array
 
+if False:
+    from ..proto import jina_pb2
 
-class BaseConvertDriver(BaseDriver):
+class BaseConvertDriver(BaseRecursiveDriver):
 
     def __init__(self, target: str, override: bool = False, *args, **kwargs):
         """ Set a target attribute of the document by another attribute
@@ -28,11 +30,11 @@ class BaseConvertDriver(BaseDriver):
         self.override = override
         self.target = target
 
-    def __call__(self, *args, **kwargs):
-        for d in self.req.docs:
-            if getattr(d, self.target) and not self.override:
-                continue
-            self.convert(d)
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        if getattr(doc, self.target) and not self.override:
+            pass
+        else:
+            self.convert(doc)
 
     def convert(self, d):
         raise NotImplementedError

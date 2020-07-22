@@ -5,8 +5,9 @@ metas:
 requests:
   on:
     [SearchRequest]:
-      - !MergeTopKDriver
+      - !ReduceAllDriver {}
+      - !SortMatchesQL
         with:
-          level: all
+          field: 'score.value'
     ControlRequest:
       - !ControlReqDriver {}

@@ -5,4 +5,4 @@ metas:
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
-      - !MergeDriver {}
+      - !ReduceDriver {}

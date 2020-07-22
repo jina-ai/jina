@@ -2,7 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Dict, List
+
 import numpy as np
+
 from .. import BaseSegmenter
 
 
@@ -47,18 +49,17 @@ class AudioSlicer(AudioSegmenter):
         """
         super().__init__(frame_size, frame_size, *args, **kwargs)
 
-    def craft(self, blob: 'np.ndarray', doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Slices the input audio signal array into frames and saves the `ndarray` of each frame in the `blob` of each
         Chunk.
 
         :param blob: the ndarray of the audio signal
-        :param doc_id: the id of the Document
         :return: a list of Chunk dicts with audio frames
         """
         frames = self.segment_audio(blob)
 
-        return [dict(doc_id=doc_id, offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
+        return [dict(offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
                 for idx, frame in enumerate(frames)]
 
 
@@ -77,16 +78,15 @@ class SlidingWindowAudioSlicer(AudioSegmenter):
         assert hop_size > 0, 'frame_overlap_size must be smaller than frame_size'
         super().__init__(frame_size, hop_size, *args, **kwargs)
 
-    def craft(self, blob: 'np.ndarray', doc_id: int, *args, **kwargs) -> List[Dict]:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Slices the input audio signal array into frames with a sliding window and saves the `ndarray` of each frame in
         the `blob` of each Chunk.
 
         :param blob: the ndarray of the audio signal
-        :param doc_id: the id of the Document
         :return: a list of Chunk dicts with audio frames
         """
         frames = self.segment_audio(blob)
 
-        return [dict(doc_id=doc_id, offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
+        return [dict(offset=idx, weight=1.0, blob=frame, length=frames.shape[0])
                 for idx, frame in enumerate(frames)]

@@ -13,21 +13,21 @@ class BaseQueryLangDriver(BaseDriver):
 
     The following Standard Query Operator to be implemented
     - filter/where: filter the doc/chunk by its attributes
-    - select: select attributes to include in the results
+    - select/exclude: select attributes to include in the results
     - limit/take/slicing: take the first k doc/chunk
     - sort/order_by: sort the doc/chunk
     - reverse: reverse the list of collections
     """
 
-    def __init__(self, raw_filter=None, *args, **kwargs):
+    def __init__(self, raw_query=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if raw_filter:
-            self.driver_filter = self.parse(raw_filter)
+        if raw_query:
+            self.driver_query = self.parse(raw_query)
 
     def __call__(self, *args, **kwargs):
-        f = getattr(self.req, 'raw_filter', None)
-        query_filter = self.parse(f) if f else None
-        filtered = self.execute(self.req.docs, self.driver_filter, query_filter)
+        f = getattr(self.req, 'raw_query', None)
+        req_query = self.parse(f) if f else None
+        filtered = self.execute(self.req.docs, self.driver_query, req_query)
         if filtered is None:
             # filter is done in-place.
             pass
@@ -45,13 +45,13 @@ class BaseQueryLangDriver(BaseDriver):
     def parse(self, raw_filter):
         raise NotImplementedError
 
-    def execute(self, docs: Iterator['jina_pb2.Document'], driver_filter, query_filter) -> Optional[
+    def execute(self, docs: Iterator['jina_pb2.Document'], driver_query, req_query) -> Optional[
         Iterator['jina_pb2.Document']]:
         """
 
         :param docs: the document to be filtered
-        :param driver_filter: the parsed filter assigned to the driver
-        :param query_filter: the parsed filter carried on the query
+        :param driver_query: the parsed filter assigned to the driver
+        :param req_query: the parsed filter carried on the query
         :return: either an iterator of document,
         """
         raise NotImplementedError

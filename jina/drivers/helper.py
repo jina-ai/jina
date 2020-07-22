@@ -5,7 +5,7 @@ import mimetypes
 import os
 import urllib.parse
 import urllib.request
-from typing import Dict, Any, Iterable, Tuple, Union, List, Callable
+from typing import Dict, Any, Iterable, Tuple
 
 import numpy as np
 
@@ -70,16 +70,14 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     return blob
 
 
-def extract_chunks(docs: Iterable['jina_pb2.Document'],
-                   filter_by: Union[Tuple[str], List[str]],
-                   embedding: bool) -> Tuple:
+def extract_docs(docs: Iterable['jina_pb2.Document'],
+                 embedding: bool) -> Tuple:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents
     :param embedding: an indicator of extracting embedding or not.
                     If ``True`` then all chunk-level embedding are extracted.
                     If ``False`` then ``text``, ``buffer``, ``blob`` info of each chunks are extracted
-    :param filter_by: a list of service names to wait
     :return: A tuple of four pieces:
 
             - a numpy ndarray of extracted info
@@ -97,21 +95,14 @@ def extract_chunks(docs: Iterable['jina_pb2.Document'],
     else:
         _extract_fn = lambda c: c.text or c.buffer or (c.blob and pb2array(c.blob))
 
-    for d in docs:
-        has_chunk = False
-        for c in d.chunks:
-            _c = _extract_fn(c)
-            if filter_by and (c.field_name not in filter_by):
-                continue
+    for c in docs:
+        _c = _extract_fn(c)
 
-            if _c is not None:
-                _contents.append(_c)
-                chunk_pts.append(c)
-                has_chunk = True
-            else:
-                bad_chunk_ids.append((d.doc_id, c.chunk_id))
-        if not has_chunk:
-            no_chunk_docs.append(d.doc_id)
+        if _c is not None:
+            _contents.append(_c)
+            chunk_pts.append(c)
+        else:
+            bad_chunk_ids.append((c.id, c.parent_id))
 
     contents = np.stack(_contents) if _contents else None
     return contents, chunk_pts, no_chunk_docs, bad_chunk_ids
@@ -149,7 +140,10 @@ def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     :param obj: a protobuf object
     :param keys: an iterable of keys for extraction
     """
-    return {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
+    ret = {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
+    if 'blob' in ret:
+        ret['blob'] = pb2array(obj.blob)
+    return ret
 
 
 def guess_mime(uri):

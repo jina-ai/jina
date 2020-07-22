@@ -1,6 +1,0 @@
-!DocPbIndexer
-with:
-  index_filename: doc.gzip
-metas:
-  name: doc_indexer  # a customized name
-  workspace: $HW_WORKDIR

@@ -11,25 +11,25 @@ class RankerTestCase(JinaTestCase):
     def create_data(self):
         query_chunk2match_chunk = {
             100: [
-                {'doc_id': 1, 'chunk_id': 10, 'score': 0.4, 'length': 200},
+                {'parent_id': 1, 'id': 10, 'score': 0.4, 'length': 200},
             ],
             110: [
-                {'doc_id': 1, 'chunk_id': 10, 'score': 0.3, 'length': 200},
-                {'doc_id': 1, 'chunk_id': 11, 'score': 0.2, 'length': 200},
-                {'doc_id': 4294967294, 'chunk_id': 20, 'score': 0.1, 'length': 300},
+                {'parent_id': 1, 'id': 10, 'score': 0.3, 'length': 200},
+                {'parent_id': 1, 'id': 11, 'score': 0.2, 'length': 200},
+                {'parent_id': 4294967294, 'id': 20, 'score': 0.1, 'length': 300},
             ]
         }
         query_chunk_meta = {}
         match_chunk_meta = {}
         match_idx = []
         num_query_chunks = len(query_chunk2match_chunk)
-        for query_chunk_id, match_chunks in query_chunk2match_chunk.items():
+        for query_chunk_id, matches in query_chunk2match_chunk.items():
             query_chunk_meta[query_chunk_id] = {'length': num_query_chunks}
-            for c in match_chunks:
-                match_chunk_meta[c['chunk_id']] = {'length': c['length']}
+            for c in matches:
+                match_chunk_meta[c['id']] = {'length': c['length']}
                 match_idx.append([
-                    c['doc_id'],
-                    c['chunk_id'],
+                    c['parent_id'],
+                    c['id'],
                     query_chunk_id,
                     c['score'],
                 ])

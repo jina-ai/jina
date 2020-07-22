@@ -1,11 +1,12 @@
 import os
 import shutil
 import time
+
 import numpy as np
+from milvus import Milvus
 
 from jina.executors.indexers.vector.milvus import MilvusIndexer
 from jina.executors.indexers.vector.milvusdb.milvusdbhandler import MilvusDBHandler
-from milvus import Milvus
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

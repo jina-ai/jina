@@ -1,6 +1,7 @@
 import os
 import time
 from sys import platform
+
 import pytest
 
 from jina.flow import Flow
@@ -8,24 +9,9 @@ from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
 from jina.peapods.container import ContainerPea
 from jina.peapods.pea import BasePea
-from jina.proto import jina_pb2
-from tests import JinaTestCase
+from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-    c_id = 0
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            c.chunk_id = c_id
-            c.doc_id = j
-            c_id += 1
-        yield d
-
 
 built = False
 img_name = 'jina/mwu-encoder'
