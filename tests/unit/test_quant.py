@@ -8,7 +8,7 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
-replicas = 10
+parallel = 10
 
 num_docs = 100
 chunks_per_doc = 100

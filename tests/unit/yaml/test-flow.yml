@@ -3,12 +3,12 @@ with:
   sse_logger: false
 pods:
   chunk_seg:
-    replicas: 3
+    parallel: 3
   wqncode1:
-    replicas: 2
+    parallel: 2
     needs: chunk_seg
   encode2:
-    replicas: 2
+    parallel: 2
     needs: chunk_seg
   joiner:
     uses: _merge

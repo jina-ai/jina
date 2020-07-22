@@ -149,9 +149,9 @@ class FlowTestCase(JinaTestCase):
             a = Flow.load_config(fp)
 
         b = (Flow()
-             .add(name='chunk_seg', replicas=3)
-             .add(name='wqncode1', replicas=2)
-             .add(name='encode2', replicas=2, needs='chunk_seg')
+             .add(name='chunk_seg', parallel=3)
+             .add(name='wqncode1', parallel=2)
+             .add(name='encode2', parallel=2, needs='chunk_seg')
              .join(['wqncode1', 'encode2']))
 
         a.save_config('test2.yml')
@@ -203,7 +203,7 @@ class FlowTestCase(JinaTestCase):
             f.dry_run()
 
     def test_pod_status(self):
-        args = set_pod_parser().parse_args(['--replicas', '3'])
+        args = set_pod_parser().parse_args(['--parallel', '3'])
         with BasePod(args) as p:
             self.assertEqual(len(p.status), p.num_peas)
             for v in p.status:
@@ -270,7 +270,7 @@ class FlowTestCase(JinaTestCase):
                     timeout=5)
 
     def test_shards(self):
-        f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=3,
+        f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3,
                        separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(1000), random_doc_id=False)
@@ -449,8 +449,8 @@ class FlowTestCase(JinaTestCase):
 
     def test_refactor_num_part_proxy_2(self):
         f = (Flow().add(name='r1', uses='_logforward')
-             .add(name='r2', uses='_logforward', needs='r1', replicas=2)
-             .add(name='r3', uses='_logforward', needs='r1', replicas=3, polling='ALL')
+             .add(name='r2', uses='_logforward', needs='r1', parallel=2)
+             .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
              .join(['r2', 'r3']))
 
         with f:
@@ -458,13 +458,13 @@ class FlowTestCase(JinaTestCase):
 
     def test_refactor_num_part_2(self):
         f = (Flow()
-             .add(name='r1', uses='_logforward', needs='gateway', replicas=3, polling='ALL'))
+             .add(name='r1', uses='_logforward', needs='gateway', parallel=3, polling='ALL'))
 
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
 
         f = (Flow()
-             .add(name='r1', uses='_logforward', needs='gateway', replicas=3))
+             .add(name='r1', uses='_logforward', needs='gateway', parallel=3))
 
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])

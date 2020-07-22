@@ -38,7 +38,7 @@ class BasePod:
             # ONLY reset when it is push
             args.uses_reducing = '_forward'
 
-        if getattr(args, 'replicas', 1) > 1:
+        if getattr(args, 'parallel', 1) > 1:
             self.is_head_router = True
             self.is_tail_router = True
 
@@ -81,7 +81,7 @@ class BasePod:
             'peas': []
         }
 
-        if getattr(args, 'replicas', 1) > 1:
+        if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
@@ -336,7 +336,7 @@ class FlowPod(BasePod):
 
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
-        if self._args.replicas > 1 and self.is_head_router:
+        if self._args.parallel > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
             # only reset its output
             pod.tail_args = _copy_to_head_args(pod.tail_args, self._args.polling.is_push, as_router=False)
@@ -352,7 +352,7 @@ class FlowPod(BasePod):
 
     def connect_to_head_of(self, pod: 'BasePod'):
         """Eliminate the tail node by connecting next_args node directly to peas """
-        if self._args.replicas > 1 and self.is_tail_router:
+        if self._args.parallel > 1 and self.is_tail_router:
             # keep the port_out and socket_out of next_arts
             # only reset its input
             pod.head_args = _copy_to_tail_args(pod.head_args,
@@ -381,7 +381,7 @@ class FlowPod(BasePod):
 
 def _set_peas_args(args, head_args, tail_args):
     result = []
-    for _ in range(args.replicas):
+    for _ in range(args.parallel):
         _args = copy.deepcopy(args)
         _args.port_in = head_args.port_out
         _args.port_out = tail_args.port_in
@@ -422,7 +422,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
                 _head_args.uses = '_route'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
-        _head_args.num_part = args.replicas
+        _head_args.num_part = args.parallel
         if as_router:
             _head_args.uses = '_forward'
 

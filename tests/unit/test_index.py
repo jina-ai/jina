@@ -99,10 +99,10 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile(b.save_abspath, b.index_abspath)
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
-    def test_two_client_route_replicas(self):
+    def test_two_client_route_parallel(self):
         fa1 = set_flow_parser().parse_args(['--optimize-level', str(FlowOptimizeLevel.NONE)])
-        f1 = Flow(fa1).add(uses='_forward', replicas=3)
-        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(uses='_forward', replicas=3)
+        f1 = Flow(fa1).add(uses='_forward', parallel=3)
+        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(uses='_forward', parallel=3)
 
         def start_client(fl):
             fl.index(input_fn=random_docs(10))
@@ -149,7 +149,7 @@ class MyTestCase(JinaTestCase):
             time.sleep(5)
 
     def test_index(self):
-        f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), replicas=3, separated_workspace=True)
+        f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3, separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(1000))
 

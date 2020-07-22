@@ -27,7 +27,7 @@ class MyTestCase(JinaTestCase):
 
         f = Flow(rest_api=True).add(
             uses='_forward',
-            replicas=2)
+            parallel=2)
         with f:
             concurrency = 50
             threads = []
@@ -81,7 +81,7 @@ class MyTestCase(JinaTestCase):
 
         f = Flow().add(
             uses='_forward',
-            replicas=2)
+            parallel=2)
         with f:
             threads = []
             status_codes = [None] * concurrency

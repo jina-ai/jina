@@ -36,7 +36,7 @@ class PeaPodsTestCase(JinaTestCase):
 
     def test_pod_context(self):
         def _test_pod_context(runtime):
-            args = set_pod_parser().parse_args(['--runtime', runtime, '--replicas', '2'])
+            args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
             with BasePod(args):
                 pass
 
@@ -83,7 +83,7 @@ class PeaPodsTestCase(JinaTestCase):
 
     def test_mutable_pod(self):
         def _test_mutable_pod(runtime):
-            args = set_pod_parser().parse_args(['--runtime', runtime, '--replicas', '2'])
+            args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
 
             with MutablePod(BasePod(args).peas_args):
                 pass
@@ -96,7 +96,7 @@ class PeaPodsTestCase(JinaTestCase):
 
     def test_flow_pod(self):
         def _test_flow_pod(runtime):
-            args = {'runtime': runtime, 'replicas': 2}
+            args = {'runtime': runtime, 'parallel': 2}
             with FlowPod(args):
                 pass
 
@@ -109,7 +109,7 @@ class PeaPodsTestCase(JinaTestCase):
     def test_pod_context_autoshutdown(self):
         def _test_pod_context(runtime):
             args = set_pod_parser().parse_args(['--runtime', runtime,
-                                                '--replicas', '2',
+                                                '--parallel', '2',
                                                 '--max-idle-time', '5',
                                                 '--shutdown-idle'])
             with BasePod(args) as bp:
@@ -121,9 +121,9 @@ class PeaPodsTestCase(JinaTestCase):
             with self.subTest(runtime=j):
                 _test_pod_context(j)
 
-    def test_peas_naming_with_replicas(self):
+    def test_peas_naming_with_parallel(self):
         args = set_pod_parser().parse_args(['--name', 'pod',
-                                            '--replicas', '2',
+                                            '--parallel', '2',
                                             '--max-idle-time', '5',
                                             '--shutdown-idle'])
         with BasePod(args) as bp:

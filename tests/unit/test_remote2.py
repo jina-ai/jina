@@ -42,7 +42,7 @@ class MyTestCase(JinaTestCase):
     def test_remote_pod(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
-            ['--host', 'localhost', '--replicas', '3',
+            ['--host', 'localhost', '--parallel', '3',
              '--port-expose', str(f_args.port_expose)])
 
         def start_gateway():
@@ -59,7 +59,7 @@ class MyTestCase(JinaTestCase):
     def test_remote_pod_process(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
-            ['--host', 'localhost', '--replicas', '3',
+            ['--host', 'localhost', '--parallel', '3',
              '--port-expose', str(f_args.port_expose), '--runtime', 'process'])
 
         def start_spawn():
@@ -109,7 +109,7 @@ class MyTestCase(JinaTestCase):
     def test_customized_pod(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
-            ['--host', 'localhost', '--replicas', '3', '--port-expose', str(f_args.port_expose)])
+            ['--host', 'localhost', '--parallel', '3', '--port-expose', str(f_args.port_expose)])
         p = BasePod(p_args)
 
         def start_gateway():
@@ -126,7 +126,7 @@ class MyTestCase(JinaTestCase):
     def test_customized_pod2(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
         p_args = set_pod_parser().parse_args(
-            ['--host', 'localhost', '--replicas', '3', '--port-expose', str(f_args.port_expose)])
+            ['--host', 'localhost', '--parallel', '3', '--port-expose', str(f_args.port_expose)])
         p = BasePod(p_args)
 
         def start_gateway():

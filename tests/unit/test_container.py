@@ -77,7 +77,7 @@ class MyTestCase(JinaTestCase):
              .add(name='dummyEncoder',
                   uses=img_name,
                   uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml'),
-                  replicas=3))
+                  parallel=3))
 
         with f:
             f.index(input_fn=random_docs(10))
@@ -107,10 +107,10 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index(input_fn=random_docs(10))
 
-    def test_flow_topo_replicas(self):
+    def test_flow_topo_parallel(self):
         f = (Flow()
-             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', replicas=3)
-             .add(name='d2', uses='_forward', replicas=3)
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', parallel=3)
+             .add(name='d2', uses='_forward', parallel=3)
              .add(name='d3', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward',
                   needs='d1')
              .join(['d3', 'd2'])
@@ -145,9 +145,9 @@ class MyTestCase(JinaTestCase):
 
         self.assertEqual(cm.exception.code, 0)
 
-    def test_tail_host_docker2local_replicas(self):
+    def test_tail_host_docker2local_parallel(self):
         f = (Flow()
-             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', replicas=3)
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', parallel=3)
              .add(name='d2', uses='_forward'))
         with f:
             self.assertEqual(getattr(f._pod_nodes['d1'].peas_args['tail'], 'host_out'), defaulthost)

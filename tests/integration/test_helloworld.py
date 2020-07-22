@@ -32,7 +32,7 @@ class MyTestCase(JinaTestCase):
 
         os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
         os.environ['SHARDS'] = str(args.shards)
-        os.environ['REPLICAS'] = str(args.replicas)
+        os.environ['PARALLEL'] = str(args.parallel)
         os.environ['HW_WORKDIR'] = args.workdir
         os.environ['WITH_LOGSERVER'] = str(args.logserver)
 
@@ -64,7 +64,7 @@ class MyTestCase(JinaTestCase):
 
         os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
         os.environ['SHARDS'] = str(args.shards)
-        os.environ['REPLICAS'] = str(args.replicas)
+        os.environ['PARALLEL'] = str(args.parallel)
         os.environ['HW_WORKDIR'] = args.workdir
         os.environ['WITH_LOGSERVER'] = str(args.logserver)
 
