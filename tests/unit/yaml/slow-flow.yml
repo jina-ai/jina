@@ -7,6 +7,6 @@ with:
   shutdown_idle: true
 pods:
   sw:
-    yaml_path: SlowWorker
+    uses: SlowWorker
     replicas: 5
     py_modules: ./yaml/slow-worker.py

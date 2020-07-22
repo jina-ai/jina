@@ -206,7 +206,7 @@ You can use the extension by specifying ``py_modules`` in the YAML file. For exa
 
     You can also assign a list of files to ``metas.py_modules`` if your Python logic is splitted over multiple files. This YAML file and all Python extension files should be put under the same directory.
 
-Then simply use it in Jina CLI by specifying ``jina pod --yaml-path=my.yml``, or ``Flow().add(yaml_path='my.yml')`` in Flow API.
+Then simply use it in Jina CLI by specifying ``jina pod --uses=my.yml``, or ``Flow().add(uses='my.yml')`` in Flow API.
 
 
 .. warning::

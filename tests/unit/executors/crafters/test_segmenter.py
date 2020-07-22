@@ -25,16 +25,16 @@ class MyTestCase(JinaTestCase):
         self.assertTrue(len(chunk_ids), 2)
 
     def test_dummy_seg(self):
-        f = Flow().add(yaml_path='DummySegment')
+        f = Flow().add(uses='DummySegment')
         with f:
             f.index(input_fn=random_docs(10), output_fn=self.validate)
 
     def test_dummy_seg_random(self):
-        f = Flow().add(yaml_path=os.path.join(cur_dir, '../../yaml/dummy-seg-random.yml'))
+        f = Flow().add(uses=os.path.join(cur_dir, '../../yaml/dummy-seg-random.yml'))
         with f:
             f.index(input_fn=random_docs(10), output_fn=self.validate)
 
     def test_dummy_seg_not_random(self):
-        f = Flow().add(yaml_path=os.path.join(cur_dir, '../../yaml/dummy-seg-not-random.yml'))
+        f = Flow().add(uses=os.path.join(cur_dir, '../../yaml/dummy-seg-not-random.yml'))
         with f:
             f.index(input_fn=random_docs(10), output_fn=self.validate)

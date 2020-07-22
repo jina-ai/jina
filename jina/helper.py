@@ -20,7 +20,7 @@ __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
-           'colored', 'kwargs2list', 'valid_yaml_path']
+           'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source']
 
 
 def deprecated_alias(**aliases):
@@ -469,7 +469,7 @@ def kwargs2list(kwargs: Dict):
     return args
 
 
-def valid_yaml_path(path: str, to_stream: bool = False):
+def get_valid_local_config_source(path: str, to_stream: bool = False):
     # priority, filepath > classname > default
     import io
     from pkg_resources import resource_filename
@@ -502,6 +502,12 @@ def valid_yaml_path(path: str, to_stream: bool = False):
         raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
                                 ' or a valid file path, or a supported class name.' % path)
 
+def valid_local_config_source(path: str) -> bool:
+    try:
+        get_valid_local_config_source(path)
+        return True
+    except:
+        return False
 
 def get_parsed_args(kwargs, parser, parser_name: str = None):
     args = kwargs2list(kwargs)

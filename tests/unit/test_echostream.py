@@ -25,7 +25,7 @@ class MyTestCase(JinaTestCase):
             '--port-out', '12346',
             '--socket-in', 'PULL_BIND',
             '--socket-out', 'PUSH_BIND',
-            '--yaml-path', '_logforward',
+            '--uses', '_logforward',
             '--timeout-ctrl', '-1'
         ])
 
@@ -38,15 +38,15 @@ class MyTestCase(JinaTestCase):
             z.send_message(msg)
 
     def test_flow_with_jump(self):
-        f = (Flow().add(name='r1', yaml_path='_forward')
-             .add(name='r2', yaml_path='_forward')
-             .add(name='r3', yaml_path='_forward', needs='r1')
-             .add(name='r4', yaml_path='_forward', needs='r2')
-             .add(name='r5', yaml_path='_forward', needs='r3')
-             .add(name='r6', yaml_path='_forward', needs='r4')
-             .add(name='r8', yaml_path='_forward', needs='r6')
-             .add(name='r9', yaml_path='_forward', needs='r5')
-             .add(name='r10', yaml_path='_merge', needs=['r9', 'r8']))
+        f = (Flow().add(name='r1', uses='_forward')
+             .add(name='r2', uses='_forward')
+             .add(name='r3', uses='_forward', needs='r1')
+             .add(name='r4', uses='_forward', needs='r2')
+             .add(name='r5', uses='_forward', needs='r3')
+             .add(name='r6', uses='_forward', needs='r4')
+             .add(name='r8', uses='_forward', needs='r6')
+             .add(name='r9', uses='_forward', needs='r5')
+             .add(name='r10', uses='_merge', needs=['r9', 'r8']))
 
         with f:
             f.dry_run()

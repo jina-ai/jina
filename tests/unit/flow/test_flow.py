@@ -40,15 +40,15 @@ class FlowTestCase(JinaTestCase):
         self.assertEqual(cm.exception.code, 1)
 
     def test_flow_with_jump(self):
-        f = (Flow().add(name='r1', yaml_path='_forward')
-             .add(name='r2', yaml_path='_forward')
-             .add(name='r3', yaml_path='_forward', needs='r1')
-             .add(name='r4', yaml_path='_forward', needs='r2')
-             .add(name='r5', yaml_path='_forward', needs='r3')
-             .add(name='r6', yaml_path='_forward', needs='r4')
-             .add(name='r8', yaml_path='_forward', needs='r6')
-             .add(name='r9', yaml_path='_forward', needs='r5')
-             .add(name='r10', yaml_path='_merge', needs=['r9', 'r8']))
+        f = (Flow().add(name='r1', uses='_forward')
+             .add(name='r2', uses='_forward')
+             .add(name='r3', uses='_forward', needs='r1')
+             .add(name='r4', uses='_forward', needs='r2')
+             .add(name='r5', uses='_forward', needs='r3')
+             .add(name='r6', uses='_forward', needs='r4')
+             .add(name='r8', uses='_forward', needs='r6')
+             .add(name='r9', uses='_forward', needs='r5')
+             .add(name='r10', uses='_merge', needs=['r9', 'r8']))
 
         with f:
             f.dry_run()
@@ -113,7 +113,7 @@ class FlowTestCase(JinaTestCase):
                 yield b'aaa'
 
         f = (Flow()
-             .add(yaml_path='_forward'))
+             .add(uses='_forward'))
 
         with f:
             f.index(input_fn=bytes_gen)
@@ -197,7 +197,7 @@ class FlowTestCase(JinaTestCase):
 
     def test_dryrun(self):
         f = (Flow()
-             .add(name='dummyEncoder', yaml_path=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
+             .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
 
         with f:
             f.dry_run()
@@ -211,7 +211,7 @@ class FlowTestCase(JinaTestCase):
 
     def test_flow_no_container(self):
         f = (Flow()
-             .add(name='dummyEncoder', yaml_path=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
+             .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
 
         with f:
             f.index(input_fn=random_docs(10))
@@ -270,7 +270,7 @@ class FlowTestCase(JinaTestCase):
                     timeout=5)
 
     def test_shards(self):
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=3,
+        f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=3,
                        separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(1000), random_doc_id=False)
@@ -280,15 +280,15 @@ class FlowTestCase(JinaTestCase):
         time.sleep(2)
 
     def test_py_client(self):
-        f = (Flow().add(name='r1', yaml_path='_forward')
-             .add(name='r2', yaml_path='_forward')
-             .add(name='r3', yaml_path='_forward', needs='r1')
-             .add(name='r4', yaml_path='_forward', needs='r2')
-             .add(name='r5', yaml_path='_forward', needs='r3')
-             .add(name='r6', yaml_path='_forward', needs='r4')
-             .add(name='r8', yaml_path='_forward', needs='r6')
-             .add(name='r9', yaml_path='_forward', needs='r5')
-             .add(name='r10', yaml_path='_merge', needs=['r9', 'r8']))
+        f = (Flow().add(name='r1', uses='_forward')
+             .add(name='r2', uses='_forward')
+             .add(name='r3', uses='_forward', needs='r1')
+             .add(name='r4', uses='_forward', needs='r2')
+             .add(name='r5', uses='_forward', needs='r3')
+             .add(name='r6', uses='_forward', needs='r4')
+             .add(name='r8', uses='_forward', needs='r6')
+             .add(name='r9', uses='_forward', needs='r5')
+             .add(name='r10', uses='_merge', needs=['r9', 'r8']))
 
         with f:
             f.dry_run()
@@ -341,8 +341,8 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
 
     def test_dry_run_with_two_pathways_diverging_at_gateway(self):
-        f = (Flow().add(name='r2', yaml_path='_forward')
-             .add(name='r3', yaml_path='_forward', needs='gateway')
+        f = (Flow().add(name='r2', uses='_forward')
+             .add(name='r3', uses='_forward', needs='gateway')
              .join(['r2', 'r3']))
 
         with f:
@@ -365,9 +365,9 @@ class FlowTestCase(JinaTestCase):
             f.dry_run()
 
     def test_dry_run_with_two_pathways_diverging_at_non_gateway(self):
-        f = (Flow().add(name='r1', yaml_path='_forward')
-             .add(name='r2', yaml_path='_forward')
-             .add(name='r3', yaml_path='_forward', needs='r1')
+        f = (Flow().add(name='r1', uses='_forward')
+             .add(name='r2', uses='_forward')
+             .add(name='r3', uses='_forward', needs='r1')
              .join(['r2', 'r3']))
 
         with f:
@@ -395,8 +395,8 @@ class FlowTestCase(JinaTestCase):
     @pytest.mark.skip('this leads to zmq address conflicts on github')
     def test_refactor_num_part(self):
         sleep(3)
-        f = (Flow().add(name='r1', yaml_path='_logforward', needs='gateway')
-             .add(name='r2', yaml_path='_logforward', needs='gateway')
+        f = (Flow().add(name='r1', uses='_logforward', needs='gateway')
+             .add(name='r2', uses='_logforward', needs='gateway')
              .join(['r1', 'r2']))
 
         with f:
@@ -419,9 +419,9 @@ class FlowTestCase(JinaTestCase):
             f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy(self):
-        f = (Flow().add(name='r1', yaml_path='_logforward')
-             .add(name='r2', yaml_path='_logforward', needs='r1')
-             .add(name='r3', yaml_path='_logforward', needs='r1')
+        f = (Flow().add(name='r1', uses='_logforward')
+             .add(name='r2', uses='_logforward', needs='r1')
+             .add(name='r3', uses='_logforward', needs='r1')
              .join(['r2', 'r3']))
 
         with f:
@@ -448,9 +448,9 @@ class FlowTestCase(JinaTestCase):
             f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy_2(self):
-        f = (Flow().add(name='r1', yaml_path='_logforward')
-             .add(name='r2', yaml_path='_logforward', needs='r1', replicas=2)
-             .add(name='r3', yaml_path='_logforward', needs='r1', replicas=3, polling='ALL')
+        f = (Flow().add(name='r1', uses='_logforward')
+             .add(name='r2', uses='_logforward', needs='r1', replicas=2)
+             .add(name='r3', uses='_logforward', needs='r1', replicas=3, polling='ALL')
              .join(['r2', 'r3']))
 
         with f:
@@ -458,13 +458,13 @@ class FlowTestCase(JinaTestCase):
 
     def test_refactor_num_part_2(self):
         f = (Flow()
-             .add(name='r1', yaml_path='_logforward', needs='gateway', replicas=3, polling='ALL'))
+             .add(name='r1', uses='_logforward', needs='gateway', replicas=3, polling='ALL'))
 
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
 
         f = (Flow()
-             .add(name='r1', yaml_path='_logforward', needs='gateway', replicas=3))
+             .add(name='r1', uses='_logforward', needs='gateway', replicas=3))
 
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])
@@ -475,7 +475,7 @@ class FlowTestCase(JinaTestCase):
             for d in req.docs:
                 self.assertNotEqual(d.text, '')
 
-        f = (Flow(read_only=True).add(yaml_path=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
+        f = (Flow(read_only=True).add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
 
         with f:
             f.index_files('*.py', output_fn=validate, callback_on_body=True)
@@ -485,8 +485,8 @@ class FlowTestCase(JinaTestCase):
     def test_flow_with_publish_driver(self):
 
         f = (Flow()
-             .add(name='r2', yaml_path='!OneHotTextEncoder')
-             .add(name='r3', yaml_path='!OneHotTextEncoder', needs='gateway')
+             .add(name='r2', uses='!OneHotTextEncoder')
+             .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
              .join(needs=['r2', 'r3']))
 
         def validate(req):

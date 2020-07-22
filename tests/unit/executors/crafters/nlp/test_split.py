@@ -51,7 +51,7 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(req.docs[0].chunks[0].text, 'This ,  text is...')
             self.assertEqual(req.docs[0].chunks[1].text, 'Amazing')
 
-        f = Flow().add(yaml_path='!Sentencizer')
+        f = Flow().add(uses='!Sentencizer')
         with f:
             f.index_lines(['  This ,  text is...  . Amazing !!'], output_fn=validate, callback_on_body=True)
 

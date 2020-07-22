@@ -157,7 +157,7 @@ class Flow:
         .. highlight:: python
         .. code-block:: python
 
-            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(yaml_path='forward', replicas=3)
+            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(uses='forward', replicas=3)
 
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
@@ -355,7 +355,7 @@ class Flow:
         """
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return self.add(name='joiner', yaml_path='_merge', needs=needs, *args, **kwargs)
+        return self.add(name='joiner', uses='_merge', needs=needs, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,

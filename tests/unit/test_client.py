@@ -20,7 +20,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class MyTestCase(JinaTestCase):
 
     def test_client(self):
-        f = Flow().add(yaml_path='_forward')
+        f = Flow().add(uses='_forward')
         with f:
             print(py_client(port_expose=f.port_expose).call_unary(b'a1234', mode=ClientMode.INDEX))
 
@@ -49,7 +49,7 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(a.status_code, 405)
 
     def test_gateway_index(self):
-        f = Flow(rest_api=True).add(yaml_path='_forward')
+        f = Flow(rest_api=True).add(uses='_forward')
         with f:
             a = requests.post(f'http://0.0.0.0:{f.port_expose}/api/index',
                               json={'data': [
@@ -64,7 +64,7 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(a.status_code, 200)
 
     def test_gateway_index_with_args(self):
-        f = Flow(rest_api=True).add(yaml_path='_forward')
+        f = Flow(rest_api=True).add(uses='_forward')
         with f:
             a = requests.post(f'http://0.0.0.0:{f.port_expose}/api/index',
                               json={'data': [
@@ -88,7 +88,7 @@ class MyTestCase(JinaTestCase):
         PyClient.check_input(input_files('*.*', size=2, read_mode='rb'))
         PyClient.check_input(input_files('*.*', sampling_rate=.5))
 
-        f = Flow().add(yaml_path='- !URI2Buffer {}')
+        f = Flow().add(uses='- !URI2Buffer {}')
 
         def validate_mime_type(req):
             for d in req.index.docs:

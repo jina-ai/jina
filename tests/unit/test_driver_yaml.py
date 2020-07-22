@@ -38,7 +38,7 @@ class MyTestCase(JinaTestCase):
     def test_load_cust_with_driver(self):
         a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
         self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
-        p = set_pod_parser().parse_args(['--yaml-path', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
+        p = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
         with Pod(p):
             # will print a cust msg from the driver when terminate
             pass
@@ -47,7 +47,7 @@ class MyTestCase(JinaTestCase):
         a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
         self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
 
-        with Pod(yaml_path=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
+        with Pod(uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
             # will print a cust msg from the driver when terminate
             pass
 

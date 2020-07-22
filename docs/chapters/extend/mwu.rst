@@ -45,7 +45,7 @@ To use that in Flow API,
     from jina.flow import Flow
 
     f = (Flow()
-        .add(name='dummyEncoder', yaml_path='mwu.yml'))
+        .add(name='dummyEncoder', uses='mwu.yml'))
 
     # test it with dry run
     with f:

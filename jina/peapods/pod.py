@@ -15,7 +15,7 @@ from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args
+from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, valid_local_config_source
 from ..main.parser import set_pod_parser, set_gateway_parser
 
 
@@ -36,7 +36,7 @@ class BasePod:
         self.deducted_tail = None
         if hasattr(args, 'polling') and args.polling.is_push:
             # ONLY reset when it is push
-            args.reducing_yaml_path = '_forward'
+            args.uses_reducing = '_forward'
 
         if getattr(args, 'replicas', 1) > 1:
             self.is_head_router = True
@@ -410,27 +410,26 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = random_port()
     _head_args.port_out = random_port()
+    _head_args.uses = None
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
             if as_router:
-                _head_args.yaml_path = '_forward'
+                _head_args.uses = '_forward'
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
             if as_router:
-                _head_args.yaml_path = '_route'
+                _head_args.uses = '_route'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
         _head_args.num_part = args.replicas
         if as_router:
-            _head_args.yaml_path = '_forward'
+            _head_args.uses = '_forward'
 
     if as_router:
         _head_args.name = args.name or ''
         _head_args.role = PeaRoleType.HEAD
 
-    # head and tail never run in docker, reset their image to None
-    _head_args.image = None
     return _head_args
 
 
@@ -441,13 +440,12 @@ def _copy_to_tail_args(args, as_router: bool = True):
     _tail_args.port_in = random_port()
     _tail_args.port_ctrl = random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
+    _tail_args.uses = None
     if as_router:
-        _tail_args.yaml_path = args.reducing_yaml_path
+        _tail_args.uses = args.uses_reducing
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
 
-    # head and tail never run in docker, reset their image to None
-    _tail_args.image = None
     return _tail_args
 
 
@@ -455,10 +453,8 @@ def _fill_in_host(bind_args, connect_args):
     from sys import platform
 
     bind_local = (bind_args.host == '0.0.0.0')
-    bind_docker = (bind_args.image is not None and bind_args.image)
-    conn_tail = (connect_args.name is not None and connect_args.role == PeaRoleType.TAIL)
     conn_local = (connect_args.host == '0.0.0.0')
-    conn_docker = (connect_args.image is not None and connect_args.image)
+    conn_docker = (getattr(connect_args, 'uses', None) is not None and not valid_local_config_source(connect_args.uses))
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
     if platform == "linux" or platform == "linux2":
         local_host = '0.0.0.0'

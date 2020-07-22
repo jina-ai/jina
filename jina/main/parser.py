@@ -121,7 +121,7 @@ def set_hw_parser(parser=None):
                     default=2,
                     help='number of replicas when index and query')
     gp = add_arg_group(parser, 'index arguments')
-    gp.add_argument('--index-yaml-path', type=str,
+    gp.add_argument('--index-uses', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
                     help='the yaml path of the index flow')
     gp.add_argument('--index-data-url', type=str,
@@ -131,7 +131,7 @@ def set_hw_parser(parser=None):
                     default=1024,
                     help='the batch size in indexing')
     gp = add_arg_group(parser, 'query arguments')
-    gp.add_argument('--query-yaml-path', type=str,
+    gp.add_argument('--query-uses', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml'))),
                     help='the yaml path of the query flow')
     gp.add_argument('--query-data-url', type=str,
@@ -154,7 +154,7 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
     from pkg_resources import resource_filename
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
@@ -187,22 +187,21 @@ def set_pea_parser(parser=None):
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string')
-    gp0.add_argument('--yaml-path', type=str, default='BaseExecutor',
-                     help='the yaml config of the executor, it could be '
+    gp0.add_argument('--uses', type=str, default='BaseExecutor',
+                     help='the config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '
                           '> one of "_clear", "_route", "_forward", "_logforward", "_merge" '
-                          '> the content of YAML config (must starts with "!")')  # pod(no use) -> pea
+                          '> the content of YAML config (must starts with "!")'
+                          '> a docker image')  # pod(no use) -> pea
     gp0.add_argument('--py-modules', type=str, nargs='*',
                      help='the customized python modules need to be imported before loading the'
                           ' executor')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
-    gp1.add_argument('--image', type=str,
-                     help='the name of the docker image that this pea runs with. it is also served as an indicator '
-                          'of containerization. '
-                          'when this and --yaml-path are both given then the docker image '
-                          'is used and its original yaml configuration is replaced by the given --yaml-path')
+    gp1.add_argument('--uses-internal', type=str, default='BaseExecutor',
+                     help='The executor config that is passed to the docker image if a docker image is used in uses. '
+                          'It cannot be another docker image ')
     gp1.add_argument('--entrypoint', type=str,
                      help='the entrypoint command overrides the ENTRYPOINT in docker image. '
                           'when not set then the docker image ENTRYPOINT takes effective.')
@@ -321,9 +320,9 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
-    gp4.add_argument('--reducing-yaml-path', type=str, default='_merge',
+    gp4.add_argument('--uses-reducing', type=str, default='_merge',
                      help='the executor used for reducing the result from all replicas, '
-                          'accepted type follows "--yaml-path"')
+                          'accepted type follows "--uses"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
 

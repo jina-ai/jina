@@ -210,18 +210,18 @@ For the use case above, the `index.yml` will be defined as following,
     !Flow
     pods:
       fields_mapper:
-        yaml_path: mapper.yml
+        uses: mapper.yml
       title_encoder:
-        yaml_path: title_encoder.yml
+        uses: title_encoder.yml
         needs: fields_mapper
       sum_encoder:
-        yaml_path: sum_encoder.yml
+        uses: sum_encoder.yml
         needs: fields_mapper
       title_indexer:
-        yaml_path: title_indexer.yml
+        uses: title_indexer.yml
         needs: title_encoder
       sum_indexer:
-        yaml_path: sum_indexer.yml
+        uses: sum_indexer.yml
         needs: sum_encoder
       join:
         needs:

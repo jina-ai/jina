@@ -18,9 +18,9 @@ class FlowExceptTestCase(JinaTestCase):
             self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
             self.assertEqual(req.status.details[0].pod, 'r1')
 
-        f = (Flow().add(name='r1', yaml_path='!BaseCrafter')
-             .add(name='r2', yaml_path='!BaseEncoder')
-             .add(name='r3', yaml_path='!BaseEncoder'))
+        f = (Flow().add(name='r1', uses='!BaseCrafter')
+             .add(name='r2', uses='!BaseEncoder')
+             .add(name='r3', uses='!BaseEncoder'))
 
         # always test two times, make sure the flow still works after it fails on the first
         with f:
@@ -33,9 +33,9 @@ class FlowExceptTestCase(JinaTestCase):
             self.assertEqual(req.status.details[0].pod, 'r2')
             self.assertTrue(req.status.details[0].exception.startswith('ZeroDivisionError'))
 
-        f = (Flow().add(name='r1', yaml_path='_forward')
-             .add(name='r2', yaml_path='!DummyCrafter')
-             .add(name='r3', yaml_path='!BaseEncoder'))
+        f = (Flow().add(name='r1', uses='_forward')
+             .add(name='r2', uses='!DummyCrafter')
+             .add(name='r3', uses='!BaseEncoder'))
 
         with f:
             f.dry_run()
@@ -54,9 +54,9 @@ class FlowExceptTestCase(JinaTestCase):
             self.assertTrue(req.status.details[0].exception.startswith('ZeroDivisionError'))
             self.assertTrue(req.status.details[1].exception.startswith('NotImplementedError'))
 
-        f = (Flow().add(name='r1', yaml_path='_forward')
-             .add(name='r2', yaml_path='!DummyCrafter', replicas=3)
-             .add(name='r3', yaml_path='!BaseEncoder'))
+        f = (Flow().add(name='r1', uses='_forward')
+             .add(name='r2', uses='!DummyCrafter', replicas=3)
+             .add(name='r3', uses='!BaseEncoder'))
 
         with f:
             f.dry_run()

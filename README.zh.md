@@ -155,21 +155,21 @@ with f:
 !Flow
 pods:
   chunk_seg:
-    yaml_path: helloworld.crafter.yml
+    uses: helloworld.crafter.yml
     replicas: $REPLICAS
     read_only: true
   doc_idx:
-    yaml_path: helloworld.indexer.doc.yml
+    uses: helloworld.indexer.doc.yml
   encode:
-    yaml_path: helloworld.encoder.yml
+    uses: helloworld.encoder.yml
     needs: chunk_seg
     replicas: $REPLICAS
   chunk_idx:
-    yaml_path: helloworld.indexer.chunk.yml
+    uses: helloworld.indexer.chunk.yml
     replicas: $SHARDS
     separated_workspace: true
   join_all:
-    yaml_path: _merge
+    uses: _merge
     needs: [doc_idx, chunk_idx]
     read_only: true
 ```

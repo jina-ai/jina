@@ -25,7 +25,7 @@ To use these enums in YAML config, following the example below:
 .. code-block:: yaml
 
       chunk_idx:
-        yaml_path: index/chunk.yml
+        uses: index/chunk.yml
         replicas: $REPLICAS
         separated_workspace: true
         replicas_type: !PollingType ANY

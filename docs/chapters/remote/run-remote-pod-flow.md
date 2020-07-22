@@ -47,7 +47,7 @@ from jina.flow import Flow
 from jina.enums import FlowOptimizeLevel
 
 f = (Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY)
-     .add(yaml_path='yaml/test-index.yml',
+     .add(uses='yaml/test-index.yml',
           replicas=3, separated_workspace=True,
           host='192.168.31.76', port_expose=41851))
 ```

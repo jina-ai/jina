@@ -26,7 +26,7 @@ We describe why and how we refactor the :class:`jina.drivers.BaseDriver` and mak
 Rationale
 ---------
 
-In the current implementation, the driver config is placed separately from the executor config. They are connected through CLI parameters ``--driver_yaml_path`` and ``--driver_group`` on the Pea’s level.
+In the current implementation, the driver config is placed separately from the executor config. They are connected through CLI parameters ``--uses`` and ``--driver_group`` on the Pea’s level.
 
 This poses multiple problems such as:
 
@@ -252,8 +252,8 @@ Backwards Compatibility
 -----------------------
 
 - The old :mod:`jina.drivers` module is essentially removed.
-- The Pod arguments ``--driver_yaml_path`` and ``driver_group`` are removed. Flow interface is also affected.
-- The Pod arguments ``--exec_yaml_path`` is renamed to ``yaml_path`` as now the Pod only needs one YAML config file.
+- The Pod arguments ``--uses`` and ``driver_group`` are removed. Flow interface is also affected.
+- The Pod arguments ``--uses`` is renamed to ``yaml_path`` as now the Pod only needs one YAML config file.
 - :file:`resources/drivers.default.yml` is kept only for references, it is not used in any Python code anymore. This file is expected to be removed in the future release.
 - A solely driver-powered ``Pea`` such as :func:`route`, :func:`merge`, :func:`clear` are now implemented with :file:`resources/executors.route.yml`, :file:`resources/executors.merge.yml` and :file:`resources/executors.clear.yml`. The Pod arguments  ``--yaml_path`` is also adapted to accept ``route``,  ``merge``,  ``clear`` as shortcuts.
 
