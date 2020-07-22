@@ -33,8 +33,9 @@ class SliceQL(BaseRecursiveDriver):
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
             pass
         else:
-            del docs[:self.start]
             del docs[self.end:]
+            del docs[:self.start]
+
 
 
 class SliceMatchesQL(SliceQL):
@@ -42,8 +43,8 @@ class SliceMatchesQL(SliceQL):
         if self.start <= 0 and (self.end is None or self.end >= len(doc.matches)):
             pass
         else:
-            del doc.matches[:self.start]
             del doc.matches[self.end:]
+            del doc.matches[:self.start]
 
     def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         pass
