@@ -1,6 +1,3 @@
-codecov:
-  max_report_age: off
-
 coverage:
   status:
     project:
@@ -11,7 +8,5 @@ coverage:
     layout: "reach, diff, flags, files"
     behavior: default
     require_changes: false  # if true: only post the comment if coverage changes
-    require_base: no        # [yes :: must have a base report to post]
-    require_head: no        # [yes :: must have a head report to post]
     branches:               # branch names that can post comment
       - "master"

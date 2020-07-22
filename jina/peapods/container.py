@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .pea import BasePea
 from .. import __ready_msg__
-from ..helper import valid_yaml_path, kwargs2list, get_non_defaults_args
+from ..helper import valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import get_logger
 
 
@@ -40,7 +40,7 @@ class ContainerPea(BasePea):
                 # uses takes value from uses_internal
                 non_defaults['uses'] = '/' + os.path.basename(self.args.uses_internal)
                 _volumes[os.path.abspath(self.args.uses_internal)] = {'bind': non_defaults['uses'], 'mode': 'ro'}
-            elif not valid_yaml_path(self.args.uses_internal):
+            elif not valid_local_config_source(self.args.uses_internal):
                 raise FileNotFoundError(f'yaml_path {self.args.uses_internal} is not like a path, please check it')
         if self.args.volumes:
             for p in self.args.volumes:

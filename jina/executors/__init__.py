@@ -18,7 +18,7 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, PathImporter, expand_dict, expand_env_var, valid_yaml_path
+from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_valid_local_config_source
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 
@@ -369,7 +369,7 @@ class BaseExecutor(metaclass=ExecutorType):
         return True
 
     @classmethod
-    def load_config(cls: Type[AnyExecutor], filename: Union[str, TextIO], separated_workspace: bool = False,
+    def load_config(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
                     replica_id: int = 0) -> AnyExecutor:
         """Build an executor from a YAML file.
 
@@ -379,10 +379,10 @@ class BaseExecutor(metaclass=ExecutorType):
         :param replica_id: the id of the storage of this replica, only effective when ``separated_workspace=True``
         :return: an executor object
         """
-        if not filename: raise FileNotFoundError
-        filename = valid_yaml_path(filename)
+        if not source: raise FileNotFoundError
+        source = get_valid_local_config_source(source)
         # first scan, find if external modules are specified
-        with (open(filename, encoding='utf8') if isinstance(filename, str) else filename) as fp:
+        with (open(source, encoding='utf8') if isinstance(source, str) else source) as fp:
             # ignore all lines start with ! because they could trigger the deserialization of that class
             safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
             tmp = yaml.load(safe_yml)
@@ -398,7 +398,7 @@ class BaseExecutor(metaclass=ExecutorType):
                         mod = [mod]
 
                     if isinstance(mod, list):
-                        mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(filename), m) for m in mod]
+                        mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(source), m) for m in mod]
                         PathImporter.add_modules(*mod)
                     else:
                         raise TypeError(f'{type(mod)!r} is not acceptable, only str or list are acceptable')
@@ -407,7 +407,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 tmp['metas']['replica_id'] = replica_id
 
             else:
-                raise EmptyExecutorYAML(f'{filename} is empty? nothing to read from there')
+                raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')
 
             tmp = expand_dict(tmp)
             stream = StringIO()

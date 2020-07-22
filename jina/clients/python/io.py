@@ -45,12 +45,15 @@ def input_files(patterns: Union[str, List[str]], recursive: bool = True,
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
     :param recursive: If recursive is true, the pattern '**' will match any files and
-                zero or more directories and subdirectories.
+                zero or more directories and subdirectories
     :param size: the maximum number of the files
     :param sampling_rate: the sampling rate between [0, 1]
     :param read_mode: specifies the mode in which the file
-            is opened. 'r' for reading in text mode, 'rb' for reading in binary
+            is opened. 'r' for reading in text mode, 'rb' for reading in binary mode.
+            If `read_mode` is None, will iterate over filenames
     """
+    if read_mode not in {'r', 'rb', None}:
+        raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
 
     def iter_file_exts(ps):
         return it.chain.from_iterable(glob.iglob(p, recursive=recursive) for p in ps)

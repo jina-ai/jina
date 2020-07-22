@@ -62,7 +62,8 @@ def build_required(required_level: 'FlowBuildLevel'):
     return __build_level
 
 
-def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]], func: Callable[['Flow', str, str], None]) -> 'Flow':
+def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
+                    func: Callable[['Flow', str, str], None]) -> 'Flow':
     _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
     stack = deque()
     stack.append('gateway')
@@ -108,29 +109,33 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
     def _optimize_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
         start_node = flow._pod_nodes[start_node_name]
         end_node = flow._pod_nodes[end_node_name]
-        edges_with_same_start = [ed for ed in pod_edges if ed.startswith(start_node_name)]
-        edges_with_same_end = [ed for ed in pod_edges if ed.endswith(end_node_name)]
+        edges_with_same_start = [ed for ed in pod_edges if ed[0].startswith(start_node_name)]
+        edges_with_same_end = [ed for ed in pod_edges if ed[1].endswith(end_node_name)]
         if len(edges_with_same_start) > 1 or len(edges_with_same_end) > 1:
             flow.logger.info(f'Connection between {start_node_name} and {end_node_name} cannot be optimized')
         else:
-            if end_node.is_head_router and start_node_name == 'gateway':
-                flow.logger.info(
-                    f'Node {end_node_name} connects to tail of {start_node_name}')
-                end_node.connect_to_tail_of(start_node)
-            elif start_node.is_tail_router and end_node_name == 'gateway' and start_node.tail_args.num_part <= 1:
-                # connect gateway directly to peas only if this is unblock router
-                # as gateway can not block & reduce message
-                flow.logger.info(
-                    f'Node {start_node_name} connects to head of {end_node_name}')
-                start_node.connect_to_head_of(end_node)
-            elif end_node.is_head_router and not start_node.is_tail_router:
-                flow.logger.info(
-                    f'Node {end_node_name} connects to tail of {start_node_name}')
-                end_node.connect_to_tail_of(start_node)
-            elif start_node.is_tail_router and start_node.tail_args.num_part <= 1:
-                flow.logger.info(
-                    f'Node {start_node_name} connects to head of {end_node_name}')
-                start_node.connect_to_head_of(end_node)
+            if start_node_name == 'gateway':
+                if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and end_node.is_head_router:
+                    flow.logger.info(
+                        f'Node {end_node_name} connects to tail of {start_node_name}')
+                    end_node.connect_to_tail_of(start_node)
+            elif end_node_name == 'gateway':
+                if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and \
+                    start_node.is_tail_router and start_node.tail_args.num_part <= 1:
+                    # connect gateway directly to peas only if this is unblock router
+                    # as gateway can not block & reduce message
+                    flow.logger.info(
+                        f'Node {start_node_name} connects to head of {end_node_name}')
+                    start_node.connect_to_head_of(end_node)
+            else:
+                if end_node.is_head_router and not start_node.is_tail_router:
+                    flow.logger.info(
+                        f'Node {end_node_name} connects to tail of {start_node_name}')
+                    end_node.connect_to_tail_of(start_node)
+                elif start_node.is_tail_router and start_node.tail_args.num_part <= 1:
+                    flow.logger.info(
+                        f'Node {start_node_name} connects to head of {end_node_name}')
+                    start_node.connect_to_head_of(end_node)
 
     if op_flow.args.optimize_level > FlowOptimizeLevel.NONE:
         return _traverse_graph(op_flow, outgoing_map, _optimize_two_connections)
@@ -437,7 +442,7 @@ class Flow:
                 if start not in op_flow._pod_nodes:
                     raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
                 _outgoing_map[start].append(end)
-                _pod_edges.add(Tuple[start, end])
+                _pod_edges.add((start, end))
 
         op_flow = _build_flow(op_flow, _outgoing_map)
         op_flow = _optimize_flow(op_flow, _outgoing_map, _pod_edges)
@@ -648,7 +653,7 @@ class Flow:
         :param size: the maximum number of the files
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
-                is opened. 'r' for reading in text mode, 'rb' for reading in
+                is opened. 'r' for reading in text mode, 'rb' for reading in binary mode
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """

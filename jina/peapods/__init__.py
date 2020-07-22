@@ -6,7 +6,7 @@ from typing import Dict, Union
 from .. import __default_host__
 from ..enums import PeaRoleType
 from ..logging import default_logger
-from ..helper import valid_docker_image
+from ..helper import valid_local_config_source
 
 if False:
     import argparse
@@ -33,7 +33,7 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
     if args.host != __default_host__:
         from .remote import RemotePea
         return RemotePea(args)
-    elif args.uses and valid_docker_image(args.uses):
+    elif args.uses and not valid_local_config_source(args.uses):
         from .container import ContainerPea
         return ContainerPea(args)
     elif args.role == PeaRoleType.HEAD:
