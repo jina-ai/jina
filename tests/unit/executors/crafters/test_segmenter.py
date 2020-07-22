@@ -19,28 +19,22 @@ class DummySegment(BaseSegmenter):
 
 
 class MyTestCase(JinaTestCase):
-    def get_chunk_id(self, req):
-        id = 0
-        for d in req.index.docs:
-            for c in d.chunks:
-                self.assertEqual(c.chunk_id, id)
-                id += 1
-
-    def collect_chunk_id(self, req):
-        chunk_ids = [c.chunk_id for d in req.index.docs for c in d.chunks]
+    def validate(self, req):
+        chunk_ids = [c.id for d in req.index.docs for c in d.chunks]
         self.assertTrue(len(chunk_ids), len(set(chunk_ids)))
+        self.assertTrue(len(chunk_ids), 2)
 
     def test_dummy_seg(self):
         f = Flow().add(yaml_path='DummySegment')
         with f:
-            f.index(input_fn=random_docs(10), output_fn=self.collect_chunk_id)
+            f.index(input_fn=random_docs(10), output_fn=self.validate)
 
     def test_dummy_seg_random(self):
         f = Flow().add(yaml_path=os.path.join(cur_dir, '../../yaml/dummy-seg-random.yml'))
         with f:
-            f.index(input_fn=random_docs(10), output_fn=self.collect_chunk_id)
+            f.index(input_fn=random_docs(10), output_fn=self.validate)
 
     def test_dummy_seg_not_random(self):
         f = Flow().add(yaml_path=os.path.join(cur_dir, '../../yaml/dummy-seg-not-random.yml'))
         with f:
-            f.index(input_fn=random_docs(10), output_fn=self.get_chunk_id)
+            f.index(input_fn=random_docs(10), output_fn=self.validate)

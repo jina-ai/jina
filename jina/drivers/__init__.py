@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Iterator
+from typing import Callable, Tuple, Iterable
 
 import ruamel.yaml.constructor
 
@@ -159,7 +159,83 @@ class BaseDriver(metaclass=DriverType):
         return d
 
 
-class BaseExecutableDriver(BaseDriver):
+class BaseRecursiveDriver(BaseDriver):
+
+    def __init__(self, depth_range: Tuple[int] = (0, 0), order: str = 'post', *args, **kwargs):
+        """
+
+        :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
+        :param order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+        self._depth_start = depth_range[0]
+        self._depth_end = depth_range[1]
+        if order in {'post', 'pre'}:
+            self.recursion_order = order
+        else:
+            raise AttributeError('can only accept oder={"pre", "post"}')
+
+    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        """ Apply function works on each doc, one by one, modify the doc in-place """
+
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        """ Apply function works on a list of docs, modify the docs in-place
+
+        Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
+        """
+
+    def __call__(self, *args, **kwargs):
+        if self.recursion_order == 'post':
+            _wrap = self._postorder_apply
+        elif self.recursion_order == 'pre':
+            _wrap = self._preorder_apply
+        else:
+            raise ValueError(f'{self.recursion_order}')
+
+        if getattr(self, 'prev_reqs', None):
+            for r in self.prev_reqs:
+                _wrap(r.docs, *args, **kwargs)
+        else:
+            _wrap(self.req.docs, *args, **kwargs)
+
+    def _postorder_apply(self, docs, *args, **kwargs):
+        """often useful when you delete a recursive structure """
+
+        def _traverse(_docs):
+            if _docs:
+                for d in _docs:
+                    if d.level_depth < self._depth_end:
+                        _traverse(d.chunks)
+                    if d.level_depth >= self._depth_start:
+                        self.apply(d, *args, **kwargs)
+
+                # check first doc if in the required depth range
+                if _docs[0].level_depth >= self._depth_start:
+                    self.apply_all(_docs, *args, **kwargs)
+
+        _traverse(docs)
+
+    def _preorder_apply(self, docs, *args, **kwargs):
+        """often useful when you grow new structure, e.g. segment """
+
+        def _traverse(_docs):
+            if _docs:
+                # check first doc if in the required depth range
+                if _docs[0].level_depth >= self._depth_start:
+                    self.apply_all(_docs, *args, **kwargs)
+
+                for d in _docs:
+                    if d.level_depth >= self._depth_start:
+                        self.apply(d, *args, **kwargs)
+                    if d.level_depth < self._depth_end:
+                        _traverse(d.chunks)
+
+        _traverse(docs)
+
+
+class BaseExecutableDriver(BaseRecursiveDriver):
     """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.pea.BasePea` and :class:`jina.executors.BaseExecutor`
         It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
         finally it returns the message back to :class:`jina.peapods.pea.BasePea`.

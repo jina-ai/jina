@@ -1,13 +1,12 @@
-import time
 import functools
+import time
 from threading import Thread
 
-import requests
-import pytest
 import numpy as np
-
-from tests import JinaTestCase
+import pytest
+import requests
 from jina.flow import Flow
+from tests import JinaTestCase
 
 concurrency = 10
 
@@ -43,19 +42,19 @@ class MyTestCase(JinaTestCase):
             for t in threads:
                 t.join()
 
-            success = status_codes.count(200)
-            failed = len(status_codes) - success
-            print(
-                f'\nmin roundtrip time: {np.min(durations)}\n',
-                f'max roundtrip time: {np.max(durations)}\n'
-                f'mean roundtrip time: {np.mean(durations)}\n'
-            )
-            self.assertTrue(success >= 1)
-            # In some slow environments, a certain degree of failed
-            # requests will occur. Here we limit the degree of failed
-            # requests.
-            rate = failed / success
-            self.assertTrue(rate < 0.1)
+        success = status_codes.count(200)
+        failed = len(status_codes) - success
+        print(
+            f'\nmin roundtrip time: {np.min(durations)}\n',
+            f'max roundtrip time: {np.max(durations)}\n'
+            f'mean roundtrip time: {np.mean(durations)}\n'
+        )
+        self.assertTrue(success >= 1)
+        # In some slow environments, a certain degree of failed
+        # requests will occur. Here we limit the degree of failed
+        # requests.
+        rate = failed / success
+        self.assertTrue(rate < 0.1)
 
     @pytest.mark.skip('this tests hang up for unknown reason on github')
     def test_grpc_gateway_concurrency(self):
@@ -98,16 +97,16 @@ class MyTestCase(JinaTestCase):
             for t in threads:
                 t.join()
 
-            success = status_codes.count(0)
-            failed = len(status_codes) - success
-            print(
-                f'\nmin roundtrip time: {np.min(durations)}\n',
-                f'max roundtrip time: {np.max(durations)}\n'
-                f'mean roundtrip time: {np.mean(durations)}\n'
-            )
-            self.assertTrue(success >= 1)
-            # In some slow environments, a certain degree of failed
-            # requests will occur. Here we limit the degree of failed
-            # requests.
-            rate = failed / success
-            self.assertTrue(rate < 0.1)
+        success = status_codes.count(0)
+        failed = len(status_codes) - success
+        print(
+            f'\nmin roundtrip time: {np.min(durations)}\n',
+            f'max roundtrip time: {np.max(durations)}\n'
+            f'mean roundtrip time: {np.mean(durations)}\n'
+        )
+        self.assertTrue(success >= 1)
+        # In some slow environments, a certain degree of failed
+        # requests will occur. Here we limit the degree of failed
+        # requests.
+        rate = failed / success
+        self.assertTrue(rate < 0.1)

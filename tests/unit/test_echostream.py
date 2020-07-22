@@ -33,7 +33,7 @@ class MyTestCase(JinaTestCase):
             req = jina_pb2.Request()
             req.request_id = 1
             d = req.index.docs.add()
-            d.doc_id = 2
+            d.id = 2
             msg = add_envelope(req, 'tmp', '')
             z.send_message(msg)
 

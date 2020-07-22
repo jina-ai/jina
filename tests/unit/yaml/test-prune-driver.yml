@@ -2,10 +2,10 @@
 requests:
   on:
     IndexRequest:
-      - !PruneDriver
+      - !ExcludeQL
         with:
-          level: chunk
-          pruned:
+          depth_range: [0, 1]  # prune root and 1st level
+          fields:
             - buffer
             - blob
             - text

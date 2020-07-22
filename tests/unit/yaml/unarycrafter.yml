@@ -1,9 +1,0 @@
-!BaseExecutor
-metas:
-  name: test_crafter
-requests:
-  on:
-    [IndexRequest, SearchRequest]:
-      - !UnarySegmentDriver {}
-    ControlRequest:
-      - !ControlReqDriver {}

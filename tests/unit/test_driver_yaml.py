@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
@@ -85,8 +85,7 @@ class MyTestCase(JinaTestCase):
         from jina.executors.encoders import BaseEncoder
         from jina.executors.indexers import BaseIndexer
         from jina.executors.rankers import Chunk2DocRanker
-        from jina.executors.crafters import BaseDocCrafter
-        from jina.executors.crafters import BaseChunkCrafter
+        from jina.executors.crafters import BaseCrafter
 
         class D1(BaseEncoder):
             pass
@@ -106,13 +105,13 @@ class MyTestCase(JinaTestCase):
         d3 = D3()
         self.assertEqual(len(d3._drivers), 2)
 
-        class D4(BaseDocCrafter):
+        class D4(BaseCrafter):
             pass
 
         d4 = D4()
         self.assertEqual(len(d4._drivers), 4)
 
-        class D5(BaseChunkCrafter):
+        class D5(BaseCrafter):
             pass
 
         d5 = D5()

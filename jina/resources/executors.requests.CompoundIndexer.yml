@@ -3,10 +3,9 @@ on:
     - !VectorSearchDriver
       with:
         executor: BaseVectorIndexer
-    - !PruneDriver
+    - !ExcludeQL
       with:
-        level: chunk
-        pruned:
+        fields:
           - embedding
           - buffer
           - blob
@@ -14,22 +13,19 @@ on:
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
-        level: chunk
   IndexRequest:
     - !VectorIndexDriver
       with:
         executor: BaseVectorIndexer
-    - !PruneDriver
+    - !ExcludeQL
       with:
-        level: chunk
-        pruned:
+        fields:
           - embedding
           - buffer
           - blob
           - text
     - !KVIndexDriver
       with:
-        level: chunk
         executor: BaseKVIndexer
   ControlRequest:
     - !ControlReqDriver {}

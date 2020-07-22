@@ -1,8 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Iterable
+
 from . import BaseExecutableDriver
-from .helper import extract_chunks, array2pb
+from .helper import extract_docs, array2pb
+
+if False:
+    from ..proto import jina_pb2
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
@@ -16,10 +21,9 @@ class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
-    def __call__(self, *args, **kwargs):
-        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_chunks(self.req.docs,
-                                                                           self.req.filter_by,
-                                                                           embedding=False)
+    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
+                                                                         embedding=False)
 
         if no_chunk_docs:
             self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
@@ -41,6 +45,7 @@ class UnaryEncodeDriver(EncodeDriver):
     """The :class:`UnaryEncodeDriver` extracts the chunk-level content from documents and copies
         the same content to the embedding
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._method_name = None

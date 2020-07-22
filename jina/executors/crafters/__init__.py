@@ -33,38 +33,6 @@ class BaseCrafter(BaseExecutor):
         raise NotImplementedError
 
 
-class BaseChunkCrafter(BaseCrafter):
-    """:class:`BaseChunkCrafter` works on chunk-level and returns new value on chunk-level.
-
-    The example below shows a dummy transformer add ``doc_id`` to the ``chunk_id`` and use it as the new ``chunk_id``.
-
-    .. highlight:: python
-    .. code-block:: python
-
-        class DummyTransformer(BaseDocCrafter):
-            def craft(chunk_id, doc_id):
-                return {'chunk_id': doc_id + chunk_id}
-
-    """
-    pass
-
-
-class BaseDocCrafter(BaseCrafter):
-    """:class:`BaseDocCrafter` works on doc-level and returns new value on doc-level.
-
-    The example below shows a dummy transformer add one to the ``doc_id`` and use it as the new ``doc_id``.
-
-    .. highlight:: python
-    .. code-block:: python
-
-        class DummyTransformer(BaseDocCrafter):
-            def craft(chunk_id, doc_id):
-                return {'doc_id': doc_id + 1}
-
-    """
-    pass
-
-
 class BaseSegmenter(BaseCrafter):
     """:class:`BaseSegmenter` works on doc-level,
         it receives value on the doc-level and returns new value on the chunk-level """

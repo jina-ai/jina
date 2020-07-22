@@ -2,6 +2,18 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    - !ChunkPruneDriver {}  # embedding info on chunk is used and no need anymore
-    - !Chunk2DocRankDriver {}
-    - !TopKFilterDriver {}
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+          - buffer
+          - blob
+          - text
+    - !SortMatchesQL
+      with:
+        field: 'score.value'
+    - !SliceMatchesQL
+      with:
+        depth_range: [0, 1]  # prune root and 1st level
+        start: 0
+        end: 50

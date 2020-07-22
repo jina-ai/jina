@@ -33,17 +33,14 @@ class ImageResizer(ImageChunkCrafter):
             raise ValueError(f'output_dim {target_size} should be an integer')
         self.how = how
 
-    def craft(self, blob: 'np.ndarray', chunk_id: int, doc_id: int, *args, **kwargs) -> Dict:
+    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
         Resize the image array to the given size.
 
         :param blob: the ndarray of the image
-        :param chunk_id: the chunk id
-        :param doc_id: the doc id
         :return: a chunk dict with the cropped image
         """
         raw_img = self.load_image(blob)
         _img = self._resize_short(raw_img, self.output_dim, self.how)
         img = self.restore_channel_axis(np.asarray(_img))
-        return dict(
-            doc_id=doc_id, offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, weight=1., blob=img.astype('float32'))

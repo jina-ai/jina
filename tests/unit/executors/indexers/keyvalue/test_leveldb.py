@@ -13,7 +13,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class MyTestCase(JinaTestCase):
     def _create_Document(self, doc_id, text, weight, length):
         d = jina_pb2.Document()
-        d.doc_id = doc_id
+        d.id = doc_id
         d.buffer = text.encode('utf8')
         d.weight = weight
         d.length = length
@@ -34,7 +34,7 @@ class MyTestCase(JinaTestCase):
 
         with BaseIndexer.load(save_abspath) as searcher:
             doc = searcher.query('d2')
-            self.assertEqual(doc.doc_id, 2)
+            self.assertEqual(doc.id, 2)
             self.assertEqual(doc.length, 3)
 
         self.add_tmpfile(save_abspath, index_abspath)

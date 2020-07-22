@@ -4,7 +4,6 @@ on:
   SearchRequest:
     - !KVSearchDriver {}
   IndexRequest:
-    - !Buffer2URI {}
     - !ExcludeQL
       with:
         fields:

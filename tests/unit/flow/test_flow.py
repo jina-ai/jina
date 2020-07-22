@@ -1,10 +1,10 @@
 import os
 import time
 import unittest
-import pytest
-
-import requests
 from time import sleep
+
+import pytest
+import requests
 
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel, SocketType
@@ -14,33 +14,9 @@ from jina.main.parser import set_pea_parser, set_ping_parser
 from jina.main.parser import set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
-from jina.proto import jina_pb2
-from tests import JinaTestCase
+from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def random_docs(num_docs, chunks_per_doc=5):
-    c_id = 0
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            c.chunk_id = c_id
-            c.doc_id = j
-            c_id += 1
-        d.meta_info = b'hello world'
-        yield d
-
-
-def random_queries(num_docs, chunks_per_doc=5):
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        for k in range(chunks_per_doc):
-            dd = d.topk_results.add()
-            dd.match_doc.doc_id = k
-        yield d
 
 
 class FlowTestCase(JinaTestCase):
@@ -303,40 +279,6 @@ class FlowTestCase(JinaTestCase):
         self.add_tmpfile('test-docshard-tmp')
         time.sleep(2)
 
-    def test_shards_insufficient_data(self):
-        """THIS IS SUPER IMPORTANT FOR TESTING SHARDS
-
-        IF THIS FAILED, DONT IGNORE IT, DEBUG IT
-        """
-        index_docs = 3
-        replicas = 4
-
-        def validate(req):
-            self.assertEqual(len(req.docs), 1)
-            self.assertEqual(len(req.docs[0].topk_results), index_docs)
-
-            for d in req.docs[0].topk_results:
-                self.assertTrue(hasattr(d.match_doc, 'weight'))
-                self.assertIsNotNone(d.match_doc.weight)
-                self.assertEqual(d.match_doc.meta_info, b'hello world')
-
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=replicas,
-                       separated_workspace=True)
-        with f:
-            f.index(input_fn=random_docs(index_docs), random_doc_id=False)
-
-        time.sleep(2)
-        with f:
-            pass
-        time.sleep(2)
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=replicas,
-                       separated_workspace=True, polling='all', reducing_yaml_path='_merge_topk_docs')
-        with f:
-            f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
-                     callback_on_body=True)
-        time.sleep(2)
-        self.add_tmpfile('test-docshard-tmp')
-
     def test_py_client(self):
         f = (Flow().add(name='r1', yaml_path='_forward')
              .add(name='r2', yaml_path='_forward')
@@ -540,38 +482,18 @@ class FlowTestCase(JinaTestCase):
 
         self.add_tmpfile('doc.gzip')
 
-    def test_flow_with_unary_segment_driver(self):
+    def test_flow_with_publish_driver(self):
 
-        f = (Flow().add(name='r1', yaml_path=os.path.join(cur_dir, '../yaml/unarycrafter.yml'))
+        f = (Flow()
              .add(name='r2', yaml_path='!OneHotTextEncoder')
-             .add(name='r3', yaml_path='!OneHotTextEncoder', needs='r1')
+             .add(name='r3', yaml_path='!OneHotTextEncoder', needs='gateway')
              .join(needs=['r2', 'r3']))
 
         def validate(req):
             for d in req.docs:
-                self.assertEqual(d.length, 1)
+                self.assertIsNotNone(d.embedding)
 
         with f:
-            node = f._pod_nodes['gateway']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
-
-            node = f._pod_nodes['r1']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
-
-            node = f._pod_nodes['r2']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
-
-            node = f._pod_nodes['r3']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
-
-            for name, node in f._pod_nodes.items():
-                self.assertEqual(node.peas_args['peas'][0], node.head_args)
-                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
-
             f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on_body=True)
 
 

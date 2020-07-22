@@ -3,21 +3,10 @@ with:
   logserver: $WITH_LOGSERVER
   compress_hwm: 1024
 pods:
-  chunk_seg:
-    yaml_path: $RESOURCE_DIR/helloworld.crafter.yml
-    replicas: $REPLICAS
-    read_only: true
-  doc_idx:
-    yaml_path: $RESOURCE_DIR/helloworld.indexer.doc.yml
   encode:
     yaml_path: $RESOURCE_DIR/helloworld.encoder.yml
-    needs: chunk_seg
     replicas: $REPLICAS
-  chunk_idx:
-    yaml_path: $RESOURCE_DIR/helloworld.indexer.chunk.yml
+  index:
+    yaml_path: $RESOURCE_DIR/helloworld.indexer.yml
     replicas: $SHARDS
     separated_workspace: true
-  join_all:
-    yaml_path: _merge
-    needs: [doc_idx, chunk_idx]
-    read_only: true

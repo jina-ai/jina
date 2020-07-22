@@ -4,38 +4,24 @@ import time
 import unittest
 
 import numpy as np
-from jina.drivers.helper import array2pb
+
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from jina.flow import Flow
 from jina.main.parser import set_flow_parser
 from jina.proto import jina_pb2
-from tests import JinaTestCase
+from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-    c_id = 0
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
-            c.chunk_id = c_id
-            c.doc_id = j
-            c_id += 1
-        yield d
 
 
 def get_result(resp):
     n = []
     for d in resp.search.docs:
-        for c in d.chunks:
-            n.append([k.match_chunk.chunk_id for k in c.topk_results])
+        n.append([k.match.id for k in d.matches])
     n = np.array(n)
-    # each chunk should return a list of top-100
-    np.testing.assert_equal(n.shape[0], 5)
+    # each doc should return a list of top-100
+    np.testing.assert_equal(n.shape[0], 2)
     np.testing.assert_equal(n.shape[1], 100)
 
 
@@ -174,26 +160,14 @@ class MyTestCase(JinaTestCase):
 
         time.sleep(3)
         with f:
-            f.search(input_fn=random_docs(1), output_fn=get_result, top_k=100)
+            f.search(input_fn=random_docs(2), output_fn=get_result, top_k=100)
 
     def test_chunk_joint_idx(self):
         f = Flow().add(yaml_path=os.path.join(cur_dir, 'yaml/test-joint.yml'))
 
-        def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-            c_id = 0
-            for j in range(num_docs):
-                d = jina_pb2.Document()
-                for k in range(chunks_per_doc):
-                    c = d.chunks.add()
-                    c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
-                    c.chunk_id = c_id
-                    c.doc_id = j
-                    c_id += 1
-                yield d
-
         def validate(req, indexer_name):
             self.assertTrue(req.status.code < jina_pb2.Status.ERROR)
-            self.assertEqual(req.search.docs[0].chunks[0].topk_results[0].score.op_name, indexer_name)
+            self.assertEqual(req.search.docs[0].matches[0].score.op_name, indexer_name)
 
         with f:
             f.index(random_docs(100))
@@ -207,6 +181,8 @@ class MyTestCase(JinaTestCase):
 
         with g:
             g.search(random_docs(10), output_fn=lambda x: validate(x, 'AnnoyIndexer'))
+
+        self.add_tmpfile('vec.gz', 'vecidx.bin', 'chunk.gz', 'chunkidx.bin')
 
 
 if __name__ == '__main__':

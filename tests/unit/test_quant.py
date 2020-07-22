@@ -1,7 +1,8 @@
 import os
 
-import pytest
 import numpy as np
+import pytest
+
 from jina.drivers.helper import array2pb, pb2array
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -23,8 +24,8 @@ def random_docs():
             c = d.chunks.add()
             # force sending at non-quantization
             c.embedding.CopyFrom(array2pb(np.random.random([embed_dim]), quantize=None))
-            c.chunk_id = c_id
-            c.doc_id = j
+            c.id = c_id
+            c.id = j
             c_id += 1
         yield d
 
@@ -62,7 +63,6 @@ class MyTestCase(JinaTestCase):
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
 
-    @pytest.mark.skip('this tests hang up for unknown reason on github')
     def test_quant(self):
         for j in ('fp32', 'fp16', 'uint8'):
             self.f1(j)

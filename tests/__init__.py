@@ -4,6 +4,11 @@ import sys
 import unittest
 from os.path import dirname
 
+import numpy as np
+
+from jina.drivers.helper import array2pb
+from jina.proto import jina_pb2
+
 
 class JinaTestCase(unittest.TestCase):
 
@@ -25,3 +30,20 @@ class JinaTestCase(unittest.TestCase):
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(dirname(file_dir))
+
+
+def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
+    c_id = 0
+    for j in range(num_docs):
+        d = jina_pb2.Document()
+        d.id = j
+        d.meta_info = b'hello world'
+        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+        for k in range(chunks_per_doc):
+            c = d.chunks.add()
+            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+            c.id = c_id
+            c.parent_id = j
+            c_id += 1
+        yield d

@@ -8,4 +8,10 @@ requests:
       - !EncodeDriver
         with:
           method: encode
-      - !ChunkPruneDriver {}
+      - !ExcludeQL
+        with:
+          fields:
+            - embedding
+            - buffer
+            - blob
+            - text
