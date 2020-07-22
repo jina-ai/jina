@@ -54,8 +54,8 @@ def export_api(args):
     from .. import __version__
     from ..logging import default_logger
 
-    if args.uses:
-        for yp in args.uses:
+    if args.yaml_path:
+        for yp in args.yaml_path:
             f_name = (yp % __version__) if '%s' in yp else yp
             from ..helper import yaml
             with open(f_name, 'w', encoding='utf8') as fp:
@@ -79,14 +79,14 @@ def hello_world(args):
 def flow(args):
     """Start a Flow from a YAML file or a docker image"""
     from ..flow import Flow
-    if args.uses:
+    if args.yaml_path:
         f = Flow.load_config(args.uses)
         f._update_args(args)
         with f:
             f.block()
     else:
         from jina.logging import default_logger
-        default_logger.critical('start a flow from CLI requires a valid "--uses"')
+        default_logger.critical('start a flow from CLI requires a valid "--yaml-path"')
 
 
 def hub(args):

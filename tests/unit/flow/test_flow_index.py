@@ -38,7 +38,7 @@ class FlowTestCase(JinaTestCase):
                 self.assertIsNotNone(d.match.weight)
                 self.assertEqual(d.match.meta_info, b'hello world')
 
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=replicas,
+        f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=replicas,
                        separated_workspace=True)
         with f:
             f.index(input_fn=random_docs(index_docs), random_doc_id=False)
@@ -47,7 +47,7 @@ class FlowTestCase(JinaTestCase):
         with f:
             pass
         time.sleep(2)
-        f = Flow().add(name='doc_pb', yaml_path=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=replicas,
+        f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), replicas=replicas,
                        separated_workspace=True, polling='all', reducing_yaml_path='_merge_all')
         with f:
             f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
