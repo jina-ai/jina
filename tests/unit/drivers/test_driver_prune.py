@@ -24,13 +24,13 @@ def input_fn():
     yield d
 
 
-class MyTestCase(JinaTestCase):
+class PruneDriverTestCase(JinaTestCase):
 
     def test_prune_driver(self):
         f = (
             Flow().add(
                 name='prune',
-                uses=os.path.join(cur_dir, 'yaml/test-prune-driver.yml')))
+                uses=os.path.join(cur_dir, '../yaml/test-prune-driver.yml')))
 
         def test_pruned(resp):
             for d in resp.docs:

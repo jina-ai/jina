@@ -80,7 +80,7 @@ In YAML
        rest_api: true
 
 And then either load it in Python via ``Flow.load_config('my.yml')`` or
-via CLI: ``jina flow --uses my.yml``
+via CLI: ``jina flow --yaml-path my.yml``
 
 In gateway's CLI (advanced)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

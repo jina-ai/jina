@@ -22,7 +22,6 @@ class SplitterPea(BasePea):
         self.executor = BaseExecutor.load_config('_splitroute')
         self.executor.attach(pea=self)
 
-
     def handle(self) -> 'BasePea':
         # TODO: Once output message is assigned at driver level, this handle can disappear
         """Call the executor to handle this message if its envelope's status is not ERROR, else skip handling of message.

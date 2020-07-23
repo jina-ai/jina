@@ -4,12 +4,12 @@ with:
 pods:
   crafter:
     uses: yaml/craft.yml
-    replicas: 4
+    parallel: 4
   encoder:
     uses: yaml/encode.yml
-    replicas: 4
+    parallel: 4
   faiss_indexer:
-    replicas: 1
+    parallel: 1
     timeout_ready: 10000
     uses: yaml/index-chunk.yml
     volumes: './workspace'

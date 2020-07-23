@@ -117,9 +117,9 @@ def set_hw_parser(parser=None):
     gp.add_argument('--shards', type=int,
                     default=2,
                     help='number of shards when index and query')
-    gp.add_argument('--replicas', type=int,
+    gp.add_argument('--parallel', type=int,
                     default=2,
-                    help='number of replicas when index and query')
+                    help='number of parallel when index and query')
     gp = add_arg_group(parser, 'index arguments')
     gp.add_argument('--index-uses', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
@@ -154,7 +154,7 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
     from pkg_resources import resource_filename
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
@@ -249,7 +249,7 @@ def set_pea_parser(parser=None):
                           'dump_interval will be ignored')
     gp3.add_argument('--separated-workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
-                          'only effective when BasePod\'s `replicas` > 1')
+                          'only effective when BasePod\'s `parallel` > 1')
     gp3.add_argument('--replica-id', type=int, default=-1,
                      help='the id of the storage of this replica, only effective when `separated_workspace=True`')
 
@@ -309,8 +309,8 @@ def set_pod_parser(parser=None):
     set_pea_parser(parser)
 
     gp4 = add_arg_group(parser, 'pod replica arguments')
-    gp4.add_argument('--replicas', type=int, default=1,
-                     help='number of parallel peas in the pod running at the same time (i.e. replicas), '
+    gp4.add_argument('--parallel', '--shards', type=int, default=1,
+                     help='number of parallel peas in the pod running at the same time, '
                           '`port_in` and `port_out` will be set to random, '
                           'and routers will be added automatically when necessary')
     gp4.add_argument('--polling', type=PollingType.from_string, choices=list(PollingType),
@@ -321,7 +321,7 @@ def set_pod_parser(parser=None):
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
     gp4.add_argument('--uses-reducing', type=str, default='_merge',
-                     help='the executor used for reducing the result from all replicas, '
+                     help='the executor used for reducing the result from all parallel, '
                           'accepted type follows "--uses"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')

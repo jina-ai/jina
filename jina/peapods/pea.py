@@ -173,6 +173,10 @@ class BasePea(metaclass=PeaMeta):
         """Get the output protobuf messages to be sent"""
         return self._messages_out
 
+    @messages_out.setter
+    def messages_out(self, value):
+        self._messages_out = value
+
     @property
     def request_type(self) -> str:
         return self._request.__class__.__name__
@@ -415,3 +419,5 @@ class BasePea(metaclass=PeaMeta):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+

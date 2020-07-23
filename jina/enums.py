@@ -26,13 +26,13 @@ To use these enums in YAML config, following the example below:
 
       chunk_idx:
         uses: index/chunk.yml
-        replicas: $REPLICAS
+        parallel: $PARALLEL
         separated_workspace: true
-        replicas_type: !PollingType ANY
+        parallel_type: !PollingType ANY
         # or
-        replicas_type: ANY
+        parallel_type: ANY
         # or
-        replicas_type: any
+        parallel_type: any
 """
 
 from enum import IntEnum, EnumMeta

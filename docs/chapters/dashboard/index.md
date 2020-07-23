@@ -66,7 +66,7 @@ with f:
 <td>
 
 ```bash
-jina flow --logserver --uses myflow.yml
+jina flow --logserver --yaml-path myflow.yml
 ```
 
 

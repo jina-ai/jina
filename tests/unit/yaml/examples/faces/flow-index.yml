@@ -4,24 +4,24 @@ metas:
 pods:
   loader:
     uses: yaml/craft-load.yml
-    replicas: 4
+    parallel: 4
     read_only: true
   flipper:
     uses: yaml/craft-flip.yml
-    replicas: 4
+    parallel: 4
     read_only: true
   normalizer:
     uses: yaml/craft-normalize.yml
-    replicas: 4
+    parallel: 4
     read_only: true
   encoder:
     image: yaml/encoder.yml
-    replicas: 4
+    parallel: 4
     timeout_ready: 600000
     read_only: true
   chunk_indexer:
     uses: yaml/index-chunk.yml
-    replicas: 1
+    parallel: 1
     separated_workspace: true
   doc_indexer:
     uses: yaml/index-doc.yml

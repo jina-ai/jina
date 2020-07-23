@@ -80,7 +80,7 @@ class MyTestCase(JinaTestCase):
         t.start()
 
         f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'),
-                       replicas=3, separated_workspace=True,
+                       parallel=3, separated_workspace=True,
                        host='localhost', port_expose=f_args.port_expose)
 
         with f:
@@ -105,7 +105,7 @@ class MyTestCase(JinaTestCase):
 
         f = (Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY)
              .add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'),
-                  replicas=3, separated_workspace=True,
+                  parallel=3, separated_workspace=True,
                   host='192.168.31.76', port_expose=44444))
 
         with f:

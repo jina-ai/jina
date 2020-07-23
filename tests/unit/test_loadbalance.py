@@ -29,7 +29,7 @@ class MyTestCase(JinaTestCase):
         f = Flow(runtime='process').add(
             name='sw',
             uses='SlowWorker',
-            replicas=10)
+            parallel=10)
         with f:
             f.index(input_fn=random_docs(100), batch_size=10)
 
@@ -37,6 +37,6 @@ class MyTestCase(JinaTestCase):
         f = Flow(runtime='process').add(
             name='sw',
             uses='SlowWorker',
-            replicas=10, scheduling=SchedulerType.ROUND_ROBIN)
+            parallel=10, scheduling=SchedulerType.ROUND_ROBIN)
         with f:
             f.index(input_fn=random_docs(100), batch_size=10)

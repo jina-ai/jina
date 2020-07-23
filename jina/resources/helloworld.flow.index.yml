@@ -4,9 +4,9 @@ with:
   compress_hwm: 1024
 pods:
   encode:
-    yaml_path: $RESOURCE_DIR/helloworld.encoder.yml
-    replicas: $REPLICAS
+    uses: $RESOURCE_DIR/helloworld.encoder.yml
+    parallel: $PARALLEL
   index:
-    yaml_path: $RESOURCE_DIR/helloworld.indexer.yml
-    replicas: $SHARDS
+    uses: $RESOURCE_DIR/helloworld.indexer.yml
+    shards: $SHARDS
     separated_workspace: true
