@@ -90,3 +90,68 @@ class RouteDriver(ControlReqDriver):
             raise NoExplicitMessage
         else:
             super().__call__(*args, **kwargs)
+
+
+class SplitRouteDriver(ControlReqDriver):
+    """This driver forward in a load balanced way, messages to different peas, depending on the
+    requested mode_id.
+
+    For simplicity, let's assume that only one dealer at the same can be requesting messages from a `mode_id`.
+
+    It splits the incoming message into different output messages to group documents by `mode_id`
+    """
+
+    def __init__(self, num_modes: int = 1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.num_modes = num_modes
+        self.idle_dealer_ids = [None] * num_modes
+        self.is_pollin_paused = False
+        self.mode_idx_map = {}
+
+    def split_message_by_mode_id(self):
+        # clear messages from old processing
+        self.output_msgs.clear()
+        self.output_msgs = [self.processing_msg] * self.num_modes # the basis of the message is the same
+        for mode_id in range(self.num_modes):
+            self.output_msgs[mode_id].req.docs.clear()
+
+        msg = self.processing_msg
+        msg.req.docs.clear()
+        for doc in self.req.docs:
+            self.output_msgs[doc.mode_id].req.docs.append(doc)
+
+
+    def __call__(self, *args, **kwargs):
+        if is_data_request(self.req):
+            self.split_message_by_mode_id()
+            for mode_id, message in enumerate(self.output_msgs):
+                # TODO: Consider case where message is missing one or two modes, need a mapping from idx, to mode_id.
+                # TODO: How do we handle synchronization, 2 dealers of different mode_id may consume messages at different rate.
+                if self.idle_dealer_ids[mode_id]:
+                    self.output_msgs[mode_id].envelope.receiver_id = self.idle_dealer_ids[mode_id]
+                    self.idle_dealer_ids[mode_id] = None
+
+            for mode_id in range(self.num_modes):
+                if self.idle_dealer_ids[mode_id] is not None:
+                    break
+            self.pea.zmqlet.pause_pollin()
+            self.is_pollin_paused = True
+        elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
+            mode_id_req = self.req.mode_id
+            if self.idle_dealer_ids[mode_id_req] is not None:
+                raise RuntimeError(f'Should never happen, more than one dealer are expecting'
+                                   f' to receive messages for mode_id {mode_id_req}:'
+                                   f' {self.idle_dealer_ids[mode_id_req]} and {self.envelope.receiver_id}.from.'
+                                   f'You may have defined a Flow where more than one outcoming'
+                                   f' pod is requesting the same mode_id from the same incoming pod')
+
+            self.idle_dealer_ids[mode_id_req] = self.envelope.receiver_id
+            self.logger.debug(f'{self.envelope.receiver_id} is idle and requests documents of mode {mode_id_req}')
+            if self.is_pollin_paused:
+                self.pea.zmqlet.resume_pollin()
+                self.is_pollin_paused = False
+
+            # not nice to raise an Exception for what is an expected behavior
+            raise NoExplicitMessage
+        else:
+            super().__call__(*args, **kwargs)

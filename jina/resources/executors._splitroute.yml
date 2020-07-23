@@ -1,0 +1,8 @@
+!BaseExecutor
+with: {}
+metas:
+  name: split_route
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+      - !SplitRouteDriver {}

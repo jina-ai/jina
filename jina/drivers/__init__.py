@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Tuple, Iterable
+from typing import Callable, Tuple, Iterable, List
 
 import ruamel.yaml.constructor
 
@@ -101,14 +101,22 @@ class BaseDriver(metaclass=DriverType):
         return self.pea.request
 
     @property
-    def msg(self) -> 'jina_pb2.Message':
-        """Get the current request, shortcut to ``self.pea.message``"""
-        return self.pea.message
+    def processing_msg(self) -> 'jina_pb2.Message':
+        """Get the current processing message, shortcut to ``self.pea.message_in``"""
+        return self.pea.message_in
+
+    @property
+    def output_msgs(self) -> List['jina_pb2.Message']:
+        """Get the output messages to send, shortcut to ``self.pea.messages_out``"""
+        return self.pea.messages_out
+
+    @output_msgs.setter
+    def output_msgs(self, value):
+        self.pea.messages_out = value
 
     @property
     def envelope(self) -> 'jina_pb2.Envelope':
-        """Get the current request, shortcut to ``self.pea.message``"""
-        return self.pea.message.envelope
+        return self.processing_msg.envelope
 
     @property
     def logger(self) -> 'logging.Logger':

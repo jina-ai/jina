@@ -37,7 +37,7 @@ class ReduceDriver(BaseRecursiveDriver):
     def __call__(self, *args, **kwargs):
         if self.envelope.num_part[-1] > 1:
             req_id = self.envelope.request_id
-            self._pending_msgs[req_id].append(self.msg)
+            self._pending_msgs[req_id].append(self.processing_msg)
             num_req = len(self._pending_msgs[req_id])
 
             self.logger.info(f'collected {num_req}/{self.envelope.num_part[-1]} parts of {type(self.req).__name__}')
@@ -57,8 +57,8 @@ class ReduceDriver(BaseRecursiveDriver):
         """
         # take unique routes by service identity
         routes = {(r.pod + r.pod_id): r for m in self.prev_msgs for r in m.envelope.routes}
-        self.msg.envelope.ClearField('routes')
-        self.msg.envelope.routes.extend(
+        self.processing_msg.envelope.ClearField('routes')
+        self.processing_msg.envelope.routes.extend(
             sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
 
 

@@ -64,7 +64,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
             try:
                 gevent.sleep(0)
                 message = __sse_queue__.get()
-                yield f'data: {message.msg}\n\n'
+                yield f'data: {message.processing_msg}\n\n'
             except EOFError:
                 yield 'LOG ENDS\n\n'
                 break
@@ -74,7 +74,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
             try:
                 gevent.sleep(0)
                 message = __profile_queue__.get()
-                yield f'data: {message.msg}\n\n'
+                yield f'data: {message.processing_msg}\n\n'
             except EOFError:
                 yield 'PROFILE ENDS\n\n'
                 break

@@ -212,7 +212,7 @@ class GatewayPea:
                 with p:
                     self.peapods.append(p)
                     for l in p.log_iterator:
-                        request.log_record = l.msg
+                        request.log_record = l.processing_msg
                         yield request
                 self.peapods.remove(p)
             else:

@@ -8,7 +8,7 @@ import threading
 import time
 import traceback
 from queue import Empty
-from typing import Dict, Optional, Union
+from typing import Dict, Union, List
 
 import zmq
 
@@ -122,7 +122,8 @@ class BasePea(metaclass=PeaMeta):
         self._timer = TimeDict()
 
         self._request = None
-        self._message = None
+        self._message_in = None
+        self._messages_out = []
 
         if isinstance(args, argparse.Namespace):
             if args.name:
@@ -143,15 +144,13 @@ class BasePea(metaclass=PeaMeta):
             r += f'({str(self.executor)})'
         return r
 
-    def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
-        """Register the current message to this pea, so that all message-related properties are up-to-date, including
-        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
-        this message if its envelope's  status is not ERROR, else skip handling of message.
-
-        :param msg: the message received
+    def handle(self) -> 'BasePea':
+        """Call the executor to handle this message if its envelope's status is not ERROR, else skip handling of message.
         """
-        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.HANDLE:
+        if self.message_in.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.HANDLE:
             self.executor(self.request_type)
+            # TODO: should this assignment be made at driver level, I THINK SO
+            self._messages_out = [self._message_in]
         return self
 
     @property
@@ -165,9 +164,14 @@ class BasePea(metaclass=PeaMeta):
         return self._request
 
     @property
-    def message(self) -> 'jina_pb2.Message':
+    def message_in(self) -> 'jina_pb2.Message':
         """Get the current protobuf message to be processed"""
-        return self._message
+        return self._message_in
+
+    @property
+    def messages_out(self) -> list('jina_pb2.Message'):
+        """Get the output protobuf messages to be sent"""
+        return self._messages_out
 
     @property
     def request_type(self) -> str:
@@ -223,23 +227,30 @@ class BasePea(metaclass=PeaMeta):
                 self.zmqlet.print_stats()
 
     def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
-        """Pre-hook function, what to do after first receiving the message """
+        """Pre-hook function, what to do after first receiving the message.
+        Register the current message to this pea, so that all message-related properties are up-to-date, including
+        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
+        this message if its envelope's status is not ERROR, else skip handling of message.
+
+        :param msg: the message received
+        """
         msg_type = msg.request.WhichOneof('body')
         self.logger.info(f'received "{msg_type}" from {routes2str(msg, flag_current=True)}')
         add_route(msg.envelope, self.name, self.args.identity)
         self._request = getattr(msg.request, msg_type)
-        self._message = msg
+        self._message_in = msg
         return self
 
-    def post_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
+    def post_hook(self) -> List['jina_pb2.Message']:
         """Post-hook function, what to do before handing out the message """
-        msg.envelope.routes[-1].end_time.GetCurrentTime()
-        if self.args.num_part > 1:
-            msg.envelope.num_part.append(self.args.num_part)
+        for msg in self._messages_out:
+            msg.envelope.routes[-1].end_time.GetCurrentTime()
+            if self.args.num_part > 1:
+                msg.envelope.num_part.append(self.args.num_part)
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
-        return self
+        return self._messages_out
 
     def set_ready(self, *args, **kwargs):
         """Set the status of the pea to ready """
@@ -251,12 +262,18 @@ class BasePea(metaclass=PeaMeta):
         self.is_ready.clear()
         self.logger.success(__stop_msg__)
 
-    def _callback(self, msg):
+    def _callback(self, msg) -> List['jina_pb2.Message']:
         if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
-            self.pre_hook(msg).handle(msg).post_hook(msg)
-        return msg
+            return self.pre_hook(msg).handle().post_hook()
+        else:
+            return [msg]
 
-    def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
+    def _process_callback(self, msg):
+        msgs_out = self._callback(msg)
+        for msg_out in msgs_out:
+            self.zmqlet.send_message(msg_out)
+
+    def msg_callback(self, msg: 'jina_pb2.Message'):
         """Callback function after receiving the message
 
         When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.
@@ -264,7 +281,7 @@ class BasePea(metaclass=PeaMeta):
         try:
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
-            self.zmqlet.send_message(self._callback(msg))
+            self._process_callback(msg)
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # serious error happen in callback, we need to break the event loop
             self.zmqlet.send_message(msg)
