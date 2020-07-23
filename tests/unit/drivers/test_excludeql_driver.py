@@ -24,15 +24,15 @@ def input_fn():
     yield d
 
 
-class PruneDriverTestCase(JinaTestCase):
+class ExcludeQLTestCase(JinaTestCase):
 
-    def test_prune_driver(self):
+    def test_excludeql_driver(self):
         f = (
             Flow().add(
-                name='prune',
-                uses=os.path.join(cur_dir, '../yaml/test-prune-driver.yml')))
+                name='exclude',
+                uses=os.path.join(cur_dir, '../yaml/test-excludeql-driver.yml')))
 
-        def test_pruned(resp):
+        def test_excluded(resp):
             for d in resp.docs:
                 self.assertFalse(d.HasField('blob'))
                 for c in d.chunks:
@@ -41,4 +41,4 @@ class PruneDriverTestCase(JinaTestCase):
                     self.assertFalse(c.HasField('text'))
 
         with f:
-            f.index(input_fn, output_fn=test_pruned, callback_on_body=True)
+            f.index(input_fn, output_fn=test_excluded, callback_on_body=True)
