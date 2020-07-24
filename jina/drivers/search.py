@@ -39,7 +39,7 @@ class KVSearchDriver(BaseSearchDriver):
         for idx, tk in enumerate(doc.matches):
             r = self.exec_fn(tk.id)
             if r:
-                tk.CopyFrom(r)
+                tk.MergeFrom(r)
             else:
                 miss_idx.append(idx)
 

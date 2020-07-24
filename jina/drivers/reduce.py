@@ -11,6 +11,7 @@ from ..proto import jina_pb2
 
 
 class ReduceDriver(BaseRecursiveDriver):
+    """:class:`ReduceDriver` merges envelope of all requests """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,7 +64,7 @@ class ReduceDriver(BaseRecursiveDriver):
 
 
 class ReduceAllDriver(ReduceDriver):
-    """ Reduce docs from all requests into one request """
+    """:class:`ReduceAllDriver` merges chunks and matches from all requests """
 
     def reduce(self, *args, **kwargs):
         self.doc_pointers = {}
