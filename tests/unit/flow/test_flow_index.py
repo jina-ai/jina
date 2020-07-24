@@ -13,8 +13,8 @@ def random_queries(num_docs, chunks_per_doc=5):
     for j in range(num_docs):
         d = jina_pb2.Document()
         for k in range(chunks_per_doc):
-            dd = d.matches.add()
-            dd.match.id = k + 1  # 1-indexed
+            dd = d.add()
+            dd.id = k + 1  # 1-indexed
         yield d
 
 
@@ -34,9 +34,9 @@ class FlowTestCase(JinaTestCase):
             self.assertEqual(len(req.docs[0].matches), index_docs)
 
             for d in req.docs[0].matches:
-                self.assertTrue(hasattr(d.match, 'weight'))
-                self.assertIsNotNone(d.match.weight)
-                self.assertEqual(d.match.meta_info, b'hello world')
+                self.assertTrue(hasattr(d, 'weight'))
+                self.assertIsNotNone(d.weight)
+                self.assertEqual(d.meta_info, b'hello world')
 
         f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=parallel,
                        separated_workspace=True)

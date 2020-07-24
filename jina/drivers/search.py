@@ -37,9 +37,9 @@ class KVSearchDriver(BaseSearchDriver):
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         miss_idx = []  #: missed hit results, not some search may not ends with result. especially in shards
         for idx, tk in enumerate(doc.matches):
-            r = self.exec_fn(tk.match.id)
+            r = self.exec_fn(tk.id)
             if r:
-                tk.match.CopyFrom(r)
+                tk.CopyFrom(r)
             else:
                 miss_idx.append(idx)
 
@@ -72,6 +72,6 @@ class VectorSearchDriver(BaseSearchDriver):
             for c, topks, scs in zip(chunk_pts, idx, dist):
                 for m, s in zip(topks, scs):
                     r = c.matches.add()
-                    r.match.id = m
+                    r.id = m
                     r.score.value = s
                     r.score.op_name = op_name

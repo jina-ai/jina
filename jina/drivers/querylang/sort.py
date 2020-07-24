@@ -29,15 +29,3 @@ class SortQL(BaseRecursiveDriver):
     def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         docs.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)
 
-
-class SortMatchesQL(SortQL):
-    """Sort the ``matches``
-
-    This driver works on both chunk and doc level
-    """
-
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        doc.matches.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)
-
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        pass
