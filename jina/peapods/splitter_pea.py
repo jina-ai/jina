@@ -19,13 +19,15 @@ class SplitterPea(BasePea):
         Force it to be attached to `_route_split`
         """
         # TODO: Change executor to _route_split which in the resources will be attached to SplitterDriver
-        self.executor = BaseExecutor.load_config('_splitroute')
-        self.executor.attach(pea=self)
+        super().load_executor()
+        self.splitter_executor = BaseExecutor.load_config('_splitroute')
+        self.splitter_executor.attach(pea=self)
 
     def handle(self) -> 'BasePea':
         # TODO: Once output message is assigned at driver level, this handle can disappear
         """Call the executor to handle this message if its envelope's status is not ERROR, else skip handling of message.
         """
+        super().handle()
         if self.message_in.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.HANDLE:
-            self.executor(self.request_type)
+            self.splitter_executor(self.request_type)
         return self
