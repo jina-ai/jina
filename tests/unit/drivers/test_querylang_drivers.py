@@ -11,14 +11,17 @@ def random_docs(num_docs):
         d = jina_pb2.Document()
         d.id = j
         d.text = 'hello world'
+        d.uri = 'doc://'
         for m in range(10):
             dm = d.matches.add()
             dm.text = 'match to hello world'
+            dm.uri = 'doc://match'
             dm.id = m
             dm.score.ref_id = d.id
             for mm in range(10):
                 dmm = dm.matches.add()
                 dmm.text = 'nested match to match'
+                dmm.uri = 'doc://match/match'
                 dmm.id = mm
                 dmm.score.ref_id = m
         yield d
@@ -27,7 +30,7 @@ def random_docs(num_docs):
 class DummySegmenter(BaseSegmenter):
 
     def craft(self, text, *args, **kwargs):
-        return [{'text': 'adasd' * j} for j in range(10)]
+        return [{'text': 'adasd' * (j + 1)} for j in range(10)]
 
 
 class QueryLangTestCase(JinaTestCase):
@@ -37,6 +40,11 @@ class QueryLangTestCase(JinaTestCase):
 
     def test_segment_driver(self):
         def validate(req):
+            self.assertNotEqual(req.docs[0].text, '')
+            self.assertNotEqual(req.docs[-1].text, '')
+            self.assertNotEqual(req.docs[0].chunks[0].text, '')
+            self.assertNotEqual(req.docs[0].matches[0].text, '')
+            self.assertNotEqual(req.docs[0].matches[0].matches[-1].text, '')
             self.assertEqual(len(req.docs[0].chunks), 10)
             self.assertEqual(len(req.docs[-1].chunks), 10)
             self.assertEqual(len(req.docs[0].matches), 10)
@@ -66,6 +74,26 @@ class QueryLangTestCase(JinaTestCase):
 
         f = (Flow().add(uses='DummySegmenter')
              .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: [chunks, matches], depth_range: [0, 2]}'))
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+    def test_select_ql(self):
+        def validate(req):
+            self.assertEqual(req.docs[0].text, '')
+            self.assertEqual(req.docs[-1].text, '')
+            self.assertEqual(req.docs[0].matches[0].text, '')
+            self.assertEqual(req.docs[0].chunks[0].text, '')
+
+        f = (Flow().add(uses='DummySegmenter')
+            .add(
+            uses='- !SelectQL | {fields: [uri, matches, chunks], traverse_on: [chunks, matches], depth_range: [0, 2]}'))
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+        f = (Flow().add(uses='DummySegmenter')
+             .add(uses='- !ExcludeQL | {fields: [text], traverse_on: [chunks, matches], depth_range: [0, 2]}'))
 
         with f:
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)
