@@ -7,32 +7,28 @@ from tests.unit.executors.encoders.nlp import NlpTestCase
 class PytorchTestCase(NlpTestCase):
     def _get_encoder(self, metas):
         return TransformerTorchEncoder(
-            model_name='bert-base-uncased',
-            pooling_strategy='cls',
+            pretrained_model_name_or_path='bert-base-uncased',
             metas=metas)
 
 
 class TfTestCase(NlpTestCase):
     def _get_encoder(self, metas):
         return TransformerTFEncoder(
-            model_name='bert-base-uncased',
-            pooling_strategy='cls',
+            pretrained_model_name_or_path='bert-base-uncased',
             metas=metas)
 
 
 class XLNetPytorchTestCase(NlpTestCase):
     def _get_encoder(self, metas):
         return TransformerTorchEncoder(
-            model_name='xlnet-base-cased',
-            pooling_strategy='cls',
+            pretrained_model_name_or_path='xlnet-base-cased',
             metas=metas)
 
 
 class XLNetTFTestCase(NlpTestCase):
     def _get_encoder(self, metas):
         return TransformerTFEncoder(
-            model_name='xlnet-base-cased',
-            pooling_strategy='cls',
+            pretrained_model_name_or_path='xlnet-base-cased',
             metas=metas)
 
 
