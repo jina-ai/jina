@@ -34,9 +34,9 @@ class Chunk2DocRankDriver(BaseRankDriver):
         match_chunk_meta = {}
         for c in doc.chunks:
             for k in c.matches:
-                match_idx.append((k.match.id, k.match.parent_id, c.id, k.score.value))
+                match_idx.append((k.id, k.parent_id, c.id, k.score.value))
                 query_chunk_meta[c.id] = pb_obj2dict(c, self.exec.required_keys)
-                match_chunk_meta[k.match.id] = pb_obj2dict(k.match, self.exec.required_keys)
+                match_chunk_meta[k.id] = pb_obj2dict(k, self.exec.required_keys)
 
         # np.uint32 uses 32 bits. np.float32 uses 23 bit mantissa, so integer greater than 2^23 will have their
         # least significant bits truncated.
@@ -47,6 +47,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
             doc_idx = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             for _d in doc_idx:
                 r = doc.matches.add()
-                r.match.id = int(_d[0])
+                r.id = int(_d[0])
+                r.score.ref_id = doc.id  # label the score is computed against doc
                 r.score.value = _d[1]
                 r.score.op_name = exec.__class__.__name__

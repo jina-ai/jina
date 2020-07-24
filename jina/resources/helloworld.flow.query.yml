@@ -12,5 +12,5 @@ pods:
     shards: $SHARDS
     separated_workspace: true
     polling: all
-    uses_reducing: _merge_all
+    uses_reducing: $RESOURCE_DIR/helloworld.reduce.yml
     timeout_ready: 100000 # larger timeout as in query time will read all the data

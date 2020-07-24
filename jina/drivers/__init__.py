@@ -161,19 +161,24 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, depth_range: Tuple[int] = (0, 0), order: str = 'post', *args, **kwargs):
+    def __init__(self, depth_range: Tuple[int] = (0, 0), apply_order: str = 'post',
+                 traverse_on: Tuple[str] = ('chunks',),
+                 *args, **kwargs):
         """
 
         :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
-        :param order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
+        :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]
-        if order in {'post', 'pre'}:
-            self.recursion_order = order
+        if isinstance(traverse_on, str):
+            self.traverse_fields = (traverse_on,)
+        self.traverse_fields = set(traverse_on)
+        if apply_order in {'post', 'pre'}:
+            self.recursion_order = apply_order
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
 
@@ -207,7 +212,8 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 for d in _docs:
                     if d.level_depth < self._depth_end:
-                        _traverse(d.chunks)
+                        for r in self.traverse_fields:
+                            _traverse(getattr(d, r))
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
 
@@ -230,7 +236,8 @@ class BaseRecursiveDriver(BaseDriver):
                     if d.level_depth >= self._depth_start:
                         self.apply(d, *args, **kwargs)
                     if d.level_depth < self._depth_end:
-                        _traverse(d.chunks)
+                        for r in self.traverse_fields:
+                            _traverse(getattr(d, r))
 
         _traverse(docs)
 

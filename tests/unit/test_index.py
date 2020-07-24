@@ -18,7 +18,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def get_result(resp):
     n = []
     for d in resp.search.docs:
-        n.append([k.match.id for k in d.matches])
+        n.append([k.id for k in d.matches])
     n = np.array(n)
     # each doc should return a list of top-100
     np.testing.assert_equal(n.shape[0], 2)

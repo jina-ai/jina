@@ -1,10 +1,20 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import inspect
 from typing import Iterator, Optional
 
-from .. import BaseDriver
+from .. import BaseRecursiveDriver, BaseDriver
 from ...proto import jina_pb2
+
+
+class QueryLangDriver(BaseRecursiveDriver):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.required_keys = {k for k in inspect.getfullargspec(self.__init__).args if k != 'self'}
+        if not self.required_keys:
+            self.logger.warning(f'{self.__class__} works on keys, but no keys are specified')
 
 
 class BaseQueryLangDriver(BaseDriver):

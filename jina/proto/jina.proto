@@ -32,22 +32,14 @@ message NdArray {
 }
 
 /**
- * Represents an unary match result
+ * Represents the relevance model to `ref_id`
  */
-message ScoredResult {
-
-    /**
-     * Represents the score of a match
-     */
-    message Score {
-        float value = 1; // value
-        string op_name = 2; // the name of the operator/score function
-        string description = 3; // text description of the score
-        repeated Score operands = 4; // the score can be nested
-    }
-
-    Document match = 1; // the matched document
-    Score score = 3; // the score of this match
+message Relevance {
+    float value = 1; // value
+    string op_name = 2; // the name of the operator/score function
+    string description = 3; // text description of the score
+    repeated Relevance operands = 4; // the score can be nested
+    uint32 ref_id = 5; // the score is computed between doc `id` and `ref_id`
 }
 
 /**
@@ -77,7 +69,7 @@ message Document {
         string text = 13;
     }
 
-    // list of the chunks of this document
+    // list of the chunks of this document (recursive structure)
     repeated Document chunks = 4;
 
     // the weight of this document
@@ -89,8 +81,8 @@ message Document {
     // some binary meta information of this Doc in bytes
     bytes meta_info = 7;
 
-    // the top-k matched Docs on the same level
-    repeated ScoredResult matches = 8;
+    // the top-k matched Docs on the same level (recursive structure)
+    repeated Document matches = 8;
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
     string mime_type = 10;
@@ -109,6 +101,8 @@ message Document {
 
     // the embedding array of this doc
     NdArray embedding = 19;
+
+    Relevance score = 20;
 }
 
 /**
@@ -225,7 +219,6 @@ message Request {
     message TrainRequest {
         repeated Document docs = 1; // a list of Documents to train
         bool flush = 2; // if True then do actual training, otherwise only collect all documents but not do training.
-        repeated string filter_by = 3; // a list of the selected field names to be queried on
     }
 
     /**
@@ -233,7 +226,6 @@ message Request {
      */
     message IndexRequest {
         repeated Document docs = 1; // a list of Documents to index
-        repeated string filter_by = 2; // a list of the selected field names to be queried on
     }
 
     /**
@@ -242,7 +234,6 @@ message Request {
     message SearchRequest {
         repeated Document docs = 1; // a list of Documents to query
         uint32 top_k = 2; // the number of most related results to return
-        repeated string filter_by = 3; // a list of the selected field names to be queried on
     }
 
     /**

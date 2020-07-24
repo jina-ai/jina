@@ -6,8 +6,5 @@ requests:
   on:
     [SearchRequest]:
       - !ReduceAllDriver {}
-      - !SortMatchesQL
-        with:
-          field: 'score.value'
     ControlRequest:
       - !ControlReqDriver {}
