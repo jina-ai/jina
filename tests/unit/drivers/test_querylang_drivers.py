@@ -13,9 +13,14 @@ def random_docs(num_docs):
         d.text = 'hello world'
         for m in range(10):
             dm = d.matches.add()
-            dm.text = 'match to hello wolrd'
+            dm.text = 'match to hello world'
             dm.id = m
             dm.score.ref_id = d.id
+            for mm in range(10):
+                dmm = dm.matches.add()
+                dmm.text = 'nested match to match'
+                dmm.id = mm
+                dmm.score.ref_id = m
         yield d
 
 
@@ -25,7 +30,7 @@ class DummySegmenter(BaseSegmenter):
         return [{'text': 'adasd' * j} for j in range(10)]
 
 
-class MyTestCase(JinaTestCase):
+class QueryLangTestCase(JinaTestCase):
 
     def test_sort_ql(self):
         pass
@@ -36,6 +41,8 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(len(req.docs[-1].chunks), 10)
             self.assertEqual(len(req.docs[0].matches), 10)
             self.assertEqual(len(req.docs[-1].matches), 10)
+            self.assertEqual(len(req.docs[-1].matches[0].matches), 10)
+            self.assertEqual(len(req.docs[-1].matches[-1].matches), 10)
 
         f = Flow().add(uses='DummySegmenter')
 
@@ -47,8 +54,8 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(len(req.docs), 2)  # slice on level 0
             self.assertEqual(len(req.docs[0].chunks), 2)  # slice on level 1
             self.assertEqual(len(req.docs[-1].chunks), 2)  # slice on level 1
-            self.assertEqual(len(req.docs[0].matches), 2)  # slice on level 1
-            self.assertEqual(len(req.docs[-1].matches), 2)  # slice on level 1
+            self.assertEqual(len(req.docs[0].matches), 2)  # slice on level 1 for matches
+            self.assertEqual(len(req.docs[-1].matches[0].matches), 2)  # slice on level 2 for matches
 
         f = (Flow().add(uses='DummySegmenter')
              .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: ["chunks"], depth_range: [0, 2]}')
