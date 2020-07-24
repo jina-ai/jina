@@ -37,7 +37,6 @@ class SliceQL(BaseRecursiveDriver):
             del docs[:self.start]
 
 
-
 class SliceMatchesQL(SliceQL):
     def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         if self.start <= 0 and (self.end is None or self.end >= len(doc.matches)):
