@@ -92,6 +92,22 @@ class RouteDriver(ControlReqDriver):
             super().__call__(*args, **kwargs)
 
 
+def split_message_by_mode_id(input_msg: 'jina_pb2.Message', num_nodes: int):
+    req_type = input_msg.request.WhichOneof('body')
+    output_msgs = []
+    for mode_id in range(num_nodes):
+        msg = jina_pb2.Message()
+        # could it be too expensive?
+        msg.CopyFrom(input_msg)
+        getattr(msg.request, req_type).ClearField('docs')
+        output_msgs.append(msg)
+    docs = getattr(input_msg.request, req_type).docs
+    for doc in docs:
+        mode_id = doc.mode_id
+        getattr(output_msgs[mode_id].request, req_type).docs.append(doc)
+    return output_msgs
+
+
 class SplitRouteDriver(ControlReqDriver):
     """This driver forward in a load balanced way, messages to different peas, depending on the
     requested mode_id.
@@ -108,22 +124,11 @@ class SplitRouteDriver(ControlReqDriver):
         self.is_pollin_paused = False
         self.mode_idx_map = {}
 
-    def split_message_by_mode_id(self):
-        # clear messages from old processing
-        self.output_msgs.clear()
-        self.output_msgs = [self.processing_msg] * self.num_modes # the basis of the message is the same
-        for mode_id in range(self.num_modes):
-            self.output_msgs[mode_id].req.docs.clear()
-
-        msg = self.processing_msg
-        msg.req.docs.clear()
-        for doc in self.req.docs:
-            self.output_msgs[doc.mode_id].req.docs.append(doc)
-
-
     def __call__(self, *args, **kwargs):
         if is_data_request(self.req):
-            self.split_message_by_mode_id()
+            # clear messages from old processing
+            self.output_msgs.clear()
+            self.output_msgs = split_message_by_mode_id(self.processing_msg, self.num_modes)
             for mode_id, message in enumerate(self.output_msgs):
                 # TODO: Consider case where message is missing one or two modes, need a mapping from idx, to mode_id.
                 # TODO: How do we handle synchronization, 2 dealers of different mode_id may consume messages at different rate.
