@@ -35,11 +35,10 @@ class DummySegmenter(BaseSegmenter):
 
 class QueryLangTestCase(JinaTestCase):
 
-    def test_sort_ql(self):
-        pass
-
     def test_segment_driver(self):
         def validate(req):
+            self.assertGreater(req.docs[-1].id, req.docs[0].id)
+            self.assertGreater(req.docs[0].matches[-1].id, req.docs[0].matches[0].id)
             self.assertNotEqual(req.docs[0].text, '')
             self.assertNotEqual(req.docs[-1].text, '')
             self.assertNotEqual(req.docs[0].chunks[0].text, '')
@@ -94,6 +93,27 @@ class QueryLangTestCase(JinaTestCase):
 
         f = (Flow().add(uses='DummySegmenter')
              .add(uses='- !ExcludeQL | {fields: [text], traverse_on: [chunks, matches], depth_range: [0, 2]}'))
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+    def test_sort_ql(self):
+        def validate(req):
+            self.assertLess(req.docs[-1].id, req.docs[0].id)
+            self.assertLess(req.docs[0].matches[-1].id, req.docs[0].matches[0].id)
+            self.assertLess(req.docs[0].chunks[-1].id, req.docs[0].chunks[0].id)
+
+        f = (Flow().add(uses='DummySegmenter')
+            .add(
+            uses='- !SortQL | {field: id, reverse: true, traverse_on: [chunks, matches], depth_range: [0, 2]}'))
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+        f = (Flow().add(uses='DummySegmenter')
+            .add(
+            uses='- !SortQL | {field: id, reverse: false, traverse_on: [chunks, matches], depth_range: [0, 2]}')
+            .add(uses='- !ReverseQL | {traverse_on: [chunks, matches], depth_range: [0, 2]}'))
 
         with f:
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)

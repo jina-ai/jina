@@ -6,8 +6,11 @@ requests:
   on:
     [SearchRequest]:
       - !ReduceAllDriver {}
-      - !SortMatchesQL
+      - !SortQL
         with:
           field: 'score.value'
+          traverse_on:
+            - chunks
+            - matches
     ControlRequest:
       - !ControlReqDriver {}
