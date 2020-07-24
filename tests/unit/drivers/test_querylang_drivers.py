@@ -11,6 +11,11 @@ def random_docs(num_docs):
         d = jina_pb2.Document()
         d.id = j
         d.text = 'hello world'
+        for m in range(10):
+            dm = d.matches.add()
+            dm.text = 'match to hello wolrd'
+            dm.id = m
+            dm.score.ref_id = d.id
         yield d
 
 
@@ -29,8 +34,31 @@ class MyTestCase(JinaTestCase):
         def validate(req):
             self.assertEqual(len(req.docs[0].chunks), 10)
             self.assertEqual(len(req.docs[-1].chunks), 10)
+            self.assertEqual(len(req.docs[0].matches), 10)
+            self.assertEqual(len(req.docs[-1].matches), 10)
 
         f = Flow().add(uses='DummySegmenter')
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+    def test_slice_ql(self):
+        def validate(req):
+            self.assertEqual(len(req.docs), 2)  # slice on level 0
+            self.assertEqual(len(req.docs[0].chunks), 2)  # slice on level 1
+            self.assertEqual(len(req.docs[-1].chunks), 2)  # slice on level 1
+            self.assertEqual(len(req.docs[0].matches), 2)  # slice on level 1
+            self.assertEqual(len(req.docs[-1].matches), 2)  # slice on level 1
+
+        f = (Flow().add(uses='DummySegmenter')
+             .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: ["chunks"], depth_range: [0, 2]}')
+             .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: ["matches"], depth_range: [0, 2]}'))
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+        f = (Flow().add(uses='DummySegmenter')
+             .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: [chunks, matches], depth_range: [0, 2]}'))
 
         with f:
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)
