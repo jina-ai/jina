@@ -1,7 +1,7 @@
 import os
+import time
 
 import numpy as np
-import pytest
 
 from jina.drivers.helper import array2pb, pb2array
 from jina.flow import Flow
@@ -66,4 +66,6 @@ class MyTestCase(JinaTestCase):
     def test_quant(self):
         for j in ('fp32', 'fp16', 'uint8'):
             self.f1(j)
+            time.sleep(4)
             self.f2(j)
+            time.sleep(4)
