@@ -15,6 +15,7 @@ import zmq
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
+from ..drivers.querylang.filter import FilterQL
 from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError
 from ..executors import BaseExecutor
@@ -191,6 +192,10 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(self.args.uses if valid_local_config_source(self.args.uses) else self.args.uses_internal,
                                                          self.args.separated_workspace, self.args.replica_id)
+                if self.args.mode_ids:
+                    # if mode_ids are explicitly requested, it means we are in multimode so we prepend a driver that will filter mode_ids not requested
+                    for req_type in ['IndexRequest', 'SearchRequest', 'TrainRequest', 'ControlRequest']:
+                        self.executor.prepend_driver(FilterQL({'mode_id__in': self.args.mode_ids}), req_type)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad

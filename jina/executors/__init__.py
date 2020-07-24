@@ -533,21 +533,19 @@ class BaseExecutor(metaclass=ExecutorType):
             r['metas'] = p
         return r
 
-    def add_driver(self, driver: 'BaseDriver', req_type: str):
-        """ Add a driver to this executor.
+    def prepend_driver(self, driver: 'BaseDriver', req_type: str):
+        """ Add a driver at the beginning of the drivers array.
 
         .. warning::
             This has to be used *before* ``.attach(pea=self)`` to be effective
 
         :param driver: the driver to add
-        :param req_type: the request type to handle by this driver
+        :param req_type: the request type to handle by this driver.
+        If the req_type is not already handled by a driver, it won't be added
         :return:
         """
-        if not isinstance(driver, list):
-            driver = [driver]
-        if req_type not in self._drivers:
-            self._drivers[req_type] = []
-        self._drivers[req_type].extend(driver)
+        if req_type in self._drivers.keys():
+            self._drivers[req_type].insert(0, driver)
 
     def attach(self, *args, **kwargs):
         """Attach this executor to a :class:`jina.peapods.pea.BasePea`.

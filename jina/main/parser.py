@@ -197,6 +197,7 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--py-modules', type=str, nargs='*',
                      help='the customized python modules need to be imported before loading the'
                           ' executor')
+    gp0.add_argument('--modes', type=str, nargs='*', help='List of mode_id the pea wants to process documents from')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--uses-internal', type=str, default='BaseExecutor',
