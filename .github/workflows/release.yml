@@ -1,13 +1,14 @@
 name: Release Cycle
 
-on:
-  schedule:
-    - cron: "55 15 * * 5"
-
 #on:
-#  push:
-#    branches:
-#      - master
+#  schedule:
+#    - cron: "55 15 * * 5"
+
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally disable this action
+
 
 jobs:
   regular-release:
