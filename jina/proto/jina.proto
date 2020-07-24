@@ -109,6 +109,9 @@ message Document {
 
     // the embedding array of this doc
     NdArray embedding = 19;
+
+    // mode_id, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
+    uint32 mode_id = 20;
 }
 
 /**
@@ -124,7 +127,7 @@ message Envelope {
     // unique id of the request
     uint32 request_id = 3;
 
-    // timeout in second until this message is droped
+    // timeout in second until this message is dropped
     uint32 timeout = 4;
 
     /**
@@ -257,6 +260,8 @@ message Request {
         Command command = 1; // the control command
 
         map<string, string> args = 2; // the pea arguments, useful in STATUS
+
+        uint32 mode_id = 3; // mode_id of the requested, used in ROUTER-DEALER pattern, tells the router which mode_id wants to get documents for.
     }
 
     Status status = 6; // status info
