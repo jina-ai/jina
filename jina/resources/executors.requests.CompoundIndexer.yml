@@ -13,6 +13,7 @@ on:
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
+        traverse_on: matches
   IndexRequest:
     - !VectorIndexDriver
       with:

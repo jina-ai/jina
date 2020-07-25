@@ -175,7 +175,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]
         if isinstance(traverse_on, str):
-            self.traverse_fields = (traverse_on,)
+            traverse_on = (traverse_on,)
         self.traverse_fields = set(traverse_on)
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
