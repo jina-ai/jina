@@ -102,12 +102,11 @@ jobs:
           tags: "devel, ${{env.JINA_VERSION}}"
 
   unit-test:
-    needs: commit-lint
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v2
@@ -139,10 +138,7 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install pytest
-          pip install pytest-xdist
-          pip install pytest-timeout
-          pip install pytest-cov
+          pip install pytest pytest-xdist pytest-timeout pytest-cov
           pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 15
@@ -159,7 +155,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.7,]
 
     steps:
       - uses: actions/checkout@v2
@@ -177,10 +173,7 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install pytest
-          pip install pytest-xdist
-          pip install pytest-timeout
-          pip install pytest-cov
+          pip install pytest pytest-xdist pytest-timeout pytest-cov
           pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/integration
           mv coverage.xml integration-test-coverage.xml
         timeout-minutes: 15
