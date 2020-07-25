@@ -14,6 +14,7 @@ on:
       with:
         executor: BaseKVIndexer
         traverse_on: matches
+        depth_range: [0, 1]
   IndexRequest:
     - !VectorIndexDriver
       with:
