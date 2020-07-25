@@ -150,7 +150,6 @@ jobs:
           path: ./unit-test-coverage.xml
 
   integration-test:
-    needs: commit-lint
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
