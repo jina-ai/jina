@@ -100,3 +100,125 @@ jobs:
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
           tags: "devel, ${{env.JINA_VERSION}}"
+
+  unit-test:
+    needs: commit-lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
+        python-version: [3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            sudo apt-get install libsndfile1
+          fi
+          python -m pip install --upgrade pip
+          pip install .[match-py-ver]
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Test docker install
+        run: |
+          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+      - name: Test with pytest
+        run: |
+          # make sure docker exist
+          docker ps
+          jina check
+          export JINA_LOG_VERBOSITY="ERROR"
+          pip install pytest
+          pip install pytest-xdist
+          pip install pytest-timeout
+          pip install pytest-cov
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/unit
+          mv coverage.xml unit-test-coverage.xml
+        timeout-minutes: 15
+      - name: Upload coverage result from unit-test
+        if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
+        uses: actions/upload-artifact@v1
+        with:
+          name: unit-test-codecoverage
+          path: ./unit-test-coverage.xml
+
+  integration-test:
+    needs: commit-lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
+        python-version: [3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[match-py-ver]
+      - name: Test with pytest
+        run: |
+          # make sure docker exist
+          docker ps
+          jina check
+          export JINA_LOG_VERBOSITY="ERROR"
+          pip install pytest
+          pip install pytest-xdist
+          pip install pytest-timeout
+          pip install pytest-cov
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/integration
+          mv coverage.xml integration-test-coverage.xml
+        timeout-minutes: 15
+      - name: Upload coverage result from integration-test
+        if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
+        uses: actions/upload-artifact@v1
+        with:
+          name: integration-test-codecoverage
+          path: ./integration-test-coverage.xml
+
+  codecov:
+    needs: [unit-test, integration-test]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download coverage result from unit-test
+        uses: actions/download-artifact@v1
+        with:
+          name: unit-test-codecoverage
+      - name: Download coverage result from integration-test
+        uses: actions/download-artifact@v1
+        with:
+          name: integration-test-codecoverage
+      - name: Upload coverage from unit-test to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: unit-test-codecoverage/unit-test-coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: true
+      - name: Upload coverage from integration-test to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: integration-test-codecoverage/integration-test-coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: true
