@@ -111,9 +111,22 @@ class QueryLangTestCase(JinaTestCase):
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)
 
         f = (Flow().add(uses='DummySegmenter')
-            .add(
+             .add(
             uses='- !SortQL | {field: id, reverse: false, traverse_on: [chunks, matches], depth_range: [0, 2]}')
-            .add(uses='- !ReverseQL | {traverse_on: [chunks, matches], depth_range: [0, 2]}'))
+             .add(uses='- !ReverseQL | {traverse_on: [chunks, matches], depth_range: [0, 2]}'))
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+    def test_filter_ql(self):
+        def validate(req):
+            self.assertEqual(req.docs[0].id, 2)
+            self.assertEqual(req.docs[0].matches[0].id, 2)
+            self.assertEqual(req.docs[0].matches[0].matches[0].id, 2)
+
+        f = (Flow().add(uses='DummySegmenter')
+            .add(
+            uses='- !FilterQL | {lookups: {id: 2}, traverse_on: [chunks, matches], depth_range: [0, 2]}'))
 
         with f:
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)
