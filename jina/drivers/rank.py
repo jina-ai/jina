@@ -28,7 +28,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         match_idx = []
         query_chunk_meta = {}
         match_chunk_meta = {}
