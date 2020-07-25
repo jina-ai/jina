@@ -131,6 +131,19 @@ class QueryLangTestCase(JinaTestCase):
         with f:
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)
 
+    def test_filter_compose_ql(self):
+        def validate(req):
+            self.assertEqual(req.docs[0].id, 2)
+            self.assertEqual(req.docs[0].matches[0].id, 2)
+            self.assertEqual(len(req.docs[0].matches[0].matches), 0)  # match's match does not contain "hello"
+
+        f = (Flow().add(uses='DummySegmenter')
+            .add(
+            uses='- !FilterQL | {lookups: {id: 2, text__contains: hello}, traverse_on: [chunks, matches], depth_range: [0, 2]}'))
+
+        with f:
+            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
 
 if __name__ == '__main__':
     unittest.main()
