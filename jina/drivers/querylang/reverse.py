@@ -10,7 +10,7 @@ if False:
 
 
 class ReverseQL(BaseRecursiveDriver):
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         prev_len = len(docs)
         for d in reversed(docs):
             dd = docs.add()

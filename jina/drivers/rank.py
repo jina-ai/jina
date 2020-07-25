@@ -28,7 +28,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         match_idx = []
         query_chunk_meta = {}
         match_chunk_meta = {}
@@ -48,6 +48,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
             for _d in doc_idx:
                 r = doc.matches.add()
                 r.id = int(_d[0])
+                r.level_depth = doc.level_depth  # the match and doc are always on the same level_depth
                 r.score.ref_id = doc.id  # label the score is computed against doc
                 r.score.value = _d[1]
                 r.score.op_name = exec.__class__.__name__

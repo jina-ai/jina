@@ -175,17 +175,17 @@ class BaseRecursiveDriver(BaseDriver):
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]
         if isinstance(traverse_on, str):
-            self.traverse_fields = (traverse_on,)
+            traverse_on = (traverse_on,)
         self.traverse_fields = set(traverse_on)
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         """ Apply function works on each doc, one by one, modify the doc in-place """
 
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         """ Apply function works on a list of docs, modify the docs in-place
 
         Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
@@ -215,11 +215,11 @@ class BaseRecursiveDriver(BaseDriver):
                         for r in self.traverse_fields:
                             _traverse(getattr(d, r))
                     if d.level_depth >= self._depth_start:
-                        self.apply(d, *args, **kwargs)
+                        self._apply(d, *args, **kwargs)
 
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
-                    self.apply_all(_docs, *args, **kwargs)
+                    self._apply_all(_docs, *args, **kwargs)
 
         _traverse(docs)
 
@@ -230,11 +230,11 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
-                    self.apply_all(_docs, *args, **kwargs)
+                    self._apply_all(_docs, *args, **kwargs)
 
                 for d in _docs:
                     if d.level_depth >= self._depth_start:
-                        self.apply(d, *args, **kwargs)
+                        self._apply(d, *args, **kwargs)
                     if d.level_depth < self._depth_end:
                         for r in self.traverse_fields:
                             _traverse(getattr(d, r))

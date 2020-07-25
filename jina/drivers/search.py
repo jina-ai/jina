@@ -34,9 +34,9 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         miss_idx = []  #: missed hit results, not some search may not ends with result. especially in shards
-        for idx, tk in enumerate(doc.matches):
+        for idx, tk in enumerate(docs):
             r = self.exec_fn(tk.id)
             if r:
                 tk.MergeFrom(r)
@@ -45,7 +45,7 @@ class KVSearchDriver(BaseSearchDriver):
 
         # delete non-exit matches in reverse
         for j in reversed(miss_idx):
-            del doc.matches[j]
+            del docs[j]
 
 
 # DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc
@@ -56,7 +56,7 @@ class VectorSearchDriver(BaseSearchDriver):
 
     """
 
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
                                                                            embedding=True)
 
@@ -72,6 +72,8 @@ class VectorSearchDriver(BaseSearchDriver):
             for c, topks, scs in zip(chunk_pts, idx, dist):
                 for m, s in zip(topks, scs):
                     r = c.matches.add()
+                    r.level_depth = c.level_depth
                     r.id = m
+                    r.score.ref_id = c.id
                     r.score.value = s
                     r.score.op_name = op_name

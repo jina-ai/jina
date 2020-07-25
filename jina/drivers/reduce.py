@@ -71,7 +71,7 @@ class ReduceAllDriver(ReduceDriver):
         BaseRecursiveDriver.__call__(self, *args, **kwargs)
         super().reduce(*args, **kwargs)
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         if doc.id not in self.doc_pointers:
             self.doc_pointers[doc.id] = copy(doc)  # force a shallow copy
         else:

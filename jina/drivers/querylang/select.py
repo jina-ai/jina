@@ -27,13 +27,13 @@ class ExcludeQL(BaseRecursiveDriver):
         # for deleting field in a recursive structure, postorder is safer
         self.recursion_order = 'post'
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in self.fields:
             doc.ClearField(k)
 
 
 class SelectQL(ExcludeQL):
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in doc.DESCRIPTOR.fields_by_name.keys():
             if k not in self.fields:
                 doc.ClearField(k)
