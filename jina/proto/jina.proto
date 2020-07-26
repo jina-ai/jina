@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 package jina;
 
@@ -90,8 +91,8 @@ message Document {
     // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
     string uri = 9;
 
-    // a map of tags
-    map<string, string> tags = 11;
+    // a structured data value, consisting of field which map to dynamically typed values.
+    google.protobuf.Struct tags = 11;
 
     // the position of the doc, could be start and end index of a string; could be x,y coordinate of a image; could be timestamp of an audio clip
     repeated uint32 location = 17;
