@@ -1,0 +1,14 @@
+!MockEncoder
+requests:
+  on:
+    IndexRequest:
+      - !FilterQL
+        with:
+          lookups: {mode_id__in: [mode2]}
+          traverse_on: [chunks]
+          depth_range: [1, 1]
+      - !EncodeDriver
+        with:
+          method: encode
+          traverse_on: [chunks]
+          depth_range: [1, 1]
