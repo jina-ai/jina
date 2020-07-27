@@ -106,7 +106,7 @@ message Document {
     Relevance score = 20;
 
     // mode_id, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
-    uint32 mode_id = 21;
+    string mode_id = 21;
 }
 
 /**

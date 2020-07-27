@@ -14,6 +14,7 @@ from jina.main.parser import set_pea_parser, set_ping_parser
 from jina.main.parser import set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
+from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -495,6 +496,25 @@ class FlowTestCase(JinaTestCase):
 
         with f:
             f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on_body=True)
+
+    def test_flow_with_mode_ids_simple(self):
+        def validate(req):
+            for d in req.index.docs:
+                self.assertTrue(d.mode_id in ['mode1', 'mode2'])
+
+        def input_fn():
+            doc1 = Document()
+            doc1.mode_id = 'mode1'
+            doc2 = Document()
+            doc2.mode_id = 'mode2'
+            doc3 = Document()
+            doc3.mode_id = 'mode3'
+            return [doc1, doc2, doc3]
+
+        flow = Flow().add(name='chunk_seg', parallel=3, uses='_forward').\
+            add(name='encoder12', parallel=2, uses='_forward', modes=['mode1', 'mode2'])
+        with flow:
+            flow.index(input_fn=input_fn, output_fn=validate)
 
 
 if __name__ == '__main__':
