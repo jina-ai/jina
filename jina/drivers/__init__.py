@@ -208,12 +208,12 @@ class BaseRecursiveDriver(BaseDriver):
     def _postorder_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def _traverse(_docs):
+        def _traverse(_docs, traverse_on):
             if _docs:
                 for d in _docs:
                     if d.level_depth < self._depth_end:
-                        for r in self.traverse_fields:
-                            _traverse(getattr(d, r))
+                        for r in getattr(d, traverse_on):
+                            _traverse(r, traverse_on)
                     if d.level_depth >= self._depth_start:
                         self._apply(d, *args, **kwargs)
 
@@ -221,12 +221,16 @@ class BaseRecursiveDriver(BaseDriver):
                 if _docs[0].level_depth >= self._depth_start:
                     self._apply_all(_docs, *args, **kwargs)
 
-        _traverse(docs)
+        if 'chunks' in self.traverse_fields:
+            _traverse(docs, 'chunks')
+        if 'matches' in self.traverse_fields:
+            for d in docs:
+                _traverse(d.matches, 'matches')
 
     def _preorder_apply(self, docs, *args, **kwargs):
         """often useful when you grow new structure, e.g. segment """
 
-        def _traverse(_docs):
+        def _traverse(_docs, traverse_on):
             if _docs:
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
@@ -236,10 +240,14 @@ class BaseRecursiveDriver(BaseDriver):
                     if d.level_depth >= self._depth_start:
                         self._apply(d, *args, **kwargs)
                     if d.level_depth < self._depth_end:
-                        for r in self.traverse_fields:
-                            _traverse(getattr(d, r))
+                        for r in getattr(d, traverse_on):
+                            _traverse(r, traverse_on)
 
-        _traverse(docs)
+        if 'chunks' in self.traverse_fields:
+            _traverse(docs, 'chunks')
+        if 'matches' in self.traverse_fields:
+            for d in docs:
+                _traverse(d.matches, 'matches')
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

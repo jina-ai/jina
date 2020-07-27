@@ -43,7 +43,7 @@ class KVSearchDriver(BaseSearchDriver):
             else:
                 miss_idx.append(idx)
 
-        # delete non-exit matches in reverse
+        # delete non-existed matches in reverse
         for j in reversed(miss_idx):
             del docs[j]
 
