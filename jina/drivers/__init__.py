@@ -192,28 +192,22 @@ class BaseRecursiveDriver(BaseDriver):
         """
 
     def __call__(self, *args, **kwargs):
-        if self.recursion_order == 'post':
-            _wrap = self._postorder_apply
-        elif self.recursion_order == 'pre':
-            _wrap = self._preorder_apply
-        else:
-            raise ValueError(f'{self.recursion_order}')
-
         if getattr(self, 'prev_reqs', None):
+            # traverse apply on ALL requests collected
             for r in self.prev_reqs:
-                _wrap(r.docs, *args, **kwargs)
+                self._traverse_apply(r.docs, *args, **kwargs)
         else:
-            _wrap(self.req.docs, *args, **kwargs)
+            self._traverse_apply(self.req.docs, *args, **kwargs)
 
-    def _postorder_apply(self, docs, *args, **kwargs):
+    def _traverse_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def _traverse(_docs, traverse_on):
+        def post_traverse(_docs, traverse_on):
             if _docs:
                 for d in _docs:
                     if d.level_depth < self._depth_end:
                         for r in getattr(d, traverse_on):
-                            _traverse(r, traverse_on)
+                            post_traverse(r, traverse_on)
                     if d.level_depth >= self._depth_start:
                         self._apply(d, *args, **kwargs)
 
@@ -221,16 +215,7 @@ class BaseRecursiveDriver(BaseDriver):
                 if _docs[0].level_depth >= self._depth_start:
                     self._apply_all(_docs, *args, **kwargs)
 
-        if 'chunks' in self.traverse_fields:
-            _traverse(docs, 'chunks')
-        if 'matches' in self.traverse_fields:
-            for d in docs:
-                _traverse(d.matches, 'matches')
-
-    def _preorder_apply(self, docs, *args, **kwargs):
-        """often useful when you grow new structure, e.g. segment """
-
-        def _traverse(_docs, traverse_on):
+        def pre_traverse(_docs, traverse_on):
             if _docs:
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
@@ -241,7 +226,14 @@ class BaseRecursiveDriver(BaseDriver):
                         self._apply(d, *args, **kwargs)
                     if d.level_depth < self._depth_end:
                         for r in getattr(d, traverse_on):
-                            _traverse(r, traverse_on)
+                            pre_traverse(r, traverse_on)
+
+        if self.recursion_order == 'post':
+            _traverse = post_traverse
+        elif self.recursion_order == 'pre':
+            _traverse = pre_traverse
+        else:
+            raise ValueError(f'{self.recursion_order}')
 
         if 'chunks' in self.traverse_fields:
             _traverse(docs, 'chunks')
