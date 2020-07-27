@@ -39,7 +39,7 @@ class BasePbIndexer(BaseKVIndexer):
         """
         return gzip.open(self.index_abspath, 'w' + self.mode, compresslevel=self.compress_level)
 
-    def query(self, key: int) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
+    def query(self, key: int) -> 'jina_pb2.Document':
         """ Find the protobuf chunk/doc using id
 
         :param key: ``id``

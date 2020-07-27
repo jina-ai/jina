@@ -196,7 +196,7 @@ class BasePea(metaclass=PeaMeta):
                     # if mode_ids are explicitly requested, it means we are in multimode
                     # so we prepend a driver that will filter mode_ids not requested
                     for req_type in ['IndexRequest', 'SearchRequest', 'TrainRequest']:
-                        self.executor.prepend_driver(FilterQL({'mode_id__in': self.args.modes}), req_type)
+                        self.executor.prepend_driver(FilterQL({'mode_id__in': self.args.modes}, depth_range=(0, 1)), req_type)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad
