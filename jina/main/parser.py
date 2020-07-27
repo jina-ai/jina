@@ -181,7 +181,6 @@ def set_pea_parser(parser=None):
     show_all = 'JINA_FULL_CLI' in os.environ
     if not parser:
         parser = set_base_parser()
-
     gp0 = add_arg_group(parser, 'pea basic arguments')
     gp0.add_argument('--name', type=str,
                      help='the name of this pea, used to identify the pod and its logs.')
@@ -197,7 +196,8 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--py-modules', type=str, nargs='*',
                      help='the customized python modules need to be imported before loading the'
                           ' executor')
-    gp0.add_argument('--modes', type=str, nargs='*', help='List of mode_id the pea wants to process documents from')
+    gp0.add_argument('--modes', type=str, nargs='*', default=None,
+                     help='List of mode_id the pea wants to process documents from')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--uses-internal', type=str, default='BaseExecutor',

@@ -192,10 +192,11 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(self.args.uses if valid_local_config_source(self.args.uses) else self.args.uses_internal,
                                                          self.args.separated_workspace, self.args.replica_id)
-                if self.args.mode_ids:
-                    # if mode_ids are explicitly requested, it means we are in multimode so we prepend a driver that will filter mode_ids not requested
+                if self.args.modes is not None:
+                    # if mode_ids are explicitly requested, it means we are in multimode
+                    # so we prepend a driver that will filter mode_ids not requested
                     for req_type in ['IndexRequest', 'SearchRequest', 'TrainRequest', 'ControlRequest']:
-                        self.executor.prepend_driver(FilterQL({'mode_id__in': self.args.mode_ids}), req_type)
+                        self.executor.prepend_driver(FilterQL({'mode_id__in': self.args.modes}), req_type)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad

@@ -45,7 +45,7 @@ class MyTestCase(JinaTestCase):
 
     def test_load_yaml(self):
         from jina.executors import BaseExecutor
-        indexer = BaseExecutor.load_config(os.path.join(cur_dir, '../../../yaml/test-leveldb.yml'))
+        indexer = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-leveldb.yml'))
         self.run_test(indexer)
 
 
