@@ -512,7 +512,8 @@ class FlowTestCase(JinaTestCase):
             return [doc1, doc2, doc3]
 
         flow = Flow().add(name='chunk_seg', parallel=3, uses='_forward').\
-            add(name='encoder12', parallel=2, uses='_forward', modes=['mode1', 'mode2'])
+            add(name='encoder12', parallel=2,
+                uses='- !FilterQL | {lookups: {mode_id__in: [mode1, mode2]}, depth_range: [0, 0]}')
         with flow:
             flow.index(input_fn=input_fn, output_fn=validate)
 

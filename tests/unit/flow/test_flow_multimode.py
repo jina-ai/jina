@@ -32,7 +32,7 @@ class MockEncoder(BaseEncoder):
                 output.append([0.0, 0.0, 0.0])
             elif "mode2" in r:
                 output.append([1.0, 1.0, 1.0])
-                
+
         return np.array(output)
 
 
@@ -52,32 +52,44 @@ class MultiModeFlowTestCase(JinaTestCase):
             return [doc1, doc2, doc3]
 
         flow = Flow().add(name='crafter', uses='!MockSegmenter').\
-            add(name='encoder1', uses='!MockEncoder', modes=['mode1']). \
+            add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
             add(name='indexer1', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'), needs=['encoder1']). \
-            add(name='encoder2', uses='!MockEncoder', modes=['mode2'], needs=['crafter']). \
-            add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml'), modes=['mode2']). \
+            add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
+            add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml')). \
             join(['indexer1', 'indexer2'])
 
         self.add_tmpfile('vec1.gz')
         self.add_tmpfile('vec2.gz')
         self.add_tmpfile('chunk1.gz')
         self.add_tmpfile('chunk2.gz')
+        self.add_tmpfile('vecidx1.bin')
+        self.add_tmpfile('vecidx2.bin')
+        self.add_tmpfile('kvidx1.bin')
+        self.add_tmpfile('kvidx2.bin')
 
         with flow:
             flow.index(input_fn=input_fn)
 
         with gzip.open('vec1.gz', 'rb') as fp:
             result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
-            np.testing.assert_equal(result, np.array([0.0, 0.0, 0.0]))
+            np.testing.assert_equal(result, np.array([[0.0, 0.0, 0.0],
+                                                      [0.0, 0.0, 0.0],
+                                                      [0.0, 0.0, 0.0]]))
 
         with gzip.open('vec2.gz', 'rb') as fp:
             result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
-            np.testing.assert_equal(result, np.array([1.0, 1.0, 1.0]))
+            np.testing.assert_equal(result, np.array([[1.0, 1.0, 1.0],
+                                                      [1.0, 1.0, 1.0],
+                                                      [1.0, 1.0, 1.0]]))
 
         chunkIndexer1 = BinaryPbIndexer(index_filename='chunk1.gz')
-        for key, pb in chunkIndexer1.query_handler().items():
-            self.assertEqual(pb.mode_id, 'mode1')
+        self.assertEqual(len(chunkIndexer1.query_handler.items()), 3)
+        for key, pb in chunkIndexer1.query_handler.items():
+            for chunk in pb.chunks:
+                self.assertEqual(chunk.mode_id, 'mode1')
 
         chunkIndexer2 = BinaryPbIndexer(index_filename='chunk2.gz')
-        for key, pb in chunkIndexer2.query_handler().items():
-            self.assertEqual(pb.mode_id, 'mode2')
+        self.assertEqual(len(chunkIndexer2.query_handler.items()), 3)
+        for key, pb in chunkIndexer2.query_handler.items():
+            for chunk in pb.chunks:
+                self.assertEqual(chunk.mode_id, 'mode2')
