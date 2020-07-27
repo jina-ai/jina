@@ -161,26 +161,31 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, depth_range: Tuple[int] = (0, 0), order: str = 'post', *args, **kwargs):
+    def __init__(self, depth_range: Tuple[int] = (0, 0), apply_order: str = 'post',
+                 traverse_on: Tuple[str] = ('chunks',),
+                 *args, **kwargs):
         """
 
         :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
-        :param order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
+        :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]
-        if order in {'post', 'pre'}:
-            self.recursion_order = order
+        if isinstance(traverse_on, str):
+            traverse_on = (traverse_on,)
+        self.traverse_fields = set(traverse_on)
+        if apply_order in {'post', 'pre'}:
+            self.recursion_order = apply_order
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         """ Apply function works on each doc, one by one, modify the doc in-place """
 
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         """ Apply function works on a list of docs, modify the docs in-place
 
         Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
@@ -207,13 +212,14 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 for d in _docs:
                     if d.level_depth < self._depth_end:
-                        _traverse(d.chunks)
+                        for r in self.traverse_fields:
+                            _traverse(getattr(d, r))
                     if d.level_depth >= self._depth_start:
-                        self.apply(d, *args, **kwargs)
+                        self._apply(d, *args, **kwargs)
 
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
-                    self.apply_all(_docs, *args, **kwargs)
+                    self._apply_all(_docs, *args, **kwargs)
 
         _traverse(docs)
 
@@ -224,13 +230,14 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
-                    self.apply_all(_docs, *args, **kwargs)
+                    self._apply_all(_docs, *args, **kwargs)
 
                 for d in _docs:
                     if d.level_depth >= self._depth_start:
-                        self.apply(d, *args, **kwargs)
+                        self._apply(d, *args, **kwargs)
                     if d.level_depth < self._depth_end:
-                        _traverse(d.chunks)
+                        for r in self.traverse_fields:
+                            _traverse(getattr(d, r))
 
         _traverse(docs)
 

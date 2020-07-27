@@ -29,22 +29,9 @@ class SliceQL(BaseRecursiveDriver):
         self.start = start
         self.end = end
 
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
             pass
         else:
             del docs[self.end:]
             del docs[:self.start]
-
-
-
-class SliceMatchesQL(SliceQL):
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        if self.start <= 0 and (self.end is None or self.end >= len(doc.matches)):
-            pass
-        else:
-            del doc.matches[self.end:]
-            del doc.matches[:self.start]
-
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        pass

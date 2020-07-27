@@ -21,7 +21,7 @@ def print_result(resp):
         vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
         for kk in d.matches:
-            kmi = kk.match.uri
+            kmi = kk.uri
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
             # k['score']['explained'] = json.loads(kk.score.explained)
         result_html.append('</td></tr>\n')

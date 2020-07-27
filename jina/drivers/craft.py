@@ -15,7 +15,7 @@ class CraftDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         ret = self.exec_fn(**pb_obj2dict(doc, self.exec.required_keys))
         if ret:
             self.set_doc_attr(doc, ret)
@@ -57,7 +57,7 @@ class SegmentDriver(CraftDriver):
         self._counter = RandomUintCounter() if random_chunk_id else SimpleCounter(first_chunk_id)
         self._protected_fields = {'length', 'id', 'parent_id', 'level_depth', 'mime_type'}
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         _args_dict = pb_obj2dict(doc, self.exec.required_keys)
         ret = self.exec_fn(**_args_dict)
         if ret:

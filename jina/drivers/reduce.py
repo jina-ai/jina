@@ -11,6 +11,7 @@ from ..proto import jina_pb2
 
 
 class ReduceDriver(BaseRecursiveDriver):
+    """:class:`ReduceDriver` merges envelope of all requests """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,14 +64,14 @@ class ReduceDriver(BaseRecursiveDriver):
 
 
 class ReduceAllDriver(ReduceDriver):
-    """ Reduce docs from all requests into one request """
+    """:class:`ReduceAllDriver` merges chunks and matches from all requests """
 
     def reduce(self, *args, **kwargs):
         self.doc_pointers = {}
         BaseRecursiveDriver.__call__(self, *args, **kwargs)
         super().reduce(*args, **kwargs)
 
-    def apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         if doc.id not in self.doc_pointers:
             self.doc_pointers[doc.id] = copy(doc)  # force a shallow copy
         else:

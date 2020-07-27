@@ -21,7 +21,7 @@ class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
-    def apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
                                                                          embedding=False)
 
