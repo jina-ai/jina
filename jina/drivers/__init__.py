@@ -206,8 +206,7 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 for d in _docs:
                     if d.level_depth < self._depth_end:
-                        for r in getattr(d, traverse_on):
-                            post_traverse(r, traverse_on)
+                        post_traverse(getattr(d, traverse_on), traverse_on)
                     if d.level_depth >= self._depth_start:
                         self._apply(d, *args, **kwargs)
 
@@ -225,8 +224,7 @@ class BaseRecursiveDriver(BaseDriver):
                     if d.level_depth >= self._depth_start:
                         self._apply(d, *args, **kwargs)
                     if d.level_depth < self._depth_end:
-                        for r in getattr(d, traverse_on):
-                            pre_traverse(r, traverse_on)
+                        pre_traverse(getattr(d, traverse_on), traverse_on)
 
         if self.recursion_order == 'post':
             _traverse = post_traverse
