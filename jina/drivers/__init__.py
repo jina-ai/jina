@@ -192,54 +192,52 @@ class BaseRecursiveDriver(BaseDriver):
         """
 
     def __call__(self, *args, **kwargs):
+        if getattr(self, 'prev_reqs', None):
+            # traverse apply on ALL requests collected
+            for r in self.prev_reqs:
+                self._traverse_apply(r.docs, *args, **kwargs)
+        else:
+            self._traverse_apply(self.req.docs, *args, **kwargs)
+
+    def _traverse_apply(self, docs, *args, **kwargs):
+        """often useful when you delete a recursive structure """
+
+        def post_traverse(_docs, traverse_on):
+            if _docs:
+                for d in _docs:
+                    if d.level_depth < self._depth_end:
+                        post_traverse(getattr(d, traverse_on), traverse_on)
+                    if d.level_depth >= self._depth_start:
+                        self._apply(d, *args, **kwargs)
+
+                # check first doc if in the required depth range
+                if _docs[0].level_depth >= self._depth_start:
+                    self._apply_all(_docs, *args, **kwargs)
+
+        def pre_traverse(_docs, traverse_on):
+            if _docs:
+                # check first doc if in the required depth range
+                if _docs[0].level_depth >= self._depth_start:
+                    self._apply_all(_docs, *args, **kwargs)
+
+                for d in _docs:
+                    if d.level_depth >= self._depth_start:
+                        self._apply(d, *args, **kwargs)
+                    if d.level_depth < self._depth_end:
+                        pre_traverse(getattr(d, traverse_on), traverse_on)
+
         if self.recursion_order == 'post':
-            _wrap = self._postorder_apply
+            _traverse = post_traverse
         elif self.recursion_order == 'pre':
-            _wrap = self._preorder_apply
+            _traverse = pre_traverse
         else:
             raise ValueError(f'{self.recursion_order}')
 
-        if getattr(self, 'prev_reqs', None):
-            for r in self.prev_reqs:
-                _wrap(r.docs, *args, **kwargs)
-        else:
-            _wrap(self.req.docs, *args, **kwargs)
-
-    def _postorder_apply(self, docs, *args, **kwargs):
-        """often useful when you delete a recursive structure """
-
-        def _traverse(_docs):
-            if _docs:
-                for d in _docs:
-                    if d.level_depth < self._depth_end:
-                        for r in self.traverse_fields:
-                            _traverse(getattr(d, r))
-                    if d.level_depth >= self._depth_start:
-                        self._apply(d, *args, **kwargs)
-
-                # check first doc if in the required depth range
-                if _docs[0].level_depth >= self._depth_start:
-                    self._apply_all(_docs, *args, **kwargs)
-
-        _traverse(docs)
-
-    def _preorder_apply(self, docs, *args, **kwargs):
-        """often useful when you grow new structure, e.g. segment """
-
-        def _traverse(_docs):
-            if _docs:
-                # check first doc if in the required depth range
-                if _docs[0].level_depth >= self._depth_start:
-                    self._apply_all(_docs, *args, **kwargs)
-
-                for d in _docs:
-                    if d.level_depth >= self._depth_start:
-                        self._apply(d, *args, **kwargs)
-                    if d.level_depth < self._depth_end:
-                        for r in self.traverse_fields:
-                            _traverse(getattr(d, r))
-
-        _traverse(docs)
+        if 'chunks' in self.traverse_fields:
+            _traverse(docs, 'chunks')
+        if 'matches' in self.traverse_fields:
+            for d in docs:
+                _traverse(d.matches, 'matches')
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
