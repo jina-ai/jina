@@ -22,11 +22,8 @@ class EncodeDriver(BaseEncodeDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
-                                                                         embedding=False)
-
-        if no_chunk_docs:
-            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
+        contents, chunk_pts, bad_chunk_ids = extract_docs(docs,
+                                                          embedding=False)
 
         if bad_chunk_ids:
             self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')

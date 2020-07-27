@@ -87,7 +87,6 @@ def extract_docs(docs: Iterable['jina_pb2.Document'],
     """
     _contents = []
     chunk_pts = []
-    no_chunk_docs = []
     bad_chunk_ids = []
 
     if embedding:
@@ -95,17 +94,18 @@ def extract_docs(docs: Iterable['jina_pb2.Document'],
     else:
         _extract_fn = lambda c: c.text or c.buffer or (c.blob and pb2array(c.blob))
 
-    for c in docs:
-        _c = _extract_fn(c)
+    for d in docs:
+        for c in d:
+            _c = _extract_fn(c)
 
-        if _c is not None:
-            _contents.append(_c)
-            chunk_pts.append(c)
-        else:
-            bad_chunk_ids.append((c.id, c.parent_id))
+            if _c is not None:
+                _contents.append(_c)
+                chunk_pts.append(c)
+            else:
+                bad_chunk_ids.append((c.id, c.parent_id))
 
     contents = np.stack(_contents) if _contents else None
-    return contents, chunk_pts, no_chunk_docs, bad_chunk_ids
+    return contents, chunk_pts, bad_chunk_ids
 
 
 def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
