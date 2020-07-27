@@ -1,10 +1,7 @@
-import unittest
-
 from jina.main.parser import set_pea_parser, set_pod_parser, set_gateway_parser
 from jina.peapods.gateway import GatewayPea
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
-from jina.drivers.querylang.filter import FilterQL
 from tests import JinaTestCase
 
 
@@ -57,14 +54,3 @@ class PeaTestCase(JinaTestCase):
             self.assertEqual(bp.peas[1].name, 'pod-tail')
             self.assertEqual(bp.peas[2].name, 'pod-1')
             self.assertEqual(bp.peas[3].name, 'pod-2')
-
-    def test_peas_with_modes_ids(self):
-        args = set_pea_parser().parse_args(['--modes', ['mode0', 'mode1']])
-        with BasePea(args) as bp:
-            bp.load_executor()
-            self.assertEqual(len(bp.executor._drivers['ControlRequest']), 2)
-            self.assertIsInstance(bp.executor._drivers['ControlRequest'][0], FilterQL)
-
-
-if __name__ == '__main__':
-    unittest.main()
