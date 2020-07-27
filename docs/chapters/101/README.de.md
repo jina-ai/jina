@@ -118,7 +118,7 @@ Pod kann entweder auf einem lokalen Host oder auf verschiedenen Computern über 
 
 <img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-**Flow stellt eine hochrangige Aufgabe dar**z.B. Indexierung, Suche, Schulung. Es verwaltet die Zustände und den Kontext einer Gruppe von Pods und orchestriert sie, um eine Aufgabe zu erfüllen. Flow umfasst die Vielfalt, unabhängig davon, ob sich ein Pod entfernt oder im Docker-Container befindet - ein Flow beherrscht sie alle!
+**Flow stellt eine hochrangige Aufgabe dar,** z.B. Indexierung, Suche, Schulung. Es verwaltet die Zustände und den Kontext einer Gruppe von Pods und orchestriert sie, um eine Aufgabe zu erfüllen. Flow umfasst die Vielfalt, unabhängig davon, ob sich ein Pod entfernt oder im Docker-Container befindet - ein Flow beherrscht sie alle!
 
 <br/><br/><br/><br/><br/><br/>
 
