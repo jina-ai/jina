@@ -486,6 +486,7 @@ def get_valid_local_config_source(path: str, to_stream: bool = False):
         return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
     elif path.startswith('!'):
         # possible YAML content
+        path = path.replace('|', '\n    with: ')
         return io.StringIO(path)
     elif path.startswith('- !'):
         # possible driver YAML content, right now it is only used for debugging
