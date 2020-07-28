@@ -67,7 +67,7 @@ def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
     _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
     stack = deque()
     stack.append('gateway')
-    op_flow.logger.info('Traversing dependency graph:')
+    op_flow.logger.debug('Traversing dependency graph:')
     while stack:
         start_node_name = stack.pop()
         end_node_idx = _outgoing_idx[start_node_name]
@@ -99,7 +99,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             first_socket_type = SocketType.PUB_BIND
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
-        flow.logger.info(f'Connect {start_node_name} with {end_node_name}')
+        flow.logger.debug(f'Connect {start_node_name} with {end_node_name}')
         FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
 
     return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
