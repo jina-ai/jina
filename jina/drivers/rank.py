@@ -33,10 +33,10 @@ class Chunk2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}
         match_chunk_meta = {}
         for c in doc.chunks:
-            for k in c.matches:
-                match_idx.append((k.id, k.parent_id, c.id, k.score.value))
+            for match in c.matches:
+                match_idx.append((match.parent_id, match.id, c.id, match.score.value))
                 query_chunk_meta[c.id] = pb_obj2dict(c, self.exec.required_keys)
-                match_chunk_meta[k.id] = pb_obj2dict(k, self.exec.required_keys)
+                match_chunk_meta[match.id] = pb_obj2dict(match, self.exec.required_keys)
 
         # np.uint32 uses 32 bits. np.float32 uses 23 bit mantissa, so integer greater than 2^23 will have their
         # least significant bits truncated.
@@ -52,30 +52,3 @@ class Chunk2DocRankDriver(BaseRankDriver):
                 r.score.ref_id = doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__
-
-
-class DocRankDriver(BaseRankDriver):
-    """Score documents' matches based on their features and the query document
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.recursion_order = 'post'
-
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        # Score all documents' matches
-        match_idx = []
-        query_doc_meta = {doc.id: pb_obj2dict(doc, self.exec.required_keys)}
-        match_doc_meta = {}
-
-        for match in doc.matches:
-            match_idx.append(match.id)
-            match_doc_meta[match.id] = pb_obj2dict(match, self.exec.required_keys)
-
-        if match_idx:
-            match_idx = np.array(match_idx, dtype=np.float64)
-            doc_scores = self.exec_fn(match_idx, query_doc_meta, match_doc_meta)
-
-            for idx, _, score in enumerate(doc_scores):
-                doc.matches[idx].score.value = score
-                doc.matches[idx].score.op_name = exec.__class__.__name__
