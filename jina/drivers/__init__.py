@@ -182,13 +182,20 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
 
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        """ Apply function works on each doc, one by one, modify the doc in-place """
+    def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', *args, **kwargs):
+        """ Apply function works on each doc, one by one, modify the doc in-place
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        :param doc: the :class:`jina_pb2.Document` object to work on. It could come from ``matches``/``chunks``.
+        :param context_doc: the owner of ``doc``
+        """
+
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """ Apply function works on a list of docs, modify the docs in-place
 
         Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
+
+        :param docs: a list of :class:`jina_pb2.Document` objects to work on; they could come from ``matches``/``chunks``.
+        :param context_doc: the owner of ``docs``
         """
 
     def __call__(self, *args, **kwargs):
@@ -202,29 +209,35 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def post_traverse(_docs, traverse_on):
+        def post_traverse(_docs, traverse_on, context_doc=None):
+            """
+            :param _docs: list of docs
+            :param traverse_on: "matches" or "chunks"
+            :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
+            :return:
+            """
             if _docs:
                 for d in _docs:
                     if d.level_depth < self._depth_end:
-                        post_traverse(getattr(d, traverse_on), traverse_on)
+                        post_traverse(getattr(d, traverse_on), traverse_on, d)
                     if d.level_depth >= self._depth_start:
-                        self._apply(d, *args, **kwargs)
+                        self._apply(d, context_doc, *args, **kwargs)
 
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
-                    self._apply_all(_docs, *args, **kwargs)
+                    self._apply_all(_docs, context_doc, *args, **kwargs)
 
-        def pre_traverse(_docs, traverse_on):
+        def pre_traverse(_docs, traverse_on, context_doc=None):
             if _docs:
                 # check first doc if in the required depth range
                 if _docs[0].level_depth >= self._depth_start:
-                    self._apply_all(_docs, *args, **kwargs)
+                    self._apply_all(_docs, context_doc, *args, **kwargs)
 
                 for d in _docs:
                     if d.level_depth >= self._depth_start:
-                        self._apply(d, *args, **kwargs)
+                        self._apply(d, context_doc, *args, **kwargs)
                     if d.level_depth < self._depth_end:
-                        pre_traverse(getattr(d, traverse_on), traverse_on)
+                        pre_traverse(getattr(d, traverse_on), traverse_on, d)
 
         if self.recursion_order == 'post':
             _traverse = post_traverse

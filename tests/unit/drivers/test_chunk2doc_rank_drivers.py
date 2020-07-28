@@ -1,8 +1,8 @@
 import os
 
-from jina.proto import jina_pb2
 from jina.drivers.rank import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker, MaxRanker, MinRanker
+from jina.proto import jina_pb2
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -53,7 +53,7 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         driver = SimpleChunk2DocRankDriver()
         executor = MockLengthRanker()
         driver.attach(executor=executor, pea=None)
-        driver._apply(doc)
+        driver._apply_all(doc.chunks, doc)
         self.assertEqual(len(doc.matches), 4)
         self.assertEqual(doc.matches[0].id, 70)
         self.assertEqual(doc.matches[0].score.value, 7)
@@ -72,7 +72,7 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         driver = SimpleChunk2DocRankDriver()
         executor = MaxRanker()
         driver.attach(executor=executor, pea=None)
-        driver._apply(doc)
+        driver._apply_all(doc.chunks, doc)
         self.assertEqual(len(doc.matches), 4)
         self.assertEqual(doc.matches[0].id, 70)
         self.assertEqual(doc.matches[0].score.value, 7)
@@ -91,16 +91,16 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         driver = SimpleChunk2DocRankDriver()
         executor = MinRanker()
         driver.attach(executor=executor, pea=None)
-        driver._apply(doc)
+        driver._apply_all(doc.chunks, doc)
         self.assertEqual(len(doc.matches), 4)
         self.assertEqual(doc.matches[0].id, 40)
-        self.assertAlmostEqual(doc.matches[0].score.value, 1/(1 + 4))
+        self.assertAlmostEqual(doc.matches[0].score.value, 1 / (1 + 4))
         self.assertEqual(doc.matches[1].id, 50)
-        self.assertAlmostEqual(doc.matches[1].score.value, 1/(1 + 5))
+        self.assertAlmostEqual(doc.matches[1].score.value, 1 / (1 + 5))
         self.assertEqual(doc.matches[2].id, 60)
-        self.assertAlmostEqual(doc.matches[2].score.value, 1/(1 + 6))
+        self.assertAlmostEqual(doc.matches[2].score.value, 1 / (1 + 6))
         self.assertEqual(doc.matches[3].id, 70)
-        self.assertAlmostEqual(doc.matches[3].score.value, 1/(1 + 7))
+        self.assertAlmostEqual(doc.matches[3].score.value, 1 / (1 + 7))
         for match in doc.matches:
             # match score is computed w.r.t to doc.id
             self.assertEqual(match.score.ref_id, doc.id)

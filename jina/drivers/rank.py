@@ -28,11 +28,24 @@ class Chunk2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply_all(self, docs: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', *args, **kwargs):
+        """
+
+        :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
+        :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        # if at the top-level already, no need to aggregate further
+        if context_doc is None:
+            return
+
         match_idx = []
         query_chunk_meta = {}
         match_chunk_meta = {}
-        for c in doc.chunks:
+        for c in docs:
             for match in c.matches:
                 match_idx.append((match.parent_id, match.id, c.id, match.score.value))
                 query_chunk_meta[c.id] = pb_obj2dict(c, self.exec.required_keys)
@@ -46,9 +59,9 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             for doc_id, score in docs_scores:
-                r = doc.matches.add()
+                r = context_doc.matches.add()
                 r.id = int(doc_id)
-                r.level_depth = doc.level_depth  # the match and doc are always on the same level_depth
-                r.score.ref_id = doc.id  # label the score is computed against doc
+                r.level_depth = context_doc.level_depth  # the match and doc are always on the same level_depth
+                r.score.ref_id = context_doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__
