@@ -4,7 +4,7 @@ requests:
     IndexRequest:
       - !FilterQL
         with:
-          lookups: {mode_id__in: [mode2]}
+          lookups: {mode_id: mode2}
           traverse_on: [chunks]
           depth_range: [1, 1]
       - !EncodeDriver

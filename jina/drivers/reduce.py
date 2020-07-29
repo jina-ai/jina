@@ -2,8 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from copy import copy
-from typing import Dict, List
+from typing import Dict, List, Iterable
 
 from . import BaseRecursiveDriver
 from ..excepts import NoExplicitMessage
@@ -26,6 +25,12 @@ class ReduceDriver(BaseRecursiveDriver):
         This returns ``None`` when ``num_part=1``.
         """
         return self._prev_requests
+
+    @property
+    def prev_reqs_exclude_last(self) -> List['jina_pb2.Request']:
+        """Get all previous requests but excluding the current request (last received request)
+        """
+        return self._prev_requests[:-1]
 
     @property
     def prev_msgs(self) -> List['jina_pb2.Message']:
@@ -67,13 +72,17 @@ class ReduceAllDriver(ReduceDriver):
     """:class:`ReduceAllDriver` merges chunks and matches from all requests """
 
     def reduce(self, *args, **kwargs):
-        self.doc_pointers = {}
-        BaseRecursiveDriver.__call__(self, *args, **kwargs)
+        # use docs in the last request to set the pointers
+        self.doc_pointers = {d.id: d for d in self.req.docs}
+        # traverse apply on ALL requests collected
+        for r in self.prev_reqs_exclude_last:
+            self._traverse_apply(r.docs, *args, **kwargs)
         super().reduce(*args, **kwargs)
 
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        if doc.id not in self.doc_pointers:
-            self.doc_pointers[doc.id] = copy(doc)  # force a shallow copy
-        else:
-            self.doc_pointers[doc.id].chunks.extend(doc.chunks)
-            self.doc_pointers[doc.id].matches.extend(doc.matches)
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
+                   **kwargs):
+        if context_doc:
+            if context_doc.id not in self.doc_pointers:
+                self.doc_pointers[context_doc.id] = context_doc
+            else:
+                getattr(self.doc_pointers[context_doc.id], field).extend(docs)

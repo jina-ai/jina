@@ -1,12 +1,13 @@
 import os
-import pytest
 from typing import List, Dict
+
 import numpy as np
-from jina.flow import Flow
-from jina.proto.jina_pb2 import Document
+import pytest
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
-from tests import JinaTestCase, random_docs
+from jina.flow import Flow
+from jina.proto.jina_pb2 import Document
+from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,16 +26,15 @@ class MockEncoder(BaseEncoder):
     def encode(self, data: str, *args, **kwargs) -> 'np.ndarray':
         output = []
         for r in data:
-            if "mode1" in r:
+            if 'mode1' in r:
                 output.append([0.0, 0.0, 0.0])
-            elif "mode2" in r:
+            elif 'mode2' in r:
                 output.append([1.0, 1.0, 1.0])
 
         return np.array(output)
 
 
 class ReduceAllDriverTestCase(JinaTestCase):
-    @pytest.mark.skip('Not working as expected')
     def test_merge_chunks_with_different_mode_id(self):
         def input_fn():
             doc1 = Document()
@@ -53,11 +53,11 @@ class ReduceAllDriverTestCase(JinaTestCase):
             for doc in req.index.docs:
                 self.assertEqual(len(doc.chunks), 2)
 
-        flow = Flow().add(name='crafter', uses='!MockSegmenter'). \
+        flow = Flow().add(name='crafter', uses='MockSegmenter'). \
             add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
             add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
-            add(name='reducer', uses='- !ReduceAllDriver | {traverse_on: [chunks], depth_range: [0, 0]}',
+            add(name='reducer', uses='- !ReduceAllDriver | {traverse_on: [chunks], depth_range: [0, 1]}',
                 needs=['encoder1', 'encoder2'])
 
         with flow:
-            flow.index(input_fn=input_fn, output_fn=validate)
+            flow.index(input_fn=input_fn, output_fn=print)
