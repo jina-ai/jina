@@ -252,8 +252,6 @@ message Request {
         Command command = 1; // the control command
 
         map<string, string> args = 2; // the pea arguments, useful in STATUS
-
-        uint32 modality = 3; // modality of the requested, used in ROUTER-DEALER pattern, tells the router which modality wants to get documents for.
     }
 
     Status status = 6; // status info
