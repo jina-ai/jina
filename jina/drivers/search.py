@@ -35,11 +35,11 @@ class KVSearchDriver(BaseSearchDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        miss_idx = []  #: missed hit results, not some search may not ends with result. especially in shards
-        for idx, tk in enumerate(docs):
-            r = self.exec_fn(tk.id)
+        miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
+        for idx, retrieved_doc in enumerate(docs):
+            r = self.exec_fn(retrieved_doc.id)
             if r:
-                tk.MergeFrom(r)
+                retrieved_doc.MergeFrom(r)
             else:
                 miss_idx.append(idx)
 
@@ -62,11 +62,11 @@ class VectorSearchDriver(BaseSearchDriver):
         if doc_pts:
             idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
             op_name = self.exec.__class__.__name__
-            for c, topks, scs in zip(doc_pts, idx, dist):
-                for m, s in zip(topks, scs):
-                    r = c.matches.add()
-                    r.level_depth = c.level_depth
-                    r.id = m
-                    r.score.ref_id = c.id
-                    r.score.value = s
+            for doc, topks, scores in zip(doc_pts, idx, dist):
+                for match_id, score in zip(topks, scores):
+                    r = doc.matches.add()
+                    r.level_depth = doc.level_depth
+                    r.id = match_id
+                    r.score.ref_id = doc.id
+                    r.score.value = score
                     r.score.op_name = op_name
