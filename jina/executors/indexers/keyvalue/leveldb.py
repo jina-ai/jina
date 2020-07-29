@@ -46,7 +46,7 @@ class LeveldbIndexer(BasePbIndexer):
         import plyvel
         return plyvel.DB(self.index_abspath, create_if_missing=True)
 
-    def query(self, key: str, *args, **kwargs) -> Union['jina_pb2.Chunk', 'jina_pb2.Document']:
+    def query(self, key: str, *args, **kwargs) -> 'jina_pb2.Document':
         """Find the protobuf chunk/doc using id
 
         :param key: ``id``
