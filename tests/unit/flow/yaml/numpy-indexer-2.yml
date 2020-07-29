@@ -1,0 +1,36 @@
+!CompoundIndexer
+metas:
+  workspace: './'
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec2.gz
+    metas:
+      name: vecidx2  # a customized name
+      workspace: './'
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk2.gz
+    metas:
+      name: kvidx2  # a customized name
+      workspace: './'
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          depth_range: [1, 1]
+          traverse_on: [chunks]
+          executor: vecidx2
+      - !ExcludeQL
+        with:
+          fields:
+            - embedding
+            - buffer
+            - blob
+            - text
+      - !KVIndexDriver
+        with:
+          executor: kvidx2
+    ControlRequest:
+      - !ControlReqDriver {}

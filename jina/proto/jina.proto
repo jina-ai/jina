@@ -104,6 +104,9 @@ message Document {
     NdArray embedding = 19;
 
     Relevance score = 20;
+
+    // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
+    string modality = 21;
 }
 
 /**
@@ -119,7 +122,7 @@ message Envelope {
     // unique id of the request
     uint32 request_id = 3;
 
-    // timeout in second until this message is droped
+    // timeout in second until this message is dropped
     uint32 timeout = 4;
 
     /**

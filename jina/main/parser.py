@@ -181,7 +181,6 @@ def set_pea_parser(parser=None):
     show_all = 'JINA_FULL_CLI' in os.environ
     if not parser:
         parser = set_base_parser()
-
     gp0 = add_arg_group(parser, 'pea basic arguments')
     gp0.add_argument('--name', type=str,
                      help='the name of this pea, used to identify the pod and its logs.')

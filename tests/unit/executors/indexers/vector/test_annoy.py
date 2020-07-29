@@ -26,7 +26,7 @@ class MyTestCase(JinaTestCase):
             index_abspath = a.index_abspath
             save_abspath = a.save_abspath
 
-        with BaseIndexer.load_config(os.path.join(cur_dir, 'annoy-wrap.yml')) as b:
+        with BaseIndexer.load_config(os.path.join(cur_dir, 'yaml/annoy-wrap.yml')) as b:
             idx, dist = b.query(query, top_k=4)
             global retr_idx
             if retr_idx is None:
@@ -36,7 +36,7 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(idx.shape, dist.shape)
             self.assertEqual(idx.shape, (10, 4))
 
-        with BaseIndexer.load_config(os.path.join(cur_dir, 'nmslib-wrap.yml')) as c:
+        with BaseIndexer.load_config(os.path.join(cur_dir, 'yaml/nmslib-wrap.yml')) as c:
             idx, dist = c.query(query, top_k=4)
             if retr_idx is None:
                 retr_idx = idx

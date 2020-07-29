@@ -27,10 +27,30 @@ def random_docs(num_docs):
         yield d
 
 
+def random_docs_with_chunks(num_docs):
+    d1 = jina_pb2.Document()
+    d1.id = 1
+    d1.text = 'chunk1 chunk2'
+    yield d1
+    d2 = jina_pb2.Document()
+    d2.id = 1
+    d2.text = 'chunk3'
+    yield d2
+
+
 class DummySegmenter(BaseSegmenter):
 
     def craft(self, text, *args, **kwargs):
         return [{'text': 'adasd' * (j + 1)} for j in range(10)]
+
+
+class DummyModeIdSegmenter(BaseSegmenter):
+
+    def craft(self, text, *args, **kwargs):
+        if 'chunk3' not in text:
+            return [{'text': f'chunk{j + 1}', 'modality': f'mode{j + 1}'} for j in range(2)]
+        elif 'chunk3' in text:
+            return [{'text': f'chunk3', 'modality': 'mode3'}]
 
 
 class QueryLangTestCase(JinaTestCase):
@@ -130,6 +150,32 @@ class QueryLangTestCase(JinaTestCase):
 
         with f:
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+
+    def test_filter_ql_modality_wrong_depth(self):
+        def validate(req):
+            # since no doc has modality mode2 they are all erased from the list of docs
+            self.assertEqual(len(req.docs), 0)
+
+        f = (Flow().add(uses='DummyModeIdSegmenter')
+            .add(
+            uses='- !FilterQL | {lookups: {modality: mode2}, traverse_on: [chunks], depth_range: [0, 1]}'))
+
+        with f:
+            f.index(random_docs_with_chunks(2), output_fn=validate, callback_on_body=True)
+
+    def test_filter_ql_modality(self):
+        def validate(req):
+            # docs are not filtered, so 2 docs are returned, but only the chunk at depth1 with modality mode2 is returned
+            self.assertEqual(len(req.docs), 2)
+            self.assertEqual(len(req.docs[0].chunks), 1)
+            self.assertEqual(len(req.docs[1].chunks), 0)
+
+        f = (Flow().add(uses='DummyModeIdSegmenter')
+            .add(
+            uses='- !FilterQL | {lookups: {modality: mode2}, traverse_on: [chunks], depth_range: [1, 1]}'))
+
+        with f:
+            f.index(random_docs_with_chunks(2), output_fn=validate, callback_on_body=True)
 
     def test_filter_compose_ql(self):
         def validate(req):

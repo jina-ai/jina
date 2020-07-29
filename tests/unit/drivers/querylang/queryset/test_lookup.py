@@ -133,3 +133,10 @@ class LookupTestCase(JinaTestCase):
         self.assertTrue(leaf.evaluate(mock0))
         mock1 = LookupTestCase.MockId(4)
         self.assertFalse(leaf.evaluate(mock1))
+
+    def test_lookup_leaf_None(self):
+        leaf = LookupLeaf(id=3)
+        mock0 = LookupTestCase.MockId(3)
+        self.assertTrue(leaf.evaluate(mock0))
+        mock1 = LookupTestCase.MockId(4)
+        self.assertFalse(leaf.evaluate(mock1))
