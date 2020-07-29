@@ -82,7 +82,4 @@ class ReduceAllDriver(ReduceDriver):
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
                    **kwargs):
         if context_doc:
-            if context_doc.id not in self.doc_pointers:
-                self.doc_pointers[context_doc.id] = context_doc
-            else:
-                getattr(self.doc_pointers[context_doc.id], field).extend(docs)
+            getattr(self.doc_pointers[context_doc.id], field).extend(docs)

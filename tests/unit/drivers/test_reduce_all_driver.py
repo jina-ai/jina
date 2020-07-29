@@ -60,4 +60,4 @@ class ReduceAllDriverTestCase(JinaTestCase):
                 needs=['encoder1', 'encoder2'])
 
         with flow:
-            flow.index(input_fn=input_fn, output_fn=print)
+            flow.index(input_fn=input_fn, output_fn=validate)
