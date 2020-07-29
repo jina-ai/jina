@@ -163,11 +163,11 @@ with f:
 !Flow
 pods:
   encode:
-    uses: $RESOURCE_DIR/helloworld.encoder.yml
-    parallel: $PARALLEL
+    uses: encoder.yml
+    parallel: 2
   index:
-    uses: $RESOURCE_DIR/helloworld.indexer.yml
-    shards: $SHARDS
+    uses: indexer.yml
+    shards: 2
     separated_workspace: true
 ```
 
