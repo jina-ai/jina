@@ -35,11 +35,11 @@ class KVSearchDriver(BaseSearchDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        miss_idx = []  #: missed hit results, not some search may not ends with result. especially in shards
-        for idx, tk in enumerate(docs):
-            r = self.exec_fn(tk.id)
+        miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
+        for idx, retrieved_doc in enumerate(docs):
+            r = self.exec_fn(retrieved_doc.id)
             if r:
-                tk.MergeFrom(r)
+                retrieved_doc.MergeFrom(r)
             else:
                 miss_idx.append(idx)
 
