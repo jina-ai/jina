@@ -258,14 +258,20 @@ def random_name() -> str:
 
 
 def random_port() -> int:
-    from contextlib import closing
-    import socket
-    import threading
-    with threading.Lock():
-        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-            s.bind(('', 0))
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            return s.getsockname()[1]
+    if 'JINA_SEQUENTIAL_PORTS' in os.environ:
+        # feel like this gives higher chance of collision in unit test
+        from contextlib import closing
+        import socket
+        import threading
+        with threading.Lock():
+            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+                s.bind(('', 0))
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                return s.getsockname()[1]
+    else:
+        import random
+        min_port, max_port = 49152, 65535
+        return random.randrange(min_port, max_port)
 
 
 def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
@@ -503,12 +509,14 @@ def get_valid_local_config_source(path: str, to_stream: bool = False):
         raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
                                 ' or a valid file path, or a supported class name.' % path)
 
+
 def valid_local_config_source(path: str) -> bool:
     try:
         get_valid_local_config_source(path)
         return True
     except:
         return False
+
 
 def get_parsed_args(kwargs, parser, parser_name: str = None):
     args = kwargs2list(kwargs)
