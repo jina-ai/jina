@@ -497,23 +497,23 @@ class FlowTestCase(JinaTestCase):
         with f:
             f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on_body=True)
 
-    def test_flow_with_mode_ids_simple(self):
+    def test_flow_with_modalitys_simple(self):
         def validate(req):
             for d in req.index.docs:
-                self.assertTrue(d.mode_id in ['mode1', 'mode2'])
+                self.assertTrue(d.modality in ['mode1', 'mode2'])
 
         def input_fn():
             doc1 = Document()
-            doc1.mode_id = 'mode1'
+            doc1.modality = 'mode1'
             doc2 = Document()
-            doc2.mode_id = 'mode2'
+            doc2.modality = 'mode2'
             doc3 = Document()
-            doc3.mode_id = 'mode3'
+            doc3.modality = 'mode3'
             return [doc1, doc2, doc3]
 
         flow = Flow().add(name='chunk_seg', parallel=3, uses='_forward').\
             add(name='encoder12', parallel=2,
-                uses='- !FilterQL | {lookups: {mode_id__in: [mode1, mode2]}, depth_range: [0, 0]}')
+                uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, depth_range: [0, 0]}')
         with flow:
             flow.index(input_fn=input_fn, output_fn=validate)
 

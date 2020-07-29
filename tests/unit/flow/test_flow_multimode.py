@@ -18,8 +18,8 @@ class MockSegmenter(BaseSegmenter):
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
-        chunks = [dict(text=split[0], offset=0, weight=1.0, mode_id='mode1'),
-                  dict(text=split[1], offset=1, weight=1.0, mode_id='mode2')]
+        chunks = [dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
+                  dict(text=split[1], offset=1, weight=1.0, modality='mode2')]
         return chunks
 
 
@@ -38,7 +38,7 @@ class MockEncoder(BaseEncoder):
 
 class MultiModeFlowTestCase(JinaTestCase):
 
-    def test_flow_with_mode_ids(self):
+    def test_flow_with_modalitys(self):
         def input_fn():
             doc1 = Document()
             doc1.id = 1
@@ -86,10 +86,10 @@ class MultiModeFlowTestCase(JinaTestCase):
         self.assertEqual(len(chunkIndexer1.query_handler.items()), 3)
         for key, pb in chunkIndexer1.query_handler.items():
             for chunk in pb.chunks:
-                self.assertEqual(chunk.mode_id, 'mode1')
+                self.assertEqual(chunk.modality, 'mode1')
 
         chunkIndexer2 = BinaryPbIndexer(index_filename='chunk2.gz')
         self.assertEqual(len(chunkIndexer2.query_handler.items()), 3)
         for key, pb in chunkIndexer2.query_handler.items():
             for chunk in pb.chunks:
-                self.assertEqual(chunk.mode_id, 'mode2')
+                self.assertEqual(chunk.modality, 'mode2')

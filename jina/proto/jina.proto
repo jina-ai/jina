@@ -105,8 +105,8 @@ message Document {
 
     Relevance score = 20;
 
-    // mode_id, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
-    string mode_id = 21;
+    // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
+    string modality = 21;
 }
 
 /**
@@ -253,7 +253,7 @@ message Request {
 
         map<string, string> args = 2; // the pea arguments, useful in STATUS
 
-        uint32 mode_id = 3; // mode_id of the requested, used in ROUTER-DEALER pattern, tells the router which mode_id wants to get documents for.
+        uint32 modality = 3; // modality of the requested, used in ROUTER-DEALER pattern, tells the router which modality wants to get documents for.
     }
 
     Status status = 6; // status info

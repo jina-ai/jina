@@ -16,8 +16,8 @@ class MockSegmenter(BaseSegmenter):
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
-        chunks = [dict(text=split[0], offset=0, weight=1.0, mode_id='mode1'),
-                  dict(text=split[1], offset=1, weight=1.0, mode_id='mode2')]
+        chunks = [dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
+                  dict(text=split[1], offset=1, weight=1.0, modality='mode2')]
         return chunks
 
 
@@ -35,7 +35,7 @@ class MockEncoder(BaseEncoder):
 
 
 class ReduceAllDriverTestCase(JinaTestCase):
-    def test_merge_chunks_with_different_mode_id(self):
+    def test_merge_chunks_with_different_modality(self):
         def input_fn():
             doc1 = Document()
             doc1.id = 1
@@ -49,7 +49,7 @@ class ReduceAllDriverTestCase(JinaTestCase):
             return [doc1, doc2, doc3]
 
         def validate(req):
-            # docs are not filtered, so 2 docs are returned, but only the chunk at depth1 with mode_id mode2 is returned
+            # docs are not filtered, so 2 docs are returned, but only the chunk at depth1 with modality mode2 is returned
             for doc in req.index.docs:
                 self.assertEqual(len(doc.chunks), 2)
 
