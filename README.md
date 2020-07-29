@@ -137,8 +137,8 @@ The implementation behind it is as simple as can be:
 <table>
 <tr>
 <td> Python API </td>
-<td> index.yml</td>
-<td> <a href="https://github.com/jina-ai/dashboard">Flow in Dashboard</a></td>
+<td> or use YAML spec</td>
+<td> or use <a href="https://github.com/jina-ai/dashboard">Dashboard</a></td>
 </tr>
 <tr>
 <td>
