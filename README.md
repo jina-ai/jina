@@ -147,9 +147,10 @@ The implementation behind it is as simple as can be:
 ```python
 from jina.flow import Flow
 
-f = (Flow().add(uses='encoder.yml', parallel=2)
-           .add(uses='indexer.yml', shards=2, 
-                separated_workspace=True))
+f = (Flow()
+        .add(uses='encoder.yml', parallel=2)
+        .add(uses='indexer.yml', shards=2, 
+             separated_workspace=True))
 
 with f:
     f.index(fashion_mnist, batch_size=1024)
