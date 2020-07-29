@@ -48,17 +48,19 @@
 
 </p>
 
-Build a search system backed by deep learning? You come to the right place!
+Want to build a search system backed by deep learning? You come to the right place!
 
 Jina is the easiest way to build neural search in the cloud. It has **long-term support** from a full-time, [venture-backed team](https://jina.ai). 
 
 ⏱️ **Time Saver** - Bootstrapping an AI-powered search system with Jina is just minutes thing. It saves engineers months of time! 
 
-🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms.
+🧠 **First-class AI models** - Jina is a new design pattern for building neural search system, offering first-class support on [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).  
 
-🚀 **Production Ready** - Cloud-native features such as containerization, microservice, scaling, sharding, async IO, REST, gRPC come out-of-the-box.
+🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, audio, you name it!
 
-🧩 **Plug & Play** - Extending Jina with simple Python scripts or Docker images optimized to your search scenario. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) to find out more.
+🚀 **Production Ready** - Cloud-native features come out-of-the-box, e.g. containerization, microservice, scaling, sharding, async IO, REST, gRPC.
+
+🧩 **Plug & Play** - Extending Jina with simple Python scripts or Docker images optimized to your search domain. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) for more extensions.
 
 ## Contents
 
