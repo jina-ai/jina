@@ -48,17 +48,17 @@
 
 </p>
 
-Want to build a search system backed by deep learning? You've come to the right place!
+Build a search system backed by deep learning? You come to the right place!
 
-Jina is an easier way to build neural search in the cloud. It has **long-term support** from a full-time, [venture-backed team](https://jina.ai).
+Jina is the easiest way to build neural search in the cloud. It has **long-term support** from a full-time, [venture-backed team](https://jina.ai). 
 
-🌌 **Universal Search** - Large-scale indexing and querying of any kind on multiple platforms and architectures.
+⏱️ **Time Saver** - Bootstrapping an AI-powered search system with Jina is just minutes thing. It saves engineers months of time! 
 
-🚀 **High Performance** - Scale out your VideoBERT, Xception, word tokenizer, image segmenter, and database to handle billions of data points. Features like async, replicas, and sharding come out-of-the-box.
+🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms.
 
-🐣 **Easy System Engineering** - One-stop solution that frees you from handcrafting and gluing packages, libraries and databases.
+🚀 **Production Ready** - Cloud-native features such as containerization, microservice, scaling, sharding, async IO, REST, gRPC come out-of-the-box.
 
-🧩 **Powerful Extensions** - Extensions are just Python scripts or Docker images. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) to find out more.
+🧩 **Plug & Play** - Extending Jina with simple Python scripts or Docker images optimized to your search scenario. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) to find out more.
 
 ## Contents
 
@@ -145,10 +145,11 @@ The implementation behind it is as simple as can be:
 ```python
 from jina.flow import Flow
 
-f = Flow.load_config('index.yml')
+f = (Flow().add(uses='encoder.yml', parallel=2)
+           .add(uses='indexer.yml', shards=2, separated_workspace=True))
 
 with f:
-    f.index(input_fn)
+    f.index(fashion_mnist, batch_size=1024)
 ```
 
 </td>
@@ -158,24 +159,13 @@ with f:
 ```yaml
 !Flow
 pods:
-  chunk_seg:
-    uses: helloworld.crafter.yml
-    replicas: $REPLICAS
-    read_only: true
-  doc_idx:
-    uses: helloworld.indexer.doc.yml
   encode:
-    uses: helloworld.encoder.yml
-    needs: chunk_seg
-    replicas: $REPLICAS
-  chunk_idx:
-    uses: helloworld.indexer.chunk.yml
-    replicas: $SHARDS
+    uses: $RESOURCE_DIR/helloworld.encoder.yml
+    parallel: $PARALLEL
+  index:
+    uses: $RESOURCE_DIR/helloworld.indexer.yml
+    shards: $SHARDS
     separated_workspace: true
-  join_all:
-    uses: _merge
-    needs: [doc_idx, chunk_idx]
-    read_only: true
 ```
 </sub>
 
