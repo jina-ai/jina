@@ -22,23 +22,20 @@ class EncodeDriver(BaseEncodeDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        contents, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
-                                                                         embedding=False)
+        contents, docs_pts, bad_doc_ids = extract_docs(docs, embedding=False)
 
-        if no_chunk_docs:
-            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
+        if bad_doc_ids:
+            self.logger.warning(f'these bad docs can not be added: {bad_doc_ids} '
+                                f'from level depth {docs[0].level_depth}')
 
-        if bad_chunk_ids:
-            self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
-
-        if chunk_pts:
+        if docs_pts:
             embeds = self.exec_fn(contents)
-            if len(chunk_pts) != embeds.shape[0]:
+            if len(docs_pts) != embeds.shape[0]:
                 self.logger.error(
-                    'mismatched %d chunks and a %s shape embedding, '
-                    'the first dimension must be the same' % (len(chunk_pts), embeds.shape))
-            for c, emb in zip(chunk_pts, embeds):
-                c.embedding.CopyFrom(array2pb(emb))
+                    f'mismatched {len(docs_pts)} docs from level {docs[0].level_depth} '
+                    f'and a {embeds.shape} shape embedding, the first dimension must be the same')
+            for doc, embedding in zip(docs_pts, embeds):
+                doc.embedding.CopyFrom(array2pb(embedding))
 
 
 class UnaryEncodeDriver(EncodeDriver):

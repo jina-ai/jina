@@ -24,16 +24,13 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs, embedding=True)
+        embed_vecs, docs_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
-        if no_chunk_docs:
-            self.pea.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
+        if bad_doc_ids:
+            self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
-        if bad_chunk_ids:
-            self.pea.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
-
-        if chunk_pts:
-            self.exec_fn(np.array([c.id for c in chunk_pts]), np.stack(embed_vecs))
+        if docs_pts:
+            self.exec_fn(np.array([doc.id for doc in docs_pts]), np.stack(embed_vecs))
 
 
 class KVIndexDriver(BaseIndexDriver):

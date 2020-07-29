@@ -54,23 +54,19 @@ class VectorSearchDriver(BaseSearchDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
-                                                                           embedding=True)
+        embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
-        if no_chunk_docs:
-            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
+        if bad_doc_ids:
+            self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
-        if bad_chunk_ids:
-            self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
-
-        if chunk_pts:
+        if doc_pts:
             idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
             op_name = self.exec.__class__.__name__
-            for chunk, topks, scores in zip(chunk_pts, idx, dist):
+            for doc, topks, scores in zip(doc_pts, idx, dist):
                 for match_id, score in zip(topks, scores):
-                    r = chunk.matches.add()
-                    r.level_depth = chunk.level_depth
+                    r = doc.matches.add()
+                    r.level_depth = doc.level_depth
                     r.id = match_id
-                    r.score.ref_id = chunk.id
+                    r.score.ref_id = doc.id
                     r.score.value = score
                     r.score.op_name = op_name
