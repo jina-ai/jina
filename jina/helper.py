@@ -258,7 +258,7 @@ def random_name() -> str:
 
 
 def random_port() -> int:
-    if 'JINA_SEQUENTIAL_PORTS' in os.environ:
+    if 'JINA_RANDOM_PORTS' not in os.environ:
         # feel like this gives higher chance of collision in unit test
         from contextlib import closing
         import socket
