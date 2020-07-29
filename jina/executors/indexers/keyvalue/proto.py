@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import gzip
 import json
-from typing import Union, Iterator
+from typing import Iterator, Optional
 
 from google.protobuf.json_format import Parse
 
@@ -39,7 +39,7 @@ class BasePbIndexer(BaseKVIndexer):
         """
         return gzip.open(self.index_abspath, 'w' + self.mode, compresslevel=self.compress_level)
 
-    def query(self, key: int) -> 'jina_pb2.Document':
+    def query(self, key: int) -> Optional['jina_pb2.Document']:
         """ Find the protobuf chunk/doc using id
 
         :param key: ``id``
@@ -74,7 +74,7 @@ class JsonPbIndexer(BasePbIndexer):
                         self._size += 1
         return r
 
-    def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
+    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs):
         """Add a JSON-friendly object to the indexer
 
         :param obj: an object can be jsonified
@@ -108,7 +108,7 @@ class BinaryPbIndexer(BasePbIndexer):
             self._size += 1
         return r
 
-    def _add(self, keys: Iterator[Union['jina_pb2.Chunk', 'jina_pb2.Document']], *args, **kwargs):
+    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs):
         """Add a object to the indexer
 
         :param obj: an object
