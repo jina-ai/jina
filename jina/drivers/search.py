@@ -48,28 +48,21 @@ class KVSearchDriver(BaseSearchDriver):
             del docs[j]
 
 
-# DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc
-# DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc
-
 class VectorSearchDriver(BaseSearchDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
-        embed_vecs, chunk_pts, no_chunk_docs, bad_chunk_ids = extract_docs(docs,
-                                                                           embedding=True)
+        embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
-        if no_chunk_docs:
-            self.logger.warning(f'these docs contain no chunk: {no_chunk_docs}')
+        if bad_doc_ids:
+            self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
-        if bad_chunk_ids:
-            self.logger.warning(f'these bad chunks can not be added: {bad_chunk_ids}')
-
-        if chunk_pts:
+        if doc_pts:
             idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
             op_name = self.exec.__class__.__name__
-            for c, topks, scs in zip(chunk_pts, idx, dist):
+            for c, topks, scs in zip(doc_pts, idx, dist):
                 for m, s in zip(topks, scs):
                     r = c.matches.add()
                     r.level_depth = c.level_depth

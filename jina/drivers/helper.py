@@ -70,42 +70,39 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     return blob
 
 
-def extract_docs(docs: Iterable['jina_pb2.Document'],
-                 embedding: bool) -> Tuple:
+def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents
     :param embedding: an indicator of extracting embedding or not.
-                    If ``True`` then all chunk-level embedding are extracted.
-                    If ``False`` then ``text``, ``buffer``, ``blob`` info of each chunks are extracted
-    :return: A tuple of four pieces:
+                    If ``True`` then all doc-level embedding are extracted.
+                    If ``False`` then ``text``, ``buffer``, ``blob`` info of each doc are extracted
+    :return: A tuple of 3 pieces:
 
             - a numpy ndarray of extracted info
-            - the corresponding chunk references
-            - the doc_id list where the doc has no chunk, useful for debugging
-            - the chunk_id list where the chunk has no contents, useful for debugging
+            - the corresponding doc references
+            - the doc_id list where the doc has no contents, useful for debugging
     """
-    _contents = []
-    chunk_pts = []
-    no_chunk_docs = []
-    bad_chunk_ids = []
+    contents = []
+    docs_pts = []
+    bad_doc_ids = []
 
     if embedding:
-        _extract_fn = lambda c: c.embedding.buffer and pb2array(c.embedding)
+        _extract_fn = lambda doc: doc.embedding.buffer and pb2array(doc.embedding)
     else:
-        _extract_fn = lambda c: c.text or c.buffer or (c.blob and pb2array(c.blob))
+        _extract_fn = lambda doc: doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
 
-    for c in docs:
-        _c = _extract_fn(c)
+    for doc in docs:
+        content = _extract_fn(doc)
 
-        if _c is not None:
-            _contents.append(_c)
-            chunk_pts.append(c)
+        if content is not None:
+            contents.append(content)
+            docs_pts.append(doc)
         else:
-            bad_chunk_ids.append((c.id, c.parent_id))
+            bad_doc_ids.append((doc.id, doc.parent_id))
 
-    contents = np.stack(_contents) if _contents else None
-    return contents, chunk_pts, no_chunk_docs, bad_chunk_ids
+    contents = np.stack(contents) if contents else None
+    return contents, docs_pts, bad_doc_ids
 
 
 def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
