@@ -2,7 +2,6 @@ import os
 from typing import List, Dict
 
 import numpy as np
-import pytest
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
@@ -49,9 +48,11 @@ class ReduceAllDriverTestCase(JinaTestCase):
             return [doc1, doc2, doc3]
 
         def validate(req):
-            # docs are not filtered, so 2 docs are returned, but only the chunk at depth1 with modality mode2 is returned
+            self.assertEqual(len(req.index.docs), 3)
             for doc in req.index.docs:
                 self.assertEqual(len(doc.chunks), 2)
+                self.assertIn(doc.chunks[0].modality, ['mode1', 'mode2'])
+                self.assertIn(doc.chunks[1].modality, ['mode1', 'mode2'])
 
         flow = Flow().add(name='crafter', uses='MockSegmenter'). \
             add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
