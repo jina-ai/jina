@@ -157,8 +157,6 @@ with f:
 
 </td>
 <td>
-  <sub>
-
 ```yaml
 !Flow
 pods:
@@ -170,7 +168,6 @@ pods:
     shards: $SHARDS
     separated_workspace: true
 ```
-</sub>
 
 </td>
 <td>
