@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 import numpy as np
 
@@ -7,8 +6,6 @@ from jina.drivers.helper import array2pb, pb2array
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 from tests import JinaTestCase
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockIndexer(BaseKVIndexer):
