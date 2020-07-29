@@ -69,12 +69,24 @@ class ReduceDriver(BaseRecursiveDriver):
 
 
 class ReduceAllDriver(ReduceDriver):
-    """:class:`ReduceAllDriver` merges chunks and matches from all requests """
+    """:class:`ReduceAllDriver` merges chunks/matches from all requests, recursively.
+
+    .. note::
+
+        It uses the last request as a reference.
+    """
+
+    def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
+        if doc.id not in self.doc_pointers:
+            self.doc_pointers[doc.id] = doc
 
     def reduce(self, *args, **kwargs):
+        self.is_apply, self.is_apply_all = True, False
         # use docs in the last request to set the pointers
-        self.doc_pointers = {d.id: d for d in self.req.docs}
-        # traverse apply on ALL requests collected
+        self.doc_pointers = {}
+        self._traverse_apply(self.req.docs, *args, **kwargs)
+        self.is_apply, self.is_apply_all = False, True
+        # traverse apply on ALL previous requests collected
         for r in self.prev_reqs_exclude_last:
             self._traverse_apply(r.docs, *args, **kwargs)
         super().reduce(*args, **kwargs)
