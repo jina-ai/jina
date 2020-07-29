@@ -48,9 +48,6 @@ class KVSearchDriver(BaseSearchDriver):
             del docs[j]
 
 
-# DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc
-# DocKVSearchDriver, no need anymore as there is no differnce between chunk and doc
-
 class VectorSearchDriver(BaseSearchDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
@@ -69,11 +66,11 @@ class VectorSearchDriver(BaseSearchDriver):
         if chunk_pts:
             idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
             op_name = self.exec.__class__.__name__
-            for c, topks, scs in zip(chunk_pts, idx, dist):
-                for m, s in zip(topks, scs):
-                    r = c.matches.add()
-                    r.level_depth = c.level_depth
-                    r.id = m
-                    r.score.ref_id = c.id
-                    r.score.value = s
+            for chunk, topks, scores in zip(chunk_pts, idx, dist):
+                for match_id, score in zip(topks, scores):
+                    r = chunk.matches.add()
+                    r.level_depth = chunk.level_depth
+                    r.id = match_id
+                    r.score.ref_id = chunk.id
+                    r.score.value = score
                     r.score.op_name = op_name
