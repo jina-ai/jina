@@ -85,10 +85,10 @@ class BaseIndexer(BaseExecutor):
         self._query_handler = None
         self._write_handler = None
 
-    def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
 
-        :param vectors: query vectors in ndarray, shape B x D
+        :param keys: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
         :return: a tuple of two ndarray.
             The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
