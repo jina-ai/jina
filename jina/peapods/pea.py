@@ -22,6 +22,7 @@ from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 from ..helper import valid_local_config_source
+from multiprocessing.synchronize import Event
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -38,7 +39,7 @@ class PeaMeta(type):
                                     'dct': dct}})
         return _cls
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, *args, **kwargs) -> 'PeaMeta':
         # switch to the new backend
         _cls = {
             'thread': threading.Thread,
@@ -55,7 +56,7 @@ class PeaMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
-def _get_event(obj):
+def _get_event(obj: 'BasePea') -> Event:
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):
@@ -64,7 +65,7 @@ def _get_event(obj):
         raise NotImplementedError
 
 
-def _make_or_event(obj, *events):
+def _make_or_event(obj: 'BasePea', *events) -> Event:
     or_event = _get_event(obj)
 
     def or_set(self):
@@ -100,7 +101,7 @@ class BasePea(metaclass=PeaMeta):
     communicates with others via protobuf and ZeroMQ
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['argparse.Namespace', Dict]) -> None:
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
@@ -360,7 +361,7 @@ class BasePea(metaclass=PeaMeta):
         """
         pass
 
-    def close(self):
+    def close(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready.is_set() and hasattr(self, 'ctrl_addr'):
             return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
@@ -373,7 +374,7 @@ class BasePea(metaclass=PeaMeta):
             return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
                                      timeout=self.args.timeout_ctrl)
 
-    def start(self):
+    def start(self) -> 'BasePea':
         super().start()
         if isinstance(self.args, dict):
             _timeout = getattr(self.args['peas'][0], 'timeout_ready', -1)
@@ -393,8 +394,8 @@ class BasePea(metaclass=PeaMeta):
             raise TimeoutError(
                 f'{self.__class__} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
 
-    def __enter__(self):
+    def __enter__(self) -> 'BasePea':
         return self.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()

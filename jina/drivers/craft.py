@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Set, List
+from typing import Optional, Dict, Set, List
 
 from . import BaseExecutableDriver
 from .helper import array2pb, pb_obj2dict
@@ -12,7 +12,7 @@ from ..proto import jina_pb2
 class CraftDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
-    def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
+    def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs) -> None:
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
@@ -43,7 +43,9 @@ class SegmentDriver(CraftDriver):
     """
 
     def __init__(self, first_chunk_id: int = 0,
-                 random_chunk_id: bool = True, level_names: List[str] = None, *args, **kwargs):
+                 random_chunk_id: bool = True, level_names: List[str] = None, *args,
+        **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         if isinstance(level_names, list) and (self._depth_end - self._depth_start + 1) != len(self.level_names):
             self.level_names = level_names

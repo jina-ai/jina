@@ -7,7 +7,7 @@ import time
 from contextlib import ExitStack
 from queue import Empty
 from threading import Thread
-from typing import Set, Dict, List, Callable, Union
+from typing import Optional, Set, Dict, List, Callable, Union
 
 from . import Pea
 from .gateway import GatewayPea, RESTGatewayPea
@@ -17,6 +17,7 @@ from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, valid_local_config_source
 from ..main.parser import set_pod_parser, set_gateway_parser
+from argparse import Namespace
 
 
 class BasePod:
@@ -24,7 +25,7 @@ class BasePod:
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['argparse.Namespace', Dict]) -> None:
         """
 
         :param args: arguments parsed from the CLI
@@ -74,7 +75,7 @@ class BasePod:
         """Get the grpc host name """
         return self.peas_args['peas'][0].host
 
-    def _parse_args(self, args):
+    def _parse_args(self, args: Namespace) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         peas_args = {
             'head': None,
             'tail': None,
@@ -142,7 +143,7 @@ class BasePod:
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
     @property
-    def all_args(self):
+    def all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod. """
         return self.peas_args['peas'] + (
             [self.peas_args['head']] if self.peas_args['head'] else []) + (
@@ -167,7 +168,7 @@ class BasePod:
             # s.host_in = __default_host__
             # s.host_out = __default_host__
 
-    def start_sentinels(self):
+    def start_sentinels(self) -> None:
         self.sentinel_threads = []
         if isinstance(self._args, argparse.Namespace) and getattr(self._args, 'shutdown_idle', False):
             self.sentinel_threads.append(Thread(target=self.close_if_idle,
@@ -176,7 +177,7 @@ class BasePod:
         for t in self.sentinel_threads:
             t.start()
 
-    def start(self):
+    def start(self) -> 'FlowPod':
         """Start to run all Peas in this BasePod.
 
         Remember to close the BasePod with :meth:`close`.
@@ -237,7 +238,7 @@ class BasePod:
     def is_shutdown(self) -> bool:
         return all(not p.is_ready.is_set() for p in self.peas)
 
-    def __enter__(self):
+    def __enter__(self) -> Union['GatewayFlowPod', 'FlowPod']:
         return self.start()
 
     @property
@@ -254,7 +255,7 @@ class BasePod:
             p.is_ready.wait()
         return True
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
 
     def join(self):
@@ -267,7 +268,7 @@ class BasePod:
         finally:
             self.peas.clear()
 
-    def close(self):
+    def close(self) -> None:
         self.stack.close()
 
 
@@ -284,7 +285,7 @@ class FlowPod(BasePod):
     """
 
     def __init__(self, kwargs: Dict,
-                 needs: Set[str] = None, parser: Callable = set_pod_parser):
+                 needs: Set[str] = None, parser: Callable = set_pod_parser) -> None:
         """
 
         :param kwargs: unparsed argument in dict, if given the
@@ -305,7 +306,7 @@ class FlowPod(BasePod):
         return f'{cmd} {" ".join(self.cli_args)}'
 
     @staticmethod
-    def connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'):
+    def connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
         """Connect two Pods
 
         :param first: the first BasePod
@@ -367,7 +368,7 @@ class FlowPod(BasePod):
         else:
             raise ValueError('the current pod has no tail router, deducting the tail is confusing')
 
-    def start(self):
+    def start(self) -> 'FlowPod':
         if self._args.host == __default_host__:
             return super().start()
         else:
@@ -379,7 +380,7 @@ class FlowPod(BasePod):
             return self
 
 
-def _set_peas_args(args, head_args, tail_args):
+def _set_peas_args(args: Namespace, head_args: Namespace, tail_args: Namespace) -> List[Namespace]:
     result = []
     for _ in range(args.parallel):
         _args = copy.deepcopy(args)
@@ -403,7 +404,7 @@ def _set_peas_args(args, head_args, tail_args):
     return result
 
 
-def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
+def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -> Namespace:
     """Set the outgoing args of the head router
     """
 
@@ -433,7 +434,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
     return _head_args
 
 
-def _copy_to_tail_args(args, as_router: bool = True):
+def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     """Set the incoming args of the tail router
     """
     _tail_args = copy.deepcopy(args)
@@ -449,7 +450,7 @@ def _copy_to_tail_args(args, as_router: bool = True):
     return _tail_args
 
 
-def _fill_in_host(bind_args, connect_args):
+def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
     from sys import platform
 
     bind_local = (bind_args.host == '0.0.0.0')
@@ -477,7 +478,7 @@ def _fill_in_host(bind_args, connect_args):
 class GatewayPod(BasePod):
     """A :class:`BasePod` that holds a Gateway """
 
-    def start(self):
+    def start(self) -> 'GatewayFlowPod':
         self.stack = ExitStack()
         for s in self.all_args:
             p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else GatewayPea(s)
@@ -491,5 +492,5 @@ class GatewayPod(BasePod):
 class GatewayFlowPod(GatewayPod, FlowPod):
     """A :class:`FlowPod` that holds a Gateway """
 
-    def __init__(self, kwargs: Dict = None, needs: Set[str] = None):
+    def __init__(self, kwargs: Dict = None, needs: Set[str] = None) -> None:
         FlowPod.__init__(self, kwargs, needs, parser=set_gateway_parser)

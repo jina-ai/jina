@@ -7,7 +7,7 @@ from collections import Iterator
 
 
 class BaseCounter(Iterator):
-    def __init__(self, seed: int = 0):
+    def __init__(self, seed: int = 0) -> None:
         self.seed = seed
 
     def __next__(self):
@@ -15,13 +15,13 @@ class BaseCounter(Iterator):
 
 
 class SimpleCounter(BaseCounter):
-    def __init__(self, seed: int = 0):
+    def __init__(self, seed: int = 0) -> None:
         super().__init__(seed)
         # note that zero is reserved
         if self.seed == 0:
             self.seed = 1
 
-    def __next__(self):
+    def __next__(self) -> int:
         ret = self.seed
         self.seed += 1
         return ret

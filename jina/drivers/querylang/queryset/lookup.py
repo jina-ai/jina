@@ -210,7 +210,7 @@ def _lookup(key, val, item):
 class LookupTreeElem:
     """Base class for a child in the _lookup expression tree"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.negate = False
 
     def evaluate(self, item):
@@ -270,7 +270,7 @@ class LookupNode(LookupTreeElem):
 class LookupLeaf(LookupTreeElem):
     """Class for a leaf in the _lookup expression tree"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__()
         self.lookups = kwargs
 
