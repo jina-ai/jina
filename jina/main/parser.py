@@ -186,7 +186,7 @@ def set_pea_parser(parser=None):
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string')
-    gp0.add_argument('--uses', type=str, default='_nop',
+    gp0.add_argument('--uses', type=str, default='_pass',
                      help='the config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '

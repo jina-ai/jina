@@ -2,6 +2,7 @@ import os
 from typing import List, Dict
 
 import numpy as np
+
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
