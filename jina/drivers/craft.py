@@ -69,6 +69,5 @@ class SegmentDriver(CraftDriver):
                 c.parent_id = doc.id
                 c.level_depth = doc.level_depth + 1
                 c.mime_type = doc.mime_type
-            doc.length = len(ret)
         else:
             self.logger.warning(f'doc {doc.id} at level {doc.level_depth} gives no chunk')

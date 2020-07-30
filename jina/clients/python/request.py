@@ -80,6 +80,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
 
             d.id = next(doc_counter)
             d.weight = 1.0
+            d.length = batch_size
         yield req
 
 
