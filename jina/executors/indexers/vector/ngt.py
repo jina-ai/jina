@@ -53,8 +53,9 @@ class NGTIndexer(BaseNumpyIndexer):
         idx = []
         for key in keys:
             results = index.search(key, size=top_k, epsilon=self.epsilon)
-            index_k, distance_k = zip(*results)
-            idx.append(index_k)
-            dist.append(distance_k)
+            if results:
+                index_k, distance_k = zip(*results)
+                idx.append(index_k)
+                dist.append(distance_k)
 
         return self.int2ext_key[np.array(idx)], np.array(dist)
