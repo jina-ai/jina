@@ -1,13 +1,10 @@
-import os
 from typing import Any
 import numpy as np
 from jina.drivers.encode import EncodeDriver
 from jina.executors.encoders import BaseEncoder
-from jina.drivers.helper import array2pb, pb2array
+from jina.drivers.helper import array2pb
 from jina.proto import jina_pb2
 from tests import JinaTestCase
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockEncoder(BaseEncoder):
@@ -41,7 +38,7 @@ def create_documents_to_encode(num_docs):
 
 class EncodeDriverTestCase(JinaTestCase):
 
-    def test_encode_ranker_driver(self):
+    def test_encode_driver(self):
         docs = create_documents_to_encode(10)
         driver = SimpleEncoderDriver()
         executor = MockEncoder()
