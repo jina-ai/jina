@@ -18,7 +18,7 @@ class NGTIndexer(BaseNumpyIndexer):
         Quick Install : pip install ngt
     """
 
-    def __init__(self, num_threads: int = 2, metric: str = 'L2', epsilon: int = 0.1, *args, **kwargs):
+    def __init__(self, num_threads: int = 2, metric: str = 'L2', epsilon: float = 0.1, *args, **kwargs):
         """
         Initialize an NGT Indexer
         :param num_threads: Number of threads to build index
@@ -53,9 +53,7 @@ class NGTIndexer(BaseNumpyIndexer):
         idx = []
         for key in keys:
             results = index.search(key, size=top_k, epsilon=self.epsilon)
-            index_k = []
-            distance_k = []
-            [(index_k.append(result[0]), distance_k.append(result[1])) for result in results]
+            index_k, distance_k = zip(*results)
             idx.append(index_k)
             dist.append(distance_k)
 

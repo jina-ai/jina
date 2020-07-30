@@ -45,6 +45,6 @@ class MilvusIndexer(BaseVectorIndexer):
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.insert(keys, vectors)
 
-    def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        dist, ids = self.query_handler.search(vectors, top_k, *args, **kwargs)
+    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        dist, ids = self.query_handler.search(keys, top_k, *args, **kwargs)
         return np.array(ids), np.array(dist)
