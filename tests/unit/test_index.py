@@ -73,7 +73,7 @@ class MyTestCase(JinaTestCase):
             print(d)
 
     def test_simple_route(self):
-        f = Flow().add(uses='_forward')
+        f = Flow().add(uses='_pass')
         with f:
             f.index(input_fn=random_docs(10))
 
@@ -101,8 +101,8 @@ class MyTestCase(JinaTestCase):
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route_parallel(self):
         fa1 = set_flow_parser().parse_args(['--optimize-level', str(FlowOptimizeLevel.NONE)])
-        f1 = Flow(fa1).add(uses='_forward', parallel=3)
-        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(uses='_forward', parallel=3)
+        f1 = Flow(fa1).add(uses='_pass', parallel=3)
+        f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(uses='_pass', parallel=3)
 
         def start_client(fl):
             fl.index(input_fn=random_docs(10))
@@ -133,7 +133,7 @@ class MyTestCase(JinaTestCase):
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):
-        f = Flow().add(uses='_forward')
+        f = Flow().add(uses='_pass')
 
         def start_client(fl):
             fl.index(input_fn=random_docs(10))

@@ -48,7 +48,7 @@ class MyTestCase(JinaTestCase):
     def f1(self, quant):
         os.environ['JINA_ARRAY_QUANT'] = quant
 
-        f = Flow(callback_on_body=True).add(uses='_forward')
+        f = Flow(callback_on_body=True).add(uses='_pass')
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
 
@@ -57,7 +57,7 @@ class MyTestCase(JinaTestCase):
     def f2(self, quant):
         os.environ['JINA_ARRAY_QUANT'] = quant
 
-        f = Flow(callback_on_body=True, compress_hwm=1024).add(uses='_forward')
+        f = Flow(callback_on_body=True, compress_hwm=1024).add(uses='_pass')
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
 
