@@ -183,7 +183,7 @@ pods:
 All the big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards. They all happened in just one minute!
 
 
-### Adding Parallelism and Sharding
+#### Adding Parallelism and Sharding
 
 ```python
 from jina.flow import Flow
@@ -192,40 +192,42 @@ f = (Flow().add(uses='encoder.yml', parallel=2)
            .add(uses='indexer.yml', shards=2, separated_workspace=True))
 ```
 
-
-### Distributing the Flow
+#### [Distributing the Flow](https://docs.jina.ai/chapters/remote/index.html)
 
 ```python
 from jina.flow import Flow
 
-f = (Flow().add(uses='encoder.yml', host='192.168.0.99')
-            .add(uses='indexer.yml', shards=2, separated_workspace=True))
+f = Flow().add(uses='encoder.yml', host='192.168.0.99')
 ``` 
 
-### Concatenating Embeddings
+#### [Using Docker Container](https://docs.jina.ai/chapters/hub/index.html)
+
+```python
+from jina.flow import Flow
+
+f = Flow().add(uses='jinahub:cnn-encode')
+``` 
+
+#### Concatenating Embeddings
 
 ```python
 from jina.flow import Flow
 
 f = (Flow().add(name='eb1', uses='BiTImageEncoder')
            .add(name='eb2', uses='KerasImageEncoder', needs='gateway')
-           .join(needs=['eb1', 'eb2'], uses='_concat')
-           .add(uses='SimpleIndexer', shards=2, separated_workspace=True))
+           .join(needs=['eb1', 'eb2'], uses='_concat'))
 ``` 
 
-### Enabling Network Query
+#### [Enabling Network Query](https://docs.jina.ai/chapters/restapi/index.html)
 
 ```python
 from jina.flow import Flow
 
-f = (Flow(port_expose=45678, rest_api=True)
-        .add(uses='encoder.yml', parallel=2)
-        .add(uses='indexer.yml', shards=2, polling='all', uses_reducing='_merge_all'))
+f = Flow(port_expose=45678, rest_api=True)
 
 with f:
     f.block()
 ``` 
-
 
 Intrigued? Play with different options:
 
