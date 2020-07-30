@@ -137,7 +137,7 @@ The implementation behind it is as simple as can be:
 <table>
 <tr>
 <td> Python API </td>
-<td> or use YAML spec</td>
+<td> or use <a href="https://github.com/jina-ai/jina/blob/master/jina/resources/helloworld.flow.index.yml">YAML spec</a></td>
 <td> or use <a href="https://github.com/jina-ai/dashboard">Dashboard</a></td>
 </tr>
 <tr>
@@ -182,6 +182,51 @@ pods:
 
 All the big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards. They all happened in just one minute!
 
+
+### Adding Parallelism and Sharding
+
+```python
+from jina.flow import Flow
+
+f = (Flow().add(uses='encoder.yml', parallel=2)
+           .add(uses='indexer.yml', shards=2, separated_workspace=True))
+```
+
+
+### Distributing the Flow
+
+```python
+from jina.flow import Flow
+
+f = (Flow().add(uses='encoder.yml', host='192.168.0.99')
+            .add(uses='indexer.yml', shards=2, separated_workspace=True))
+``` 
+
+### Concatenating Embeddings
+
+```python
+from jina.flow import Flow
+
+f = (Flow().add(name='eb1', uses='BiTImageEncoder')
+           .add(name='eb2', uses='KerasImageEncoder', needs='gateway')
+           .join(needs=['eb1', 'eb2'], uses='_concat')
+           .add(uses='SimpleIndexer', shards=2, separated_workspace=True))
+``` 
+
+### Enabling Network Query
+
+```python
+from jina.flow import Flow
+
+f = (Flow(port_expose=45678, rest_api=True)
+        .add(uses='encoder.yml', parallel=2)
+        .add(uses='indexer.yml', shards=2, polling='all', uses_reducing='_merge_all'))
+
+with f:
+    f.block()
+``` 
+
+
 Intrigued? Play with different options:
 
 ```bash
@@ -189,6 +234,7 @@ jina hello-world --help
 ```
 
 [Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
+
 
 ## Build your own Project
 
