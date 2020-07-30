@@ -76,7 +76,7 @@ message Document {
     // the weight of this document
     float weight = 5;
 
-    // total number of chunks in this document
+    // total number of siblings of this document (docs that are in the same level_depth and parent_id)
     uint32 length = 6;
 
     // some binary meta information of this Doc in bytes
