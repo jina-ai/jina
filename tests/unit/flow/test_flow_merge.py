@@ -45,11 +45,11 @@ class MergeFlowTest(JinaTestCase):
 
     def test_this_should_work(self):
         f = (Flow()
-             .add(name='a1', uses='_forward')
+             .add(name='a1', uses='_pass')
              .add(name='a11', uses='DummySegment', needs='a1')
              .add(name='a12', uses='DummySegment', needs='a1')
              .add(name='r1', uses='_merge_all', needs=['a11', 'a12'])
-             .add(name='a2', uses='_forward', needs='gateway')
+             .add(name='a2', uses='_pass', needs='gateway')
              .add(name='a21', uses='DummySegment', needs='a2')
              .add(name='a22', uses='DummySegment', needs='a2')
              .add(name='r2', uses='_merge_all', needs=['a21', 'a22'])

@@ -182,7 +182,6 @@ pods:
 
 All the big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards. They all happened in just one minute!
 
-
 #### Adding Parallelism and Sharding
 
 ```python
@@ -205,7 +204,8 @@ f = Flow().add(uses='encoder.yml', host='192.168.0.99')
 ```python
 from jina.flow import Flow
 
-f = Flow().add(uses='jinahub:cnn-encode')
+f = (Flow().add(uses='jinahub/cnn-encode:0.1')
+           .add(uses='jinahub/faiss-index:0.2', host='192.168.0.99'))
 ``` 
 
 #### Concatenating Embeddings

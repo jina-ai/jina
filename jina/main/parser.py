@@ -186,11 +186,11 @@ def set_pea_parser(parser=None):
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string')
-    gp0.add_argument('--uses', type=str, default='BaseExecutor',
+    gp0.add_argument('--uses', type=str, default='_nop',
                      help='the config of the executor, it could be '
                           '> a YAML file path, '
                           '> a supported executor\'s class name, '
-                          '> one of "_clear", "_route", "_forward", "_logforward", "_merge" '
+                          '> one of "_clear", "_route", "_pass", "_logforward", "_merge" '
                           '> the content of YAML config (must starts with "!")'
                           '> a docker image')  # pod(no use) -> pea
     gp0.add_argument('--py-modules', type=str, nargs='*',

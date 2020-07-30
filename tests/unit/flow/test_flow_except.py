@@ -33,7 +33,7 @@ class FlowExceptTestCase(JinaTestCase):
             self.assertEqual(req.status.details[0].pod, 'r2')
             self.assertTrue(req.status.details[0].exception.startswith('ZeroDivisionError'))
 
-        f = (Flow().add(name='r1', uses='_forward')
+        f = (Flow().add(name='r1', uses='_pass')
              .add(name='r2', uses='!DummyCrafter')
              .add(name='r3', uses='!BaseEncoder'))
 
@@ -54,7 +54,7 @@ class FlowExceptTestCase(JinaTestCase):
             self.assertTrue(req.status.details[0].exception.startswith('ZeroDivisionError'))
             self.assertTrue(req.status.details[1].exception.startswith('NotImplementedError'))
 
-        f = (Flow().add(name='r1', uses='_forward')
+        f = (Flow().add(name='r1', uses='_pass')
              .add(name='r2', uses='!DummyCrafter', parallel=3)
              .add(name='r3', uses='!BaseEncoder'))
 

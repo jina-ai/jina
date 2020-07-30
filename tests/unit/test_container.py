@@ -109,9 +109,9 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_topo_parallel(self):
         f = (Flow()
-             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', parallel=3)
-             .add(name='d2', uses='_forward', parallel=3)
-             .add(name='d3', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward',
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass', parallel=3)
+             .add(name='d2', uses='_pass', parallel=3)
+             .add(name='d3', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass',
                   needs='d1')
              .join(['d3', 'd2'])
              )
@@ -147,16 +147,16 @@ class MyTestCase(JinaTestCase):
 
     def test_tail_host_docker2local_parallel(self):
         f = (Flow()
-             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward', parallel=3)
-             .add(name='d2', uses='_forward'))
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass', parallel=3)
+             .add(name='d2', uses='_pass'))
         with f:
             self.assertEqual(getattr(f._pod_nodes['d1'].peas_args['tail'], 'host_out'), defaulthost)
             f.dry_run()
 
     def test_tail_host_docker2local(self):
         f = (Flow()
-             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_forward')
-             .add(name='d2', uses='_forward'))
+             .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass')
+             .add(name='d2', uses='_pass'))
         with f:
             self.assertEqual(getattr(f._pod_nodes['d1'].tail_args, 'host_out'), localhost)
             f.dry_run()

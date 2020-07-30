@@ -38,14 +38,14 @@ class MyTestCase(JinaTestCase):
             z.send_message(msg)
 
     def test_flow_with_jump(self):
-        f = (Flow().add(name='r1', uses='_forward')
-             .add(name='r2', uses='_forward')
-             .add(name='r3', uses='_forward', needs='r1')
-             .add(name='r4', uses='_forward', needs='r2')
-             .add(name='r5', uses='_forward', needs='r3')
-             .add(name='r6', uses='_forward', needs='r4')
-             .add(name='r8', uses='_forward', needs='r6')
-             .add(name='r9', uses='_forward', needs='r5')
+        f = (Flow().add(name='r1', uses='_pass')
+             .add(name='r2', uses='_pass')
+             .add(name='r3', uses='_pass', needs='r1')
+             .add(name='r4', uses='_pass', needs='r2')
+             .add(name='r5', uses='_pass', needs='r3')
+             .add(name='r6', uses='_pass', needs='r4')
+             .add(name='r8', uses='_pass', needs='r6')
+             .add(name='r9', uses='_pass', needs='r5')
              .add(name='r10', uses='_merge', needs=['r9', 'r8']))
 
         with f:
