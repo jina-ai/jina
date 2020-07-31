@@ -12,18 +12,15 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def input_fn():
-    np.random.seed(0)
     doc1 = Document()
     doc1.id = 1
-    a = np.random.random([7])
-    doc1.embedding.CopyFrom(array2pb(a))
+    doc1.embedding.CopyFrom(array2pb(np.random.random([7])))
     c = doc1.chunks.add()
     c.id = 3
     c.embedding.CopyFrom(array2pb(np.random.random([5])))
     doc2 = Document()
     doc2.id = 2
-    b = np.random.random([3])
-    doc2.embedding.CopyFrom(array2pb(b))
+    doc2.embedding.CopyFrom(array2pb(np.random.random([3])))
     d = doc2.chunks.add()
     d.id = 4
     d.embedding.CopyFrom(array2pb(np.random.random([9])))

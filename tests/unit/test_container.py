@@ -120,7 +120,7 @@ class MyTestCase(JinaTestCase):
             f.dry_run()
             f.index(input_fn=random_docs(1000))
 
-    @pytest.mark.skip('this leads to zmq address conflicts on github')
+    @pytest.mark.repeat(10)
     def test_container_volume(self):
         time.sleep(5)
         f = (Flow()
