@@ -14,13 +14,17 @@ def input_fn():
     np.random.seed(0)
     doc1 = Document()
     doc1.id = 1
-    doc1.embedding.CopyFrom(array2pb(np.random.random([7])))
+    a = np.random.random([7])
+    print(f'{a}')
+    doc1.embedding.CopyFrom(array2pb(a))
     c = doc1.chunks.add()
     c.id = 3
     c.embedding.CopyFrom(array2pb(np.random.random([5])))
     doc2 = Document()
     doc2.id = 2
-    doc2.embedding.CopyFrom(array2pb(np.random.random([3])))
+    b = np.random.random([3])
+    print(f'{b}')
+    doc2.embedding.CopyFrom(array2pb(b))
     d = doc2.chunks.add()
     d.id = 4
     d.embedding.CopyFrom(array2pb(np.random.random([9])))
@@ -36,6 +40,9 @@ class ConcatDriverTestCase(JinaTestCase):
         doc1.embedding.buffer += doc2.embedding.buffer
         doc1.embedding.shape[0] += doc2.embedding.shape[0]
         t2 = pb2array(doc1.embedding)
+        print(f'{t1}')
+        print(f'{t2}')
+
 
         np.testing.assert_almost_equal(t1, t2)
 
