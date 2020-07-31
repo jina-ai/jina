@@ -1,8 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import inspect
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Any
 
 from .. import BaseRecursiveDriver, BaseDriver
 from ...proto import jina_pb2
@@ -10,11 +9,24 @@ from ...proto import jina_pb2
 
 class QueryLangDriver(BaseRecursiveDriver):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, priority: int = 0, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = {k for k in inspect.getfullargspec(self.__init__).args if k != 'self'}
-        if not self.required_keys:
-            self.logger.warning(f'{self.__class__} works on keys, but no keys are specified')
+        self._priority = priority
+
+    def _get_parameter(self, key: str, default: Any):
+        for q in self.queryset:
+            if (not q.disabled and self.__class__.__name__ == q.name and
+                    q.priority > self._priority and key in q.parameters):
+                return q.parameters[key]
+        return getattr(self, f'_{key}', default)
+
+    def __getattr__(self, name: str):
+        # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
+        if name == '_init_kwargs_dict':
+            # raise attribute error to avoid recursive call
+            raise AttributeError
+        if name in self._init_kwargs_dict:
+            return self._get_parameter(name, default=self._init_kwargs_dict[name])
 
 
 class BaseQueryLangDriver(BaseDriver):

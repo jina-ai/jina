@@ -110,18 +110,11 @@ class PyClient(GrpcClient):
         _kwargs = vars(self.args)
         _kwargs['data'] = self.input_fn
         # override by the caller-specific kwargs
-        for k in _kwargs.keys():
-            if k in kwargs:
-                _kwargs[k] = kwargs[k]
+        _kwargs.update(kwargs)
 
         tname = str(self.mode).lower()
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
-
-        if 'mime_type' not in kwargs:
-            self.logger.warning('starting from v0.2.0, '
-                                'the best practice of sending binary data is with "mime_type". '
-                                'when not given then MIME sniff (based on libmagic) will be used')
 
         req_iter = getattr(request, tname)(**_kwargs)
         # next(req_iter)

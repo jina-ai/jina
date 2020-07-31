@@ -738,7 +738,7 @@ class Flow:
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).index(input_fn, output_fn)
+        self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
