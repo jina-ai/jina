@@ -271,6 +271,16 @@ def random_port() -> int:
     else:
         import random
         min_port, max_port = 49152, 65535
+        # scan all the available ports and randomly sample from it
+        # port_list = []
+        # import socket
+        # for i in range(min_port, max_port):
+        #     s = socket(socket.AF_INET, socket.SOCK_STREAM)
+        #     result = s.connect_ex(('', i))
+        #     if result == 0:
+        #         port_list.append(i)
+        #     s.close()
+        # return random.sample(port_list, 1)
         return random.randrange(min_port, max_port)
 
 

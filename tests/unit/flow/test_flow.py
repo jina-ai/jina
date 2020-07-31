@@ -428,7 +428,7 @@ class FlowTestCase(JinaTestCase):
         with f:
             node = f._pod_nodes['gateway']
             self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
 
             node = f._pod_nodes['r1']
             self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
