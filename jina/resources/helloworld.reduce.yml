@@ -5,7 +5,9 @@ metas:
 requests:
   on:
     [SearchRequest]:
-      - !ReduceAllDriver {}
+      - !ReduceAllDriver
+        with:
+          traverse_on: matches
       - !SortQL
         with:
           reverse: true

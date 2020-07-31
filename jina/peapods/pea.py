@@ -101,7 +101,7 @@ class BasePea(metaclass=PeaMeta):
     communicates with others via protobuf and ZeroMQ
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]) -> None:
+    def __init__(self, args: Union['argparse.Namespace', Dict]):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI

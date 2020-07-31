@@ -41,14 +41,14 @@ class FlowTestCase(JinaTestCase):
         self.assertEqual(cm.exception.code, 1)
 
     def test_flow_with_jump(self):
-        f = (Flow().add(name='r1', uses='_forward')
-             .add(name='r2', uses='_forward')
-             .add(name='r3', uses='_forward', needs='r1')
-             .add(name='r4', uses='_forward', needs='r2')
-             .add(name='r5', uses='_forward', needs='r3')
-             .add(name='r6', uses='_forward', needs='r4')
-             .add(name='r8', uses='_forward', needs='r6')
-             .add(name='r9', uses='_forward', needs='r5')
+        f = (Flow().add(name='r1', uses='_pass')
+             .add(name='r2', uses='_pass')
+             .add(name='r3', uses='_pass', needs='r1')
+             .add(name='r4', uses='_pass', needs='r2')
+             .add(name='r5', uses='_pass', needs='r3')
+             .add(name='r6', uses='_pass', needs='r4')
+             .add(name='r8', uses='_pass', needs='r6')
+             .add(name='r9', uses='_pass', needs='r5')
              .add(name='r10', uses='_merge', needs=['r9', 'r8']))
 
         with f:
@@ -114,7 +114,7 @@ class FlowTestCase(JinaTestCase):
                 yield b'aaa'
 
         f = (Flow()
-             .add(uses='_forward'))
+             .add(uses='_pass'))
 
         with f:
             f.index(input_fn=bytes_gen)
@@ -281,14 +281,14 @@ class FlowTestCase(JinaTestCase):
         time.sleep(2)
 
     def test_py_client(self):
-        f = (Flow().add(name='r1', uses='_forward')
-             .add(name='r2', uses='_forward')
-             .add(name='r3', uses='_forward', needs='r1')
-             .add(name='r4', uses='_forward', needs='r2')
-             .add(name='r5', uses='_forward', needs='r3')
-             .add(name='r6', uses='_forward', needs='r4')
-             .add(name='r8', uses='_forward', needs='r6')
-             .add(name='r9', uses='_forward', needs='r5')
+        f = (Flow().add(name='r1', uses='_pass')
+             .add(name='r2', uses='_pass')
+             .add(name='r3', uses='_pass', needs='r1')
+             .add(name='r4', uses='_pass', needs='r2')
+             .add(name='r5', uses='_pass', needs='r3')
+             .add(name='r6', uses='_pass', needs='r4')
+             .add(name='r8', uses='_pass', needs='r6')
+             .add(name='r9', uses='_pass', needs='r5')
              .add(name='r10', uses='_merge', needs=['r9', 'r8']))
 
         with f:
@@ -342,8 +342,8 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
 
     def test_dry_run_with_two_pathways_diverging_at_gateway(self):
-        f = (Flow().add(name='r2', uses='_forward')
-             .add(name='r3', uses='_forward', needs='gateway')
+        f = (Flow().add(name='r2', uses='_pass')
+             .add(name='r3', uses='_pass', needs='gateway')
              .join(['r2', 'r3']))
 
         with f:
@@ -366,9 +366,9 @@ class FlowTestCase(JinaTestCase):
             f.dry_run()
 
     def test_dry_run_with_two_pathways_diverging_at_non_gateway(self):
-        f = (Flow().add(name='r1', uses='_forward')
-             .add(name='r2', uses='_forward')
-             .add(name='r3', uses='_forward', needs='r1')
+        f = (Flow().add(name='r1', uses='_pass')
+             .add(name='r2', uses='_pass')
+             .add(name='r3', uses='_pass', needs='r1')
              .join(['r2', 'r3']))
 
         with f:
@@ -511,7 +511,7 @@ class FlowTestCase(JinaTestCase):
             doc3.modality = 'mode3'
             return [doc1, doc2, doc3]
 
-        flow = Flow().add(name='chunk_seg', parallel=3, uses='_forward').\
+        flow = Flow().add(name='chunk_seg', parallel=3, uses='_pass').\
             add(name='encoder12', parallel=2,
                 uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, depth_range: [0, 0]}')
         with flow:

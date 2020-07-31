@@ -7,17 +7,18 @@ import random
 import re
 import sys
 import time
+
+import numpy as np
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
-
-import numpy as np
-from ruamel.yaml import YAML, nodes
-
-from . import JINA_GLOBAL
 from argparse import ArgumentParser, Namespace
 from io import StringIO
 from uvloop import Loop
+from ruamel.yaml import YAML, nodes
+
+from . import JINA_GLOBAL
+
 
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',

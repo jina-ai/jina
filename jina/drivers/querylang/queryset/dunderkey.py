@@ -32,8 +32,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## This module deals with code regarding handling the double
 ## underscore separated keys
-from .helper import *
 from typing import Tuple, Union
+
+from .helper import *
 
 
 def dunderkey(*args):

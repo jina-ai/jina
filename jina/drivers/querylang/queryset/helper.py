@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from collections import Iterable
 from functools import partial
 from collections.abc import Iterable
 from typing import Callable, List, Type, Union

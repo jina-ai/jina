@@ -17,7 +17,7 @@ class BaseCrafter(BaseExecutor):
         :mod:`jina.drivers.handlers.craft`
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.required_keys = {k for k in inspect.getfullargspec(self.craft).args if k != 'self'}
         if not self.required_keys:

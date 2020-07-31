@@ -7,7 +7,7 @@ from collections import Iterator
 
 
 class BaseCounter(Iterator):
-    def __init__(self, seed: int = 0) -> None:
+    def __init__(self, seed: int = 0):
         self.seed = seed
 
     def __next__(self):
@@ -15,7 +15,7 @@ class BaseCounter(Iterator):
 
 
 class SimpleCounter(BaseCounter):
-    def __init__(self, seed: int = 0) -> None:
+    def __init__(self, seed: int = 0):
         super().__init__(seed)
         # note that zero is reserved
         if self.seed == 0:
@@ -34,5 +34,5 @@ class RandomUintCounter(BaseCounter):
         if self.seed:
             random.seed(self.seed)
 
-    def __next__(self):
+    def __next__(self) -> int:
         return random.randint(1, self.max_val)  # zero is reserved

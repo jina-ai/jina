@@ -20,7 +20,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class ClientTestCase(JinaTestCase):
 
     def test_client(self):
-        f = Flow().add(uses='_forward')
+        f = Flow().add(uses='_pass')
         with f:
             print(py_client(port_expose=f.port_expose).call_unary(b'a1234', mode=ClientMode.INDEX))
 
@@ -49,7 +49,7 @@ class ClientTestCase(JinaTestCase):
             self.assertEqual(a.status_code, 405)
 
     def test_gateway_index(self):
-        f = Flow(rest_api=True).add(uses='_forward')
+        f = Flow(rest_api=True).add(uses='_pass')
         with f:
             a = requests.post(f'http://0.0.0.0:{f.port_expose}/api/index',
                               json={'data': [
@@ -64,7 +64,7 @@ class ClientTestCase(JinaTestCase):
             self.assertEqual(a.status_code, 200)
 
     def test_gateway_index_with_args(self):
-        f = Flow(rest_api=True).add(uses='_forward')
+        f = Flow(rest_api=True).add(uses='_pass')
         with f:
             a = requests.post(f'http://0.0.0.0:{f.port_expose}/api/index',
                               json={'data': [

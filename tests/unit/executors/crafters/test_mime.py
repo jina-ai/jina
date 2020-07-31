@@ -66,7 +66,7 @@ class MyTestCase(JinaTestCase):
             f.index_lines(lines=['abc', '123', 'hello, world'])
 
     def test_gateway_dataui(self):
-        f = (Flow().add(uses='_forward'))
+        f = (Flow().add(uses='_pass'))
 
         with f:
             f.index_lines(lines=['abc', '123', 'hello, world'])

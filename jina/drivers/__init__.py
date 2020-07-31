@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Any, Dict, Optional, Callable, Tuple, Iterable
+from typing import Any, Dict, Callable, Tuple, Iterable
 
 import ruamel.yaml.constructor
 
@@ -83,7 +83,7 @@ class BaseDriver(metaclass=DriverType):
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs):
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
         self.pea = None  # type: 'BasePea'
 
@@ -162,10 +162,7 @@ class BaseDriver(metaclass=DriverType):
 class BaseRecursiveDriver(BaseDriver):
 
     def __init__(self, depth_range: Tuple[int] = (0, 0), apply_order: str = 'post',
-                 traverse_on: Tuple[str] = ('chunks',),
-                 *args,
-        **kwargs
-    ) -> None:
+                 traverse_on: Tuple[str] = ('chunks',), *args, **kwargs):
         """
 
         :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
@@ -264,7 +261,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
-    def __init__(self, executor: str = None, method: str = None, *args, **kwargs) -> None:
+    def __init__(self, executor: str = None, method: str = None, *args, **kwargs):
         """ Initialize a :class:`BaseExecutableDriver`
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
