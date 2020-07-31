@@ -255,6 +255,8 @@ message Request {
     }
 
     Status status = 6; // status info
+
+    map<string, google.protobuf.Struct> queryset = 7; // the query set
 }
 
 message SpawnRequest {
