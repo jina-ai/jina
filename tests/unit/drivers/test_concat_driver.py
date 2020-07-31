@@ -11,6 +11,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def input_fn():
+    np.random.seed(0)
     doc1 = Document()
     doc1.id = 1
     doc1.embedding.CopyFrom(array2pb(np.random.random([7])))
