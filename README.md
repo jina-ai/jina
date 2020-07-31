@@ -48,17 +48,19 @@
 
 </p>
 
-Want to build a search system backed by deep learning? You've come to the right place!
+Want to build a search system backed by deep learning? You come to the right place!
 
-Jina is an easier way to build neural search in the cloud. It has **long-term support** from a full-time, [venture-backed team](https://jina.ai).
+Jina is the easiest way to build neural search in the cloud. It provides an one-stop solution for multi-/cross-modality search. Jina has **long-term support** from a full-time, [venture-backed team](https://jina.ai). 
 
-🌌 **Universal Search** - Large-scale indexing and querying of any kind on multiple platforms and architectures.
+⏱️ **Time Saver** - Bootstrapping an AI-powered search system with Jina is just minutes thing. It saves engineers months of time! 
 
-🚀 **High Performance** - Scale out your VideoBERT, Xception, word tokenizer, image segmenter, and database to handle billions of data points. Features like async, replicas, and sharding come out-of-the-box.
+🧠 **First-class AI models** - Jina is a new design pattern of the neural search system, offering first-class support on [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).  
 
-🐣 **Easy System Engineering** - One-stop solution that frees you from handcrafting and gluing packages, libraries and databases.
+🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code you name it!
 
-🧩 **Powerful Extensions** - Extensions are just Python scripts or Docker images. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) to find out more.
+🚀 **Production Ready** - Cloud-native features come out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
+
+🧩 **Plug & Play** - Extending Jina with simple Python scripts or Docker images optimized to your search domain. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) for more extensions.
 
 ## Contents
 
@@ -135,8 +137,8 @@ The implementation behind it is as simple as can be:
 <table>
 <tr>
 <td> Python API </td>
-<td> index.yml</td>
-<td> <a href="https://github.com/jina-ai/dashboard">Flow in Dashboard</a></td>
+<td> or use <a href="https://github.com/jina-ai/jina/blob/master/jina/resources/helloworld.flow.index.yml">YAML spec</a></td>
+<td> or use <a href="https://github.com/jina-ai/dashboard">Dashboard</a></td>
 </tr>
 <tr>
 <td>
@@ -145,39 +147,29 @@ The implementation behind it is as simple as can be:
 ```python
 from jina.flow import Flow
 
-f = Flow.load_config('index.yml')
+f = (Flow()
+        .add(uses='encoder.yml', parallel=2)
+        .add(uses='indexer.yml', shards=2, 
+             separated_workspace=True))
 
 with f:
-    f.index(input_fn)
+    f.index(fashion_mnist, batch_size=1024)
 ```
 
 </td>
 <td>
-  <sub>
 
 ```yaml
 !Flow
 pods:
-  chunk_seg:
-    uses: helloworld.crafter.yml
-    replicas: $REPLICAS
-    read_only: true
-  doc_idx:
-    uses: helloworld.indexer.doc.yml
   encode:
-    uses: helloworld.encoder.yml
-    needs: chunk_seg
-    replicas: $REPLICAS
-  chunk_idx:
-    uses: helloworld.indexer.chunk.yml
-    replicas: $SHARDS
+    uses: encoder.yml
+    parallel: 2
+  index:
+    uses: indexer.yml
+    shards: 2
     separated_workspace: true
-  join_all:
-    uses: _merge
-    needs: [doc_idx, chunk_idx]
-    read_only: true
 ```
-</sub>
 
 </td>
 <td>
@@ -190,6 +182,53 @@ pods:
 
 All the big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards. They all happened in just one minute!
 
+#### Adding Parallelism and Sharding
+
+```python
+from jina.flow import Flow
+
+f = (Flow().add(uses='encoder.yml', parallel=2)
+           .add(uses='indexer.yml', shards=2, separated_workspace=True))
+```
+
+#### [Distributing the Flow](https://docs.jina.ai/chapters/remote/index.html)
+
+```python
+from jina.flow import Flow
+
+f = Flow().add(uses='encoder.yml', host='192.168.0.99')
+``` 
+
+#### [Using Docker Container](https://docs.jina.ai/chapters/hub/index.html)
+
+```python
+from jina.flow import Flow
+
+f = (Flow().add(uses='jinahub/cnn-encode:0.1')
+           .add(uses='jinahub/faiss-index:0.2', host='192.168.0.99'))
+``` 
+
+#### Concatenating Embeddings
+
+```python
+from jina.flow import Flow
+
+f = (Flow().add(name='eb1', uses='BiTImageEncoder')
+           .add(name='eb2', uses='KerasImageEncoder', needs='gateway')
+           .join(needs=['eb1', 'eb2'], uses='_concat'))
+``` 
+
+#### [Enabling Network Query](https://docs.jina.ai/chapters/restapi/index.html)
+
+```python
+from jina.flow import Flow
+
+f = Flow(port_expose=45678, rest_api=True)
+
+with f:
+    f.block()
+``` 
+
 Intrigued? Play with different options:
 
 ```bash
@@ -197,6 +236,7 @@ jina hello-world --help
 ```
 
 [Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
+
 
 ## Build your own Project
 

@@ -63,7 +63,7 @@ def hello_world(args):
     # run it!
     with f:
         f.search_ndarray(targets['query']['data'], shuffle=True, size=args.num_query,
-                       output_fn=print_result, top_k=args.top_k, batch_size=args.query_batch_size)
+                         output_fn=print_result, top_k=args.top_k, batch_size=args.query_batch_size)
 
     # write result to html
     write_html(os.path.join(args.workdir, 'hello-world.html'))

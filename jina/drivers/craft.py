@@ -29,7 +29,7 @@ class CraftDriver(BaseExecutableDriver):
                     doc.blob.CopyFrom(array2pb(v))
             elif isinstance(protected_keys, dict) and k in protected_keys:
                 self.logger.warning(f'you are assigning a {k} in in {self.exec.__class__}, '
-                                    f'is it intentional? {k} will be override by {self.__class__} '
+                                    f'is it intentional? {k} will be overwritten by {self.__class__} '
                                     f'anyway')
             elif isinstance(v, list) or isinstance(v, tuple):
                 doc.ClearField(k)
@@ -69,6 +69,5 @@ class SegmentDriver(CraftDriver):
                 c.parent_id = doc.id
                 c.level_depth = doc.level_depth + 1
                 c.mime_type = doc.mime_type
-            doc.length = len(ret)
         else:
             self.logger.warning(f'doc {doc.id} at level {doc.level_depth} gives no chunk')

@@ -4,15 +4,7 @@ metas:
   workspace: $HW_WORKDIR
 requests:
   on:
-    IndexRequest:
-      - !Blob2PngURI {}
-      - !EncodeDriver {}
-      - !ExcludeQL
-        with:
-          fields:
-            - buffer
-            - chunks
-    SearchRequest:
+    [IndexRequest, SearchRequest]:
       - !Blob2PngURI {}
       - !EncodeDriver {}
       - !ExcludeQL

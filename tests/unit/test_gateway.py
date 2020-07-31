@@ -26,7 +26,7 @@ class MyTestCase(JinaTestCase):
             status_codes[index] = resp.status_code
 
         f = Flow(rest_api=True).add(
-            uses='_forward',
+            uses='_pass',
             parallel=2)
         with f:
             concurrency = 50
@@ -80,7 +80,7 @@ class MyTestCase(JinaTestCase):
                 ))
 
         f = Flow().add(
-            uses='_forward',
+            uses='_pass',
             parallel=2)
         with f:
             threads = []

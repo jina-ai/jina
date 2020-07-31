@@ -36,7 +36,7 @@ class BasePod:
         self.deducted_tail = None
         if hasattr(args, 'polling') and args.polling.is_push:
             # ONLY reset when it is push
-            args.uses_reducing = '_forward'
+            args.uses_reducing = '_pass'
 
         if getattr(args, 'parallel', 1) > 1:
             self.is_head_router = True
@@ -415,7 +415,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
             if as_router:
-                _head_args.uses = '_forward'
+                _head_args.uses = '_pass'
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
             if as_router:
@@ -424,7 +424,7 @@ def _copy_to_head_args(args, is_push: bool, as_router: bool = True):
         _head_args.socket_out = SocketType.PUB_BIND
         _head_args.num_part = args.parallel
         if as_router:
-            _head_args.uses = '_forward'
+            _head_args.uses = '_pass'
 
     if as_router:
         _head_args.name = args.name or ''

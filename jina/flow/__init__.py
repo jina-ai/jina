@@ -121,7 +121,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
                     end_node.connect_to_tail_of(start_node)
             elif end_node_name == 'gateway':
                 if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and \
-                    start_node.is_tail_router and start_node.tail_args.num_part <= 1:
+                        start_node.is_tail_router and start_node.tail_args.num_part <= 1:
                     # connect gateway directly to peas only if this is unblock router
                     # as gateway can not block & reduce message
                     flow.logger.info(
@@ -346,16 +346,19 @@ class Flow:
         kwargs['name'] = 'gateway'
         self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
-    def join(self, needs: Union[Tuple[str], List[str]], *args, **kwargs) -> 'Flow':
+    def join(self, needs: Union[Tuple[str], List[str]], uses: str = '_merge', name: str = 'joiner', *args,
+             **kwargs) -> 'Flow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
         :param needs: list of service names to wait
+        :param uses: the config of the executor, by default is ``_merge``
+        :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return self.add(name='joiner', uses='_merge', needs=needs, *args, **kwargs)
+        return self.add(name=name, uses=uses, needs=needs, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
