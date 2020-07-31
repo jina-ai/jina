@@ -1,13 +1,9 @@
-import os
-
 import numpy as np
 
 from jina.drivers.helper import array2pb, pb2array
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def input_fn():
@@ -36,6 +32,8 @@ class ConcatDriverTestCase(JinaTestCase):
         t2 = pb2array(doc1.embedding)
         self.assertEqual(t1.shape[0], 10)
         self.assertEqual(t2.shape[0], 10)
+        print(t1)
+        print(t2)
         np.testing.assert_almost_equal(t1, t2)
 
     def test_concat_embed_driver(self):
