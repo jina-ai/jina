@@ -9,16 +9,16 @@ from tests import JinaTestCase
 def input_fn():
     doc1 = Document()
     doc1.id = 1
-    doc1.embedding.CopyFrom(array2pb(np.random.random([7]).astype('float32')))
+    doc1.embedding.CopyFrom(array2pb(np.random.random([7])))
     c = doc1.chunks.add()
     c.id = 3
-    c.embedding.CopyFrom(array2pb(np.random.random([5]).astype('float32')))
+    c.embedding.CopyFrom(array2pb(np.random.random([5])))
     doc2 = Document()
     doc2.id = 2
-    doc2.embedding.CopyFrom(array2pb(np.random.random([3]).astype('float32')))
+    doc2.embedding.CopyFrom(array2pb(np.random.random([3])))
     d = doc2.chunks.add()
     d.id = 4
-    d.embedding.CopyFrom(array2pb(np.random.random([9]).astype('float32')))
+    d.embedding.CopyFrom(array2pb(np.random.random([9])))
     return [doc1, doc2]
 
 
@@ -32,8 +32,6 @@ class ConcatDriverTestCase(JinaTestCase):
         t2 = pb2array(doc1.embedding)
         self.assertEqual(t1.shape[0], 10)
         self.assertEqual(t2.shape[0], 10)
-        print(t1)
-        print(t2)
         np.testing.assert_almost_equal(t1, t2)
 
     def test_concat_embed_driver(self):
