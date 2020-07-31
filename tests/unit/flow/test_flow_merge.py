@@ -43,6 +43,7 @@ class MergeFlowTest(JinaTestCase):
         with f:
             f.index(input_fn=random_docs(10), output_fn=self.validate)
 
+    @pytest.mark.repeat(10)
     def test_this_should_work(self):
         f = (Flow()
              .add(name='a1', uses='_pass')
