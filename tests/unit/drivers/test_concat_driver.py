@@ -29,6 +29,9 @@ def input_fn():
 class ConcatDriverTestCase(JinaTestCase):
 
     def test_direct_concat(self):
+        t = np.random.random([9])
+        np.testing.assert_almost_equal(pb2array(array2pb(t)), t)
+
         doc1, doc2 = input_fn()
 
         t1 = np.concatenate([pb2array(doc1.embedding), pb2array(doc2.embedding)], axis=0)

@@ -21,6 +21,9 @@ def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
     :param blob: a blob described in protobuf
     """
     x = np.frombuffer(blob.buffer, dtype=blob.dtype)
+    dx = x.dtype
+    dx.newbyteorder('<')
+    x.astype(dx)
 
     if blob.quantization == jina_pb2.NdArray.FP16:
         x = x.astype(blob.original_dtype)
@@ -64,6 +67,10 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     else:
         blob.quantization = jina_pb2.NdArray.NONE
 
+    # to little endian
+    dx = x.dtype
+    dx.newbyteorder('<')
+    x.astype(dx)
     blob.buffer = x.tobytes()
     blob.shape.extend(list(x.shape))
     blob.dtype = x.dtype.name
