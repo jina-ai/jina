@@ -35,7 +35,7 @@ class dummyDriver(QueryLangDriver):
         self._arg2 = arg2
 
 
-class QueryLangTestCase(JinaTestCase):
+class QueryLangReaderTestCase(JinaTestCase):
 
     def test_read_from_req(self):
         def validate1(req):

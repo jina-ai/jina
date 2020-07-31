@@ -8,8 +8,37 @@ from ...proto import jina_pb2
 
 
 class QueryLangDriver(BaseRecursiveDriver):
+    """
+    :class:`QueryLangDriver` allows a driver to read arguments from the protobuf message. This allows a
+    driver to override its behavior based on the message it receives. Extremely useful in production, for example,
+    get ``top_k`` results, doing pagination, filtering.
+
+    To register the field you want to read from the message, simply register them in :meth:`__init__`.
+    For example, ``__init__(self, arg1, arg2, **kwargs)`` will allow the driver to read field ``arg1`` and ``arg2`` from
+    the message. When they are not found in the message, the value ``_arg1`` and ``_arg2`` will be used. Note the underscore
+    prefix.
+
+    .. note::
+        - To set default value of ``arg1``, use ``self._arg1 = ``, note the underscore in the front.
+        - To access ``arg1``, simply use ``self.arg1``. It automatically switch between default ``_arg1`` and ``arg1`` from the request.
+
+    For successful value reading, the following condition must be met:
+
+        - the ``name`` in the proto must match with the current class name
+        - the ``disabled`` field in the proto should not be ``False``
+        - the ``priority`` in the proto should be strictly greater than the driver's priority (by default is 0)
+        - the field name must exist in proto's ``parameters``
+
+    """
 
     def __init__(self, priority: int = 0, *args, **kwargs):
+        """
+
+        :param priority: the priority of its default arg values (hardcoded in Python). If the
+        received ``QueryLang`` has a higher priority, it will override the hardcoded value
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self._priority = priority
 
