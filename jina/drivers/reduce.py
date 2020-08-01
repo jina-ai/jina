@@ -4,7 +4,10 @@ __license__ = "Apache-2.0"
 from collections import defaultdict
 from typing import Dict, List, Iterable
 
+import numpy as np
+
 from . import BaseRecursiveDriver
+from .helper import pb2array, array2pb
 from ..excepts import NoExplicitMessage
 from ..proto import jina_pb2
 
@@ -104,10 +107,12 @@ class ReduceAllDriver(ReduceDriver):
 class ConcatEmbedDriver(ReduceDriver):
     def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
         if doc.id not in self.doc_pointers:
-            self.doc_pointers[doc.id] = doc
+            self.doc_pointers[doc.id] = [pb2array(doc.embedding)]
         else:
-            self.doc_pointers[doc.id].embedding.buffer += doc.embedding.buffer
-            self.doc_pointers[doc.id].embedding.shape[0] += doc.embedding.shape[0]
+            self.doc_pointers[doc.id].append(pb2array(doc.embedding))
+
+    def _apply_post(self, doc: 'jina_pb2.Document', *args, **kwargs):
+        doc.embedding.CopyFrom(array2pb(np.concatenate(self.doc_pointers[doc.id], axis=0)))
 
     def reduce(self, *args, **kwargs):
         # use docs in the last request to set the pointers
@@ -117,3 +122,7 @@ class ConcatEmbedDriver(ReduceDriver):
         # traverse apply on ALL previous requests collected
         for r in self.prev_reqs_exclude_last:
             self._traverse_apply(r.docs, *args, **kwargs)
+
+        # update embedding
+        self._apply = self._apply_post
+        self._traverse_apply(self.req.docs, *args, **kwargs)
