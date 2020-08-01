@@ -36,6 +36,7 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
     """To skip weights downloading and model initialization part replaces the actual model with dummy version"""
     texts = ["Never gonna run around", "and desert you"]
 
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_encodes_bert_like(self):
         """Tests that for BERT-like models the embedding from first token is used for sequence embedding"""
         from transformers import AutoModelForPreTraining
@@ -48,6 +49,7 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
                 encoded_batch = encoder.encode(np.asarray(self.texts))
                 assert np.array_equal(encoded_batch.squeeze(), np.asarray([0, 0]))
 
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_encodes_lm_like(self):
         """Tests that for GPT-like language models the embedding from first token is used for sequence embedding"""
         from transformers import AutoModelForPreTraining
@@ -61,6 +63,7 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
                 encoded_batch = encoder.encode(self.texts)
                 assert np.array_equal(encoded_batch.squeeze(), np.asarray(tokenized_seq_lengths) - 1)
 
+    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
     def test_loads_tf_encoder(self):
         """Tests that TF-based model can be loaded"""
         from transformers import TFAutoModelForPreTraining
