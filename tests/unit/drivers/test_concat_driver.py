@@ -33,6 +33,9 @@ def input_fn():
 
 class ConcatDriverTestCase(JinaTestCase):
 
+    def test_array2pb(self):
+        np.testing.assert_almost_equal(pb2array(array2pb(e4)), e4)
+
     def test_concat_embed_driver(self):
         def validate(req):
             self.assertEqual(len(req.docs), 2)
