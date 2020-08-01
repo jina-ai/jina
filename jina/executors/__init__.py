@@ -1,4 +1,5 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights re" \
+                "served."
 __license__ = "Apache-2.0"
 
 import os

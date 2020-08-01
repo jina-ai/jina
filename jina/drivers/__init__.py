@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Tuple, Iterable
+from typing import Callable, Tuple, Iterable, Iterator
 
 import ruamel.yaml.constructor
 
@@ -104,6 +104,13 @@ class BaseDriver(metaclass=DriverType):
     def msg(self) -> 'jina_pb2.Message':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message
+
+    @property
+    def queryset(self) -> Iterator['jina_pb2.QueryLang']:
+        if self.pea and self.msg:
+            return self.pea.message.request.queryset
+        else:
+            return []
 
     @property
     def envelope(self) -> 'jina_pb2.Envelope':
