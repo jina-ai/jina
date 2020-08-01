@@ -1,3 +1,4 @@
+import pytest
 from jina.drivers.rank import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker, MaxRanker, MinRanker
 from jina.proto import jina_pb2
@@ -23,7 +24,8 @@ class SimpleChunk2DocRankDriver(Chunk2DocRankDriver):
         return self._exec_fn
 
 
-def create_document_to_score():
+@pytest.fixture
+def doc_with_score():
     # doc: 1 - chunk: 2 - match: 4 (parent 40), 5 (parent 50)
     #        - chunk: 3 - match: 6 (parent 60), 7 (parent 70)
     doc = jina_pb2.Document()
@@ -41,62 +43,47 @@ def create_document_to_score():
             match.score.value = match.id
     return doc
 
+@pytest.fixture(
+    scope="module",
+    params=[
+        MockLengthRanker(),
+        MaxRanker(),
+        MinRanker()
+])
+def ranker(request):
+    return request.param
+
+@pytest.fixture(scope="module")
+def driver(ranker):
+    driver = SimpleChunk2DocRankDriver()
+    return driver.attach(executor=ranker, pea=None)
 
 class Chunk2DocRankerDriverTestCase(JinaTestCase):
 
-    def test_chunk2doc_ranker_driver_mock_exec(self):
-        doc = create_document_to_score()
-        driver = SimpleChunk2DocRankDriver()
-        executor = MockLengthRanker()
-        driver.attach(executor=executor, pea=None)
-        driver._apply_all(doc.chunks, doc)
-        self.assertEqual(len(doc.matches), 4)
-        self.assertEqual(doc.matches[0].id, 70)
-        self.assertEqual(doc.matches[0].score.value, 7)
-        self.assertEqual(doc.matches[1].id, 60)
-        self.assertEqual(doc.matches[1].score.value, 6)
-        self.assertEqual(doc.matches[2].id, 50)
-        self.assertEqual(doc.matches[2].score.value, 5)
-        self.assertEqual(doc.matches[3].id, 40)
-        self.assertEqual(doc.matches[3].score.value, 4)
-        for match in doc.matches:
+    def test_chunk2doc_ranker_driver_mock_exec(self, driver, doc_with_score):
+        driver._apply_all(doc_with_score.chunks, doc_with_score)
+        for match in doc_with_score.matches:
             # match score is computed w.r.t to doc.id
-            self.assertEqual(match.score.ref_id, doc.id)
+            self.assertEqual(match.score.ref_id, doc_with_score.id)
 
-    def test_chunk2doc_ranker_driver_MaxRanker(self):
-        doc = create_document_to_score()
-        driver = SimpleChunk2DocRankDriver()
-        executor = MaxRanker()
-        driver.attach(executor=executor, pea=None)
-        driver._apply_all(doc.chunks, doc)
-        self.assertEqual(len(doc.matches), 4)
-        self.assertEqual(doc.matches[0].id, 70)
-        self.assertEqual(doc.matches[0].score.value, 7)
-        self.assertEqual(doc.matches[1].id, 60)
-        self.assertEqual(doc.matches[1].score.value, 6)
-        self.assertEqual(doc.matches[2].id, 50)
-        self.assertEqual(doc.matches[2].score.value, 5)
-        self.assertEqual(doc.matches[3].id, 40)
-        self.assertEqual(doc.matches[3].score.value, 4)
-        for match in doc.matches:
-            # match score is computed w.r.t to doc.id
-            self.assertEqual(match.score.ref_id, doc.id)
+    @pytest.maxk.parameterize("index, ranker, expected", [
+        (0, 7),
+        (1, 6),
+        (2, 5),
+        (3, 4),
 
-    def test_chunk2doc_ranker_driver_MinRanker(self):
-        doc = create_document_to_score()
-        driver = SimpleChunk2DocRankDriver()
-        executor = MinRanker()
-        driver.attach(executor=executor, pea=None)
-        driver._apply_all(doc.chunks, doc)
-        self.assertEqual(len(doc.matches), 4)
-        self.assertEqual(doc.matches[0].id, 40)
-        self.assertAlmostEqual(doc.matches[0].score.value, 1 / (1 + 4))
-        self.assertEqual(doc.matches[1].id, 50)
-        self.assertAlmostEqual(doc.matches[1].score.value, 1 / (1 + 5))
-        self.assertEqual(doc.matches[2].id, 60)
-        self.assertAlmostEqual(doc.matches[2].score.value, 1 / (1 + 6))
-        self.assertEqual(doc.matches[3].id, 70)
-        self.assertAlmostEqual(doc.matches[3].score.value, 1 / (1 + 7))
-        for match in doc.matches:
-            # match score is computed w.r.t to doc.id
-            self.assertEqual(match.score.ref_id, doc.id)
+    ])
+    def test_doc_score_chunk2doc_driver(self, index, expected, driver, doc_with_score):
+        driver._apply_all(doc_with_score.chunks, doc_with_score)
+        assert doc_with_score[index].score.value == expected
+
+    @pytest.maxk.parameterize("index, expected", [
+        (0, 70),
+        (1, 60),
+        (2, 50),
+        (3, 40)
+    ])
+    def test_doc_id_chunk2doc_driver(self, index, expected, driver, doc_with_score):
+        driver._apply_all(doc_with_score.chunks, doc_with_score)
+        assert doc_with_score.matches[index].id == expected
+
