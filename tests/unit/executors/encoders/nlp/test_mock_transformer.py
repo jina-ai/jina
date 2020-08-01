@@ -2,6 +2,7 @@ import unittest
 from unittest.case import TestCase
 from unittest.mock import patch
 import numpy as np
+import os
 
 from jina.executors.encoders.nlp.transformer import TransformerTorchEncoder, TransformerTFEncoder
 
