@@ -36,12 +36,16 @@ class ConcatDriverTestCase(JinaTestCase):
     def test_array2pb(self):
         # i don't understand why is this set?
         # os env should be available to that process-context only
-        os.environ['JINA_ARRAY_QUANT'] = None
+        if 'JINA_ARRAY_QUANT' in os.environ:
+            print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
+            del os.environ['JINA_ARRAY_QUANT']
 
         np.testing.assert_almost_equal(pb2array(array2pb(e4)), e4)
 
     def test_concat_embed_driver(self):
-        os.environ['JINA_ARRAY_QUANT'] = None
+        if 'JINA_ARRAY_QUANT' in os.environ:
+            print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
+            del os.environ['JINA_ARRAY_QUANT']
 
         def validate(req):
             self.assertEqual(len(req.docs), 2)
