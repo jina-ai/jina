@@ -66,12 +66,11 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
             # match score is computed w.r.t to doc.id
             self.assertEqual(match.score.ref_id, doc_with_score.id)
 
-    @pytest.maxk.parameterize("index, ranker, expected", [
+    @pytest.maxk.parameterize("index, expected", [
         (0, 7),
         (1, 6),
         (2, 5),
         (3, 4),
-
     ])
     def test_doc_score_chunk2doc_driver(self, index, expected, driver, doc_with_score):
         driver._apply_all(doc_with_score.chunks, doc_with_score)
