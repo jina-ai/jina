@@ -237,7 +237,6 @@ message Request {
      */
     message SearchRequest {
         repeated Document docs = 1; // a list of Documents to query
-        uint32 top_k = 2; // the number of most related results to return
     }
 
     /**

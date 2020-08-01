@@ -18,7 +18,7 @@ from ...proto import jina_pb2
 
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
