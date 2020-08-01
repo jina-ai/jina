@@ -13,6 +13,7 @@ from jina.main.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
+import pytest
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,6 +39,7 @@ class ClientTestCase(JinaTestCase):
         bad_input_fn = iter([Document(), None])
         self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
 
+    @pytest.mark.repeat(10)
     def test_gateway_ready(self):
         p = set_gateway_parser().parse_args([])
         with RESTGatewayPea(p):
