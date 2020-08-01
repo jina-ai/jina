@@ -5,42 +5,41 @@ from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+e1 = np.random.random([7])
+e2 = np.random.random([5])
+e3 = np.random.random([3])
+e4 = np.random.random([9])
+
 
 def input_fn():
     doc1 = Document()
     doc1.id = 1
-    doc1.embedding.CopyFrom(array2pb(np.random.random([7])))
+    doc1.embedding.CopyFrom(array2pb(e1))
     c = doc1.chunks.add()
     c.id = 3
-    c.embedding.CopyFrom(array2pb(np.random.random([5])))
+    c.embedding.CopyFrom(array2pb(e2))
     doc2 = Document()
     doc2.id = 2
-    doc2.embedding.CopyFrom(array2pb(np.random.random([3])))
+    doc2.embedding.CopyFrom(array2pb(e3))
     d = doc2.chunks.add()
     d.id = 4
-    d.embedding.CopyFrom(array2pb(np.random.random([9])))
+    d.embedding.CopyFrom(array2pb(e4))
     return [doc1, doc2]
 
 
 class ConcatDriverTestCase(JinaTestCase):
 
-    def test_direct_concat(self):
-        doc1, doc2 = input_fn()
-        t1 = np.concatenate([pb2array(doc1.embedding), pb2array(doc2.embedding)], axis=0)
-        doc1.embedding.buffer += doc2.embedding.buffer
-        doc1.embedding.shape[0] += doc2.embedding.shape[0]
-        t2 = pb2array(doc1.embedding)
-        self.assertEqual(t1.shape[0], 10)
-        self.assertEqual(t2.shape[0], 10)
-        np.testing.assert_almost_equal(t1, t2)
-
     def test_concat_embed_driver(self):
         def validate(req):
             self.assertEqual(len(req.docs), 2)
-            self.assertEqual(req.docs[0].embedding.shape, [14])
-            self.assertEqual(req.docs[1].embedding.shape, [6])
-            self.assertEqual(req.docs[0].chunks[0].embedding.shape, [10])
-            self.assertEqual(req.docs[1].chunks[0].embedding.shape, [18])
+            self.assertEqual(req.docs[0].embedding.shape, [e1.shape[0] * 2])
+            self.assertEqual(req.docs[1].embedding.shape, [e3.shape[0] * 2])
+            self.assertEqual(req.docs[0].chunks[0].embedding.shape, [e2.shape[0] * 2])
+            self.assertEqual(req.docs[1].chunks[0].embedding.shape, [e4.shape[0] * 2])
+            np.testing.assert_almost_equal(pb2array(req.docs[0].embedding), np.concatenate([e1, e1], axis=0))
+            np.testing.assert_almost_equal(pb2array(req.docs[0].chunks[0].embedding), np.concatenate([e2, e2], axis=0))
 
         # simulate two encoders
         flow = (Flow().add(name='a')
