@@ -483,6 +483,7 @@ class FlowTestCase(JinaTestCase):
 
         self.add_tmpfile('doc.gzip')
 
+    @pytest.mark.repeat(10)
     def test_flow_with_publish_driver(self):
 
         f = (Flow()
