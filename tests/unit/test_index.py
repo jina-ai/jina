@@ -22,7 +22,7 @@ def get_result(resp):
     n = np.array(n)
     # each doc should return a list of top-100
     np.testing.assert_equal(n.shape[0], 2)
-    np.testing.assert_equal(n.shape[1], 100)
+    np.testing.assert_equal(n.shape[1], 50)
 
 
 class DummyIndexer(NumpyIndexer):
@@ -160,7 +160,7 @@ class MyTestCase(JinaTestCase):
 
         time.sleep(3)
         with f:
-            f.search(input_fn=random_docs(2), output_fn=get_result, top_k=100)
+            f.search(input_fn=random_docs(2), output_fn=get_result)
 
     def test_chunk_joint_idx(self):
         f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml'))

@@ -4,16 +4,16 @@ __license__ = "Apache-2.0"
 from typing import Dict, Any, Iterable
 
 from .queryset.lookup import Q
-from .. import BaseRecursiveDriver
+from . import QueryLangDriver
 
 if False:
     from ...proto import jina_pb2
 
 
-class FilterQL(BaseRecursiveDriver):
+class FilterQL(QueryLangDriver):
     def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.lookups = Q(**lookups) if lookups else None
+        self._lookups = Q(**lookups) if lookups else None
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         if self.lookups:

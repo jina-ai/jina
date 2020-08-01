@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable
 
-from .. import BaseRecursiveDriver
+from . import QueryLangDriver
 
 if False:
     from ...proto import jina_pb2
 
 
-class SliceQL(BaseRecursiveDriver):
+class SliceQL(QueryLangDriver):
     """Restrict the size of the ``matches`` to ``k`` (given by the request)
 
     This driver works on both chunk and doc level
@@ -26,12 +26,12 @@ class SliceQL(BaseRecursiveDriver):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self.start = start
-        self.end = end
+        self._start = int(start)
+        self._end = int(end)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
             pass
         else:
-            del docs[self.end:]
-            del docs[:self.start]
+            del docs[int(self.end):]
+            del docs[:int(self.start)]
