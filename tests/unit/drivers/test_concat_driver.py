@@ -34,9 +34,15 @@ def input_fn():
 class ConcatDriverTestCase(JinaTestCase):
 
     def test_array2pb(self):
+        # i don't understand why is this set?
+        # os env should be available to that process-context only
+        os.unsetenv('JINA_ARRAY_QUANT')
+
         np.testing.assert_almost_equal(pb2array(array2pb(e4)), e4)
 
     def test_concat_embed_driver(self):
+        os.unsetenv('JINA_ARRAY_QUANT')
+
         def validate(req):
             self.assertEqual(len(req.docs), 2)
             self.assertEqual(req.docs[0].embedding.shape, [e1.shape[0] * 2])
