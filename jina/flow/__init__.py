@@ -843,10 +843,9 @@ class Flow:
             while _port in self._ports_in_use or _port is None:
                 _new = random_port()
                 if _port is not None:
-                    self.logger.critical(
-                        f'{_port_name} collision detected. set from {_port} to {_new}')
+                    print(f'{_port_name} collision detected. set from {_port} to {_new}')
                 _port = _new
             kwargs[_port_name] = _port
-            self.logger.info(f'{kwargs.get("name")} {_port_name}: {_port}')
+            print(f'{kwargs.get("name")} {_port_name}: {_port}')
             self._ports_in_use.append(_port)
         return self._ports_in_use
