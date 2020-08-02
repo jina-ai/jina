@@ -275,7 +275,7 @@ def random_port() -> int:
             if p is None:
                 return True
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                result = s.connect_ex(('', _port))
+                result = s.connect_ex(('', p))
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 return result == 0
 
