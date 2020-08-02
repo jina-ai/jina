@@ -53,6 +53,10 @@ class VectorSearchDriver(BaseSearchDriver):
 
     """
 
+    def __init__(self, top_k: int = 50, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._top_k = top_k
+
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
@@ -60,7 +64,7 @@ class VectorSearchDriver(BaseSearchDriver):
             self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
         if doc_pts:
-            idx, dist = self.exec_fn(embed_vecs, top_k=self.req.top_k)
+            idx, dist = self.exec_fn(embed_vecs, top_k=self._top_k)
             op_name = self.exec.__class__.__name__
             for doc, topks, scores in zip(doc_pts, idx, dist):
                 for match_id, score in zip(topks, scores):

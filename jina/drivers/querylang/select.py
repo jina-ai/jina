@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple
 
-from .. import BaseRecursiveDriver
+from . import QueryLangDriver
 
 if False:
     from ...proto import jina_pb2
 
 
-class ExcludeQL(BaseRecursiveDriver):
+class ExcludeQL(QueryLangDriver):
     """Clean some fields from the chunk-level protobuf to reduce the total size of the request
     """
 
@@ -20,9 +20,9 @@ class ExcludeQL(BaseRecursiveDriver):
         """
         super().__init__(*args, **kwargs)
         if isinstance(fields, str):
-            self.fields = {fields, }
+            self._fields = {fields, }
         else:
-            self.fields = set(fields)
+            self._fields = set(fields)
 
         # for deleting field in a recursive structure, postorder is safer
         self.recursion_order = 'post'

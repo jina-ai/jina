@@ -31,15 +31,29 @@ def input_fn():
 
 class ConcatDriverTestCase(JinaTestCase):
 
+    def test_array2pb(self):
+        # i don't understand why is this set?
+        # os env should be available to that process-context only
+        if 'JINA_ARRAY_QUANT' in os.environ:
+            print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
+            del os.environ['JINA_ARRAY_QUANT']
+
+        np.testing.assert_almost_equal(pb2array(array2pb(e4)), e4)
+
     def test_concat_embed_driver(self):
+        if 'JINA_ARRAY_QUANT' in os.environ:
+            print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
+            del os.environ['JINA_ARRAY_QUANT']
+
         def validate(req):
             self.assertEqual(len(req.docs), 2)
             self.assertEqual(req.docs[0].embedding.shape, [e1.shape[0] * 2])
             self.assertEqual(req.docs[1].embedding.shape, [e3.shape[0] * 2])
             self.assertEqual(req.docs[0].chunks[0].embedding.shape, [e2.shape[0] * 2])
             self.assertEqual(req.docs[1].chunks[0].embedding.shape, [e4.shape[0] * 2])
-            np.testing.assert_almost_equal(pb2array(req.docs[0].embedding), np.concatenate([e1, e1], axis=0))
-            np.testing.assert_almost_equal(pb2array(req.docs[0].chunks[0].embedding), np.concatenate([e2, e2], axis=0))
+            np.testing.assert_almost_equal(pb2array(req.docs[0].embedding), np.concatenate([e1, e1], axis=0), decimal=4)
+            np.testing.assert_almost_equal(pb2array(req.docs[0].chunks[0].embedding), np.concatenate([e2, e2], axis=0),
+                                           decimal=4)
 
         # simulate two encoders
         flow = (Flow().add(name='a')

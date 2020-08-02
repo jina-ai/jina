@@ -18,8 +18,8 @@ from ...proto import jina_pb2
 
 def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
               first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
-              mime_type: str = None,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX,
+              mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
     doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
@@ -42,12 +42,10 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
     for pi in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
         req.request_id = next(req_counter)
-
-        if mode == ClientMode.SEARCH:
-            if top_k <= 0:
-                raise ValueError('"top_k: %d" is not a valid number' % top_k)
-            else:
-                req.search.top_k = top_k
+        if queryset:
+            if isinstance(queryset, jina_pb2.QueryLang):
+                queryset = [queryset]
+            req.queryset.extend(queryset)
 
         for _raw in pi:
             d = getattr(req, str(mode).lower()).docs.add()

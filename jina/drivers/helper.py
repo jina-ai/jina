@@ -66,7 +66,7 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
 
     blob.buffer = x.tobytes()
     blob.shape.extend(list(x.shape))
-    blob.dtype = x.dtype.name
+    blob.dtype = x.dtype.str
     return blob
 
 

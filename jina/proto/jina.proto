@@ -237,7 +237,6 @@ message Request {
      */
     message SearchRequest {
         repeated Document docs = 1; // a list of Documents to query
-        uint32 top_k = 2; // the number of most related results to return
     }
 
     /**
@@ -255,6 +254,15 @@ message Request {
     }
 
     Status status = 6; // status info
+
+    repeated QueryLang queryset = 7; // the query set
+}
+
+message QueryLang {
+    string name = 1;  // the name of the query lang, map to the corresponding driver
+    google.protobuf.Struct parameters = 2;  // the parameter of the query lang
+    bool disabled = 3;  // when set, then is query lang is disabled
+    int32 priority = 4;  // when query lang is set on both driver and request levels, higher priority query lang is applied, lower priority is dropped
 }
 
 message SpawnRequest {
