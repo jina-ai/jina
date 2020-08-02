@@ -102,6 +102,7 @@ jobs:
           tags: "devel, ${{env.JINA_VERSION}}"
 
   unit-test:
+    needs: update-docker
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
