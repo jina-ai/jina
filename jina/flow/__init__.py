@@ -847,5 +847,6 @@ class Flow:
                         f'{_port_name} collision detected. set from {_port} to {_new}')
                 _port = _new
             kwargs[_port_name] = _port
+            self.logger.info(f'{kwargs.get("name")} {_port_name}: {_port}')
             self._ports_in_use.append(_port)
         return self._ports_in_use
