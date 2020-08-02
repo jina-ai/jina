@@ -516,6 +516,17 @@ class FlowTestCase(JinaTestCase):
         with flow:
             flow.index(input_fn=input_fn, output_fn=validate)
 
+    def test_flow_with_collision(self):
+        collision_port = 55555
+
+        flow = (Flow()
+                .add(name='p1', uses='_pass', port_out=collision_port)
+                .add(name='p2', uses='_pass', port_out=collision_port))
+
+        self.assertNotEqual(
+            flow._pod_nodes['p1']._args.port_out,
+            flow._pod_nodes['p2']._args.port_out)
+
 
 if __name__ == '__main__':
     unittest.main()
