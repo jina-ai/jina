@@ -70,7 +70,7 @@ jobs:
           export JINA_LOG_VERBOSITY="ERROR"
           export JINA_RANDOM_PORTS="TRUE"
           pip install pytest pytest-xdist pytest-timeout pytest-cov
-          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/integration
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 15
       - name: Upload coverage result from unit-test
