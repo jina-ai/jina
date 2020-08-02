@@ -7,17 +7,19 @@ import random
 import re
 import sys
 import time
-
-import numpy as np
+from argparse import ArgumentParser, Namespace
+from io import StringIO
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
-from argparse import ArgumentParser, Namespace
-from io import StringIO
-from uvloop import Loop
+
+import numpy as np
 from ruamel.yaml import YAML, nodes
 
 from . import JINA_GLOBAL
+
+if False:
+    from uvloop import Loop
 
 
 __all__ = ['batch_iterator', 'yaml',
@@ -605,7 +607,7 @@ def use_uvloop():
                 'you did not install uvloop. Try "pip install uvloop"')
 
 
-def show_ioloop_backend(loop: Optional[Loop] = None) -> None:
+def show_ioloop_backend(loop: Optional['Loop'] = None) -> None:
     if loop is None:
         import asyncio
         loop = asyncio.get_event_loop()
