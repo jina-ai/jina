@@ -278,7 +278,7 @@ class FlowTestCase(JinaTestCase):
         with f:
             pass
         self.add_tmpfile('test-docshard-tmp')
-        time.sleep(2)
+        # time.sleep(2)
 
     def test_py_client(self):
         f = (Flow().add(name='r1', uses='_pass')
@@ -394,7 +394,6 @@ class FlowTestCase(JinaTestCase):
             f.dry_run()
 
     def test_refactor_num_part(self):
-        sleep(3)
         f = (Flow().add(name='r1', uses='_logforward', needs='gateway')
              .add(name='r2', uses='_logforward', needs='gateway')
              .join(['r1', 'r2']))
