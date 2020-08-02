@@ -653,7 +653,15 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
                 try:
                     sock.bind('tcp://%s:%d' % (host, port))
                 except zmq.error.ZMQError as ex:
+                    import os
+                    import signal
+                    import subprocess
+                    cmd = f"netstat -ltnp | grep -w '{port}'"
+                    c = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    stdout, stderr = c.communicate()
                     default_logger.error('error when binding port %d to %s' % (port, host))
+                    default_logger.error(f'{stdout.decode("utf8")}\n{stderr.decode("utf8")}')
+                    c.kill()
                     raise ex
     else:
         if port is None:
