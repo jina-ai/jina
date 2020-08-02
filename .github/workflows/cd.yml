@@ -151,6 +151,7 @@ jobs:
           path: ./unit-test-coverage.xml
 
   integration-test:
+    needs: update-docker
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
