@@ -258,10 +258,10 @@ def random_name() -> str:
 
 
 def random_port() -> int:
+    from contextlib import closing
+    import socket
     if 'JINA_RANDOM_PORTS' not in os.environ:
         # feel like this gives higher chance of collision in unit test
-        from contextlib import closing
-        import socket
         import threading
         with threading.Lock():
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
@@ -271,8 +271,20 @@ def random_port() -> int:
                 return s.getsockname()[1]
     else:
         import random
+
+        def is_port_in_use(p):
+            if p is None:
+                return True
+            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+                result = s.connect_ex(('', _port))
+                return result == 0
+
         min_port, max_port = 49152, 65535
-        return random.randrange(min_port, max_port)
+        _port = None
+        while is_port_in_use(_port):
+            _port = random.randrange(min_port, max_port)
+        return _port
+
 
 
 def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
