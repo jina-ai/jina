@@ -660,7 +660,7 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
                     c = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = c.communicate()
                     default_logger.error('error when binding port %d to %s' % (port, host))
-                    default_logger.error(f'{stdout.decode("utf8")}\n{stderr.decode("utf8")}')
+                    print(f'{stdout.decode("utf8")}\n{stderr.decode("utf8")}')
                     c.kill()
                     raise ex
     else:
