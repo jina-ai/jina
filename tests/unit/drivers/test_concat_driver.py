@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from jina.drivers.helper import array2pb, pb2array
