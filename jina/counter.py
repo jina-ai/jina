@@ -21,7 +21,7 @@ class SimpleCounter(BaseCounter):
         if self.seed == 0:
             self.seed = 1
 
-    def __next__(self):
+    def __next__(self) -> int:
         ret = self.seed
         self.seed += 1
         return ret
@@ -34,5 +34,5 @@ class RandomUintCounter(BaseCounter):
         if self.seed:
             random.seed(self.seed)
 
-    def __next__(self):
+    def __next__(self) -> int:
         return random.randint(1, self.max_val)  # zero is reserved

@@ -3,7 +3,9 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Tuple, Iterable, Iterator
+
+from typing import Any, Dict, Callable, Tuple, Iterable, Iterator
+
 
 import ruamel.yaml.constructor
 
@@ -87,7 +89,7 @@ class BaseDriver(metaclass=DriverType):
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
         self.pea = None  # type: 'BasePea'
 
-    def attach(self, pea: 'BasePea', *args, **kwargs):
+    def attach(self, pea: 'BasePea', *args, **kwargs) -> None:
         """Attach this driver to a :class:`jina.peapods.pea.BasePea`
 
         :param pea: the pea to be attached.
@@ -156,7 +158,7 @@ class BaseDriver(metaclass=DriverType):
     def __eq__(self, other):
         return self.__class__ == other.__class__
 
-    def __getstate__(self):
+    def __getstate__(self) -> Dict[str, Any]:
         """Do not save the BasePea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
         file is always unattached. """
         d = dict(self.__dict__)
@@ -169,8 +171,7 @@ class BaseDriver(metaclass=DriverType):
 class BaseRecursiveDriver(BaseDriver):
 
     def __init__(self, depth_range: Tuple[int] = (0, 0), apply_order: str = 'post',
-                 traverse_on: Tuple[str] = ('chunks',),
-                 *args, **kwargs):
+                 traverse_on: Tuple[str] = ('chunks',), *args, **kwargs):
         """
 
         :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
@@ -294,7 +295,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         else:
             return lambda *args, **kwargs: None
 
-    def attach(self, executor: 'AnyExecutor', *args, **kwargs):
+    def attach(self, executor: 'AnyExecutor', *args, **kwargs) -> None:
         """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
@@ -314,7 +315,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         if self._method_name:
             self._exec_fn = getattr(self.exec, self._method_name)
 
-    def __getstate__(self):
+    def __getstate__(self) -> Dict[str, Any]:
         """Do not save the executor and executor function, as it would be cross-referencing and unserializable.
         In other words, a deserialized :class:`BaseExecutableDriver` from file is always unattached. """
         d = super().__getstate__()

@@ -7,14 +7,18 @@ import random
 import re
 import sys
 import time
-from itertools import islice
-from types import SimpleNamespace
-from typing import Iterator, Any, Union, List, Dict
 
 import numpy as np
+from itertools import islice
+from types import SimpleNamespace
+from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
+from argparse import ArgumentParser, Namespace
+from io import StringIO
+from uvloop import Loop
 from ruamel.yaml import YAML, nodes
 
 from . import JINA_GLOBAL
+
 
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
@@ -154,7 +158,7 @@ def _get_yaml():
     return y
 
 
-def parse_arg(v: str):
+def parse_arg(v: str) -> Union[bool, int, str]:
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
         tmp = v.replace('[', '').replace(']', '').strip().split(',')
@@ -178,18 +182,14 @@ def parse_arg(v: str):
     return v
 
 
-def countdown(t: int, logger=None, reason: str = 'I am blocking this thread'):
-    if not logger:
-        sys.stdout.write('\n')
-        sys.stdout.flush()
+def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
+    sys.stdout.write('\n')
+    sys.stdout.flush()
     while t > 0:
         t -= 1
         msg = f'⏳ {colored("%3d" % t, "yellow")}s left: {reason}'
-        if logger:
-            logger.info(msg)
-        else:
-            sys.stdout.write(f'\r{msg}')
-            sys.stdout.flush()
+        sys.stdout.write(f'\r{msg}')
+        sys.stdout.flush()
         time.sleep(1)
     sys.stdout.write('\n')
     sys.stdout.flush()
@@ -422,7 +422,8 @@ if os.name == 'nt':
     os.system('color')
 
 
-def colored(text, color=None, on_color=None, attrs=None):
+def colored(text: str, color: Optional[str] = None,
+            on_color: Optional[str] = None, attrs: Union[str, list, None] = None) -> str:
     if 'JINA_LOG_NO_COLOR' not in os.environ:
         fmt_str = '\033[%dm%s'
         if color:
@@ -460,7 +461,7 @@ def get_tags_from_node(node) -> List[str]:
     return list(set(list(node_recurse_generator(node))))
 
 
-def kwargs2list(kwargs: Dict):
+def kwargs2list(kwargs: Dict) -> List[str]:
     args = []
     for k, v in kwargs.items():
         k = k.replace('_', '-')
@@ -475,7 +476,7 @@ def kwargs2list(kwargs: Dict):
     return args
 
 
-def get_valid_local_config_source(path: str, to_stream: bool = False):
+def get_valid_local_config_source(path: str, to_stream: bool = False) -> Union[StringIO, TextIO, str]:
     # priority, filepath > classname > default
     import io
     from pkg_resources import resource_filename
@@ -518,7 +519,8 @@ def valid_local_config_source(path: str) -> bool:
         return False
 
 
-def get_parsed_args(kwargs, parser, parser_name: str = None):
+def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser, parser_name: str = None) -> Union[
+    Tuple[List[str], Namespace, List[Any]], Tuple[List[str], Namespace, List[str]]]:
     args = kwargs2list(kwargs)
     try:
         p_args, unknown_args = parser.parse_known_args(args)
@@ -535,7 +537,7 @@ def get_parsed_args(kwargs, parser, parser_name: str = None):
     return args, p_args, unknown_args
 
 
-def get_non_defaults_args(args, parser, taboo=(None,)) -> Dict:
+def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = (None,)) -> Dict:
     non_defaults = {}
     _defaults = vars(parser.parse_args([]))
     for k, v in vars(args).items():
@@ -544,7 +546,7 @@ def get_non_defaults_args(args, parser, taboo=(None,)) -> Dict:
     return non_defaults
 
 
-def get_full_version():
+def get_full_version() -> str:
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
     import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
@@ -603,7 +605,7 @@ def use_uvloop():
                 'you did not install uvloop. Try "pip install uvloop"')
 
 
-def show_ioloop_backend(loop=None):
+def show_ioloop_backend(loop: Optional[Loop] = None) -> None:
     if loop is None:
         import asyncio
         loop = asyncio.get_event_loop()
