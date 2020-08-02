@@ -267,7 +267,6 @@ def random_port() -> int:
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
                 s.bind(('', 0))
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                print(f'assigning {s.getsockname()[1]}')
                 return s.getsockname()[1]
     else:
         import random
@@ -277,6 +276,7 @@ def random_port() -> int:
                 return True
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
                 result = s.connect_ex(('', _port))
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 return result == 0
 
         min_port, max_port = 49152, 65535
@@ -284,7 +284,6 @@ def random_port() -> int:
         while is_port_in_use(_port):
             _port = random.randrange(min_port, max_port)
         return _port
-
 
 
 def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
