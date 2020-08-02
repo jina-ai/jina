@@ -6,7 +6,6 @@ from jina.drivers.helper import array2pb, pb2array
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
-import pytest
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

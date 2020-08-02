@@ -68,7 +68,7 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install pytest pytest-timeout pytest-cov pytest-repeat
+          pip install pytest pytest-timeout pytest-cov
           pytest --cov=jina --cov-report=xml --timeout=60 -s -v tests/unit
           mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 15

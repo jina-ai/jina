@@ -13,7 +13,6 @@ from jina.main.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
-import pytest
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
