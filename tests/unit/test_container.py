@@ -120,7 +120,6 @@ class MyTestCase(JinaTestCase):
             f.dry_run()
             f.index(input_fn=random_docs(1000))
 
-    # @pytest.mark.repeat(10)
     @pytest.mark.skip('extract_docs throw an error')
     def test_container_volume(self):
         time.sleep(5)

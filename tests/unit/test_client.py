@@ -39,7 +39,6 @@ class ClientTestCase(JinaTestCase):
         bad_input_fn = iter([Document(), None])
         self.assertRaises(TypeError, PyClient.check_input, bad_input_fn)
 
-    @pytest.mark.repeat(10)
     def test_gateway_ready(self):
         p = set_gateway_parser().parse_args([])
         with RESTGatewayPea(p):

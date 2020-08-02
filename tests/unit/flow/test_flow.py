@@ -393,7 +393,6 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
             f.dry_run()
 
-    @pytest.mark.repeat(10)
     def test_refactor_num_part(self):
         sleep(3)
         f = (Flow().add(name='r1', uses='_logforward', needs='gateway')
@@ -483,7 +482,6 @@ class FlowTestCase(JinaTestCase):
 
         self.add_tmpfile('doc.gzip')
 
-    @pytest.mark.repeat(10)
     def test_flow_with_publish_driver(self):
 
         f = (Flow()
