@@ -32,6 +32,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## This module deals with code regarding handling the double
 ## underscore separated keys
+from typing import Tuple, Union
+
 from .helper import *
 
 
@@ -48,7 +50,7 @@ def dunderkey(*args):
     return '__'.join(args)
 
 
-def dunder_partition(key):
+def dunder_partition(key: str) -> Union[Tuple[str, str], Tuple[str, None]]:
     """Splits a dunderkey into 2 parts
 
     The first part is everything before the final double underscore

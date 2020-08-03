@@ -1,8 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from collections import Iterable
 from functools import partial
+from collections.abc import Iterable
+from typing import Callable, List, Type, Union
 
 
 ## Exceptions
@@ -14,7 +15,7 @@ class LookupyError(Exception):
 
 ## utility functions
 
-def iff(precond, val, f):
+def iff(precond: Callable, val: Union[int, str], f: Callable) -> bool:
     """If and only if the precond is True
 
     Shortcut function for precond(val) and f(val). It is mainly used
@@ -31,7 +32,7 @@ def iff(precond, val, f):
 iff_not_none = partial(iff, lambda x: x is not None)
 
 
-def guard_type(classinfo, val):
+def guard_type(classinfo: Union[Type[str], Type[Iterable]], val: Union[str, List[int]]) -> Union[str, List[int]]:
     if not isinstance(val, classinfo):
         raise LookupyError(f'Value not a {classinfo}')
     return val
