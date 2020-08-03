@@ -316,7 +316,10 @@ class ZmqStreamlet(Zmqlet):
             for s in self.opened_socks:
                 s.flush()
             super().close()
-            self.io_loop.stop()
+            try:
+                self.io_loop.stop()
+            except AttributeError as e:
+                self.logger.info(f'failed to stop. {e}')
             # Replace handle events function, to skip
             # None event after sockets are closed.
             if hasattr(self.in_sock, '_handle_events'):
