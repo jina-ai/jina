@@ -30,6 +30,9 @@ class MockIndexer(BaseKVIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        doc0 = jina_pb2.Document()
+        doc0.id = 0
+        doc0.embedding.CopyFrom(array2pb(np.array([doc0.id])))
         doc1 = jina_pb2.Document()
         doc1.id = 1
         doc1.embedding.CopyFrom(array2pb(np.array([doc1.id])))
@@ -43,6 +46,7 @@ class MockIndexer(BaseKVIndexer):
         doc4.id = 4
         doc4.embedding.CopyFrom(array2pb(np.array([doc4.id])))
         self.db = {
+            0: doc0,
             1: doc1,
             2: doc2,
             3: doc3,
@@ -52,7 +56,7 @@ class MockIndexer(BaseKVIndexer):
 
 class SimpleKVSearchDriver(KVSearchDriver):
 
-    def __init__(self, top_k,  *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @property
@@ -73,14 +77,15 @@ def create_document_to_search():
     for c in range(5):
         chunk = doc.chunks.add()
         chunk.id = c + 1
+        chunk.parent_id = doc.id
     return doc
 
 
-class VectorSearchDriverTestCase(JinaTestCase):
+class KVSearchDriverTestCase(JinaTestCase):
 
-    def test_vectorsearch_driver_mock_indexer(self):
+    def test_key_value_driver_mock_indexer(self):
         doc = create_document_to_search()
-        driver = SimpleKVSearchDriver(top_k=2)
+        driver = SimpleKVSearchDriver()
         executor = MockIndexer()
         driver.attach(executor=executor, pea=None)
 
@@ -96,4 +101,3 @@ class VectorSearchDriverTestCase(JinaTestCase):
             self.assertNotEqual(chunk.embedding.buffer, b'')
             embedding_array = pb2array(chunk.embedding)
             np.testing.assert_equal(embedding_array, np.array([chunk.id]))
-

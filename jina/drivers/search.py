@@ -34,10 +34,14 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
+    def __init__(self, key: str = 'id', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._key = key
+
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            r = self.exec_fn(retrieved_doc.id)
+            r = self.exec_fn(getattr(retrieved_doc, self._key))
             if r:
                 retrieved_doc.MergeFrom(r)
             else:
