@@ -67,7 +67,7 @@ jobs:
           # make sure docker exist
           docker ps
           jina check
-          export JINA_LOG_VERBOSITY="DEBUG"
+          export JINA_LOG_VERBOSITY="ERROR"
           pip install pytest pytest-xdist pytest-timeout pytest-cov
           pytest --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
