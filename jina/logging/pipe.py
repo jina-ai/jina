@@ -19,7 +19,7 @@ class PipeLogger:
         :param args: the parsed arguments from the CLI
         """
         self.args = args
-        self._preserved_logs = defaultdict(str)
+        self._preserved_logs: defaultdict[str, str] = defaultdict(str)
 
     def start(self):
         """ Start to receive logs from pipe"""

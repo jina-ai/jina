@@ -1,9 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, List
+from typing import Dict, List, Any
 
-_defaults = {}
+_defaults: Dict[str, Dict[str, Any]] = {}
 
 
 def get_default_reqs(cls_mro: List[type]) -> Dict:

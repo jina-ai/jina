@@ -4,9 +4,9 @@ __license__ = "Apache-2.0"
 import atexit
 import multiprocessing
 
-__sse_queue__ = multiprocessing.Queue()  #: the global sse log queue
-__profile_queue__ = multiprocessing.Queue()  #: the global profile log queue
-__log_queue__ = multiprocessing.Queue()  #: the global log queue
+__sse_queue__: "multiprocessing.queues.Queue" = multiprocessing.Queue()  #: the global sse log queue
+__profile_queue__: "multiprocessing.queues.Queue" = multiprocessing.Queue()  #: the global profile log queue
+__log_queue__: "multiprocessing.queues.Queue" = multiprocessing.Queue()  #: the global log queue
 
 
 def clear_queue():

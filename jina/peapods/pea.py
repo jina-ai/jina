@@ -8,7 +8,7 @@ import threading
 import time
 import traceback
 from queue import Empty
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Any
 
 import zmq
 
@@ -29,7 +29,7 @@ __all__ = ['PeaMeta', 'BasePea']
 
 class PeaMeta(type):
     """Meta class of :class:`BasePea` to enable switching between ``thread`` and ``process`` backend. """
-    _dct = {}
+    _dct: Dict[str, Dict[str, Any]] = {}
 
     def __new__(cls, name, bases, dct):
         _cls = super().__new__(cls, name, bases, dct)

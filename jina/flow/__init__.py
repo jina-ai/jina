@@ -9,7 +9,7 @@ import time
 from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
-from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
+from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Deque, Any
 
 import ruamel.yaml
 from ruamel.yaml import StringIO
@@ -65,7 +65,7 @@ def build_required(required_level: 'FlowBuildLevel'):
 def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
                     func: Callable[['Flow', str, str], None]) -> 'Flow':
     _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
-    stack = deque()
+    stack: Deque[str] = deque()
     stack.append('gateway')
     op_flow.logger.debug('Traversing dependency graph:')
     while stack:

@@ -3,6 +3,7 @@ import shutil
 import sys
 import unittest
 from os.path import dirname
+from typing import List
 
 import numpy as np
 
@@ -13,7 +14,7 @@ from jina.proto import jina_pb2
 class JinaTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.tmp_files = []
+        self.tmp_files: List[str] = []
         os.environ['TEST_WORKDIR'] = os.getcwd()
 
     def tearDown(self) -> None:

@@ -30,7 +30,7 @@ class BasePod:
 
         :param args: arguments parsed from the CLI
         """
-        self.peas = []
+        self.peas: List[BasePea] = []
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None

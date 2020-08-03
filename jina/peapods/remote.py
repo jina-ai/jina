@@ -11,6 +11,7 @@ from ..clients.python import GrpcClient
 from ..helper import kwargs2list
 from ..logging import get_logger
 from ..proto import jina_pb2
+from typing import List, Tuple
 
 if False:
     import argparse
@@ -63,7 +64,7 @@ class PodSpawnHelper(PeaSpawnHelper):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
-        self.all_ctrl_addr = []  #: all peas control address and ports of this pod, need to be set in set_ready()
+        self.all_ctrl_addr: List[Tuple[str, bool]] = []  #: all peas control address and ports of this pod, need to be set in set_ready()
 
     def close(self):
         if not self.is_closed:
