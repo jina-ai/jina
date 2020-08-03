@@ -275,17 +275,16 @@ def random_port() -> int:
         import random
 
         def is_port_in_use(p):
-            if p is None:
-                return True
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
                 result = s.connect_ex(('', p))
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 return result == 0
 
         min_port, max_port = 49152, 65535
-        _port = None
-        while is_port_in_use(_port):
+        while True:
             _port = random.randrange(min_port, max_port)
+            if not is_port_in_use(_port):
+                break
         return _port
 
 

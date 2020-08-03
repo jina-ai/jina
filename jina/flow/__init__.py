@@ -840,12 +840,13 @@ class Flow:
         """Check if the Pods' ports collide"""
         for _port_name in ('port_in', 'port_out', 'port_ctrl', 'port_expose'):
             _port = kwargs.get(_port_name)
-            while _port in self._ports_in_use or _port is None:
+            if _port is None:
+                _port = random_port()
+            while _port in self._ports_in_use:
                 _new = random_port()
-                if _port is not None:
-                    self.logger.info(f'{_port_name} collision detected. set from {_port} to {_new}')
                 _port = _new
+                self.logger.info(f'{_port_name} collision detected. set from {_port} to {_new}')
             kwargs[_port_name] = _port
-            self.logger.info(f'{kwargs.get("name")} {_port_name}: {_port}')
             self._ports_in_use.append(_port)
+            self.logger.info(f'{kwargs.get("name")} {_port_name}: {_port}')
         return self._ports_in_use
