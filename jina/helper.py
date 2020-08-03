@@ -270,7 +270,6 @@ def random_port() -> int:
                 s.bind(('', 0))
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 _port = s.getsockname()[1]
-                print(f'assigning by sys: {_port}')
                 return _port
     else:
         import random
@@ -287,7 +286,6 @@ def random_port() -> int:
         _port = None
         while is_port_in_use(_port):
             _port = random.randrange(min_port, max_port)
-        print(f'assigning randomly: {_port}')
         return _port
 
 

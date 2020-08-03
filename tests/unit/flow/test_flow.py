@@ -278,7 +278,6 @@ class FlowTestCase(JinaTestCase):
         with f:
             pass
         self.add_tmpfile('test-docshard-tmp')
-        # time.sleep(2)
 
     def test_py_client(self):
         f = (Flow().add(name='r1', uses='_pass')
