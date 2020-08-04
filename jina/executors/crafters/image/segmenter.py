@@ -139,31 +139,6 @@ class SlidingWindowImageCropper(BaseSegmenter):
                       mode='constant',
                       constant_values=0)
 
-    def _location_generator_without_padding(self, img: 'np.ndarray') -> Generator[Tuple[int, int], None, None]:
-        height, width, _ = img.shape
-        top, left = (0, 0)
-        if isinstance(self.target_size, Tuple):
-            w_size, h_size = self.target_size
-        else:
-            w_size = h_size = self.target_size
-
-        while top + h_size <= height:
-            while left + w_size <= width:
-                yield top, left
-                left += self.stride_w
-            left = 0
-            top += self.stride_h
-
-    def _location_generator_with_padding(self, img: 'np.ndarray') -> Generator[Tuple[int, int], None, None]:
-        height, width, _ = img.shape
-        top, left = (0, 0)
-        while top <= height:
-            while left <= width:
-                yield top, left
-                left += self.stride_w
-            left = 0
-            top += self.stride_h
-
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array with a sliding window.
@@ -194,12 +169,16 @@ class SlidingWindowImageCropper(BaseSegmenter):
                 row_step,
                 col_step,
                 1), writeable=False)
+
+        bbox_locations = [
+            (h * self.stride_h, w * self.stride_w)
+            for h in range(expanded_img.shape[0])
+            for w in range(expanded_img.shape[1])]
+
         expanded_img = expanded_img.reshape((-1, self.target_size, self.target_size, c))
-        location_generator = self._location_generator_with_padding(raw_img) if self.padding \
-            else self._location_generator_without_padding(raw_img)
 
         results = []
-        for location, _blob in zip(location_generator, expanded_img):
+        for location, _blob in zip(bbox_locations, expanded_img):
             blob = _restore_channel_axis(_blob, self.channel_axis)
             results.append(dict(offset=0, weight=1.0, blob=blob.astype('float32'), location=location))
         return results
