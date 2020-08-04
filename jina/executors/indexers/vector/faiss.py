@@ -54,9 +54,12 @@ class FaissIndexer(BaseNumpyIndexer, BaseFaissExecutor):
         self.distance = distance
         self.nprobe = nprobe
 
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
+
     def post_init(self):
         super(BaseNumpyIndexer, self).post_init()
-        super(BaseFaissExecutor, self).post_init()
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """

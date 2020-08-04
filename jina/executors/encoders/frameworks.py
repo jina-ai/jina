@@ -24,6 +24,10 @@ class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):
         self.outputs_name = output_feature
         self.raw_model_path = model_path
 
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
+
     def post_init(self):
         """
         Load the model from the `.onnx` file and add outputs for the selected layer, i.e. ``outputs_name``. The modified
@@ -55,15 +59,22 @@ class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):
 
 
 class BaseTFEncoder(BaseTFExecutor, BaseEncoder):
-    pass
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
 
 
 class BaseTorchEncoder(BaseTorchExecutor, BaseEncoder):
-    pass
+
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
 
 
 class BasePaddlehubEncoder(BasePaddleExecutor, BaseEncoder):
-    pass
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
 
 
 class BaseTextTFEncoder(BaseTFEncoder):
