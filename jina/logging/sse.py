@@ -1,9 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import logging
-import os
-
 from . import default_logger
 from .queue import __sse_queue__, __profile_queue__
 from .. import JINA_GLOBAL, __version__
@@ -51,9 +48,9 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     JINA_GLOBAL.logserver.address = f'http://{_config["host"]}:{_config["port"]}'
 
     JINA_GLOBAL.logserver.ready = JINA_GLOBAL.logserver.address + \
-        _config['endpoints']['ready']
+                                  _config['endpoints']['ready']
     JINA_GLOBAL.logserver.shutdown = JINA_GLOBAL.logserver.address + \
-        _config['endpoints']['shutdown']
+                                     _config['endpoints']['shutdown']
 
     app = Flask(__name__)
     CORS(app)
@@ -78,7 +75,6 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
             except EOFError:
                 yield 'PROFILE ENDS\n\n'
                 break
-
 
     @app.route(_config['endpoints']['log'])
     def get_log():
