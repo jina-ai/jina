@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 
-def reduce_mean(data, mask_2d):
+def reduce_mean(data: 'np.ndarray', mask_2d: 'np.ndarray') -> 'np.ndarray':
     emb_dim = data.shape[2]
     mask = np.tile(mask_2d, (emb_dim, 1, 1))
     mask = np.rollaxis(mask, 0, 3)
@@ -12,7 +12,7 @@ def reduce_mean(data, mask_2d):
     return np.sum(output, axis=1) / np.sum(mask, axis=1)
 
 
-def reduce_max(data, mask_2d):
+def reduce_max(data: 'np.ndarray', mask_2d: 'np.ndarray') -> 'np.ndarray':
     emb_dim = data.shape[2]
     mask = np.tile(mask_2d, (emb_dim, 1, 1))
     mask = np.rollaxis(mask, 0, 3)
@@ -24,7 +24,7 @@ def reduce_max(data, mask_2d):
     return np.max(output, axis=1)
 
 
-def reduce_min(data, mask_2d):
+def reduce_min(data: 'np.ndarray', mask_2d: 'np.ndarray') -> 'np.ndarray':
     emb_dim = data.shape[2]
     mask = np.tile(mask_2d, (emb_dim, 1, 1))
     mask = np.rollaxis(mask, 0, 3)
@@ -36,7 +36,7 @@ def reduce_min(data, mask_2d):
     return np.min(output, axis=1)
 
 
-def reduce_cls(data, mask_2d, cls_pos='head'):
+def reduce_cls(data: 'np.ndarray', mask_2d: 'np.ndarray', cls_pos='head'):
     mask_pruned = prune_mask(mask_2d, cls_pos)
     return reduce_mean(data, mask_pruned)
 
