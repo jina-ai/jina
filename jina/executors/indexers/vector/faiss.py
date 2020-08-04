@@ -6,10 +6,10 @@ from typing import Tuple
 import numpy as np
 
 from . import BaseNumpyIndexer
-from ...frameworks import BaseFaissExecutor
+from ...frameworks import BaseFaissDeviceHandler
 
 
-class FaissIndexer(BaseNumpyIndexer, BaseFaissExecutor):
+class FaissIndexer(BaseNumpyIndexer, BaseFaissDeviceHandler):
     """Faiss powered vector indexer
 
     For more information about the Faiss supported parameters and installation problems, please consult:

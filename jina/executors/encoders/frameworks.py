@@ -7,11 +7,13 @@ import numpy as np
 
 from . import BaseEncoder
 from ..decorators import batching, as_ndarray
-from ..frameworks import BaseOnnxExecutor, BasePaddleExecutor, BaseTorchExecutor, BaseTFExecutor
+from ..frameworks import BaseOnnxDeviceHandler, BasePaddleDeviceHandler, BaseTorchDeviceHandler, BaseTFDeviceHandler
 from ...helper import is_url
 
 
-class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):
+# mixin classes go first, base classes are read from right to left.
+# TODO: Try to turn DeviceHandler into real mix-in (no members)
+class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
     def __init__(self, output_feature: str, model_path: str = None, *args, **kwargs):
         """
 
@@ -20,7 +22,8 @@ class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):
             models at https://github.com/onnx/models#image_classification and download the git LFS to your local path.
             The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
         """
-        super().__init__(*args, **kwargs)
+        super(BaseEncoder, self).__init__(*args, **kwargs)
+        super(BaseOnnxDeviceHandler, self).__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
 
@@ -58,26 +61,41 @@ class BaseOnnxEncoder(BaseOnnxExecutor, BaseEncoder):
         onnx.save(model, output_fn)
 
 
-class BaseTFEncoder(BaseTFExecutor, BaseEncoder):
-    @property
-    def run_on_gpu(self):
-        return self.on_gpu
+class BaseTFEncoder(BaseTFDeviceHandler, BaseEncoder):
 
-
-class BaseTorchEncoder(BaseTorchExecutor, BaseEncoder):
+    def __init__(self, *args, **kwargs):
+        super(BaseEncoder, self).__init__(*args, **kwargs)
+        super(BaseTFDeviceHandler, self).__init__(*args, **kwargs)
 
     @property
     def run_on_gpu(self):
         return self.on_gpu
 
 
-class BasePaddlehubEncoder(BasePaddleExecutor, BaseEncoder):
+class BaseTorchEncoder(BaseTorchDeviceHandler, BaseEncoder):
+
+    def __init__(self, *args, **kwargs):
+        super(BaseEncoder, self).__init__(*args, **kwargs)
+        super(BaseTorchDeviceHandler, self).__init__(*args, **kwargs)
+
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
+
+
+class BasePaddlehubEncoder(BasePaddleDeviceHandler, BaseEncoder):
+
+    def __init__(self, *args, **kwargs):
+        super(BaseEncoder, self).__init__(*args, **kwargs)
+        super(BasePaddleDeviceHandler, self).__init__(*args, **kwargs)
+
     @property
     def run_on_gpu(self):
         return self.on_gpu
 
 
 class BaseTextTFEncoder(BaseTFEncoder):
+
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 

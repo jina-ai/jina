@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from abc import abstractmethod
 
 
-class BaseFrameworkExecutor:
+class BaseDeviceHandler:
     """
     :class:`BaseFrameworkExecutor` is the base class for the executors using other frameworks internally, including
         `tensorflow`, `pytorch`, `onnx`, `faiss` and `paddlepaddle`.
@@ -50,9 +50,9 @@ class BaseFrameworkExecutor:
         pass
 
 
-class BaseTorchExecutor(BaseFrameworkExecutor):
+class BaseTorchDeviceHandler(BaseDeviceHandler):
     """
-    :class:`BaseTorchExecutor` implements the base class for the executors using :mod:`torch` library. The common setups
+    :class:`BaseTorchDeviceHandler` implements the base class for the executors using :mod:`torch` library. The common setups
          go into this class.
 
     To implement your own executor with the :mod:`torch` library,
@@ -60,7 +60,7 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
     .. highlight:: python
     .. code-block:: python
 
-        class MyAwesomeTorchEncoder(BaseTorchExecutor):
+        class MyAwesomeTorchEncoder(BaseEncoder, BaseTorchDeviceHandler):
             def post_init(self):
                 # load your awesome model
                 import torchvision.models as models
@@ -88,7 +88,7 @@ class BaseTorchExecutor(BaseFrameworkExecutor):
         model.to(self.device)
 
 
-class BasePaddleExecutor(BaseFrameworkExecutor):
+class BasePaddleDeviceHandler(BaseDeviceHandler):
     """
     :class:`BasePaddleExecutor` implements the base class for the executors using :mod:`paddlepaddle` library. The
         common setups go into this class.
@@ -128,16 +128,16 @@ class BasePaddleExecutor(BaseFrameworkExecutor):
         return fluid.Executor(self.device)
 
 
-class BaseTFExecutor(BaseFrameworkExecutor):
+class BaseTFDeviceHandler(BaseDeviceHandler):
     """
-    :class:`BaseTFExecutor` implements the base class for the executors using :mod:`tensorflow` library. The common
+    :class:`BaseTFDeviceHandler` implements the base class for the executors using :mod:`tensorflow` library. The common
         setups go into this class.
     To implement your own executor with the :mod:`tensorflow` library,
 
     .. highlight:: python
     .. code-block:: python
 
-        class MyAwesomeTFEncoder(BaseTFExecutor):
+        class MyAwesomeTFEncoder(BaseTFDeviceHandler):
             def post_init(self):
                 # load your awesome model
                 self.to_device()
@@ -168,9 +168,9 @@ class BaseTFExecutor(BaseFrameworkExecutor):
         tf.config.experimental.set_visible_devices(devices=self.device)
 
 
-class BaseOnnxExecutor(BaseFrameworkExecutor):
+class BaseOnnxDeviceHandler(BaseDeviceHandler):
     """
-    :class:`BaseOnnxExecutor` implements the base class for the executors using :mod:`onnxruntime` library. The common
+    :class:`BaseOnnxDeviceHandler` implements the base class for the executors using :mod:`onnxruntime` library. The common
         setups go into this class.
 
     To implement your own executor with the :mod:`onnxruntime` library,
@@ -178,7 +178,7 @@ class BaseOnnxExecutor(BaseFrameworkExecutor):
     .. highlight:: python
     .. code-block:: python
 
-        class MyAwesomeOnnxEncoder(BaseOnnxExecutor):
+        class MyAwesomeOnnxEncoder(BaseOnnxDeviceHandler):
             def __init__(self, output_feature, model_path, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.outputs_name = output_feature
@@ -208,9 +208,9 @@ class BaseOnnxExecutor(BaseFrameworkExecutor):
         model.set_providers(self.device)
 
 
-class BaseFaissExecutor(BaseFrameworkExecutor):
+class BaseFaissDeviceHandler(BaseDeviceHandler):
     """
-    :class:`BaseFaissExecutor` implements the base class for the executors using :mod:`faiss` library. The common
+    :class:`BaseFaissDeviceHandler` implements the base class for the executors using :mod:`faiss` library. The common
         setups go into this class.
     """
 

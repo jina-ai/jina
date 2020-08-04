@@ -5,10 +5,11 @@ from typing import Tuple, Dict, Union
 
 import numpy as np
 
-from . import ImageChunkCrafter
+from .. import BaseCrafter
+from .helper import _load_image, _restore_channel_axis, _crop_image, _resize_short
 
 
-class ImageNormalizer(ImageChunkCrafter):
+class ImageNormalizer(BaseCrafter):
     """:class:`ImageNormalizer` works on doc-level,
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
 
@@ -17,6 +18,7 @@ class ImageNormalizer(ImageChunkCrafter):
                  img_mean: Tuple[float] = (0, 0, 0),
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,
+                 channel_axis: int = -1,
                  *args,
                  **kwargs):
         """
@@ -38,6 +40,7 @@ class ImageNormalizer(ImageChunkCrafter):
         self.resize_dim = resize_dim
         self.img_mean = np.array(img_mean).reshape((1, 1, 3))
         self.img_std = np.array(img_std).reshape((1, 1, 3))
+        self.channel_axis = channel_axis
 
     def craft(self, blob: 'np.ndarray', *args, **kwargs) -> Dict:
         """
@@ -45,14 +48,14 @@ class ImageNormalizer(ImageChunkCrafter):
         :param blob: the ndarray of the image with the color channel at the last axis
         :return: a chunk dict with the normalized image
         """
-        raw_img = self.load_image(blob)
+        raw_img = _load_image(blob, self.channel_axis)
         _img = self._normalize(raw_img)
-        img = self.restore_channel_axis(_img)
+        img = _restore_channel_axis(_img, self.channel_axis)
         return dict(offset=0, weight=1., blob=img)
 
     def _normalize(self, img):
-        img = self._resize_short(img, target_size=self.resize_dim)
-        img = self._crop_image(img, target_size=self.target_size, how='center')
+        img = _resize_short(img, target_size=self.resize_dim)
+        img, _, _ = _crop_image(img, target_size=self.target_size, how='center')
         img = np.array(img).astype('float32') / 255
         img -= self.img_mean
         img /= self.img_std
