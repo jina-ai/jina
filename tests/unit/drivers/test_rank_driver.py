@@ -91,6 +91,7 @@ class Chunk2DocRankDriverTestCase(JinaTestCase):
         driver.attach(executor=executor, pea=pea)
         executor.attach(pea)
         driver._apply_all(doc.chunks, doc)
+        print(doc)
         self.assertEqual(len(doc.matches), 2)
         for idx, m in enumerate(doc.matches):
             self.assertEqual(m.id, idx + 1)
