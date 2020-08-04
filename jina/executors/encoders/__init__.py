@@ -19,6 +19,11 @@ class BaseEncoder(BaseExecutor):
     .. seealso::
         :mod:`jina.drivers.handlers.encode`
     """
+
+    def __init__(self, model_name: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
     def encode(self, data: Any, *args, **kwargs) -> Any:
         raise NotImplementedError
 

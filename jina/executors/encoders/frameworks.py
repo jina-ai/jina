@@ -12,7 +12,6 @@ from ...helper import is_url
 
 
 # mixin classes go first, base classes are read from right to left.
-# TODO: Try to turn DeviceHandler into real mix-in (no members)
 class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
     def __init__(self, output_feature: str, model_path: str = None, *args, **kwargs):
         """
@@ -22,8 +21,7 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
             models at https://github.com/onnx/models#image_classification and download the git LFS to your local path.
             The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
         """
-        super(BaseEncoder, self).__init__(*args, **kwargs)
-        super(BaseOnnxDeviceHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
 
@@ -64,8 +62,7 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
 class BaseTFEncoder(BaseTFDeviceHandler, BaseEncoder):
 
     def __init__(self, *args, **kwargs):
-        super(BaseEncoder, self).__init__(*args, **kwargs)
-        super(BaseTFDeviceHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def run_on_gpu(self):
@@ -75,8 +72,7 @@ class BaseTFEncoder(BaseTFDeviceHandler, BaseEncoder):
 class BaseTorchEncoder(BaseTorchDeviceHandler, BaseEncoder):
 
     def __init__(self, *args, **kwargs):
-        super(BaseEncoder, self).__init__(*args, **kwargs)
-        super(BaseTorchDeviceHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def run_on_gpu(self):
@@ -86,8 +82,7 @@ class BaseTorchEncoder(BaseTorchDeviceHandler, BaseEncoder):
 class BasePaddlehubEncoder(BasePaddleDeviceHandler, BaseEncoder):
 
     def __init__(self, *args, **kwargs):
-        super(BaseEncoder, self).__init__(*args, **kwargs)
-        super(BasePaddleDeviceHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def run_on_gpu(self):
