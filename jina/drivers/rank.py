@@ -45,11 +45,11 @@ class Chunk2DocRankDriver(BaseRankDriver):
         match_idx = []
         query_chunk_meta = {}
         match_chunk_meta = {}
-        for c in docs:
-            for match in c.matches:
-                match_idx.append((match.parent_id, match.id, c.id, match.score.value))
-                query_chunk_meta[c.id] = pb_obj2dict(c, self.exec.required_keys)
-                match_chunk_meta[match.id] = pb_obj2dict(match, self.exec.required_keys)
+        for match in docs:
+            # for match in c.matches:
+            match_idx.append((match.parent_id, match.id, context_doc.id, match.score.value))
+            query_chunk_meta[context_doc.id] = pb_obj2dict(context_doc, self.exec.required_keys)
+            match_chunk_meta[match.id] = pb_obj2dict(match, self.exec.required_keys)
 
         # np.uint32 uses 32 bits. np.float32 uses 23 bit mantissa, so integer greater than 2^23 will have their
         # least significant bits truncated.

@@ -1,0 +1,5 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  SearchRequest:
+    - !Chunk2DocRankDriver {}
