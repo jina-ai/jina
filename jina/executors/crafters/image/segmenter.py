@@ -38,10 +38,10 @@ class RandomImageCropper(BaseSegmenter):
         raw_img = _load_image(blob, self.channel_axis)
         result = []
         for i in range(self.num_pathes):
-            _img = _crop_image(raw_img, self.target_size, how='random')
+            _img, top, left = _crop_image(raw_img, self.target_size, how='random')
             img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
             result.append(
-                dict(offset=0, weight=1., blob=np.asarray(img).astype('float32')))
+                dict(offset=0, weight=1., blob=np.asarray(img).astype('float32')), location=(top, left))
         return result
 
 
@@ -79,22 +79,22 @@ class FiveImageCropper(BaseSegmenter):
             target_h, target_w = self.target_size
         else:
             raise ValueError(f'target_size should be an integer or a tuple of two integers: {self.target_size}')
-        _tl = _crop_image(raw_img, self.target_size, 0, 0)
+        _tl, top_tl, left_tl = _crop_image(raw_img, self.target_size, 0, 0)
         tl = _restore_channel_axis(np.asarray(_tl), self.channel_axis)
-        _tr = _crop_image(raw_img, self.target_size, image_width - target_w, 0)
+        _tr, top_tr, left_tr = _crop_image(raw_img, self.target_size, image_width - target_w, 0)
         tr = _restore_channel_axis(np.asarray(_tr), self.channel_axis)
-        _bl = _crop_image(raw_img, self.target_size, 0, image_height - target_h)
+        _bl, top_bl, left_bl = _crop_image(raw_img, self.target_size, 0, image_height - target_h)
         bl = _restore_channel_axis(np.asarray(_bl), self.channel_axis)
-        _br = _crop_image(raw_img, self.target_size, image_width - target_w, image_height - target_h)
+        _br, top_br, left_br = _crop_image(raw_img, self.target_size, image_width - target_w, image_height - target_h)
         br = _restore_channel_axis(np.asarray(_br), self.channel_axis)
-        _center = _crop_image(raw_img, self.target_size, how='center')
+        _center, top_center, left_center = _crop_image(raw_img, self.target_size, how='center')
         center = _restore_channel_axis(np.asarray(_center), self.channel_axis)
         return [
-            dict(offset=0, weight=1., blob=tl.astype('float32')),
-            dict(offset=0, weight=1., blob=tr.astype('float32')),
-            dict(offset=0, weight=1., blob=bl.astype('float32')),
-            dict(offset=0, weight=1., blob=br.astype('float32')),
-            dict(offset=0, weight=1., blob=center.astype('float32')),
+            dict(offset=0, weight=1., blob=tl.astype('float32'), location=(top_tl, left_tl)),
+            dict(offset=0, weight=1., blob=tr.astype('float32'), location=(top_tr, left_tr)),
+            dict(offset=0, weight=1., blob=bl.astype('float32'), location=(top_tr, left_tr)),
+            dict(offset=0, weight=1., blob=br.astype('float32'), location=(top_tr, left_tr)),
+            dict(offset=0, weight=1., blob=center.astype('float32'), location=(top_center, left_center)),
         ]
 
 

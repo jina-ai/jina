@@ -75,7 +75,7 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
     w_end = w_beg + target_w
     h_end = h_beg + target_h
     img = img.crop((w_beg, h_beg, w_end, h_end))
-    return img
+    return img, h_beg, w_beg
 
 
 def _resize_short(img, target_size: Union[Tuple[int], int], how: str = 'LANCZOS'):

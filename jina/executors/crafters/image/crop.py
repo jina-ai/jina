@@ -39,9 +39,9 @@ class ImageCropper(BaseCrafter):
         :returns: a chunk dict with the cropped image
         """
         raw_img = _load_image(blob, self.channel_axis)
-        _img = _crop_image(raw_img, (self.width, self.height), self.left, self.top)
+        _img, top, left = _crop_image(raw_img, target_size=(self.width, self.height), top=self.top, left=self.left)
         img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))
 
 
 class CenterImageCropper(BaseCrafter):
@@ -72,6 +72,6 @@ class CenterImageCropper(BaseCrafter):
         :return: a chunk dict with the cropped image
         """
         raw_img = _load_image(blob, self.channel_axis)
-        _img = _crop_image(raw_img, self.target_size, how='center')
+        _img, top, left = _crop_image(raw_img, self.target_size, how='center')
         img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
-        return dict(offset=0, weight=1., blob=img.astype('float32'))
+        return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))

@@ -11,7 +11,7 @@ class ImageCropTestCase(JinaImageTestCase):
         top = 17
         width = 20
         height = 20
-        crafter = ImageCropper(left, top, width, height)
+        crafter = ImageCropper(top=top, left=left, width=width, height=height)
         crafted_chunk = crafter.craft(img_array, 0, 0)
         np.testing.assert_array_equal(
             crafted_chunk['blob'], np.asarray(img_array[top:top + height, left:left + width, :]),

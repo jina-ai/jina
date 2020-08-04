@@ -55,7 +55,7 @@ class ImageNormalizer(BaseCrafter):
 
     def _normalize(self, img):
         img = _resize_short(img, target_size=self.resize_dim)
-        img = _crop_image(img, target_size=self.target_size, how='center')
+        img, _, _ = _crop_image(img, target_size=self.target_size, how='center')
         img = np.array(img).astype('float32') / 255
         img -= self.img_mean
         img /= self.img_std
