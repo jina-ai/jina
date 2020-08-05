@@ -6,12 +6,12 @@ from typing import Optional
 
 import numpy as np
 
-from jina.logging.base import get_logger
 from .. import BaseEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
 from ...devices import TFDevice, TorchDevice
 from ....helper import cached_property
+from ....logging.base import get_logger
 
 logger = get_logger("transformer_encoder")
 
@@ -80,13 +80,13 @@ class BaseTransformerEncoder(BaseEncoder):
         :return: an ndarray in size `B x D`
         """
         try:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
             ids_info = self.tokenizer.batch_encode_plus(data,
                                                         max_length=self.max_length,
                                                         truncation=self.truncation_strategy,
                                                         pad_to_max_length=True,
                                                         padding='max_length')
         except ValueError:
-            self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             self.model.resize_token_embeddings(len(self.tokenizer))
             ids_info = self.tokenizer.batch_encode_plus(data,
                                                         max_length=self.max_length,
