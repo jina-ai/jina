@@ -327,7 +327,7 @@ class ZmqStreamlet(Zmqlet):
                 if hasattr(self.ctrl_sock, '_handle_events'):
                     self.ctrl_sock._handle_events = lambda *args, **kwargs: None
             except AttributeError as e:
-                self.logger.info(f'failed to stop. {e}')
+                self.logger.error(f'failed to stop. {e}')
 
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """

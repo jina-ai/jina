@@ -414,7 +414,6 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.head_args)
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
 
-            f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy(self):
         f = (Flow().add(name='r1', uses='_logforward')
@@ -443,7 +442,6 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.head_args)
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
 
-            f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy_2(self):
         f = (Flow().add(name='r1', uses='_logforward')
