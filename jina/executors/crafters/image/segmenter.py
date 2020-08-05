@@ -6,7 +6,7 @@ from typing import Tuple, Dict, List, Union
 import numpy as np
 
 from .. import BaseSegmenter
-from .helper import _crop_image, _restore_channel_axis, _load_image, _check_channel_axis
+from .helper import _crop_image, _move_channel_axis, _load_image
 
 
 class RandomImageCropper(BaseSegmenter):
@@ -42,7 +42,7 @@ class RandomImageCropper(BaseSegmenter):
         result = []
         for i in range(self.num_patches):
             _img, top, left = _crop_image(raw_img, self.target_size, how='random')
-            img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
+            img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
             result.append(
                 dict(offset=0, weight=1., blob=np.asarray(img).astype('float32'), location=(top, left)))
         return result
@@ -150,7 +150,7 @@ class SlidingWindowImageCropper(BaseSegmenter):
         :return: a list of chunk dicts with the cropped images.
         """
         raw_img = np.copy(blob)
-        raw_img = _check_channel_axis(raw_img, self.channel_axis)
+        raw_img = _move_channel_axis(raw_img, self.channel_axis)
         if self.padding:
             raw_img = self._add_zero_padding(blob)
         h, w, c = raw_img.shape
