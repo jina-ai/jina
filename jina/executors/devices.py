@@ -22,11 +22,6 @@ class BaseDevice:
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
 
-    @property
-    @abstractmethod
-    def is_gpu(self) -> bool:
-        """Check if the current device is GPU """
-        pass
 
     @abstractmethod
     def to_device(self, *args, **kwargs):
@@ -66,7 +61,7 @@ class TorchDevice(BaseDevice):
     @cached_property
     def device(self):
         import torch
-        return torch.device('cuda:0') if self.is_gpu else torch.device('cpu')
+        return torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
 
     def to_device(self, model, *args, **kwargs):
         model.to(self.device)
@@ -106,7 +101,7 @@ class PaddleDevice(BaseDevice):
     @cached_property
     def device(self):
         import paddle.fluid as fluid
-        return fluid.CUDAPlace(0) if self.is_gpu else fluid.CPUPlace()
+        return fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
 
     def to_device(self):
         import paddle.fluid as fluid
@@ -145,7 +140,7 @@ class TFDevice(BaseDevice):
         import tensorflow as tf
         cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
         gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-        if self.is_gpu and len(gpus) > 0:
+        if self.on_gpu and len(gpus) > 0:
             cpus.append(gpus[0])
         return cpus
 
@@ -189,7 +184,7 @@ class OnnxDevice(BaseDevice):
 
     @cached_property
     def device(self):
-        return ['CUDAExecutionProvider'] if self.is_gpu else ['CPUExecutionProvider']
+        return ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
 
     def to_device(self, model, *args, **kwargs):
         model.set_providers(self.device)
@@ -205,7 +200,7 @@ class FaissDevice(BaseDevice):
     def device(self):
         import faiss
         # For now, consider only one GPU, do not distribute the index
-        return faiss.StandardGpuResources() if self.is_gpu else None
+        return faiss.StandardGpuResources() if self.on_gpu else None
 
     def to_device(self, index, *args, **kwargs):
         import faiss
