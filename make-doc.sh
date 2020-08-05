@@ -19,7 +19,7 @@ cd ${DOC_DIR} && make html && cd -
 
 if [[ $1 == "commit" ]]; then
   cp ${DOC_DIR}/README.md ${HTML_DIR}/
-  cp ${DOC_DIR}/jina-logo-dark.png ${HTML_DIR}/
+  cp ${DOC_DIR}/jina-logo-dark.svg ${HTML_DIR}/
   cd ${HTML_DIR}
   echo docs.jina.ai > CNAME
   git init
@@ -32,7 +32,7 @@ if [[ $1 == "commit" ]]; then
   cd -
 elif [[ $1 == "release" ]]; then
   cp ${DOC_DIR}/README.md ${HTML_DIR}/
-  cp ${DOC_DIR}/jina-logo-dark.png ${HTML_DIR}/
+  cp ${DOC_DIR}/jina-logo-dark.svg ${HTML_DIR}/
   cd ${HTML_DIR}
   echo docs.jina.ai > CNAME
   git init
