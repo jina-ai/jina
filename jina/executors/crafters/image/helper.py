@@ -6,19 +6,19 @@ from typing import Tuple, Union
 import numpy as np
 
 
-def _check_channel_axis(img: 'np.ndarray', channel_axis: int) -> 'np.ndarray':
+def _check_channel_axis(img: 'np.ndarray', channel_axis: int, default_channel_axis: int = -1) -> 'np.ndarray':
     """
     Ensure the color channel axis is the last axis.
     """
-    if channel_axis == -1:
+    if channel_axis == default_channel_axis:
         return img
-    return np.moveaxis(img, channel_axis, -1)
+    return np.moveaxis(img, channel_axis, default_channel_axis)
 
 
-def _restore_channel_axis(img: 'np.ndarray', channel_axis: int) -> 'np.ndarray':
-    if channel_axis == -1:
+def _restore_channel_axis(img: 'np.ndarray', channel_axis: int, default_channel_axis: int = -1) -> 'np.ndarray':
+    if channel_axis == default_channel_axis:
         return img
-    return np.moveaxis(img, -1, channel_axis)
+    return np.moveaxis(img, default_channel_axis, channel_axis)
 
 
 def _load_image(blob: 'np.ndarray', channel_axis: int):

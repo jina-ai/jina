@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Dict, List, Union, Generator
+from typing import Tuple, Dict, List, Union
 
 import numpy as np
 
