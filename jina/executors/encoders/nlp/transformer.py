@@ -100,11 +100,6 @@ class BaseTransformerEncoder(BaseEncoder):
             _seq_output = self.tensor2array(seq_output)
             if self.pooling_strategy == 'auto':
                 output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
-            elif self.pooling_strategy == 'cls':
-                if hasattr(self._tokenizer, 'cls_token') and len(extra_output) > 0:
-                    output = self.tensor2array(extra_output[0])
-                else:
-                    output = reduce_cls(_seq_output, _mask_ids_batch, self.cls_pos)
             elif self.pooling_strategy == 'mean':
                 output = reduce_mean(_seq_output, _mask_ids_batch)
             elif self.pooling_strategy == 'max':
