@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 
 from .. import BaseEncoder
-from ..frameworks import BaseTextTFEncoder, BaseTextTorchEncoder
+from ..frameworks import BaseTFDeviceHandler, BaseTorchDeviceHandler
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
 from jina.logging.base import get_logger
@@ -32,7 +32,7 @@ def auto_reduce(model_outputs, mask_2d, model_name):
 
 class BaseTransformerEncoder(BaseEncoder):
     """
-    :class:`TransformerTextEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
+    :class:`BaseTransformerEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
     """
 
     def __init__(self,
@@ -181,11 +181,21 @@ class BaseTransformerEncoder(BaseEncoder):
         raise NotImplementedError
 
 
-# diamond problem
-class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
+class TransformerTFEncoder(BaseTFDeviceHandler, BaseTransformerEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
+    def __init__(self, model_name: str = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
+    def post_init(self):
+        super().post_init()
+        self._device = None
+
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
 
     def get_model(self):
         from transformers import TFAutoModelForPreTraining
@@ -202,11 +212,21 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
         return tf.constant
 
 
-# diamond problem
-class TransformerTorchEncoder(BaseTransformerEncoder, BaseTextTorchEncoder):
+class TransformerTorchEncoder(BaseTorchDeviceHandler, BaseTransformerEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
+    def __init__(self, model_name: str = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
+    def post_init(self):
+        super().post_init()
+        self._device = None
+
+    @property
+    def run_on_gpu(self):
+        return self.on_gpu
 
     def get_model(self):
         from transformers import AutoModelForPreTraining
