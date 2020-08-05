@@ -1,6 +1,6 @@
 import tempfile
 
-from jina.executors.encoders.image.customtfkeras import CustomKerasImageEncoder
+from jina.executors.encoders.image.tfkeras import CustomKerasImageEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 
 
