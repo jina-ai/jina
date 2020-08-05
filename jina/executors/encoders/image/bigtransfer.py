@@ -47,6 +47,7 @@ class BiTImageEncoder(BaseCVTFEncoder):
         self.model_path = model_path
 
     def post_init(self):
+        super().post_init()
         self.to_device()
         import tensorflow as tf
         _model = tf.saved_model.load(self.model_path)

@@ -44,6 +44,7 @@ class ImageTorchEncoder(BaseCVTorchEncoder):
         self.pool_strategy = pool_strategy
 
     def post_init(self):
+        super().post_init()
         import torchvision.models as models
         if self.pool_strategy is not None:
             self.pool_fn = getattr(np, self.pool_strategy)

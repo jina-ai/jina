@@ -28,6 +28,7 @@ class CustomKerasImageEncoder(KerasImageEncoder):
         self.channel_axis = channel_axis
 
     def post_init(self):
+        super().post_init()
         self.to_device()
         import tensorflow as tf
         model = tf.keras.models.load_model(self.model_path)

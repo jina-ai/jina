@@ -29,6 +29,7 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         self.input_sample_rate = input_sample_rate
 
     def post_init(self):
+        super().post_init()
         import torch
         from fairseq.models.wav2vec import Wav2VecModel
         cp = torch.load(self.model_path, map_location=torch.device('cpu'))

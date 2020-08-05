@@ -25,6 +25,10 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
         self.outputs_name = output_feature
         self.raw_model_path = model_path
 
+    def post_init(self):
+        super().post_init()
+        self._device = None
+
     @property
     def run_on_gpu(self):
         return self.on_gpu
@@ -35,6 +39,7 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
              models is saved at `tmp_model_path`.
         """
         import onnxruntime
+        super().post_init()
         self.model_name = self.raw_model_path.split('/')[-1]
         self.tmp_model_path = self.get_file_from_workspace(f'{self.model_name}.tmp')
         if is_url(self.raw_model_path):
@@ -47,6 +52,7 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
             self.logger.info(f'save the model with outputs [{self.outputs_name}] at {self.tmp_model_path}')
         self.model = onnxruntime.InferenceSession(self.tmp_model_path, None)
         self.inputs_name = self.model.get_inputs()[0].name
+        self._device = None
         self.to_device(self.model)
 
     @staticmethod
@@ -61,8 +67,13 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
 
 class BaseTFEncoder(BaseTFDeviceHandler, BaseEncoder):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
+    def post_init(self):
+        super().post_init()
+        self._device = None
 
     @property
     def run_on_gpu(self):
@@ -71,8 +82,13 @@ class BaseTFEncoder(BaseTFDeviceHandler, BaseEncoder):
 
 class BaseTorchEncoder(BaseTorchDeviceHandler, BaseEncoder):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
+    def post_init(self):
+        super().post_init()
+        self._device = None
 
     @property
     def run_on_gpu(self):
@@ -81,8 +97,13 @@ class BaseTorchEncoder(BaseTorchDeviceHandler, BaseEncoder):
 
 class BasePaddlehubEncoder(BasePaddleDeviceHandler, BaseEncoder):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.model_name = model_name
+
+    def post_init(self):
+        super().post_init()
+        self._device = None
 
     @property
     def run_on_gpu(self):
@@ -187,6 +208,7 @@ class BaseCVPaddlehubEncoder(BasePaddlehubEncoder):
         self._default_channel_axis = -3
 
     def post_init(self):
+        super().post_init()
         import paddlehub as hub
         module = hub.Module(name=self.model_name)
         inputs, outputs, self.model = module.context(trainable=False)

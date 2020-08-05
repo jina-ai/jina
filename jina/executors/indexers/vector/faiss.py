@@ -9,7 +9,7 @@ from . import BaseNumpyIndexer
 from ...frameworks import BaseFaissDeviceHandler
 
 
-class FaissIndexer(BaseNumpyIndexer, BaseFaissDeviceHandler):
+class FaissIndexer(BaseFaissDeviceHandler, BaseNumpyIndexer):
     """Faiss powered vector indexer
 
     For more information about the Faiss supported parameters and installation problems, please consult:
@@ -59,7 +59,8 @@ class FaissIndexer(BaseNumpyIndexer, BaseFaissDeviceHandler):
         return self.on_gpu
 
     def post_init(self):
-        super(BaseNumpyIndexer, self).post_init()
+        super().post_init()
+        self._device = None
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """Load all vectors (in numpy ndarray) into Faiss indexers """

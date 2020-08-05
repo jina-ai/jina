@@ -24,6 +24,7 @@ class CustomImageTorchEncoder(ImageTorchEncoder):
         self.layer_name = layer_name
 
     def post_init(self):
+        super().post_init()
         import torch
         if self.pool_strategy is not None:
             self.pool_fn = getattr(np, self.pool_strategy)

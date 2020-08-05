@@ -124,6 +124,7 @@ class BaseTransformerEncoder(BaseEncoder):
         return super().__getstate__()
 
     def post_init(self):
+        super().post_init()
         self._model = None
         self._tensor_func = None
         self._sess_func = None
@@ -180,6 +181,7 @@ class BaseTransformerEncoder(BaseEncoder):
         raise NotImplementedError
 
 
+# diamond problem
 class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
@@ -200,6 +202,7 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
         return tf.constant
 
 
+# diamond problem
 class TransformerTorchEncoder(BaseTransformerEncoder, BaseTextTorchEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
