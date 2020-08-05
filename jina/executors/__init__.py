@@ -27,7 +27,7 @@ from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 
 if False:
-    from ..drivers import BaseDriver
+    pass
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -285,6 +285,9 @@ class BaseExecutor(metaclass=ExecutorType):
         d = dict(self.__dict__)
         del d['logger']
         for k in self._post_init_vars:
+            del d[k]
+        cached = [k for k in d.keys() if k.startswith('CACHED_')]
+        for k in cached:
             del d[k]
         return d
 

@@ -635,5 +635,5 @@ class cached_property:
         if obj is None:
             return self
 
-        value = obj.__dict__[self.func.__name__] = self.func(obj)
+        value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
         return value
