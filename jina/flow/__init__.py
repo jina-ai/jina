@@ -401,7 +401,7 @@ class Flow:
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
-        op_flow._ports_in_use += self._check_port_collision(kwargs)
+        op_flow._ports_in_use += op_flow._check_port_collision(kwargs)
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
         op_flow.set_last_pod(pod_name, False)
 
