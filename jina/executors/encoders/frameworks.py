@@ -7,12 +7,12 @@ import numpy as np
 
 from . import BaseEncoder
 from ..decorators import batching, as_ndarray
-from ..frameworks import BaseOnnxDeviceHandler, BasePaddleDeviceHandler, BaseTorchDeviceHandler, BaseTFDeviceHandler
+from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice
 from ...helper import is_url
 
 
 # mixin classes go first, base classes are read from right to left.
-class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
+class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
     def __init__(self, output_feature: str, model_path: str = None, *args, **kwargs):
         """
 
@@ -24,14 +24,6 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
         super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
-
-    def post_init(self):
-        super().post_init()
-        self._device = None
-
-    @property
-    def run_on_gpu(self):
-        return self.on_gpu
 
     def post_init(self):
         """
@@ -65,49 +57,25 @@ class BaseOnnxEncoder(BaseOnnxDeviceHandler, BaseEncoder):
         onnx.save(model, output_fn)
 
 
-class BaseTFEncoder(BaseTFDeviceHandler, BaseEncoder):
+class BaseTFEncoder(TFDevice, BaseEncoder):
 
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
 
-    def post_init(self):
-        super().post_init()
-        self._device = None
 
-    @property
-    def run_on_gpu(self):
-        return self.on_gpu
-
-
-class BaseTorchEncoder(BaseTorchDeviceHandler, BaseEncoder):
+class BaseTorchEncoder(TorchDevice, BaseEncoder):
 
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
 
-    def post_init(self):
-        super().post_init()
-        self._device = None
 
-    @property
-    def run_on_gpu(self):
-        return self.on_gpu
-
-
-class BasePaddlehubEncoder(BasePaddleDeviceHandler, BaseEncoder):
+class BasePaddlehubEncoder(PaddleDevice, BaseEncoder):
 
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
-
-    def post_init(self):
-        super().post_init()
-        self._device = None
-
-    @property
-    def run_on_gpu(self):
-        return self.on_gpu
 
 
 class BaseTextTFEncoder(BaseTFEncoder):
@@ -118,7 +86,6 @@ class BaseTextTFEncoder(BaseTFEncoder):
         :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
         :return: an ndarray of `B x D`
         """
-        pass
 
 
 class BaseTextTorchEncoder(BaseTorchEncoder):
@@ -128,7 +95,6 @@ class BaseTextTorchEncoder(BaseTorchEncoder):
         :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
         :return: an ndarray of `B x D`
         """
-        pass
 
 
 class BaseTextPaddlehubEncoder(BasePaddlehubEncoder):
@@ -138,7 +104,6 @@ class BaseTextPaddlehubEncoder(BasePaddlehubEncoder):
         :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
         :return: an ndarray of `B x D`
         """
-        pass
 
 
 class BaseCVTFEncoder(BaseTFEncoder):
@@ -147,7 +112,6 @@ class BaseCVTFEncoder(BaseTFEncoder):
         :param data: a `B x ([T] x D)` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
         """
-        pass
 
 
 class BaseCVTorchEncoder(BaseTorchEncoder):

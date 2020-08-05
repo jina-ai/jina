@@ -3,13 +3,14 @@ __license__ = "Apache-2.0"
 
 import os
 from typing import Optional
+
 import numpy as np
 
+from jina.logging.base import get_logger
 from .. import BaseEncoder
-from ..frameworks import BaseTFDeviceHandler, BaseTorchDeviceHandler
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
-from jina.logging.base import get_logger
+from ...devices import TFDevice, TorchDevice
 
 logger = get_logger("transformer_encoder")
 
@@ -181,21 +182,14 @@ class BaseTransformerEncoder(BaseEncoder):
         raise NotImplementedError
 
 
-class TransformerTFEncoder(BaseTFDeviceHandler, BaseTransformerEncoder):
+class TransformerTFEncoder(TFDevice, BaseTransformerEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
+
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
-
-    def post_init(self):
-        super().post_init()
-        self._device = None
-
-    @property
-    def run_on_gpu(self):
-        return self.on_gpu
 
     def get_model(self):
         from transformers import TFAutoModelForPreTraining
@@ -212,21 +206,14 @@ class TransformerTFEncoder(BaseTFDeviceHandler, BaseTransformerEncoder):
         return tf.constant
 
 
-class TransformerTorchEncoder(BaseTorchDeviceHandler, BaseTransformerEncoder):
+class TransformerTorchEncoder(TorchDevice, BaseTransformerEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
+
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_name = model_name
-
-    def post_init(self):
-        super().post_init()
-        self._device = None
-
-    @property
-    def run_on_gpu(self):
-        return self.on_gpu
 
     def get_model(self):
         from transformers import AutoModelForPreTraining
