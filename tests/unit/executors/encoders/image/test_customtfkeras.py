@@ -34,4 +34,4 @@ class CustomKerasTestCase(ImageTestCase):
         model.save(path)
         self.target_output_dim = 10
         self.input_dim = 224
-        return CustomKerasImageEncoder(model_path=path, layer_name='dense')
+        return CustomKerasImageEncoder(channel_axis=1, model_path=path, layer_name='dense')
