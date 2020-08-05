@@ -11,6 +11,7 @@ from .. import BaseEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
 from ...devices import TFDevice, TorchDevice
+from ....helper import cached_property
 
 logger = get_logger("transformer_encoder")
 
@@ -124,13 +125,6 @@ class BaseTransformerEncoder(BaseEncoder):
             self.tokenizer.save_pretrained(self.model_abspath)
         return super().__getstate__()
 
-    def post_init(self):
-        super().post_init()
-        self._model = None
-        self._tensor_func = None
-        self._sess_func = None
-        self._tokenizer = self.get_tokenizer()
-
     def array2tensor(self, array):
         return self.tensor_func(array)
 
@@ -143,29 +137,21 @@ class BaseTransformerEncoder(BaseEncoder):
         """
         return self.get_file_from_workspace(self.model_save_path)
 
-    @property
+    @cached_property
     def model(self):
-        if self._model is None:
-            self._model = self.get_model()
-        return self._model
+        return self.get_model()
 
-    @property
+    @cached_property
     def session(self):
-        if self._sess_func is None:
-            self._sess_func = self.get_session()
-        return self._sess_func
+        return self.get_session()
 
-    @property
+    @cached_property
     def tensor_func(self):
-        if self._tensor_func is None:
-            self._tensor_func = self.get_tensor_func()
-        return self._tensor_func
+        return self.get_tensor_func()
 
-    @property
+    @cached_property
     def tokenizer(self):
-        if self._tokenizer is None:
-            self._tokenizer = self.get_tokenizer()
-        return self._tokenizer
+        return self.get_tokenizer()
 
     def get_tokenizer(self):
         from transformers import AutoTokenizer

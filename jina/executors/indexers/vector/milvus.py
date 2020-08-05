@@ -38,7 +38,6 @@ class MilvusIndexer(BaseVectorIndexer):
 
     @property
     def query_handler(self):
-
         return self.get_query_handler()
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):

@@ -2,7 +2,8 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from abc import abstractmethod
-from functools import cached_property
+
+from ..helper import cached_property
 
 
 class BaseDevice:
