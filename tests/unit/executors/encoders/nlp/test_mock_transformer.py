@@ -69,7 +69,3 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
             encoder = TransformerTFEncoder(pretrained_model_name_or_path=model)
             encoded_batch = encoder.encode(np.asarray(self.texts))
             assert np.array_equal(encoded_batch.squeeze(), np.asarray([0, 0]))
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,5 +1,3 @@
-import unittest
-
 from jina.executors.encoders.nlp.transformer import TransformerTFEncoder, TransformerTorchEncoder
 from tests.unit.executors.encoders.nlp import NlpTestCase
 
@@ -30,7 +28,3 @@ class XLNetTFTestCase(NlpTestCase):
         return TransformerTFEncoder(
             pretrained_model_name_or_path='xlnet-base-cased',
             metas=metas)
-
-
-if __name__ == '__main__':
-    unittest.main()

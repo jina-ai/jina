@@ -1,11 +1,10 @@
 import tempfile
-import unittest
 
 from jina.executors.encoders.image.customtorchvision import CustomImageTorchEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 
 
-class MyTestCase(ImageTestCase):
+class CustomTorchTestCase(ImageTestCase):
     def _get_encoder(self, metas):
         import torch
         import torch.nn as nn
@@ -37,7 +36,3 @@ class MyTestCase(ImageTestCase):
         self.target_output_dim = 10
         self.input_dim = 224
         return CustomImageTorchEncoder(model_path=path, layer_name='conv1', metas=metas)
-
-
-if __name__ == '__main__':
-    unittest.main()
