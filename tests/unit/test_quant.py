@@ -52,16 +52,12 @@ class MyTestCase(JinaTestCase):
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
 
-        time.sleep(4)
-
     def f2(self, quant):
         os.environ['JINA_ARRAY_QUANT'] = quant
 
         f = Flow(callback_on_body=True, compress_hwm=1024).add(uses='_pass')
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
-
-        time.sleep(4)
 
     def test_quant(self):
         for j in ('fp32', 'fp16', 'uint8'):
