@@ -64,7 +64,7 @@ def get_readable_size(num_bytes: int) -> str:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
-def print_load_table(load_stat: Dict[str, List[any]]):
+def print_load_table(load_stat: Dict[str, List[Any]]):
     from .logging import default_logger
 
     load_table = []
