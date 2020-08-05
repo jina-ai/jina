@@ -12,7 +12,7 @@ from io import StringIO
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
-
+import types
 import numpy as np
 from ruamel.yaml import YAML, nodes
 
@@ -41,7 +41,7 @@ def deprecated_alias(**aliases):
     return deco
 
 
-def rename_kwargs(func_name, kwargs, aliases):
+def rename_kwargs(func_name: str, kwargs, aliases):
     from .logging import default_logger
     for alias, new in aliases.items():
         if alias in kwargs:
@@ -53,7 +53,7 @@ def rename_kwargs(func_name, kwargs, aliases):
             kwargs[new] = kwargs.pop(alias)
 
 
-def get_readable_size(num_bytes):
+def get_readable_size(num_bytes: int) -> str:
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
     elif num_bytes < 1024 ** 2:
@@ -64,7 +64,7 @@ def get_readable_size(num_bytes):
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
-def print_load_table(load_stat):
+def print_load_table(load_stat: Dict[str, List[Any]]):
     from .logging import default_logger
 
     load_table = []
@@ -79,7 +79,7 @@ def print_load_table(load_stat):
         default_logger.info('\n'.join(load_table))
 
 
-def print_load_csv_table(load_stat):
+def print_load_csv_table(load_stat: Dict[str, List[Any]]):
     from .logging import default_logger
 
     load_table = []
@@ -197,7 +197,7 @@ def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
     sys.stdout.flush()
 
 
-def load_contrib_module():
+def load_contrib_module() -> List[Any]:
     if 'JINA_CONTRIB_MODULE_IS_LOADING' not in os.environ:
 
         contrib = os.getenv('JINA_CONTRIB_MODULE')
@@ -219,28 +219,28 @@ def load_contrib_module():
 class PathImporter:
 
     @staticmethod
-    def _get_module_name(absolute_path):
+    def _get_module_name(absolute_path: str) -> str:
         module_name = os.path.basename(absolute_path)
         module_name = module_name.replace('.py', '')
         return module_name
 
     @staticmethod
-    def add_modules(*paths):
+    def add_modules(*paths) -> 'types.ModuleType':
         for p in paths:
             if not os.path.exists(p):
                 raise FileNotFoundError('cannot import module from %s, file not exist', p)
-            module, spec = PathImporter._path_import(p)
+            module = PathImporter._path_import(p)
         return module
 
     @staticmethod
-    def _path_import(absolute_path):
+    def _path_import(absolute_path: str) -> 'types.ModuleType':
         import importlib.util
         module_name = PathImporter._get_module_name(absolute_path)
         spec = importlib.util.spec_from_file_location(module_name, absolute_path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         sys.modules[spec.name] = module
-        return module, spec
+        return module
 
 
 _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young', 'early', 'major', 'clear', 'black',

@@ -14,7 +14,7 @@ from jina.logging.base import get_logger
 logger = get_logger("transformer_encoder")
 
 
-def auto_reduce(model_outputs, mask_2d, model_name):
+def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: str) -> 'np.ndarray':
     """
     Automatically creates a sentence embedding from its token embeddings.
         * For BERT-like models (BERT, RoBERTa, DistillBERT, Electra ...) uses embedding of first token
