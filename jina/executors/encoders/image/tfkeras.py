@@ -16,7 +16,7 @@ class KerasImageEncoder(BaseCVTFEncoder):
     """
 
     def __init__(self, img_shape: int = 96,
-                 pool_strategy: str = 'avg', channel_axis: int = -1, *args, **kwargs):
+                 pool_strategy: str = 'avg', channel_axis: int = 1, *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include

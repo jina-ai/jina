@@ -20,7 +20,7 @@ class BiTImageEncoder(BaseCVTFEncoder):
         Known issue: this does not work on tensorflow==2.2.0, https://github.com/tensorflow/tensorflow/issues/38571
     """
 
-    def __init__(self, model_path: str, channel_axis: int = -1, *args, **kwargs):
+    def __init__(self, model_path: str, channel_axis: int = 1, *args, **kwargs):
         """
         :param model_path: the path of the model in the `SavedModel` format. `model_path` should be a directory path,
             which has the following structure. The pretrained model can be downloaded at
