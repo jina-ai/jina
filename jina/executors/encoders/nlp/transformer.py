@@ -22,13 +22,13 @@ def auto_reduce(model_outputs, mask_2d, model_name):
         * For XLM and XLNet models uses embedding of last token
         * Assumes that other models are language-model like and uses embedding of last token
     """
-    if "bert" in model_name or "electra" in model_name:
+    if 'bert' in model_name or 'electra' in model_name:
         return reduce_cls(model_outputs, mask_2d)
-    if "xlnet" in model_name:
-        return reduce_cls(model_outputs, mask_2d, cls_pos="tail")
-    logger.warning("Using embedding of a last token as a sequence embedding. "
-                   "If that's not desirable, change `pooling_strategy`")
-    return reduce_cls(model_outputs, mask_2d, cls_pos="tail")
+    if 'xlnet' in model_name:
+        return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
+    logger.warning('Using embedding of a last token as a sequence embedding. '
+                   'If that is not desirable, change `pooling_strategy`')
+    return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
 
 
 class BaseTransformerEncoder(BaseEncoder):

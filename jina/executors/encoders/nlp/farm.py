@@ -3,18 +3,18 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseTextTorchEncoder
+from ..frameworks import BaseTorchEncoder
 from ...decorators import batching, as_ndarray
 
 
-class FarmTextEncoder(BaseTextTorchEncoder):
+class FarmTextEncoder(BaseTorchEncoder):
     """FARM-based text encoder: (Framework for Adapting Representation Models)
     https://github.com/deepset-ai/FARM
 
     It encodes an array of string in size `B` into an ndarray in size `B x D`
     """
 
-    def __init__(self, model_name_or_path: str = 'deepset/bert-base-cased-squad2',
+    def __init__(self, model_name: str = 'deepset/bert-base-cased-squad2',
                  num_processes: int = 0, extraction_strategy: str = 'cls_token',
                  extraction_layer: int = -1,
                  *args,
@@ -32,8 +32,7 @@ class FarmTextEncoder(BaseTextTorchEncoder):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        if self.model_name is None:
-            self.model_name = 'deepset/bert-base-cased-squad2'
+        self.model_name = 'deepset/bert-base-cased-squad2' or model_name
         self.num_processes = num_processes
         self.extraction_strategy = extraction_strategy
         self.extraction_layer = extraction_layer

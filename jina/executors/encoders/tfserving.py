@@ -2,10 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Any
+
 import numpy as np
 
-from ..clients import BaseTFServingClientExecutor
 from . import BaseEncoder
+from ..clients import BaseTFServingClientExecutor
 
 
 class BaseTFServingClientEncoder(BaseTFServingClientExecutor, BaseEncoder):

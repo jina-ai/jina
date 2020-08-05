@@ -5,6 +5,7 @@ import json
 from typing import Optional
 
 from google.protobuf.json_format import Parse
+
 from jina.executors.indexers.keyvalue.proto import BasePbIndexer
 from jina.executors.indexers.keyvalue.proto import jina_pb2
 
@@ -57,11 +58,3 @@ class LeveldbIndexer(BasePbIndexer):
         if v is not None:
             value = Parse(json.loads(v.decode('utf8')), self._parser())
         return value
-
-
-class ChunkLeveldbIndexer(LeveldbIndexer):
-    """"""
-
-
-class DocLeveldbIndexer(LeveldbIndexer):
-    """"""
