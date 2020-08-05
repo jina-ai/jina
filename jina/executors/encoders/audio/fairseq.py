@@ -6,6 +6,7 @@ import numpy as np
 from .. import BaseAudioEncoder
 from ..frameworks import BaseTorchEncoder
 from ...decorators import batching, as_ndarray
+from ....helper import cached_property
 
 
 class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
@@ -29,6 +30,7 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         self.input_sample_rate = input_sample_rate
 
     def post_init(self):
+        super().post_init()
         import torch
         from fairseq.models.wav2vec import Wav2VecModel
         cp = torch.load(self.model_path, map_location=torch.device('cpu'))
@@ -36,7 +38,6 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
         self.model.load_state_dict(cp['model'])
         self.model.eval()
         self.to_device(self.model)
-        self._sess_func = None
         self._tensor_func = torch.tensor
 
     @batching
@@ -70,11 +71,9 @@ class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):
     def tensor2array(self, tensor):
         return tensor.cuda().numpy() if self.on_gpu else tensor.numpy()
 
-    @property
+    @cached_property
     def session(self):
-        if self._sess_func is None:
-            self._sess_func = self.get_session()
-        return self._sess_func
+        return self.get_session()
 
     def get_session(self):
         from torch import no_grad

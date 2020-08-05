@@ -3,10 +3,10 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseCVTorchEncoder
+from ..frameworks import BaseTorchEncoder
 
 
-class ImageTorchEncoder(BaseCVTorchEncoder):
+class ImageTorchEncoder(BaseTorchEncoder):
     """
     :class:`ImageTorchEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -14,7 +14,7 @@ class ImageTorchEncoder(BaseCVTorchEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self, pool_strategy: str = 'mean', *args, **kwargs):
+    def __init__(self, model_name: str = None, pool_strategy: str = 'mean', *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -37,13 +37,13 @@ class ImageTorchEncoder(BaseCVTorchEncoder):
             - `max` means that global max pooling will be applied.
         """
         super().__init__(*args, **kwargs)
-        if self.model_name is None:
-            self.model_name = 'mobilenet_v2'
+        self.model_name = 'mobilenet_v2' or model_name
         if pool_strategy not in ('mean', 'max', None):
             raise NotImplementedError(f'unknown pool_strategy: {self.pool_strategy}')
         self.pool_strategy = pool_strategy
 
     def post_init(self):
+        super().post_init()
         import torchvision.models as models
         if self.pool_strategy is not None:
             self.pool_fn = getattr(np, self.pool_strategy)
@@ -58,3 +58,36 @@ class ImageTorchEncoder(BaseCVTorchEncoder):
         if feature_map.ndim == 2 or self.pool_strategy is None:
             return feature_map
         return self.pool_fn(feature_map, axis=(2, 3))
+
+
+class CustomImageTorchEncoder(ImageTorchEncoder):
+    """
+    :class:`CustomImageTorchEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
+        ndarray of `B x D`.
+    Internally, :class:`CustomImageTorchEncoder` wraps any custom torch model not part of models from `torchvision.models`.
+    https://pytorch.org/docs/stable/torchvision/models.html
+    """
+
+    def __init__(self, layer_name: str, *args, **kwargs):
+        """
+        :param model_path: the path where the model is stored.
+        :layer: Name of the layer from where to extract the feature map.
+        """
+        super().__init__(*args, **kwargs)
+        self.layer_name = layer_name
+
+    def post_init(self):
+        super().post_init()
+        self.layer = getattr(self.model, self.layer_name)
+
+    def _get_features(self, data):
+        feature_map = None
+
+        def get_activation(model, input, output):
+            nonlocal feature_map
+            feature_map = output.detach()
+
+        handle = self.layer.register_forward_hook(get_activation)
+        self.model(data)
+        handle.remove()
+        return feature_map

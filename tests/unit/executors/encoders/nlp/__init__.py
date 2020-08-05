@@ -1,5 +1,5 @@
 import os
-import unittest
+import pytest
 
 import numpy as np
 from jina.executors import BaseExecutor
@@ -37,7 +37,7 @@ class NlpTestCase(ExecutorTestCase):
     def _get_encoder(self, metas):
         return None
 
-    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_encoding_results(self):
         encoder = self.get_encoder()
         if encoder is None:
@@ -46,7 +46,7 @@ class NlpTestCase(ExecutorTestCase):
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape[0], 2)
 
-    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_save_and_load(self):
         encoder = self.get_encoder()
         if encoder is None:
@@ -61,7 +61,7 @@ class NlpTestCase(ExecutorTestCase):
         self.assertEqual(encoder_loaded.max_length, encoder.max_length)
         np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
-    @unittest.skipUnless('JINA_TEST_PRETRAINED' in os.environ, 'skip the pretrained test if not set')
+    @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_save_and_load_config(self):
         encoder = self.get_encoder()
         if encoder is None:

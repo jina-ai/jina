@@ -21,12 +21,12 @@ from . import JINA_GLOBAL
 if False:
     from uvloop import Loop
 
-
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
-           'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source']
+           'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source',
+           'cached_property']
 
 
 def deprecated_alias(**aliases):
@@ -638,3 +638,15 @@ def rgetattr(obj, attr: str, *args):
         return getattr(obj, attr, *args)
 
     return functools.reduce(_getattr, [obj] + attr.split('.'))
+
+
+class cached_property:
+    def __init__(self, func):
+        self.func = func
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+
+        value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
+        return value

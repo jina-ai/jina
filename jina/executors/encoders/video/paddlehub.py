@@ -1,14 +1,14 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..frameworks import BaseCVPaddlehubEncoder
+from ..frameworks import BasePaddleEncoder
 
 
-class VideoPaddlehubEncoder(BaseCVPaddlehubEncoder):
+class VideoPaddleEncoder(BasePaddleEncoder):
     """
-    :class:`VideoPaddlehubEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into a
+    :class:`VideoPaddleEncoder` encodes data from a ndarray, potentially B x T x (Channel x Height x Width) into a
         ndarray of `B x D`.
-    Internally, :class:`VideoPaddlehubEncoder` wraps the models from `paddlehub`.
+    Internally, :class:`VideoPaddleEncoder` wraps the models from `paddlehub`.
     https://github.com/PaddlePaddle/PaddleHub
     """
 

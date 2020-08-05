@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseCVTFEncoder
+from ..frameworks import BaseTFEncoder
 from ...decorators import batching, as_ndarray
 
 
-class BiTImageEncoder(BaseCVTFEncoder):
+class BiTImageEncoder(BaseTFEncoder):
     """
     :class:`BiTImageEncoder` is Big Transfer (BiT) presented by Google (https://github.com/google-research/big_transfer),
     this class use pretrained BiT to encode data from a ndarray, potentially B x (Channel x Height x Width) into a
@@ -20,7 +20,7 @@ class BiTImageEncoder(BaseCVTFEncoder):
         Known issue: this does not work on tensorflow==2.2.0, https://github.com/tensorflow/tensorflow/issues/38571
     """
 
-    def __init__(self, model_path: str, channel_axis: int = -1, *args, **kwargs):
+    def __init__(self, model_path: str, channel_axis: int = 1, *args, **kwargs):
         """
         :param model_path: the path of the model in the `SavedModel` format. `model_path` should be a directory path,
             which has the following structure. The pretrained model can be downloaded at
@@ -47,6 +47,7 @@ class BiTImageEncoder(BaseCVTFEncoder):
         self.model_path = model_path
 
     def post_init(self):
+        super().post_init()
         self.to_device()
         import tensorflow as tf
         _model = tf.saved_model.load(self.model_path)

@@ -1,5 +1,4 @@
 import os
-import unittest
 
 import numpy as np
 from jina.executors import BaseExecutor
@@ -7,7 +6,7 @@ from jina.executors.encoders.nlp.char import OneHotTextEncoder
 from tests import JinaTestCase
 
 
-class MyTestCase(JinaTestCase):
+class OneHotEncoderTestCase(JinaTestCase):
     def test_encoding_results(self):
         encoder = OneHotTextEncoder(workspace=os.environ['TEST_WORKDIR'])
         test_data = np.array(['a', 'b', 'c', 'x', '!'])
@@ -43,7 +42,3 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(encoder_loaded.dim, encoder.dim)
 
         self.add_tmpfile(encoder_loaded.config_abspath, encoder_loaded.save_abspath)
-
-
-if __name__ == '__main__':
-    unittest.main()
