@@ -1,13 +1,12 @@
 import io
 import os
-import unittest
 
 from PIL import Image
 from jina.executors.crafters.image.io import ImageReader
 from tests.unit.executors.crafters.image import JinaImageTestCase
 
 
-class MyTestCase(JinaImageTestCase):
+class ImageIOTestCase(JinaImageTestCase):
     def test_io_uri(self):
         crafter = ImageReader()
         tmp_fn = os.path.join(crafter.current_workspace, 'test.jpeg')
@@ -29,7 +28,3 @@ class MyTestCase(JinaImageTestCase):
         test_doc = crafter.craft(buffer=image_buffer.getvalue(), uri=None)
         self.assertEqual(test_doc['blob'].shape, (img_size, img_size, 3))
         self.add_tmpfile(tmp_fn)
-
-
-if __name__ == '__main__':
-    unittest.main()

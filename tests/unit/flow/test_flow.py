@@ -449,7 +449,7 @@ class FlowTestCase(JinaTestCase):
         f = (Flow().add(name='r1', uses='_logforward')
              .add(name='r2', uses='_logforward', needs='r1', parallel=2)
              .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
-             .join(['r2', 'r3']))
+             .needs(['r2', 'r3']))
 
         with f:
             f.index_lines(lines=['abbcs', 'efgh'])

@@ -94,7 +94,7 @@ message Document {
     // a structured data value, consisting of field which map to dynamically typed values.
     google.protobuf.Struct tags = 11;
 
-    // the position of the doc, could be start and end index of a string; could be x,y coordinate of a image; could be timestamp of an audio clip
+    // the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip
     repeated uint32 location = 17;
 
     // the offset of this doc in the previous level document

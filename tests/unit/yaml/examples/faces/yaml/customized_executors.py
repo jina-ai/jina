@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 
 import numpy as np
-from jina.executors.crafters.image import ImageChunkCrafter
+from jina.executors.crafters import BaseCrafter
 from PIL import ImageOps
 
 
-class ImageFlipper(ImageChunkCrafter):
+class ImageFlipper(BaseCrafter):
     def craft(self, blob, doc_id, *args, **kwargs):
         raw_img = self.load_image(blob)
         _img = ImageOps.mirror(raw_img)
