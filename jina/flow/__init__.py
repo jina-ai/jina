@@ -17,7 +17,7 @@ from ruamel.yaml import StringIO
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias
+from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, random_port
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
@@ -171,6 +171,7 @@ class Flow:
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
 
         self._update_args(args, **kwargs)
+        self._ports_in_use = []
 
     def _update_args(self, args, **kwargs):
         from ..main.parser import set_flow_parser
@@ -346,8 +347,8 @@ class Flow:
         kwargs['name'] = 'gateway'
         self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
-    def join(self, needs: Union[Tuple[str], List[str]], uses: str = '_merge', name: str = 'joiner', *args,
-             **kwargs) -> 'Flow':
+    def needs(self, needs: Union[Tuple[str], List[str]], uses: str = '_merge', name: str = 'joiner', *args,
+              copy_flow: bool = True, **kwargs) -> 'Flow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
@@ -356,9 +357,11 @@ class Flow:
         :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
+        op_flow = copy.deepcopy(self) if copy_flow else self
+
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return self.add(name=name, uses=uses, needs=needs, *args, **kwargs)
+        return op_flow.add(name=name, uses=uses, needs=needs, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
@@ -398,8 +401,8 @@ class Flow:
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
+        op_flow._ports_in_use += op_flow._check_port_collision(kwargs)
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
-
         op_flow.set_last_pod(pod_name, False)
 
         return op_flow
@@ -642,7 +645,8 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn, **kwargs)
+        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn,
+                                         **kwargs)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -661,7 +665,8 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn, **kwargs)
+        self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn,
+                                         **kwargs)
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -680,7 +685,8 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn, **kwargs)
+        self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn,
+                                          **kwargs)
 
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
@@ -698,7 +704,8 @@ class Flow:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn, **kwargs)
+        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn,
+                                          **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
@@ -834,3 +841,21 @@ class Flow:
     def use_rest_gateway(self):
         """Change to use REST gateway for IO """
         self._common_kwargs['rest_api'] = True
+
+    def _check_port_collision(self, kwargs):
+        """Check if the Pods' ports collide"""
+        for _port_name in ('port_in', 'port_out', 'port_ctrl', 'port_expose'):
+            _port = kwargs.get(_port_name)
+            if _port is None:
+                _port = random_port()
+            while _port in self._ports_in_use:
+                _new = random_port()
+                _port = _new
+                self.logger.warning(f'{_port_name} collision detected. set from {_port} to {_new}')
+            kwargs[_port_name] = _port
+            self._ports_in_use.append(_port)
+            self.logger.debug(f'{kwargs.get("name")} {_port_name}: {_port}')
+        return self._ports_in_use
+
+    # for backward support
+    join = needs
