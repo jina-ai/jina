@@ -1,7 +1,5 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
-
-import numbers
 from typing import Union, Tuple, Dict
 
 import numpy as np
@@ -29,7 +27,7 @@ class ImageResizer(BaseCrafter):
             Default is `BILINEAR`. Please refer to `PIL.Image` for detaisl.
         """
         super().__init__(*args, **kwargs)
-        if isinstance(target_size, numbers.Number):
+        if isinstance(target_size, int):
             self.output_dim = target_size
         else:
             raise ValueError(f'output_dim {target_size} should be an integer')
