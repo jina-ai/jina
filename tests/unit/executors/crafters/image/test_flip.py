@@ -12,14 +12,9 @@ class ImageFlipperTestCase(JinaImageTestCase):
         img_array = self.create_random_img_array(img_size, img_size)
         crafted_chunk = crafter.craft(img_array)
         # image flips along the second axis (horizontal flip)
-        flip_img_array = img_array[:, ::-1]
-        # assert flipped image using slice method
-        self.assertEqual(np.array_equal(
-            crafted_chunk['blob'], flip_img_array), True)
-        # assert flipped image using numpy's fliplr method
         flip_img_array = np.fliplr(img_array)
-        self.assertEqual(np.array_equal(
-            crafted_chunk['blob'], flip_img_array), True)
+        # assert flipped image using numpy's fliplr method
+        np.testing.assert_equal(crafted_chunk['blob'], flip_img_array)
 
     def test_vertical_flip(self):
         img_size = 217
@@ -28,11 +23,6 @@ class ImageFlipperTestCase(JinaImageTestCase):
         img_array = self.create_random_img_array(img_size, img_size)
         crafted_chunk = crafter.craft(img_array)
         # image flips along the first axis (vertical flip)
-        flip_img_array = img_array[::-1]
-        # assert flipped image using slice method
-        self.assertEqual(np.array_equal(
-            crafted_chunk['blob'], flip_img_array), True)
-        # assert flipped image using numpy's flipud method
         flip_img_array = np.flipud(img_array)
-        self.assertEqual(np.array_equal(
-            crafted_chunk['blob'], flip_img_array), True)
+        # assert flipped image using numpy's flipud method
+        np.testing.assert_equal(crafted_chunk['blob'], flip_img_array)
