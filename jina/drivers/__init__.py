@@ -176,6 +176,7 @@ class BaseRecursiveDriver(BaseDriver):
 
         :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
+        :param traverse_on: the field on which the Driver works on
         :param args:
         :param kwargs:
         """
@@ -254,6 +255,7 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
+        # context_doc is missing, and this leads to `_apply_all` is skipped
         if 'chunks' in self.traverse_fields:
             _traverse(docs, 'chunks')
         if 'matches' in self.traverse_fields:
