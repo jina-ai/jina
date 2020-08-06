@@ -39,7 +39,7 @@ class PeaSpawnHelper(GrpcClient):
         getattr(req, self.body_tag).args.extend(kwargs2list(vars(self.args)))
         self.remote_logging(req, set_ready)
 
-    def remote_logging(self, req, set_ready):
+    def remote_logging(self, req: 'jina_pb2.SpawnRequest', set_ready: Callable = None):
         try:
             for resp in self._stub.Spawn(req):
                 if set_ready and self.callback_on_first:

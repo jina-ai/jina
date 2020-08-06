@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseTextTFEncoder
+from ..frameworks import BaseTFEncoder
 from ...decorators import batching, as_ndarray
 
 
-class UniversalSentenceEncoder(BaseTextTFEncoder):
+class UniversalSentenceEncoder(BaseTFEncoder):
     """
     :class:`UniversalSentenceEncoder` is a encoder based on the Universal Sentence
     Encoder family (https://tfhub.dev/google/collections/universal-sentence-encoder/1).
@@ -26,8 +26,7 @@ class UniversalSentenceEncoder(BaseTextTFEncoder):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        if self.model_url is None:
-            self.model_url = 'https://tfhub.dev/google/universal-sentence-encoder/4'
+        self.model_url = 'https://tfhub.dev/google/universal-sentence-encoder/4' or model_url
 
     def post_init(self):
         self.to_device()
@@ -44,4 +43,4 @@ class UniversalSentenceEncoder(BaseTextTFEncoder):
         :param kwargs:
         :return: an ndarray in size `B x D`
         """
-        return self.model(data).numpy()
+        return self.model(data)

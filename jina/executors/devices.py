@@ -3,14 +3,18 @@ __license__ = "Apache-2.0"
 
 from abc import abstractmethod
 
+from ..helper import cached_property
 
-class BaseDeviceHandler:
+
+class BaseDevice:
     """
     :class:`BaseFrameworkExecutor` is the base class for the executors using other frameworks internally, including
         `tensorflow`, `pytorch`, `onnx`, `faiss` and `paddlepaddle`.
 
     """
-    @property
+
+    @cached_property
+    @abstractmethod
     def device(self):
         """Set the device on which the executor will be running.
 
@@ -19,31 +23,13 @@ class BaseDeviceHandler:
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
 
-        if getattr(self, '_device', None):
-            return self._device
-        else:
-            try:
-                self._device = self.get_device()
-                return self._device
-            except Exception:
-                self.logger.error(f'error when setting devices "on_gpu={self.run_on_gpu}"')
-                raise
-
-    @property
-    @abstractmethod
-    def run_on_gpu(self):
-        pass
-
-    @abstractmethod
-    def get_device(self):
-        pass
 
     @abstractmethod
     def to_device(self, *args, **kwargs):
-        pass
+        """Move the computation from GPU to CPU or vice versa"""
 
 
-class BaseTorchDeviceHandler(BaseDeviceHandler):
+class TorchDevice(BaseDevice):
     """
     :class:`BaseTorchDeviceHandler` implements the base class for the executors using :mod:`torch` library. The common setups
          go into this class.
@@ -73,15 +59,16 @@ class BaseTorchDeviceHandler(BaseDeviceHandler):
 
     """
 
-    def get_device(self):
+    @cached_property
+    def device(self):
         import torch
-        return torch.device('cuda:0') if self.run_on_gpu else torch.device('cpu')
+        return torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
 
     def to_device(self, model, *args, **kwargs):
         model.to(self.device)
 
 
-class BasePaddleDeviceHandler(BaseDeviceHandler):
+class PaddleDevice(BaseDevice):
     """
     :class:`BasePaddleExecutor` implements the base class for the executors using :mod:`paddlepaddle` library. The
         common setups go into this class.
@@ -112,16 +99,17 @@ class BasePaddleDeviceHandler(BaseDeviceHandler):
                 return feature_map
     """
 
-    def get_device(self):
+    @cached_property
+    def device(self):
         import paddle.fluid as fluid
-        return fluid.CUDAPlace(0) if self.run_on_gpu else fluid.CPUPlace()
+        return fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
 
     def to_device(self):
         import paddle.fluid as fluid
         return fluid.Executor(self.device)
 
 
-class BaseTFDeviceHandler(BaseDeviceHandler):
+class TFDevice(BaseDevice):
     """
     :class:`BaseTFDeviceHandler` implements the base class for the executors using :mod:`tensorflow` library. The common
         setups go into this class.
@@ -148,11 +136,12 @@ class BaseTFDeviceHandler(BaseDeviceHandler):
                 return self.model(data)
     """
 
-    def get_device(self):
+    @cached_property
+    def device(self):
         import tensorflow as tf
         cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
         gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-        if self.run_on_gpu and len(gpus) > 0:
+        if self.on_gpu and len(gpus) > 0:
             cpus.append(gpus[0])
         return cpus
 
@@ -161,9 +150,9 @@ class BaseTFDeviceHandler(BaseDeviceHandler):
         tf.config.experimental.set_visible_devices(devices=self.device)
 
 
-class BaseOnnxDeviceHandler(BaseDeviceHandler):
+class OnnxDevice(BaseDevice):
     """
-    :class:`BaseOnnxDeviceHandler` implements the base class for the executors using :mod:`onnxruntime` library. The common
+    :class:`OnnxDevice` implements the base class for the executors using :mod:`onnxruntime` library. The common
         setups go into this class.
 
     To implement your own executor with the :mod:`onnxruntime` library,
@@ -194,23 +183,25 @@ class BaseOnnxDeviceHandler(BaseDeviceHandler):
 
     """
 
-    def get_device(self):
-        return ['CUDAExecutionProvider'] if self.run_on_gpu else ['CPUExecutionProvider']
+    @cached_property
+    def device(self):
+        return ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
 
     def to_device(self, model, *args, **kwargs):
         model.set_providers(self.device)
 
 
-class BaseFaissDeviceHandler(BaseDeviceHandler):
+class FaissDevice(BaseDevice):
     """
-    :class:`BaseFaissDeviceHandler` implements the base class for the executors using :mod:`faiss` library. The common
+    :class:`FaissDevice` implements the base class for the executors using :mod:`faiss` library. The common
         setups go into this class.
     """
 
-    def get_device(self):
+    @cached_property
+    def device(self):
         import faiss
         # For now, consider only one GPU, do not distribute the index
-        return faiss.StandardGpuResources() if self.run_on_gpu else None
+        return faiss.StandardGpuResources() if self.on_gpu else None
 
     def to_device(self, index, *args, **kwargs):
         import faiss

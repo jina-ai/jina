@@ -83,16 +83,16 @@ class FiveImageCropper(BaseSegmenter):
         else:
             raise ValueError(f'target_size should be an integer or a tuple of two integers: {self.target_size}')
         _tl, top_tl, left_tl = _crop_image(raw_img, self.target_size, 0, 0)
-        tl = _restore_channel_axis(np.asarray(_tl), self.channel_axis)
+        tl = _move_channel_axis(np.asarray(_tl), -1, self.channel_axis)
         _tr, top_tr, left_tr = _crop_image(raw_img, self.target_size, top=0, left=image_width - target_w)
-        tr = _restore_channel_axis(np.asarray(_tr), self.channel_axis)
+        tr = _move_channel_axis(np.asarray(_tr), -1, self.channel_axis)
         _bl, top_bl, left_bl = _crop_image(raw_img, self.target_size, top=image_height - target_h, left=0)
-        bl = _restore_channel_axis(np.asarray(_bl), self.channel_axis)
+        bl = _move_channel_axis(np.asarray(_bl), -1, self.channel_axis)
         _br, top_br, left_br = _crop_image(raw_img, self.target_size, top=image_height - target_h,
                                            left=image_width - target_w)
-        br = _restore_channel_axis(np.asarray(_br), self.channel_axis)
+        br = _move_channel_axis(np.asarray(_br), -1, self.channel_axis)
         _center, top_center, left_center = _crop_image(raw_img, self.target_size, how='center')
-        center = _restore_channel_axis(np.asarray(_center), self.channel_axis)
+        center = _move_channel_axis(np.asarray(_center), -1, self.channel_axis)
         return [
             dict(offset=0, weight=1., blob=tl.astype('float32'), location=(top_tl, left_tl)),
             dict(offset=0, weight=1., blob=tr.astype('float32'), location=(top_tr, left_tr)),
@@ -182,6 +182,6 @@ class SlidingWindowImageCropper(BaseSegmenter):
 
         results = []
         for location, _blob in zip(bbox_locations, expanded_img):
-            blob = _restore_channel_axis(_blob, self.channel_axis)
+            blob = _move_channel_axis(_blob, -1, self.channel_axis)
             results.append(dict(offset=0, weight=1.0, blob=blob.astype('float32'), location=location))
         return results

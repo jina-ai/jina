@@ -1,6 +1,6 @@
 import tempfile
 
-from jina.executors.encoders.image.customtorchvision import CustomImageTorchEncoder
+from jina.executors.encoders.image.torchvision import CustomImageTorchEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 import torch
 import torch.nn as nn

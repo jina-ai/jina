@@ -1,8 +1,8 @@
 from jina.executors.crafters import BaseSegmenter
-from jina.executors.frameworks import BaseTorchDeviceHandler
+from jina.executors.devices import TorchDevice
 
 
-class BaseTorchSegmenter(BaseTorchDeviceHandler, BaseSegmenter):
+class BaseTorchSegmenter(TorchDevice, BaseSegmenter):
 
     def __init__(self, model_name: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)

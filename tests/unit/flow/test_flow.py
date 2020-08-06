@@ -278,7 +278,6 @@ class FlowTestCase(JinaTestCase):
         with f:
             pass
         self.add_tmpfile('test-docshard-tmp')
-        time.sleep(2)
 
     def test_py_client(self):
         f = (Flow().add(name='r1', uses='_pass')
@@ -393,9 +392,7 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
             f.dry_run()
 
-    @pytest.mark.skip('this leads to zmq address conflicts on github')
     def test_refactor_num_part(self):
-        sleep(3)
         f = (Flow().add(name='r1', uses='_logforward', needs='gateway')
              .add(name='r2', uses='_logforward', needs='gateway')
              .join(['r1', 'r2']))
@@ -403,11 +400,11 @@ class FlowTestCase(JinaTestCase):
         with f:
             node = f._pod_nodes['gateway']
             self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
 
             node = f._pod_nodes['r1']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
+            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
 
             node = f._pod_nodes['r2']
             self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
@@ -417,7 +414,6 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.head_args)
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
 
-            f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy(self):
         f = (Flow().add(name='r1', uses='_logforward')
@@ -446,7 +442,6 @@ class FlowTestCase(JinaTestCase):
                 self.assertEqual(node.peas_args['peas'][0], node.head_args)
                 self.assertEqual(node.peas_args['peas'][0], node.tail_args)
 
-            f.index_lines(lines=['abbcs', 'efgh'])
 
     def test_refactor_num_part_proxy_2(self):
         f = (Flow().add(name='r1', uses='_logforward')
@@ -516,6 +511,17 @@ class FlowTestCase(JinaTestCase):
                 uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, depth_range: [0, 0]}')
         with flow:
             flow.index(input_fn=input_fn, output_fn=validate)
+
+    def test_flow_with_collision(self):
+        collision_port = 55555
+
+        flow = (Flow()
+                .add(name='p1', uses='_pass', port_out=collision_port)
+                .add(name='p2', uses='_pass', port_out=collision_port))
+
+        self.assertNotEqual(
+            flow._pod_nodes['p1']._args.port_out,
+            flow._pod_nodes['p2']._args.port_out)
 
 
 if __name__ == '__main__':

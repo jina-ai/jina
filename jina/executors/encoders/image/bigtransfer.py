@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseCVTFEncoder
+from ..frameworks import BaseTFEncoder
 from ...decorators import batching, as_ndarray
 
 
-class BiTImageEncoder(BaseCVTFEncoder):
+class BiTImageEncoder(BaseTFEncoder):
     """
     :class:`BiTImageEncoder` is Big Transfer (BiT) presented by Google (https://github.com/google-research/big_transfer),
     this class use pretrained BiT to encode data from a ndarray, potentially B x (Channel x Height x Width) into a

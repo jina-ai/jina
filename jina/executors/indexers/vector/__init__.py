@@ -8,6 +8,7 @@ from typing import Optional
 import numpy as np
 
 from .. import BaseVectorIndexer
+from ....helper import cached_property
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
@@ -32,7 +33,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.compress_level = compress_level
         self.key_bytes = b''
         self.key_dtype = None
-        self._raw_ndarray = None
         self._ref_index_abspath = None
 
         if ref_indexer:
@@ -106,28 +106,24 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'{abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
         return result
 
-    @property
+    @cached_property
     def raw_ndarray(self):
-        if self._raw_ndarray is None:
-            vecs = self._load_gzip(self.index_abspath)
-            if vecs is None:
+        vecs = self._load_gzip(self.index_abspath)
+        if vecs is None:
+            return None
+
+        if self.key_bytes and self.key_dtype:
+            self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+
+        if self.int2ext_key is not None and vecs is not None and vecs.ndim == 2:
+            if self.int2ext_key.shape[0] != vecs.shape[0]:
+                self.logger.error(
+                    f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
+                    f'did you write to this index twice? or did you forget to save indexer?')
                 return None
+            if vecs.shape[0] == 0:
+                self.logger.warning(f'an empty index is loaded')
 
-            if self.key_bytes and self.key_dtype:
-                self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
-
-            if self.int2ext_key is not None and vecs is not None and vecs.ndim == 2:
-                if self.int2ext_key.shape[0] != vecs.shape[0]:
-                    self.logger.error(
-                        f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
-                        f'did you write to this index twice? or did you forget to save indexer?')
-                    return None
-                if vecs.shape[0] == 0:
-                    self.logger.warning(f'an empty index is loaded')
-
-                self._raw_ndarray = vecs
-                return self._raw_ndarray
-            else:
-                return None
+            return vecs
         else:
-            return self._raw_ndarray
+            return None

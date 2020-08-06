@@ -1,4 +1,4 @@
-from jina.executors.encoders.image.tfkeras import KerasImageEncoder
+from jina.executors.encoders.image.keras import KerasImageEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 
 
