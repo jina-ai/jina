@@ -37,12 +37,12 @@ This version of Jina includes 80 Executors.
    - `BaseEncoder`
       - `BaseFrameworkExecutor`
          - `BasePaddleExecutor`
-            - `BasePaddlehubEncoder`
+            - `BasePaddleEncoder`
                - `BaseTextPaddlehubEncoder`
                   - `TextPaddlehubEncoder`
-               - `BaseCVPaddlehubEncoder`
+               - `BaseCVPaddleEncoder`
                   - `ImagePaddlehubEncoder`
-                  - `VideoPaddlehubEncoder`
+                  - `VideoPaddleEncoder`
          - `BaseTFExecutor`
             - `BaseTFEncoder`
                - `BaseCVTFEncoder`
@@ -97,7 +97,7 @@ This version of Jina includes 80 Executors.
 | `AnnoyIndexer` | `jina.executors.indexers.vector.nmslib` |
 | `BM25Ranker` | `jina.executors.rankers.tfidf` |
 | `BaseAudioEncoder` | `jina.executors.encoders` |
-| `BaseCVPaddlehubEncoder` | `jina.executors.encoders.frameworks` |
+| `BaseCVPaddleEncoder` | `jina.executors.encoders.frameworks` |
 | `BaseCVTFEncoder` | `jina.executors.encoders.frameworks` |
 | `BaseCVTorchEncoder` |   |
 | `BaseCVTorchEncoder` | `jina.executors.encoders.frameworks` |
@@ -116,7 +116,7 @@ This version of Jina includes 80 Executors.
 | `BaseOnnxExecutor` | `jina.executors.frameworks` |
 | `BasePaddleExecutor` |   |
 | `BasePaddleExecutor` | `jina.executors.frameworks` |
-| `BasePaddlehubEncoder` |   |
+| `BasePaddleEncoder` |   |
 | `BasePbIndexer` | `jina.executors.indexers` |
 | `Chunk2DocRanker` | `jina.executors.encoders` |
 | `BaseSegmenter` | `jina.executors.crafters` |
@@ -173,5 +173,5 @@ This version of Jina includes 80 Executors.
 | `TfIdfRanker` | `jina.executors.rankers.bi_match` |
 | `TransformerTFEncoder` |   |
 | `TransformerTorchEncoder` |   |
-| `VideoPaddlehubEncoder` | `jina.executors.encoders.frameworks` |
+| `VideoPaddleEncoder` | `jina.executors.encoders.frameworks` |
 | `VideoTorchEncoder` |   |

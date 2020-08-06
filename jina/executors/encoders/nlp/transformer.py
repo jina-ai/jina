@@ -3,36 +3,38 @@ __license__ = "Apache-2.0"
 
 import os
 from typing import Optional
+
 import numpy as np
 
 from .. import BaseEncoder
-from ..frameworks import BaseTextTFEncoder, BaseTextTorchEncoder
 from ..helper import reduce_mean, reduce_max, reduce_min, reduce_cls
 from ...decorators import batching, as_ndarray
-from jina.logging.base import get_logger
+from ...devices import TFDevice, TorchDevice
+from ....helper import cached_property
+from ....logging.base import get_logger
 
 logger = get_logger("transformer_encoder")
 
 
-def auto_reduce(model_outputs, mask_2d, model_name):
+def auto_reduce(model_outputs: 'np.ndarray', mask_2d: 'np.ndarray', model_name: str) -> 'np.ndarray':
     """
     Automatically creates a sentence embedding from its token embeddings.
         * For BERT-like models (BERT, RoBERTa, DistillBERT, Electra ...) uses embedding of first token
         * For XLM and XLNet models uses embedding of last token
         * Assumes that other models are language-model like and uses embedding of last token
     """
-    if "bert" in model_name or "electra" in model_name:
+    if 'bert' in model_name or 'electra' in model_name:
         return reduce_cls(model_outputs, mask_2d)
-    if "xlnet" in model_name:
-        return reduce_cls(model_outputs, mask_2d, cls_pos="tail")
-    logger.warning("Using embedding of a last token as a sequence embedding. "
-                   "If that's not desirable, change `pooling_strategy`")
-    return reduce_cls(model_outputs, mask_2d, cls_pos="tail")
+    if 'xlnet' in model_name:
+        return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
+    logger.warning('Using embedding of a last token as a sequence embedding. '
+                   'If that is not desirable, change `pooling_strategy`')
+    return reduce_cls(model_outputs, mask_2d, cls_pos='tail')
 
 
 class BaseTransformerEncoder(BaseEncoder):
     """
-    :class:`TransformerTextEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
+    :class:`BaseTransformerEncoder` encodes data from an array of string in size `B` into an ndarray in size `B x D`.
     """
 
     def __init__(self,
@@ -78,13 +80,13 @@ class BaseTransformerEncoder(BaseEncoder):
         :return: an ndarray in size `B x D`
         """
         try:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
             ids_info = self.tokenizer.batch_encode_plus(data,
                                                         max_length=self.max_length,
                                                         truncation=self.truncation_strategy,
                                                         pad_to_max_length=True,
                                                         padding='max_length')
         except ValueError:
-            self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             self.model.resize_token_embeddings(len(self.tokenizer))
             ids_info = self.tokenizer.batch_encode_plus(data,
                                                         max_length=self.max_length,
@@ -98,11 +100,6 @@ class BaseTransformerEncoder(BaseEncoder):
             _seq_output = self.tensor2array(seq_output)
             if self.pooling_strategy == 'auto':
                 output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
-            elif self.pooling_strategy == 'cls':
-                if hasattr(self._tokenizer, 'cls_token') and len(extra_output) > 0:
-                    output = self.tensor2array(extra_output[0])
-                else:
-                    output = reduce_cls(_seq_output, _mask_ids_batch, self.cls_pos)
             elif self.pooling_strategy == 'mean':
                 output = reduce_mean(_seq_output, _mask_ids_batch)
             elif self.pooling_strategy == 'max':
@@ -123,12 +120,6 @@ class BaseTransformerEncoder(BaseEncoder):
             self.tokenizer.save_pretrained(self.model_abspath)
         return super().__getstate__()
 
-    def post_init(self):
-        self._model = None
-        self._tensor_func = None
-        self._sess_func = None
-        self._tokenizer = self.get_tokenizer()
-
     def array2tensor(self, array):
         return self.tensor_func(array)
 
@@ -141,29 +132,21 @@ class BaseTransformerEncoder(BaseEncoder):
         """
         return self.get_file_from_workspace(self.model_save_path)
 
-    @property
+    @cached_property
     def model(self):
-        if self._model is None:
-            self._model = self.get_model()
-        return self._model
+        return self.get_model()
 
-    @property
+    @cached_property
     def session(self):
-        if self._sess_func is None:
-            self._sess_func = self.get_session()
-        return self._sess_func
+        return self.get_session()
 
-    @property
+    @cached_property
     def tensor_func(self):
-        if self._tensor_func is None:
-            self._tensor_func = self.get_tensor_func()
-        return self._tensor_func
+        return self.get_tensor_func()
 
-    @property
+    @cached_property
     def tokenizer(self):
-        if self._tokenizer is None:
-            self._tokenizer = self.get_tokenizer()
-        return self._tokenizer
+        return self.get_tokenizer()
 
     def get_tokenizer(self):
         from transformers import AutoTokenizer
@@ -180,10 +163,14 @@ class BaseTransformerEncoder(BaseEncoder):
         raise NotImplementedError
 
 
-class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
+class TransformerTFEncoder(TFDevice, BaseTransformerEncoder):
     """
     Internally, TransformerTFEncoder wraps the tensorflow-version of transformers from huggingface.
     """
+
+    def __init__(self, model_name: str = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
 
     def get_model(self):
         from transformers import TFAutoModelForPreTraining
@@ -200,10 +187,14 @@ class TransformerTFEncoder(BaseTransformerEncoder, BaseTextTFEncoder):
         return tf.constant
 
 
-class TransformerTorchEncoder(BaseTransformerEncoder, BaseTextTorchEncoder):
+class TransformerTorchEncoder(TorchDevice, BaseTransformerEncoder):
     """
     Internally, TransformerTorchEncoder wraps the pytorch-version of transformers from huggingface.
     """
+
+    def __init__(self, model_name: str = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
 
     def get_model(self):
         from transformers import AutoModelForPreTraining

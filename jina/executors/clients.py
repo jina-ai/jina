@@ -1,9 +1,11 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from . import BaseExecutor
-import grpc
 from typing import Dict
+
+import grpc
+
+from . import BaseExecutor
 
 if False:
     from tensorflow_serving.apis import predict_pb2
@@ -16,6 +18,7 @@ class BaseClientExecutor(BaseExecutor):
     :class:`BaseClientExecutor` is the base class for the executors that wrap up a client to other server.
 
     """
+
     def __init__(self, host: str, port: str, timeout: int = -1, *args, **kwargs):
         """
         :param host: the host address of the server
@@ -56,6 +59,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
                 return np.array(response.result().outputs['output_feature'].float_val)
 
     """
+
     def __init__(self, model_name: str, signature_name: str = 'serving_default', method_name: str = 'Predict',
                  *args, **kwargs):
         """

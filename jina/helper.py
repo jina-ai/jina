@@ -12,7 +12,7 @@ from io import StringIO
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
-
+import types
 import numpy as np
 from ruamel.yaml import YAML, nodes
 
@@ -21,12 +21,12 @@ from . import JINA_GLOBAL
 if False:
     from uvloop import Loop
 
-
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
-           'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source']
+           'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source',
+           'cached_property']
 
 
 def deprecated_alias(**aliases):
@@ -41,7 +41,7 @@ def deprecated_alias(**aliases):
     return deco
 
 
-def rename_kwargs(func_name, kwargs, aliases):
+def rename_kwargs(func_name: str, kwargs, aliases):
     from .logging import default_logger
     for alias, new in aliases.items():
         if alias in kwargs:
@@ -53,7 +53,7 @@ def rename_kwargs(func_name, kwargs, aliases):
             kwargs[new] = kwargs.pop(alias)
 
 
-def get_readable_size(num_bytes):
+def get_readable_size(num_bytes: int) -> str:
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
     elif num_bytes < 1024 ** 2:
@@ -64,7 +64,7 @@ def get_readable_size(num_bytes):
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
-def print_load_table(load_stat):
+def print_load_table(load_stat: Dict[str, List[Any]]):
     from .logging import default_logger
 
     load_table = []
@@ -79,7 +79,7 @@ def print_load_table(load_stat):
         default_logger.info('\n'.join(load_table))
 
 
-def print_load_csv_table(load_stat):
+def print_load_csv_table(load_stat: Dict[str, List[Any]]):
     from .logging import default_logger
 
     load_table = []
@@ -197,7 +197,7 @@ def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
     sys.stdout.flush()
 
 
-def load_contrib_module():
+def load_contrib_module() -> List[Any]:
     if 'JINA_CONTRIB_MODULE_IS_LOADING' not in os.environ:
 
         contrib = os.getenv('JINA_CONTRIB_MODULE')
@@ -219,28 +219,28 @@ def load_contrib_module():
 class PathImporter:
 
     @staticmethod
-    def _get_module_name(absolute_path):
+    def _get_module_name(absolute_path: str) -> str:
         module_name = os.path.basename(absolute_path)
         module_name = module_name.replace('.py', '')
         return module_name
 
     @staticmethod
-    def add_modules(*paths):
+    def add_modules(*paths) -> 'types.ModuleType':
         for p in paths:
             if not os.path.exists(p):
                 raise FileNotFoundError('cannot import module from %s, file not exist', p)
-            module, spec = PathImporter._path_import(p)
+            module = PathImporter._path_import(p)
         return module
 
     @staticmethod
-    def _path_import(absolute_path):
+    def _path_import(absolute_path: str) -> 'types.ModuleType':
         import importlib.util
         module_name = PathImporter._get_module_name(absolute_path)
         spec = importlib.util.spec_from_file_location(module_name, absolute_path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         sys.modules[spec.name] = module
-        return module, spec
+        return module
 
 
 _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young', 'early', 'major', 'clear', 'black',
@@ -260,20 +260,33 @@ def random_name() -> str:
 
 
 def random_port() -> int:
-    if 'JINA_RANDOM_PORTS' not in os.environ:
-        # feel like this gives higher chance of collision in unit test
-        from contextlib import closing
-        import socket
-        import threading
+
+    import threading
+    from contextlib import closing
+    import socket
+
+    def _get_port(port=0):
+        _p = None
         with threading.Lock():
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                s.bind(('', 0))
-                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                return s.getsockname()[1]
-    else:
-        import random
+                try:
+                    s.bind(('', port))
+                    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                    _p = s.getsockname()[1]
+                except socket.error:
+                    pass
+        return _p
+
+    _port = None
+    if 'JINA_RANDOM_PORTS' in os.environ:
         min_port, max_port = 49152, 65535
-        return random.randrange(min_port, max_port)
+        while True:
+            _port = random.randrange(min_port, max_port)
+            if _get_port(_port) is not None:
+                break
+    else:
+        _port = _get_port()
+    return _port
 
 
 def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
@@ -625,3 +638,15 @@ def rgetattr(obj, attr: str, *args):
         return getattr(obj, attr, *args)
 
     return functools.reduce(_getattr, [obj] + attr.split('.'))
+
+
+class cached_property:
+    def __init__(self, func):
+        self.func = func
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+
+        value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
+        return value

@@ -8,7 +8,7 @@ import numpy as np
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
-from ...helper import call_obj_fn
+from ...helper import call_obj_fn, cached_property
 
 
 class BaseIndexer(BaseExecutor):
@@ -102,7 +102,7 @@ class BaseIndexer(BaseExecutor):
         """
         return self.get_file_from_workspace(self.index_filename)
 
-    @property
+    @cached_property
     def query_handler(self):
         """A readable and indexable object, could be dict, map, list, numpy array etc. """
         if self._query_handler is None and os.path.exists(self.index_abspath):
@@ -115,7 +115,7 @@ class BaseIndexer(BaseExecutor):
                                 'If you are querying data then the index file must be empty or broken.')
         return self._query_handler
 
-    @property
+    @cached_property
     def write_handler(self):
         """A writable and indexable object, could be dict, map, list, numpy array etc. """
 

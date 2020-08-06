@@ -120,7 +120,7 @@ class MyTestCase(JinaTestCase):
             f.dry_run()
             f.index(input_fn=random_docs(1000))
 
-    @pytest.mark.skip('this leads to zmq address conflicts on github')
+    @pytest.mark.skip('extract_docs throw an error')
     def test_container_volume(self):
         time.sleep(5)
         f = (Flow()
@@ -131,7 +131,7 @@ class MyTestCase(JinaTestCase):
             f.index(input_fn=random_docs(10))
 
         out_file = 'abc/ext-mwu-encoder.bin'
-        self.assertTrue(os.path.exists(out_file))
+        self.assertTrue(os.path.exists(os.path.join(cur_dir, out_file)))
         self.add_tmpfile(out_file, './abc')
 
     def test_container_ping(self):

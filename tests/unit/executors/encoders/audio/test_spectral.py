@@ -1,12 +1,10 @@
-import unittest
-
 import numpy as np
 
 from jina.executors.encoders.audio.spectral import MFCCTimbreEncoder, ChromaPitchEncoder
 from tests import JinaTestCase
 
 
-class MyTestCase(JinaTestCase):
+class SpectralTestCase(JinaTestCase):
     def test_mfcc_encoder(self):
         batch_size = 10
         n_frames = 5
@@ -25,7 +23,3 @@ class MyTestCase(JinaTestCase):
         encoder = ChromaPitchEncoder()
         encoded_data = encoder.encode(test_data)
         self.assertEqual(encoded_data.shape, (batch_size, 12 * n_frames))
-
-
-if __name__ == '__main__':
-    unittest.main()

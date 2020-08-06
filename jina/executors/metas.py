@@ -59,7 +59,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. confval:: on_gpu
 
-        indicates if the executor is running on GPU.
+        if the executor is set to run on GPU.
 
         :type: bool
         :default: ``False``

@@ -1,16 +1,15 @@
 import tempfile
-import unittest
 
-from jina.executors.encoders.image.customtfkeras import CustomKerasImageEncoder
+from jina.executors.encoders.image.keras import CustomKerasImageEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 
 
-class MyTestCase(ImageTestCase):
+class CustomKerasTestCase(ImageTestCase):
     def _get_encoder(self, metas):
         from tensorflow.keras.models import Sequential
         from tensorflow.keras.layers import Conv2D, Activation, Flatten, Dense
 
-        class TestNet():
+        class TestNet:
             def __init__(self):
                 self.model = None
                 self.input_shape = (224, 224, 3)
@@ -35,8 +34,4 @@ class MyTestCase(ImageTestCase):
         model.save(path)
         self.target_output_dim = 10
         self.input_dim = 224
-        return CustomKerasImageEncoder(model_path=path, layer_name='dense')
-
-
-if __name__ == '__main__':
-    unittest.main()
+        return CustomKerasImageEncoder(channel_axis=1, model_path=path, layer_name='dense')

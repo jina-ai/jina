@@ -1,5 +1,5 @@
 import os
-import unittest
+import pytest
 
 import numpy as np
 from jina.executors import BaseExecutor
@@ -16,7 +16,7 @@ class MnistTFServingClientEncoder(UnaryTFServingClientEncoder):
         super().__init__(*args, **kwargs)
 
 
-@unittest.skip('add grpc mocking for this test')
+@pytest.mark.skip('add grpc mocking for this test')
 class MyTestCase(JinaTestCase):
     @property
     def workspace(self):
@@ -51,7 +51,3 @@ class MyTestCase(JinaTestCase):
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
         self.assertEqual(encoder_loaded.model_name, encoder.model_name)
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..frameworks import BaseCVTFEncoder
+from ..frameworks import BaseTFEncoder
 from ...decorators import batching, as_ndarray
 
 
-class KerasImageEncoder(BaseCVTFEncoder):
+class KerasImageEncoder(BaseTFEncoder):
     """
     :class:`KerasImageEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
         ndarray of `B x D`.
@@ -15,8 +15,8 @@ class KerasImageEncoder(BaseCVTFEncoder):
     https://keras.io/applications/
     """
 
-    def __init__(self, img_shape: int = 96,
-                 pool_strategy: str = 'avg', channel_axis: int = -1, *args, **kwargs):
+    def __init__(self, model_name: str = None, img_shape: int = 96,
+                 pool_strategy: str = 'avg', channel_axis: int = 1, *args, **kwargs):
         """
 
         :param model_name: the name of the model. Supported models include
@@ -37,13 +37,13 @@ class KerasImageEncoder(BaseCVTFEncoder):
                 If given other, then ``np.moveaxis(data, channel_axis, -1)`` is performed before :meth:`encode`.
         """
         super().__init__(*args, **kwargs)
-        if self.model_name is None:
-            self.model_name = 'MobileNetV2'
+        self.model_name = 'MobileNetV2' or model_name
         self.pool_strategy = pool_strategy
         self.img_shape = img_shape
         self.channel_axis = channel_axis
 
     def post_init(self):
+        super().post_init()
         self.to_device()
         import tensorflow as tf
         model = getattr(tf.keras.applications, self.model_name)(
@@ -65,3 +65,26 @@ class KerasImageEncoder(BaseCVTFEncoder):
         if self.channel_axis != -1:
             data = np.moveaxis(data, self.channel_axis, -1)
         return self.model(data)
+
+
+class CustomKerasImageEncoder(KerasImageEncoder):
+    """
+    :class:`CustomImageKerasEncoder` encodes data from a ndarray, potentially B x (Channel x Height x Width) into a
+        ndarray of `B x D`.
+    Internally, :class:`CustomImageKerasEncoder` wraps any custom tf.keras model not part of models from `tensorflow.keras.applications`.
+    https://www.tensorflow.org/api_docs/python/tf/keras/applications
+    """
+
+    def __init__(self, layer_name: str, *args, **kwargs):
+        """
+        :param model_path: the path where the model is stored.
+        :layer: Name of the layer from where to extract the feature map.
+        """
+        super().__init__(*args, **kwargs)
+        self.layer_name = layer_name
+
+    def post_init(self):
+        super().post_init()
+        import tensorflow as tf
+        self.model = tf.keras.Model(inputs=self.model.input,
+                                    outputs=self.model.get_layer(self.layer_name).output)
