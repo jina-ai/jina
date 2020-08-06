@@ -69,7 +69,7 @@ jobs:
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
           pip install pytest pytest-xdist pytest-timeout pytest-cov
-          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 -v tests/unit
+          pytest --cov=jina --cov-report=xml -n 1 --timeout=60 tests/unit/drivers/test_chunk2doc_rank_drivers.py
           mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 15
       - name: Upload coverage result from unit-test
