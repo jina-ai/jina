@@ -6,7 +6,7 @@ from typing import Tuple, Dict, Union
 import numpy as np
 
 from .. import BaseCrafter
-from .helper import _crop_image, _restore_channel_axis, _load_image
+from .helper import _crop_image, _move_channel_axis, _load_image
 
 
 class ImageCropper(BaseCrafter):
@@ -40,7 +40,7 @@ class ImageCropper(BaseCrafter):
         """
         raw_img = _load_image(blob, self.channel_axis)
         _img, top, left = _crop_image(raw_img, target_size=(self.height, self.width), top=self.top, left=self.left)
-        img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
+        img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
         return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))
 
 
@@ -73,5 +73,5 @@ class CenterImageCropper(BaseCrafter):
         """
         raw_img = _load_image(blob, self.channel_axis)
         _img, top, left = _crop_image(raw_img, self.target_size, how='center')
-        img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
+        img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
         return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))

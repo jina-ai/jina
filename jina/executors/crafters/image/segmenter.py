@@ -1,12 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Dict, List, Union, Generator
+from typing import Tuple, Dict, List, Union
 
 import numpy as np
 
 from .. import BaseSegmenter
-from .helper import _crop_image, _restore_channel_axis, _load_image, _check_channel_axis
+from .helper import _crop_image, _move_channel_axis, _load_image
 
 
 class RandomImageCropper(BaseSegmenter):
@@ -42,7 +42,7 @@ class RandomImageCropper(BaseSegmenter):
         result = []
         for i in range(self.num_patches):
             _img, top, left = _crop_image(raw_img, self.target_size, how='random')
-            img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
+            img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
             result.append(
                 dict(offset=0, weight=1., blob=np.asarray(img).astype('float32'), location=(top, left)))
         return result
@@ -83,16 +83,16 @@ class FiveImageCropper(BaseSegmenter):
         else:
             raise ValueError(f'target_size should be an integer or a tuple of two integers: {self.target_size}')
         _tl, top_tl, left_tl = _crop_image(raw_img, self.target_size, 0, 0)
-        tl = _restore_channel_axis(np.asarray(_tl), self.channel_axis)
+        tl = _move_channel_axis(np.asarray(_tl), -1, self.channel_axis)
         _tr, top_tr, left_tr = _crop_image(raw_img, self.target_size, top=0, left=image_width - target_w)
-        tr = _restore_channel_axis(np.asarray(_tr), self.channel_axis)
+        tr = _move_channel_axis(np.asarray(_tr), -1, self.channel_axis)
         _bl, top_bl, left_bl = _crop_image(raw_img, self.target_size, top=image_height - target_h, left=0)
-        bl = _restore_channel_axis(np.asarray(_bl), self.channel_axis)
+        bl = _move_channel_axis(np.asarray(_bl), -1, self.channel_axis)
         _br, top_br, left_br = _crop_image(raw_img, self.target_size, top=image_height - target_h,
                                            left=image_width - target_w)
-        br = _restore_channel_axis(np.asarray(_br), self.channel_axis)
+        br = _move_channel_axis(np.asarray(_br), -1, self.channel_axis)
         _center, top_center, left_center = _crop_image(raw_img, self.target_size, how='center')
-        center = _restore_channel_axis(np.asarray(_center), self.channel_axis)
+        center = _move_channel_axis(np.asarray(_center), -1, self.channel_axis)
         return [
             dict(offset=0, weight=1., blob=tl.astype('float32'), location=(top_tl, left_tl)),
             dict(offset=0, weight=1., blob=tr.astype('float32'), location=(top_tr, left_tr)),
@@ -150,7 +150,7 @@ class SlidingWindowImageCropper(BaseSegmenter):
         :return: a list of chunk dicts with the cropped images.
         """
         raw_img = np.copy(blob)
-        raw_img = _check_channel_axis(raw_img, self.channel_axis)
+        raw_img = _move_channel_axis(raw_img, self.channel_axis)
         if self.padding:
             raw_img = self._add_zero_padding(blob)
         h, w, c = raw_img.shape
@@ -182,6 +182,6 @@ class SlidingWindowImageCropper(BaseSegmenter):
 
         results = []
         for location, _blob in zip(bbox_locations, expanded_img):
-            blob = _restore_channel_axis(_blob, self.channel_axis)
+            blob = _move_channel_axis(_blob, -1, self.channel_axis)
             results.append(dict(offset=0, weight=1.0, blob=blob.astype('float32'), location=location))
         return results
