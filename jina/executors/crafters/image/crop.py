@@ -39,7 +39,7 @@ class ImageCropper(BaseCrafter):
         :returns: a chunk dict with the cropped image
         """
         raw_img = _load_image(blob, self.channel_axis)
-        _img, top, left = _crop_image(raw_img, target_size=(self.width, self.height), top=self.top, left=self.left)
+        _img, top, left = _crop_image(raw_img, target_size=(self.height, self.width), top=self.top, left=self.left)
         img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
         return dict(offset=0, weight=1., blob=img.astype('float32'), location=(top, left))
 
@@ -51,7 +51,7 @@ class CenterImageCropper(BaseCrafter):
     """
 
     def __init__(self,
-                 target_size: Union[Tuple[int], int],
+                 target_size: Union[Tuple[int, int], int],
                  channel_axis: int = -1,
                  *args,
                  **kwargs):

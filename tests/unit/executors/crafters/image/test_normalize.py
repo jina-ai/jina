@@ -8,5 +8,5 @@ class ImageNormalizerTestCase(JinaImageTestCase):
         target_size = 224
         crafter = ImageNormalizer(target_size=target_size)
         img_array = self.create_random_img_array(img_size, img_size)
-        crafted_chunk = crafter.craft(img_array)
-        self.assertEqual(crafted_chunk["blob"].shape, (224, 224, 3))
+        crafted_doc = crafter.craft(img_array)
+        self.assertEqual(crafted_doc["blob"].shape, (224, 224, 3))

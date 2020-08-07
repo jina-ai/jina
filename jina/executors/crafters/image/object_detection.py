@@ -5,11 +5,12 @@ from typing import Dict, List
 
 import numpy as np
 
-from ..frameworks import BaseTorchSegmenter
+from jina.executors.crafters import BaseSegmenter
+from jina.executors.devices import TorchDevice
 from .helper import _crop_image, _move_channel_axis, _load_image
 
 
-class TorchObjectDetectionSegmenter(BaseTorchSegmenter):
+class TorchObjectDetectionSegmenter(TorchDevice, BaseSegmenter):
     """
     :class:`TorchObjectDetectionSegmenter` detects objects from an image using `torchvision detection models` and crops
     the images according tothe detected bounding boxes of the objects with a confidence higher than a threshold.
@@ -30,22 +31,23 @@ class TorchObjectDetectionSegmenter(BaseTorchSegmenter):
         'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
     ]
 
-    def __init__(self, channel_axis: int = 0,
+    def __init__(self, model_name: str = None,
+                 channel_axis: int = 0,
                  confidence_threshold: int = 0.0,
                  label_name_map: Dict[int, str] = None,
                  *args, **kwargs):
         """
+        :param model_name: the name of the model. Supported models include
+        ``fasterrcnn_resnet50_fpn``,
+        ``maskrcnn_resnet50_fpn`
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         :param confidence_threshold: confidence value from which it
         considers a positive detection and therefore the object detected will be cropped and returned
         :param label_name_map: A Dict mapping from label index to label name, by default will be
         COCO_INSTANCE_CATEGORY_NAMES
-        :param model_name: the name of the model. Supported models include
-        ``fasterrcnn_resnet50_fpn``,
-        ``maskrcnn_resnet50_fpn`
         """
         super().__init__(*args, **kwargs)
-
+        self.model_name = model_name
         if self.model_name is None:
             self.model_name = 'fasterrcnn_resnet50_fpn'
         self.channel_axis = channel_axis
@@ -57,6 +59,7 @@ class TorchObjectDetectionSegmenter(BaseTorchSegmenter):
 
     def post_init(self):
         super().post_init()
+        self._device = None
         import torchvision.models.detection as detection_models
         model = getattr(detection_models, self.model_name)(pretrained=True, pretrained_backbone=True)
         self.model = model.eval()

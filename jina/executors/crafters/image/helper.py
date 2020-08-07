@@ -75,7 +75,7 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
     return img, h_beg, w_beg
 
 
-def _resize_short(img, target_size: Union[Tuple[int], int], how: str = 'LANCZOS'):
+def _resize_short(img, target_size: Union[Tuple[int, int], int], how: str = 'LANCZOS'):
     """
     Resize the input :py:mod:`PIL` image.
     :param img: :py:mod:`PIL.Image`, the image to be resized
