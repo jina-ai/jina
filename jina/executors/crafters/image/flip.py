@@ -45,13 +45,6 @@ class ImageHorizontalFlipper(ImageFlipper):
     :class:`ImageHorizontalFlipper` flips the image horizontally. Flip image in the left/right direction respectively.
     """
 
-    def __init__(self, channel_axis: int = -1, *args, **kwargs):
-        """
-
-        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        super().__init__(channel_axis, *args, **kwargs)
-
     def _flip_image(self, img):
         img = np.array(img).astype('float32')
         return np.fliplr(img)
@@ -61,13 +54,6 @@ class ImageVerticalFlipper(ImageFlipper):
     """
     :class:`ImageVerticalFlipper` flips the image vertically. Flip image in the up/down direction.
     """
-
-    def __init__(self, channel_axis: int = -1, *args, **kwargs):
-        """
-
-        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        super().__init__(channel_axis, *args, **kwargs)
 
     def _flip_image(self, img):
         img = np.array(img).astype('float32')
