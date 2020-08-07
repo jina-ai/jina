@@ -29,12 +29,11 @@ class Chunk2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def _apply_all(self, docs: List['jina_pb2.Document'], context_doc: 'jina_pb2.Document', travers_on: str, *args, **kwargs):
+    def _apply_all(self, docs: List['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """
 
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
         :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
-        :param traverse_on: "matches" or "chunks"
         :param args:
         :param kwargs:
         :return:

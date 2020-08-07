@@ -255,7 +255,6 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
-        # context_doc is missing, and this leads to `_apply_all` is skipped
         if 'chunks' in self.traverse_fields:
             _traverse(docs, 'chunks')
         if 'matches' in self.traverse_fields:
