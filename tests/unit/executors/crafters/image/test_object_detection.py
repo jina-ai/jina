@@ -1,7 +1,8 @@
+from unittest.mock import patch
+
 import os
 import pytest
 import numpy as np
-from PIL import ImageChops
 
 from jina.executors.crafters.image.object_detection import TorchObjectDetectionSegmenter
 from tests.unit.executors.crafters.image import JinaImageTestCase
@@ -9,11 +10,56 @@ from tests.unit.executors.crafters.image import JinaImageTestCase
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def equal_images(im1, im2):
-    return ImageChops.difference(im1, im2).getbbox() is None
+class MockModel:
+    def __init__(self):
+        pass
+
+    def __call__(self, input_ids, *args, **kwargs):
+        import torch
+        bbox_1 = [10, 15, 30, 40]
+        bbox_2 = [-1, -1, -1, -1]
+        bbox_3 = [20, 10, 30, 40]
+        score_1 = 0.91
+        score_2 = 0.87
+        score_3 = 0.909
+        label_1 = 1
+        label_2 = 2
+        label_3 = 3
+        predictions = [{
+            'boxes': torch.Tensor([bbox_1, bbox_2, bbox_3]),
+            'scores': torch.Tensor([score_1, score_2, score_3]),
+            'labels': torch.Tensor([label_1, label_2, label_3])
+        }]
+        return predictions
+
+    def eval(self):
+        return self
+
+    def to(self, device):
+        return self
 
 
 class TorchObjectDetectionTestCase(JinaImageTestCase):
+    def test_encoding_mock_model_results(self):
+        import torchvision.models.detection as detection_models
+        img_array = self.create_random_img_array(128, 64)
+        img_array = img_array / 255
+        with patch.object(detection_models, 'fasterrcnn_resnet50_fpn', return_value=MockModel()):
+            crafter = TorchObjectDetectionSegmenter(channel_axis=-1, confidence_threshold=0.9,
+                                                    label_name_map={0: 'zero',
+                                                                    1: 'one',
+                                                                    2: 'two',
+                                                                    3: 'three'})
+            chunks = crafter.craft(img_array)
+            self.assertEqual(len(chunks), 2)
+            self.assertEqual(chunks[0]['blob'].shape, (25, 20, 3))
+            self.assertEqual(chunks[0]['location'], (15, 10))
+            self.assertEqual(chunks[0]['meta_info'].decode(), 'one')
+
+            self.assertEqual(chunks[1]['blob'].shape, (30, 10, 3))
+            self.assertEqual(chunks[1]['location'], (10, 20))
+            self.assertEqual(chunks[1]['meta_info'].decode(), 'three')
+
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_encoding_fasterrcnn_results(self):
         img_array = self.create_random_img_array(128, 64)
@@ -24,7 +70,6 @@ class TorchObjectDetectionTestCase(JinaImageTestCase):
 
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_encoding_fasterrcnn_results_real_image(self):
-
         from PIL import Image
         """
         Credit for the image used in this test: 
@@ -140,7 +185,6 @@ class TorchObjectDetectionTestCase(JinaImageTestCase):
 
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_encoding_maskrcnn_results_real_image(self):
-
         from PIL import Image
         """
         Credit for the image used in this test: 
@@ -234,7 +278,7 @@ class TorchObjectDetectionTestCase(JinaImageTestCase):
 
         self.assertEqual(chunks[8]['meta_info'].decode(), 'car')
         img = Image.open(os.path.join(cur_dir, 'imgs/mask_rcnn/car-8.jpg')).convert('RGB')
-        self.assertEqual(chunks[8]['location'], (534, 142) )
+        self.assertEqual(chunks[8]['location'], (534, 142))
         # check that the shape of retrieved is the same as the expected image (was computed and stored once)
         blob = chunks[8]['blob']
         self.assertEqual((blob.shape[1], blob.shape[0]), img.size)
