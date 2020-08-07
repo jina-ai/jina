@@ -4,14 +4,14 @@ __license__ = "Apache-2.0"
 import mimetypes
 import os
 import urllib.parse
-from typing import Iterator, Union, Tuple, List
+from typing import Iterator, Union
 
 import numpy as np
 
 from ...counter import RandomUintCounter, SimpleCounter
 from ...drivers.helper import array2pb, guess_mime
 from ...enums import ClientMode
-from ...helper import batch_iterator
+from ...helper import batch_iterator, is_url
 from ...logging import default_logger
 from ...proto import jina_pb2
 
@@ -63,7 +63,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                         default_logger.warning(f'can not sniff the MIME type due to the exception {ex}')
             elif isinstance(_raw, str):
                 scheme = urllib.parse.urlparse(_raw).scheme
-                if (scheme in {'http', 'https', 'data'} or os.path.exists(_raw)
+                if ((scheme in {'http', 'https'} and is_url(_raw)) or (scheme in {'data'}) or os.path.exists(_raw)
                         or os.access(os.path.dirname(_raw), os.W_OK)):
                     d.uri = _raw
                     mime_type = guess_mime(_raw)

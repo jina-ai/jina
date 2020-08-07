@@ -1,13 +1,14 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import numbers
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
 from typing import Union, Tuple, Dict
 
 import numpy as np
 
 from .. import BaseCrafter
-from .helper import _load_image, _restore_channel_axis, _resize_short
+from .helper import _load_image, _move_channel_axis, _resize_short
 
 
 class ImageResizer(BaseCrafter):
@@ -29,7 +30,7 @@ class ImageResizer(BaseCrafter):
             Default is `BILINEAR`. Please refer to `PIL.Image` for detaisl.
         """
         super().__init__(*args, **kwargs)
-        if isinstance(target_size, numbers.Number):
+        if isinstance(target_size, int):
             self.output_dim = target_size
         else:
             raise ValueError(f'output_dim {target_size} should be an integer')
@@ -45,5 +46,5 @@ class ImageResizer(BaseCrafter):
         """
         raw_img = _load_image(blob, self.channel_axis)
         _img = _resize_short(raw_img, self.output_dim, self.how)
-        img = _restore_channel_axis(np.asarray(_img), self.channel_axis)
+        img = _move_channel_axis(np.asarray(_img), -1, self.channel_axis)
         return dict(offset=0, weight=1., blob=img.astype('float32'))

@@ -6,7 +6,7 @@ from typing import Tuple, Dict, Union
 import numpy as np
 
 from .. import BaseCrafter
-from .helper import _load_image, _restore_channel_axis, _crop_image, _resize_short
+from .helper import _load_image, _move_channel_axis, _crop_image, _resize_short
 
 
 class ImageNormalizer(BaseCrafter):
@@ -50,7 +50,7 @@ class ImageNormalizer(BaseCrafter):
         """
         raw_img = _load_image(blob, self.channel_axis)
         _img = self._normalize(raw_img)
-        img = _restore_channel_axis(_img, self.channel_axis)
+        img = _move_channel_axis(_img, -1, self.channel_axis)
         return dict(offset=0, weight=1., blob=img)
 
     def _normalize(self, img):

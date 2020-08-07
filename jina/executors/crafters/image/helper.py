@@ -6,19 +6,13 @@ from typing import Tuple, Union
 import numpy as np
 
 
-def _check_channel_axis(img: 'np.ndarray', channel_axis: int) -> 'np.ndarray':
+def _move_channel_axis(img: 'np.ndarray', channel_axis_to_move: int, target_channel_axis: int = -1) -> 'np.ndarray':
     """
-    Ensure the color channel axis is the last axis.
+    Ensure the color channel axis is the default axis.
     """
-    if channel_axis == -1:
+    if channel_axis_to_move == target_channel_axis:
         return img
-    return np.moveaxis(img, channel_axis, -1)
-
-
-def _restore_channel_axis(img: 'np.ndarray', channel_axis: int) -> 'np.ndarray':
-    if channel_axis == -1:
-        return img
-    return np.moveaxis(img, -1, channel_axis)
+    return np.moveaxis(img, channel_axis_to_move, target_channel_axis)
 
 
 def _load_image(blob: 'np.ndarray', channel_axis: int):
@@ -27,7 +21,7 @@ def _load_image(blob: 'np.ndarray', channel_axis: int):
     """
 
     from PIL import Image
-    img = _check_channel_axis(blob, channel_axis)
+    img = _move_channel_axis(blob, channel_axis)
     return Image.fromarray(img.astype('uint8'))
 
 
@@ -81,7 +75,7 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
     return img, h_beg, w_beg
 
 
-def _resize_short(img, target_size: Union[Tuple[int], int], how: str = 'LANCZOS'):
+def _resize_short(img, target_size: Union[Tuple[int, int], int], how: str = 'LANCZOS'):
     """
     Resize the input :py:mod:`PIL` image.
     :param img: :py:mod:`PIL.Image`, the image to be resized
