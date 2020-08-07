@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import mimetypes
 import os
 import urllib.parse
-from typing import Iterator, Union, Tuple, List
+from typing import Iterator, Union
 
 import numpy as np
 
