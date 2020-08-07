@@ -647,6 +647,6 @@ class cached_property:
     def __get__(self, obj, cls):
         if obj is None:
             return self
-
-        value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
-        return value
+        val = self.func(obj)
+        setattr(obj, self.func.__name__, val)
+        return val
