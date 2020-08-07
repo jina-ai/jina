@@ -75,6 +75,7 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 - [Build your own Project](#build-your-own-project)
 - [Tutorials](#tutorials)
 - [Documentation](#documentation)
+- [Contributors](#contributors)
 - [Contributing](#contributing)
 - [Community](#community)
 - [Join Us](#join-us)
