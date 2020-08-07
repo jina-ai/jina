@@ -1,5 +1,3 @@
-import unittest
-
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -27,7 +25,7 @@ def random_docs(num_docs):
         yield d
 
 
-def random_docs_with_chunks(num_docs):
+def random_docs_with_chunks():
     d1 = jina_pb2.Document()
     d1.id = 1
     d1.text = 'chunk1 chunk2'
@@ -54,48 +52,6 @@ class DummyModeIdSegmenter(BaseSegmenter):
 
 
 class QueryLangTestCase(JinaTestCase):
-
-    def test_segment_driver(self):
-        def validate(req):
-            self.assertGreater(req.docs[-1].id, req.docs[0].id)
-            self.assertGreater(req.docs[0].matches[-1].id, req.docs[0].matches[0].id)
-            self.assertNotEqual(req.docs[0].text, '')
-            self.assertNotEqual(req.docs[-1].text, '')
-            self.assertNotEqual(req.docs[0].chunks[0].text, '')
-            self.assertNotEqual(req.docs[0].matches[0].text, '')
-            self.assertNotEqual(req.docs[0].matches[0].matches[-1].text, '')
-            self.assertEqual(len(req.docs[0].chunks), 10)
-            self.assertEqual(len(req.docs[-1].chunks), 10)
-            self.assertEqual(len(req.docs[0].matches), 10)
-            self.assertEqual(len(req.docs[-1].matches), 10)
-            self.assertEqual(len(req.docs[-1].matches[0].matches), 10)
-            self.assertEqual(len(req.docs[-1].matches[-1].matches), 10)
-
-        f = Flow().add(uses='DummySegmenter')
-
-        with f:
-            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
-
-    def test_slice_ql(self):
-        def validate(req):
-            self.assertEqual(len(req.docs), 2)  # slice on level 0
-            self.assertEqual(len(req.docs[0].chunks), 2)  # slice on level 1
-            self.assertEqual(len(req.docs[-1].chunks), 2)  # slice on level 1
-            self.assertEqual(len(req.docs[0].matches), 2)  # slice on level 1 for matches
-            self.assertEqual(len(req.docs[-1].matches[0].matches), 2)  # slice on level 2 for matches
-
-        f = (Flow().add(uses='DummySegmenter')
-             .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: ["chunks"], depth_range: [0, 2]}')
-             .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: ["matches"], depth_range: [0, 2]}'))
-
-        with f:
-            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
-
-        f = (Flow().add(uses='DummySegmenter')
-             .add(uses='- !SliceQL | {start: 0, end: 2, traverse_on: [chunks, matches], depth_range: [0, 2]}'))
-
-        with f:
-            f.index(random_docs(10), output_fn=validate, callback_on_body=True)
 
     def test_select_ql(self):
         def validate(req):
@@ -161,7 +117,7 @@ class QueryLangTestCase(JinaTestCase):
             uses='- !FilterQL | {lookups: {modality: mode2}, traverse_on: [chunks], depth_range: [0, 1]}'))
 
         with f:
-            f.index(random_docs_with_chunks(2), output_fn=validate, callback_on_body=True)
+            f.index(random_docs_with_chunks(), output_fn=validate, callback_on_body=True)
 
     def test_filter_ql_modality(self):
         def validate(req):
@@ -175,7 +131,7 @@ class QueryLangTestCase(JinaTestCase):
             uses='- !FilterQL | {lookups: {modality: mode2}, traverse_on: [chunks], depth_range: [1, 1]}'))
 
         with f:
-            f.index(random_docs_with_chunks(2), output_fn=validate, callback_on_body=True)
+            f.index(random_docs_with_chunks(), output_fn=validate, callback_on_body=True)
 
     def test_filter_compose_ql(self):
         def validate(req):
@@ -189,7 +145,3 @@ class QueryLangTestCase(JinaTestCase):
 
         with f:
             f.index(random_docs(10), output_fn=validate, callback_on_body=True)
-
-
-if __name__ == '__main__':
-    unittest.main()
