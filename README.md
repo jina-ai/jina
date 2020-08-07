@@ -399,6 +399,8 @@ Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the docum
 
 [Documentation for older versions is archived here](https://github.com/jina-ai/docs/releases).
 
+## Contributors
+
 ## Contributing
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
