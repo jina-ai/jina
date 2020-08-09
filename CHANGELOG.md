@@ -55,6 +55,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -3286,4 +3287,70 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```3fcb9fba```](https://github.com/jina-ai/jina/commit/3fcb9fbaca3f72c1a14528dd38f8b85b8f60869c)] __-__ update copyright header (*Jina Dev Bot*)
  - [[```83bc04e9```](https://github.com/jina-ai/jina/commit/83bc04e9af2c707b327564140394ba923b95c39c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```c77f4241```](https://github.com/jina-ai/jina/commit/c77f424184ae72b40849ddac93e6e132eb54e6f8)] __-__ __version__: the next version will be 0.4.4 (*Jina Dev Bot*)
+
+## Release Note (`0.4.5`)
+
+> Release time: 2020-08-09 16:10:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Rohan Chaudhari,  Maanav Shah,  Alex C-G,  Joan Fontanals Martinez,  Kavan72,  Joan Fontanals,  🙇
+
+
+### 🆕 New Features
+
+ - [[```9d50be7b```](https://github.com/jina-ai/jina/commit/9d50be7b85bb40e67420823d41f5698f78070ab2)] __-__ __crafter__: add flip image crafters (*Maanav Shah*)
+ - [[```35f088aa```](https://github.com/jina-ai/jina/commit/35f088aae56b0487fa89c0a2cb731a9b62a14c6b)] __-__ contributors draft section (*Alex C-G*)
+ - [[```e937a213```](https://github.com/jina-ai/jina/commit/e937a2135a4a7323dcd7511d2ffe11cc5d1e4fe7)] __-__ add test and refactor move axis (*Joan Fontanals Martinez*)
+ - [[```c54bc83e```](https://github.com/jina-ai/jina/commit/c54bc83ef03c36d73bb1e33bdd46e5aa28ff9593)] __-__ add torch object detection model based crafter (*Joan Fontanals Martinez*)
+ - [[```bea5e465```](https://github.com/jina-ai/jina/commit/bea5e4652cf028c96b791900f3504d15a9498410)] __-__ __images__: add location info to sliding window (*Joan Fontanals Martinez*)
+ - [[```3c0faa75```](https://github.com/jina-ai/jina/commit/3c0faa75a7f6c15d1c9f5f062f21d518956ef4b4)] __-__ __images__: add location to cropped chunks from images (*Joan Fontanals Martinez*)
+
+### 🐞 Bug fixes
+
+ - [[```a69eb04f```](https://github.com/jina-ai/jina/commit/a69eb04f2a418bc95cd73a03b6213edad886b7a0)] __-__ __helper__: cached_property decorator fixed (*Rohan Chaudhari*)
+ - [[```533a2234```](https://github.com/jina-ai/jina/commit/533a2234def2ff92030af0e032fa53de97c28444)] __-__ __crafter__: modify flip image crafters (*Maanav Shah*)
+ - [[```ece9b5e1```](https://github.com/jina-ai/jina/commit/ece9b5e125ac081d83535180a390a9488510ea09)] __-__ __crafter__: remove flip image crafters redundant code (*Maanav Shah*)
+ - [[```6c9395bc```](https://github.com/jina-ai/jina/commit/6c9395bcc85305d65b768a136da72957e547b646)] __-__ __crafter__: update flip image crafters (*Maanav Shah*)
+ - [[```aba0843b```](https://github.com/jina-ai/jina/commit/aba0843b1e17fe32b681a1338b4466c821221e19)] __-__ __crafter__: fix flip image crafters (*Maanav Shah*)
+ - [[```ebd91bdc```](https://github.com/jina-ai/jina/commit/ebd91bdcad81570e95facd9da46cbac99af17a88)] __-__ add missing section (*Alex C-G*)
+ - [[```10ee9e6c```](https://github.com/jina-ai/jina/commit/10ee9e6cf5200590d1f3bf0059979c6d7726a175)] __-__ have url regex pattern compiled just once (*Joan Fontanals Martinez*)
+ - [[```3704670f```](https://github.com/jina-ai/jina/commit/3704670fc598f77813f2b341ac5ff1ac067c1475)] __-__ __request__: add one more condition to check doc is url or not (*Kavan72*)
+ - [[```4a964a8a```](https://github.com/jina-ai/jina/commit/4a964a8a1922869446ea9389088df96e7f62d5a4)] __-__ __crafters__: fix crop dimension (*Joan Fontanals Martinez*)
+ - [[```0a629fcf```](https://github.com/jina-ai/jina/commit/0a629fcfd2a736501725093c29cfff9f4cc6c395)] __-__ wording (*Alex C-G*)
+ - [[```e6ea9ec4```](https://github.com/jina-ai/jina/commit/e6ea9ec49db5bff4a14ab97cab6dd9c0a44d26cf)] __-__ set channel_axis 1 by default for tensorflow vision models (*Joan Fontanals Martinez*)
+ - [[```687b0960```](https://github.com/jina-ai/jina/commit/687b09601a932b1afb7b4e34d1e5268900dbf58e)] __-__ fix test custom image encoders (*Joan Fontanals Martinez*)
+ - [[```572b5c52```](https://github.com/jina-ai/jina/commit/572b5c529d54717edf0c8c982c45ba3ea6d853c2)] __-__ fix customtfkeras (*Joan Fontanals Martinez*)
+ - [[```e34390a5```](https://github.com/jina-ai/jina/commit/e34390a59874a433e7b327d6ae31ecf6caa27b5f)] __-__ fix diamond problem from transformers (*Joan Fontanals Martinez*)
+ - [[```154f39ee```](https://github.com/jina-ai/jina/commit/154f39eea6f895391f9f0acf0cf0e4479472129b)] __-__ __flow__: join is an alias of needs (*Han Xiao*)
+ - [[```564ce47c```](https://github.com/jina-ai/jina/commit/564ce47c2aa587587dd8f75aca206d93c9402229)] __-__ __transformers__: force padding to max length in all versions (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```74ab1b01```](https://github.com/jina-ai/jina/commit/74ab1b01f537d21179924ff05823d711438bf268)] __-__ move model_name init plus add post init super call (*Joan Fontanals Martinez*)
+ - [[```751f0307```](https://github.com/jina-ai/jina/commit/751f03072d7a7a7f65594aa90941e3b1ea7be55e)] __-__ turn devicehandler into mixins (*Joan Fontanals Martinez*)
+ - [[```27be7523```](https://github.com/jina-ai/jina/commit/27be7523769b7a6dbc167e2eb07a7e294da0bd00)] __-__ avoid baseframeworkexecutor to inherit baseexecutor (*Joan Fontanals Martinez*)
+ - [[```f2f2511e```](https://github.com/jina-ai/jina/commit/f2f2511e71559c283196be90c1bfebbc3d99ba9c)] __-__ change generator (*Joan Fontanals Martinez*)
+ - [[```139779ed```](https://github.com/jina-ai/jina/commit/139779eda98f3b3f43ced4cd3bab5e9563fc0732)] __-__ __images__: refactor image crafters, will add location (*Joan Fontanals Martinez*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```cb0b1b76```](https://github.com/jina-ai/jina/commit/cb0b1b76d044c01f068779d561aca249d8147f6d)] __-__ fix label pr action (*Han Xiao*)
+ - [[```c12f74d8```](https://github.com/jina-ai/jina/commit/c12f74d863c47cf972a23f9f4146159db3caecaf)] __-__ __crafter__: update flip image crafters test (*Maanav Shah*)
+ - [[```c7bd1d13```](https://github.com/jina-ai/jina/commit/c7bd1d13401140bc6d3c7595803aa76aefa8afac)] __-__ separate test for sliceql (*Joan Fontanals Martinez*)
+ - [[```02b2cfd8```](https://github.com/jina-ai/jina/commit/02b2cfd8464cac80f29f532f56a0018237cfa80b)] __-__ add test with mock for object detection (*Joan Fontanals Martinez*)
+ - [[```6de0d8f9```](https://github.com/jina-ai/jina/commit/6de0d8f9a608ca254a7907f9295151ac4396cb35)] __-__ add tests with real images for object detection (*Joan Fontanals Martinez*)
+ - [[```51a16411```](https://github.com/jina-ai/jina/commit/51a16411a842dd92250850e24c05d230e29129ca)] __-__ __request__: add request generator test (*Kavan72*)
+ - [[```44b5df9e```](https://github.com/jina-ai/jina/commit/44b5df9ef289be4f992cc0c07a8ec9f7755f0ef0)] __-__ rename test cases plus remove unittest framework (*Joan Fontanals Martinez*)
+
+### 🍹 Other Improvements
+
+ - [[```7a97cd8a```](https://github.com/jina-ai/jina/commit/7a97cd8a5d215911baa991ad3ec8fa08926ab082)] __-__ hotfix fix release (*Han Xiao*)
+ - [[```5ef04a4c```](https://github.com/jina-ai/jina/commit/5ef04a4c982f0aa967bfc10b443c3f397c5e790f)] __-__ fix styling (*Han Xiao*)
+ - [[```f62b9364```](https://github.com/jina-ai/jina/commit/f62b93642bcdd94272b00a6a494950e2072da800)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```4ac3beaa```](https://github.com/jina-ai/jina/commit/4ac3beaaaf7bd912edc46fec723698259eb54bd9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b6d5ca60```](https://github.com/jina-ai/jina/commit/b6d5ca6056339d62a3ba968851b8ce0b032cdc52)] __-__ __version__: the next version will be 0.4.5 (*Jina Dev Bot*)
+ - [[```c77f4241```](https://github.com/jina-ai/jina/commit/c77f424184ae72b40849ddac93e6e132eb54e6f8)] __-__ __version__: the next version will be 0.4.4 (*Jina Dev Bot*)
+ - [[```9fd6685a```](https://github.com/jina-ai/jina/commit/9fd6685a6635f613faf77caf946b8b6e055f225e)] __-__ __version__: the next version will be 0.4.3 (*Jina Dev Bot*)
 
