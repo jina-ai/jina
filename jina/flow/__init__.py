@@ -850,8 +850,8 @@ class Flow:
                 _port = random_port()
             while _port in self._ports_in_use:
                 _new = random_port()
-                _port = _new
                 self.logger.warning(f'{_port_name} collision detected. set from {_port} to {_new}')
+                _port = _new
             kwargs[_port_name] = _port
             self._ports_in_use.append(_port)
             self.logger.debug(f'{kwargs.get("name")} {_port_name}: {_port}')
