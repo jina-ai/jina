@@ -1,0 +1,20 @@
+name: Label PR
+
+on:
+  - pull_request_target
+
+jobs:
+  label-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          xs_max_size: '10'
+          s_max_size: '100'
+          m_max_size: '500'
+          l_max_size: '1000'
+          fail_if_xl: 'false'
+      - uses: actions/labeler@v2
+        with:
+          repo-token: "${{ secrets.JINA_DEV_BOT }}"

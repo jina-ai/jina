@@ -14,22 +14,6 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-  label-pr:
-    needs: commit-lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: codelytv/pr-size-labeler@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
-          xs_max_size: '10'
-          s_max_size: '100'
-          m_max_size: '500'
-          l_max_size: '1000'
-          fail_if_xl: 'false'
-      - uses: actions/labeler@v2
-        with:
-          repo-token: "${{ secrets.JINA_DEV_BOT }}"
-
   unit-test:
     needs: commit-lint
     runs-on: ${{ matrix.os }}
