@@ -666,12 +666,12 @@ def rgetattr(obj, attr: str, *args):
     return functools.reduce(_getattr, [obj] + attr.split('.'))
 
 
-class cached_property(object):
+class cached_property:
     def __init__(self, func):
         self.func = func
 
     def __get__(self, obj, cls):
-        cached_value = obj.__dict__.get(f'CACHED_{self.func.__name__}')
+        cached_value = obj.__dict__.get(f'CACHED_{self.func.__name__}', None)
         if cached_value is not None:
             return cached_value
 
