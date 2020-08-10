@@ -425,8 +425,8 @@ input {
 
 .table-of-contents .card-content {
     max-width: 250px;
-    max-height: 600px;
-    overflow: auto;
+    max-height: 700px;
+    overflow: hidden;
     font-size: .9rem;
 }
 
@@ -442,6 +442,7 @@ input {
     padding-right: 1em;
     vertical-align: inherit;
 }
+
 
 .toc-card-footer:hover {
     background: #32C8CD
@@ -551,7 +552,7 @@ input {
 
 .rst-content pre.literal-block, .rst-content div[class^='highlight'] {
     border: 1px solid #009999;
-    overflow-x: auto;
+    overflow-x: hidden;
     margin: 1px 0 24px 0;
     border-radius: 5px;
     background: rgba(50, 200, 205, 0.01);

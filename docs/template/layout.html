@@ -185,12 +185,12 @@
       </nav>
 
       <div class="card table-of-contents">
-          <span class="card-title">Table of Contents</span>
-            <div class="card-content">
+          <span class="card-title" onclick="showhide_littlenavbar()">Table of Contents</span>
+            <div id="little-navbar" class="card-content">
             {{ toc }}
             </div>
         <a href="https://github.com/jina-ai/jina/">
-          <span class="toc-card-footer">
+          <span class="toc-card-footer" >
             <span>Visit us on Github</span>
           </span>
         </a>
@@ -246,6 +246,21 @@
         x.style.display = "none";
         y.style.marginLeft = "0";
         z.style.left = "0px";
+      }
+
+    }
+    function showhide_littlenavbar() {
+      var x = document.getElementById("little-navbar");
+      //var y = document.getElementsByClassName("wy-nav-content-wrap")[0];
+      //var z = document.getElementById("showhide-navbar-btn");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+        //y.style.marginLeft = "23rem";
+        //z.style.left = "23rem";
+      } else {
+        x.style.display = "none";
+        //y.style.marginLeft = "0";
+        //z.style.left = "0px";
       }
     }
   </script>
