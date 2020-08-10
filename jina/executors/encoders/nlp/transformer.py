@@ -80,7 +80,8 @@ class BaseTransformerEncoder(BaseEncoder):
         :return: an ndarray in size `B x D`
         """
         try:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
             ids_info = self.tokenizer.batch_encode_plus(data,
                                                         max_length=self.max_length,
                                                         truncation=self.truncation_strategy,
