@@ -61,13 +61,32 @@ These are the extra dependencies used by jina.
 
 | PyPi Name | Required by | Description | Compatibility
 |---|---|---|---|
-|`scipy>=0.4.1`| `numeric`, `index` | `Python-based ecosystem of open-source software for mathematics, science, and engineering. Required for similarity measure computation and required for many other extra packages (tensorflow, paddlehub ...)` | `tensorflow>=2.0.0 requires scipy>=1.4.1, while paddlepaddle<1.8.1 require scipy<=1.3.1`
-|`flask, flask-cors`| `http`, `sse` | `Lightweight web application framework, used for logging server and exposing REST API` |
+|`scipy>=0.4.1`| `numeric`, `index` | `Scientific Library for Python. Required for similarity measure computation and required for many other extra packages (tensorflow, paddlehub ...)` | `tensorflow>=2.0.0 requires scipy>=1.4.1, while paddlepaddle<1.8.1 require scipy<=1.3.1.`
+|`flask, flask-cors`| `http`, `sse` | `A simple framework for building complex web applications, used for logging server and exposing REST API.` |
 |`nmslib` | `index` | `Non-Metric Space Library (NMSLIB) is an efficient cross-platform similarity search library` | 
-|`docker` | `docker` | `A Python library for the Docker Engine API` | `See https://docs.docker.com/engine/api/ for compatibility with docker engine versions`
-|`torch>=1.0.0` | `framework` | `PyTorch is a Python package that provides tensor computation (like NumPy) and Deep neural networks built on a tape-based autograd system. Enables several image encoders, object detection crafters and transformers models` | `It imposes compatibility restrictions with torchvision (https://pypi.org/project/torchvision/)`
-|`transformers>=2.3.0` | `nlp, encode` | `Transformers (formerly known as pytorch-transformers and pytorch-pretrained-bert) provides state-of-the-art general-purpose architectures (BERT, GPT-2, RoBERTa, XLM, DistilBert, XLNet, T5, CTRL...) for Natural Language Understanding` | `Some flair versions impose some requirements on the transformer version required`
-|`flair` | `nlp, encode` | `A very simple framework for state-of-the-art NLP` | `It imposes restrictions on torch and transformers version compatibility`
+|`docker` | `network` | `A Python library for the Docker Engine API` | `See https://docs.docker.com/engine/api/ for compatibility with docker engine versions.`
+|`torch>=1.0.0` | `framework` | `Tensors and Dynamic neural networks in Python with strong GPU acceleration. Enables several image encoders, object detection crafters and transformers models` | `It imposes compatibility restrictions with torchvision (https://pypi.org/project/torchvision/).`
+|`transformers>=2.6.0` | `nlp` | ` Repository of pre-trained NLP Transformer models` | `Some flair versions impose some requirements on the transformer version required. For proper padding to work, version 2.6.0 is required as minimmum version.`
+|`flair` | `nlp` | `A very simple framework for state-of-the-art NLP` | `It imposes restrictions on torch and transformers version compatibility.`
+|`paddlepaddle` | `framework` | `Parallel Distributed Deep Learning` | `It imposes restrictions on scipy version and is required for paddlehub models.`
+|`paddlehub` | `framework` | `A toolkit for managing pretrained models of PaddlePaddle` | `Requires paddlepaddle.`
+|`tensorflow>=2.0` | `framework` | `TensorFlow is an open source machine learning framework for everyone.`
+|`tensorflow-hub` | `framework` | `TensorFlow Hub is a library to foster the publication, discovery, and consumption of reusable parts of machine learning models.`
+|`torchvision>=0.3.0` | `framework, cv` | `image and video datasets and models for torch deep learning` | `Make sure that the models you want to use ara available at your installed torchvision version.`
+|`onnx` | `framework` | `Open Neural Network Exchange.` 
+|`onnxruntime` | `framework` | `ONNX Runtime Python bindings.` 
+|`annoy` | `index` | `Approximate Nearest Neighbors in C++/Python optimized for memory usage and loading/saving to disk.`
+|`sklearn` | `numeric` | `A set of python modules for machine learning and data mining. Used for a variety of numeric encoders.`
+|`plyvel` | `index` | `fast and feature-rich Python interface to LevelDB. Enables the use of LevelDB as a Key-Value indexer.`
+|`jieba` | `nlp` | `Chinese Words Segmentation Utilities`
+|`lz4` | `optimization, network` | `LZ4 Bindings for Python. Enables compression to send large messages.`
+|`gevent` | `http` | `Coroutine-based network library`
+|`python-magic` | `http` | `File type identification using libmagic. Used to identify document request type.`
+|`pymilvus` | `index` | ` Python Sdk for Milvus. Enables the usage of Milvus DB as vector indexer as a client.`
+|`librosa` | `audio` | `Python module for audio and music processing.`
+|`deepsegment` | `nlp` | `Sentence Segmentation with sequence tagging.`
+|`ngt` | `index` | `Neighborhood Graph and Tree for Indexing High-dimensional Data.`
+|`uvloop` | `òptimization` | `Fast implementation of asyncio event loop on top of libuv.`
 
 ## Install Jina on Raspberry Pi and other Linux Systems
 
