@@ -82,17 +82,17 @@ class BaseTransformerEncoder(BaseEncoder):
         try:
             if self.tokenizer.pad_token is None:
                 self.tokenizer.pad_token = self.tokenizer.eos_token
+                if self.tokenizer.pad_token is None:
+                    self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             ids_info = self.tokenizer.batch_encode_plus(data,
                                                         max_length=self.max_length,
                                                         truncation=self.truncation_strategy,
-                                                        pad_to_max_length=True,
-                                                        padding='max_length')
+                                                        pad_to_max_length=True)
         except ValueError:
             self.model.resize_token_embeddings(len(self.tokenizer))
             ids_info = self.tokenizer.batch_encode_plus(data,
                                                         max_length=self.max_length,
-                                                        pad_to_max_length=True,
-                                                        padding='max_length')
+                                                        pad_to_max_length=True)
         token_ids_batch = self.array2tensor(ids_info['input_ids'])
         mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
         with self.session():
