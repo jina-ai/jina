@@ -425,8 +425,8 @@ input {
 
 .table-of-contents .card-content {
     max-width: 250px;
-    max-height: 700px;
-    overflow: hidden;
+    max-height: 600px;
+    overflow: scroll;
     font-size: .9rem;
 }
 
