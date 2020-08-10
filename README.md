@@ -78,7 +78,7 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 - [Contributing](#contributing)
 - [Community](#community)
 - [Join Us](#join-us)
-- [Roadmap](#roadmap)
+- [Open Governance](#open-governance)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -408,6 +408,10 @@ We welcome all kinds of contributions from the open-source community, individual
 
 ### Contributors
 
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
+<!-- ALL-CONTRIBUTORS-BADGE:END --> 
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -423,8 +427,8 @@ We welcome all kinds of contributions from the open-source community, individual
 
 ## Community
 
-- [Slack channel](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
-- [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest updates, releases and event news of Jina
+- [Slack workspace](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
+- [Youtube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
 - [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow us and interact with using hashtag `#JinaSearch`  
 - [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source!
@@ -433,11 +437,17 @@ We welcome all kinds of contributions from the open-source community, individual
 
 Jina is an open-source project. [We are hiring](https://jina.ai/#/jobs) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
 
-## Roadmap
+## Open Governance
 
 [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to Jina's future improvements.
 
-We are looking for partnerships to build a Open Governance model (e.g. Technical Steering Committee) around Jina, to enable a healthy open-source ecosystem and developer-friendly culture. If you are interested, contact us at [hello@jina.ai](mailto:hello@jina.ai).
+As a part of open governance model, we host the **Engineering All Hands** of Jina AI in public. This Zoom meeting recurs monthly on the second Tuesday, 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
+
+- [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
+- [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
+- [Engineering All Hands in Public](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)
+
+The meeting will also be live-streamed and later published to our [Youtube channel](https://youtube.com/c/jina-ai). Make sure to subscribe it if you want to watch the replay.
 
 ## License
 
