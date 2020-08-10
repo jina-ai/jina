@@ -16,20 +16,20 @@
 # 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
 # 4. Tag `all` is reserved for representing all packages
 
-scipy==1.4.1:               numeric, index
+scipy>=1.4.1:               numeric, index
 flask:                      http, sse, devel
 flask_cors:                 http, sse, devel
 nmslib:                     index
 docker:                     flow, devel
-torch:                      framework
-transformers:               nlp, encode
+torch>=1.1.0:               framework
+transformers>=2.3.0:        nlp, encode
 flair:                      nlp, encode
 paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 Pillow:                     cv
 tensorflow>=2.0:            framework
 tensorflow-hub:             framework, py37
-torchvision:                framework
+torchvision>=0.3.0:         framework
 onnx:                       framework, py37
 onnxruntime:                framework, py37
 annoy:                      index
