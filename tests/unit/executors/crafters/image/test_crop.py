@@ -31,19 +31,15 @@ class ImageCropTestCase(JinaImageTestCase):
         self.assertEqual(crafted_doc['location'], (top, left))
 
     def test_crop_file_image(self):
-        tmp_fn = os.path.join(cur_dir, 'test.jpeg')
-        self.create_test_image(tmp_fn, size_width=1024, size_height=512)
-        img = Image.open(tmp_fn)
-        img = img.convert('RGB')
-        width, height = img.size
-        self.assertEqual(width, 1024)
-        self.assertEqual(height, 512)
-        half_width, half_height = int(width/2), int(height/2)
+        tmp_fn = os.path.join(cur_dir, 'imgs/cars.jpg')
+        img = Image.open(tmp_fn).convert('RGB')
         img_array = np.array(img).astype('float32')
-        crafter = ImageCropper(top=0, left=0, width=half_width, height=half_height)
+        crafter = ImageCropper(top=541, left=992, width=24, height=67)
         crafted_doc = crafter.craft(img_array)
-        self.assertEqual(crafted_doc['blob'].shape, (half_height, half_width, 3))
-        self.add_tmpfile(tmp_fn)
+        self.assertEqual(crafted_doc['blob'].shape, (67, 24, 3))
+        crop_real_img = Image.open(os.path.join(cur_dir, 'imgs/faster_rcnn/person-0.png'))
+        crop_real_img_array = np.array(crop_real_img).astype('float32')
+        np.testing.assert_array_almost_equal(crafted_doc['blob'], crop_real_img_array)
 
     def test_center_crop(self):
         img_size = 217
