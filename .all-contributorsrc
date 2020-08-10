@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "hanxiao",
+      "name": "Han Xiao",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/2041322?v=4",
+      "profile": "https://hanxiao.io",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "jina",
+  "projectOwner": "jina-ai",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
