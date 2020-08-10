@@ -1,6 +1,10 @@
 name: CI
 
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - '.all-contributorsrc'
 
 jobs:
   commit-lint:
@@ -137,11 +141,11 @@ jobs:
           file: unit-test-codecoverage/unit-test-coverage.xml
           env_vars: OS,PYTHON
           name: codecov
-          fail_ci_if_error: true
+          fail_ci_if_error: false
       - name: Upload coverage from integration-test to Codecov
         uses: codecov/codecov-action@v1
         with:
           file: integration-test-codecoverage/integration-test-coverage.xml
           env_vars: OS,PYTHON
           name: codecov
-          fail_ci_if_error: true
+          fail_ci_if_error: false
