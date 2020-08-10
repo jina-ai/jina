@@ -14,6 +14,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ericsyh",
+      "name": "Eric Shen",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/10498732?v=4",
+      "profile": "https://github.com/ericsyh",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
