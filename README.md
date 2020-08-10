@@ -403,9 +403,15 @@ Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the docum
 
 [Documentation for older versions is archived here](https://github.com/jina-ai/docs/releases).
 
-## Contributors
-
 ## Contributing
+
+We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
+
+- [Contributing guidelines](CONTRIBUTING.md)
+- [Release cycles and development stages](RELEASE.md)
+
+### Contributors
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -418,11 +424,6 @@ Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the docum
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
-We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
-
-- [Contributing guidelines](CONTRIBUTING.md)
-- [Release cycles and development stages](RELEASE.md)
 
 ## Community
 
