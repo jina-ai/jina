@@ -38,7 +38,9 @@
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
   <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
+  <!---
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
+  -->
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
@@ -54,9 +56,9 @@ Jina ist das cloud-native neuronale Such-Framework, das auf modernster KI und ti
 🚀**Leistungsstark und auf dem neuesten Stand der Technik** - Jina strebt KI in Produktion an. Sie können Ihr VideoBERT, Xception, Ihren Word-Tokenizer, Bildsegmentierer und Ihre Datenbank leicht skalieren, um Daten auf Milliardenebene zu verarbeiten. Funktionen wie Replikate und Scherben kommen von der Stange.
 
 🐣**Systemtechnik leicht gemacht** - Jina bietet eine Lösung aus einer Hand, die Sie von Handarbeit und Kleben von Verpackungen, Bibliotheken und Datenbanken befreit. Mit der intuitivsten API und[dashboard](https://github.com/jina-ai/dashboard)Der Aufbau eines cloud-nativen Suchsystems ist nur eine Kleinigkeit.
-
+<!---
 🧩**Leistungsstarke Erweiterungen, einfache Integration** - Neues KI-Modell für Jina? Schreiben Sie einfach ein Python-Skript oder erstellen Sie ein Docker-Image. Das Einfügen neuer Algorithmen war noch nie so einfach, wie es sein sollte[Sehen Sie sich Jina Hub an (beta)](https://github.com/jina-ai/jina-hub) und finden Sie weitere Erweiterungen zu verschiedenen Anwendungsfällen, die von der Gemeinschaft beigetragen wurden.
-
+-->
 Jina ist ein Open-Source-Projekt[Wir stellen ein](https://jobs.jina.ai) KI-Ingenieure, Full-Stack-Entwickler, Evangelisten, PMs zum Aufbau des nächsten neuronalen Such-Ökosystems in Open-Source
 
 ## Inhaltsverzeichnis
@@ -326,6 +328,7 @@ Learn to how to use SOTA visual representation for searching Pokémon!
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+<!---
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
@@ -333,7 +336,7 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 </td>
 <td><h3>🚀</h3></td>
 </tr>
-
+-->
 </table>
   
 
