@@ -9,6 +9,13 @@
   "imageSize": 50,
   "commit": true,
   "commitConvention": "eslint",
+  "types": {
+    "heart": {
+      "symbol": "❤️",
+      "description": "Jina friend",
+      "link": "<%= symbol %>"
+    }
+  },
   "contributors": [
     {
       "login": "hanxiao",
@@ -16,7 +23,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/2041322?v=4",
       "profile": "https://hanxiao.io/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -25,7 +32,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/4329072?v=4",
       "profile": "https://github.com/nan-wang",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -34,7 +41,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/19825685?v=4",
       "profile": "https://github.com/JoanFM",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -43,7 +50,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/62694369?v=4",
       "profile": "https://jina.ai/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -52,7 +59,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/4182659?v=4",
       "profile": "http://alexcg1.github.io/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -61,7 +68,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/44052928?v=4",
       "profile": "https://github.com/fhaase2",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -70,7 +77,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/30991932?v=4",
       "profile": "https://www.cnblogs.com/callyblog/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -79,7 +86,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/43991882?v=4",
       "profile": "https://github.com/shivam-raj",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -88,7 +95,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/64522311?v=4",
       "profile": "https://github.com/YueLiu-jina",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -97,7 +104,7 @@
       "avatar_url": "https://avatars0.githubusercontent.com/in/23186?v=4",
       "profile": "https://github.com/apps/allcontributors",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -106,7 +113,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/16228282?v=4",
       "profile": "https://github.com/anish2197",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -115,7 +122,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/52166018?v=4",
       "profile": "https://github.com/antonkurenkov",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -124,7 +131,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/61045304?v=4",
       "profile": "https://jina.ai/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -133,7 +140,7 @@
       "avatar_url": "https://avatars0.githubusercontent.com/u/30289560?v=4",
       "profile": "https://www.linkedin.com/in/maanavshah/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -142,7 +149,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/11474949?v=4",
       "profile": "https://guiferviz.com/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -151,7 +158,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/1285370?v=4",
       "profile": "https://github.com/redram",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -160,7 +167,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/852343?v=4",
       "profile": "http://www.joaopalotti.com/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -169,7 +176,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/12904434?v=4",
       "profile": "https://github.com/Morriaty-The-Murderer",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -178,7 +185,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/6877858?v=4",
       "profile": "https://github.com/festeh",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -187,7 +194,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/14146667?v=4",
       "profile": "https://github.com/phamtrancsek12",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -196,7 +203,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/19048640?v=4",
       "profile": "https://github.com/Kavan72",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -205,7 +212,7 @@
       "avatar_url": "https://avatars0.githubusercontent.com/u/10478725?v=4",
       "profile": "https://github.com/boussoffara",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -214,7 +221,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/5943684?v=4",
       "profile": "http://weizhen.rocks/",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -223,7 +230,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/1935623?v=4",
       "profile": "https://t.me/neural_network_engineering",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -232,7 +239,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/26192691?v=4",
       "profile": "https://github.com/emmaadesile",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -241,7 +248,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/10498732?v=4",
       "profile": "https://github.com/ericsyh",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -250,7 +257,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/17229109?v=4",
       "profile": "https://stackoverflow.com/users/7550592/yik-san-chan",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -259,7 +266,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/69177855?v=4",
       "profile": "https://github.com/JamesTang-jinaai",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -268,7 +275,7 @@
       "avatar_url": "https://avatars0.githubusercontent.com/u/29118702?v=4",
       "profile": "https://github.com/JamesTang616",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -277,7 +284,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/9986322?v=4",
       "profile": "https://github.com/rohan1chaudhari",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -286,7 +293,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/9448002?v=4",
       "profile": "https://github.com/rutujasurve94",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -295,7 +302,7 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/47736458?v=4",
       "profile": "https://github.com/tracy-propertyguru",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -304,7 +311,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/47085752?v=4",
       "profile": "https://github.com/Zenahr",
       "contributions": [
-        "code"
+        "heart"
       ]
     },
     {
@@ -313,7 +320,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/36444522?v=4",
       "profile": "https://github.com/coolmian",
       "contributions": [
-        "code"
+        "heart"
       ]
     }
   ],

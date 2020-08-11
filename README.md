@@ -410,7 +410,7 @@ We welcome all kinds of contributions from the open-source community, individual
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Release cycles and development stages](RELEASE.md)
 
-### Contributors
+### Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-34-orange.svg?style=flat-square)](#contributors-)
@@ -421,48 +421,48 @@ We welcome all kinds of contributions from the open-source community, individual
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://hanxiao.io/"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=hanxiao" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/nan-wang"><img src="https://avatars3.githubusercontent.com/u/4329072?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Nan Wang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=nan-wang" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/JoanFM"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Joan Fontanals</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JoanFM" title="Code">💻</a></td>
-    <td align="center"><a href="https://jina.ai/"><img src="https://avatars2.githubusercontent.com/u/62694369?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Jina Dev Bot</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=jina-bot" title="Code">💻</a></td>
-    <td align="center"><a href="http://alexcg1.github.io/"><img src="https://avatars2.githubusercontent.com/u/4182659?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Alex Cureton-Griffiths</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=alexcg1" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/fhaase2"><img src="https://avatars2.githubusercontent.com/u/44052928?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Frederic Haase</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=fhaase2" title="Code">💻</a></td>
-    <td align="center"><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Cally</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=policeme" title="Code">💻</a></td>
+    <td align="center"><a href="https://hanxiao.io/"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/nan-wang"><img src="https://avatars3.githubusercontent.com/u/4329072?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Nan Wang</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/JoanFM"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Joan Fontanals</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://jina.ai/"><img src="https://avatars2.githubusercontent.com/u/62694369?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Jina Dev Bot</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="http://alexcg1.github.io/"><img src="https://avatars2.githubusercontent.com/u/4182659?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Alex Cureton-Griffiths</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/fhaase2"><img src="https://avatars2.githubusercontent.com/u/44052928?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Frederic Haase</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Cally</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/shivam-raj"><img src="https://avatars3.githubusercontent.com/u/43991882?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Shivam Raj</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=shivam-raj" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/YueLiu-jina"><img src="https://avatars1.githubusercontent.com/u/64522311?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Yue Liu</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=YueLiu-jina" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/apps/allcontributors"><img src="https://avatars0.githubusercontent.com/in/23186?v=4?s=50" width="50px;" alt=""/><br /><sub><b>allcontributors[bot]</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=allcontributors[bot]" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/anish2197"><img src="https://avatars2.githubusercontent.com/u/16228282?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Anish</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=anish2197" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/antonkurenkov"><img src="https://avatars2.githubusercontent.com/u/52166018?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Anton</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=antonkurenkov" title="Code">💻</a></td>
-    <td align="center"><a href="https://jina.ai/"><img src="https://avatars1.githubusercontent.com/u/61045304?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Bing @Jina AI</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=BingHo1013" title="Code">💻</a></td>
-    <td align="center"><a href="https://www.linkedin.com/in/maanavshah/"><img src="https://avatars0.githubusercontent.com/u/30289560?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Maanav Shah</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=maanavshah" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/shivam-raj"><img src="https://avatars3.githubusercontent.com/u/43991882?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Shivam Raj</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/YueLiu-jina"><img src="https://avatars1.githubusercontent.com/u/64522311?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Yue Liu</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/apps/allcontributors"><img src="https://avatars0.githubusercontent.com/in/23186?v=4?s=50" width="50px;" alt=""/><br /><sub><b>allcontributors[bot]</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/anish2197"><img src="https://avatars2.githubusercontent.com/u/16228282?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Anish</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/antonkurenkov"><img src="https://avatars2.githubusercontent.com/u/52166018?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Anton</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://jina.ai/"><img src="https://avatars1.githubusercontent.com/u/61045304?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Bing @Jina AI</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/maanavshah/"><img src="https://avatars0.githubusercontent.com/u/30289560?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Maanav Shah</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://guiferviz.com/"><img src="https://avatars2.githubusercontent.com/u/11474949?v=4?s=50" width="50px;" alt=""/><br /><sub><b>guiferviz</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=guiferviz" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/redram"><img src="https://avatars3.githubusercontent.com/u/1285370?v=4?s=50" width="50px;" alt=""/><br /><sub><b>redram</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=redram" title="Code">💻</a></td>
-    <td align="center"><a href="http://www.joaopalotti.com/"><img src="https://avatars2.githubusercontent.com/u/852343?v=4?s=50" width="50px;" alt=""/><br /><sub><b>joaopalotti</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=joaopalotti" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Morriaty-The-Murderer"><img src="https://avatars3.githubusercontent.com/u/12904434?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Morry Wang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=Morriaty-The-Murderer" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/festeh"><img src="https://avatars1.githubusercontent.com/u/6877858?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Dmitry Lipin</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=festeh" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/phamtrancsek12"><img src="https://avatars3.githubusercontent.com/u/14146667?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Tran Pham</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=phamtrancsek12" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Kavan72"><img src="https://avatars3.githubusercontent.com/u/19048640?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Hidan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=Kavan72" title="Code">💻</a></td>
+    <td align="center"><a href="https://guiferviz.com/"><img src="https://avatars2.githubusercontent.com/u/11474949?v=4?s=50" width="50px;" alt=""/><br /><sub><b>guiferviz</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/redram"><img src="https://avatars3.githubusercontent.com/u/1285370?v=4?s=50" width="50px;" alt=""/><br /><sub><b>redram</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="http://www.joaopalotti.com/"><img src="https://avatars2.githubusercontent.com/u/852343?v=4?s=50" width="50px;" alt=""/><br /><sub><b>joaopalotti</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/Morriaty-The-Murderer"><img src="https://avatars3.githubusercontent.com/u/12904434?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Morry Wang</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/festeh"><img src="https://avatars1.githubusercontent.com/u/6877858?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Dmitry Lipin</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/phamtrancsek12"><img src="https://avatars3.githubusercontent.com/u/14146667?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Tran Pham</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/Kavan72"><img src="https://avatars3.githubusercontent.com/u/19048640?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Hidan</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/boussoffara"><img src="https://avatars0.githubusercontent.com/u/10478725?v=4?s=50" width="50px;" alt=""/><br /><sub><b>boussoffara</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=boussoffara" title="Code">💻</a></td>
-    <td align="center"><a href="http://weizhen.rocks/"><img src="https://avatars3.githubusercontent.com/u/5943684?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Weizhen Yan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=roccia" title="Code">💻</a></td>
-    <td align="center"><a href="https://t.me/neural_network_engineering"><img src="https://avatars1.githubusercontent.com/u/1935623?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Andrey Vasnetsov</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=generall" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/emmaadesile"><img src="https://avatars2.githubusercontent.com/u/26192691?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Emmanuel Adesile</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=emmaadesile" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/ericsyh"><img src="https://avatars3.githubusercontent.com/u/10498732?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Eric Shen</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=ericsyh" title="Code">💻</a></td>
-    <td align="center"><a href="https://stackoverflow.com/users/7550592/yik-san-chan"><img src="https://avatars1.githubusercontent.com/u/17229109?v=4?s=50" width="50px;" alt=""/><br /><sub><b>yiksanchan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=YikSanChan" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/JamesTang-jinaai"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4?s=50" width="50px;" alt=""/><br /><sub><b>James Tang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JamesTang-jinaai" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/boussoffara"><img src="https://avatars0.githubusercontent.com/u/10478725?v=4?s=50" width="50px;" alt=""/><br /><sub><b>boussoffara</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="http://weizhen.rocks/"><img src="https://avatars3.githubusercontent.com/u/5943684?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Weizhen Yan</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://t.me/neural_network_engineering"><img src="https://avatars1.githubusercontent.com/u/1935623?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Andrey Vasnetsov</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/emmaadesile"><img src="https://avatars2.githubusercontent.com/u/26192691?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Emmanuel Adesile</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/ericsyh"><img src="https://avatars3.githubusercontent.com/u/10498732?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Eric Shen</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://stackoverflow.com/users/7550592/yik-san-chan"><img src="https://avatars1.githubusercontent.com/u/17229109?v=4?s=50" width="50px;" alt=""/><br /><sub><b>yiksanchan</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/JamesTang-jinaai"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4?s=50" width="50px;" alt=""/><br /><sub><b>James Tang</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/JamesTang616"><img src="https://avatars0.githubusercontent.com/u/29118702?v=4?s=50" width="50px;" alt=""/><br /><sub><b>James Tang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JamesTang616" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/rohan1chaudhari"><img src="https://avatars1.githubusercontent.com/u/9986322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rohan Chaudhari</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=rohan1chaudhari" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/rutujasurve94"><img src="https://avatars1.githubusercontent.com/u/9448002?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rutuja Surve</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=rutujasurve94" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/tracy-propertyguru"><img src="https://avatars2.githubusercontent.com/u/47736458?v=4?s=50" width="50px;" alt=""/><br /><sub><b>tracy-propertyguru</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=tracy-propertyguru" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Zenahr"><img src="https://avatars1.githubusercontent.com/u/47085752?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Zenahr Barzani</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=Zenahr" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/coolmian"><img src="https://avatars3.githubusercontent.com/u/36444522?v=4?s=50" width="50px;" alt=""/><br /><sub><b>coolmian</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=coolmian" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/JamesTang616"><img src="https://avatars0.githubusercontent.com/u/29118702?v=4?s=50" width="50px;" alt=""/><br /><sub><b>James Tang</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/rohan1chaudhari"><img src="https://avatars1.githubusercontent.com/u/9986322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rohan Chaudhari</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/rutujasurve94"><img src="https://avatars1.githubusercontent.com/u/9448002?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rutuja Surve</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/tracy-propertyguru"><img src="https://avatars2.githubusercontent.com/u/47736458?v=4?s=50" width="50px;" alt=""/><br /><sub><b>tracy-propertyguru</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/Zenahr"><img src="https://avatars1.githubusercontent.com/u/47085752?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Zenahr Barzani</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
+    <td align="center"><a href="https://github.com/coolmian"><img src="https://avatars3.githubusercontent.com/u/36444522?v=4?s=50" width="50px;" alt=""/><br /><sub><b>coolmian</b></sub></a><br /><a href="❤️" title="Jina friend">❤️</a></td>
   </tr>
 </table>
 
@@ -499,16 +499,3 @@ The meeting will also be live-streamed and later published to our [Youtube chann
 Copyright (c) 2020 Jina AI Limited. All rights reserved.
 
 Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
