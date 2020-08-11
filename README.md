@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -424,6 +424,7 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://hanxiao.io/"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=hanxiao" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/nan-wang"><img src="https://avatars3.githubusercontent.com/u/4329072?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Nan Wang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=nan-wang" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/JoanFM"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Joan Fontanals</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JoanFM" title="Code">💻</a></td>
+    <td align="center"><a href="https://jina.ai/"><img src="https://avatars2.githubusercontent.com/u/62694369?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Jina Dev Bot</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=jina-bot" title="Code">💻</a></td>
   </tr>
 </table>
 
