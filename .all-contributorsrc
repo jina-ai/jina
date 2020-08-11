@@ -32,6 +32,22 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "nan-wang",
+      "name": "Nan Wang",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4329072?v=4",
+      "profile": "http://jina.ai",
+      "contributions": [
+        "code",
+        "doc",
+        "bug",
+        "example",
+        "ideas",
+        "review",
+        "infra",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
