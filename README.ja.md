@@ -38,7 +38,9 @@
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
   <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
+  <!---
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
+  -->
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
@@ -54,9 +56,9 @@ Jinaは、最先端のAIとディープラーニングを搭載したクラウ�
 🚀**ハイパフォーマント＆ステートオブザアート** - JinaはAIインプロダクションを目指しています。VideoBERT、Xception、ワードトークナイザー、画像セグメンテーション、データベースを簡単にスケールアウトして、10億レベルのデータを扱うことができます。レプリカやシャードなどの機能は、すぐに使えるようになっています。
 
 🐣**システムエンジニアリングが簡単に** - Jinaは、パッケージやライブラリ、データベースの手作りや接着から解放されるワンストップソリューションを提供しています。最も直感的なAPIと[ダッシュボード](https://github.com/jina-ai/dashboard)クラウドネイティブの検索システムを構築するのは、ほんの少しのことです。
-
+<!---
 🧩**強力な拡張機能、シンプルな統合** - Jinaに新しいAIモデル？Python スクリプトを書くか、Docker イメージを構築するだけです。新しいアルゴリズムをプラグインすることは、本来であればこれほど簡単ではありませんでした。[ジナハブ（ベータ版）をチェック](https://github.com/jina-ai/jina-hub)そして、コミュニティによって貢献されたさまざまなユースケースの拡張機能を見つけることができます。
-
+-->
 Jinaはオープンソースのプロジェクトです。[採用しています。](https://jobs.jina.ai)AIエンジニア、フルスタック開発者、エバンジェリスト、PMがオープンソースで次のニューラル検索エコシステムを構築する。
 
 ## 目次
@@ -324,6 +326,7 @@ Learn to how to use SOTA visual representation for searching Pokémon!
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+<!---
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
@@ -331,7 +334,7 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 </td>
 <td><h3>🚀</h3></td>
 </tr>
-
+-->
 </table>
   
 

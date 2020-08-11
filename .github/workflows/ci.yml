@@ -1,6 +1,11 @@
 name: CI
 
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - '.all-contributorsrc'
+      - 'docs/*'
 
 jobs:
   commit-lint:
@@ -20,7 +25,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v2
@@ -69,7 +74,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v2
@@ -121,11 +126,11 @@ jobs:
           file: unit-test-codecoverage/unit-test-coverage.xml
           env_vars: OS,PYTHON
           name: codecov
-          fail_ci_if_error: true
+          fail_ci_if_error: false
       - name: Upload coverage from integration-test to Codecov
         uses: codecov/codecov-action@v1
         with:
           file: integration-test-codecoverage/integration-test-coverage.xml
           env_vars: OS,PYTHON
           name: codecov
-          fail_ci_if_error: true
+          fail_ci_if_error: false
