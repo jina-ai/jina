@@ -40,8 +40,10 @@
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
-  <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
+  <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> • 
+  <!---
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
+  -->  
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
@@ -59,9 +61,9 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, you name it!
 
 🚀 **Production Ready** - Cloud-native features come out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
-
+<!---
 🧩 **Plug & Play** - Extend Jina with simple Python scripts or Docker images optimized for your search domain. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) for more extensions.
-
+-->
 ## Contents
 
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
@@ -75,11 +77,10 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 - [Build your own Project](#build-your-own-project)
 - [Tutorials](#tutorials)
 - [Documentation](#documentation)
-- [Contributors](#contributors)
 - [Contributing](#contributing)
 - [Community](#community)
 - [Join Us](#join-us)
-- [Roadmap](#roadmap)
+- [Open Governance](#open-governance)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -371,6 +372,7 @@ Search Pokemon with SOTA visual representation!
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+<!---
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
@@ -378,6 +380,7 @@ Share your extensions with engineers around the globe on Jina Hub
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+-->
 
 </table>
 
@@ -400,8 +403,6 @@ Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the docum
 
 [Documentation for older versions is archived here](https://github.com/jina-ai/docs/releases).
 
-## Contributors
-
 ## Contributing
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
@@ -409,10 +410,30 @@ We welcome all kinds of contributions from the open-source community, individual
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Release cycles and development stages](RELEASE.md)
 
+### Contributors
+
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END --> 
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://hanxiao.io"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=hanxiao" title="Code">💻</a></td>
+    <td align="center"><a href="http://weizhen.rocks"><img src="https://avatars3.githubusercontent.com/u/5943684?v=4" width="50px;" alt=""/><br /><sub><b>Weizhen Yan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=roccia" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 ## Community
 
-- [Slack channel](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
-- [Community newsletter](mailto:newsletter+subscribe@jina.ai) - subscribe to the latest updates, releases and event news of Jina
+- [Slack workspace](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
+- [Youtube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
 - [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow us and interact with using hashtag `#JinaSearch`  
 - [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source!
@@ -421,11 +442,17 @@ We welcome all kinds of contributions from the open-source community, individual
 
 Jina is an open-source project. [We are hiring](https://jina.ai/#/jobs) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
 
-## Roadmap
+## Open Governance
 
 [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to Jina's future improvements.
 
-We are looking for partnerships to build a Open Governance model (e.g. Technical Steering Committee) around Jina, to enable a healthy open-source ecosystem and developer-friendly culture. If you are interested, contact us at [hello@jina.ai](mailto:hello@jina.ai).
+As a part of open governance model, we host the **Engineering All Hands** of Jina AI in public. This Zoom meeting recurs monthly on the second Tuesday, 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
+
+- [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
+- [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
+- [Engineering All Hands in Public](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)
+
+The meeting will also be live-streamed and later published to our [Youtube channel](https://youtube.com/c/jina-ai). Make sure to subscribe it if you want to watch the replay.
 
 ## License
 

@@ -75,16 +75,21 @@ class CustomKerasImageEncoder(KerasImageEncoder):
     https://www.tensorflow.org/api_docs/python/tf/keras/applications
     """
 
-    def __init__(self, layer_name: str, *args, **kwargs):
+    def __init__(self, model_path: str, layer_name: str, channel_axis: int = -1, *args, **kwargs):
+
         """
         :param model_path: the path where the model is stored.
         :layer: Name of the layer from where to extract the feature map.
         """
         super().__init__(*args, **kwargs)
+        self.model_path = model_path
         self.layer_name = layer_name
+        self.channel_axis = channel_axis
 
     def post_init(self):
-        super().post_init()
+        self.to_device()
         import tensorflow as tf
-        self.model = tf.keras.Model(inputs=self.model.input,
-                                    outputs=self.model.get_layer(self.layer_name).output)
+        model = tf.keras.models.load_model(self.model_path)
+        model.trainable = False
+        self.model = tf.keras.Model(inputs=model.input,
+                                    outputs=model.get_layer(self.layer_name).output)
