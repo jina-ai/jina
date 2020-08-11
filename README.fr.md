@@ -39,7 +39,9 @@
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
   <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
+  <!---
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
+  -->
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
@@ -55,9 +57,9 @@ Jina est le cadre de recherche neuronale natif des nuages alimenté par l'IA de 
 🚀**Performances et état de l'art** - Jina vise l'AI-in-production. Vous pouvez facilement adapter votre VideoBERT, Xception, votre word tokenizer, votre segmenteur d'images et votre base de données pour traiter des données de plusieurs milliards de niveaux. Des fonctionnalités telles que les répliques et les tessons sont disponibles sur le marché.
 
 🐣**L'ingénierie des systèmes rendue facile** - Jina propose une solution unique qui vous libère de l'artisanat et du collage de paquets, de bibliothèques et de bases de données. Avec l'API la plus intuitive et[tableau de bord](https://github.com/jina-ai/dashboard)La construction d'un système de recherche dans les nuages n'est qu'une question de minutes.
-
+<!---
 🧩**Des extensions puissantes, une intégration simple** - Un nouveau modèle d'IA pour Jina ? Il suffit d'écrire un script Python ou de construire une image Docker. Le branchement de nouveaux algorithmes n'a jamais été aussi simple, comme il se doit[Voir Jina Hub (beta)](https://github.com/jina-ai/jina-hub) et trouver d'autres extensions sur différents cas d'utilisation fournis par la communauté.
-
+-->
 Jina est un projet open-source[Nous recrutons](https://jobs.jina.ai) Des ingénieurs en IA, des développeurs, des évangélistes et des députés pour construire le prochain écosystème de recherche neurale en open-source
 
 ## Table des matières
@@ -195,7 +197,7 @@ jina hello-world --help
 
 ### Démarrer un projet à partir du modèle
 
-"Bash
+```Bash
 pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 ``` 
 
@@ -209,8 +211,8 @@ pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
     </a>
     </td>
     <td width="70%">
-&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Thing to Learn About Jina</a></h3>
-&nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
+  <h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Thing to Learn About Jina</a></h3>
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.jp.md">日本語</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">français</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.pt.md">Português</a> •
@@ -321,6 +323,7 @@ Learn to how to use SOTA visual representation for searching Pokémon!
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+<!---
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
@@ -328,7 +331,7 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 </td>
 <td><h3>🚀</h3></td>
 </tr>
-
+-->
 </table>
   
 
