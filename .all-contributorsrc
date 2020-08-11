@@ -135,6 +135,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "guiferviz",
+      "name": "guiferviz",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/11474949?v=4",
+      "profile": "https://guiferviz.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7

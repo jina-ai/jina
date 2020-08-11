@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -437,6 +437,9 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://github.com/antonkurenkov"><img src="https://avatars2.githubusercontent.com/u/52166018?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Anton</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=antonkurenkov" title="Code">💻</a></td>
     <td align="center"><a href="https://jina.ai/"><img src="https://avatars1.githubusercontent.com/u/61045304?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Bing @Jina AI</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=BingHo1013" title="Code">💻</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/maanavshah/"><img src="https://avatars0.githubusercontent.com/u/30289560?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Maanav Shah</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=maanavshah" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://guiferviz.com/"><img src="https://avatars2.githubusercontent.com/u/11474949?v=4?s=50" width="50px;" alt=""/><br /><sub><b>guiferviz</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=guiferviz" title="Code">💻</a></td>
   </tr>
 </table>
 
