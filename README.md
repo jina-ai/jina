@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
