@@ -38,7 +38,9 @@
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
   <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
+  <!---
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
+  -->
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
@@ -55,7 +57,9 @@ Jina是由最先进的AI和深度学习驱动的云端神经搜索框架。它�
 
 🐣**简单的系统工程** - Jina提供了一个一站式的解决方案，让你从手工制作和粘合包、库和数据库中解脱出来。通过最直观的API和[仪表板](https://github.com/jina-ai/dashboard)构建一个云端搜索系统只是分分钟的事情。
 
+<!---
 🧩**强大的扩展功能，简单的集成** - Jina的新AI模型？只需编写一个Python脚本或构建一个Docker镜像即可。插入新的算法从来都不是那么容易的事情，就像它应该做的那样。[看看Jina Hub (测试版)](https://github.com/jina-ai/jina-hub)并在社区贡献的不同用例上找到更多的扩展。
+-->
 
 Jina是一个开源项目。[我们正在招聘](https://jobs.jina.ai)AI工程师、全栈开发者、传道者、PM，打造下一个开源的神经搜索生态。
 
@@ -325,6 +329,7 @@ Learn to how to use SOTA visual representation for searching Pokémon!
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+<!---
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
@@ -332,6 +337,7 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+-->
 
 </table>
   

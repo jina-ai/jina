@@ -40,8 +40,10 @@
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
-  <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> •
+  <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> • 
+  <!---
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
+  -->  
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
@@ -59,9 +61,9 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, you name it!
 
 🚀 **Production Ready** - Cloud-native features come out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
-
+<!---
 🧩 **Plug & Play** - Extend Jina with simple Python scripts or Docker images optimized for your search domain. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) for more extensions.
-
+-->
 ## Contents
 
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
@@ -370,6 +372,7 @@ Search Pokemon with SOTA visual representation!
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+<!---
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
@@ -377,6 +380,7 @@ Share your extensions with engineers around the globe on Jina Hub
 </td>
 <td><h3>🚀</h3></td>
 </tr>
+-->
 
 </table>
 
@@ -419,6 +423,7 @@ We welcome all kinds of contributions from the open-source community, individual
   <tr>
     <td align="center"><a href="https://hanxiao.io"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=hanxiao" title="Code">💻</a></td>
     <td align="center"><a href="http://www.linkedin.com/in/joanfontanalsmartinez/"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4" width="50px;" alt=""/><br /><sub><b>Joan Fontanals</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JoanFM" title="Code">💻</a></td>
+    <td align="center"><a href="http://weizhen.rocks"><img src="https://avatars3.githubusercontent.com/u/5943684?v=4" width="50px;" alt=""/><br /><sub><b>Weizhen Yan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=roccia" title="Code">💻</a></td>
   </tr>
 </table>
 
