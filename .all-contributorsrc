@@ -1,59 +1,24 @@
 {
+  "projectName": "jina",
+  "projectOwner": "jina-ai",
+  "repoType": "github",
+  "repoHost": "https://github.com",
   "files": [
     "README.md"
   ],
   "imageSize": 50,
-  "commit": false,
-  "contributorsSortAlphabetically": true,
+  "commit": true,
+  "commitConvention": "eslint",
   "contributors": [
     {
       "login": "hanxiao",
       "name": "Han Xiao",
       "avatar_url": "https://avatars2.githubusercontent.com/u/2041322?v=4",
-      "profile": "https://hanxiao.io",
+      "profile": "https://hanxiao.io/",
       "contributions": [
         "code"
-      ]
-    },
-    {
-      "login": "JoanFM",
-      "name": "Joan Fontanals",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/19825685?v=4",
-      "profile": "http://www.linkedin.com/in/joanfontanalsmartinez/",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "roccia",
-      "name": "Weizhen Yan",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/5943684?v=4",
-      "profile": "http://weizhen.rocks",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "nan-wang",
-      "name": "Nan Wang",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/4329072?v=4",
-      "profile": "http://jina.ai",
-      "contributions": [
-        "code",
-        "doc",
-        "bug",
-        "example",
-        "ideas",
-        "review",
-        "infra",
-        "test"
       ]
     }
   ],
-  "contributorsPerLine": 7,
-  "projectName": "jina",
-  "projectOwner": "jina-ai",
-  "repoType": "github",
-  "repoHost": "https://github.com",
-  "skipCi": true
+  "contributorsPerLine": 7
 }
