@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-21-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -445,6 +445,7 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://github.com/Morriaty-The-Murderer"><img src="https://avatars3.githubusercontent.com/u/12904434?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Morry Wang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=Morriaty-The-Murderer" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/festeh"><img src="https://avatars1.githubusercontent.com/u/6877858?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Dmitry Lipin</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=festeh" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/phamtrancsek12"><img src="https://avatars3.githubusercontent.com/u/14146667?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Tran Pham</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=phamtrancsek12" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Kavan72"><img src="https://avatars3.githubusercontent.com/u/19048640?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Hidan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=Kavan72" title="Code">💻</a></td>
   </tr>
 </table>
 
