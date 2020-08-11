@@ -63,6 +63,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "policeme",
+      "name": "Cally",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/30991932?v=4",
+      "profile": "https://www.cnblogs.com/callyblog/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7

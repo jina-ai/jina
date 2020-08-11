@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -427,6 +427,7 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://jina.ai/"><img src="https://avatars2.githubusercontent.com/u/62694369?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Jina Dev Bot</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=jina-bot" title="Code">💻</a></td>
     <td align="center"><a href="http://alexcg1.github.io/"><img src="https://avatars2.githubusercontent.com/u/4182659?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Alex Cureton-Griffiths</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=alexcg1" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/fhaase2"><img src="https://avatars2.githubusercontent.com/u/44052928?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Frederic Haase</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=fhaase2" title="Code">💻</a></td>
+    <td align="center"><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Cally</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=policeme" title="Code">💻</a></td>
   </tr>
 </table>
 
