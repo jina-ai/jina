@@ -69,6 +69,31 @@ def create_matches_to_score():
     return doc
 
 
+def create_chunk_matches_to_score():
+    # doc: (id: 100, level_depth=0)
+    # |- chunks: (id: 10)
+    # |  |- matches: (id: 11, parent_id: 1, score.value: 1, level_depth=1),
+    # |  |- matches: (id: 12, parent_id: 1, score.value: 2, level_depth=1),
+    # |- chunks: (id: 20)
+    #    |- matches: (id: 21, parent_id: 2, score.value: 1, level_depth=1),
+    #    |- matches: (id: 22, parent_id: 2, score.value: 2, level_depth=1)
+    doc = jina_pb2.Document()
+    doc.id = 100
+    for parent_id in range(1, 3):
+        chunk = doc.chunks.add()
+        chunk.id = parent_id * 10
+        for score_value in range(1, 3):
+            match = chunk.matches.add()
+            match.level_depth = 1
+            match.id = 10 * parent_id + score_value
+            match.parent_id = parent_id
+            match.length = 4
+            # to be used by MaxRanker and MinRanker
+            match.score.ref_id = chunk.id
+            match.score.value = score_value
+    return doc
+
+
 class Chunk2DocRankerDriverTestCase(JinaTestCase):
 
     def test_chunk2doc_ranker_driver_mock_exec(self):
@@ -128,9 +153,25 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
             # match score is computed w.r.t to doc.id
             self.assertEqual(match.score.ref_id, doc.id)
 
-    def test_chunk2doc_ranker_driver_traverse_apply_MinRanker(self):
+    def test_chunk2doc_ranker_driver_traverse_apply_MinRanker_on_matches(self):
         docs = [create_matches_to_score() for _ in range(1)]
         driver = Chunk2DocRankDriver(traverse_on='matches')
+        executor = MinRanker()
+        driver.attach(executor=executor, pea=None)
+        driver._traverse_apply(docs)
+        for doc in docs:
+            # for each doc, the expected outputs are two matches reduced from the original four matches.
+            # The matches with the same parent_id are merged into one match. The one with the lower score is kept and
+            # The id of the reduced matches is now the original parent_id.
+            self.assertEqual(len(doc.matches), 2)
+            for idx, m in enumerate(doc.matches):
+                self.assertEqual(m.id, idx+1)
+                self.assertEqual(m.score.value, 1)
+                self.assertEqual(m.level_depth, 0)
+
+    def test_chunk2doc_ranker_driver_traverse_apply_MinRanker_on_chunks(self):
+        docs = [create_chunk_matches_to_score() for _ in range(1)]
+        driver = Chunk2DocRankDriver(traverse_on='chunks', depth_range=[1, 1])
         executor = MinRanker()
         driver.attach(executor=executor, pea=None)
         driver._traverse_apply(docs)
