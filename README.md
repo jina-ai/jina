@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -424,6 +424,7 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://hanxiao.io"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=hanxiao" title="Code">💻</a></td>
     <td align="center"><a href="http://www.linkedin.com/in/joanfontanalsmartinez/"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4" width="50px;" alt=""/><br /><sub><b>Joan Fontanals</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JoanFM" title="Code">💻</a></td>
     <td align="center"><a href="http://weizhen.rocks"><img src="https://avatars3.githubusercontent.com/u/5943684?v=4" width="50px;" alt=""/><br /><sub><b>Weizhen Yan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=roccia" title="Code">💻</a></td>
+    <td align="center"><a href="http://jina.ai"><img src="https://avatars3.githubusercontent.com/u/4329072?v=4" width="50px;" alt=""/><br /><sub><b>Nan Wang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=nan-wang" title="Code">💻</a> <a href="https://github.com/jina-ai/jina/commits?author=nan-wang" title="Documentation">📖</a> <a href="https://github.com/jina-ai/jina/issues?q=author%3Anan-wang" title="Bug reports">🐛</a> <a href="#example-nan-wang" title="Examples">💡</a> <a href="#ideas-nan-wang" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/jina-ai/jina/pulls?q=is%3Apr+reviewed-by%3Anan-wang" title="Reviewed Pull Requests">👀</a> <a href="#infra-nan-wang" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/jina-ai/jina/commits?author=nan-wang" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
