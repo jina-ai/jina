@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-33-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-34-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -462,6 +462,7 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://github.com/rutujasurve94"><img src="https://avatars1.githubusercontent.com/u/9448002?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rutuja Surve</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=rutujasurve94" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/tracy-propertyguru"><img src="https://avatars2.githubusercontent.com/u/47736458?v=4?s=50" width="50px;" alt=""/><br /><sub><b>tracy-propertyguru</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=tracy-propertyguru" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Zenahr"><img src="https://avatars1.githubusercontent.com/u/47085752?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Zenahr Barzani</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=Zenahr" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/coolmian"><img src="https://avatars3.githubusercontent.com/u/36444522?v=4?s=50" width="50px;" alt=""/><br /><sub><b>coolmian</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=coolmian" title="Code">💻</a></td>
   </tr>
 </table>
 
