@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -432,6 +432,7 @@ We welcome all kinds of contributions from the open-source community, individual
   <tr>
     <td align="center"><a href="https://github.com/shivam-raj"><img src="https://avatars3.githubusercontent.com/u/43991882?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Shivam Raj</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=shivam-raj" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/YueLiu-jina"><img src="https://avatars1.githubusercontent.com/u/64522311?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Yue Liu</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=YueLiu-jina" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/apps/allcontributors"><img src="https://avatars0.githubusercontent.com/in/23186?v=4?s=50" width="50px;" alt=""/><br /><sub><b>allcontributors[bot]</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=allcontributors[bot]" title="Code">💻</a></td>
   </tr>
 </table>
 
