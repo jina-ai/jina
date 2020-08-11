@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-28-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -455,6 +455,9 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://github.com/ericsyh"><img src="https://avatars3.githubusercontent.com/u/10498732?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Eric Shen</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=ericsyh" title="Code">💻</a></td>
     <td align="center"><a href="https://stackoverflow.com/users/7550592/yik-san-chan"><img src="https://avatars1.githubusercontent.com/u/17229109?v=4?s=50" width="50px;" alt=""/><br /><sub><b>yiksanchan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=YikSanChan" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/JamesTang-jinaai"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4?s=50" width="50px;" alt=""/><br /><sub><b>James Tang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JamesTang-jinaai" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/JamesTang616"><img src="https://avatars0.githubusercontent.com/u/29118702?v=4?s=50" width="50px;" alt=""/><br /><sub><b>James Tang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JamesTang616" title="Code">💻</a></td>
   </tr>
 </table>
 
