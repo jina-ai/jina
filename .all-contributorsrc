@@ -9,7 +9,7 @@
   "imageSize": 50,
   "commit": false,
   "commitConvention": "none",
-  "contributorTemplate": "<a class=\"avatar avatar-user\" href=\"<%= contributor.profile %>\"><img src=\"<%= contributor.avatar_url %>\" width=\"<%= options.imageSize %>px;\"/></a>",
+  "contributorTemplate": "<a href=\"<%= contributor.profile %>\"><img src=\"<%= contributor.avatar_url %>\" class=\"avatar-user\" width=\"<%= options.imageSize %>px;\"/></a>",
   "types": {
     "heart": {
       "symbol": "❤️",
