@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-26-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -453,6 +453,7 @@ We welcome all kinds of contributions from the open-source community, individual
     <td align="center"><a href="https://t.me/neural_network_engineering"><img src="https://avatars1.githubusercontent.com/u/1935623?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Andrey Vasnetsov</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=generall" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/emmaadesile"><img src="https://avatars2.githubusercontent.com/u/26192691?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Emmanuel Adesile</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=emmaadesile" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/ericsyh"><img src="https://avatars3.githubusercontent.com/u/10498732?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Eric Shen</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=ericsyh" title="Code">💻</a></td>
+    <td align="center"><a href="https://stackoverflow.com/users/7550592/yik-san-chan"><img src="https://avatars1.githubusercontent.com/u/17229109?v=4?s=50" width="50px;" alt=""/><br /><sub><b>yiksanchan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=YikSanChan" title="Code">💻</a></td>
   </tr>
 </table>
 
