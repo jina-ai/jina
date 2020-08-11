@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-30-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -458,6 +458,7 @@ We welcome all kinds of contributions from the open-source community, individual
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/JamesTang616"><img src="https://avatars0.githubusercontent.com/u/29118702?v=4?s=50" width="50px;" alt=""/><br /><sub><b>James Tang</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JamesTang616" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/rohan1chaudhari"><img src="https://avatars1.githubusercontent.com/u/9986322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rohan Chaudhari</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=rohan1chaudhari" title="Code">💻</a></td>
   </tr>
 </table>
 
