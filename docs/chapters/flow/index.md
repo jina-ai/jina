@@ -337,8 +337,42 @@ from any upstream `encoder` and obtain in the response message of the pod the co
 the key-value index. This lets the `VectorIndexer` be responsible to obtain the most relevant documents by finding similarities
 in the `embedding` space while targeting the `key-value` database to extract the meaningful data and fields from those relevant documents.
 
-- Indexers at different depth levels:
+- Text document segmentation:
+A common search pattern is to store `long` text documents in an index for them to be later retrieved by using some `short`
+sentences. Having a single `embedding` vector for a single `long` text document is not the proper way to go about this.
+It is hard to extract a single `semantically meaningful` vector from a long document. `jina` solves this issue introducing 
+the concept of `chunks`. The common scenario is to have a `crafter` segmenting the `document` in `smaller` parts (tipically short sentences) followed by some `nlp` based encoder.
 
-- NLP Document chunks (Segment + encode):
+```yaml
+!Sentencizer
+with:
+  min_sent_len: 2
+  max_sent_len: 64
+```
+```yaml
+!TransformerTorchEncoder
+with:
+  pooling_strategy: auto
+  pretrained_model_name_or_path: distilbert-base-cased
+  max_length: 96
+```
+This way a single document contains `N` different `chunks` that are later independently encoded by a downstream `encoder`. 
+This will allow `jina` to query the index with a `short` sentence as input, where similarity search can be applied to find the most 
+common chunks. This way the same document can be retrieved based on different parts of it.
+
+For instance:
+A text document containing 3 sentences can be decomposed in 3 chunks:
+
+`Someone is waiting at the bus stop. John looks surprised, his face seems familiar` ->
+[`Someone is waiting at the bus stop`, `John looks surprised`, `his face seems familiar`]
+
+This will allow the document to be retrieved by different `input` sentences that will match any of these 3 parts.
+For instance, these 3 different inputs could lead to the extraction of the same document by targetting 3 different chunks:
+
+    - A standing guy -> Someone is waiting at the bus stop.
+    - He is amazed` -> John looks surprised.
+    - a similar look -> his face seems familiar.
+
+- Indexers at different depth levels:
 
 - Reference Indexer
