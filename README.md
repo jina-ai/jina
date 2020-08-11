@@ -413,7 +413,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -422,6 +422,7 @@ We welcome all kinds of contributions from the open-source community, individual
 <table>
   <tr>
     <td align="center"><a href="https://hanxiao.io"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=hanxiao" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.linkedin.com/in/joanfontanalsmartinez/"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4" width="50px;" alt=""/><br /><sub><b>Joan Fontanals</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=JoanFM" title="Code">💻</a></td>
     <td align="center"><a href="http://weizhen.rocks"><img src="https://avatars3.githubusercontent.com/u/5943684?v=4" width="50px;" alt=""/><br /><sub><b>Weizhen Yan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=roccia" title="Code">💻</a></td>
   </tr>
 </table>
