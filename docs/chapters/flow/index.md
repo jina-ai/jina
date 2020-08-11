@@ -311,6 +311,32 @@ However, there are basic common patterns that show up when developing search sol
 
 - CompoundIndexer (Vector + KV Indexers):
 
+To develop neural search applications, it is useful to use a `CompoundIndexer` in the same `Pod` for both `index` and `query` Flows.
+The following `yaml` file shows an example of this pattern.
+
+```yaml
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vectors.gz
+      metric: cosine
+    metas:
+      name: vecIndexer
+  - !BinaryPbIndexer
+    with:
+      index_filename: values.gz
+    metas:
+      name: kvIndexer  # a customized name
+metas:
+  name: complete indexer
+```
+
+This type of construction will act as a single `indexer` and will allow to seamlessly `query` this index with the `embedding` vector coming
+from any upstream `encoder` and obtain in the response message of the pod the corresponding `binary` information stored in
+the key-value index. This lets the `VectorIndexer` be responsible to obtain the most relevant documents by finding similarities
+in the `embedding` space while targeting the `key-value` database to extract the meaningful data and fields from those relevant documents.
+
 - Indexers at different depth levels:
 
 - NLP Document chunks (Segment + encode):
