@@ -100,3 +100,23 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         for match in doc.matches:
             # match score is computed w.r.t to doc.id
             self.assertEqual(match.score.ref_id, doc.id)
+
+    def test_chunk2doc_ranker_driver_traverse_apply_MinRanker(self):
+        docs = [create_document_to_score() for i in range(3)]
+        driver = SimpleChunk2DocRankDriver()
+        executor = MinRanker()
+        driver.attach(executor=executor, pea=None)
+        driver._traverse_apply(docs)
+        for doc in docs:
+            self.assertEqual(len(doc.matches), 4)
+            self.assertEqual(doc.matches[0].id, 40)
+            self.assertAlmostEqual(doc.matches[0].score.value, 1 / (1 + 4))
+            self.assertEqual(doc.matches[1].id, 50)
+            self.assertAlmostEqual(doc.matches[1].score.value, 1 / (1 + 5))
+            self.assertEqual(doc.matches[2].id, 60)
+            self.assertAlmostEqual(doc.matches[2].score.value, 1 / (1 + 6))
+            self.assertEqual(doc.matches[3].id, 70)
+            self.assertAlmostEqual(doc.matches[3].score.value, 1 / (1 + 7))
+            for match in doc.matches:
+                # match score is computed w.r.t to doc.id
+                self.assertEqual(match.score.ref_id, doc.id)
