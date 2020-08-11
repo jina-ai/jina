@@ -96,9 +96,12 @@ class BaseTransformerEncoder(BaseEncoder):
         token_ids_batch = self.array2tensor(ids_info['input_ids'])
         mask_ids_batch = self.array2tensor(ids_info['attention_mask'])
         with self.session():
-            seq_output, *extra_output = self.model(token_ids_batch, attention_mask=mask_ids_batch)
+            _, _, hidden_states = self.model(token_ids_batch,
+                                             attention_mask=mask_ids_batch,
+                                             output_hidden_states=True)
+            output_embeddings = hidden_states[0]
             _mask_ids_batch = self.tensor2array(mask_ids_batch)
-            _seq_output = self.tensor2array(seq_output)
+            _seq_output = self.tensor2array(output_embeddings)
             if self.pooling_strategy == 'auto':
                 output = auto_reduce(_seq_output, _mask_ids_batch, self.model.base_model_prefix)
             elif self.pooling_strategy == 'mean':

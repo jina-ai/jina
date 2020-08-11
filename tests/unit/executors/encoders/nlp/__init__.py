@@ -44,7 +44,7 @@ class NlpTestCase(ExecutorTestCase):
             return
         test_data = np.array(['it is a good day!', 'the dog sits on the floor.'])
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape[0], 2)
+        self.assertEqual(encoded_data.shape, (2, self.target_output_dim))
 
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_save_and_load(self):
