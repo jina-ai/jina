@@ -302,3 +302,17 @@ With Jina Dashboard, you can interactively drag-n-drop Pod, set its attribute an
 
 
 More information on the dashboard can be found [here](https://github.com/jina-ai/dashboard).
+
+# Common design patterns
+
+jina is a really flexible AI-powered neural search framework. It is designed to enable any pattern that can be framed as  
+a neural search problem.
+However, there are basic common patterns that show up when developing search solutions with jina and here is a recopilation of some of them.
+
+- CompoundIndexer (Vector + KV Indexers):
+
+- Indexers at different depth levels:
+
+- NLP Document chunks (Segment + encode):
+
+- Reference Indexer
