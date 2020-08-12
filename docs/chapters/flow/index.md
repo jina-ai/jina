@@ -302,3 +302,148 @@ With Jina Dashboard, you can interactively drag-n-drop Pod, set its attribute an
 
 
 More information on the dashboard can be found [here](https://github.com/jina-ai/dashboard).
+
+# Common design patterns
+
+jina is a really flexible AI-powered neural search framework. It is designed to enable any pattern that can be framed as  
+a neural search problem.
+However, there are basic common patterns that show up when developing search solutions with jina and here is a recopilation of some of them.
+
+- CompoundIndexer (Vector + KV Indexers):
+
+To develop neural search applications, it is useful to use a `CompoundIndexer` in the same `Pod` for both `index` and `query` Flows.
+The following `yaml` file shows an example of this pattern.
+
+```yaml
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vectors.gz
+      metric: cosine
+    metas:
+      name: vecIndexer
+  - !BinaryPbIndexer
+    with:
+      index_filename: values.gz
+    metas:
+      name: kvIndexer  # a customized name
+metas:
+  name: complete indexer
+```
+
+This type of construction will act as a single `indexer` and will allow to seamlessly `query` this index with the `embedding` vector coming
+from any upstream `encoder` and obtain in the response message of the pod the corresponding `binary` information stored in
+the key-value index. This lets the `VectorIndexer` be responsible to obtain the most relevant documents by finding similarities
+in the `embedding` space while targeting the `key-value` database to extract the meaningful data and fields from those relevant documents.
+
+- Text document segmentation:
+A common search pattern is to store `long` text documents in an index for them to be later retrieved by using some `short`
+sentences. Having a single `embedding` vector for a single `long` text document is not the proper way to go about this.
+It is hard to extract a single `semantically meaningful` vector from a long document. `jina` solves this issue introducing 
+the concept of `chunks`. The common scenario is to have a `crafter` segmenting the `document` in `smaller` parts (tipically short sentences) followed by some `nlp` based encoder.
+
+```yaml
+!Sentencizer
+with:
+  min_sent_len: 2
+  max_sent_len: 64
+```
+```yaml
+!TransformerTorchEncoder
+with:
+  pooling_strategy: auto
+  pretrained_model_name_or_path: distilbert-base-cased
+  max_length: 96
+```
+This way a single document contains `N` different `chunks` that are later independently encoded by a downstream `encoder`. 
+This will allow `jina` to query the index with a `short` sentence as input, where similarity search can be applied to find the most 
+common chunks. This way the same document can be retrieved based on different parts of it.
+
+For instance:
+A text document containing 3 sentences can be decomposed in 3 chunks:
+
+`Someone is waiting at the bus stop. John looks surprised, his face seems familiar` ->
+[`Someone is waiting at the bus stop`, `John looks surprised`, `his face seems familiar`]
+
+This will allow the document to be retrieved by different `input` sentences that will match any of these 3 parts.
+For instance, these 3 different inputs could lead to the extraction of the same document by targetting 3 different chunks:
+
+    - A standing guy -> Someone is waiting at the bus stop.
+    - He is amazed` -> John looks surprised.
+    - a similar look -> his face seems familiar.
+
+- Indexers at different depth levels:
+In a configuration like the described under `Text document segmentation`, there is the need to have different levels of indexing.
+The system needs to keep the data related to the `chunks` as well as the information of the `original documents`. This 
+way, the actual search can be performed at the `chunk` level following the `CompoundIndexer` pattern. Then the `document` indexer 
+works as a final step to be able to extract the actual `documents` expected by the user.
+To implement this strategy, two common structures appear in `index` and `query`. In an `index` flow, these two indexers would work 
+in parallel. While the `chunk indexer` would get messages from an `encoder`, the `doc indexer` can get the documents even from 
+the `gateway`.
+
+```yaml
+!Flow
+pods:
+  encoder:
+    uses: BaseEncoder
+  chunk_indexer:
+    uses: CompoundIndexer
+  doc_indexer:
+    uses: BinaryPbIndexer
+    needs: gateway
+  join_all:
+    uses: _merge
+    needs: [doc_indexer, chunk_indexer]
+```
+
+However, at `query` time, `document` and `chunk` indexers would work sequentially. Normally the `document` would get the messages 
+from the `chunk` indexer with a `Chunk2DocRanker` in the middle. The `ranker` would rank the `chunks` by relevance and redcue the results
+to the `parent` ids, thus enabling the `doc indexer` to extract the original `document` binary information.
+
+```yaml
+!Flow
+  encoder:
+    uses: BaseEncoder
+  chunk_indexer:
+    uses: CompoundIndexer
+  ranker:
+    uses: Chunk2DocRanker
+  doc_indexer:
+    uses: BinaryPbIndexer
+```
+
+- Switch vector indexer at query time:
+A very useful feature provided by jina, is the ability to decide which kind of `vector index` to use when exposing the system
+to be queried. Almost all the advanced vector indexers that jina offers inherit from `BaseNumpyIndexer`. These classes only override
+the methods related to `querying` the index, but not the ones related to store vectors. This means, that they all store vectors in 
+the same format.
+jina takes advantage of this, and offers the flexibility to offer the same `vector` data in different `vector indexer` types.
+To implement this functionality there are two things to consider, one for `index` and one for `query`.
+
+At index time, a `NumpyIndexer` is used. It is important that the `Pod` containing this executor ensures `read_only: False`.
+It is important because this way, the same indexer can be reconstructed from binary form, which will contain information of the
+vectors (dimensions, ...) that are needed to have it work at `query` time.
+
+```yaml
+!NumpyIndexer
+with:
+  index_filename: 'vec.gz'
+metas:
+  name: wrapidx
+```
+
+At query time, this `NumpyIndexer` will be used as `ref_indexer` for any advanced indexer inheriting from `BaseNumpyIndexer` (see `AnnoyIndexer`, `FaissIndexer`, ...).
+
+```yaml
+!FaissIndexer
+with:
+  ref_indexer:
+    !NumpyIndexer
+    metas:
+      name: wrapidx
+    with:
+      index_filename: 'vec.gz'
+```
+
+In this case, this construction will let the `FaissIndexer` use the `vectors` stored by the indexer named `wrapidx`. 
