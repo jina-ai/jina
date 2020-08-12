@@ -1,34 +1,24 @@
 {
-  "files": [
-    "README.md"
-  ],
-  "imageSize": 50,
-  "commit": false,
-  "contributorsSortAlphabetically": true,
-  "contributors": [
-    {
-      "login": "hanxiao",
-      "name": "Han Xiao",
-      "avatar_url": "https://avatars2.githubusercontent.com/u/2041322?v=4",
-      "profile": "https://hanxiao.io",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "roccia",
-      "name": "Weizhen Yan",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/5943684?v=4",
-      "profile": "http://weizhen.rocks",
-      "contributions": [
-        "code"
-      ]
-    }
-  ],
-  "contributorsPerLine": 7,
   "projectName": "jina",
   "projectOwner": "jina-ai",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "Lingling",
+      "name": "Lingling_hou",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/720131?v=4",
+      "profile": "https://github.com/Lingling",
+      "contributions": [
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
 }

@@ -409,7 +409,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END --> 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -417,8 +417,7 @@ We welcome all kinds of contributions from the open-source community, individual
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://hanxiao.io"><img src="https://avatars2.githubusercontent.com/u/2041322?v=4" width="50px;" alt=""/><br /><sub><b>Han Xiao</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=hanxiao" title="Code">💻</a></td>
-    <td align="center"><a href="http://weizhen.rocks"><img src="https://avatars3.githubusercontent.com/u/5943684?v=4" width="50px;" alt=""/><br /><sub><b>Weizhen Yan</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=roccia" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Lingling"><img src="https://avatars2.githubusercontent.com/u/720131?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Lingling_hou</b></sub></a><br /><a href="https://github.com/jina-ai/jina/commits?author=Lingling" title="Documentation">📖</a></td>
   </tr>
 </table>
 
@@ -455,3 +454,16 @@ The meeting will also be live-streamed and later published to our [Youtube chann
 Copyright (c) 2020 Jina AI Limited. All rights reserved.
 
 Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
