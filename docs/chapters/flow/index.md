@@ -374,5 +374,43 @@ For instance, these 3 different inputs could lead to the extraction of the same 
     - a similar look -> his face seems familiar.
 
 - Indexers at different depth levels:
+In a configuration like the described under `Text document segmentation`, there is the need to have different levels of indexing.
+The system needs to keep the data related to the `chunks` as well as the information of the `original documents`. This 
+way, the actual search can be performed at the `chunk` level following the `CompoundIndexer` pattern. Then the `document` indexer 
+works as a final step to be able to extract the actual `documents` expected by the user.
+To implement this strategy, two common structures appear in `index` and `query`. In an `index` flow, these two indexers would work 
+in parallel. While the `chunk indexer` would get messages from an `encoder`, the `doc indexer` can get the documents even from 
+the `gateway`.
 
-- Reference Indexer
+```yaml
+!Flow
+pods:
+  encoder:
+    uses: BaseEncoder
+  chunk_indexer:
+    uses: CompoundIndexer
+  doc_indexer:
+    uses: BinaryPbIndexer
+    needs: gateway
+  join_all:
+    uses: _merge
+    needs: [doc_indexer, chunk_indexer]
+```
+
+However, at `query` time, `document` and `chunk` indexers would work sequentially. Normally the `document` would get the messages 
+from the `chunk` indexer with a `Chunk2DocRanker` in the middle. The `ranker` would rank the `chunks` by relevance and redcue the results
+to the `parent` ids, thus enabling the `doc indexer` to extract the original `document` binary information.
+
+```yaml
+!Flow
+  encoder:
+    uses: BaseEncoder
+  chunk_indexer:
+    uses: CompoundIndexer
+  ranker:
+    uses: Chunk2DocRanker
+  doc_indexer:
+    uses: BinaryPbIndexer
+```
+
+- Switch indexers at query time:
