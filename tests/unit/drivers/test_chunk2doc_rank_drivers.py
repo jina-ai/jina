@@ -133,8 +133,8 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
             self.assertEqual(match.score.ref_id, doc.id)
 
     def test_chunk2doc_ranker_driver_traverse_apply(self):
-        docs = [create_chunk_matches_to_score() for _ in range(1)]
-        driver = SimpleChunk2DocRankDriver(traverse_on='chunks', depth_range=[0, 1])
+        docs = [create_chunk_matches_to_score(), ]
+        driver = SimpleChunk2DocRankDriver()
         executor = MinRanker()
         driver.attach(executor=executor, pea=None)
         driver._traverse_apply(docs)
