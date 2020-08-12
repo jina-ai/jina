@@ -58,13 +58,15 @@ def create_chunk_matches_to_score():
     #    |- matches: (id: 22, parent_id: 2, score.value: 5, level_depth=1)
     doc = jina_pb2.Document()
     doc.id = 100
+    doc.level_depth = 0
     num_matches = 2
     for parent_id in range(1, 3):
         chunk = doc.chunks.add()
         chunk.id = parent_id * 10
+        chunk.level_depth = doc.level_depth + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
             match = chunk.matches.add()
-            match.level_depth = 1
+            match.level_depth = chunk.level_depth
             match.parent_id = parent_id
             match.score.value = score_value
             match.score.ref_id = chunk.id
