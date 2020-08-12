@@ -413,4 +413,37 @@ to the `parent` ids, thus enabling the `doc indexer` to extract the original `do
     uses: BinaryPbIndexer
 ```
 
-- Switch indexers at query time:
+- Switch vector indexer at query time:
+A very useful feature provided by jina, is the ability to decide which kind of `vector index` to use when exposing the system
+to be queried. Almost all the advanced vector indexers that jina offers inherit from `BaseNumpyIndexer`. These classes only override
+the methods related to `querying` the index, but not the ones related to store vectors. This means, that they all store vectors in 
+the same format.
+jina takes advantage of this, and offers the flexibility to offer the same `vector` data in different `vector indexer` types.
+To implement this functionality there are two things to consider, one for `index` and one for `query`.
+
+At index time, a `NumpyIndexer` is used. It is important that the `Pod` containing this executor ensures `read_only: False`.
+It is important because this way, the same indexer can be reconstructed from binary form, which will contain information of the
+vectors (dimensions, ...) that are needed to have it work at `query` time.
+
+```yaml
+!NumpyIndexer
+with:
+  index_filename: 'vec.gz'
+metas:
+  name: wrapidx
+```
+
+At query time, this `NumpyIndexer` will be used as `ref_indexer` for any advanced indexer inheriting from `BaseNumpyIndexer` (see `AnnoyIndexer`, `FaissIndexer`, ...).
+
+```yaml
+!FaissIndexer
+with:
+  ref_indexer:
+    !NumpyIndexer
+    metas:
+      name: wrapidx
+    with:
+      index_filename: 'vec.gz'
+```
+
+In this case, this construction will let the `FaissIndexer` use the `vectors` stored by the indexer named `wrapidx`. 
