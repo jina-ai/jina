@@ -89,16 +89,22 @@ class CustomImageTorchEncoder(ImageTorchEncoder):
     https://pytorch.org/docs/stable/torchvision/models.html
     """
 
-    def __init__(self, layer_name: str, *args, **kwargs):
+    def __init__(self, model_path: str, layer_name: str, *args, **kwargs):
         """
         :param model_path: the path where the model is stored.
         :layer: Name of the layer from where to extract the feature map.
         """
         super().__init__(*args, **kwargs)
+        self.model_path = model_path
         self.layer_name = layer_name
 
     def post_init(self):
-        super().post_init()
+        import torch
+        if self.pool_strategy is not None:
+            self.pool_fn = getattr(np, self.pool_strategy)
+        self.model = torch.load(self.model_path)
+        self.model.eval()
+        self.to_device(self.model)
         self.layer = getattr(self.model, self.layer_name)
 
     def _get_features(self, data):
