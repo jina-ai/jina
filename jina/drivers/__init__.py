@@ -183,7 +183,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]
         if self._depth_end <= self._depth_start:
-            self.logger.warning(f'invalid value for traversing, depth_range = {depth_range}')
+            self.logger.error(f'invalid value for traversing, depth_range = {depth_range}')
         if isinstance(traverse_on, str):
             traverse_on = (traverse_on,)
         self.traverse_fields = set(traverse_on)
