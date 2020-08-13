@@ -128,7 +128,7 @@ class QueryLangTestCase(JinaTestCase):
 
         f = (Flow().add(uses='DummyModeIdSegmenter')
             .add(
-            uses='- !FilterQL | {lookups: {modality: mode2}, traverse_on: [chunks], depth_range: [1, 1]}'))
+            uses='- !FilterQL | {lookups: {modality: mode2}, traverse_on: [chunks], depth_range: [1, 2]}'))
 
         with f:
             f.index(random_docs_with_chunks(), output_fn=validate, callback_on_body=True)
