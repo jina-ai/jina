@@ -31,15 +31,6 @@ try:
 except FileNotFoundError:
     _long_description = ''
 
-base_dep = [
-    'numpy',
-    'pyzmq>=17.1.0',
-    'protobuf',
-    'grpcio',
-    'ruamel.yaml>=0.15.89',
-    'tornado>=5.1.0'
-]
-
 
 def get_extra_requires(path, add_all=True):
     import re
@@ -119,6 +110,8 @@ class PostInstallCommand(install):
         register_ac()
 
 
+all_deps = get_extra_requires('extra-requirements.txt')
+
 setup(
     name=pkg_name,
     packages=find_packages(),
@@ -136,8 +129,8 @@ setup(
     setup_requires=[
         'setuptools>=18.0',
     ],
-    install_requires=base_dep,
-    extras_require=get_extra_requires('extra-requirements.txt'),
+    install_requires=list(all_deps['core'].union(all_deps['perf'])),
+    extras_require=all_deps,
     entry_points={
         'console_scripts': ['jina=jina.main:main'],
     },

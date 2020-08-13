@@ -6,7 +6,7 @@
 #
 # AVAILABLE TAGS
 #
-# nlp, cv, audio, numeric, index, http, sse, framework, optimization, network
+# nlp, cv, audio, numeric, index, http, sse, framework, perf, network
 #
 # REMARKS ON TAGS
 # 1. Try to reuse the existing tags if possible.
@@ -35,11 +35,17 @@ annoy>=1.9.5:               index
 sklearn:                    numeric
 plyvel:                     index
 jieba:                      nlp
-lz4:                        devel, optimization, network
+lz4:                        devel, perf, network
 gevent:                     http, devel
 python-magic:               http, devel
 pymilvus:                   index
 deepsegment:                nlp
 ngt:                        index, py37
 librosa>=0.7.2:             audio
-uvloop:                     devel, optimization
+uvloop:                     devel, perf
+numpy:                      core
+pyzmq>=17.1.0:              core
+protobuf:                   core
+grpcio:                     core
+ruamel.yaml>=0.15.89:       core
+tornado>=5.1.0:             core
