@@ -26,8 +26,8 @@ def rewrite_projetName(repo):
     json.dump(contributorsrc, outputFile, indent=2)
     outputFile.close()
 
-# get all unqiue & shuffle jina-ai contributors
-def allUniqueContributors(repos_list):
+# get all jina-ai contributors
+def allContributors(repos_list):
     allContributors = {}
     for repo in repos_list:
         rewrite_projetName(repo)
@@ -44,7 +44,7 @@ def allUniqueContributors(repos_list):
     return allContributors
 
 # unqiue & shuffle jina-ai contributors
-contributors_dict = allUniqueContributors(jina_repos)
+contributors_dict = allContributors(jina_repos)
 contributors_keys = list(contributors_dict.keys())
 print(contributors_dict)
 random.shuffle(contributors_keys)
