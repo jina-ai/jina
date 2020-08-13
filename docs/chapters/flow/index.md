@@ -30,7 +30,7 @@ from jina.flow import Flow
 f = Flow()
 ```
 
-`Flow()` accepts some arguments, see `jina flow --help` or [our documentation](https://docs.jina.ai) for details. For example, `Flow(log_server=True)` will send logs to the [dashboard](https://github.com/jina-ai/dashboard). 
+`Flow()` accepts some arguments, see `jina flow --help` or [our documentation](https://docs.jina.ai) for details. For example, `Flow(log_server=True)` will enable sending logs to the [dashboard](https://github.com/jina-ai/dashboard). 
 
 When the arguments given to `Flow()` cannot be parsed, they are propagated to all the Flow's `Pods` for parsing (if they are accepted, see `jina pod --help` for the list of arguments). For example:
 
@@ -309,7 +309,7 @@ Jina is a really flexible AI-powered neural search framework and is designed to 
 
 ## CompoundIndexer (Vector + KV Indexers)
 
-To develop neural search applications, it is useful to use a `CompoundIndexer` in the same `Pod` for both `index` and `query` Flows. The following `yaml` file shows an example of this pattern:
+For neural search applications, it helps to use a `CompoundIndexer` in the same Pod for both the index and query Flows. The following YAML file shows an example of this pattern:
 
 ```yaml
 !CompoundIndexer
@@ -329,11 +329,20 @@ metas:
   name: complete indexer
 ```
 
-This acts as a single indexer, letting you seamlessly query the index with the embedding vector from any upstream encoder. It returns the binary information in the key-value index in the Pod's response message. This lets the `VectorIndexer` be responsible for getting the most relevant Documents by finding similarities in the embedding space while targeting the key-value database to extract meaningful data and fields from the relevant Documents.
+The above YAML creates a Flow that:
+
+* Acts as a single indexer
+* Lets you seamlessly query the index with the embedding vector from any upstream encoder
+* Returns the binary information in the key-value index in the Pod's response message.
+ 
+The `VectorIndexer`:
+
+* Retrieves the most relevant Documents by finding similarities in the embedding space
+* Uses the key-value index to extract meaningful data and fields from those Documents
 
 ## Text Document Segmentation
 
-A common search pattern is storing long text documents in an index to retrieve them later using short sentences. A single embedding vector per long text document is not the proper way to do this: It makes it hard to extract a single semantically-meaningful vector from a long document. Jina solves this by introducing the concept of [Chunks](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#document--chunk). The common scenario is to have a `crafter` segmenting the document into smaller parts (typically short sentences) followed by an NLP-based encoder. 
+A common search pattern is storing long text documents in an index to retrieve them later using short sentences. A single embedding vector per long text document is not the proper way to do this: It makes it hard to extract a single semantically-meaningful vector from a long document. Jina solves this by introducing [Chunks](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#document--chunk). The common scenario is to have a `crafter` segmenting the document into smaller parts (typically short sentences) followed by an NLP-based encoder. 
 
 ```yaml
 !Sentencizer
@@ -356,7 +365,7 @@ For instance, a text document containing 3 sentences can be decomposed into 3 Ch
 `Someone is waiting at the bus stop. John looks surprised, his face seems familiar` ->
 [`Someone is waiting at the bus stop`, `John looks surprised`, `his face seems familiar`]
 
-This allows the Document to be retrieved from different `input` sentences that match any of these three parts. For instance, these 3 different inputs could lead to the extraction of the same document by targeting 3 different Chunks:
+This lets us retrieve the Document from different `input` sentences that match any of these 3 parts. For instance, these 3 different inputs could lead to the extraction of the same document by targeting 3 different Chunks:
 
 - A standing guy -> Someone is waiting at the bus stop.
 - He is amazed` -> John looks surprised.
@@ -364,7 +373,15 @@ This allows the Document to be retrieved from different `input` sentences that m
 
 ## Indexers at Different Depth Levels
 
-In a configuration like the one for *Text Document Segmentation*, we need different levels of indexing. The system needs to keep the data related to the Chunks as well as the information of the original documents. This way, the actual search can be performed at the Chunk level following the `CompoundIndexer` pattern. Then the Document indexer works as a final step to be able to extract the actual Documents expected by the user. To implement this strategy, two common structures appear in `index` and `query`. In an `index` flow, these two indexers work in parallel. While the `chunk indexer` gets messages from an `encoder`, the `doc indexer` can get the documents even from the `gateway`.
+In a configuration like the one for *Text Document Segmentation*, we need different levels of indexing. The system needs to keep the data related to the Chunks as well as the information of the original documents. This way: 
+
+1. The actual search is performed at the Chunk level following the `CompoundIndexer` pattern.
+2. Then the Document indexer works as a final step to extract the actual Documents expected by the user.
+ 
+To implement this, two common structures appear in `index` and `query`. In an `index` flow, these two indexers work in parallel:
+
+* The `chunk indexer` gets messages from an `encoder`
+* The `doc indexer` can get the documents even from the `gateway`.
 
 ```yaml
 !Flow
@@ -397,9 +414,11 @@ However, at query time the Document and Chunk indexers work sequentially. Normal
 
 ## Switch Vector Indexer at Query Time
 
-Jina lets you decide which kind of vector index to use when exposing the system to be queried. Almost all of Jina's advanced vector indexers inherit from `BaseNumpyIndexer`. These classes only override methods related to querying the index, but not the ones related to storing vectors. This means they all store vectors in the same format. Jina takes advantage of this, and has the flexibility to offer the same vector data in different vector indexer types. To implement this functionality there are two things to consider, one for indexing and one for querying.
+Jina lets you decide which kind of vector index to use when exposing the system to be queried. Almost all of Jina's advanced vector indexers inherit from `BaseNumpyIndexer`. These classes only override methods related to querying the index, but not the ones related to storing vectors, meaning they all store vectors in the same format. Jina takes advantage of this, and has the flexibility to offer the same vector data in different vector indexer types. To implement this functionality there are two things to consider, one for indexing and one for querying.
 
-At index time, a `NumpyIndexer` is used. It is important that the `Pod` containing this Executor ensures `read_only: False`. This way, the same indexer can be reconstructed from binary form, which contains information of the vectors (dimensions, ...) that are needed to have it work at query time.
+### Indexing
+
+At index time, we use `NumpyIndexer`. It is important that the `Pod` containing this Executor ensures `read_only: False`. This way, the same indexer can be reconstructed from binary form, which contains information of the vectors (dimensions, ...) that are needed to have it work at query time.
 
 ```yaml
 !NumpyIndexer
@@ -409,7 +428,9 @@ metas:
   name: wrapidx
 ```
 
-At query time, this `NumpyIndexer` is used as `ref_indexer` for any advanced indexer inheriting from `BaseNumpyIndexer` (see `AnnoyIndexer`, `FaissIndexer`, ...).
+### Querying
+
+At query time, we use `NumpyIndexer` as `ref_indexer` for any advanced indexer inheriting from `BaseNumpyIndexer` (see `AnnoyIndexer`, `FaissIndexer`, ...).
 
 ```yaml
 !FaissIndexer
