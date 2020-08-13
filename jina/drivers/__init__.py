@@ -245,10 +245,10 @@ class BaseRecursiveDriver(BaseDriver):
 
                 for d in _docs:
                     # check if apply on the current level
-                    if self.is_apply and d.level_depth >= self._depth_start:
+                    if self.is_apply and self._depth_start <= d.level_depth < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
                     # check if apply to the next level
-                    if (d.level_depth + 1) < self._depth_end:
+                    if d.level_depth < self._depth_end:
                         pre_traverse(getattr(d, traverse_on), traverse_on, d)
 
         if self.recursion_order == 'post':
