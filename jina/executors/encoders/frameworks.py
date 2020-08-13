@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import os
 
 from . import BaseEncoder
-from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice
+from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice, MindsporeDevice
 from ...helper import is_url
 
 
@@ -64,3 +64,19 @@ class BaseTorchEncoder(TorchDevice, BaseEncoder):
 
 class BasePaddleEncoder(PaddleDevice, BaseEncoder):
     pass
+
+
+class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
+    def __init__(self, model_name: str, model_path: str, channel_axis: int = -1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_name = model_name
+        self.model_path = model_path
+        self.channel_axis = channel_axis
+
+    def post_init(self):
+        from mindspore.train.serialization import load_checkpoint, load_param_into_net
+        super().post_init()
+        self.to_device()
+        self.model = lambda x: globals()[self.model_name]
+        param_dict = load_checkpoint(ckpt_file_name=self.model_path)
+        load_param_into_net(self.model, param_dict)
