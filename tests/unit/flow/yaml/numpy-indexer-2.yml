@@ -31,6 +31,7 @@ requests:
             - text
       - !KVIndexDriver
         with:
+          depth_range: [1, 2]
           executor: kvidx2
     ControlRequest:
       - !ControlReqDriver {}
