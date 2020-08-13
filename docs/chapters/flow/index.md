@@ -1,8 +1,8 @@
 # Using Flow API to Compose Your Jina Workflow
 
-In a search system, a task such as indexing often involves multiple steps: preprocessing, encoding, storing, etc. In Jina's architecture, each step is implemented by an Executor and wrapped by a Pod. This microservice design makes the whole pipeline flexible and scalable. Accomplishing a task is then orchestrating all these Pods work together, either sequentially or in parallel; locally or remotely. 
+In search systems, tasks such as indexing often involve multiple steps: preprocessing, encoding, storing, etc. In Jina's architecture, each step is implemented by an Executor and wrapped by a Pod. This microservice design makes the whole pipeline flexible and scalable. Accomplishing a task is then orchestrating all these Pods to work together, either sequentially or in parallel; locally or remotely. 
 
-Flow API is a context manager for Pods. Each `Flow` object corresponds to a real-world task. It helps the user to manage the states and contexts of all Pods required in that task. Flow API translates a workflow defined in Python code, YAML spec and interactive graph to a runtime backed by multi-thread/process, Kubernetes, Docker Swarm, etc. Users don't need to worry about where the Pod is running and how the Pods are connected.
+The Flow API is a context manager for Pods. Each `Flow` object corresponds to a real-world task. It helps the user to manage the states and contexts of all Pods required in that task. The Flow API translates a workflow defined in Python code, YAML file, or interactive graph to a runtime backed by multi-thread/process, Kubernetes, Docker Swarm, etc. Users don't need to worry about where the Pod is running or how the Pods are connected.
 
 ![Flow is a context manager](flow-api-doc.png)
 
@@ -10,7 +10,7 @@ Flow API is a context manager for Pods. Each `Flow` object corresponds to a real
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Using Flow API in Python](#using-flow-api-in-python)
+- [Use Flow API in Python](#use-flow-api-in-python)
 - [Use Flow API in YAML](#use-flow-api-in-yaml)
 - [Design a Flow with Dashboard](#design-a-flow-with-dashboard)
 
@@ -18,7 +18,7 @@ Flow API is a context manager for Pods. Each `Flow` object corresponds to a real
 
 
 
-## Using Flow API in Python
+## Use Flow API in Python
 
 ### Create a Flow 
 
@@ -30,19 +30,19 @@ from jina.flow import Flow
 f = Flow()
 ```
 
-`Flow()` accepts some arguments, see `jina flow --help` or [our documentation](https://docs.jina.ai) for details. For example, `Flow(log_server=True)` will enable the logs emission to the [dashboard](https://github.com/jina-ai/dashboard). 
+`Flow()` accepts some arguments, see `jina flow --help` or [our documentation](https://docs.jina.ai) for details. For example, `Flow(log_server=True)` will send logs to the [dashboard](https://github.com/jina-ai/dashboard). 
 
-When the arguments given to `Flow()` cannot be parsed, they are propagated to all their `Pods` for parsing (if they are accepted, see `jina pod --help` for the list of arguments). For example, 
+When the arguments given to `Flow()` cannot be parsed, they are propagated to all the Flow's `Pods` for parsing (if they are accepted, see `jina pod --help` for the list of arguments). For example:
 
 ```python
 f = Flow(read_only=True)
 ```
 
-will override `read_only` attribute of all Pods in `f` to `True`.
+will set the `read_only` attribute of all Pods in `f` to `True`.
 
 ### Add Pod into the Flow
 
-To add a Pod to Flow, simply call `.add()`. For example,
+To add a Pod to the Flow, simply call `.add()`:
 
 ```python
 f = (Flow().add(name='p1', uses='mypod1.yml')
@@ -50,14 +50,15 @@ f = (Flow().add(name='p1', uses='mypod1.yml')
            .add(name='p3', uses='mypod3.yml', read_only=True))
 ``` 
 
-This will create a sequential workflow 
+This will create a sequential workflow:
+
 ```
 
 gateway -> p1 -> p2 -> p3 -> gateway
 
 ``` 
 
-The input of a Pod is the output of the last Pod in sequential order. The gateway is the entry point of the whole Jina network. The `gateway` Pod will be automatically added to every `Flow`, of which the output is the first Pod and the input is the last Pod defined in the Flow.
+The input of each Pod is the output of the last Pod in sequential order. The gateway is the entrypoint of the whole Jina network. The `gateway` Pod is automatically added to every `Flow`, of which the output is the first Pod and the input is the last Pod defined in the Flow.
 
 All accepted arguments follow the command line interface of `Pod`, which can be found in `jina pod --help`. Just remember to replace the dash `-` to underscore `_` in the name of the argument when referring to it in Python.
 
@@ -68,11 +69,11 @@ Besides the file path, in Flow API `uses` can accept other types:
 | YAML file path | `crafter/my.yml` | |
 | Inline YAML | `'!DataURICrafter\nwith: {mimetype: png}'` | don't forget `!` in the beginning |
 | The name of an executor [listed here](../all_exec.html) | `TransformerTorchEncoder` | only the executors that have full default values can be directly used |
-| Built-in simple executors [listed here](../simple_exec.html) | `_clear` | it always starts with `_` |
+| Built-in simple executors [listed here](../simple_exec.html) | `_clear` | Always starts with `_` |
  
 #### Add a Containerized Pod into the Flow
 
-To run a Pod in a Docker container, simply specify the `image` argument.
+To run a Pod in a Docker container, simply specify the `image` argument:
 
 ```python
 f = (Flow().add(name='p1')
@@ -80,11 +81,11 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ``` 
 
-This will run `p2` in a Docker container equipped with image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using container Pod can be found in [our documentation](https://docs.jina.ai). 
+This will run `p2` in a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using containerized Pod can be found in [our documentation](https://docs.jina.ai). 
 
 #### Add a Remote Pod into the Flow
 
-To run a Pod remotely, simply specify the `host` and `port_expose` arguments. For example,
+To run a Pod remotely, simply specify the `host` and `port_expose` arguments. For example:
 
 ```python
 f = (Flow().add(name='p1')
@@ -94,7 +95,7 @@ f = (Flow().add(name='p1')
 
 This will start `p2` remotely on `192.168.0.100`, whereas `p1` and `p3` run locally.
 
-To use remote Pod feature, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pod can be found in [our documentation](https://docs.jina.ai).  
+To use remote Pods, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pods can be found in [our documentation](https://docs.jina.ai).  
 
 
 #### Add a Remote Containerized Pod into the Flow
@@ -109,13 +110,13 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ```
 
-This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pod can be found in [our documentation](https://docs.jina.ai). 
+This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pods can be found in [our documentation](https://docs.jina.ai). 
 
 
 
 ### Parallelize the Steps
 
-By default, if you keep `.add()` to a `Flow`, it will create a long chain of sequential workflow. You can parallelize some of the steps by using `needs` argument. For example,
+By default, if you keep adding `.add()` to a `Flow`, it will create a long chain of sequential workflow. You can parallelize some of the steps by using `needs` argument. For example,
 
 ```python
 f = (Flow().add(name='p1')
@@ -130,10 +131,9 @@ gateway -> p1 -> p2
               -> p3 -> gateway 
 ```
 
-### Wait Parallel Steps to Finish
+### Waiting for Parallel Steps to Finish
 
-
-In the last example, the message is returned to the gateway regardless the status `p2`. To wait for multiple parallel steps to finish before continue, you can do:
+In the prior example, the message is returned to the gateway regardless of the status of `p2`. To wait for multiple parallel steps to finish before continuing, you can do:
 
 ```python
 f = (Flow().add(name='p1')
@@ -167,9 +167,9 @@ with f:
 
 Though you can manually call the `start()` method to run the flow, you also need to call the corresponding `close()` method to release the resource. Using `with` saves you the trouble, as the resource is automatically released when running out of the scope. 
 
-#### Test the Connectivity with Dry Run
+#### Test Connectivity with Dry Run
 
-You can test the whole workflow with `dry_run()`. For example,
+You can test the whole workflow with `dry_run()`. For example:
 
 ```python
 
@@ -180,9 +180,9 @@ with f:
 
 This will send a `ControRequest` to all pods following the topology you defined. You can use it to test the connectivity of all pods. 
 
-### Iterate over the Pods in the Flow
+### Iterate over Pods in the Flow
 
-You can iterate the pods in a Flow like in a list.
+You can iterate the Pods in a Flow like you would a list:
 
 ```python
 f = (Flow().add(...)
@@ -192,11 +192,11 @@ for p in f.build():
     print(f'{p.name} in: {str(p.head_args.socket_in)} out: {str(p.head_args.socket_out)}')
 ```
 
-Note `f.build()` will build the underlying network context but not running the pods. It is very useful for debugging.
+Note `f.build()` will build the underlying network context but not run the Pods. It is very useful for debugging.
 
 ### Feed Data to the Flow
 
-You can use `.index()`, `.search()` to feed index data and search query to a flow:
+You can use `.index()`, `.search()` to feed index data and search query to a Flow:
 
 ```python
 with f:
@@ -209,7 +209,7 @@ with f:
 ```
 
 - `input_fn` is an `Iterator[bytes]`, each of which corresponds to the representation of a Document with bytes.
-- `output_fn` is the callback function after each request, take a `Request` protobuf as the only input.
+- `output_fn` is the callback function after each request, and takes a `Request` protobuf as its only input.
 
 A simple `input_fn` is defined as follows:
 
@@ -225,9 +225,9 @@ input_fn = (b's' for _ in range(10))
 
 > Please note that the current Flow API does not support using `index()` and `search()` together in the same `with` scope. This is because the workflow of `index()` and `search()` are usually different and you cannot use one workflow for both tasks.
 
-#### Feed Data to the Flow using Other Client
+#### Feed Data to the Flow from Other Clients
 
-If you don't use Python as a client, or your client and flow are in different instances. You can hold a flow in running state and use a client in another language to connect to it. Simply:
+If you don't use Python as a client, or your client and Flow are in different instances, you can keep a Flow running and use a client in another language to connect to it:
 
 ```python
 import threading
@@ -236,7 +236,7 @@ with f:
     f.block()
 ```
 
-Please checkout our [hello world in client-server architecture](https://github.com/jina-ai/examples/tree/master/helloworld-in-cs) for a complete example.
+Please check out our [hello world in client-server architecture](https://github.com/jina-ai/examples/tree/master/helloworld-in-cs) for a complete example.
 
 **WARNING**: don't use a while loop to do the waiting, it is extremely inefficient:
 
@@ -248,7 +248,7 @@ with f:
 
 ## Use Flow API in YAML
 
-You can also write a Flow in YAML. For example,
+You can also write a Flow in YAML:
 
 ```yaml
 !Flow
@@ -276,7 +276,7 @@ pods:
     read_only: true
 ```
 
-You can use enviroment variables via `$` in YAML. More information on the Flow YAML Schema can be found in [our documentation](https://docs.jina.ai). 
+You can use enviroment variables with `$` in YAML. More information on the Flow YAML Schema can be found in [our documentation](https://docs.jina.ai). 
 
 ### Load a Flow from YAML
 
@@ -287,7 +287,7 @@ f = Flow.load_config('myflow.yml')
 
 ### Start a Flow Directly from the CLI
 
-The following command will start a flow from the console and hold it for client to connect.
+The following command will start a Flow from the console and hold it for a client to connect.
 
 ```bash
 jina flow --yaml-path myflow.yml
@@ -296,23 +296,20 @@ jina flow --yaml-path myflow.yml
 
 ## Design a Flow with Dashboard
 
-With Jina Dashboard, you can interactively drag-n-drop Pod, set its attribute and export to a Flow YAML file.  
+With Jina Dashboard, you can interactively drag and drop Pods, set their attribute and export to a Flow YAML file.  
 
 ![Dashboard](flow-demo.gif)
 
 
 More information on the dashboard can be found [here](https://github.com/jina-ai/dashboard).
 
-# Common design patterns
+# Common Design Patterns
 
-jina is a really flexible AI-powered neural search framework. It is designed to enable any pattern that can be framed as  
-a neural search problem.
-However, there are basic common patterns that show up when developing search solutions with jina and here is a recopilation of some of them.
+Jina is a really flexible AI-powered neural search framework and is designed to enable any pattern that can be framed as a neural search problem. However, there are basic common patterns that show up when developing search solutions with Jina:
 
-- CompoundIndexer (Vector + KV Indexers):
+## CompoundIndexer (Vector + KV Indexers)
 
-To develop neural search applications, it is useful to use a `CompoundIndexer` in the same `Pod` for both `index` and `query` Flows.
-The following `yaml` file shows an example of this pattern.
+To develop neural search applications, it is useful to use a `CompoundIndexer` in the same `Pod` for both `index` and `query` Flows. The following `yaml` file shows an example of this pattern:
 
 ```yaml
 !CompoundIndexer
@@ -332,16 +329,11 @@ metas:
   name: complete indexer
 ```
 
-This type of construction will act as a single `indexer` and will allow to seamlessly `query` this index with the `embedding` vector coming
-from any upstream `encoder` and obtain in the response message of the pod the corresponding `binary` information stored in
-the key-value index. This lets the `VectorIndexer` be responsible to obtain the most relevant documents by finding similarities
-in the `embedding` space while targeting the `key-value` database to extract the meaningful data and fields from those relevant documents.
+This acts as a single indexer, letting you seamlessly query the index with the embedding vector from any upstream encoder. It returns the binary information in the key-value index in the Pod's response message. This lets the `VectorIndexer` be responsible for getting the most relevant Documents by finding similarities in the embedding space while targeting the key-value database to extract meaningful data and fields from the relevant Documents.
 
-- Text document segmentation:
-A common search pattern is to store `long` text documents in an index for them to be later retrieved by using some `short`
-sentences. Having a single `embedding` vector for a single `long` text document is not the proper way to go about this.
-It is hard to extract a single `semantically meaningful` vector from a long document. `jina` solves this issue introducing 
-the concept of `chunks`. The common scenario is to have a `crafter` segmenting the `document` in `smaller` parts (tipically short sentences) followed by some `nlp` based encoder.
+## Text Document Segmentation
+
+A common search pattern is storing long text documents in an index to retrieve them later using short sentences. A single embedding vector per long text document is not the proper way to do this: It makes it hard to extract a single semantically-meaningful vector from a long document. Jina solves this by introducing the concept of [Chunks](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#document--chunk). The common scenario is to have a `crafter` segmenting the document into smaller parts (typically short sentences) followed by an NLP-based encoder. 
 
 ```yaml
 !Sentencizer
@@ -356,31 +348,23 @@ with:
   pretrained_model_name_or_path: distilbert-base-cased
   max_length: 96
 ```
-This way a single document contains `N` different `chunks` that are later independently encoded by a downstream `encoder`. 
-This will allow `jina` to query the index with a `short` sentence as input, where similarity search can be applied to find the most 
-common chunks. This way the same document can be retrieved based on different parts of it.
 
-For instance:
-A text document containing 3 sentences can be decomposed in 3 chunks:
+This way a single document contains `N` different Chunks that are later independently encoded by a downstream encoder. This lets Jina query the index using a short sentence as input, where similarity search can be applied to find the most common Chunks. This way the same Document can be retrieved based on searching different parts of it.
+
+For instance, a text document containing 3 sentences can be decomposed into 3 Chunks:
 
 `Someone is waiting at the bus stop. John looks surprised, his face seems familiar` ->
 [`Someone is waiting at the bus stop`, `John looks surprised`, `his face seems familiar`]
 
-This will allow the document to be retrieved by different `input` sentences that will match any of these 3 parts.
-For instance, these 3 different inputs could lead to the extraction of the same document by targetting 3 different chunks:
+This allows the Document to be retrieved from different `input` sentences that match any of these three parts. For instance, these 3 different inputs could lead to the extraction of the same document by targeting 3 different Chunks:
 
-    - A standing guy -> Someone is waiting at the bus stop.
-    - He is amazed` -> John looks surprised.
-    - a similar look -> his face seems familiar.
+- A standing guy -> Someone is waiting at the bus stop.
+- He is amazed` -> John looks surprised.
+- a similar look -> his face seems familiar.
 
-- Indexers at different depth levels:
-In a configuration like the described under `Text document segmentation`, there is the need to have different levels of indexing.
-The system needs to keep the data related to the `chunks` as well as the information of the `original documents`. This 
-way, the actual search can be performed at the `chunk` level following the `CompoundIndexer` pattern. Then the `document` indexer 
-works as a final step to be able to extract the actual `documents` expected by the user.
-To implement this strategy, two common structures appear in `index` and `query`. In an `index` flow, these two indexers would work 
-in parallel. While the `chunk indexer` would get messages from an `encoder`, the `doc indexer` can get the documents even from 
-the `gateway`.
+## Indexers at Different Depth Levels
+
+In a configuration like the one for *Text Document Segmentation*, we need different levels of indexing. The system needs to keep the data related to the Chunks as well as the information of the original documents. This way, the actual search can be performed at the Chunk level following the `CompoundIndexer` pattern. Then the Document indexer works as a final step to be able to extract the actual Documents expected by the user. To implement this strategy, two common structures appear in `index` and `query`. In an `index` flow, these two indexers work in parallel. While the `chunk indexer` gets messages from an `encoder`, the `doc indexer` can get the documents even from the `gateway`.
 
 ```yaml
 !Flow
@@ -397,9 +381,7 @@ pods:
     needs: [doc_indexer, chunk_indexer]
 ```
 
-However, at `query` time, `document` and `chunk` indexers would work sequentially. Normally the `document` would get the messages 
-from the `chunk` indexer with a `Chunk2DocRanker` in the middle. The `ranker` would rank the `chunks` by relevance and redcue the results
-to the `parent` ids, thus enabling the `doc indexer` to extract the original `document` binary information.
+However, at query time the Document and Chunk indexers work sequentially. Normally the Document would get messages from the Chunk indexer with a `Chunk2DocRanker` Pod in the middle of the Flow. The `ranker` would rank the Chunks by relevance and reduce the results to the parent IDs, enabling the `doc indexer` to extract the original Document's binary information.
 
 ```yaml
 !Flow
@@ -413,17 +395,11 @@ to the `parent` ids, thus enabling the `doc indexer` to extract the original `do
     uses: BinaryPbIndexer
 ```
 
-- Switch vector indexer at query time:
-A very useful feature provided by jina, is the ability to decide which kind of `vector index` to use when exposing the system
-to be queried. Almost all the advanced vector indexers that jina offers inherit from `BaseNumpyIndexer`. These classes only override
-the methods related to `querying` the index, but not the ones related to store vectors. This means, that they all store vectors in 
-the same format.
-jina takes advantage of this, and offers the flexibility to offer the same `vector` data in different `vector indexer` types.
-To implement this functionality there are two things to consider, one for `index` and one for `query`.
+## Switch Vector Indexer at Query Time
 
-At index time, a `NumpyIndexer` is used. It is important that the `Pod` containing this executor ensures `read_only: False`.
-It is important because this way, the same indexer can be reconstructed from binary form, which will contain information of the
-vectors (dimensions, ...) that are needed to have it work at `query` time.
+Jina lets you decide which kind of vector index to use when exposing the system to be queried. Almost all of Jina's advanced vector indexers inherit from `BaseNumpyIndexer`. These classes only override methods related to querying the index, but not the ones related to storing vectors. This means they all store vectors in the same format. Jina takes advantage of this, and has the flexibility to offer the same vector data in different vector indexer types. To implement this functionality there are two things to consider, one for indexing and one for querying.
+
+At index time, a `NumpyIndexer` is used. It is important that the `Pod` containing this Executor ensures `read_only: False`. This way, the same indexer can be reconstructed from binary form, which contains information of the vectors (dimensions, ...) that are needed to have it work at query time.
 
 ```yaml
 !NumpyIndexer
@@ -433,7 +409,7 @@ metas:
   name: wrapidx
 ```
 
-At query time, this `NumpyIndexer` will be used as `ref_indexer` for any advanced indexer inheriting from `BaseNumpyIndexer` (see `AnnoyIndexer`, `FaissIndexer`, ...).
+At query time, this `NumpyIndexer` is used as `ref_indexer` for any advanced indexer inheriting from `BaseNumpyIndexer` (see `AnnoyIndexer`, `FaissIndexer`, ...).
 
 ```yaml
 !FaissIndexer
@@ -446,4 +422,4 @@ with:
       index_filename: 'vec.gz'
 ```
 
-In this case, this construction will let the `FaissIndexer` use the `vectors` stored by the indexer named `wrapidx`. 
+In this case, this construction lets the `FaissIndexer` use the `vectors` stored by the indexer named `wrapidx`. 
