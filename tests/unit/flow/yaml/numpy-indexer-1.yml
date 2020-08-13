@@ -19,7 +19,7 @@ requests:
     IndexRequest:
       - !VectorIndexDriver
         with:
-          depth_range: [1, 1]
+          depth_range: [1, 2]
           traverse_on: [chunks]
           executor: vecidx1
       - !ExcludeQL
