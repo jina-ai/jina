@@ -57,6 +57,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -3507,4 +3508,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```9fd6685a```](https://github.com/jina-ai/jina/commit/9fd6685a6635f613faf77caf946b8b6e055f225e)] __-__ __version__: the next version will be 0.4.3 (*Jina Dev Bot*)
  - [[```49de8711```](https://github.com/jina-ai/jina/commit/49de87113b665341c588329f9c54ba2f379b4ebd)] __-__ __version__: the next version will be 0.3.1 (*Jina Dev Bot*)
  - [[```4ceb5fde```](https://github.com/jina-ai/jina/commit/4ceb5fde70d3dcd87af8784a3a3a690b5c6ad69e)] __-__ hotfix password stdin (*Han Xiao*)
+
+## Release Note (`0.4.7`)
+
+> Release time: 2020-08-13 16:53:15
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```e3f79d43```](https://github.com/jina-ai/jina/commit/e3f79d43932082c70e5bb89ca9a671de561591d3)] __-__ __dockerfile__: add uvloop and lz4 (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```106f032f```](https://github.com/jina-ai/jina/commit/106f032fcbc0229452fac9975da463bffdced888)] __-__ hotfix fix release (*Han Xiao*)
+ - [[```0e74e987```](https://github.com/jina-ai/jina/commit/0e74e98790f7500639dd72220bc70a235e094820)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8637149a```](https://github.com/jina-ai/jina/commit/8637149a529f9ef3c4668a1b5085b5f60b6339f3)] __-__ __version__: the next version will be 0.4.7 (*Jina Dev Bot*)
 
