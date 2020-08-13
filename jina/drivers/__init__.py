@@ -230,7 +230,7 @@ class BaseRecursiveDriver(BaseDriver):
                     if d.level_depth < self._depth_end:
                         post_traverse(getattr(d, traverse_on), traverse_on, d)
                     # check if apply to the current level
-                    if self.is_apply and (d.level_depth >= self._depth_start):
+                    if self.is_apply and self._depth_start <= d.level_depth < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
