@@ -67,16 +67,26 @@ class BasePaddleEncoder(PaddleDevice, BaseEncoder):
 
 
 class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
-    def __init__(self, model_name: str, model_path: str, channel_axis: int = -1, *args, **kwargs):
+    def __init__(self, model_name: str, model_path: str, *args, **kwargs):
+        """
+
+        :param model_name: the class name of the model
+        :param model_path: the path of the model's checkpoint.
+        """
         super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.model_path = model_path
-        self.channel_axis = channel_axis
 
     def post_init(self):
+        """
+        Load the model from the `.ckpt` checkpoint.
+        """
         from mindspore.train.serialization import load_checkpoint, load_param_into_net
         super().post_init()
         self.to_device()
-        self.model = lambda x: globals()[self.model_name]
+        try:
+            self.model = globals()[self.model_name]()
+        except KeyError:
+            raise TypeError(f'model not found, model_name: {self.model_name}')
         param_dict = load_checkpoint(ckpt_file_name=self.model_path)
         load_param_into_net(self.model, param_dict)
