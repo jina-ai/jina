@@ -174,7 +174,7 @@ class BaseRecursiveDriver(BaseDriver):
                  traverse_on: Tuple[str] = ('chunks',), *args, **kwargs):
         """
 
-        :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
+        :param depth_range: right-exclusive range of the recursion depth, (0, 0) for root-level only
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
