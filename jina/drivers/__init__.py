@@ -170,11 +170,11 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, depth_range: Tuple[int] = (0, 1), apply_order: str = 'post',
+    def __init__(self, depth_range: Tuple[int] = (0, 0), apply_order: str = 'post',
                  traverse_on: Tuple[str] = ('chunks',), *args, **kwargs):
         """
 
-        :param depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param depth_range: right-exclusive range of the recursion depth, (0, 0) for root-level only
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
@@ -182,8 +182,6 @@ class BaseRecursiveDriver(BaseDriver):
         super().__init__(*args, **kwargs)
         self._depth_start = depth_range[0]
         self._depth_end = depth_range[1]
-        if self._depth_end <= self._depth_start:
-            self.logger.error(f'invalid value for traversing, depth_range = {depth_range}')
         if isinstance(traverse_on, str):
             traverse_on = (traverse_on,)
         self.traverse_fields = set(traverse_on)

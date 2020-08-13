@@ -136,7 +136,7 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
 
     def test_chunk2doc_ranker_driver_traverse_apply(self):
         docs = [create_chunk_matches_to_score(), ]
-        driver = SimpleChunk2DocRankDriver()
+        driver = SimpleChunk2DocRankDriver(depth_range=(0, 1))
         executor = MinRanker()
         driver.attach(executor=executor, pea=None)
         driver._traverse_apply(docs)
