@@ -10,6 +10,8 @@ if False:
 
 
 class ReverseQL(QueryLangDriver):
+    """Reverses the order of the provided ``docs``
+    """
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         prev_len = len(docs)
         for d in reversed(docs):

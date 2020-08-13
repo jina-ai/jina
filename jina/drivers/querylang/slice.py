@@ -10,9 +10,7 @@ if False:
 
 
 class SliceQL(QueryLangDriver):
-    """Restrict the size of the ``matches`` to ``k`` (given by the request)
-
-    This driver works on both chunk and doc level
+    """Restrict the size of the ``docs`` to ``k`` (given by the request)
     """
 
     def __init__(self, start: int, end: int = None, *args, **kwargs):
@@ -22,8 +20,6 @@ class SliceQL(QueryLangDriver):
         :param end:  Zero-based index before which to end extraction.
                 slice extracts up to but not including end. For example, take(1,4) extracts
                 the second element through the fourth element (elements indexed 1, 2, and 3).
-        :param args:
-        :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self._start = int(start)

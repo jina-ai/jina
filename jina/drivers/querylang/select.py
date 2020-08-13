@@ -10,7 +10,7 @@ if False:
 
 
 class ExcludeQL(QueryLangDriver):
-    """Clean some fields from the chunk-level protobuf to reduce the total size of the request
+    """Clean some fields from the document-level protobuf to reduce the total size of the request
     """
 
     def __init__(self, fields: Tuple, *args, **kwargs):
@@ -33,17 +33,17 @@ class ExcludeQL(QueryLangDriver):
 
 
 class SelectQL(ExcludeQL):
+    """Selects some fields from the chunk-level protobuf to reduce the total size of the request, it works with the opposite
+    logic as `:class:`ExcludeQL`
+    """
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in doc.DESCRIPTOR.fields_by_name.keys():
             if k not in self.fields:
                 doc.ClearField(k)
 
 
-# ChunkPruneDriver: pruned=('embedding', 'buffer', 'blob', 'text')
-# DocPruneDriver: pruned=('chunks', 'buffer')
-
 class ExcludeReqQL(ExcludeQL):
-    """Clean up request from the protobuf message to reduce the total size of the message
+    """Clean up request from the request-level protobuf message to reduce the total size of the message
 
         This is often useful when the proceeding Pods require only a signal, not the full message.
     """
@@ -54,6 +54,9 @@ class ExcludeReqQL(ExcludeQL):
 
 
 class SelectReqQL(ExcludeReqQL):
+    """Clean up request from the request-level protobuf message to reduce the total size of the message, it works with the opposite
+    logic as `:class:`ExcludeReqQL`
+    """
     def __call__(self, *args, **kwargs):
         for k in self.msg.DESCRIPTOR.fields_by_name.keys():
             if k not in self.fields:
