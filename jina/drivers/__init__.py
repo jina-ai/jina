@@ -170,11 +170,11 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, depth_range: Tuple[int] = (0, 0), apply_order: str = 'post',
+    def __init__(self, depth_range: Tuple[int] = (0, 1), apply_order: str = 'post',
                  traverse_on: Tuple[str] = ('chunks',), *args, **kwargs):
         """
 
-        :param depth_range: right-exclusive range of the recursion depth, (0,0) for root-level only
+        :param depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
@@ -226,8 +226,10 @@ class BaseRecursiveDriver(BaseDriver):
             """
             if _docs:
                 for d in _docs:
+                    # check if apply to next level
                     if d.level_depth < self._depth_end:
                         post_traverse(getattr(d, traverse_on), traverse_on, d)
+                    # check if apply to the current level
                     if self.is_apply and (d.level_depth >= self._depth_start):
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
@@ -242,9 +244,11 @@ class BaseRecursiveDriver(BaseDriver):
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
                 for d in _docs:
+                    # check if apply on the current level
                     if self.is_apply and d.level_depth >= self._depth_start:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
-                    if d.level_depth < self._depth_end:
+                    # check if apply to the next level
+                    if (d.level_depth + 1) < self._depth_end:
                         pre_traverse(getattr(d, traverse_on), traverse_on, d)
 
         if self.recursion_order == 'post':
