@@ -1,0 +1,26 @@
+name: update_contrib
+on:
+  schedule:
+    - cron: "0 0 * * 4"
+jobs:
+  update-contrib:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - uses: actions/checkout@v2
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          git fetch --prune --unshallow
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git clone https://github.com/jina-ai/wall-of-honor.git .
+          npm i -g all-contributors-cli
+          python add-all-contributors.py
+          git commit -am 'chore: update contributors'
+          git push
