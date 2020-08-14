@@ -3,14 +3,14 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable
 
-from . import QueryLangDriver
+from .. import QuerysetReader, BaseRecursiveDriver
 from ...helper import rgetattr
 
 if False:
     from ...proto import jina_pb2
 
 
-class SortQL(QueryLangDriver):
+class SortQL(QuerysetReader, BaseRecursiveDriver):
     """Sorts the incoming of the documents by the value of a given field.
      It can also work in reverse mode
 

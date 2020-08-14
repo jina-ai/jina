@@ -1,6 +1,6 @@
 import unittest
 
-from jina.drivers.querylang import QueryLangDriver
+from jina.drivers import QuerysetReader, BaseDriver
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import JinaTestCase
@@ -27,7 +27,7 @@ def random_docs(num_docs):
         yield d
 
 
-class dummyDriver(QueryLangDriver):
+class dummyDriver(QuerysetReader, BaseDriver):
 
     def __init__(self, arg1='hello', arg2=456, *args, **kwargs):
         super().__init__(*args, **kwargs)
