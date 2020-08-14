@@ -2,6 +2,7 @@ import os
 import unittest
 
 import numpy as np
+
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector.numpy import NumpyIndexer
 from tests import JinaTestCase
@@ -42,7 +43,7 @@ class MyTestCase(JinaTestCase):
                             [10, 10, 10],
                             [100, 100, 100],
                             [1000, 1000, 1000]])
-        keys = np.array([0, 1, 2, 3]).reshape(-1, 1)
+        keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
         with NumpyIndexer(index_filename='np.test.gz') as a:
             a.add(keys, vectors)
             a.save()
@@ -56,9 +57,10 @@ class MyTestCase(JinaTestCase):
                             [1000, 1000, 1000]])
         with BaseIndexer.load(save_abspath) as b:
             idx, dist = b.query(queries, top_k=2)
-            np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]))
+            np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
             self.assertEqual(idx.shape, dist.shape)
             self.assertEqual(idx.shape, (4, 2))
+            np.testing.assert_equal(b.query_by_id([7, 4]), vectors[[3, 0]])
 
         self.add_tmpfile(index_abspath, save_abspath)
 
