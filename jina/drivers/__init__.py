@@ -52,9 +52,9 @@ def store_init_kwargs(func):
     return arg_wrapper
 
 
-class QuerysetReader:
+class QuerySetReader:
     """
-    :class:`QuerysetReader` allows a driver to read arguments from the protobuf message. This allows a
+    :class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
     driver to override its behavior based on the message it receives. Extremely useful in production, for example,
     get ``top_k`` results, doing pagination, filtering.
 
