@@ -77,10 +77,11 @@ class QuerysetReader:
     """
 
     def _get_parameter(self, key: str, default: Any):
-        for q in self.queryset:
-            if (not q.disabled and self.__class__.__name__ == q.name and
-                    q.priority > self._priority and key in q.parameters):
-                return q.parameters[key]
+        if getattr(self, 'queryset', None):
+            for q in self.queryset:
+                if (not q.disabled and self.__class__.__name__ == q.name and
+                        q.priority > self._priority and key in q.parameters):
+                    return q.parameters[key]
         return getattr(self, f'_{key}', default)
 
     def __getattr__(self, name: str):
@@ -90,6 +91,18 @@ class QuerysetReader:
             raise AttributeError
         if name in self._init_kwargs_dict:
             return self._get_parameter(name, default=self._init_kwargs_dict[name])
+        raise AttributeError
+
+    # def __getattribute__(self, attr):
+    #     try:
+    #         return super().__getattribute__(attr)
+    #     except AttributeError:
+    #         if attr == '_init_kwargs_dict':
+    #             # raise attribute error to avoid recursive call
+    #             raise AttributeError
+    #         if attr in self._init_kwargs_dict:
+    #             return self._get_parameter(attr, default=self._init_kwargs_dict[name])
+    #         raise
 
 
 class DriverType(type):
@@ -143,7 +156,7 @@ class BaseDriver(metaclass=DriverType):
 
     @property
     def req(self) -> 'jina_pb2.Request':
-        """Get the current request, shortcut to ``self.pea.request``"""
+        """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.pea.request
 
     @property
@@ -153,15 +166,15 @@ class BaseDriver(metaclass=DriverType):
 
     @property
     def queryset(self) -> Iterator['jina_pb2.QueryLang']:
-        if self.pea and self.msg:
-            return self.pea.message.request.queryset
+        if self.msg:
+            return self.msg.request.queryset
         else:
             return []
 
     @property
     def envelope(self) -> 'jina_pb2.Envelope':
         """Get the current request, shortcut to ``self.pea.message``"""
-        return self.pea.message.envelope
+        return self.msg.envelope
 
     @property
     def logger(self) -> 'logging.Logger':
