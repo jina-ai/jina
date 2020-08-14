@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple
 
-from . import QueryLangDriver
+from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
     from ...proto import jina_pb2
 
 
-class ExcludeQL(QueryLangDriver):
+class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
     """Clean some fields from the document-level protobuf to reduce the total size of the request
         Example::
         - !ExcludeQL
