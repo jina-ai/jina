@@ -173,6 +173,16 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
+    def query_by_id(self, ids: 'np.ndarray', *args, **kwargs):
+        """ Get the vectors by id, return a subset of indexed vectors
+
+        :param ids: a list of id
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        raise NotImplementedError
+
 
 class BaseKVIndexer(BaseIndexer):
     """An abstract class for key-value indexer.
