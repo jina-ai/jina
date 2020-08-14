@@ -79,7 +79,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         dist, ids = self.query_handler.search(keys, top_k)
         return self.int2ext_key[ids], dist
 
-    def train(self, index, data: 'np.ndarray', *args, **kwargs):
+    def train(self, index, data: 'np.ndarray', *args, **kwargs) -> None:
         _num_samples, _num_dim = data.shape
         if not self.num_dim:
             self.num_dim = _num_dim
@@ -88,7 +88,7 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
                 self.num_dim, _num_dim))
         index.train(data)
 
-    def _load_training_data(self, train_filepath):
+    def _load_training_data(self, train_filepath: str) -> 'np.ndarray':
         result = None
         try:
             result = self._load_gzip(train_filepath)

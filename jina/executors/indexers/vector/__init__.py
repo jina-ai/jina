@@ -63,14 +63,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         """
         return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
 
-    def get_create_handler(self):
+    def get_create_handler(self) -> 'gzip.GzipFile':
         """Create a new gzip file for adding new vectors
 
         :return: a gzip file stream
         """
         return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs) -> None:
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.key_bytes += keys.tobytes()
@@ -91,7 +91,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def build_advanced_index(self, vecs: 'np.ndarray'):
         raise NotImplementedError
 
-    def _load_gzip(self, abspath):
+    def _load_gzip(self, abspath: str) -> Optional['np.ndarray']:
         self.logger.info(f'loading index from {abspath}...')
         if not path.exists(abspath):
             self.logger.warning('numpy data not found: {}'.format(abspath))
