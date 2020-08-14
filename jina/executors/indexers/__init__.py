@@ -176,7 +176,7 @@ class BaseVectorIndexer(BaseIndexer):
     def query_by_id(self, ids: 'np.ndarray', *args, **kwargs):
         """ Get the vectors by id, return a subset of indexed vectors
 
-        :param ids: a list of id
+        :param ids: a list of ``id``, i.e. ``doc.id``
         :param args:
         :param kwargs:
         :return:
