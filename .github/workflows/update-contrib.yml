@@ -1,7 +1,9 @@
 name: update_contrib
+
 on:
   schedule:
     - cron: "0 0 * * 4"
+
 jobs:
   update-contrib:
     runs-on: ubuntu-latest
@@ -12,7 +14,6 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
-        # https://github.com/actions/checkout#fetch-all-tags
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - run: |
