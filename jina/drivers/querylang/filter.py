@@ -14,15 +14,18 @@ class FilterQL(QueryLangDriver):
     """Filters incoming `docs` by evaluating a series of `lookup rules`.
 
         This is often useful when the proceeding Pods require only a signal, not the full message.
+
+
     """
     def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
         super().__init__(*args, **kwargs)
         """
-        :param lookups: (dict) a dictionary where keys are interpreted by `:class:`LookupLeaf` to form a 
-        an evaluation function. For instance, a dictionary { modality__in: [mode1, mode2] }, would create 
+        :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a 
+        an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create 
         an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
         """
         self._lookups = Q(**lookups) if lookups else None
+        self.is_apply = False
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         if self.lookups:

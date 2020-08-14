@@ -15,6 +15,7 @@ class BaseSearchDriver(BaseExecutableDriver):
 
     def __init__(self, executor: str = None, method: str = 'query', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
+        self._is_apply = False
 
 
 class KVSearchDriver(BaseSearchDriver):

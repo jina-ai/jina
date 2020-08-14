@@ -24,6 +24,7 @@ class SliceQL(QueryLangDriver):
         super().__init__(*args, **kwargs)
         self._start = int(start)
         self._end = int(end)
+        self.is_apply = False
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
