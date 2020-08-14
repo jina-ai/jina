@@ -189,8 +189,8 @@ class BaseRecursiveDriver(BaseDriver):
             self.recursion_order = apply_order
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
-        self.is_apply = True
-        self.is_apply_all = True
+        self._is_apply = True
+        self._is_apply_all = True
 
     def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
         """ Apply function works on each doc, one by one, modify the doc in-place
@@ -230,22 +230,22 @@ class BaseRecursiveDriver(BaseDriver):
                     if d.level_depth < self._depth_end:
                         post_traverse(getattr(d, traverse_on), traverse_on, d)
                     # check if apply to the current level
-                    if self.is_apply and self._depth_start <= d.level_depth < self._depth_end:
+                    if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
-                if self.is_apply_all and _docs[0].level_depth >= self._depth_start:
+                if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
         def pre_traverse(_docs, traverse_on, context_doc=None):
             if _docs:
                 # check first doc if in the required depth range
-                if self.is_apply_all and _docs[0].level_depth >= self._depth_start:
+                if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
                 for d in _docs:
                     # check if apply on the current level
-                    if self.is_apply and self._depth_start <= d.level_depth < self._depth_end:
+                    if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
                     # check if apply to the next level
                     if d.level_depth < self._depth_end:

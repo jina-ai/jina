@@ -21,6 +21,10 @@ class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._is_apply = False
+
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         contents, docs_pts, bad_doc_ids = extract_docs(docs, embedding=False)
 
@@ -36,14 +40,3 @@ class EncodeDriver(BaseEncodeDriver):
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(docs_pts, embeds):
                 doc.embedding.CopyFrom(array2pb(embedding))
-
-
-class UnaryEncodeDriver(EncodeDriver):
-    """The :class:`UnaryEncodeDriver` extracts the chunk-level content from documents and copies
-        the same content to the embedding
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._method_name = None
-        self._exec_fn = lambda x: x

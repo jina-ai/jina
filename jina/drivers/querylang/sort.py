@@ -11,20 +11,37 @@ if False:
 
 
 class SortQL(QueryLangDriver):
-    """Restrict the size of the ``matches`` to ``k`` (given by the request)
+    """Sorts the incoming of the documents by the value of a given field.
+     It can also work in reverse mode
 
-    This driver works on both chunk and doc level
+        Example::
+        - !ReduceAllDriver
+            with:
+                traverse_on: matches
+        - !SortQL
+            with:
+                reverse: true
+                field: 'score.value'
+                traverse_on: matches
+        - !SliceQL
+            with:
+                start: 0
+                end: 50
+                traverse_on: matches
+
+        `SortQL` will ensure that only the documents are sorted by the score value before slicing the first top 50 documents
     """
 
     def __init__(self, field: str, reverse: bool = False, *args, **kwargs):
         """
-
+        :param field: the value of the field drives the sort of the iterable docs
         :param reverse: sort the value from big to small
         """
 
         super().__init__(*args, **kwargs)
         self._reverse = reverse
         self._field = field
+        self.is_apply = False
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         docs.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)

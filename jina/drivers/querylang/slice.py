@@ -10,9 +10,24 @@ if False:
 
 
 class SliceQL(QueryLangDriver):
-    """Restrict the size of the ``matches`` to ``k`` (given by the request)
+    """Restrict the size of the ``docs`` to ``k`` (given by the request)
 
-    This driver works on both chunk and doc level
+        Example::
+        - !ReduceAllDriver
+            with:
+                traverse_on: matches
+        - !SortQL
+            with:
+                reverse: true
+                field: 'score.value'
+                traverse_on: matches
+        - !SliceQL
+            with:
+                start: 0
+                end: 50
+                traverse_on: matches
+
+        `SliceQL` will ensure that only the first 50 documents are returned from this `Pod`
     """
 
     def __init__(self, start: int, end: int = None, *args, **kwargs):
@@ -22,12 +37,11 @@ class SliceQL(QueryLangDriver):
         :param end:  Zero-based index before which to end extraction.
                 slice extracts up to but not including end. For example, take(1,4) extracts
                 the second element through the fourth element (elements indexed 1, 2, and 3).
-        :param args:
-        :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self._start = int(start)
         self._end = int(end)
+        self.is_apply = False
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):

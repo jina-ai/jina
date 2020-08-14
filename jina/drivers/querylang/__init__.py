@@ -36,8 +36,6 @@ class QueryLangDriver(BaseRecursiveDriver):
 
         :param priority: the priority of its default arg values (hardcoded in Python). If the
         received ``QueryLang`` has a higher priority, it will override the hardcoded value
-        :param args:
-        :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self._priority = priority

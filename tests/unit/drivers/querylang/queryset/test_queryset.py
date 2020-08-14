@@ -6,7 +6,7 @@ from tests import JinaTestCase, random_docs
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-class MyTestCase(JinaTestCase):
+class QuerySetTestCase(JinaTestCase):
 
     def test_docs_filter(self):
         s = random_docs(10)
@@ -16,13 +16,13 @@ class MyTestCase(JinaTestCase):
         for d in ssr:
             self.assertTrue(3 < d.id < 5)
 
-    def test_chunks_filter(self):
+    def test_docs_filter_equal(self):
         s = random_docs(10)
         ss = QuerySet(s).filter(id=4)
         ssr = list(ss)
         self.assertEqual(len(ssr), 1)
         for d in ssr:
-            self.assertTrue(3 < d.id < 5)
+            self.assertEqual(d.id, 4)
             self.assertEqual(len(d.chunks), 5)
 
     def test_nested_chunks_filter(self):
@@ -32,13 +32,3 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(len(ssr), 1)
         for d in ssr:
             self.assertEqual(len(d.chunks), 5)
-
-    # def test_chunk_select_filter(self):
-    #     s = random_docs(10)
-    #     ss = QuerySet(s).filter(chunks__filter=Q(chunk_id=13))
-    #     ssr = list(ss)
-    #     self.assertEqual(len(ssr), 1)
-    #     for d in ssr:
-    #         print(d)
-    #         for c in d.chunks:
-    #             self.assertEqual(c.chunk_id, 10)
