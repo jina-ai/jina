@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable
 
-from .. import QuerysetReader, BaseRecursiveDriver
+from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
     from ...proto import jina_pb2
 
 
-class ReverseQL(QuerysetReader, BaseRecursiveDriver):
+class ReverseQL(QuerySetReader, BaseRecursiveDriver):
     """Reverses the order of the provided ``docs``.
 
         This is often useful when the proceeding Pods require only a signal, not the full message.

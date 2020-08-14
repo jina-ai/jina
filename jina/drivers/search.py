@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable
 
-from . import BaseExecutableDriver, QuerysetReader
+from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs
 
 if False:
@@ -49,7 +49,7 @@ class KVSearchDriver(BaseSearchDriver):
             del docs[j]
 
 
-class VectorSearchDriver(QuerysetReader, BaseSearchDriver):
+class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
     """
