@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable
 
-from . import QueryLangDriver
+from .. import QuerysetReader, BaseRecursiveDriver
 
 if False:
     from ...proto import jina_pb2
 
 
-class SliceQL(QueryLangDriver):
+class SliceQL(QuerysetReader, BaseRecursiveDriver):
     """Restrict the size of the ``docs`` to ``k`` (given by the request)
 
         Example::
