@@ -4,13 +4,13 @@ __license__ = "Apache-2.0"
 from typing import Dict, Any, Iterable
 
 from .queryset.lookup import Q
-from . import QueryLangDriver
+from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
     from ...proto import jina_pb2
 
 
-class FilterQL(QueryLangDriver):
+class FilterQL(QuerySetReader, BaseRecursiveDriver):
     """Filters incoming `docs` by evaluating a series of `lookup rules`.
 
         This is often useful when the proceeding Pods require only a signal, not the full message.

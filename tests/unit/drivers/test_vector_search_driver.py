@@ -1,8 +1,9 @@
 from typing import Tuple
+
 import numpy as np
 
-from jina.drivers.search import VectorSearchDriver
 from jina.drivers.helper import array2pb
+from jina.drivers.search import VectorSearchDriver
 from jina.executors.indexers import BaseVectorIndexer
 from jina.proto import jina_pb2
 from tests import JinaTestCase
@@ -34,21 +35,16 @@ class MockIndexer(BaseVectorIndexer):
         dist = np.hstack((dist_top_1, dist_top_2))
         return idx, dist
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
 
 class SimpleVectorSearchDriver(VectorSearchDriver):
 
-    def __init__(self, top_k,  *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.top_k = top_k
-
     @property
-    def req(self) -> 'jina_pb2.Request':
-        req = jina_pb2.Request
-        req.top_k = self.top_k
-        return req
+    def queryset(self):
+        q = jina_pb2.QueryLang()
+        q.name = 'SimpleVectorSearchDriver'
+        q.priority = 1
+        q.parameters['top_k'] = 4
+        return [q]
 
     @property
     def exec_fn(self):
@@ -72,6 +68,15 @@ def create_document_to_search():
 
 
 class VectorSearchDriverTestCase(JinaTestCase):
+
+    def test_vectorsearch_driver_mock_queryset(self):
+        # no queryset
+        driver = VectorSearchDriver(top_k=3)
+        self.assertEqual(driver.top_k, 3)
+
+        # with queryset
+        driver = SimpleVectorSearchDriver(top_k=3)
+        self.assertEqual(driver.top_k, 4)
 
     def test_vectorsearch_driver_mock_indexer(self):
         doc = create_document_to_search()

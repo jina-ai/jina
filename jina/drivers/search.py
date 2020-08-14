@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable
 
-from . import BaseExecutableDriver
+from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs
 
 if False:
@@ -49,7 +49,7 @@ class KVSearchDriver(BaseSearchDriver):
             del docs[j]
 
 
-class VectorSearchDriver(BaseSearchDriver):
+class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
     """Extract chunk-level embeddings from the request and use the executor to query it
 
     """
@@ -65,7 +65,7 @@ class VectorSearchDriver(BaseSearchDriver):
             self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
         if doc_pts:
-            idx, dist = self.exec_fn(embed_vecs, top_k=self._top_k)
+            idx, dist = self.exec_fn(embed_vecs, top_k=self.top_k)
             op_name = self.exec.__class__.__name__
             for doc, topks, scores in zip(doc_pts, idx, dist):
                 for match_id, score in zip(topks, scores):
