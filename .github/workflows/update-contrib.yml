@@ -15,7 +15,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
-      - run: |
+        run: |
           git fetch --prune --unshallow
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
