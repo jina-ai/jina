@@ -93,21 +93,29 @@ For branches, commits, and PRs we follow some basic naming conventions:
 * Short (under 70 characters is best)
 * In general, follow the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary) guidelines
 
-### Types
+### Specify the correct types
 
-For each branch, commit, or PR, we need you to specify the type to help us keep things organized:
- 
-- build
-- ci
-- chore
-- docs
-- feat
-- fix
-- perf
-- refactor
-- revert
-- style
-- test
+Type is an important prefix in PR, commit message. For each branch, commit, or PR, we need you to specify the type to help us keep things organized. For example,
+
+```
+feat: add hat wobble
+^--^  ^------------^
+|     |
+|     +-> Summary in present tense.
+|
++-------> Type: chore, docs, feat, fix, refactor, style, or test.
+```
+
+- build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- docs: Documentation only changes
+- feat: A new feature
+- fix: A bug fix
+- perf: A code change that improves performance
+- refactor: A code change that neither fixes a bug nor adds a feature
+- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- test: Adding missing tests or correcting existing tests
+- chore: updating grunt tasks etc; no production code change
 
 ### Naming your Branch
 
