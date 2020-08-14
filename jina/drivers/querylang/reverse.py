@@ -11,12 +11,20 @@ if False:
 
 class ReverseQL(QueryLangDriver):
 
+    """Reverses the order of the provided ``docs``.
+
+        This is often useful when the proceeding Pods require only a signal, not the full message.
+
+        Example ::
+        - !Chunk2DocRankerDriver {}
+        - !ReverseQL {}
+
+        will reverse the order of the documents returned by the `Chunk2DocRankerDriver` before sending them to the next `Pod`
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_apply = False
 
-    """Reverses the order of the provided ``docs``
-    """
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         prev_len = len(docs)
         for d in reversed(docs):

@@ -87,12 +87,12 @@ class ReduceAllDriver(ReduceDriver):
             self.doc_pointers[doc.id] = doc
 
     def reduce(self, *args, **kwargs):
-        self.is_apply, self.is_apply_all = True, False
+        self._is_apply, self._is_apply_all = True, False
         # use docs in the last request to set the pointers
         self.doc_pointers = {}
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
-        self.is_apply, self.is_apply_all = False, True
+        self._is_apply, self._is_apply_all = False, True
 
         # traverse apply on ALL previous requests collected
         for r in self.prev_reqs_exclude_last:

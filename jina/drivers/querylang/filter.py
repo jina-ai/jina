@@ -15,7 +15,20 @@ class FilterQL(QueryLangDriver):
 
         This is often useful when the proceeding Pods require only a signal, not the full message.
 
+        Example ::
+        - !FilterQL
+            with:
+                lookups: {modality: mode2}
+                traverse_on: [chunks]
+                depth_range: [1, 2]
+        - !EncodeDriver
+            with:
+                method: encode
+                traverse_on: [chunks]
+                depth_range: [1, 2]
 
+        ensures that the EncodeDriver will only get documents which modality field value is `mode2` by filtering
+        those documents at the specific levels that do not comply with this condition
     """
     def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
         super().__init__(*args, **kwargs)

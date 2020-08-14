@@ -11,6 +11,23 @@ if False:
 
 class SliceQL(QueryLangDriver):
     """Restrict the size of the ``docs`` to ``k`` (given by the request)
+
+        Example::
+        - !ReduceAllDriver
+            with:
+                traverse_on: matches
+        - !SortQL
+            with:
+                reverse: true
+                field: 'score.value'
+                traverse_on: matches
+        - !SliceQL
+            with:
+                start: 0
+                end: 50
+                traverse_on: matches
+
+        `SliceQL` will ensure that only the first 50 documents are returned from this `Pod`
     """
 
     def __init__(self, start: int, end: int = None, *args, **kwargs):

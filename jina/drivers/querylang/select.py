@@ -11,6 +11,14 @@ if False:
 
 class ExcludeQL(QueryLangDriver):
     """Clean some fields from the document-level protobuf to reduce the total size of the request
+        Example::
+        - !ExcludeQL
+        with:
+            fields:
+                - chunks
+                - buffer
+
+        ExcludeQL will avoid `buffer` and `chunks` fields to be sent to the next `Pod`
     """
 
     def __init__(self, fields: Tuple, *args, **kwargs):
@@ -36,6 +44,14 @@ class ExcludeQL(QueryLangDriver):
 class SelectQL(ExcludeQL):
     """Selects some fields from the chunk-level protobuf to reduce the total size of the request, it works with the opposite
     logic as `:class:`ExcludeQL`
+
+        Example::
+        - !SelectQL
+        with:
+            fields:
+                - matches
+
+        SelectQL will ensure that the `outgoing` documents only contain the field `matches`
     """
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in doc.DESCRIPTOR.fields_by_name.keys():
