@@ -22,6 +22,6 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git clone https://github.com/jina-ai/wall-of-honor.git .
-          python add-all-contributors.py
+          python app.py
           git commit -am 'chore: update contributors'
           git push
