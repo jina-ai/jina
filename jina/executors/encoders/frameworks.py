@@ -87,6 +87,7 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
         try:
             self.model = globals()[self.model_name]()
         except KeyError:
+            self.logger.info(f'global: {globals()}')
             raise TypeError(f'model not found, model_name: {self.model_name}')
         param_dict = load_checkpoint(ckpt_file_name=self.model_path)
         load_param_into_net(self.model, param_dict)

@@ -221,6 +221,5 @@ class MindsporeDevice(BaseDevice):
 
     def to_device(self):
         import mindspore.context as context
-        device = self.device
         context.set_context(mode=context.GRAPH_MODE, device_target=self.device)
 
