@@ -1,0 +1,42 @@
+name: Contributors
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-copyright:
+    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          git fetch --prune --unshallow
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/wall-of-honor
+          path: wall
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          npm i -g all-contributors-cli@6.17.1
+          cd wall
+          cp patch.js /usr/local/lib/node_modules/all-contributors-cli/dist/generate/index.js
+          cp ../README.md README.md
+          python app.py config.yml export.yml
+          cp README.md ../README.md
+          cd ..
+          git add README.md
+          git commit -m 'chore: update contributors'
+          git status
+          git push
+        env:
+          PRIVATE_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+        continue-on-error: true
