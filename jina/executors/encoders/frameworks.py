@@ -83,8 +83,8 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
         from mindspore.train.serialization import load_checkpoint, load_param_into_net
         super().post_init()
         self.to_device()
-        param_dict = load_checkpoint(ckpt_file_name=self.model_path)
-        load_param_into_net(self.model, param_dict)
+        _param_dict = load_checkpoint(ckpt_file_name=self.model_path)
+        load_param_into_net(self.model, _param_dict)
 
     @cached_property
     def model(self):
