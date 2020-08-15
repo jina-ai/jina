@@ -68,14 +68,12 @@ class BasePaddleEncoder(PaddleDevice, BaseEncoder):
 
 
 class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
-    def __init__(self, model_name: str, model_path: str, *args, **kwargs):
+    def __init__(self, model_path: str, *args, **kwargs):
         """
 
-        :param model_name: the class name of the model
         :param model_path: the path of the model's checkpoint.
         """
         super().__init__(*args, **kwargs)
-        self.model_name = model_name
         self.model_path = model_path
 
     def post_init(self):
