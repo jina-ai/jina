@@ -1,5 +1,5 @@
 import os
-import unittest
+import pytest
 import gzip
 
 import numpy as np
@@ -16,9 +16,9 @@ query = np.array(np.random.random([10, 10]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-class MyTestCase(JinaTestCase):
+class FaissTestCase(JinaTestCase):
 
-    @unittest.skip
+    @pytest.mark.skipif('JINA_TEST_FAISS' not in os.environ, reason='skip the faiss test if not set')
     def test_faiss_indexer(self):
         train_filepath = os.path.join(cur_dir, 'train.tgz')
         train_data = np.array(np.random.random([1024, 10]), dtype=np.float32)
@@ -43,7 +43,3 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(idx.shape, (10, 4))
 
         self.add_tmpfile(index_abspath, save_abspath, train_filepath)
-
-
-if __name__ == '__main__':
-    unittest.main()

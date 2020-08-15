@@ -58,6 +58,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -114,6 +116,9 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.4.4`)](#release-note-044)
 - [Release Note (`0.4.5`)](#release-note-045)
 - [Release Note (`0.4.6`)](#release-note-046)
+- [Release Note (`0.4.7`)](#release-note-047)
+- [Release Note (`0.4.8`)](#release-note-048)
+- [Release Note (`0.4.9`)](#release-note-049)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -3527,5 +3532,61 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```106f032f```](https://github.com/jina-ai/jina/commit/106f032fcbc0229452fac9975da463bffdced888)] __-__ hotfix fix release (*Han Xiao*)
  - [[```0e74e987```](https://github.com/jina-ai/jina/commit/0e74e98790f7500639dd72220bc70a235e094820)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8637149a```](https://github.com/jina-ai/jina/commit/8637149a529f9ef3c4668a1b5085b5f60b6339f3)] __-__ __version__: the next version will be 0.4.7 (*Jina Dev Bot*)
+
+## Release Note (`0.4.8`)
+
+> Release time: 2020-08-14 05:56:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```9c1c304e```](https://github.com/jina-ai/jina/commit/9c1c304e5d6e7f612337df6485df52fa65bd56bc)] __-__ __version__: the next version will be 0.4.8 (*Jina Dev Bot*)
+
+## Release Note (`0.4.9`)
+
+> Release time: 2020-08-14 18:43:05
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals Martinez,  🙇
+
+
+### 🆕 New Features
+
+ - [[```5337764b```](https://github.com/jina-ai/jina/commit/5337764b3c043deb5a6afcdaf41c586838bbad2a)] __-__ __driver__: add top_k reader for search driver (*Han Xiao*)
+ - [[```679811e2```](https://github.com/jina-ai/jina/commit/679811e217ba9e2b0c69078e14ccfa599c145183)] __-__ __indexer__: add query by ids to BaseNumpyIndexer (*Han Xiao*)
+ - [[```3e7288e7```](https://github.com/jina-ai/jina/commit/3e7288e72605417f520e9b434acc170c3a61debd)] __-__ enforce using _is_apply and _is_apply_all (*Joan Fontanals Martinez*)
+
+### 🐞 Bug fixes
+
+ - [[```8a8410b1```](https://github.com/jina-ai/jina/commit/8a8410b1386752e80da2ed2a8edb1e8977c58988)] __-__ faiss should not keep self.index (*Joan Fontanals Martinez*)
+
+### 🚧 Code Refactoring
+
+ - [[```509b28f1```](https://github.com/jina-ai/jina/commit/509b28f18b46998b7b7ca8405e38f30b08c1cc35)] __-__ __driver__: move querylangdriver to a mixin class (*Han Xiao*)
+ - [[```eee42d53```](https://github.com/jina-ai/jina/commit/eee42d53916504b386f2a50e59401f644a2a217d)] __-__ add some type annotations (*Joan Fontanals Martinez*)
+
+### 📗 Documentation
+
+ - [[```ee947a80```](https://github.com/jina-ai/jina/commit/ee947a8056cb972c953b6e72c52b0a02ba38595b)] __-__ add explaination to all the types (*Han Xiao*)
+ - [[```2eade014```](https://github.com/jina-ai/jina/commit/2eade014a509c9be94892cb7000fdca768218c5a)] __-__ add examples to querylangdrivers docstrings (*Joan Fontanals Martinez*)
+ - [[```ac82cff6```](https://github.com/jina-ai/jina/commit/ac82cff667cca7b442b2cb8138281d316ec1a683)] __-__ improve documentation of query lang drivers (*Joan Fontanals Martinez*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```05dc9464```](https://github.com/jina-ai/jina/commit/05dc9464b6a6d078b016eb35c093e5339f1ce55e)] __-__ fix pytest-cov to certain version (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```eb7e3560```](https://github.com/jina-ai/jina/commit/eb7e356090ea208f061fd778aead52eb33c7118d)] __-__ hotfix fix release (*Han Xiao*)
+ - [[```54c8d063```](https://github.com/jina-ai/jina/commit/54c8d063515ad18684c97beb101c2187d5e71e64)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```cccf2b7f```](https://github.com/jina-ai/jina/commit/cccf2b7f6f1091ccd8d92ce9d74781205e1b15af)] __-__ __version__: the next version will be 0.4.9 (*Jina Dev Bot*)
  - [[```8637149a```](https://github.com/jina-ai/jina/commit/8637149a529f9ef3c4668a1b5085b5f60b6339f3)] __-__ __version__: the next version will be 0.4.7 (*Jina Dev Bot*)
 

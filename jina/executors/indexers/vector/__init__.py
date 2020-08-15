@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import gzip
 from os import path
-from typing import Optional
+from typing import Optional, List, Union
 
 import numpy as np
 
@@ -63,14 +63,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         """
         return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
 
-    def get_create_handler(self):
+    def get_create_handler(self) -> 'gzip.GzipFile':
         """Create a new gzip file for adding new vectors
 
         :return: a gzip file stream
         """
         return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs) -> None:
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.key_bytes += keys.tobytes()
@@ -89,9 +89,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return None
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
+        """
+        Build advanced index structure based on in-memory numpy ndarray, e.g. graph, tree, etc.
+
+        :param vecs: the raw numpy ndarray
+        :return:
+        """
         raise NotImplementedError
 
-    def _load_gzip(self, abspath):
+    def _load_gzip(self, abspath: str) -> Optional['np.ndarray']:
         self.logger.info(f'loading index from {abspath}...')
         if not path.exists(abspath):
             self.logger.warning('numpy data not found: {}'.format(abspath))
@@ -107,7 +113,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         return result
 
     @cached_property
-    def raw_ndarray(self):
+    def raw_ndarray(self) -> Optional['np.ndarray']:
         vecs = self._load_gzip(self.index_abspath)
         if vecs is None:
             return None
@@ -124,6 +130,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             if vecs.shape[0] == 0:
                 self.logger.warning(f'an empty index is loaded')
 
+            self.ext2int_key = {k: idx for idx, k in enumerate(self.int2ext_key)}
             return vecs
         else:
             return None
+
+    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+        int_ids = np.array([self.ext2int_key[j] for j in ids])
+        return self.raw_ndarray[int_ids]

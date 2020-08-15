@@ -2,4 +2,4 @@
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !UnaryEncodeDriver {}
+      - !EncodeDriver {}

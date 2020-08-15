@@ -63,32 +63,32 @@ class FaissIndexer(FaissDevice, BaseNumpyIndexer):
         if self.distance not in {'inner_product', 'l2'}:
             self.logger.warning('Invalid distance metric for Faiss index construction. Defaulting to l2 distance')
 
-        self._index = self.to_device(index=faiss.index_factory(self.num_dim, self.index_key, metric))
+        index = self.to_device(index=faiss.index_factory(self.num_dim, self.index_key, metric))
 
         if not self.is_trained:
-            _train_data = self._load_training_data(self.train_filepath)
-            if _train_data is None:
+            train_data = self._load_training_data(self.train_filepath)
+            if train_data is None:
                 self.logger.warning('loading training data failed.')
                 return None
-            self.train(_train_data)
-        self._index.add(vecs.astype('float32'))
-        self._index.nprobe = self.nprobe
-        return self._index
+            self.train(index, train_data)
+        index.add(vecs.astype('float32'))
+        index.nprobe = self.nprobe
+        return index
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         dist, ids = self.query_handler.search(keys, top_k)
         return self.int2ext_key[ids], dist
 
-    def train(self, data: 'np.ndarray', *args, **kwargs):
+    def train(self, index, data: 'np.ndarray', *args, **kwargs) -> None:
         _num_samples, _num_dim = data.shape
         if not self.num_dim:
             self.num_dim = _num_dim
         if self.num_dim != _num_dim:
             raise ValueError('training data should have the same number of features as the index, {} != {}'.format(
                 self.num_dim, _num_dim))
-        self._index.train(data)
+        index.train(data)
 
-    def _load_training_data(self, train_filepath):
+    def _load_training_data(self, train_filepath: str) -> 'np.ndarray':
         result = None
         try:
             result = self._load_gzip(train_filepath)

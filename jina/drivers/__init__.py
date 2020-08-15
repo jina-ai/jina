@@ -3,9 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-
 from typing import Any, Dict, Callable, Tuple, Iterable, Iterator
-
 
 import ruamel.yaml.constructor
 
@@ -54,6 +52,59 @@ def store_init_kwargs(func):
     return arg_wrapper
 
 
+class QuerySetReader:
+    """
+    :class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
+    driver to override its behavior based on the message it receives. Extremely useful in production, for example,
+    get ``top_k`` results, doing pagination, filtering.
+
+    To register the field you want to read from the message, simply register them in :meth:`__init__`.
+    For example, ``__init__(self, arg1, arg2, **kwargs)`` will allow the driver to read field ``arg1`` and ``arg2`` from
+    the message. When they are not found in the message, the value ``_arg1`` and ``_arg2`` will be used. Note the underscore
+    prefix.
+
+    .. note::
+        - To set default value of ``arg1``, use ``self._arg1 = ``, note the underscore in the front.
+        - To access ``arg1``, simply use ``self.arg1``. It automatically switch between default ``_arg1`` and ``arg1`` from the request.
+
+    For successful value reading, the following condition must be met:
+
+        - the ``name`` in the proto must match with the current class name
+        - the ``disabled`` field in the proto should not be ``False``
+        - the ``priority`` in the proto should be strictly greater than the driver's priority (by default is 0)
+        - the field name must exist in proto's ``parameters``
+
+    """
+
+    def _get_parameter(self, key: str, default: Any):
+        if getattr(self, 'queryset', None):
+            for q in self.queryset:
+                if (not q.disabled and self.__class__.__name__ == q.name and
+                        q.priority > self._priority and key in q.parameters):
+                    return q.parameters[key]
+        return getattr(self, f'_{key}', default)
+
+    def __getattr__(self, name: str):
+        # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
+        if name == '_init_kwargs_dict':
+            # raise attribute error to avoid recursive call
+            raise AttributeError
+        if name in self._init_kwargs_dict:
+            return self._get_parameter(name, default=self._init_kwargs_dict[name])
+        raise AttributeError
+
+    # def __getattribute__(self, attr):
+    #     try:
+    #         return super().__getattribute__(attr)
+    #     except AttributeError:
+    #         if attr == '_init_kwargs_dict':
+    #             # raise attribute error to avoid recursive call
+    #             raise AttributeError
+    #         if attr in self._init_kwargs_dict:
+    #             return self._get_parameter(attr, default=self._init_kwargs_dict[name])
+    #         raise
+
+
 class DriverType(type):
 
     def __new__(cls, *args, **kwargs):
@@ -85,9 +136,15 @@ class BaseDriver(metaclass=DriverType):
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, priority: int = 0, *args, **kwargs):
+        """
+
+        :param priority: the priority of its default arg values (hardcoded in Python). If the
+             received ``QueryLang`` has a higher priority, it will override the hardcoded value
+        """
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
         self.pea = None  # type: 'BasePea'
+        self._priority = priority
 
     def attach(self, pea: 'BasePea', *args, **kwargs) -> None:
         """Attach this driver to a :class:`jina.peapods.pea.BasePea`
@@ -99,7 +156,7 @@ class BaseDriver(metaclass=DriverType):
 
     @property
     def req(self) -> 'jina_pb2.Request':
-        """Get the current request, shortcut to ``self.pea.request``"""
+        """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.pea.request
 
     @property
@@ -109,15 +166,15 @@ class BaseDriver(metaclass=DriverType):
 
     @property
     def queryset(self) -> Iterator['jina_pb2.QueryLang']:
-        if self.pea and self.msg:
-            return self.pea.message.request.queryset
+        if self.msg:
+            return self.msg.request.queryset
         else:
             return []
 
     @property
     def envelope(self) -> 'jina_pb2.Envelope':
         """Get the current request, shortcut to ``self.pea.message``"""
-        return self.pea.message.envelope
+        return self.msg.envelope
 
     @property
     def logger(self) -> 'logging.Logger':
@@ -189,8 +246,8 @@ class BaseRecursiveDriver(BaseDriver):
             self.recursion_order = apply_order
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
-        self.is_apply = True
-        self.is_apply_all = True
+        self._is_apply = True
+        self._is_apply_all = True
 
     def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
         """ Apply function works on each doc, one by one, modify the doc in-place
@@ -230,22 +287,22 @@ class BaseRecursiveDriver(BaseDriver):
                     if d.level_depth < self._depth_end:
                         post_traverse(getattr(d, traverse_on), traverse_on, d)
                     # check if apply to the current level
-                    if self.is_apply and self._depth_start <= d.level_depth < self._depth_end:
+                    if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
-                if self.is_apply_all and _docs[0].level_depth >= self._depth_start:
+                if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
         def pre_traverse(_docs, traverse_on, context_doc=None):
             if _docs:
                 # check first doc if in the required depth range
-                if self.is_apply_all and _docs[0].level_depth >= self._depth_start:
+                if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
                 for d in _docs:
                     # check if apply on the current level
-                    if self.is_apply and self._depth_start <= d.level_depth < self._depth_end:
+                    if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
                     # check if apply to the next level
                     if d.level_depth < self._depth_end:

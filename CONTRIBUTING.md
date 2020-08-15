@@ -89,31 +89,39 @@ For branches, commits, and PRs we follow some basic naming conventions:
 * Be descriptive
 * Use all lower-case
 * Limit punctuation
-* Include one of our specified [types](#types)
+* Include one of our specified [types](#specify-the-correct-types)
 * Short (under 70 characters is best)
 * In general, follow the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary) guidelines
 
-### Types
+### Specify the correct types
 
-For each branch, commit, or PR, we need you to specify the type to help us keep things organized:
- 
-- build
-- ci
-- chore
-- docs
-- feat
-- fix
-- perf
-- refactor
-- revert
-- style
-- test
+Type is an important prefix in PR, commit message. For each branch, commit, or PR, we need you to specify the type to help us keep things organized. For example,
+
+```
+feat: add hat wobble
+^--^  ^------------^
+|     |
+|     +-> Summary in present tense.
+|
++-------> Type: chore, docs, feat, fix, refactor, style, or test.
+```
+
+- build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- docs: Documentation only changes
+- feat: A new feature
+- fix: A bug fix
+- perf: A code change that improves performance
+- refactor: A code change that neither fixes a bug nor adds a feature
+- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- test: Adding missing tests or correcting existing tests
+- chore: updating grunt tasks etc; no production code change
 
 ### Naming your Branch
 
 Your branch name should follow the format `type-scope(-issue_id)`:
 
-* `type` is one of the [types above](#types)
+* `type` is one of the [types above](#specify-the-correct-types)
 * `scope` is optional, and represents the module your branch is working on.
 * `issue_id` is [the GitHub issue](https://github.com/jina-ai/jina/issues) number. Having the correct issue number will automatically link the Pull Request on this branch to that issue. 
 
@@ -140,7 +148,7 @@ A good commit message helps us track Jina's development. A Pull Request with a b
 
 Commit messages should stick to our [naming conventions](#naming-conventions) outlined above, and use the format `type(scope?): subject`:
 
-* `type` is one of the [types above](#types).
+* `type` is one of the [types above](#specify-the-correct-types).
 * `scope` is optional, and represents the module your commit is working on.
 * `subject` explains the commit, without an ending period `.`
 
