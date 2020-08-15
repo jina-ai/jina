@@ -6,6 +6,7 @@ import os
 from . import BaseEncoder
 from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice, MindsporeDevice
 from ...helper import is_url
+from ...helper import cached_property
 
 
 # mixin classes go first, base classes are read from right to left.
@@ -84,10 +85,12 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
         from mindspore.train.serialization import load_checkpoint, load_param_into_net
         super().post_init()
         self.to_device()
-        try:
-            self.model = globals()[self.model_name]()
-        except KeyError:
-            self.logger.info(f'global: {globals()}')
-            raise TypeError(f'model not found, model_name: {self.model_name}')
         param_dict = load_checkpoint(ckpt_file_name=self.model_path)
         load_param_into_net(self.model, param_dict)
+
+    @cached_property
+    def model(self):
+        return self.get_model()
+
+    def get_model(self):
+        raise NotImplemented('the model is not implemented')
