@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  update-copyright:
+  update-contributors:
     if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
     runs-on: ubuntu-latest
     steps:
