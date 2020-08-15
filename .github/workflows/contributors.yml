@@ -26,9 +26,9 @@ jobs:
           path: wall
           token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
+          cd wall
           npm i -D all-contributors-cli@6.17.1
           npm list all-contributors-cli
-          cd wall
           cp patch.js ./node_modules/all-contributors-cli/dist/generate/index.js
           cp ../README.md README.md
           python app.py config.yml export.yml
