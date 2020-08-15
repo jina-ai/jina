@@ -31,6 +31,7 @@ jobs:
           npm list all-contributors-cli
           cp patch.js ./node_modules/all-contributors-cli/dist/generate/index.js
           cp ../README.md README.md
+          pip install -r requirements.txt
           python app.py config.yml export.yml
           cp README.md ../README.md
           cd ..
