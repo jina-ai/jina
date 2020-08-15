@@ -89,7 +89,7 @@ For branches, commits, and PRs we follow some basic naming conventions:
 * Be descriptive
 * Use all lower-case
 * Limit punctuation
-* Include one of our specified [types](#types)
+* Include one of our specified [types](#specify-the-correct-types)
 * Short (under 70 characters is best)
 * In general, follow the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary) guidelines
 
@@ -121,7 +121,7 @@ feat: add hat wobble
 
 Your branch name should follow the format `type-scope(-issue_id)`:
 
-* `type` is one of the [types above](#types)
+* `type` is one of the [types above](#specify-the-correct-types)
 * `scope` is optional, and represents the module your branch is working on.
 * `issue_id` is [the GitHub issue](https://github.com/jina-ai/jina/issues) number. Having the correct issue number will automatically link the Pull Request on this branch to that issue. 
 
@@ -148,7 +148,7 @@ A good commit message helps us track Jina's development. A Pull Request with a b
 
 Commit messages should stick to our [naming conventions](#naming-conventions) outlined above, and use the format `type(scope?): subject`:
 
-* `type` is one of the [types above](#types).
+* `type` is one of the [types above](#specify-the-correct-types).
 * `scope` is optional, and represents the module your commit is working on.
 * `subject` explains the commit, without an ending period `.`
 
