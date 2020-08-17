@@ -1,6 +1,6 @@
 import os
-import unittest
 import numpy as np
+import pytest
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector.ngt import NGTIndexer
 from tests import JinaTestCase
@@ -24,9 +24,9 @@ vec = np.random.random([10, 10])
 query = np.array(np.random.random([10, 10]), dtype=np.float32)
 
 
-@unittest.skipIf('py38' == py_tag, 'skip if python3.8 version is tested')
-class MyTestCase(JinaTestCase):
+class NgtIndexerTestCase(JinaTestCase):
 
+    @pytest.mark.skipIf('py38' == py_tag, 'skip if python3.8 version is tested')
     def test_simple_ngt(self):
         import ngtpy
         path = '/tmp/ngt-index'
@@ -54,16 +54,18 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(idx.shape, dist.shape)
         self.assertEqual(idx.shape, (queries, top_k))
 
+    @pytest.mark.skipIf('py38' == py_tag, 'skip if python3.8 version is tested')
     def test_ngt_indexer(self):
-        with NGTIndexer(index_filename='ngt.test.gz') as a:
-            a.add(vec_idx, vec)
-            a.save()
-            self.assertTrue(os.path.exists(a.index_abspath))
-            index_abspath = a.index_abspath
-            save_abspath = a.save_abspath
+        with NGTIndexer(index_filename='ngt.test.gz') as indexer:
+            indexer.add(vec_idx, vec)
+            indexer.save()
+            self.assertTrue(os.path.exists(indexer.index_abspath))
+            index_abspath = indexer.index_abspath
+            save_abspath = indexer.save_abspath
 
-        with BaseIndexer.load(save_abspath) as b:
-            idx, dist = b.query(query, top_k=4)
+        with BaseIndexer.load(save_abspath) as indexer:
+            self.assertIsInstance(indexer, NGTIndexer)
+            idx, dist = indexer.query(query, top_k=4)
             global retr_idx
             if retr_idx is None:
                 retr_idx = idx
@@ -73,7 +75,3 @@ class MyTestCase(JinaTestCase):
             self.assertEqual(idx.shape, (10, 4))
 
         self.add_tmpfile(index_abspath, save_abspath)
-
-
-if __name__ == '__main__':
-    unittest.main()
