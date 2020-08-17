@@ -13,16 +13,12 @@ class FitTransformEncoder(BaseNumericEncoder):
     """
 
     def __init__(self, model_path: Optional[str],
-                 output_dim: int,
-                 random_state=2020,
                  *args,
                  **kwargs):
         """
         :param output_dim: the output size.
         """
         super().__init__(*args, **kwargs)
-        self.output_dim = output_dim
-        self.random_state = random_state
         self.model_path = model_path
 
     def post_init(self):

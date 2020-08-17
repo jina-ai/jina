@@ -13,11 +13,7 @@ class IncrementalPCAEncoder(FitTransformEncoder):
         incremental way.
     """
 
-    def __init__(self,
-                 num_features: int = None,
-                 whiten: bool = False,
-                 *args,
-                 **kwargs):
+    def __init__(self, output_dim: int, num_features: int = None, whiten: bool = False, *args, **kwargs):
         """
 
         :param output_dim: the output size.
@@ -26,6 +22,7 @@ class IncrementalPCAEncoder(FitTransformEncoder):
         :param whiten: If whiten is false, the data is already considered to be whitened, and no whitening is performed.
         """
         super().__init__(*args, **kwargs)
+        self.output_dim = output_dim
         self.whiten = whiten
         self.num_features = num_features
         self.is_trained = False

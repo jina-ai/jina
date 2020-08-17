@@ -10,8 +10,10 @@ class RandomSparseEncoder(FitTransformEncoder):
     https://scikit-learn.org/stable/modules/generated/sklearn.random_projection.SparseRandomProjection.html
     """
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, output_dim: int, random_state=2020, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.output_dim = output_dim
+        self.random_state = random_state
 
     def post_init(self):
         super().post_init()
