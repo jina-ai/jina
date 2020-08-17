@@ -16,9 +16,17 @@ class ImportChecker:
     """Check all executors, drivers and handler functions in the package. """
 
     def __init__(self, args: 'argparse.Namespace'):
-        default_logger.info('\navailable executors\n'.upper())
+        default_logger.info('\navailable core executors\n'.upper())
 
         _r = import_classes('jina.executors', show_import_table=True, import_once=False)
+
+        if args.summary_exec:
+            with open(args.summary_exec, 'w') as fp:
+                print_dep_tree_rst(fp, _r, 'Executor')
+
+        default_logger.info('\navailable hub executors\n'.upper())
+
+        _r = import_classes('jina.hub', show_import_table=True, import_once=False)
 
         if args.summary_exec:
             with open(args.summary_exec, 'w') as fp:

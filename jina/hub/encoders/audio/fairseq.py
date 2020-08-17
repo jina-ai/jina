@@ -3,10 +3,10 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from .. import BaseAudioEncoder
-from ..frameworks import BaseTorchEncoder
-from ...decorators import batching, as_ndarray
-from ....helper import cached_property
+from jina.executors.decorators import batching, as_ndarray
+from jina.executors.encoders import BaseAudioEncoder
+from jina.executors.encoders.frameworks import BaseTorchEncoder
+from jina.helper import cached_property
 
 
 class Wav2VecSpeechEncoder(BaseTorchEncoder, BaseAudioEncoder):

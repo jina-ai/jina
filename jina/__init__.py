@@ -102,6 +102,10 @@ def import_classes(namespace: str, targets=None,
         import_type = 'DriverType'
         if import_once and JINA_GLOBAL.imported.drivers:
             return
+    elif namespace == 'jina.hub':
+        import_type = 'ExecutorType'
+        if import_once and JINA_GLOBAL.imported.executors:
+            return
     else:
         raise TypeError(f'namespace: {namespace} is unrecognized')
 
