@@ -68,6 +68,31 @@ class BasePaddleEncoder(PaddleDevice, BaseEncoder):
 
 
 class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
+    """
+    :class:`BaseMindsporeEncoder` is the base class for implementing Encoders with models from `mindspore`.
+
+    To implement your own executor with the :mod:`mindspore` lilbrary,
+
+    .. highlight:: python
+    .. code-block:: python
+        import mindspore.nn as nn
+
+        class YourAwesomeModel(nn.Cell):
+            def __init__(self):
+                ...
+
+            def construct(self, x):
+                ...
+
+        class YourAwesomeEncoder(BaseMindsporeEncoder):
+            def encode(self, data, *args, **kwargs):
+                from mindspore import Tensor
+                return self.model(Tensor(data)).asnumpy()
+
+            def get_model(self):
+                return YourAwesomeModel()
+
+    """
     def __init__(self, model_path: str, *args, **kwargs):
         """
 
