@@ -207,3 +207,18 @@ class FaissDevice(BaseDevice):
         import faiss
         device = self.device
         return faiss.index_cpu_to_gpu(device, 0, index, None) if device is not None else index
+
+
+class MindsporeDevice(BaseDevice):
+    """
+    :class:`MindsporeDevice` implements the base classes for the executors using :mod:`mindspore` library. The
+        common setups go into this class.
+    """
+    
+    @cached_property
+    def device(self):
+        return 'GPU' if self.on_gpu else 'CPU'
+    
+    def to_device(self):
+        import mindspore.context as context
+        context.set_context(mode=context.GRAPH_MODE, device_target=self.device)

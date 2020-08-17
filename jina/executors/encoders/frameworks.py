@@ -4,8 +4,9 @@ __license__ = "Apache-2.0"
 import os
 
 from . import BaseEncoder
-from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice
+from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice, MindsporeDevice
 from ...helper import is_url
+from ...helper import cached_property
 
 
 # mixin classes go first, base classes are read from right to left.
@@ -64,3 +65,55 @@ class BaseTorchEncoder(TorchDevice, BaseEncoder):
 
 class BasePaddleEncoder(PaddleDevice, BaseEncoder):
     pass
+
+
+class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
+    """
+    :class:`BaseMindsporeEncoder` is the base class for implementing Encoders with models from `mindspore`.
+
+    To implement your own executor with the :mod:`mindspore` lilbrary,
+
+    .. highlight:: python
+    .. code-block:: python
+        import mindspore.nn as nn
+
+        class YourAwesomeModel(nn.Cell):
+            def __init__(self):
+                ...
+
+            def construct(self, x):
+                ...
+
+        class YourAwesomeEncoder(BaseMindsporeEncoder):
+            def encode(self, data, *args, **kwargs):
+                from mindspore import Tensor
+                return self.model(Tensor(data)).asnumpy()
+
+            def get_model(self):
+                return YourAwesomeModel()
+
+    """
+    def __init__(self, model_path: str, *args, **kwargs):
+        """
+
+        :param model_path: the path of the model's checkpoint.
+        """
+        super().__init__(*args, **kwargs)
+        self.model_path = model_path
+
+    def post_init(self):
+        """
+        Load the model from the `.ckpt` checkpoint.
+        """
+        from mindspore.train.serialization import load_checkpoint, load_param_into_net
+        super().post_init()
+        self.to_device()
+        _param_dict = load_checkpoint(ckpt_file_name=self.model_path)
+        load_param_into_net(self.model, _param_dict)
+
+    @cached_property
+    def model(self):
+        return self.get_model()
+
+    def get_model(self):
+        raise NotImplemented('the model is not implemented')
