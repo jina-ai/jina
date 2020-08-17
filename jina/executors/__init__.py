@@ -1,10 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights re" \
-                "served."
-__license__ = "Apache-2.0"
-
 import os
 import pickle
 import re
@@ -27,7 +23,7 @@ from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 
 if False:
-    from ..drivers import BaseDriver
+    pass
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
