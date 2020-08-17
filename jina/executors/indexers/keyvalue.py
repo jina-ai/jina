@@ -7,9 +7,9 @@ from typing import Iterator, Optional
 
 from google.protobuf.json_format import Parse
 
-from jina import __binary_delimiter__
-from jina.executors.indexers import BaseKVIndexer
-from jina.proto import jina_pb2
+from . import BaseKVIndexer
+from ... import __binary_delimiter__
+from ...proto import jina_pb2
 
 
 class BasePbIndexer(BaseKVIndexer):
