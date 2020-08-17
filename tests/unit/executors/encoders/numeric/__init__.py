@@ -19,12 +19,28 @@ class NumericTestCase(JinaTestCase):
         self._target_output_dim = output_dim
 
     @property
+    def requires_train_after_load(self):
+        return self._requires_train_after_load
+
+    @requires_train_after_load.setter
+    def requires_train_after_load(self, train_after_load):
+        self._requires_train_after_load = train_after_load
+
+    @property
     def input_dim(self):
         return self._input_dim
 
     @input_dim.setter
     def input_dim(self, input_dim):
         self._input_dim = input_dim
+
+    @property
+    def train_data(self):
+        return self._train_data
+
+    @train_data.setter
+    def train_data(self, train_data):
+        self._train_data = train_data
 
     def get_encoder(self):
         encoder = self._get_encoder()
@@ -55,9 +71,13 @@ class NumericTestCase(JinaTestCase):
         encoder.save()
         self.assertTrue(os.path.exists(encoder.save_abspath))
         encoder_loaded = BaseExecutor.load(encoder.save_abspath)
-        encoded_data_test = encoder_loaded.encode(test_data)
-        np.testing.assert_array_equal(
-            encoded_data_test, encoded_data_control)
+
+        if not self.requires_train_after_load:
+            # some models are not deterministic when training, so even with same training data, we cannot ensure
+            # same encoding results
+            encoded_data_test = encoder_loaded.encode(test_data)
+            np.testing.assert_array_equal(
+                encoded_data_test, encoded_data_control)
 
     def test_save_and_load_config(self):
         encoder = self.get_encoder()
@@ -66,4 +86,10 @@ class NumericTestCase(JinaTestCase):
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-        self.assertEqual(encoder_loaded.output_dim, encoder.output_dim)
+
+        if self.requires_train_after_load:
+            encoder_loaded.train(self.train_data)
+
+        test_data = np.random.rand(10, self.input_dim)
+        encoded_data_test = encoder_loaded.encode(test_data)
+        self.assertEqual(encoded_data_test.shape, (10, self.target_output_dim))

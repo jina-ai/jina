@@ -1,10 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from . import FitTransformEncoder
+from . import TransformEncoder
 
 
-class IncrementalPCAEncoder(FitTransformEncoder):
+class IncrementalPCAEncoder(TransformEncoder):
     """
     :class:`IncrementalPCAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
 
@@ -29,6 +29,7 @@ class IncrementalPCAEncoder(FitTransformEncoder):
         self.model = None
 
     def post_init(self):
+        super().post_init()
         if not self.model:
             from sklearn.decomposition import IncrementalPCA
             self.model = IncrementalPCA(

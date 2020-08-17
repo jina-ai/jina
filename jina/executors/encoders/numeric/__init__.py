@@ -6,17 +6,17 @@ from ...decorators import batching
 from jina.excepts import UndefinedModel
 
 
-class FitTransformEncoder(BaseNumericEncoder):
+class TransformEncoder(BaseNumericEncoder):
     """
-    :class:`FitTransformEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
-    Parent class for RandomGaussianEncoder, RandomSparseEncoder and TSNEEncoder to prevent redundant code
+    :class:`TransformEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
     """
 
-    def __init__(self, model_path: Optional[str],
+    def __init__(self,
+                 model_path: Optional[str] = None,
                  *args,
                  **kwargs):
         """
-        :param output_dim: the output size.
+        :param model_path: path from where to pickle the sklearn model.
         """
         super().__init__(*args, **kwargs)
         self.model_path = model_path
@@ -32,9 +32,9 @@ class FitTransformEncoder(BaseNumericEncoder):
     def train(self, data: 'np.ndarray', *args, **kwargs):
         if not self.model:
             raise UndefinedModel(
-                'Model is not defined: Provide a loadable pickled model, or defined any specific FitTransformEncoder')
+                'Model is not defined: Provide a loadable pickled model, or defined any specific TransformEncoder')
         num_samples, num_features = data.shape
-        if not self.num_features:
+        if not getattr(self, 'num_features', None):
             self.num_features = num_features
         if num_samples < 5 * num_features:
             self.logger.warning(
