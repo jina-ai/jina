@@ -215,11 +215,6 @@ class MindsporeDevice(BaseDevice):
         common setups go into this class.
     """
 
-    @cached_property
-    def device(self):
-        return 'GPU' if self.on_gpu else 'CPU'
-
     def to_device(self):
         import mindspore.context as context
         context.set_context(mode=context.GRAPH_MODE, device_target=self.device)
-
