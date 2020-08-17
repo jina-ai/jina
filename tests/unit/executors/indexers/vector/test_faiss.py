@@ -25,15 +25,16 @@ class FaissTestCase(JinaTestCase):
         with gzip.open(train_filepath, 'wb', compresslevel=1) as f:
             f.write(train_data.tobytes())
 
-        with FaissIndexer(index_filename='faiss.test.gz', index_key='IVF10,PQ2', train_filepath=train_filepath) as a:
-            a.add(vec_idx, vec)
-            a.save()
-            self.assertTrue(os.path.exists(a.index_abspath))
-            index_abspath = a.index_abspath
-            save_abspath = a.save_abspath
+        with FaissIndexer(index_filename='faiss.test.gz', index_key='IVF10,PQ2', train_filepath=train_filepath) as indexer:
+            indexer.add(vec_idx, vec)
+            indexer.save()
+            self.assertTrue(os.path.exists(indexer.index_abspath))
+            index_abspath = indexer.index_abspath
+            save_abspath = indexer.save_abspath
 
-        with BaseIndexer.load(save_abspath) as b:
-            idx, dist = b.query(query, top_k=4)
+        with BaseIndexer.load(save_abspath) as indexer:
+            self.assertIsInstance(indexer, FaissIndexer)
+            idx, dist = indexer.query(query, top_k=4)
             global retr_idx
             if retr_idx is None:
                 retr_idx = idx

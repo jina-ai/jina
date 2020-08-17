@@ -10,13 +10,20 @@ As a starter, we invite you to try Jina's "Hello, World" - a simple demo of imag
     jina hello-world
 
 
-...or even easier for Docker users, *no any install required*, simply:
+or even easier for Docker users, *no install required*, simply for MacOS:
 
 
 .. highlight:: bash
 .. code-block:: bash
 
-    docker run -v "$(pwd)/j:/j" jinaai/jina:devel hello-world --workdir /j --logserver && open j/hello-world.html
+    docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
+
+or for Linux:
+
+.. highlight:: bash
+.. code-block:: bash
+
+    docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && xdg-open j/hello-world.html
 
 
 .. image:: hello-world-demo.png
@@ -40,10 +47,10 @@ And the implementation behind? As simple as it should be:
 
         from jina.flow import Flow
 
-        f = Flow.load_config('index.yml')
+        f = Flow.load_config('helloworld.flow.index.yml')
 
         with f:
-            f.index(input_fn)
+            f.index_ndarray(fashion_mnist)
 
 .. confval:: YAML spec
 
@@ -52,24 +59,14 @@ And the implementation behind? As simple as it should be:
 
         !Flow
         pods:
-          chunk_seg:
-            uses: helloworld.crafter.yml
-            replicas: $REPLICAS
-            read_only: true
-          doc_idx:
-            uses: helloworld.indexer.doc.yml
           encode:
             uses: helloworld.encoder.yml
-            needs: chunk_seg
-            replicas: $REPLICAS
-          chunk_idx:
-            uses: helloworld.indexer.chunk.yml
-            replicas: $SHARDS
+            parallel: 2
+          index:
+            uses: helloworld.indexer.yml
+            shards: 2
             separated_workspace: true
-          join_all:
-            uses: _merge
-            needs: [doc_idx, chunk_idx]
-            read_only: true
+
 
 .. confval:: Flow in Dashboard
 
@@ -98,7 +95,7 @@ or if you use Docker:
 .. code-block:: bash
 
 
-    docker run -p 5000:5000 -v $(pwd)/tmp:/workspace jinaai/jina:devel hello-world --workdir /workspace --logserver && open tmp/hello-world.html
+    docker run -p 5000:5000 -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j --logserver && open j/hello-world.html # replace "open" with "xdg-open" on Linux
 
 
 

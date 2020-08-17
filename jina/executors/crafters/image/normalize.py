@@ -14,7 +14,7 @@ class ImageNormalizer(BaseCrafter):
         it receives values of file names on the doc-level and returns image matrix on the chunk-level """
 
     def __init__(self,
-                 target_size: Union[Tuple[int], int],
+                 target_size: Union[Tuple[int, int], int],
                  img_mean: Tuple[float] = (0, 0, 0),
                  img_std: Tuple[float] = (1, 1, 1),
                  resize_dim: int = 256,

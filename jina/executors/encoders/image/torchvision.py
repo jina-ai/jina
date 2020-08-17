@@ -42,6 +42,7 @@ class ImageTorchEncoder(BaseTorchEncoder):
         """
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
+        # axis 0 is the batch
         self._default_channel_axis = 1
         self.model_name = 'mobilenet_v2' or model_name
         if pool_strategy not in ('mean', 'max', None):
