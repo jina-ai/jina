@@ -94,3 +94,7 @@ class GatewayPartialMessage(Exception):
 
 class MilvusDBException(Exception):
     """Any time Milvus client returns Status not OK"""
+
+
+class UndefinedModel(Exception):
+    """Any time a non-defined model is tried to be used """
