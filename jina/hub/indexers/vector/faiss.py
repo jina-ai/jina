@@ -6,7 +6,7 @@ from typing import Tuple
 import numpy as np
 
 from jina.executors.devices import FaissDevice
-from . import BaseNumpyIndexer
+from jina.executors.indexers.vector import BaseNumpyIndexer
 
 
 class FaissIndexer(FaissDevice, BaseNumpyIndexer):

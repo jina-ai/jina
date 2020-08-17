@@ -5,7 +5,7 @@ from typing import Tuple
 
 import numpy as np
 
-from . import BaseNumpyIndexer
+from jina.executors.indexers.vector import BaseNumpyIndexer
 
 
 class SptagIndexer(BaseNumpyIndexer):

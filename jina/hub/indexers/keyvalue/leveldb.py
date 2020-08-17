@@ -6,8 +6,8 @@ from typing import Optional
 
 from google.protobuf.json_format import Parse
 
+from jina.executors.indexers.keyvalue import BasePbIndexer
 from jina.proto import jina_pb2
-from .proto import BasePbIndexer
 
 
 class LeveldbIndexer(BasePbIndexer):
