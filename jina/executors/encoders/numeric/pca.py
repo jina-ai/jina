@@ -1,13 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import numpy as np
-
-from .. import BaseNumericEncoder
-from ...decorators import batching, require_train
+from . import TransformEncoder
 
 
-class IncrementalPCAEncoder(BaseNumericEncoder):
+class IncrementalPCAEncoder(TransformEncoder):
     """
     :class:`IncrementalPCAEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
 
@@ -16,12 +13,7 @@ class IncrementalPCAEncoder(BaseNumericEncoder):
         incremental way.
     """
 
-    def __init__(self,
-                 output_dim: int,
-                 num_features: int = None,
-                 whiten: bool = False,
-                 *args,
-                 **kwargs):
+    def __init__(self, output_dim: int, num_features: int = None, whiten: bool = False, *args, **kwargs):
         """
 
         :param output_dim: the output size.
@@ -37,30 +29,9 @@ class IncrementalPCAEncoder(BaseNumericEncoder):
         self.model = None
 
     def post_init(self):
-        from sklearn.decomposition import IncrementalPCA
+        super().post_init()
         if not self.model:
+            from sklearn.decomposition import IncrementalPCA
             self.model = IncrementalPCA(
                 n_components=self.output_dim,
                 whiten=self.whiten)
-
-    @batching
-    def train(self, data: 'np.ndarray', *args, **kwargs):
-        num_samples, num_features = data.shape
-        if not self.num_features:
-            self.num_features = num_features
-        if num_samples < 5 * num_features:
-            self.logger.warning(
-                'the batch size (={}) is suggested to be 5 * num_features(={}) to provide a balance between '
-                'approximation accuracy and memory consumption.'.format(num_samples, num_features))
-        self.model.partial_fit(data)
-        self.is_trained = True
-
-    @require_train
-    @batching
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        """
-        :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
-        :return: a `B x D` numpy ``ndarray``
-        """
-        _, num_features = data.shape
-        return self.model.transform(data)
