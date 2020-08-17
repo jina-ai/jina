@@ -95,7 +95,7 @@ or if you use Docker:
 .. code-block:: bash
 
 
-    docker run -p 5000:5000 -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j --logserver && open tmp/hello-world.html # replace "open" with "xdg-open" on Linux
+    docker run -p 5000:5000 -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j --logserver && open j/hello-world.html # replace "open" with "xdg-open" on Linux
 
 
 
