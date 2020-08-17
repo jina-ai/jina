@@ -4,10 +4,10 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 from jina.executors.decorators import batching
-from . import TransformEncoder
+from jina.executors.encoders import BaseNumericEncoder
 
 
-class TSNEEncoder(TransformEncoder):
+class TSNEEncoder(BaseNumericEncoder):
     """
     :class:`TSNEEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`.
     https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
