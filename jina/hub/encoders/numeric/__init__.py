@@ -16,7 +16,7 @@ class TransformEncoder(BaseNumericEncoder):
     """
 
     def __init__(self,
-                 output_dim: int,
+                 output_dim: int = 64,
                  model_path: Optional[str] = None,
                  random_state: int = 2020,
                  *args,
