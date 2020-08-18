@@ -9,10 +9,6 @@
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true  "Jina is licensed under Apache-2.0")](#license)
 [![Jina Docs](https://github.com/jina-ai/jina/blob/master/.github/badges/docs-badge.svg?raw=true  "Checkout our docs and learn Jina")](https://docs.jina.ai)
 [![We are hiring](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-corp-badge-hiring.svg?raw=true  "We are hiring full-time position at Jina")](https://jobs.jina.ai)
-<a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
-  <img src="https://github.com/jina-ai/jina/blob/master/.github/badges/twitter-badge.svg?raw=true "
-       alt="tweet button" title="👍Share Jina with your friends on Twitter"></img>
-</a>
 [![Python 3.7 3.8](https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true  "Jina supports Python 3.7 and above")](https://pypi.org/project/jina/)
 [![PyPI](https://img.shields.io/pypi/v/jina?color=%23099cec&label=PyPI%20package&logo=pypi&logoColor=white)](https://pypi.org/project/jina/)
 [![Docker](https://github.com/jina-ai/jina/blob/master/.github/badges/docker-badge.svg?raw=true  "Jina is multi-arch ready, can run on different architectures")](https://hub.docker.com/r/jinaai/jina/tags)
@@ -77,8 +73,8 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Community](#community)
-- [Join Us](#join-us)
 - [Open Governance](#open-governance)
+- [Join Us](#join-us)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -180,8 +176,6 @@ pods:
 </tr>
 </table>
 
-All the big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards. They all happened in just one minute!
-
 #### Adding Parallelism and Sharding
 
 ```python
@@ -215,7 +209,7 @@ from jina.flow import Flow
 
 f = (Flow().add(name='eb1', uses='BiTImageEncoder')
            .add(name='eb2', uses='KerasImageEncoder', needs='gateway')
-           .join(needs=['eb1', 'eb2'], uses='_concat'))
+           .needs(['eb1', 'eb2'], uses='_concat'))
 ``` 
 
 #### [Enabling Network Queries](https://docs.jina.ai/chapters/restapi/index.html)
@@ -339,14 +333,6 @@ Improve performance using prefetching and sharding
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Revisit "Hello, World!" in a Client-Server Architecture</a></h4>
-Run a Flow remotely and connect from a local client
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-<tr>
-<td>
 <h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
 Run Jina on remote instances and distribute your workflow
 </td>
@@ -436,20 +422,21 @@ We welcome all kinds of contributions from the open-source community, individual
 - [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow us and interact with using hashtag `#JinaSearch`  
 - [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source!
 
-## Join Us
-
-Jina is an open-source project. [We are hiring](https://jina.ai/#/jobs) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
-
 ## Open Governance
 
 [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to Jina's future improvements.
 
-As a part of open governance model, we host the [**Engineering All Hands**]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) of Jina AI in public. This Zoom meeting recurs monthly on the second Tuesday, 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
+As a part of open governance model, we host the [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) of Jina AI in public. This Zoom meeting recurs monthly on the second Tuesday, 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
 
 - [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
 - [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
 
-The meeting will also be live-streamed and later published to our [Youtube channel](https://youtube.com/c/jina-ai). Make sure to subscribe it if you want to watch the replay.
+The meeting will also be live-streamed and later published to our [Youtube channel](https://youtube.com/c/jina-ai).
+
+## Join Us
+
+Jina is an open-source project. [We are hiring](https://jobs.jina.ai) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
+
 
 ## License
 
