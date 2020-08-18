@@ -5,7 +5,7 @@ from typing import Dict
 
 import numpy as np
 
-from . import Chunk2DocRanker
+from jina.executors.rankers import Chunk2DocRanker
 
 
 class TfIdfRanker(Chunk2DocRanker):

@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from . import Chunk2DocRanker
+from jina.executors.rankers import Chunk2DocRanker
 
 
 class BiMatchRanker(Chunk2DocRanker):

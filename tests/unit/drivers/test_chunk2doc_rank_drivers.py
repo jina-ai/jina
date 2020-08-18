@@ -1,5 +1,6 @@
 from jina.drivers.rank import Chunk2DocRankDriver
-from jina.hub.rankers import Chunk2DocRanker, MaxRanker, MinRanker
+from jina.hub.rankers import MaxRanker, MinRanker
+from jina.executors.rankers import Chunk2DocRanker
 from jina.proto import jina_pb2
 from tests import JinaTestCase
 
