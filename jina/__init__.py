@@ -205,6 +205,7 @@ def import_classes(namespace: str, targets=None,
 # driver first, as executor may contain driver
 import_classes('jina.drivers', show_import_table=False, import_once=True)
 import_classes('jina.executors', show_import_table=False, import_once=True)
+import_classes('jina.hub', show_import_table=False, import_once=True)
 
 # manually install the default signal handler
 import signal
