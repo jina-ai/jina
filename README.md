@@ -41,9 +41,7 @@
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
   <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> • 
-  <!---
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
-  -->  
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
   <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
@@ -61,9 +59,9 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, you name it!
 
 🚀 **Production Ready** - Cloud-native features come out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
-<!---
+
 🧩 **Plug & Play** - Extend Jina with simple Python scripts or Docker images optimized for your search domain. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) for more extensions.
--->
+
 ## Contents
 
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
@@ -99,7 +97,7 @@ To install Jina with extra dependencies, or install on Raspberry Pi [please refe
 
 #### ...or Run in a Docker Container
 
-We provide a universal Docker image (only 80MB!) that supports multiple architectures (including x64, x86, arm-64/v7/v6). Simply run:
+We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). Simply run:
 
 ```bash
 docker run jinaai/jina --help
@@ -334,7 +332,7 @@ Search images, define your own executors, and run them in Docker
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Video Semantic Search in Scale with Prefetching and Sharding</a></h4>
-Increase performance using prefetching and sharding
+Improve performance using prefetching and sharding
 </td>
 <td><h3>🕊</h3></td>
 </tr>
@@ -380,16 +378,6 @@ Search Pokemon with SOTA visual representation!
 </td>
 <td><h3>🚀</h3></td>
 </tr>
-<!---
-<tr>
-<td>
-<h4><a href="https://github.com/jina-ai/jina-hub#publish-your-pod-image-to-jina-hub">Share Your Extension with the World</a></h4>
-Share your extensions with engineers around the globe on Jina Hub
-</td>
-<td><h3>🚀</h3></td>
-</tr>
--->
-
 </table>
 
 ## Documentation
@@ -456,11 +444,10 @@ Jina is an open-source project. [We are hiring](https://jina.ai/#/jobs) full-sta
 
 [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to Jina's future improvements.
 
-As a part of open governance model, we host the **Engineering All Hands** of Jina AI in public. This Zoom meeting recurs monthly on the second Tuesday, 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
+As a part of open governance model, we host the [**Engineering All Hands**]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) of Jina AI in public. This Zoom meeting recurs monthly on the second Tuesday, 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
 
 - [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
 - [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
-- [Engineering All Hands in Public](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)
 
 The meeting will also be live-streamed and later published to our [Youtube channel](https://youtube.com/c/jina-ai). Make sure to subscribe it if you want to watch the replay.
 
