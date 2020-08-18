@@ -1,12 +1,15 @@
+import unittest
+
 from jina.helper import cached_property
 from tests import JinaTestCase
-import unittest
+
 
 class MyTestCase(JinaTestCase):
 
     def test_cached_property(self):
         """Test the cached_property decorator"""
         new_value = "99999"
+
         class TestClass:
             def __init__(self):
                 self.value = "11111"
@@ -37,5 +40,5 @@ class MyTestCase(JinaTestCase):
         self.assertEqual(second_uncached_test_property, "99999")
 
 
-if __name__  == "__main__":
+if __name__ == "__main__":
     unittest.main()

@@ -4,7 +4,7 @@ import gzip
 
 import numpy as np
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.vector.faiss import FaissIndexer
+from jina.hub.indexers.vector.faiss import FaissIndexer
 from tests import JinaTestCase
 
 # fix the seed here

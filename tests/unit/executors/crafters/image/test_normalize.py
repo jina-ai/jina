@@ -1,4 +1,4 @@
-from jina.executors.crafters.image.normalize import ImageNormalizer
+from jina.hub.crafters.image.normalize import ImageNormalizer
 from tests.unit.executors.crafters.image import JinaImageTestCase
 
 

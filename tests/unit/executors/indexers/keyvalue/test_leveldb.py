@@ -4,7 +4,7 @@ import unittest
 import jina.proto.jina_pb2 as jina_pb2
 from google.protobuf.json_format import MessageToJson
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.keyvalue.leveldb import LeveldbIndexer
+from jina.hub.indexers.keyvalue.leveldb import LeveldbIndexer
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

@@ -1,9 +1,10 @@
 import io
 import os
 
-from PIL import Image
 import numpy as np
-from jina.executors.crafters.image.io import ImageReader
+from PIL import Image
+
+from jina.hub.crafters.image.io import ImageReader
 from tests.unit.executors.crafters.image import JinaImageTestCase
 
 

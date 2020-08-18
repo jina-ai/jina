@@ -1,4 +1,4 @@
-from jina.executors.crafters.image.segmenter import RandomImageCropper, FiveImageCropper, \
+from jina.hub.crafters.image.segmenter import RandomImageCropper, FiveImageCropper, \
     SlidingWindowImageCropper
 from tests.unit.executors.crafters.image import JinaImageTestCase
 

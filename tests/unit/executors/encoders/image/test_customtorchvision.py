@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from tests.unit.executors.encoders.image import ImageTestCase
-from jina.executors.encoders.image.torchvision import CustomImageTorchEncoder
+from jina.hub.encoders.image.torchvision import CustomImageTorchEncoder
 from jina.executors import BaseExecutor
 
 

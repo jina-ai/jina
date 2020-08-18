@@ -1,4 +1,4 @@
-from jina.executors.encoders.nlp.farm import FarmTextEncoder
+from jina.hub.encoders.nlp.farm import FarmTextEncoder
 from tests.unit.executors.encoders.nlp import NlpTestCase
 
 

@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import numpy as np
 
-from jina.executors.encoders.nlp.transformer import TransformerTorchEncoder, TransformerTFEncoder
+from jina.hub.encoders.nlp.transformer import TransformerTorchEncoder, TransformerTFEncoder
 
 
 class MockPtModel:

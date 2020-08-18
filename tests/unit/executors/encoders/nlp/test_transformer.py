@@ -1,4 +1,4 @@
-from jina.executors.encoders.nlp.transformer import TransformerTFEncoder, TransformerTorchEncoder
+from jina.hub.encoders.nlp.transformer import TransformerTFEncoder, TransformerTorchEncoder
 from tests.unit.executors.encoders.nlp import NlpTestCase
 
 

@@ -1,8 +1,9 @@
 import os
-import numpy as np
-from PIL import Image, ImageChops
 
-from jina.executors.crafters.image.crop import ImageCropper, CenterImageCropper
+import numpy as np
+from PIL import Image
+
+from jina.hub.crafters.image.crop import ImageCropper, CenterImageCropper
 from tests.unit.executors.crafters.image import JinaImageTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

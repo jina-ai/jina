@@ -1,7 +1,7 @@
-from jina.executors.crafters.image.flip import ImageFlipper
-from tests.unit.executors.crafters.image import JinaImageTestCase
-
 import numpy as np
+
+from jina.hub.crafters.image.flip import ImageFlipper
+from tests.unit.executors.crafters.image import JinaImageTestCase
 
 
 class ImageFlipperTestCase(JinaImageTestCase):

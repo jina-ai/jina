@@ -1,6 +1,6 @@
 import unittest
 
-from jina.executors.crafters.audio.io import AudioReader
+from jina.hub.crafters.audio.io import AudioReader
 from tests import JinaTestCase
 
 

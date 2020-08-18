@@ -1,4 +1,4 @@
-from jina.executors.encoders.video.torchvision import VideoTorchEncoder
+from jina.hub.encoders.video.torchvision import VideoTorchEncoder
 from tests.unit.executors.encoders.video import VideoTestCase
 
 

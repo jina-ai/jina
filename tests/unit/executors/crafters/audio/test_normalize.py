@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from jina.executors.crafters.audio.normalize import AudioNormalizer
+from jina.hub.crafters.audio.normalize import AudioNormalizer
 from tests import JinaTestCase
 
 

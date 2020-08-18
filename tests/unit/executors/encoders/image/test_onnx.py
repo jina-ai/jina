@@ -1,4 +1,4 @@
-from jina.executors.encoders.image.onnx import OnnxImageEncoder
+from jina.hub.encoders.image.onnx import OnnxImageEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 
 

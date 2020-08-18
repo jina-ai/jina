@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from jina.executors.crafters.audio.split import AudioSlicer, SlidingWindowAudioSlicer
+from jina.hub.crafters.audio.split import AudioSlicer, SlidingWindowAudioSlicer
 from tests import JinaTestCase
 
 

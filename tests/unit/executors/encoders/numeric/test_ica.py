@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
-from jina.executors.encoders.numeric import TransformEncoder
-from jina.executors.encoders.numeric.ica import FastICAEncoder
+from jina.hub.encoders.numeric import TransformEncoder
+from jina.hub.encoders.numeric.ica import FastICAEncoder
 from tests.unit.executors.encoders.numeric import NumericTestCase
 
 

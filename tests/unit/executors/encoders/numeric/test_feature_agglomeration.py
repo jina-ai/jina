@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
-from jina.executors.encoders.numeric import TransformEncoder
-from jina.executors.encoders.numeric.feature_agglomeration import FeatureAgglomerationEncoder
+from jina.hub.encoders.numeric import TransformEncoder
+from jina.hub.encoders.numeric.feature_agglomeration import FeatureAgglomerationEncoder
 from tests.unit.executors.encoders.numeric import NumericTestCase
 
 

@@ -1,4 +1,4 @@
-from jina.executors.encoders.image.torchvision import ImageTorchEncoder
+from jina.hub.encoders.image.torchvision import ImageTorchEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 
 
