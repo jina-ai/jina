@@ -75,6 +75,7 @@ JINA_GLOBAL = SimpleNamespace()
 JINA_GLOBAL.imported = SimpleNamespace()
 JINA_GLOBAL.imported.executors = False
 JINA_GLOBAL.imported.drivers = False
+JINA_GLOBAL.imported.hub = False
 JINA_GLOBAL.stack = SimpleNamespace()
 JINA_GLOBAL.stack.id = random.randint(0, 10000)
 JINA_GLOBAL.logserver = SimpleNamespace()
@@ -104,7 +105,7 @@ def import_classes(namespace: str, targets=None,
             return
     elif namespace == 'jina.hub':
         import_type = 'ExecutorType'
-        if import_once and JINA_GLOBAL.imported.executors:
+        if import_once and JINA_GLOBAL.imported.hub:
             return
     else:
         raise TypeError(f'namespace: {namespace} is unrecognized')
@@ -198,6 +199,8 @@ def import_classes(namespace: str, targets=None,
         JINA_GLOBAL.imported.executors = True
     elif namespace == 'jina.drivers':
         JINA_GLOBAL.imported.drivers = True
+    elif namespace == 'jina.hub':
+        JINA_GLOBAL.imported.hub = True
 
     return depend_tree
 
