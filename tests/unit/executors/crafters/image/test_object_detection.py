@@ -1,10 +1,10 @@
+import os
 from unittest.mock import patch
 
-import os
-import pytest
 import numpy as np
+import pytest
 
-from jina.executors.crafters.image.object_detection import TorchObjectDetectionSegmenter
+from jina.hub.crafters.image.object_detection import TorchObjectDetectionSegmenter
 from tests.unit.executors.crafters.image import JinaImageTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

@@ -68,12 +68,17 @@ def print_load_table(load_stat: Dict[str, List[Any]]):
     from .logging import default_logger
 
     load_table = []
+    cached = set()
+
     for k, v in load_stat.items():
         for cls_name, import_stat, err_reason in v:
-            load_table.append('%-5s %-25s %-40s %s' % (
-                colored('✓', 'green') if import_stat else colored('✗', 'red'),
-                cls_name if cls_name else colored('Module load error', 'red'), k, str(err_reason)))
+            if cls_name not in cached:
+                load_table.append('%-5s %-25s %-40s %s' % (
+                    colored('✓', 'green') if import_stat else colored('✗', 'red'),
+                    cls_name if cls_name else colored('Module load error', 'red'), k, str(err_reason)))
+                cached.add(cls_name)
     if load_table:
+        load_table.sort()
         load_table = ['', '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
                       '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10)] + load_table
         default_logger.info('\n'.join(load_table))

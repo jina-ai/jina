@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pytest
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.vector.ngt import NGTIndexer
+from jina.hub.indexers.vector.ngt import NGTIndexer
 from tests import JinaTestCase
 import sys
 

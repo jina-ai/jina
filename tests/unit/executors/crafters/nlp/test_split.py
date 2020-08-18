@@ -1,7 +1,7 @@
 import unittest
 
-from jina.executors.crafters.nlp.split import Sentencizer, JiebaSegmenter, SlidingWindowSegmenter
 from jina.flow import Flow
+from jina.hub.crafters.nlp.split import Sentencizer, JiebaSegmenter, SlidingWindowSegmenter
 from tests import JinaTestCase
 
 

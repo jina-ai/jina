@@ -1,4 +1,4 @@
-from jina.executors.encoders.numeric.tsne import TSNEEncoder
+from jina.hub.encoders.numeric.tsne import TSNEEncoder
 from tests.unit.executors.encoders.numeric import NumericTestCase
 
 

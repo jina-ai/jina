@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 
-from jina.executors.encoders.image.keras import CustomKerasImageEncoder
+from jina.hub.encoders.image.keras import CustomKerasImageEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 from jina.executors import BaseExecutor
 

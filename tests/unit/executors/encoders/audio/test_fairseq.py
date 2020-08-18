@@ -3,7 +3,7 @@ import pytest
 
 import numpy as np
 
-from jina.executors.encoders.audio.fairseq import Wav2VecSpeechEncoder
+from jina.hub.encoders.audio.fairseq import Wav2VecSpeechEncoder
 from tests.unit.executors import ExecutorTestCase
 
 

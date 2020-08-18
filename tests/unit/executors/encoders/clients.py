@@ -3,7 +3,7 @@ import pytest
 
 import numpy as np
 from jina.executors import BaseExecutor
-from jina.executors.encoders.clients import UnaryTFServingClientEncoder
+from jina.executors.encoders.tfserving import UnaryTFServingClientEncoder
 from tests import JinaTestCase
 
 

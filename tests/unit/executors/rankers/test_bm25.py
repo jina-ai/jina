@@ -1,4 +1,4 @@
-from jina.executors.rankers.tfidf import BM25Ranker
+from jina.hub.rankers.tfidf import BM25Ranker
 from tests.unit.executors.rankers import RankerTestCase
 
 

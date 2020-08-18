@@ -19,6 +19,7 @@ class BaseEncoder(BaseExecutor):
     .. seealso::
         :mod:`jina.drivers.handlers.encode`
     """
+
     def encode(self, data: Any, *args, **kwargs) -> Any:
         raise NotImplementedError
 

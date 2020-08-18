@@ -15,6 +15,7 @@ class BaseTFServingClientEncoder(BaseTFServingClientExecutor, BaseEncoder):
         the gRPC port of the tf server.
 
     """
+
     def encode(self, data: Any, *args, **kwargs) -> Any:
         _req = self.get_request(data)
         return self.get_response(_req)
@@ -26,6 +27,7 @@ class UnaryTFServingClientEncoder(BaseTFServingClientEncoder):
         case, in which both the request and the response have a single data field.
 
     """
+
     def __init__(self, input_name: str, output_name: str, *args, **kwargs):
         """
         :param input_name: the name of data field in the request

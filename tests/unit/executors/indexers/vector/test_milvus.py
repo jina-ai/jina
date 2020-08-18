@@ -1,7 +1,7 @@
 import os
 
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.vector.milvus import MilvusIndexer
+from jina.hub.indexers.vector.milvus import MilvusIndexer
 from tests import JinaTestCase
 
 

@@ -1,4 +1,4 @@
-from jina.executors.encoders.nlp.flair import FlairTextEncoder
+from jina.hub.encoders.nlp.flair import FlairTextEncoder
 from tests.unit.executors.encoders.nlp import NlpTestCase
 
 

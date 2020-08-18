@@ -1,6 +1,6 @@
 import numpy as np
 
-from jina.executors.encoders.audio.spectral import MFCCTimbreEncoder, ChromaPitchEncoder
+from jina.hub.encoders.audio.spectral import MFCCTimbreEncoder, ChromaPitchEncoder
 from tests import JinaTestCase
 
 

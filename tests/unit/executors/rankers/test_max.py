@@ -1,4 +1,4 @@
-from jina.executors.rankers import MaxRanker
+from jina.hub.rankers import MaxRanker
 from tests.unit.executors.rankers import RankerTestCase
 
 

@@ -1,7 +1,11 @@
 from unittest.case import TestCase
 from unittest.mock import patch
 
-from jina.executors.encoders.nlp.transformer import TransformerTorchEncoder, TransformerTFEncoder
+
+import numpy as np
+
+from jina.hub.encoders.nlp.transformer import TransformerTorchEncoder, TransformerTFEncoder
+
 
 
 class MockPtModel:

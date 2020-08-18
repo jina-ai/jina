@@ -1,6 +1,6 @@
 import os
 
-from jina.executors.encoders.nlp.paddlehub import TextPaddlehubEncoder
+from jina.hub.encoders.nlp.paddlehub import TextPaddlehubEncoder
 from tests.unit.executors.encoders.nlp import NlpTestCase
 
 

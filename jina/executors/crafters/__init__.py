@@ -10,9 +10,7 @@ from .. import BaseExecutor
 class BaseCrafter(BaseExecutor):
     """A :class:`BaseCrafter` craft the content of `Document` or `Chunk`. It can be used for preprocessing,
     segmenting etc.
-
     The apply function is :func:`craft`, where the name of the arguments will be used as keys of the content.
-
     .. seealso::
         :mod:`jina.drivers.handlers.craft`
     """
@@ -25,7 +23,6 @@ class BaseCrafter(BaseExecutor):
 
     def craft(self, *args, **kwargs) -> Dict:
         """The apply function of this executor.
-
         The name of the arguments are used as keys, which are then used to tell :class:`Driver` what information to extract
         from the protobuf request accordingly. Therefore the name of the arguments should be always valid keys defined
         in the protobuf.
@@ -39,12 +36,10 @@ class BaseSegmenter(BaseCrafter):
 
     def craft(self, *args, **kwargs) -> List[Dict]:
         """The apply function of this executor.
-
         Unlike :class:`BaseCrafter`, the :func:`craft` here works on doc-level info and the output is defined on
         chunk-level. Therefore the name of the arguments should be always valid keys defined
         in the doc-level protobuf whereas the output dict keys should always be valid keys defined in the chunk-level
         protobuf.
-
         :return: a list of chunks-level info represented by a dict
         """
         raise NotImplementedError

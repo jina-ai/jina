@@ -1,4 +1,4 @@
-from jina.executors.encoders.image.paddlehub import ImagePaddlehubEncoder
+from jina.hub.encoders.image.paddlehub import ImagePaddlehubEncoder
 from tests.unit.executors.encoders.image import ImageTestCase
 
 

@@ -1,4 +1,4 @@
-from jina.executors.crafters.image.resize import ImageResizer
+from jina.hub.crafters.image.resize import ImageResizer
 from tests.unit.executors.crafters.image import JinaImageTestCase
 
 

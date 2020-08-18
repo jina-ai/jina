@@ -1,4 +1,4 @@
-from jina.executors.encoders.nlp.use import UniversalSentenceEncoder
+from jina.hub.encoders.nlp.use import UniversalSentenceEncoder
 from tests.unit.executors.encoders.nlp import NlpTestCase
 
 

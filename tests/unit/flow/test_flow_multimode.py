@@ -1,15 +1,15 @@
-import os
 import gzip
-
+import os
 from typing import List, Dict
+
 import numpy as np
-from jina.flow import Flow
-from jina.proto.jina_pb2 import Document
+
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
-from jina.executors.indexers.keyvalue.proto import BinaryPbIndexer
-from tests import JinaTestCase, random_docs
-
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
+from jina.flow import Flow
+from jina.proto.jina_pb2 import Document
+from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -51,7 +51,7 @@ class MultiModeFlowTestCase(JinaTestCase):
             doc3.text = 'title: this is mode1 from doc3, body: this is mode2 from doc3'
             return [doc1, doc2, doc3]
 
-        flow = Flow().add(name='crafter', uses='!MockSegmenter').\
+        flow = Flow().add(name='crafter', uses='!MockSegmenter'). \
             add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
             add(name='indexer1', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'), needs=['encoder1']). \
             add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \

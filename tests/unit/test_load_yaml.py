@@ -17,7 +17,7 @@ class MyTestCase(JinaTestCase):
         BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/dummy_exec2.yml'))
 
     def test_load_yaml1(self):
-        from jina.executors.indexers.vector.numpy import NumpyIndexer
+        from jina.hub.indexers.vector.numpy import NumpyIndexer
         NumpyIndexer.load_config(os.path.join(cur_dir, 'yaml/dummy_exec1.yml'))
         self.add_tmpfile('test.gzip')
 

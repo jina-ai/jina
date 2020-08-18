@@ -2,8 +2,8 @@ import os
 
 import numpy as np
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.vector.numpy import NumpyIndexer
-from jina.executors.indexers.vector.nmslib import NmslibIndexer
+from jina.hub.indexers.vector.numpy import NumpyIndexer
+from jina.hub.indexers.vector.nmslib import NmslibIndexer
 from tests import JinaTestCase
 
 # fix the seed here

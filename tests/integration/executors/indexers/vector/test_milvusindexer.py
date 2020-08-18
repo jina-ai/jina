@@ -5,8 +5,8 @@ import time
 import numpy as np
 from milvus import Milvus
 
-from jina.executors.indexers.vector.milvus import MilvusIndexer
-from jina.executors.indexers.vector.milvusdb.milvusdbhandler import MilvusDBHandler
+from jina.hub.indexers.vector.milvus import MilvusIndexer
+from jina.hub.indexers.vector.milvusdb.milvusdbhandler import MilvusDBHandler
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

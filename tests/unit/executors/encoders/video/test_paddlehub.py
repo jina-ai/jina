@@ -1,4 +1,4 @@
-from jina.executors.encoders.video.paddlehub import VideoPaddleEncoder
+from jina.hub.encoders.video.paddlehub import VideoPaddleEncoder
 from tests.unit.executors.encoders.video import VideoTestCase
 
 

@@ -1,4 +1,4 @@
-from jina.executors.rankers.bi_match import BiMatchRanker
+from jina.hub.rankers.bi_match import BiMatchRanker
 from tests.unit.executors.rankers import RankerTestCase
 
 
