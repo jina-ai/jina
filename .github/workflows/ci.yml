@@ -29,6 +29,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
@@ -78,6 +80,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
@@ -112,6 +116,8 @@ jobs:
         python-version: [3.7]
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Download coverage result from unit-test
         uses: actions/download-artifact@v1
         with:
