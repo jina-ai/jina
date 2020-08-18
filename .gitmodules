@@ -1,0 +1,3 @@
+[submodule "jina/hub"]
+	path = jina/hub
+	url = git@github.com:jina-ai/jina-hub.git
