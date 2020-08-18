@@ -29,8 +29,8 @@ Make sure you've read through our [README](./README.md), [Jina 101](./docs/chapt
 
 We're happy for any contributions, code or not. If you'd like to write a blog post, record a podcast, organize a meetup, or anything else to contribute to Jina, we'd love to hear from you!
 
-* [Contribute docs](#📖-contribute-documentation)
-* For other contributions, please [get in touch](#💬-getting-support) to discuss on Slack
+* [Contribute docs](#-contributing-documentation)
+* For other contributions, please [get in touch](#-getting-support) to discuss on Slack
 
 ## 🐞 Bugs and Issues
 
