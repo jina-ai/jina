@@ -1,9 +1,11 @@
 from unittest.case import TestCase
 from unittest.mock import patch
 
+
 import numpy as np
 
 from jina.hub.encoders.nlp.transformer import TransformerTorchEncoder, TransformerTFEncoder
+
 
 
 class MockPtModel:
@@ -49,7 +51,7 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
                     pretrained_model_name_or_path=model,
                     pooling_strategy='auto',
                     metas={})
-                encoded_batch = encoder.encode(np.asarray(self.texts))
+                encoded_batch = encoder.encode(self.texts)
                 self.assertEqual(encoded_batch.shape, (2, 768))
 
     def test_encodes_lm_like(self):
@@ -70,5 +72,5 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
         model = "bert-base-uncased"
         with patch.object(TFAutoModelForPreTraining, 'from_pretrained', return_value=MockTFModel(model)):
             encoder = TransformerTFEncoder(pretrained_model_name_or_path=model)
-            encoded_batch = encoder.encode(np.asarray(self.texts))
+            encoded_batch = encoder.encode(self.texts)
             self.assertEqual(encoded_batch.shape, (2, 768))
