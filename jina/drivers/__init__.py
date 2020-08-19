@@ -308,7 +308,7 @@ class BaseRecursiveDriver(BaseDriver):
             _traverse(docs, 'chunks')
         if 'matches' in self.traverse_fields:
             for d in docs:
-                _traverse(d.matches, 'matches')
+                _traverse(d.matches, 'matches', context_doc=d)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
