@@ -1,6 +1,5 @@
 import os
 import subprocess
-import unittest
 from pathlib import Path
 
 import pytest
@@ -14,7 +13,7 @@ from jina.main.parser import set_hw_parser
 from tests import JinaTestCase
 
 
-class MyTestCase(JinaTestCase):
+class HelloWorldTestCase(JinaTestCase):
 
     @pytest.mark.timeout(360)
     def test_helloworld(self):
@@ -26,7 +25,7 @@ class MyTestCase(JinaTestCase):
         from jina.helloworld import hello_world
         hello_world(set_hw_parser().parse_args([]))
 
-    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
+    @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_helloworld_flow(self):
         args = set_hw_parser().parse_args([])
 
@@ -76,9 +75,9 @@ class MyTestCase(JinaTestCase):
         with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml')))):
             pass
 
-    @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
-    @unittest.skipIf('HTTP_PROXY' not in os.environ, 'skipped. '
-                                                     'Set os env `HTTP_PROXY` if you want run test at your local env.')
+    @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
+    @pytest.mark.skipif('HTTP_PROXY' not in os.environ, 'skipped. '
+                                                        'Set os env `HTTP_PROXY` if you want run test at your local env.')
     def test_download_proxy(self):
         import urllib.request
         # first test no proxy
@@ -106,7 +105,3 @@ class MyTestCase(JinaTestCase):
         req = urllib.request.Request(args.index_data_url, method="HEAD")
         response = urllib.request.urlopen(req, timeout=5)
         self.assertEqual(response.status, 200)
-
-
-if __name__ == '__main__':
-    unittest.main()
