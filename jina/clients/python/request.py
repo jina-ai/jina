@@ -19,7 +19,7 @@ if False:
     from ...counter import BaseCounter
 
 
-def _add_document(request: 'jina_pb2.Request', content: Union[bytes, 'jina_pb2.Document', str], mode: str,
+def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document', 'np.ndarray', bytes, str], mode: str,
                   doc_counter: 'BaseCounter', docs_in_same_batch: int, mime_type: str, buffer_sniff: bool,
                   level_depth: int):
     d = getattr(request, str(mode).lower()).docs.add()
@@ -56,8 +56,8 @@ def _add_document(request: 'jina_pb2.Request', content: Union[bytes, 'jina_pb2.D
     d.level_depth = level_depth
 
 
-def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
-              first_doc_id: int = 0, first_request_id: int = 0,
+def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
+              batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               level_depth: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
