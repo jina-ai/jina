@@ -55,6 +55,22 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.level_depth, 0)
             self.assertEqual(doc.text, f'https://github.com i\'m dummy doc {index}')
 
+    def test_request_generate_bytes(self):
+        def random_lines(num_lines):
+            for j in range(1, num_lines + 1):
+                yield f'i\'m dummy doc {j}'.encode('utf8')
+
+        req = _generate(data=random_lines(100), batch_size=100)
+
+        request = next(req)
+        self.assertEqual(len(request.index.docs), 100)
+        for index, doc in enumerate(request.index.docs, 1):
+            self.assertEqual(doc.id, index)
+            self.assertEqual(doc.length, 100)
+            self.assertEqual(doc.mime_type, 'text/plain')
+            self.assertEqual(doc.level_depth, 0)
+            self.assertEqual(doc.buffer.decode(), f'i\'m dummy doc {index}')
+
     def test_request_generate_docs(self):
         def random_docs(num_docs):
             for j in range(1, num_docs + 1):
