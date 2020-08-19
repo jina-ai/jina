@@ -1,0 +1,47 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: cosine
+    metas:
+      name: vecidx
+      workspace: './test_workspace'
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: chunkidx
+      workspace: './test_workspace'
+metas:
+  name: chunk_indexer
+  workspace: './test_workspace'
+requests:
+  on:
+    IndexRequest:
+      - !LogInfoDriver {}
+      - !VectorIndexDriver
+        with:
+          executor: vecidx
+          traverse_on: chunks
+          depth_range: [1, 1]
+      - !LogInfoDriver {}
+      - !KVIndexDriver
+        with:
+          executor: chunkidx
+          traverse_on: chunks
+          depth_range: [1, 1]
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: vecidx
+          top_k: 1
+          traverse_on: chunks
+          depth_range: [1, 1]
+      - !LogInfoDriver {}
+      - !KVSearchDriver
+        with:
+          executor: chunkidx
+          traverse_on: matches
+          depth_range: [1, 1]
+      - !LogInfoDriver {}

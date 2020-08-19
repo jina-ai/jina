@@ -1,0 +1,22 @@
+!BinaryPbIndexer
+with:
+  index_filename: doc.gzip
+metas:
+  name: docIndexer
+  workspace: './test_workspace'
+requests:
+  on:
+    IndexRequest:
+      - !LogInfoDriver {}
+      - !KVIndexDriver
+        with:
+          executor: docIndexer
+          depth_range: [0, 0]
+    SearchRequest:
+      - !LogInfoDriver {}
+      - !KVSearchDriver
+        with:
+          executor: docIndexer
+          traverse_on: matches
+          depth_range: [0, 1]
+      - !LogInfoDriver {}
