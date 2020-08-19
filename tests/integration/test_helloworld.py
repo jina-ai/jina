@@ -25,7 +25,7 @@ class HelloWorldTestCase(JinaTestCase):
         from jina.helloworld import hello_world
         hello_world(set_hw_parser().parse_args([]))
 
-    @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
+    @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
     def test_helloworld_flow(self):
         args = set_hw_parser().parse_args([])
 
@@ -75,9 +75,9 @@ class HelloWorldTestCase(JinaTestCase):
         with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml')))):
             pass
 
-    @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
-    @pytest.mark.skipif('HTTP_PROXY' not in os.environ, 'skipped. '
-                                                        'Set os env `HTTP_PROXY` if you want run test at your local env.')
+    @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
+    @pytest.mark.skipif('HTTP_PROXY' not in os.environ, reason='skipped. '
+                                                               'Set os env `HTTP_PROXY` if you want run test at your local env.')
     def test_download_proxy(self):
         import urllib.request
         # first test no proxy
