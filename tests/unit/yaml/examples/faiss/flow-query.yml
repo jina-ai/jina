@@ -3,17 +3,14 @@ with:
   read_only: true
 pods:
   crafter:
-    uses: yaml/craft.yml
     parallel: 4
   encoder:
-    uses: yaml/encode.yml
     parallel: 4
   faiss_indexer:
     parallel: 1
     timeout_ready: 10000
-    uses: yaml/index-chunk.yml
     volumes: './workspace'
   ranker:
     uses: MinRanker
   doc_indexer:
-    uses: yaml/index-doc.yml
+    parallel: 1

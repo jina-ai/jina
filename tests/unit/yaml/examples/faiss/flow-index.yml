@@ -3,17 +3,12 @@ metas:
   prefetch: 10
 pods:
   crafter:
-    uses: yaml/craft.yml
     parallel: 4
   encoder:
-    uses: yaml/encode.yml
     parallel: 4
   faiss_indexer:
     parallel: 1
-    uses: yaml/index-chunk.yml
-    volumes: './workspace'
   doc_indexer:
-    uses: yaml/index-doc.yml
     needs: crafter
   join_all:
     uses: _merge
