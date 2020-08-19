@@ -58,11 +58,12 @@ class RequestTestCase(JinaTestCase):
     def test_request_generate_docs(self):
         def random_docs(num_docs):
             for j in range(1, num_docs + 1):
-                doc = jina_pb2.Document
+                doc = jina_pb2.Document()
                 doc.text = f'i\'m dummy doc {j}'
                 doc.offset = 1000
                 doc.id = 1000  # this will be ignored
-                doc.level_depth = 3  # this will not be ignored
+                doc.level_depth = 3  # this will be ignored
+                doc.mime_type = 'mime_type'
                 yield doc
 
         req = _generate(data=random_docs(100), batch_size=100)
@@ -72,8 +73,8 @@ class RequestTestCase(JinaTestCase):
         for index, doc in enumerate(request.index.docs, 1):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
-            self.assertEqual(doc.mime_type, 'text/plain')
-            self.assertEqual(doc.level_depth, 3)
+            self.assertEqual(doc.mime_type, 'mime_type')
+            self.assertEqual(doc.level_depth, 0)
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
             self.assertEqual(doc.offset, 1000)
 
@@ -89,7 +90,8 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(doc.level_depth, 0)
-            np.testing.assert_almost_equal(pb2array(doc.blob), input_array[doc.id - 1])
+            self.assertEqual(pb2array(doc.blob).shape, (10,))
+            self.assertEqual(doc.blob.shape, [10])
 
         request = next(req)
         self.assertEqual(len(request.index.docs), 5)
@@ -97,7 +99,8 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, 5 + index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(doc.level_depth, 0)
-            np.testing.assert_almost_equal(pb2array(doc.blob), input_array[doc.id - 1])
+            self.assertEqual(pb2array(doc.blob).shape, (10,))
+            self.assertEqual(doc.blob.shape, [10])
 
     def test_request_generate_numpy_arrays_iterator(self):
 
@@ -115,7 +118,8 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(doc.level_depth, 0)
-            np.testing.assert_almost_equal(pb2array(doc.blob), input_array[doc.id - 1])
+            self.assertEqual(pb2array(doc.blob).shape, (10, ))
+            self.assertEqual(doc.blob.shape, [10])
 
         request = next(req)
         self.assertEqual(len(request.index.docs), 5)
@@ -123,16 +127,18 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, 5 + index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(doc.level_depth, 0)
-            np.testing.assert_almost_equal(pb2array(doc.blob), input_array[doc.id - 1])
+            self.assertEqual(pb2array(doc.blob).shape, (10, ))
+            self.assertEqual(doc.blob.shape, [10])
 
     def test_request_generate_docs_with_different_level_depth(self):
         def random_docs(num_docs):
             for j in range(1, num_docs + 1):
-                doc = jina_pb2.Document
+                doc = jina_pb2.Document()
                 doc.text = f'i\'m dummy doc {j}'
                 doc.offset = 1000
                 doc.id = 1000  # this will be ignored
                 doc.level_depth = 3  # this will be overriden by _generate level_depth param
+                doc.mime_type = 'mime_type'
                 yield doc
 
         req = _generate(data=random_docs(100), batch_size=100, level_depth=5)
@@ -142,7 +148,7 @@ class RequestTestCase(JinaTestCase):
         for index, doc in enumerate(request.index.docs, 1):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
-            self.assertEqual(doc.mime_type, 'text/plain')
+            self.assertEqual(doc.mime_type, 'mime_type')
             self.assertEqual(doc.level_depth, 5)
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
             self.assertEqual(doc.offset, 1000)
