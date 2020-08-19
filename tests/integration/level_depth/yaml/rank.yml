@@ -5,6 +5,6 @@ requests:
       - !LogInfoDriver {}
       - !Chunk2DocRankDriver
         with:
-          depth_range: [0, 1]
-          traverse_on: [chunks, matches]
+          depth_range: [1, 1]
+          traverse_on: matches
       - !LogInfoDriver {}
