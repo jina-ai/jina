@@ -118,7 +118,7 @@ class HubIO:
                 self.logger.warning(f'{r} is missing in your docker image labels, you may want to check it')
         try:
             if name != safe_url_name(
-                    f'{_repo_prefix}' + '{type}.{name}:{version}'.format(
+                    f'{_repo_prefix}' + '{type}.{kind}.{name}:{version}'.format(
                         **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})):
                 raise ValueError(f'image {name} does not match with label info in the image')
         except KeyError:
