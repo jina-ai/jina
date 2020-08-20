@@ -73,6 +73,7 @@ These are the extra dependencies used by jina.
 |`tensorflow>=2.0` | `framework` | `TensorFlow is an open source machine learning framework for everyone.`
 |`tensorflow-hub` | `framework` | `TensorFlow Hub is a library to foster the publication, discovery, and consumption of reusable parts of machine learning models.`
 |`torchvision>=0.3.0` | `framework, cv` | `image and video datasets and models for torch deep learning` | `Make sure that the models you want to use ara available at your installed torchvision version.`
+|`Pillow` | `cv` | ` Python Imaging Library`
 |`onnx` | `framework` | `Open Neural Network Exchange.` 
 |`onnxruntime` | `framework` | `ONNX Runtime Python bindings.` 
 |`annoy` | `index` | `Approximate Nearest Neighbors in C++/Python optimized for memory usage and loading/saving to disk.`
