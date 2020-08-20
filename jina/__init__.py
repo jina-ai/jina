@@ -96,7 +96,6 @@ def import_classes(namespace: str, targets=None,
     import os, sys, re
     from .logging import default_logger
 
-
     if namespace == 'jina.executors':
         import_type = 'ExecutorType'
         if import_once and JINA_GLOBAL.imported.executors:
@@ -121,6 +120,7 @@ def import_classes(namespace: str, targets=None,
     except AttributeError:
         if namespace == 'jina.hub':
             default_logger.error(f'hub submodule is not initialized. Please try "git submodule update --init"')
+        return {}
 
     modules = set()
 
@@ -203,7 +203,6 @@ def import_classes(namespace: str, targets=None,
         print_load_table(load_stat)
     else:
         if bad_imports:
-
             default_logger.error(f'theses modules or classes can not be imported {bad_imports}')
 
     if namespace == 'jina.executors':
