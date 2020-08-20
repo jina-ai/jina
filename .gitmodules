@@ -1,4 +1,4 @@
 [submodule "jina/hub"]
 	path = jina/hub
-	url = git@github.com:jina-ai/jina-hub.git
+	url = https://github.com/jina-ai/jina.git
 	branch = master
