@@ -94,6 +94,7 @@ def import_classes(namespace: str, targets=None,
     """
 
     import os, sys, re
+    from .logging import default_logger
 
 
     if namespace == 'jina.executors':
@@ -114,7 +115,12 @@ def import_classes(namespace: str, targets=None,
     from setuptools import find_packages
     import pkgutil
     from pkgutil import iter_modules
-    path = os.path.dirname(pkgutil.get_loader(namespace).path)
+
+    try:
+        path = os.path.dirname(pkgutil.get_loader(namespace).path)
+    except AttributeError:
+        if namespace == 'jina.hub':
+            default_logger.error(f'hub submodule is not initialized. Please try "git submodule update --init"')
 
     modules = set()
 
@@ -197,7 +203,7 @@ def import_classes(namespace: str, targets=None,
         print_load_table(load_stat)
     else:
         if bad_imports:
-            from .logging import default_logger
+
             default_logger.error(f'theses modules or classes can not be imported {bad_imports}')
 
     if namespace == 'jina.executors':
