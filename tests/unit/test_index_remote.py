@@ -5,7 +5,7 @@ import unittest
 
 import numpy as np
 from jina.enums import FlowOptimizeLevel
-from jina.hub.indexers.vector.NumpyIndexer import NumpyIndexer
+from jina.executors.indexers.vector import NumpyIndexer
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
 from jina.peapods.pod import GatewayPod
