@@ -84,18 +84,18 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         executor = MockLengthRanker()
         driver.attach(executor=executor, pea=None)
         driver._apply_all(doc.chunks, doc)
-        self.assertEqual(len(doc.matches), 4)
-        self.assertEqual(doc.matches[0].id, 70)
-        self.assertEqual(doc.matches[0].score.value, 7)
-        self.assertEqual(doc.matches[1].id, 60)
-        self.assertEqual(doc.matches[1].score.value, 6)
-        self.assertEqual(doc.matches[2].id, 50)
-        self.assertEqual(doc.matches[2].score.value, 5)
-        self.assertEqual(doc.matches[3].id, 40)
-        self.assertEqual(doc.matches[3].score.value, 4)
+        assert len(doc.matches) == 4
+        assert doc.matches[0].id == 70
+        assert doc.matches[0].score.value == 7
+        assert doc.matches[1].id == 60
+        assert doc.matches[1].score.value == 6
+        assert doc.matches[2].id == 50
+        assert doc.matches[2].score.value == 5
+        assert doc.matches[3].id == 40
+        assert doc.matches[3].score.value == 4
         for match in doc.matches:
             # match score is computed w.r.t to doc.id
-            self.assertEqual(match.score.ref_id, doc.id)
+            assert match.score.ref_id == doc.id
 
     def test_chunk2doc_ranker_driver_MaxRanker(self):
         doc = create_document_to_score()
@@ -103,18 +103,18 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         executor = MaxRanker()
         driver.attach(executor=executor, pea=None)
         driver._apply_all(doc.chunks, doc)
-        self.assertEqual(len(doc.matches), 4)
-        self.assertEqual(doc.matches[0].id, 70)
-        self.assertEqual(doc.matches[0].score.value, 7)
-        self.assertEqual(doc.matches[1].id, 60)
-        self.assertEqual(doc.matches[1].score.value, 6)
-        self.assertEqual(doc.matches[2].id, 50)
-        self.assertEqual(doc.matches[2].score.value, 5)
-        self.assertEqual(doc.matches[3].id, 40)
-        self.assertEqual(doc.matches[3].score.value, 4)
+        assert len(doc.matches) == 4
+        assert doc.matches[0].id == 70
+        assert doc.matches[0].score.value == 7
+        assert doc.matches[1].id == 60
+        assert doc.matches[1].score.value == 6
+        assert doc.matches[2].id == 50
+        assert doc.matches[2].score.value == 5
+        assert doc.matches[3].id == 40
+        assert doc.matches[3].score.value == 4
         for match in doc.matches:
             # match score is computed w.r.t to doc.id
-            self.assertEqual(match.score.ref_id, doc.id)
+            assert match.score.ref_id == doc.id
 
     def test_chunk2doc_ranker_driver_MinRanker(self):
         doc = create_document_to_score()
@@ -122,18 +122,18 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         executor = MinRanker()
         driver.attach(executor=executor, pea=None)
         driver._apply_all(doc.chunks, doc)
-        self.assertEqual(len(doc.matches), 4)
-        self.assertEqual(doc.matches[0].id, 40)
+        assert len(doc.matches) == 4
+        assert doc.matches[0].id == 40
         self.assertAlmostEqual(doc.matches[0].score.value, 1 / (1 + 4))
-        self.assertEqual(doc.matches[1].id, 50)
+        assert doc.matches[1].id == 50
         self.assertAlmostEqual(doc.matches[1].score.value, 1 / (1 + 5))
-        self.assertEqual(doc.matches[2].id, 60)
+        assert doc.matches[2].id == 60
         self.assertAlmostEqual(doc.matches[2].score.value, 1 / (1 + 6))
-        self.assertEqual(doc.matches[3].id, 70)
+        assert doc.matches[3].id == 70
         self.assertAlmostEqual(doc.matches[3].score.value, 1 / (1 + 7))
         for match in doc.matches:
             # match score is computed w.r.t to doc.id
-            self.assertEqual(match.score.ref_id, doc.id)
+            assert match.score.ref_id == doc.id
 
     def test_chunk2doc_ranker_driver_traverse_apply(self):
         docs = [create_chunk_matches_to_score(), ]
@@ -142,8 +142,8 @@ class Chunk2DocRankerDriverTestCase(JinaTestCase):
         driver.attach(executor=executor, pea=None)
         driver._traverse_apply(docs)
         for doc in docs:
-            self.assertEqual(len(doc.matches), 2)
+            assert len(doc.matches) == 2
             for idx, m in enumerate(doc.matches):
                 # the score should be 1 / (1 + id * 2)
                 self.assertAlmostEqual(m.score.value, 1. / (1 + m.id * 2.))
-                self.assertEqual(m.level_depth, 0)
+                assert m.level_depth == 0

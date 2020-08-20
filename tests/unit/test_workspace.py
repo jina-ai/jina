@@ -55,13 +55,13 @@ class MyTestCase(JinaTestCase):
             self.add_tmpfile(a.current_workspace)
             all_subspace.add(a.current_workspace)
 
-        self.assertEqual(len(all_subspace), 3)
+        assert len(all_subspace) == 3
 
     def test_compound_indexer_rw(self):
         all_vecs = np.random.random([6, 5])
         for j in range(3):
             a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'), True, j)
-            self.assertEqual(a[0], a['test_meta'])
+            assert a[0] == a['test_meta']
             self.assertFalse(a[0].is_updated)
             self.assertFalse(a.is_updated)
             a[0].add([jina_pb2.Document()])

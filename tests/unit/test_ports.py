@@ -10,6 +10,6 @@ class MyTestCase(JinaTestCase):
         register_port(5557)
         register_port(5555)
 
-        self.assertEqual(get_registered_ports(), [5555, 5556, 5557])
+        assert get_registered_ports() == [5555, 5556, 5557]
         deregister_all_ports()
-        self.assertEqual(get_registered_ports(), [])
+        assert get_registered_ports() == []

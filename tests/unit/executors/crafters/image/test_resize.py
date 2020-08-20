@@ -10,4 +10,4 @@ class ImageResizerTestCase(JinaImageTestCase):
         crafter = ImageResizer(target_size=output_dim)
         img_array = self.create_random_img_array(img_width, img_height)
         crafted_doc = crafter.craft(img_array)
-        self.assertEqual(min(crafted_doc['blob'].shape[:-1]), output_dim)
+        assert min(crafted_doc['blob'].shape[:-1]) == output_dim

@@ -53,27 +53,27 @@ class SegmentDriverTestCase(JinaTestCase):
         driver.attach(executor=executor, pea=None)
         driver._apply(docs[0])
 
-        self.assertEqual(docs[0].length, 2)
-        self.assertEqual(docs[1].length, 2)
+        assert docs[0].length == 2
+        assert docs[1].length == 2
 
-        self.assertEqual(docs[0].chunks[0].id, 3)
-        self.assertEqual(docs[0].chunks[0].parent_id, docs[0].id)
-        self.assertEqual(docs[0].chunks[0].blob, array2pb(np.array([0.0, 0.0, 0.0])))
-        self.assertEqual(docs[0].chunks[0].weight, 0)
-        self.assertEqual(docs[0].chunks[0].length, 3)
+        assert docs[0].chunks[0].id == 3
+        assert docs[0].chunks[0].parent_id == docs[0].id
+        assert docs[0].chunks[0].blob == array2pb(np.array([0.0, 0.0, 0.0]))
+        assert docs[0].chunks[0].weight == 0
+        assert docs[0].chunks[0].length == 3
 
-        self.assertEqual(docs[0].chunks[1].id, 4)
-        self.assertEqual(docs[0].chunks[1].parent_id, docs[0].id)
-        self.assertEqual(docs[0].chunks[1].blob, array2pb(np.array([1.0, 1.0, 1.0])))
-        self.assertEqual(docs[0].chunks[1].weight, 1)
-        self.assertEqual(docs[0].chunks[1].length, 3)
+        assert docs[0].chunks[1].id == 4
+        assert docs[0].chunks[1].parent_id == docs[0].id
+        assert docs[0].chunks[1].blob == array2pb(np.array([1.0, 1.0, 1.0]))
+        assert docs[0].chunks[1].weight == 1
+        assert docs[0].chunks[1].length == 3
 
-        self.assertEqual(docs[0].chunks[2].id, 5)
-        self.assertEqual(docs[0].chunks[2].parent_id, docs[0].id)
-        self.assertEqual(docs[0].chunks[2].blob, array2pb(np.array([2.0, 2.0, 2.0])))
-        self.assertEqual(docs[0].chunks[2].weight, 2)
-        self.assertEqual(docs[0].chunks[2].length, 3)
+        assert docs[0].chunks[2].id == 5
+        assert docs[0].chunks[2].parent_id == docs[0].id
+        assert docs[0].chunks[2].blob == array2pb(np.array([2.0, 2.0, 2.0]))
+        assert docs[0].chunks[2].weight == 2
+        assert docs[0].chunks[2].length == 3
 
         with self.assertRaises(AttributeError) as error:
             driver._apply(docs[1])
-        self.assertEqual(error.exception.__str__(), '\'Document\' object has no attribute \'non_existing_key\'')
+        assert error.exception.__str__() == '\'Document\' object has no attribute \'non_existing_key\''

@@ -49,9 +49,9 @@ class ReduceAllDriverTestCase(JinaTestCase):
             return [doc1, doc2, doc3]
 
         def validate(req):
-            self.assertEqual(len(req.index.docs), 3)
+            assert len(req.index.docs) == 3
             for doc in req.index.docs:
-                self.assertEqual(len(doc.chunks), 2)
+                assert len(doc.chunks) == 2
                 self.assertIn(doc.chunks[0].modality, ['mode1', 'mode2'])
                 self.assertIn(doc.chunks[1].modality, ['mode1', 'mode2'])
 

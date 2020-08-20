@@ -47,8 +47,8 @@ class CraftDriverTestCase(JinaTestCase):
         executor = MockCrafter()
         driver.attach(executor=executor, pea=None)
         driver._apply(docs[0])
-        self.assertEqual(docs[0].blob, array2pb(np.array([0.0, 0.0, 0.0])))
-        self.assertEqual(docs[0].weight, 10)
+        assert docs[0].blob == array2pb(np.array([0.0, 0.0, 0.0]))
+        assert docs[0].weight == 10
         with self.assertRaises(AttributeError) as error:
             driver._apply(docs[1])
-        self.assertEqual(error.exception.__str__(), '\'Document\' object has no attribute \'non_existing_key\'')
+        assert error.exception.__str__() == '\'Document\' object has no attribute \'non_existing_key\''

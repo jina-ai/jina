@@ -34,8 +34,8 @@ class AnnoyIndexerTestCase(JinaTestCase):
                 retr_idx = idx
             else:
                 np.testing.assert_almost_equal(retr_idx, idx)
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (10, 4))
+            assert idx.shape == dist.shape
+            assert idx.shape == (10, 4)
 
     def test_simple_annoy(self):
         from annoy import AnnoyIndex
@@ -44,7 +44,7 @@ class AnnoyIndexerTestCase(JinaTestCase):
             _index.add_item(j, np.random.random((5,)))
         _index.build(4)
         idx1, _ = _index.get_nns_by_vector(np.random.random((5,)), 3, include_distances=True)
-        self.assertEqual(len(idx1), 3)
+        assert len(idx1) == 3
 
     def test_annoy_indexer(self):
         with AnnoyIndexer(index_filename='annoy.test.gz') as indexer:
@@ -62,8 +62,8 @@ class AnnoyIndexerTestCase(JinaTestCase):
                 retr_idx = idx
             else:
                 np.testing.assert_almost_equal(retr_idx, idx)
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (10, 4))
+            assert idx.shape == dist.shape
+            assert idx.shape == (10, 4)
 
         self.add_tmpfile(index_abspath, save_abspath)
 
@@ -79,7 +79,7 @@ class AnnoyIndexerTestCase(JinaTestCase):
             self.assertIsInstance(indexer, AnnoyIndexer)
             idx, dist = indexer.query(query, top_k=4)
             # search_k is 0, so no tree is searched for
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (10, 0))
+            assert idx.shape == dist.shape
+            assert idx.shape == (10, 0)
 
         self.add_tmpfile(index_abspath, save_abspath)

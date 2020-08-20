@@ -25,12 +25,12 @@ class MyTestCase(JinaTestCase):
             a = yaml.load(fp)
         os.environ['ENV1'] = 'a'
         b = expand_dict(a)
-        self.assertEqual(b['components'][0]['metas']['bad_var'], 'real-compound')
-        self.assertEqual(b['components'][1]['metas']['bad_var'], 2)
-        self.assertEqual(b['components'][1]['metas']['float_var'], 0.232)
-        self.assertEqual(b['components'][1]['metas']['mixed'], '0.232-2-real-compound')
-        self.assertEqual(b['components'][1]['metas']['mixed_env'], '0.232-a')
-        self.assertEqual(b['components'][1]['metas']['name_shortcut'], 'test_numpy')
+        assert b['components'][0]['metas']['bad_var'] == 'real-compound'
+        assert b['components'][1]['metas']['bad_var'] == 2
+        assert b['components'][1]['metas']['float_var'] == 0.232
+        assert b['components'][1]['metas']['mixed'] == '0.232-2-real-compound'
+        assert b['components'][1]['metas']['mixed_env'] == '0.232-a'
+        assert b['components'][1]['metas']['name_shortcut'] == 'test_numpy'
 
     def test_yaml_expand3(self):
         with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
@@ -44,7 +44,7 @@ class MyTestCase(JinaTestCase):
 
         a = AttrDict()
         a.__dict__['sda'] = 1
-        self.assertEqual(a.sda, 1)
+        assert a.sda == 1
         a.__dict__['components'] = list()
         self.assertTrue(isinstance(a.components, list))
 
@@ -60,7 +60,7 @@ class MyTestCase(JinaTestCase):
         yaml.register_class(DummyClass)
 
         a = yaml.load('!DummyClass {}')
-        self.assertEqual(type(a), DummyClass)
+        assert type(a) == DummyClass
 
         with open(resource_filename('jina',
                                     '/'.join(('resources', 'executors.requests.%s.yml' % 'BaseExecutor')))) as fp:
@@ -84,5 +84,5 @@ class MyTestCase(JinaTestCase):
         print(b._drivers['SearchRequest'][0]._executor_name)
         print(b._drivers['SearchRequest'])
         b.attach(pea=None)
-        self.assertEqual(b._drivers['SearchRequest'][0]._exec, b[0])
-        self.assertEqual(b._drivers['SearchRequest'][-1]._exec, b[1])
+        assert b._drivers['SearchRequest'][0]._exec == b[0]
+        assert b._drivers['SearchRequest'][-1]._exec == b[1]

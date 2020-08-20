@@ -43,7 +43,7 @@ class RankerTestCase(JinaTestCase):
         # check the matched docs are in descending order of the scores
         # check the matched docs are in descending order of the scores
         self.assertGreater(doc_idx[0][1], doc_idx[1][1])
-        self.assertEqual(doc_idx[0][0], 1)
-        self.assertEqual(doc_idx[1][0], 4294967294)
+        assert doc_idx[0][0] == 1
+        assert doc_idx[1][0] == 4294967294
         # check the number of matched docs
-        self.assertEqual(len(doc_idx), 2)
+        assert len(doc_idx) == 2

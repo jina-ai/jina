@@ -58,7 +58,7 @@ class NumericTestCase(JinaTestCase):
             return
         test_data = np.random.rand(10, self.input_dim)
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (test_data.shape[0], self.target_output_dim))
+        assert encoded_data.shape == (test_data.shape[0], self.target_output_dim)
         self.assertIs(type(encoded_data), np.ndarray)
 
     def test_save_and_load(self):
@@ -92,4 +92,4 @@ class NumericTestCase(JinaTestCase):
 
         test_data = np.random.rand(10, self.input_dim)
         encoded_data_test = encoder_loaded.encode(test_data)
-        self.assertEqual(encoded_data_test.shape, (10, self.target_output_dim))
+        assert encoded_data_test.shape == (10, self.target_output_dim)

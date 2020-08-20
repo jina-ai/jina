@@ -50,7 +50,7 @@ class PeaTestCase(JinaTestCase):
                                             '--max-idle-time', '5',
                                             '--shutdown-idle'])
         with BasePod(args) as bp:
-            self.assertEqual(bp.peas[0].name, 'pod-head')
-            self.assertEqual(bp.peas[1].name, 'pod-tail')
-            self.assertEqual(bp.peas[2].name, 'pod-1')
-            self.assertEqual(bp.peas[3].name, 'pod-2')
+            assert bp.peas[0].name == 'pod-head'
+            assert bp.peas[1].name == 'pod-tail'
+            assert bp.peas[2].name == 'pod-1'
+            assert bp.peas[3].name == 'pod-2'

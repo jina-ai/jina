@@ -32,7 +32,7 @@ class MyTestCase(JinaTestCase):
         encoder = self.get_encoder()
         data = np.random.rand(1, 784)
         result = encoder.encode(data)
-        self.assertEqual(result.shape, (10, ))
+        assert result.shape == (10, )
 
     def test_save_and_load(self):
         encoder = self.get_encoder()
@@ -50,4 +50,4 @@ class MyTestCase(JinaTestCase):
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-        self.assertEqual(encoder_loaded.model_name, encoder.model_name)
+        assert encoder_loaded.model_name == encoder.model_name

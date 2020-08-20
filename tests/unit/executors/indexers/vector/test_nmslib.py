@@ -34,8 +34,8 @@ class NmsLibTestCase(JinaTestCase):
                 retr_idx = idx
             else:
                 np.testing.assert_almost_equal(retr_idx, idx)
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (10, 4))
+            assert idx.shape == dist.shape
+            assert idx.shape == (10, 4)
 
         self.add_tmpfile(index_abspath, save_abspath)
 
@@ -56,6 +56,6 @@ class NmsLibTestCase(JinaTestCase):
                 retr_idx = idx
             else:
                 np.testing.assert_almost_equal(retr_idx, idx)
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (10, 4))
+            assert idx.shape == dist.shape
+            assert idx.shape == (10, 4)
             self.add_tmpfile(index_abspath, save_abspath)

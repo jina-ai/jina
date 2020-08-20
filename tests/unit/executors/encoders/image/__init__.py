@@ -44,7 +44,7 @@ class ImageTestCase(ExecutorTestCase):
             return
         test_data = np.random.rand(2, 3, self.input_dim, self.input_dim)
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (2, self.target_output_dim))
+        assert encoded_data.shape == (2, self.target_output_dim)
 
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_save_and_load(self):
@@ -58,7 +58,7 @@ class ImageTestCase(ExecutorTestCase):
         self.assertTrue(os.path.exists(encoder.save_abspath))
         encoder_loaded = BaseExecutor.load(encoder.save_abspath)
         encoded_data_test = encoder_loaded.encode(test_data)
-        self.assertEqual(encoder_loaded.channel_axis, encoder.channel_axis)
+        assert encoder_loaded.channel_axis == encoder.channel_axis
         np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
@@ -69,4 +69,4 @@ class ImageTestCase(ExecutorTestCase):
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-        self.assertEqual(encoder_loaded.channel_axis, encoder.channel_axis)
+        assert encoder_loaded.channel_axis == encoder.channel_axis

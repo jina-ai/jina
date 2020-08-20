@@ -36,7 +36,7 @@ class VideoTestCase(ExecutorTestCase):
             return
         test_data = np.random.rand(2, 3, 3, 224, 224)
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (2, self._target_output_dim))
+        assert encoded_data.shape == (2, self._target_output_dim)
 
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
     def test_save_and_load(self):
@@ -50,7 +50,7 @@ class VideoTestCase(ExecutorTestCase):
         self.assertTrue(os.path.exists(encoder.save_abspath))
         encoder_loaded = BaseExecutor.load(encoder.save_abspath)
         encoded_data_test = encoder_loaded.encode(test_data)
-        self.assertEqual(encoder_loaded.model_name, encoder.model_name)
+        assert encoder_loaded.model_name == encoder.model_name
         np.testing.assert_array_equal(encoded_data_control, encoded_data_test)
 
     @pytest.mark.skipif('JINA_TEST_PRETRAINED' not in os.environ, reason='skip the pretrained test if not set')
@@ -61,4 +61,4 @@ class VideoTestCase(ExecutorTestCase):
         encoder.save_config()
         self.assertTrue(os.path.exists(encoder.config_abspath))
         encoder_loaded = BaseExecutor.load_config(encoder.config_abspath)
-        self.assertEqual(encoder_loaded.model_name, encoder.model_name)
+        assert encoder_loaded.model_name == encoder.model_name

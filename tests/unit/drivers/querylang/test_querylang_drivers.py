@@ -55,10 +55,10 @@ class QueryLangTestCase(JinaTestCase):
 
     def test_select_ql(self):
         def validate(req):
-            self.assertEqual(req.docs[0].text, '')
-            self.assertEqual(req.docs[-1].text, '')
-            self.assertEqual(req.docs[0].matches[0].text, '')
-            self.assertEqual(req.docs[0].chunks[0].text, '')
+            assert req.docs[0].text == ''
+            assert req.docs[-1].text == ''
+            assert req.docs[0].matches[0].text == ''
+            assert req.docs[0].chunks[0].text == ''
 
         f = (Flow().add(uses='DummySegmenter')
             .add(
@@ -96,9 +96,9 @@ class QueryLangTestCase(JinaTestCase):
 
     def test_filter_ql(self):
         def validate(req):
-            self.assertEqual(req.docs[0].id, 2)
-            self.assertEqual(req.docs[0].matches[0].id, 2)
-            self.assertEqual(req.docs[0].matches[0].matches[0].id, 2)
+            assert req.docs[0].id == 2
+            assert req.docs[0].matches[0].id == 2
+            assert req.docs[0].matches[0].matches[0].id == 2
 
         f = (Flow().add(uses='DummySegmenter')
             .add(
@@ -110,7 +110,7 @@ class QueryLangTestCase(JinaTestCase):
     def test_filter_ql_modality_wrong_depth(self):
         def validate(req):
             # since no doc has modality mode2 they are all erased from the list of docs
-            self.assertEqual(len(req.docs), 0)
+            assert len(req.docs) == 0
 
         f = (Flow().add(uses='DummyModeIdSegmenter')
             .add(
@@ -122,9 +122,9 @@ class QueryLangTestCase(JinaTestCase):
     def test_filter_ql_modality(self):
         def validate(req):
             # docs are not filtered, so 2 docs are returned, but only the chunk at depth1 with modality mode2 is returned
-            self.assertEqual(len(req.docs), 2)
-            self.assertEqual(len(req.docs[0].chunks), 1)
-            self.assertEqual(len(req.docs[1].chunks), 0)
+            assert len(req.docs) == 2
+            assert len(req.docs[0].chunks) == 1
+            assert len(req.docs[1].chunks) == 0
 
         f = (Flow().add(uses='DummyModeIdSegmenter')
             .add(
@@ -135,9 +135,9 @@ class QueryLangTestCase(JinaTestCase):
 
     def test_filter_compose_ql(self):
         def validate(req):
-            self.assertEqual(req.docs[0].id, 2)
-            self.assertEqual(req.docs[0].matches[0].id, 2)
-            self.assertEqual(len(req.docs[0].matches[0].matches), 0)  # match's match does not contain "hello"
+            assert req.docs[0].id == 2
+            assert req.docs[0].matches[0].id == 2
+            assert len(req.docs[0].matches[0].matches) == 0  # match's match does not contain "hello"
 
         f = (Flow().add(uses='DummySegmenter')
             .add(

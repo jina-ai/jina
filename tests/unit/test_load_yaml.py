@@ -39,7 +39,7 @@ class MyTestCase(JinaTestCase):
                           os.path.join(cur_dir, 'yaml/dummy_ext_exec.yml'))
 
         b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/dummy_ext_exec_sucess.yml'))
-        self.assertEqual(b.__class__.__name__, 'DummyExternalIndexer')
+        assert b.__class__.__name__ == 'DummyExternalIndexer'
 
     def test_expand_env(self):
         print(expand_env_var('${PATH}-${AA}'))

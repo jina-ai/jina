@@ -31,36 +31,36 @@ class MyTestCase(JinaTestCase):
         a = CompoundExecutor()
 
         a.components = lambda: [da, db]
-        self.assertEqual(a.say_all(), ['a', 'b'])
+        assert a.say_all() == ['a', 'b']
         with self.assertRaises(AttributeError):
             a.say()
 
         b = CompoundExecutor({'say': {da.name: 'say'}})
         b.components = lambda: [da, db]
-        self.assertEqual(b.say_all(), ['a', 'b'])
-        self.assertEqual(b.say(), 'a')
+        assert b.say_all() == ['a', 'b']
+        assert b.say() == 'a'
         b.add_route('say', db.name, 'say')
-        self.assertEqual(b.say(), 'b')
+        assert b.say() == 'b'
         b.save_config()
         self.assertTrue(os.path.exists(b.config_abspath))
 
         c = BaseExecutor.load_config(b.config_abspath)
-        self.assertEqual(c.say_all(), ['a', 'b'])
-        self.assertEqual(c.say(), 'a')
+        assert c.say_all() == ['a', 'b']
+        assert c.say() == 'a'
 
         b.add_route('say', db.name, 'say', is_stored=True)
         b.save_config()
         c = BaseExecutor.load_config(b.config_abspath)
-        self.assertEqual(c.say_all(), ['a', 'b'])
-        self.assertEqual(c.say(), 'b')
+        assert c.say_all() == ['a', 'b']
+        assert c.say() == 'b'
 
         b.touch()
         b.save()
         self.assertTrue(os.path.exists(b.save_abspath))
 
         d = BaseExecutor.load(b.save_abspath)
-        self.assertEqual(d.say_all(), ['a', 'b'])
-        self.assertEqual(d.say(), 'b')
+        assert d.say_all() == ['a', 'b']
+        assert d.say() == 'b'
 
         self.tmp_files.append(b.config_abspath)
         self.tmp_files.append(b.save_abspath)
