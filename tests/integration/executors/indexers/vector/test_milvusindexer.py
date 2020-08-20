@@ -3,10 +3,9 @@ import shutil
 import time
 
 import numpy as np
+from jina.hub.indexers.vector.MilvusIndexer import MilvusIndexer
+from jina.hub.indexers.vector.MilvusIndexer.MilvusDBHandler import MilvusDBHandler
 from milvus import Milvus
-
-from jina.hub.indexers.vector.milvus import MilvusIndexer
-from jina.hub.indexers.vector.milvusdb.milvusdbhandler import MilvusDBHandler
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
