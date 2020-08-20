@@ -9,7 +9,7 @@ class HelperTestCases(JinaTestCase):
         correct_data = np.random.rand(10, 10, 3)
         correct_mask = np.random.rand(10, 10)
         correct_mean = reduce_mean(correct_data, correct_mask)
-        self.assertEqual(type(correct_mean).__name__, 'ndarray')
+        assert type(correct_mean).__name__ == 'ndarray'
 
     def test_reduce_mean_with_wrong_input(self):
         wrong_data = np.random.rand(10, 10)

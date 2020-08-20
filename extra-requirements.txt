@@ -31,7 +31,7 @@ tensorflow-hub:             framework, py37
 torchvision>=0.3.0:         framework, cv
 onnx:                       framework, py37
 onnxruntime:                framework, py37
-Pillow                      cv
+Pillow:                     cv
 annoy>=1.9.5:               index
 sklearn:                    numeric
 plyvel:                     index

@@ -31,14 +31,14 @@ class FlowTestCase(JinaTestCase):
             with BasePea(a1):
                 NetworkChecker(a2)
 
-        self.assertEqual(cm.exception.code, 0)
+        assert cm.exception.code == 0
 
         # test with bad addresss
         with self.assertRaises(SystemExit) as cm:
             with BasePea(a1):
                 NetworkChecker(a3)
 
-        self.assertEqual(cm.exception.code, 1)
+        assert cm.exception.code == 1
 
     def test_flow_with_jump(self):
         f = (Flow().add(name='r1', uses='_pass')
@@ -55,48 +55,48 @@ class FlowTestCase(JinaTestCase):
             f.dry_run()
 
         node = f._pod_nodes['gateway']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.PULL_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r1']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUB_BIND
 
         node = f._pod_nodes['r2']
-        self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.SUB_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r3']
-        self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.SUB_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r4']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r5']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r6']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r8']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r9']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['r10']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_BIND)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_BIND
 
         for name, node in f._pod_nodes.items():
-            self.assertEqual(node.peas_args['peas'][0], node.head_args)
-            self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+            assert node.peas_args['peas'][0] == node.head_args
+            assert node.peas_args['peas'][0] == node.tail_args
 
         f.save_config('tmp.yml')
         Flow.load_config('tmp.yml')
@@ -127,16 +127,16 @@ class FlowTestCase(JinaTestCase):
             f.index(input_fn=bytes_fn)
 
         node = f._pod_nodes['gateway']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+        assert node.head_args.socket_in == SocketType.PULL_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
         node = f._pod_nodes['pod0']
-        self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-        self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_BIND)
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_BIND
 
         for name, node in f._pod_nodes.items():
-            self.assertEqual(node.peas_args['peas'][0], node.head_args)
-            self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+            assert node.peas_args['peas'][0] == node.head_args
+            assert node.peas_args['peas'][0] == node.tail_args
 
     def test_load_flow_from_yaml(self):
         with open(os.path.join(cur_dir, '../yaml/test-flow.yml')) as fp:
@@ -159,42 +159,42 @@ class FlowTestCase(JinaTestCase):
 
         c = Flow.load_config('test2.yml')
 
-        self.assertEqual(a, b)
-        self.assertEqual(a, c)
+        assert a == b
+        assert a == c
 
         self.add_tmpfile('test2.yml')
 
         with a as f:
             node = f._pod_nodes['gateway']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['chunk_seg']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.head_args.socket_out, SocketType.ROUTER_BIND)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.head_args.socket_out == SocketType.ROUTER_BIND
             for arg in node.peas_args['peas']:
-                self.assertEqual(arg.socket_in, SocketType.DEALER_CONNECT)
-                self.assertEqual(arg.socket_out, SocketType.PUSH_CONNECT)
-            self.assertEqual(node.tail_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+                assert arg.socket_in == SocketType.DEALER_CONNECT
+                assert arg.socket_out == SocketType.PUSH_CONNECT
+            assert node.tail_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUB_BIND
 
             node = f._pod_nodes['wqncode1']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.head_args.socket_out, SocketType.ROUTER_BIND)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.head_args.socket_out == SocketType.ROUTER_BIND
             for arg in node.peas_args['peas']:
-                self.assertEqual(arg.socket_in, SocketType.DEALER_CONNECT)
-                self.assertEqual(arg.socket_out, SocketType.PUSH_CONNECT)
-            self.assertEqual(node.tail_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+                assert arg.socket_in == SocketType.DEALER_CONNECT
+                assert arg.socket_out == SocketType.PUSH_CONNECT
+            assert node.tail_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['encode2']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.head_args.socket_out, SocketType.ROUTER_BIND)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.head_args.socket_out == SocketType.ROUTER_BIND
             for arg in node.peas_args['peas']:
-                self.assertEqual(arg.socket_in, SocketType.DEALER_CONNECT)
-                self.assertEqual(arg.socket_out, SocketType.PUSH_CONNECT)
-            self.assertEqual(node.tail_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+                assert arg.socket_in == SocketType.DEALER_CONNECT
+                assert arg.socket_out == SocketType.PUSH_CONNECT
+            assert node.tail_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
     def test_dryrun(self):
         f = (Flow()
@@ -206,7 +206,7 @@ class FlowTestCase(JinaTestCase):
     def test_pod_status(self):
         args = set_pod_parser().parse_args(['--parallel', '3'])
         with BasePod(args) as p:
-            self.assertEqual(len(p.status), p.num_peas)
+            assert len(p.status) == p.num_peas
             for v in p.status:
                 self.assertIsNotNone(v)
 
@@ -224,8 +224,8 @@ class FlowTestCase(JinaTestCase):
         f.save_config('test1.yml')
 
         fl = Flow.load_config('test1.yml')
-        self.assertEqual(f.args.logserver_config, fl.args.logserver_config)
-        self.assertEqual(f.args.optimize_level, fl.args.optimize_level)
+        assert f.args.logserver_config == fl.args.logserver_config
+        assert f.args.optimize_level == fl.args.optimize_level
         self.add_tmpfile('test1.yml')
 
     def test_flow_log_server(self):
@@ -238,7 +238,7 @@ class FlowTestCase(JinaTestCase):
                 JINA_GLOBAL.logserver.address +
                 '/status/ready',
                 timeout=5)
-            self.assertEqual(a.status_code, 200)
+            assert a.status_code == 200
 
             # YAML endpoint
             a = requests.get(
@@ -246,7 +246,7 @@ class FlowTestCase(JinaTestCase):
                 '/data/yaml',
                 timeout=5)
             self.assertTrue(a.text.startswith('!Flow'))
-            self.assertEqual(a.status_code, 200)
+            assert a.status_code == 200
 
             # Pod endpoint
             a = requests.get(
@@ -254,14 +254,14 @@ class FlowTestCase(JinaTestCase):
                 '/data/api/pod',
                 timeout=5)
             self.assertTrue('pod' in a.json())
-            self.assertEqual(a.status_code, 200)
+            assert a.status_code == 200
 
             # Shutdown endpoint
             a = requests.get(
                 JINA_GLOBAL.logserver.address +
                 '/action/shutdown',
                 timeout=5)
-            self.assertEqual(a.status_code, 200)
+            assert a.status_code == 200
 
             # Check ready endpoint after shutdown, check if server stopped
             with self.assertRaises(requests.exceptions.ConnectionError):
@@ -297,48 +297,48 @@ class FlowTestCase(JinaTestCase):
 
         with f:
             node = f._pod_nodes['gateway']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r1']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUB_BIND
 
             node = f._pod_nodes['r2']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r3']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r4']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r5']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r6']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r8']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r9']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r10']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_BIND)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUSH_BIND
 
             for name, node in f._pod_nodes.items():
-                self.assertEqual(node.peas_args['peas'][0], node.head_args)
-                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+                assert node.peas_args['peas'][0] == node.head_args
+                assert node.peas_args['peas'][0] == node.tail_args
 
     def test_dry_run_with_two_pathways_diverging_at_gateway(self):
         f = (Flow().add(name='r2', uses='_pass')
@@ -347,20 +347,20 @@ class FlowTestCase(JinaTestCase):
 
         with f:
             node = f._pod_nodes['gateway']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+            assert node.head_args.socket_in == SocketType.PULL_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUB_BIND
 
             node = f._pod_nodes['r2']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r3']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             for name, node in f._pod_nodes.items():
-                self.assertEqual(node.peas_args['peas'][0], node.head_args)
-                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+                assert node.peas_args['peas'][0] == node.head_args
+                assert node.peas_args['peas'][0] == node.tail_args
 
             f.dry_run()
 
@@ -372,24 +372,24 @@ class FlowTestCase(JinaTestCase):
 
         with f:
             node = f._pod_nodes['gateway']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r1']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUB_BIND
 
             node = f._pod_nodes['r2']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r3']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             for name, node in f._pod_nodes.items():
-                self.assertEqual(node.peas_args['peas'][0], node.head_args)
-                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+                assert node.peas_args['peas'][0] == node.head_args
+                assert node.peas_args['peas'][0] == node.tail_args
             f.dry_run()
 
     def test_refactor_num_part(self):
@@ -399,20 +399,20 @@ class FlowTestCase(JinaTestCase):
 
         with f:
             node = f._pod_nodes['gateway']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+            assert node.head_args.socket_in == SocketType.PULL_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUB_BIND
 
             node = f._pod_nodes['r1']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r2']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             for name, node in f._pod_nodes.items():
-                self.assertEqual(node.peas_args['peas'][0], node.head_args)
-                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+                assert node.peas_args['peas'][0] == node.head_args
+                assert node.peas_args['peas'][0] == node.tail_args
 
 
     def test_refactor_num_part_proxy(self):
@@ -423,24 +423,24 @@ class FlowTestCase(JinaTestCase):
 
         with f:
             node = f._pod_nodes['gateway']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.PULL_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r1']
-            self.assertEqual(node.head_args.socket_in, SocketType.PULL_BIND)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUB_BIND)
+            assert node.head_args.socket_in == SocketType.PULL_BIND
+            assert node.tail_args.socket_out == SocketType.PUB_BIND
 
             node = f._pod_nodes['r2']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             node = f._pod_nodes['r3']
-            self.assertEqual(node.head_args.socket_in, SocketType.SUB_CONNECT)
-            self.assertEqual(node.tail_args.socket_out, SocketType.PUSH_CONNECT)
+            assert node.head_args.socket_in == SocketType.SUB_CONNECT
+            assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
             for name, node in f._pod_nodes.items():
-                self.assertEqual(node.peas_args['peas'][0], node.head_args)
-                self.assertEqual(node.peas_args['peas'][0], node.tail_args)
+                assert node.peas_args['peas'][0] == node.head_args
+                assert node.peas_args['peas'][0] == node.tail_args
 
 
     def test_refactor_num_part_proxy_2(self):

@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 from jina.enums import FlowOptimizeLevel
-from jina.hub.indexers.vector.numpy import NumpyIndexer
+from jina.hub.indexers.vector.NumpyIndexer import NumpyIndexer
 from jina.flow import Flow
 from jina.main.parser import set_flow_parser
 from jina.proto import jina_pb2
@@ -108,7 +108,7 @@ class MyTestCase(JinaTestCase):
             fl.index(input_fn=random_docs(10))
 
         with f1:
-            self.assertEqual(f1.num_peas, 6)
+            assert f1.num_peas == 6
             t1 = mp.Process(target=start_client, args=(f1,))
             t1.daemon = True
             t2 = mp.Process(target=start_client, args=(f1,))
@@ -120,7 +120,7 @@ class MyTestCase(JinaTestCase):
 
         with f2:
             # no optimization can be made because we ignored the gateway
-            self.assertEqual(f2.num_peas, 6)
+            assert f2.num_peas == 6
             t1 = mp.Process(target=start_client, args=(f2,))
             t1.daemon = True
             t2 = mp.Process(target=start_client, args=(f2,))
@@ -167,7 +167,7 @@ class MyTestCase(JinaTestCase):
 
         def validate(req, indexer_name):
             self.assertTrue(req.status.code < jina_pb2.Status.ERROR)
-            self.assertEqual(req.search.docs[0].matches[0].score.op_name, indexer_name)
+            assert req.search.docs[0].matches[0].score.op_name == indexer_name
 
         with f:
             f.index(random_docs(100))

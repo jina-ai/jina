@@ -39,10 +39,10 @@ class QueryLangReaderTestCase(JinaTestCase):
 
     def test_read_from_req(self):
         def validate1(req):
-            self.assertEqual(len(req.docs), 5)
+            assert len(req.docs) == 5
 
         def validate2(req):
-            self.assertEqual(len(req.docs), 3)
+            assert len(req.docs) == 3
 
         qs = jina_pb2.QueryLang(name='SliceQL', priority=1)
         qs.parameters['start'] = 1
@@ -65,7 +65,7 @@ class QueryLangReaderTestCase(JinaTestCase):
 
     def test_querlang_driver(self):
         qld2 = dummyDriver(arg1='world')
-        self.assertEqual(qld2.arg1, 'world')
+        assert qld2.arg1 == 'world'
 
 
 if __name__ == '__main__':

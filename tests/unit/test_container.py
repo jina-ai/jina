@@ -143,14 +143,14 @@ class MyTestCase(JinaTestCase):
             with BasePea(a4):
                 NetworkChecker(a5)
 
-        self.assertEqual(cm.exception.code, 0)
+        assert cm.exception.code == 0
 
     def test_tail_host_docker2local_parallel(self):
         f = (Flow()
              .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass', parallel=3)
              .add(name='d2', uses='_pass'))
         with f:
-            self.assertEqual(getattr(f._pod_nodes['d1'].peas_args['tail'], 'host_out'), defaulthost)
+            assert getattr(f._pod_nodes['d1'].peas_args['tail'], 'host_out') == defaulthost
             f.dry_run()
 
     def test_tail_host_docker2local(self):
@@ -158,5 +158,5 @@ class MyTestCase(JinaTestCase):
              .add(name='d1', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass')
              .add(name='d2', uses='_pass'))
         with f:
-            self.assertEqual(getattr(f._pod_nodes['d1'].tail_args, 'host_out'), localhost)
+            assert getattr(f._pod_nodes['d1'].tail_args, 'host_out') == localhost
             f.dry_run()

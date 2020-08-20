@@ -15,8 +15,8 @@ class FlowExceptTestCase(JinaTestCase):
 
     def test_bad_flow(self):
         def validate(req):
-            self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
-            self.assertEqual(req.status.details[0].pod, 'r1')
+            assert req.status.code == jina_pb2.Status.ERROR
+            assert req.status.details[0].pod == 'r1'
 
         f = (Flow().add(name='r1', uses='!BaseCrafter')
              .add(name='r2', uses='!BaseEncoder')
@@ -29,8 +29,8 @@ class FlowExceptTestCase(JinaTestCase):
 
     def test_bad_flow_customized(self):
         def validate(req):
-            self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
-            self.assertEqual(req.status.details[0].pod, 'r2')
+            assert req.status.code == jina_pb2.Status.ERROR
+            assert req.status.details[0].pod == 'r2'
             self.assertTrue(req.status.details[0].exception.startswith('ZeroDivisionError'))
 
         f = (Flow().add(name='r1', uses='_pass')
@@ -47,10 +47,10 @@ class FlowExceptTestCase(JinaTestCase):
 
     def test_except_with_parallel(self):
         def validate(req):
-            self.assertEqual(req.status.code, jina_pb2.Status.ERROR)
-            self.assertEqual(len(req.status.details), 2)
-            self.assertEqual(req.status.details[0].executor, 'DummyCrafter')
-            self.assertEqual(req.status.details[1].executor, 'BaseEncoder')
+            assert req.status.code == jina_pb2.Status.ERROR
+            assert len(req.status.details) == 2
+            assert req.status.details[0].executor == 'DummyCrafter'
+            assert req.status.details[1].executor == 'BaseEncoder'
             self.assertTrue(req.status.details[0].exception.startswith('ZeroDivisionError'))
             self.assertTrue(req.status.details[1].exception.startswith('NotImplementedError'))
 

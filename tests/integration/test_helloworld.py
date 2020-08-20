@@ -92,7 +92,7 @@ class MyTestCase(JinaTestCase):
         # head check
         req = urllib.request.Request(args.index_data_url, method="HEAD")
         response = urllib.request.urlopen(req, timeout=5)
-        self.assertEqual(response.status, 200)
+        assert response.status == 200
 
         # test with proxy
         args = set_hw_parser().parse_args(["--download-proxy", os.getenv("HTTP_PROXY")])
@@ -105,7 +105,7 @@ class MyTestCase(JinaTestCase):
         # head check
         req = urllib.request.Request(args.index_data_url, method="HEAD")
         response = urllib.request.urlopen(req, timeout=5)
-        self.assertEqual(response.status, 200)
+        assert response.status == 200
 
 
 if __name__ == '__main__':

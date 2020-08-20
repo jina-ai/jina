@@ -48,11 +48,11 @@ class ConcatDriverTestCase(JinaTestCase):
             del os.environ['JINA_ARRAY_QUANT']
 
         def validate(req):
-            self.assertEqual(len(req.docs), 2)
-            self.assertEqual(req.docs[0].embedding.shape, [e1.shape[0] * 2])
-            self.assertEqual(req.docs[1].embedding.shape, [e3.shape[0] * 2])
-            self.assertEqual(req.docs[0].chunks[0].embedding.shape, [e2.shape[0] * 2])
-            self.assertEqual(req.docs[1].chunks[0].embedding.shape, [e4.shape[0] * 2])
+            assert len(req.docs) == 2
+            assert req.docs[0].embedding.shape == [e1.shape[0] * 2]
+            assert req.docs[1].embedding.shape == [e3.shape[0] * 2]
+            assert req.docs[0].chunks[0].embedding.shape == [e2.shape[0] * 2]
+            assert req.docs[1].chunks[0].embedding.shape == [e4.shape[0] * 2]
             np.testing.assert_almost_equal(pb2array(req.docs[0].embedding), np.concatenate([e1, e1], axis=0), decimal=4)
             np.testing.assert_almost_equal(pb2array(req.docs[0].chunks[0].embedding), np.concatenate([e2, e2], axis=0),
                                            decimal=4)

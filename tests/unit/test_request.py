@@ -12,4 +12,4 @@ class RequestTestCase(JinaTestCase):
 
         req = _generate(data=random_lines(100), batch_size=100)
 
-        self.assertEqual(len(list(req)), 1)
+        assert len(list(req)) == 1

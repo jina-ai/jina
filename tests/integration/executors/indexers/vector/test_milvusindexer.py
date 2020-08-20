@@ -3,10 +3,9 @@ import shutil
 import time
 
 import numpy as np
+from jina.hub.indexers.vector.MilvusIndexer import MilvusIndexer
+from jina.hub.indexers.vector.MilvusIndexer.MilvusDBHandler import MilvusDBHandler
 from milvus import Milvus
-
-from jina.hub.indexers.vector.milvus import MilvusIndexer
-from jina.hub.indexers.vector.milvusdb.milvusdbhandler import MilvusDBHandler
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -81,8 +80,8 @@ class MilvusIndexerTestCase(JinaTestCase):
             dist, idx = db.search(vectors, 2)
             dist = np.array(dist)
             idx = np.array(idx)
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (4, 2))
+            assert idx.shape == dist.shape
+            assert idx.shape == (4, 2)
             np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]))
 
     def test_milvusdbhandler_build(self):
@@ -101,8 +100,8 @@ class MilvusIndexerTestCase(JinaTestCase):
             dist, idx = db.search(vectors, 2, {'nprobe': 2})
             dist = np.array(dist)
             idx = np.array(idx)
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (4, 2))
+            assert idx.shape == dist.shape
+            assert idx.shape == (4, 2)
             np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]))
 
     def test_milvus_indexer(self):
@@ -121,6 +120,6 @@ class MilvusIndexerTestCase(JinaTestCase):
             idx, dist = indexer.query(vectors, 2, search_params={'nprobe': 2})
             dist = np.array(dist)
             idx = np.array(idx)
-            self.assertEqual(idx.shape, dist.shape)
-            self.assertEqual(idx.shape, (4, 2))
+            assert idx.shape == dist.shape
+            assert idx.shape == (4, 2)
             np.testing.assert_equal(idx, np.array([[0, 1], [1, 0], [2, 1], [3, 2]]))

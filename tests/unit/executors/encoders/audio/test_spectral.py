@@ -13,7 +13,7 @@ class SpectralTestCase(JinaTestCase):
         n_mfcc = 12
         encoder = MFCCTimbreEncoder(n_mfcc=n_mfcc)
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (batch_size, n_mfcc * n_frames))
+        assert encoded_data.shape == (batch_size, n_mfcc * n_frames)
 
     def test_chroma_encoder(self):
         batch_size = 10
@@ -22,4 +22,4 @@ class SpectralTestCase(JinaTestCase):
         test_data = np.random.randn(batch_size, signal_length)
         encoder = ChromaPitchEncoder()
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape, (batch_size, 12 * n_frames))
+        assert encoded_data.shape == (batch_size, 12 * n_frames)

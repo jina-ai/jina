@@ -31,13 +31,13 @@ class MyTestCase(JinaTestCase):
             b = yaml.load(fp)
 
         self.assertTrue(isinstance(b, KVSearchDriver))
-        self.assertEqual(b._executor_name, a[0]._executor_name)
+        assert b._executor_name == a[0]._executor_name
 
         self.add_tmpfile('test_driver.yml')
 
     def test_load_cust_with_driver(self):
         a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
-        self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
+        assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
         p = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
         with Pod(p):
             # will print a cust msg from the driver when terminate
@@ -45,7 +45,7 @@ class MyTestCase(JinaTestCase):
 
     def test_pod_new_api_from_kwargs(self):
         a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
-        self.assertEqual(a._drivers['ControlRequest'][0].__class__.__name__, 'MyAwesomeDriver')
+        assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
 
         with Pod(uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
             # will print a cust msg from the driver when terminate
@@ -53,33 +53,33 @@ class MyTestCase(JinaTestCase):
 
     def test_load_yaml2(self):
         a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-exec-with-driver.yml'))
-        self.assertEqual(len(a._drivers), 2)
+        assert len(a._drivers) == 2
         # should be able to auto fill in ControlRequest
         self.assertTrue('ControlRequest' in a._drivers)
         a.save_config()
         p = a.config_abspath
         b = BaseExecutor.load_config(p)
-        self.assertEqual(a._drivers, b._drivers)
+        assert a._drivers == b._drivers
         self.add_tmpfile(p)
         a.touch()
         a.save()
         c = BaseExecutor.load(a.save_abspath)
-        self.assertEqual(a._drivers, c._drivers)
+        assert a._drivers == c._drivers
         self.add_tmpfile(a.save_abspath)
 
     def test_resource_executor(self):
         a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._route.yml'))))
-        self.assertEqual(a.name, 'route')
-        self.assertEqual(len(a._drivers), 4)
+        assert a.name == 'route'
+        assert len(a._drivers) == 4
         a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._pass.yml'))))
-        self.assertEqual(a.name, 'forward')
-        self.assertEqual(len(a._drivers), 4)
+        assert a.name == 'forward'
+        assert len(a._drivers) == 4
         a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._merge.yml'))))
-        self.assertEqual(a.name, 'merge')
-        self.assertEqual(len(a._drivers), 4)
+        assert a.name == 'merge'
+        assert len(a._drivers) == 4
         a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', 'executors._clear.yml'))))
-        self.assertEqual(a.name, 'clear')
-        self.assertEqual(len(a._drivers), 4)
+        assert a.name == 'clear'
+        assert len(a._drivers) == 4
 
     def test_multiple_executor(self):
         from jina.executors.encoders import BaseEncoder
@@ -91,31 +91,31 @@ class MyTestCase(JinaTestCase):
             pass
 
         d1 = D1()
-        self.assertEqual(len(d1._drivers), 4)
+        assert len(d1._drivers) == 4
 
         class D2(BaseIndexer):
             pass
 
         d2 = D2('dummy.bin')
-        self.assertEqual(len(d2._drivers), 1)
+        assert len(d2._drivers) == 1
 
         class D3(Chunk2DocRanker):
             pass
 
         d3 = D3()
-        self.assertEqual(len(d3._drivers), 2)
+        assert len(d3._drivers) == 2
 
         class D4(BaseCrafter):
             pass
 
         d4 = D4()
-        self.assertEqual(len(d4._drivers), 4)
+        assert len(d4._drivers) == 4
 
         class D5(BaseCrafter):
             pass
 
         d5 = D5()
-        self.assertEqual(len(d5._drivers), 4)
+        assert len(d5._drivers) == 4
 
 
 if __name__ == '__main__':

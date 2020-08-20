@@ -83,13 +83,13 @@ class MultiModeFlowTestCase(JinaTestCase):
                                                       [1.0, 1.0, 1.0]]))
 
         chunkIndexer1 = BinaryPbIndexer(index_filename='chunk1.gz')
-        self.assertEqual(len(chunkIndexer1.query_handler.items()), 3)
+        assert len(chunkIndexer1.query_handler.items()) == 3
         for key, pb in chunkIndexer1.query_handler.items():
             for chunk in pb.chunks:
-                self.assertEqual(chunk.modality, 'mode1')
+                assert chunk.modality == 'mode1'
 
         chunkIndexer2 = BinaryPbIndexer(index_filename='chunk2.gz')
-        self.assertEqual(len(chunkIndexer2.query_handler.items()), 3)
+        assert len(chunkIndexer2.query_handler.items()) == 3
         for key, pb in chunkIndexer2.query_handler.items():
             for chunk in pb.chunks:
-                self.assertEqual(chunk.modality, 'mode2')
+                assert chunk.modality == 'mode2'

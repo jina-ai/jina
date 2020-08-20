@@ -93,7 +93,8 @@ def import_classes(namespace: str, targets=None,
     :param import_once: import everything only once, to avoid repeated import
     """
 
-    import os, sys
+    import os, sys, re
+
 
     if namespace == 'jina.executors':
         import_type = 'ExecutorType'
@@ -132,6 +133,10 @@ def import_classes(namespace: str, targets=None,
             for info in iter_modules([pkgpath]):
                 if not info.ispkg:
                     modules.add('.'.join([namespace, pkg, info.name]))
+
+    # filter
+    ignored_module_pattern = r'\.tests|\.api'
+    modules = {m for m in modules if not re.findall(ignored_module_pattern, m)}
 
     from collections import defaultdict
     load_stat = defaultdict(list)

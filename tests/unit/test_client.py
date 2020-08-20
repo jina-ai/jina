@@ -42,11 +42,11 @@ class ClientTestCase(JinaTestCase):
         p = set_gateway_parser().parse_args([])
         with RESTGatewayPea(p):
             a = requests.get(f'http://0.0.0.0:{p.port_expose}/ready')
-            self.assertEqual(a.status_code, 200)
+            assert a.status_code == 200
 
         with RESTGatewayPea(p):
             a = requests.post(f'http://0.0.0.0:{p.port_expose}/api/ass')
-            self.assertEqual(a.status_code, 405)
+            assert a.status_code == 405
 
     def test_gateway_index(self):
         f = Flow(rest_api=True).add(uses='_pass')
@@ -58,10 +58,9 @@ class ClientTestCase(JinaTestCase):
 
             j = a.json()
             self.assertTrue('index' in j)
-            self.assertEqual(len(j['index']['docs']), 2)
-            self.assertEqual(j['index']['docs'][0]['uri'],
-                             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
-            self.assertEqual(a.status_code, 200)
+            assert len(j['index']['docs']) == 2
+            assert j['index']['docs'][0]['uri'] == 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC'
+            assert a.status_code == 200
 
     def test_gateway_index_with_args(self):
         f = Flow(rest_api=True).add(uses='_pass')
@@ -74,12 +73,11 @@ class ClientTestCase(JinaTestCase):
                               })
             j = a.json()
             self.assertTrue('index' in j)
-            self.assertEqual(len(j['index']['docs']), 2)
-            self.assertEqual(j['index']['docs'][0]['id'], 1)  # doc zero is reserved
-            self.assertEqual(j['index']['docs'][1]['id'], 2)
-            self.assertEqual(j['index']['docs'][0]['uri'],
-                             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC')
-            self.assertEqual(a.status_code, 200)
+            assert len(j['index']['docs']) == 2
+            assert j['index']['docs'][0]['id'] == 1  # doc zero is reserved
+            assert j['index']['docs'][1]['id'] == 2
+            assert j['index']['docs'][0]['uri'] == 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC'
+            assert a.status_code == 200
 
     def test_io_files(self):
         PyClient.check_input(input_files('*.*'))
@@ -92,7 +90,7 @@ class ClientTestCase(JinaTestCase):
 
         def validate_mime_type(req):
             for d in req.index.docs:
-                self.assertEqual(d.mime_type, 'text/x-python')
+                assert d.mime_type == 'text/x-python'
 
         with f:
             f.index(input_files('*.py'), validate_mime_type)

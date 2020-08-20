@@ -52,7 +52,7 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
                     pooling_strategy='auto',
                     metas={})
                 encoded_batch = encoder.encode(self.texts)
-                self.assertEqual(encoded_batch.shape, (2, 768))
+                assert encoded_batch.shape == (2, 768)
 
     def test_encodes_lm_like(self):
         """Tests that for GPT-like language models the embedding from first token is used for sequence embedding"""
@@ -64,7 +64,7 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
                     pooling_strategy='auto',
                     metas={})
                 encoded_batch = encoder.encode(self.texts)
-                self.assertEqual(encoded_batch.shape, (2, 768))
+                assert encoded_batch.shape == (2, 768)
 
     def test_loads_tf_encoder(self):
         """Tests that TF-based model can be loaded"""
@@ -73,4 +73,4 @@ class TransformerEncoderWithMockedModelTestCase(TestCase):
         with patch.object(TFAutoModelForPreTraining, 'from_pretrained', return_value=MockTFModel(model)):
             encoder = TransformerTFEncoder(pretrained_model_name_or_path=model)
             encoded_batch = encoder.encode(self.texts)
-            self.assertEqual(encoded_batch.shape, (2, 768))
+            assert encoded_batch.shape == (2, 768)
