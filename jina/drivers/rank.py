@@ -61,7 +61,6 @@ class Chunk2DocRankDriver(BaseRankDriver):
             for doc_id, score in docs_scores:
                 r = context_doc.matches.add()
                 r.id = int(doc_id)
-                r.level_depth = context_doc.level_depth  # the match and doc are always on the same level_depth
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__

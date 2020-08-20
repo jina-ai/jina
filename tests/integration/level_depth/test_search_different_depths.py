@@ -32,7 +32,7 @@ class SearchDifferentLevelDepthTestCase(JinaTestCase):
                 self.assertEqual(doc.level_depth, 1)
                 self.assertEqual(len(doc.matches), 1)
                 self.assertEqual(doc.matches[0].id, doc.id)  # done on purpose
-                # self.assertEqual(doc.matches[0].level_depth, 0)  # tconceptually is like this, but we impose that match has same level as its matched
+                self.assertEqual(doc.matches[0].level_depth, 0)
 
             self.assertEqual(resp.docs[0].text, 'I am chunk 1 of doc 1,')
             self.assertEqual(resp.docs[0].matches[0].text, 'I am chunk 0 of doc 1, I am chunk 1 of doc 1, I am chunk 2 of doc 1')
