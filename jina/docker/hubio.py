@@ -249,6 +249,7 @@ class HubIO:
         tmp = self._read_manifest(self.manifest_path)
         self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, tmp)
         self.canonical_name = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}:{version}'.format(**tmp))
+        return completeness
 
     def _read_manifest(self, path: str, validate: bool = True):
         with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
