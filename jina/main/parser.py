@@ -10,7 +10,7 @@ def add_arg_group(parser, title):
 
 def set_base_parser():
     from .. import __version__
-    from ..helper import colored, get_full_version
+    from ..helper import colored, get_full_version, format_full_version_info
     # create the top-level parser
     urls = {
         'Jina 101': ('🐣', 'https://101.jina.ai'),
@@ -35,7 +35,7 @@ def set_base_parser():
                         help='show Jina version')
 
     parser.add_argument('-vf', '--version-full', action='version',
-                        version=get_full_version(),
+                        version=format_full_version_info(*get_full_version()),
                         help='show Jina and all dependencies versions')
     return parser
 

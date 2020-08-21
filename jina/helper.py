@@ -7,12 +7,14 @@ import random
 import re
 import sys
 import time
+import types
 from argparse import ArgumentParser, Namespace
+from datetime import datetime
 from io import StringIO
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
-import types
+
 import numpy as np
 from ruamel.yaml import YAML, nodes
 
@@ -603,7 +605,7 @@ def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Op
     return non_defaults
 
 
-def get_full_version() -> str:
+def get_full_version() -> Tuple[Dict, Dict]:
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
     import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
@@ -615,7 +617,7 @@ def get_full_version() -> str:
 
         info = {'jina': __version__,
                 'jina-proto': __proto_version__,
-                'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', colored('(unset)', 'yellow')),
+                'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', '(unset)'),
                 'libzmq': zmq.zmq_version(),
                 'pyzmq': numpy.__version__,
                 'protobuf': google.protobuf.__version__,
@@ -630,12 +632,16 @@ def get_full_version() -> str:
                 'processor': platform.processor(),
                 'jina-resources': resource_filename('jina', 'resources')
                 }
-        version_info = '\n'.join(f'{k:30s}{v}' for k, v in info.items())
-        env_info = '\n'.join('%-30s%s' % (k, os.environ.get(k, colored('(unset)', 'yellow'))) for k in
-                             __jina_env__)
-        return version_info + '\n' + env_info
+        env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
+        return info, env_info
     except Exception as e:
-        default_logger.exception(e)
+        default_logger.error(e)
+
+
+def format_full_version_info(info: Dict, env_info: Dict) -> str:
+    version_info = '\n'.join(f'{k:30s}{v}' for k, v in info.items())
+    env_info = '\n'.join(f'{k:30s}{v}' for k, v in env_info.items())
+    return version_info + '\n' + env_info
 
 
 def use_uvloop():
@@ -682,3 +688,8 @@ class cached_property:
 
         value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
         return value
+
+
+def get_now_timestamp():
+    now = datetime.now()
+    return int(datetime.timestamp(now))
