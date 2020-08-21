@@ -10,7 +10,7 @@ from typing import Dict
 from .checker import *
 from .helper import get_default_login
 from ..clients.python import ProgressBar
-from ..helper import colored, get_readable_size
+from ..helper import colored, get_readable_size, get_now_timestamp
 from ..logging import get_logger
 from ..logging.profile import TimeContext
 
@@ -141,11 +141,12 @@ class HubIO:
             # use default login
             self._client.login(**get_default_login(), registry=self.args.registry)
 
-    def build(self):
+    def build(self) -> Dict:
         """A wrapper of docker build """
         self._check_completeness()
-        is_build_success = True
-        with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger):
+        is_build_success, is_push_success = True, False
+        logs = []
+        with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger) as tc:
 
             streamer = self._raw_client.build(
                 decode=True,
@@ -166,6 +167,7 @@ class HubIO:
                             self.logger.warning(line)
                         else:
                             self.logger.info(line)
+                        logs.append(line)
 
         if is_build_success:
             # compile it again, but this time don't show the log
@@ -176,13 +178,38 @@ class HubIO:
                                                    rm=True)
 
             # success
-            self.logger.success(
-                f'🎉 built {image.tags[0]} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
 
-            if self.args.push:
-                self.push(image.tags[0], self.readme_path)
+            _details = {
+                'inspect': self._raw_client.inspect_image(image.tags[0]),
+                'tag': image.tags[0],
+                'hash': image.short_id,
+                'size': get_readable_size(image.attrs['Size']),
+            }
+
+            self.logger.success(
+                '🎉 built {tag} ({hash}) uncompressed size: {size}'.format_map(_details))
+
         else:
             self.logger.error(f'can not build the image, please double check the log')
+            _details = {}
+
+        if is_build_success and self.args.push:
+            try:
+                self.push(image.tags[0], self.readme_path)
+                is_push_success = True
+            except Exception:
+                self.logger.error(f'can not push tot the registry')
+
+        return {
+            'name': self.canonical_name,
+            'path': self.args.path,
+            'details': _details,
+            'last_build_time': get_now_timestamp(),
+            'build_duration': tc.duration,
+            'is_build_success': is_build_success,
+            'is_push_success': is_push_success,
+            'build_logs': logs
+        }
 
     def _check_completeness(self):
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')

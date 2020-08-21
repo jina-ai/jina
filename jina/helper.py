@@ -7,12 +7,14 @@ import random
 import re
 import sys
 import time
+import types
 from argparse import ArgumentParser, Namespace
+from datetime import datetime
 from io import StringIO
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
-import types
+
 import numpy as np
 from ruamel.yaml import YAML, nodes
 
@@ -682,3 +684,7 @@ class cached_property:
 
         value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
         return value
+
+def get_now_timestamp():
+    now = datetime.now()
+    return int(datetime.timestamp(now))
