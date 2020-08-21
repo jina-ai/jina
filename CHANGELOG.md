@@ -61,6 +61,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -3674,4 +3675,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```1d2af7f8```](https://github.com/jina-ai/jina/commit/1d2af7f8091923257328ea9cbecf19eafc09a426)] __-__ update contributors (*Jina Dev Bot*)
  - [[```af97ad73```](https://github.com/jina-ai/jina/commit/af97ad7347a4887e809ae7381b77491323fe67f4)] __-__ __version__: the next version will be 0.4.10 (*Jina Dev Bot*)
  - [[```9c1c304e```](https://github.com/jina-ai/jina/commit/9c1c304e5d6e7f612337df6485df52fa65bd56bc)] __-__ __version__: the next version will be 0.4.8 (*Jina Dev Bot*)
+
+## Release Note (`0.4.11`)
+
+> Release time: 2020-08-21 18:07:16
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```ab067ca2```](https://github.com/jina-ai/jina/commit/ab067ca26e88a9ec53d9ee10b6619a74fca19853)] __-__ __hub__: add more info to hubio for builder (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```cb44213d```](https://github.com/jina-ai/jina/commit/cb44213d0293ab06ab5eb46dcf73c9e7789be206)] __-__ fix flaky cicd (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```cdd0d2bc```](https://github.com/jina-ai/jina/commit/cdd0d2bcce9381ea83268ae2f6eda95be8893001)] __-__ hotfix fix release (*Han Xiao*)
+ - [[```075108de```](https://github.com/jina-ai/jina/commit/075108deaaac58297370d1448405029fb172b7e1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1441f40f```](https://github.com/jina-ai/jina/commit/1441f40f849d22c21b8397527960b4307ff0d5a3)] __-__ __version__: the next version will be 0.4.11 (*Jina Dev Bot*)
 
