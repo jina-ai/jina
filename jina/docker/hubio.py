@@ -145,7 +145,8 @@ class HubIO:
         """A wrapper of docker build """
         self._check_completeness()
         is_build_success, is_push_success = True, False
-        logs = []
+        _logs = []
+        _excepts = []
         with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger) as tc:
 
             streamer = self._raw_client.build(
@@ -163,11 +164,12 @@ class HubIO:
                         if 'error' in line.lower():
                             self.logger.critical(line)
                             is_build_success = False
+                            _excepts.append(line)
                         elif 'warning' in line.lower():
                             self.logger.warning(line)
                         else:
                             self.logger.info(line)
-                        logs.append(line)
+                        _logs.append(line)
 
         if is_build_success:
             # compile it again, but this time don't show the log
@@ -208,7 +210,8 @@ class HubIO:
             'build_duration': tc.duration,
             'is_build_success': is_build_success,
             'is_push_success': is_push_success,
-            'build_logs': logs
+            'build_logs': _logs,
+            'exception': _excepts
         }
 
     def _check_completeness(self):
