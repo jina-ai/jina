@@ -162,7 +162,7 @@ class Flow:
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
         as the head and tail routers are removed.
-        
+
         """
         self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
@@ -454,6 +454,73 @@ class Flow:
         op_flow = _optimize_flow(op_flow, _outgoing_map, _pod_edges)
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
+
+    def visualize(self, filename: str = None, format: str = None):
+        """
+        Creates a graphviz object for respresenting the Flow object; this graphviz
+        object will be rendered inline if called from an IPython notebook, otherwise
+        it will be rendered in a new window.  If a `filename` is provided, the object
+        will not be rendered and instead saved to the location specified.
+
+        Example,
+
+        .. highlight:: python
+        .. code-block:: python
+
+            flow = Flow().load_config('flow-index.yml')
+
+            flow.visualize('flow-index-v1.gv','format='png')
+
+        :param filename: a filename specifying a location to save this visualization
+                            to; if provided, the visualization will not be rendered
+                            automatically
+        :param format: a format specifying the output file type; defaults to 'pdf'.
+                            Refer to http://www.graphviz.org/doc/info/output.html for valid formats
+        :return: graphviz object if called from an IPython notebook, otherwise
+                    it will be rendered in a new window
+        """
+        try:
+            import graphviz
+        except ModuleNotFoundError:
+            self.logger.error(
+                f'Flow visualize would not work as "graphviz" is missing, '
+                f'use pip install "jina[viz]" (with double quotes) to install the dependencies')
+
+        graph = graphviz.Digraph()
+
+        # prune gateway pod & populate the graph object
+        for end, pod in self._pod_nodes.items():
+            if end == "gateway":
+                continue
+            graph.node(end)
+            for start in pod.needs:
+                if start != "gateway":
+                    graph.edge(start, end)
+
+        if filename:
+            graph.render(filename, view=False, format=format, cleanup=True)
+        else:
+            try:
+                from IPython import get_ipython
+
+                assert get_ipython().config.get("IPKernelApp") is not None
+            except Exception:
+                with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                    tmp.close()
+                    try:
+                        graph.render(tmp.name, view=True)
+                    except graphviz.backend.ExecutableNotFound:
+                        msg = (
+                            "It appears you do not have Graphviz installed, or it is not on your "
+                            "PATH. Please install Graphviz from http://www.graphviz.org/download/. "
+                            "And note: just installing the `graphviz` python package is not "
+                            "sufficient!"
+                        )
+                        raise graphviz.backend.ExecutableNotFound(msg)
+                    finally:
+                        os.unlink(tmp.name)
+
+        return graph
 
     def __call__(self, *args, **kwargs):
         return self.build(*args, **kwargs)

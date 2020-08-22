@@ -6,7 +6,7 @@
 #
 # AVAILABLE TAGS
 #
-# nlp, cv, audio, numeric, index, http, sse, framework, perf, network
+# nlp, cv, audio, numeric, index, http, sse, framework, perf, network, viz
 #
 # REMARKS ON TAGS
 # 1. Try to reuse the existing tags if possible.
@@ -51,3 +51,4 @@ grpcio:                     core
 ruamel.yaml>=0.15.89:       core
 tornado>=5.1.0:             core
 cookiecutter:               hub, devel
+graphviz:                   viz
