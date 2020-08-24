@@ -20,7 +20,7 @@ scipy>=1.4.1:               index, numeric
 flask:                      devel, http, sse
 flask_cors:                 devel, http, sse
 nmslib>=1.6.3:              index
-docker:                     devel, network
+docker:                     devel, network, hub
 torch>=1.1.0:               framework
 transformers>=2.6.0:        nlp
 flair:                      nlp
@@ -31,6 +31,7 @@ tensorflow-hub:             framework, py37
 torchvision>=0.3.0:         framework, cv
 onnx:                       framework, py37
 onnxruntime:                framework, py37
+Pillow:                     cv
 annoy>=1.9.5:               index
 sklearn:                    numeric
 plyvel:                     index
@@ -49,3 +50,4 @@ protobuf:                   core
 grpcio:                     core
 ruamel.yaml>=0.15.89:       core
 tornado>=5.1.0:             core
+cookiecutter:               hub, devel

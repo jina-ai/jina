@@ -59,10 +59,10 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install pytest pytest-xdist==1.34.0 pytest-timeout pytest-cov
-          pytest --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
+          pip install pytest pytest-xdist==1.34.0 pytest-timeout pytest-cov flaky
+          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
-        timeout-minutes: 15
+        timeout-minutes: 30
       - name: Upload coverage result from unit-test
         if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
         uses: actions/upload-artifact@v1
@@ -96,10 +96,10 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install pytest pytest-xdist==1.34.0 pytest-timeout pytest-cov
-          pytest --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/integration
+          pip install pytest pytest-xdist==1.34.0 pytest-timeout pytest-cov flaky
+          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/integration
           mv coverage.xml integration-test-coverage.xml
-        timeout-minutes: 15
+        timeout-minutes: 30
       - name: Upload coverage result from integration-test
         if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
         uses: actions/upload-artifact@v1

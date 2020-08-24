@@ -91,5 +91,5 @@ def flow(args):
 
 def hub(args):
     """Start a hub builder for build, push, pull"""
-    from jina.hubapi.api.docker import HubIO
+    from jina.docker.hubio import HubIO
     getattr(HubIO(args), args.hub)()

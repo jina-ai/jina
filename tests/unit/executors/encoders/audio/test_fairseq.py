@@ -19,5 +19,5 @@ class FairSeqTestCase(ExecutorTestCase):
         test_data = np.random.randn(batch_size, signal_length).astype('f')
         encoder = self._get_encoder()
         encoded_data = encoder.encode(test_data)
-        self.assertEqual(encoded_data.shape[0], batch_size)
+        assert encoded_data.shape[0] == batch_size
         self.assertTrue(encoded_data.shape[1] % self.target_output_dim == 0)

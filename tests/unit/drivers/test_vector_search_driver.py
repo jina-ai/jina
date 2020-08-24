@@ -72,11 +72,11 @@ class VectorSearchDriverTestCase(JinaTestCase):
     def test_vectorsearch_driver_mock_queryset(self):
         # no queryset
         driver = VectorSearchDriver(top_k=3)
-        self.assertEqual(driver.top_k, 3)
+        assert driver.top_k == 3
 
         # with queryset
         driver = SimpleVectorSearchDriver(top_k=3)
-        self.assertEqual(driver.top_k, 4)
+        assert driver.top_k == 4
 
     def test_vectorsearch_driver_mock_indexer(self):
         doc = create_document_to_search()
@@ -86,12 +86,12 @@ class VectorSearchDriverTestCase(JinaTestCase):
         driver._apply_all(doc.chunks)
 
         for chunk in doc.chunks:
-            self.assertEqual(len(chunk.matches), 2)
-            self.assertEqual(chunk.matches[0].id, chunk.id * 100)
-            self.assertEqual(chunk.matches[1].id, chunk.id * 1000)
-            self.assertEqual(chunk.matches[0].level_depth, chunk.level_depth)
-            self.assertEqual(chunk.matches[1].level_depth, chunk.level_depth)
-            self.assertEqual(chunk.matches[0].score.ref_id, chunk.id)
-            self.assertEqual(chunk.matches[1].score.ref_id, chunk.id)
+            assert len(chunk.matches) == 2
+            assert chunk.matches[0].id == chunk.id * 100
+            assert chunk.matches[1].id == chunk.id * 1000
+            assert chunk.matches[0].level_depth == chunk.level_depth
+            assert chunk.matches[1].level_depth == chunk.level_depth
+            assert chunk.matches[0].score.ref_id == chunk.id
+            assert chunk.matches[1].score.ref_id == chunk.id
             self.assertAlmostEqual(chunk.matches[0].score.value, chunk.id * 0.01)
             self.assertAlmostEqual(chunk.matches[1].score.value, chunk.id * 0.1)

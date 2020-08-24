@@ -267,8 +267,6 @@ We're always happy to lend a hand, answer questions, or listen to feedback. You 
 
 We're also looking at starting online developer hangouts, so you can catch up with us over chat and video, and get to meet your fellow Jina contributors.
 
-And you can find me, Jina's Open Source Evangelist on [Twitter](http://twitter.com/alexcg). Feel free to @ me if there's anything you want to know!
-
 ## 🙏 Thank You
 
 Once again, thanks so much for your interest in contributing to Jina. We're excited to see your contributions!

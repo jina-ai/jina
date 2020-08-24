@@ -60,6 +60,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -119,6 +121,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.4.7`)](#release-note-047)
 - [Release Note (`0.4.8`)](#release-note-048)
 - [Release Note (`0.4.9`)](#release-note-049)
+- [Release Note (`0.4.10`)](#release-note-0410)
+- [Release Note (`0.4.11`)](#release-note-0411)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -3589,4 +3593,111 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```54c8d063```](https://github.com/jina-ai/jina/commit/54c8d063515ad18684c97beb101c2187d5e71e64)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```cccf2b7f```](https://github.com/jina-ai/jina/commit/cccf2b7f6f1091ccd8d92ce9d74781205e1b15af)] __-__ __version__: the next version will be 0.4.9 (*Jina Dev Bot*)
  - [[```8637149a```](https://github.com/jina-ai/jina/commit/8637149a529f9ef3c4668a1b5085b5f60b6339f3)] __-__ __version__: the next version will be 0.4.7 (*Jina Dev Bot*)
+
+## Release Note (`0.4.10`)
+
+> Release time: 2020-08-21 05:56:44
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals Martinez,  Jina Dev Bot,  Alex C-G,  Nan Wang,  Yue Liu,  joanna350,  🙇
+
+
+### 🆕 New Features
+
+ - [[```58a660ee```](https://github.com/jina-ai/jina/commit/58a660ee6a94789a0ec1a4ca175d241dfd3fdf99)] __-__ __hub__: add hub new to cli parser (*Han Xiao*)
+ - [[```23429947```](https://github.com/jina-ai/jina/commit/234299470269ebea5fc0904f245f928702afd8b7)] __-__ add docstrings (*Nan Wang*)
+ - [[```c9987bda```](https://github.com/jina-ai/jina/commit/c9987bda035b14b13629152bd5345131b3670ada)] __-__ clean up (*Nan Wang*)
+ - [[```9e75477f```](https://github.com/jina-ai/jina/commit/9e75477f82cae5c3a166685c9a9e0b4451842e57)] __-__ remove the image encoders (*Nan Wang*)
+ - [[```a12bfe8d```](https://github.com/jina-ai/jina/commit/a12bfe8d60c89fe3d5b7bfc823544b561e6d299c)] __-__ __executors__: add tests for mindspore (*Nan Wang*)
+ - [[```f00f7999```](https://github.com/jina-ai/jina/commit/f00f7999254237cec4984af807a04711158a7b10)] __-__ __executors__: add support for mindspore (*Nan Wang*)
+
+### 🐞 Bug fixes
+
+ - [[```8a2ed8cf```](https://github.com/jina-ai/jina/commit/8a2ed8cfacc710ab6cdafea3395f54dd510d8205)] __-__ __test__: update import to core (*Han Xiao*)
+ - [[```5e80ce32```](https://github.com/jina-ai/jina/commit/5e80ce3216d2b3d9f3524d16c0840d623e782cb1)] __-__ __hubio__: fix standard hub name (*Han Xiao*)
+ - [[```7d98cc26```](https://github.com/jina-ai/jina/commit/7d98cc26b1b70caef63022eb31614decefe4b275)] __-__ manifest yaml in test (*Han Xiao*)
+ - [[```8f25abad```](https://github.com/jina-ai/jina/commit/8f25abad9d3071b884d0934a1852c6ced925d29d)] __-__ remind jina-hub submodule not loaded (*Han Xiao*)
+ - [[```94a72aa2```](https://github.com/jina-ai/jina/commit/94a72aa2fdf8c6376e426b4eaefe41522234460e)] __-__ __test__: fix numpy related tests (*Han Xiao*)
+ - [[```c45e6c82```](https://github.com/jina-ai/jina/commit/c45e6c82862af77c1497cc88e2ec5195e929f883)] __-__ remove migrated tests (*Han Xiao*)
+ - [[```d40573e7```](https://github.com/jina-ai/jina/commit/d40573e789c945460a6e59e6d462a59ec9c2ee09)] __-__ __requirements__: fix format in req (*Han Xiao*)
+ - [[```e6b4bce2```](https://github.com/jina-ai/jina/commit/e6b4bce23f1d9d0b0aac8e501e7d98b7ec59840f)] __-__ add ignore pattern to import class (*Han Xiao*)
+ - [[```30d47033```](https://github.com/jina-ai/jina/commit/30d47033716efc524253bcfedc151859bf92f8d6)] __-__ submodule reference (*Han Xiao*)
+ - [[```34092944```](https://github.com/jina-ai/jina/commit/34092944f77b792fe747a66ce0d8a3497f05066c)] __-__ __cli__: fix hub cli imports (*Han Xiao*)
+ - [[```cf3f02e0```](https://github.com/jina-ai/jina/commit/cf3f02e0e90f95e04d86a7ce78af8829c29f0f50)] __-__ rm emojis from links (*Alex C-G*)
+ - [[```531496d7```](https://github.com/jina-ai/jina/commit/531496d7f6c9416f5a2ac2e62c0464a7cf12cc4f)] __-__ __ci__: force submodules checkout (*Han Xiao*)
+ - [[```fee4eaaf```](https://github.com/jina-ai/jina/commit/fee4eaaf071096bd3068cc3e50b9b1d5b1601342)] __-__ __tests__: fix import in tests (*Han Xiao*)
+ - [[```5f3d3da4```](https://github.com/jina-ai/jina/commit/5f3d3da4ca4a1394d21b22d84fa68d8cc0a7b12b)] __-__ fix class import marker (*Han Xiao*)
+ - [[```d007bd04```](https://github.com/jina-ai/jina/commit/d007bd04363dca4fb51018c1241c82f63bc258cd)] __-__ __cli__: fix jina check cli (*Han Xiao*)
+ - [[```019e812d```](https://github.com/jina-ai/jina/commit/019e812d0d9558f694f26a3a20e63a3f2e29982f)] __-__ __executors__: remove unnecessary code (*Han Xiao*)
+ - [[```e68e4a9a```](https://github.com/jina-ai/jina/commit/e68e4a9a265450a88788643718546084b03d6bd7)] __-__ fit transform should not fit at encode time plus refactor (*Joan Fontanals Martinez*)
+ - [[```79f5b440```](https://github.com/jina-ai/jina/commit/79f5b4407dd8930dc0e75d4dac41969e0961c386)] __-__ minor fix (*Nan Wang*)
+
+### 🚧 Code Refactoring
+
+ - [[```e85a84e3```](https://github.com/jina-ai/jina/commit/e85a84e3e3b0414db5d51ec22f67c3062f04c772)] __-__ __hub__: move hub cli api back to core (*Han Xiao*)
+ - [[```821c18f9```](https://github.com/jina-ai/jina/commit/821c18f9c3c2acb2c7ce79e3881cfdba6c6dadc4)] __-__ move numpy indexer back in core (*Joan Fontanals Martinez*)
+ - [[```6e81181a```](https://github.com/jina-ai/jina/commit/6e81181aa18ec407ec0bcf3c2a4bbea1dedf0678)] __-__ add pillow back (*Joan Fontanals Martinez*)
+ - [[```b62c6fff```](https://github.com/jina-ai/jina/commit/b62c6fff15aa0f4f63f5fa28f1247ab07a058dbc)] __-__ remove tests migrated to hub (*Joan Fontanals Martinez*)
+ - [[```cfcb038b```](https://github.com/jina-ai/jina/commit/cfcb038bc964e9bc405c80ec4635175ba59a1352)] __-__ __hub__: move hub to a submodule (*Han Xiao*)
+ - [[```c2baaa01```](https://github.com/jina-ai/jina/commit/c2baaa0156c1459dd087aafc419818813cf175bd)] __-__ __hub__: new jina.hub namespace for storing executors (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```3086b77a```](https://github.com/jina-ai/jina/commit/3086b77a97f915b9a2aad2107dbe57e356577af4)] __-__ add more ways to contribute, emojis (*Alex C-G*)
+ - [[```6f63e2e5```](https://github.com/jina-ai/jina/commit/6f63e2e5a221b0c220bd981149873ab758956b5a)] __-__ smaller README to meet hub api req (*Han Xiao*)
+ - [[```5e119eb2```](https://github.com/jina-ai/jina/commit/5e119eb282d78eb5166c56ea892c3a3b2d71d72e)] __-__ __helloworld__: change workspace (*Yue Liu*)
+ - [[```f3e86031```](https://github.com/jina-ai/jina/commit/f3e860313f26edc6d9f6e6ecc74cf6c2a3c65bff)] __-__ __helloworld__: update helloworld doc (*Yue Liu*)
+ - [[```5ca6ae32```](https://github.com/jina-ai/jina/commit/5ca6ae32ce52c0fc328493d18040ac6221154bbf)] __-__ correct anchor for type in CONTRIBUTING.md (*joanna350*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```e2fd5dd7```](https://github.com/jina-ai/jina/commit/e2fd5dd785b12cd81053aa9c3ec6c475f9c72f63)] __-__ remove test_nmslib (*Joan Fontanals Martinez*)
+ - [[```1d37f655```](https://github.com/jina-ai/jina/commit/1d37f65500b2813317aecf8cd1b03c687eaa8db3)] __-__ __milvus__: fix milvus tests (*Han Xiao*)
+ - [[```2cc6267f```](https://github.com/jina-ai/jina/commit/2cc6267f0cc2bfcc0b1a274b5cfd815fbe9f52cd)] __-__ __crafter__: move tests to hub (*Han Xiao*)
+ - [[```24adac69```](https://github.com/jina-ai/jina/commit/24adac6995f9cd956d7d198e9ab515abd0a42df8)] __-__ no need of np asarray (*Joan Fontanals Martinez*)
+ - [[```3417fa1b```](https://github.com/jina-ai/jina/commit/3417fa1bda71a489bd7c2bf3516912fa4b8d2586)] __-__ fix numeric encoders test (*Joan Fontanals Martinez*)
+ - [[```0c30bc7f```](https://github.com/jina-ai/jina/commit/0c30bc7f310e3ea8d12c2194bbc8eeffa091bd9f)] __-__ test numeric executor from train and load (*Joan Fontanals Martinez*)
+ - [[```5b1ce8ab```](https://github.com/jina-ai/jina/commit/5b1ce8abed64dadb4780fbcee3190cd518c77689)] __-__ refactor indexer tests and check instance type (*Joan Fontanals Martinez*)
+ - [[```b2c19a79```](https://github.com/jina-ai/jina/commit/b2c19a79abd09409e5ace4e13dfed619daa8173b)] __-__ add contributor generation (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```615c9350```](https://github.com/jina-ai/jina/commit/615c9350fdb4bb4289be198e574daf175f3b3cc5)] __-__ sync to jina-hub (*Han Xiao*)
+ - [[```a17b013a```](https://github.com/jina-ai/jina/commit/a17b013a3fd090ca1ca8eab8e90c217220814c66)] __-__ self assert to assert (*Han Xiao*)
+ - [[```88a7f21a```](https://github.com/jina-ai/jina/commit/88a7f21abf3baf28352c50a43612e1cd17f04355)] __-__ sync with hub (*Han Xiao*)
+ - [[```e1bc7c33```](https://github.com/jina-ai/jina/commit/e1bc7c3313820f4b501c06888f401b5751a4208a)] __-__ update contributing.md (*Han Xiao*)
+ - [[```d2514809```](https://github.com/jina-ai/jina/commit/d25148096eb3848126d05b3642bacb6eed7375b1)] __-__ update submodule tracking (*Han Xiao*)
+ - [[```a38dd8f6```](https://github.com/jina-ai/jina/commit/a38dd8f6e474066b4dee32367c3e05561117f018)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```ca230fe7```](https://github.com/jina-ai/jina/commit/ca230fe7cad66ce27ea91577f37aafff897c7216)] __-__ __readme__: add new example (*Alex C-G*)
+ - [[```04225268```](https://github.com/jina-ai/jina/commit/042252683f72d9e7a51b82a50d3bee2e5adf6472)] __-__ revert it back to previous commit (*Han Xiao*)
+ - [[```f9ebb05c```](https://github.com/jina-ai/jina/commit/f9ebb05c90c1ccbab1b8326b1d5621e80342559d)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```1d2af7f8```](https://github.com/jina-ai/jina/commit/1d2af7f8091923257328ea9cbecf19eafc09a426)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```af97ad73```](https://github.com/jina-ai/jina/commit/af97ad7347a4887e809ae7381b77491323fe67f4)] __-__ __version__: the next version will be 0.4.10 (*Jina Dev Bot*)
+ - [[```9c1c304e```](https://github.com/jina-ai/jina/commit/9c1c304e5d6e7f612337df6485df52fa65bd56bc)] __-__ __version__: the next version will be 0.4.8 (*Jina Dev Bot*)
+
+## Release Note (`0.4.11`)
+
+> Release time: 2020-08-21 18:07:16
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```ab067ca2```](https://github.com/jina-ai/jina/commit/ab067ca26e88a9ec53d9ee10b6619a74fca19853)] __-__ __hub__: add more info to hubio for builder (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```cb44213d```](https://github.com/jina-ai/jina/commit/cb44213d0293ab06ab5eb46dcf73c9e7789be206)] __-__ fix flaky cicd (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```cdd0d2bc```](https://github.com/jina-ai/jina/commit/cdd0d2bcce9381ea83268ae2f6eda95be8893001)] __-__ hotfix fix release (*Han Xiao*)
+ - [[```075108de```](https://github.com/jina-ai/jina/commit/075108deaaac58297370d1448405029fb172b7e1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1441f40f```](https://github.com/jina-ai/jina/commit/1441f40f849d22c21b8397527960b4307ff0d5a3)] __-__ __version__: the next version will be 0.4.11 (*Jina Dev Bot*)
 

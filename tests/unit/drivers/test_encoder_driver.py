@@ -43,10 +43,10 @@ class EncodeDriverTestCase(JinaTestCase):
         driver = SimpleEncoderDriver()
         executor = MockEncoder()
         driver.attach(executor=executor, pea=None)
-        self.assertEqual(len(docs), 10)
+        assert len(docs) == 10
         for doc in docs:
-            self.assertEqual(doc.embedding.buffer, b'')
+            assert doc.embedding.buffer == b''
         driver._apply_all(docs)
-        self.assertEqual(len(docs), 10)
+        assert len(docs) == 10
         for doc in docs:
-            self.assertEqual(doc.embedding, doc.blob)
+            assert doc.embedding == doc.blob

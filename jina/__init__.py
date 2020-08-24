@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.4.10'
+__version__ = '0.4.12'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -93,7 +93,8 @@ def import_classes(namespace: str, targets=None,
     :param import_once: import everything only once, to avoid repeated import
     """
 
-    import os, sys
+    import os, sys, re
+    from .logging import default_logger
 
     if namespace == 'jina.executors':
         import_type = 'ExecutorType'
@@ -113,7 +114,13 @@ def import_classes(namespace: str, targets=None,
     from setuptools import find_packages
     import pkgutil
     from pkgutil import iter_modules
-    path = os.path.dirname(pkgutil.get_loader(namespace).path)
+
+    try:
+        path = os.path.dirname(pkgutil.get_loader(namespace).path)
+    except AttributeError:
+        if namespace == 'jina.hub':
+            default_logger.error(f'hub submodule is not initialized. Please try "git submodule update --init"')
+        return {}
 
     modules = set()
 
@@ -132,6 +139,10 @@ def import_classes(namespace: str, targets=None,
             for info in iter_modules([pkgpath]):
                 if not info.ispkg:
                     modules.add('.'.join([namespace, pkg, info.name]))
+
+    # filter
+    ignored_module_pattern = r'\.tests|\.api'
+    modules = {m for m in modules if not re.findall(ignored_module_pattern, m)}
 
     from collections import defaultdict
     load_stat = defaultdict(list)
@@ -192,7 +203,6 @@ def import_classes(namespace: str, targets=None,
         print_load_table(load_stat)
     else:
         if bad_imports:
-            from .logging import default_logger
             default_logger.error(f'theses modules or classes can not be imported {bad_imports}')
 
     if namespace == 'jina.executors':

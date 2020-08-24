@@ -30,13 +30,13 @@ class FlowTestCase(JinaTestCase):
         parallel = 4
 
         def validate(req):
-            self.assertEqual(len(req.docs), 1)
-            self.assertEqual(len(req.docs[0].matches), index_docs)
+            assert len(req.docs) == 1
+            assert len(req.docs[0].matches) == index_docs
 
             for d in req.docs[0].matches:
                 self.assertTrue(hasattr(d, 'weight'))
                 self.assertIsNotNone(d.weight)
-                self.assertEqual(d.meta_info, b'hello world')
+                assert d.meta_info == b'hello world'
 
         f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=parallel,
                        separated_workspace=True)

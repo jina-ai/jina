@@ -32,12 +32,12 @@ class MyTestCase(JinaTestCase):
         second_cached_test_property = testClass.test_property
         second_uncached_test_property = testClass.test_uncached_property
 
-        self.assertEqual(first_cached_test_property, second_cached_test_property)
-        self.assertEqual(first_cached_test_property, "11111")
+        assert first_cached_test_property == second_cached_test_property
+        assert first_cached_test_property == "11111"
 
         self.assertNotEqual(first_uncached_test_property, second_uncached_test_property)
-        self.assertEqual(first_uncached_test_property, "11111")
-        self.assertEqual(second_uncached_test_property, "99999")
+        assert first_uncached_test_property == "11111"
+        assert second_uncached_test_property == "99999"
 
 
 if __name__ == "__main__":

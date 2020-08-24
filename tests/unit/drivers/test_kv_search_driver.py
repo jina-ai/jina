@@ -84,14 +84,14 @@ class VectorSearchDriverTestCase(JinaTestCase):
         executor = MockIndexer()
         driver.attach(executor=executor, pea=None)
 
-        self.assertEqual(len(doc.chunks), 5)
+        assert len(doc.chunks) == 5
         for chunk in doc.chunks:
-            self.assertEqual(chunk.embedding.buffer, b'')
+            assert chunk.embedding.buffer == b''
 
         driver._apply_all(doc.chunks)
 
         # chunk idx: 5 had no matched and is removed as missing idx
-        self.assertEqual(len(doc.chunks), 4)
+        assert len(doc.chunks) == 4
         for chunk in doc.chunks:
             self.assertNotEqual(chunk.embedding.buffer, b'')
             embedding_array = pb2array(chunk.embedding)

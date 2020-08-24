@@ -17,7 +17,7 @@ class MyTestCase(JinaTestCase):
         BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/dummy_exec2.yml'))
 
     def test_load_yaml1(self):
-        from jina.hub.indexers.vector.numpy import NumpyIndexer
+        from jina.executors.indexers.vector import NumpyIndexer
         NumpyIndexer.load_config(os.path.join(cur_dir, 'yaml/dummy_exec1.yml'))
         self.add_tmpfile('test.gzip')
 
@@ -39,7 +39,7 @@ class MyTestCase(JinaTestCase):
                           os.path.join(cur_dir, 'yaml/dummy_ext_exec.yml'))
 
         b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/dummy_ext_exec_sucess.yml'))
-        self.assertEqual(b.__class__.__name__, 'DummyExternalIndexer')
+        assert b.__class__.__name__ == 'DummyExternalIndexer'
 
     def test_expand_env(self):
         print(expand_env_var('${PATH}-${AA}'))

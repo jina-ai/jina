@@ -10,7 +10,7 @@ def add_arg_group(parser, title):
 
 def set_base_parser():
     from .. import __version__
-    from ..helper import colored, get_full_version
+    from ..helper import colored, get_full_version, format_full_version_info
     # create the top-level parser
     urls = {
         'Jina 101': ('🐣', 'https://101.jina.ai'),
@@ -35,7 +35,7 @@ def set_base_parser():
                         help='show Jina version')
 
     parser.add_argument('-vf', '--version-full', action='version',
-                        version=get_full_version(),
+                        version=format_full_version_info(*get_full_version()),
                         help='show Jina and all dependencies versions')
     return parser
 
@@ -67,6 +67,19 @@ def set_hub_base_parser(parser=None):
     return parser
 
 
+def set_hub_new_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument('--output-dir', type=str, default='.',
+                        help='where to output the generated project dir into.')
+    parser.add_argument('--template', type=str, default='https://github.com/jina-ai/cookiecutter-jina-hub.git',
+                        help='s directory containing a project template directory, or a URL to a git repository.')
+    parser.add_argument('--overwrite', action='store_true', default=False,
+                        help='overwrite the contents of output directory if it exists')
+    return parser
+
+
 def set_hub_build_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -74,7 +87,7 @@ def set_hub_build_parser(parser=None):
     set_hub_base_parser(parser)
 
     parser.add_argument('path', type=str, help='path to the directory containing '
-                                               'Dockerfile, manifest.yml, README.md'
+                                               'Dockerfile, manifest.yml, README.md '
                                                'zero or more yaml config, '
                                                'zero or more Python file. '
                                                'All files in this directory will be shipped into a Docker image')
@@ -532,6 +545,11 @@ def get_main_parser():
     spp = pp.add_subparsers(dest='hub',
                             description='use "%(prog)-8s [sub-command] --help" '
                                         'to get detailed information about each sub-command', required=True)
+
+    set_hub_new_parser(
+        spp.add_parser('new', help='create a new Hub executor using cookiecutter',
+                       description='Create a new Hub executor using cookiecutter',
+                       formatter_class=_chf))
 
     set_hub_build_parser(
         spp.add_parser('build', help='build a directory into Jina hub image',
