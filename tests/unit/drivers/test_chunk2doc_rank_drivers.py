@@ -13,7 +13,7 @@ class MockLengthRanker(Chunk2DocRanker):
         self.required_keys = {'length'}
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return match_idx[0][self.col_parent_id], match_chunk_meta[match_idx[0][self.col_doc_id]]['length']
+        return match_idx[0][self.col_doc_id], match_chunk_meta[match_idx[0][self.col_chunk_id]]['length']
 
 
 class SimpleChunk2DocRankDriver(Chunk2DocRankDriver):
