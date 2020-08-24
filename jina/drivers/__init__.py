@@ -276,16 +276,17 @@ class BaseRecursiveDriver(BaseDriver):
                         chunk_traverse(d.chunks, d)
                     # check if apply to the current level
                     if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
-                        self._apply(d, context_doc, 'chunks', *args, **kwargs)
+                        self._apply(doc=d, context_doc=context_doc, field='chunks', *args, **kwargs)
 
                 # check first doc if in the required depth range
                 if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
-                    self._apply_all(_docs, context_doc, 'chunks', *args, **kwargs)
+                    self._apply_all(docs=_docs, context_doc=context_doc, field='chunks', *args, **kwargs)
 
         def match_traverse(_docs, num_iterations, context_doc=None):
             """
             :param _docs: list of docs
-            :param num_iterations: number of iterations it will traverse on matches (similar to depth level concept for chunks)
+            :param num_iterations: number of iterations it will traverse on matches
+            (similar to depth level concept for chunks) (0 means apply just once)
             :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
             :return:
             """
@@ -296,11 +297,11 @@ class BaseRecursiveDriver(BaseDriver):
                         match_traverse(d.matches, num_iterations - 1, d)
                     # check if apply to the current level
                     if self._is_apply:
-                        self._apply(d, context_doc, 'matches', *args, **kwargs)
+                        self._apply(doc=d, context_doc=context_doc, field='matches', *args, **kwargs)
 
                 # check first doc if in the required depth range
                 if self._is_apply_all:
-                    self._apply_all(_docs, context_doc, 'matches', *args, **kwargs)
+                    self._apply_all(docs=_docs, context_doc=context_doc, field='matches', *args, **kwargs)
 
         if 'chunks' in self.traverse_fields:
             chunk_traverse(docs)

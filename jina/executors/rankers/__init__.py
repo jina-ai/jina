@@ -34,42 +34,42 @@ class Chunk2DocRanker(BaseRanker):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.col_doc_id = 0
-        self.col_chunk_id = 1
-        self.col_query_chunk_id = 2
+        self.col_parent_id = 0
+        self.col_doc_id = 1
+        self.col_query_doc_id = 2
         self.col_score = 3
 
-    def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
+    def score(self, match_idx: 'np.ndarray', query_doc_meta: Dict, match_doc_meta: Dict) -> 'np.ndarray':
         """Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
         meta information of the query, hence the meta info of the query chunks and matched chunks are given
         as arguments.
 
         :param match_idx: a [N x 4] numpy ``ndarray``, column-wise:
 
-                - ``match_idx[:, 0]``: ``doc_id`` of the matched chunks, integer
-                - ``match_idx[:, 1]``: ``chunk_id`` of the matched chunks, integer
-                - ``match_idx[:, 2]``: ``chunk_id`` of the query chunks, integer
+                - ``match_idx[:, 0]``: ``parent_id`` of the matched documents, integer
+                - ``match_idx[:, 1]``: ``doc_id`` of the matched documents, integer
+                - ``match_idx[:, 2]``: ``doc_id`` of the query documents, integer
                 - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
-        :param query_chunk_meta: the meta information of the query chunks, where the key is query chunks' ``chunk_id``,
+        :param query_doc_meta: the meta information of the query documents, where the key is query document' ``dod_id``,
             the value is extracted by the ``required_keys``.
-        :param match_chunk_meta: the meta information of the matched chunks, where the key is matched chunks'
-            ``chunk_id``, the value is extracted by the ``required_keys``.
+        :param match_doc_meta: the meta information of the matched docks, where the key is matched docs'
+            ``doc_id``, the value is extracted by the ``required_keys``.
         :return: a [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
                 the second column is the score/distance/metric between the matched doc and the query doc (float).
         """
-        _groups = self.group_by_doc_id(match_idx)
+        _groups = self.group_by_parent_id(match_idx)
         r = []
         for _g in _groups:
-            _doc_id, _doc_score = self._get_score(_g, query_chunk_meta, match_chunk_meta)
+            _doc_id, _doc_score = self._get_score(_g, query_doc_meta, match_doc_meta)
             r.append((_doc_id, _doc_score))
         return self.sort_doc_by_score(r)
 
-    def group_by_doc_id(self, match_idx):
+    def group_by_parent_id(self, match_idx):
         """
         Group the ``match_idx`` by ``doc_id``
         :return: an iterator over the groups
         """
-        return self._group_by(match_idx, self.col_doc_id)
+        return self._group_by(match_idx, self.col_parent_id)
 
     @staticmethod
     def _group_by(match_idx, col):
@@ -79,7 +79,7 @@ class Chunk2DocRanker(BaseRanker):
         # group by ``col``
         return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+    def _get_score(self, match_idx, query_doc_meta, match_doc_meta, *args, **kwargs):
         raise NotImplementedError
 
     @staticmethod
@@ -92,5 +92,5 @@ class Chunk2DocRanker(BaseRanker):
         r = r[r[:, -1].argsort()[::-1]]
         return r
 
-    def get_doc_id(self, match_with_same_doc_id):
-        return match_with_same_doc_id[0, self.col_doc_id]
+    def get_doc_id(self, match_with_same_parent_id):
+        return match_with_same_parent_id[0, self.col_parent_id]

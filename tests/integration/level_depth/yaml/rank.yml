@@ -3,7 +3,7 @@ requests:
   on:
     SearchRequest:
       - !LogInfoDriver {}
-      - !Chunk2DocRankDriver
+      - !CollectMatches2DocRankDriver
         with:
           depth_range: [1, 1]
           traverse_on: matches

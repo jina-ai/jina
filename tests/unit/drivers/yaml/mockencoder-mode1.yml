@@ -1,4 +1,4 @@
-!MockEncoder
+!MockEncoderReduce
 requests:
   on:
     IndexRequest:
