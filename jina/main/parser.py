@@ -95,6 +95,8 @@ def set_hub_build_parser(parser=None):
                         help='downloads any updates to the FROM image in Dockerfiles')
     parser.add_argument('--push', action='store_true', default=False,
                         help='push the built image to the registry')
+    parser.add_argument('--dry-run', action='store_true', default=False,
+                        help='only check path and validility, no real building')
     return parser
 
 
