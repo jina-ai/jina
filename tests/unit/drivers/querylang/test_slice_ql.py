@@ -1,33 +1,5 @@
 from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
-from tests import JinaTestCase
-
-
-def random_docs_with_matches(num_docs):
-    docs = []
-    #matches are always in the same level depth as its match
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        d.level_depth = 0
-        d.id = j
-        d.text = 'hello world'
-        d.uri = 'doc://'
-        for m in range(10):
-            dm = d.matches.add()
-            dm.text = 'match to hello world'
-            dm.level_depth = 0
-            dm.uri = 'doc://match'
-            dm.id = m
-            dm.score.ref_id = d.id
-            for mm in range(10):
-                dmm = dm.matches.add()
-                dmm.text = 'nested match to match'
-                dmm.uri = 'doc://match/match'
-                dmm.id = mm
-                dmm.score.ref_id = m
-                dmm.level_depth = 0
-        docs.append(d)
-    return docs
 
 
 def random_docs_with_chunks(num_docs):
@@ -114,87 +86,74 @@ def random_docs_with_chunks_and_matches(num_docs):
     return docs
 
 
-class SliceQLTestCase(JinaTestCase):
+def test_slice_ql_on_chunks():
+    docs = random_docs_with_chunks(10)
+    driver = SliceQL(start=0, end=2, traverse_on='chunks', depth_range=(0, 2))
+    driver._traverse_apply(docs)
+    assert len(docs) == 2
+    assert len(docs[0].chunks) == 2  # slice on level 1
+    assert len(docs[0].chunks[0].chunks) == 2  # slice on level 2 for chunks
+    assert len(docs[0].chunks[-1].chunks) == 2  # slice on level 2 for chunks
+    assert len(docs[-1].chunks) == 2  # slice on level 1
+    assert len(docs[-1].chunks[0].chunks) == 2  # slice on level 2 for chunks
+    assert len(docs[-1].chunks[-1].chunks) == 2  # slice on level 2 for chunks
 
-    def test_slice_ql_on_matches(self):
-        docs = random_docs_with_matches(10)
-        driver = SliceQL(start=0, end=2, traverse_on='matches', depth_range=(0, 2))
-        driver._traverse_apply(docs)
-        assert len(docs) == 10  # traverses directly on matches
-        assert len(docs[0].matches) == 2  # slice on level 1
-        assert len(docs[0].matches[0].matches) == 2  # slice on level 2 for matches
-        assert len(docs[0].matches[-1].matches) == 2  # slice on level 2 for matches
-        assert len(docs[-1].matches) == 2  # slice on level 1
-        assert len(docs[-1].matches[0].matches) == 2  # slice on level 2 for matches
-        assert len(docs[-1].matches[-1].matches) == 2  # slice on level 2 for matches
 
-    def test_slice_ql_on_chunks(self):
-        docs = random_docs_with_chunks(10)
-        driver = SliceQL(start=0, end=2, traverse_on='chunks', depth_range=(0, 2))
-        driver._traverse_apply(docs)
-        assert len(docs) == 2
-        assert len(docs[0].chunks) == 2  # slice on level 1
-        assert len(docs[0].chunks[0].chunks) == 2  # slice on level 2 for chunks
-        assert len(docs[0].chunks[-1].chunks) == 2  # slice on level 2 for chunks
-        assert len(docs[-1].chunks) == 2  # slice on level 1
-        assert len(docs[-1].chunks[0].chunks) == 2  # slice on level 2 for chunks
-        assert len(docs[-1].chunks[-1].chunks) == 2  # slice on level 2 for chunks
+def test_slice_ql_on_matches_and_chunks():
+    docs = random_docs_with_chunks_and_matches(10)
+    driver = SliceQL(start=0, end=2, traverse_on=['chunks', 'matches'], depth_range=(0, 2))
+    assert len(docs) == 10
+    assert len(docs[0].chunks) == 10
+    assert len(docs[-1].chunks) == 10
+    assert len(docs[0].matches) == 10
+    assert len(docs[-1].matches) == 10
+    assert len(docs[0].matches[0].chunks) == 10
+    assert len(docs[0].matches[-1].chunks) == 10
+    assert len(docs[-1].matches[0].chunks) == 10
+    assert len(docs[-1].matches[-1].chunks) == 10
+    assert len(docs[0].chunks[0].chunks) == 10
+    assert len(docs[0].chunks[0].matches) == 10
+    assert len(docs[0].chunks[0].matches[0].chunks) == 10
+    assert len(docs[0].chunks[0].matches[-1].chunks) == 10
+    assert len(docs[0].chunks[-1].matches[0].chunks) == 10
+    assert len(docs[0].chunks[-1].matches[-1].chunks) == 10
+    assert len(docs[0].chunks[-1].chunks) == 10
+    assert len(docs[0].chunks[-1].matches) == 10
+    assert len(docs[-1].chunks[0].chunks) == 10
+    assert len(docs[-1].chunks[0].matches) == 10
+    assert len(docs[-1].chunks[-1].chunks) == 10
+    assert len(docs[-1].chunks[-1].matches) == 10
+    driver._traverse_apply(docs)
+    assert len(docs) == 2
 
-    def test_slice_ql_on_matches_and_chunks(self):
-        docs = random_docs_with_chunks_and_matches(10)
-        driver = SliceQL(start=0, end=2, traverse_on=['chunks', 'matches'], depth_range=(0, 2))
-        assert len(docs) == 10
-        assert len(docs[0].chunks) == 10
-        assert len(docs[-1].chunks) == 10
-        assert len(docs[0].matches) == 10
-        assert len(docs[-1].matches) == 10
-        assert len(docs[0].matches[0].chunks) == 10
-        assert len(docs[0].matches[-1].chunks) == 10
-        assert len(docs[-1].matches[0].chunks) == 10
-        assert len(docs[-1].matches[-1].chunks) == 10
-        assert len(docs[0].chunks[0].chunks) == 10
-        assert len(docs[0].chunks[0].matches) == 10
-        assert len(docs[0].chunks[0].matches[0].chunks) == 10
-        assert len(docs[0].chunks[0].matches[-1].chunks) == 10
-        assert len(docs[0].chunks[-1].matches[0].chunks) == 10
-        assert len(docs[0].chunks[-1].matches[-1].chunks) == 10
-        assert len(docs[0].chunks[-1].chunks) == 10
-        assert len(docs[0].chunks[-1].matches) == 10
-        assert len(docs[-1].chunks[0].chunks) == 10
-        assert len(docs[-1].chunks[0].matches) == 10
-        assert len(docs[-1].chunks[-1].chunks) == 10
-        assert len(docs[-1].chunks[-1].matches) == 10
-        driver._traverse_apply(docs)
-        assert len(docs) == 2
+    assert len(docs[0].chunks) == 2  # slice on level 1
+    assert len(docs[0].matches) == 2  # slice on level 1
 
-        assert len(docs[0].chunks) == 2  # slice on level 1
-        assert len(docs[0].matches) == 2  # slice on level 1
+    assert len(docs[0].chunks[0].chunks) == 2  # slice on level 2 for chunks
+    assert len(docs[0].chunks[-1].chunks) == 2  # slice on level 2 for chunks
 
-        assert len(docs[0].chunks[0].chunks) == 2  # slice on level 2 for chunks
-        assert len(docs[0].chunks[-1].chunks) == 2  # slice on level 2 for chunks
+    assert len(docs[0].chunks[0].matches) == 10  # traverses directly on matches
+    assert len(docs[0].chunks[0].matches[0].chunks) == 10
+    assert len(docs[0].chunks[0].matches[-1].chunks) == 10
+    assert len(docs[0].chunks[-1].matches) == 10  # traverses directly on matches
+    assert len(docs[0].chunks[-1].matches[0].chunks) == 10
+    assert len(docs[0].chunks[-1].matches[-1].chunks) == 10
 
-        assert len(docs[0].chunks[0].matches) == 10  # traverses directly on matches
-        assert len(docs[0].chunks[0].matches[0].chunks) == 10
-        assert len(docs[0].chunks[0].matches[-1].chunks) == 10
-        assert len(docs[0].chunks[-1].matches) == 10  # traverses directly on matches
-        assert len(docs[0].chunks[-1].matches[0].chunks) == 10
-        assert len(docs[0].chunks[-1].matches[-1].chunks) == 10
+    assert len(docs[0].matches[0].chunks) == 10
+    assert len(docs[0].matches[-1].chunks) == 10
 
-        assert len(docs[0].matches[0].chunks) == 10
-        assert len(docs[0].matches[-1].chunks) == 10
+    assert len(docs[-1].chunks) == 2  # slice on level 1 of chunks
+    assert len(docs[-1].matches) == 2  # slice on level 1 of chunks
 
-        assert len(docs[-1].chunks) == 2  # slice on level 1 of chunks
-        assert len(docs[-1].matches) == 2  # slice on level 1 of chunks
+    assert len(docs[-1].chunks[0].chunks) == 2  # slice on level 2 for matches of chunks
+    assert len(docs[-1].chunks[-1].chunks) == 2  # slice on level 2 for matches of chunks
 
-        assert len(docs[-1].chunks[0].chunks) == 2  # slice on level 2 for matches of chunks
-        assert len(docs[-1].chunks[-1].chunks) == 2  # slice on level 2 for matches of chunks
+    assert len(docs[-1].chunks[0].matches) == 10  # traverses directly on matches
+    assert len(docs[-1].chunks[0].matches[0].chunks) == 10
+    assert len(docs[-1].chunks[0].matches[-1].chunks) == 10
+    assert len(docs[-1].chunks[-1].matches) == 10  # traverses directly on matches
+    assert len(docs[-1].chunks[-1].matches[0].chunks) == 10
+    assert len(docs[-1].chunks[-1].matches[-1].chunks) == 10
 
-        assert len(docs[-1].chunks[0].matches) == 10  # traverses directly on matches
-        assert len(docs[-1].chunks[0].matches[0].chunks) == 10
-        assert len(docs[-1].chunks[0].matches[-1].chunks) == 10
-        assert len(docs[-1].chunks[-1].matches) == 10  # traverses directly on matches
-        assert len(docs[-1].chunks[-1].matches[0].chunks) == 10
-        assert len(docs[-1].chunks[-1].matches[-1].chunks) == 10
-
-        assert len(docs[-1].matches[0].chunks) == 10
-        assert len(docs[-1].matches[-1].chunks) == 10
+    assert len(docs[-1].matches[0].chunks) == 10
+    assert len(docs[-1].matches[-1].chunks) == 10

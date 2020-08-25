@@ -282,19 +282,14 @@ class BaseRecursiveDriver(BaseDriver):
                 if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
                     self._apply_all(docs=_docs, context_doc=context_doc, field='chunks', *args, **kwargs)
 
-        def match_traverse(_docs, num_iterations, context_doc=None):
+        def match_apply(_docs, context_doc=None):
             """
             :param _docs: list of docs
-            :param num_iterations: number of iterations it will traverse on matches
-            (similar to depth level concept for chunks) (0 means apply just once)
             :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
             :return:
             """
             if _docs:
                 for d in _docs:
-                    # check if apply to next level
-                    if num_iterations > 0:
-                        match_traverse(d.matches, num_iterations - 1, d)
                     # check if apply to the current level
                     if self._is_apply:
                         self._apply(doc=d, context_doc=context_doc, field='matches', *args, **kwargs)
@@ -308,7 +303,7 @@ class BaseRecursiveDriver(BaseDriver):
         if 'matches' in self.traverse_fields:
             for d in docs:
                 # depth should be expressed in a different way when related to matches
-                match_traverse(d.matches, self._depth_end - self._depth_start, context_doc=d)
+                match_apply(d.matches, context_doc=d)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

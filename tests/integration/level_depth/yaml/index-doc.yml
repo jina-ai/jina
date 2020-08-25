@@ -18,5 +18,4 @@ requests:
         with:
           executor: docIndexer
           traverse_on: matches
-          depth_range: [0, 1]
       - !LogInfoDriver {}

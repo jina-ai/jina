@@ -12,5 +12,6 @@ requests:
     SearchRequest:
       - !EncodeDriver
         with:
+          traverse_on: chunks
           depth_range: [1, 1]
       - !LogInfoDriver {}
