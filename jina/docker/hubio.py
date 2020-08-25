@@ -206,7 +206,7 @@ class HubIO:
 
         if self.args.prune_images:
             self.logger.info('deleting unused images')
-            self._client.prune_images()
+            self._raw_client.prune_images()
 
         return {
             'name': self.canonical_name,
