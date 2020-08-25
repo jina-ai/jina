@@ -97,6 +97,8 @@ def set_hub_build_parser(parser=None):
                         help='push the built image to the registry')
     parser.add_argument('--dry-run', action='store_true', default=False,
                         help='only check path and validility, no real building')
+    parser.add_argument('--prune-images', action='store_true', default=False,
+                        help='prune unused images after building, this often saves disk space')
     return parser
 
 

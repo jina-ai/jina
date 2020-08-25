@@ -204,6 +204,10 @@ class HubIO:
             except Exception:
                 self.logger.error(f'can not push tot the registry')
 
+        if self.args.prune_images:
+            self.logger.info('deleting unused images')
+            self._client.prune_images()
+
         return {
             'name': self.canonical_name,
             'path': self.args.path,
