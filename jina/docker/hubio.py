@@ -143,6 +143,8 @@ class HubIO:
 
     def build(self) -> Dict:
         """A wrapper of docker build """
+        if self.args.dry_run:
+            return self.dry_run()
         self._check_completeness()
         is_build_success, is_push_success = True, False
         _logs = []
@@ -214,7 +216,16 @@ class HubIO:
             'exception': _excepts
         }
 
-    def _check_completeness(self):
+    def dry_run(self) -> Dict:
+        try:
+            s = self._check_completeness()
+            s['is_build_success'] = True
+        except Exception as ex:
+            s = {'is_build_success': False,
+                 'exception': str(ex)}
+        return s
+
+    def _check_completeness(self) -> Dict:
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
@@ -231,15 +242,15 @@ class HubIO:
         completeness = {
             'Dockerfile': self.dockerfile_path,
             'manifest.yml': self.manifest_path,
-            'README.md': os.path.exists(self.readme_path),
-            'requirements.txt': os.path.exists(self.readme_path),
+            'README.md': self.readme_path,
+            'requirements.txt': self.requirements_path,
             '*.yml': yaml_glob,
             '*.py': py_glob,
             'tests': test_glob
         }
 
         self.logger.info(
-            f'a completeness check\n' +
+            f'completeness check\n' +
             '\n'.join('%4s %-20s %s' % (colored('✓', 'green') if v else colored('✗', 'red'), k, v) for k, v in
                       completeness.items()) + '\n')
 
