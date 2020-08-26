@@ -2,7 +2,7 @@
 
 Linux distributions are like a box of chocolates. They're all different, and you never know what you're going to get.
 
-While installing Jina on Ubuntu is pretty straightforward, other distributions may have their quirks, either with Jina directly or with some of the tools around Jina (like Docker for example). This document aims to be a one-stop resource for any issues you may encounter.
+While installing Jina on Ubuntu is pretty straightforward, other distributions may have their quirks, either with Jina directly or with some of the tools around Jina (like Docker for example). This document aims to be a one-stop resource for any issues you may encounter on different distros, operating systems, or running in notebooks.
 
 ## Fedora
 
@@ -42,3 +42,7 @@ Currently not supported. But if you can get it working we'd love to hear from yo
 ## Other
 
 If you've got Jina running on other systems, we'd love to hear from you, and especially the steps you had to go through to make it work properly!
+
+## Google Colab
+
+Jina requires Python 3.9. At the time of writing Google Colab runs Python 3.6.7 so Jina can't be installed via `pip`
