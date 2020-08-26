@@ -84,7 +84,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
 
 class CollectMatches2DocRankDriver(BaseRankDriver):
-    """Extract matches score and use the executor to compute the score and link the results to the parent level
+    """This Driver is intended to take a `document` with matches at a `given level depth > 0`, clear those matches and substitute
+    these matches by the documents at a lower depth level.
     Input-Output ::
         Input:
         document: {level_depth: k}
@@ -92,6 +93,17 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         Output:
         document: {level_depth: k}
             |- matches: {level_depth: k-1} (Sorted according to Ranker Executor)
+
+    Imagine a case where we are querying a system with text documents chunked by sentences. When we query the system,
+    we use sentences (chunks) to query it. So at some point we will have:
+    `query sentence (documents of level_depth 1):
+        matches: indexed sentences (documents of level depth 1)`
+    `
+    But in the output we want to have the full document that better matches the `sentence`.
+    `query sentence (documents of level_depth 1):
+        matches: indexed full documents (documents of level depth 0).
+    `
+    Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
     """
 
     def __init__(self, *args, **kwargs):
