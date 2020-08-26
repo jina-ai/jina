@@ -125,7 +125,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             # These ranker will change the current matches
-            del context_doc.matches[0: len(context_doc.matches)]
+            context_doc.ClearField('matches')
             for doc_id, score in docs_scores:
                 r = context_doc.matches.add()
                 r.id = int(doc_id)
