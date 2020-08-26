@@ -47,6 +47,12 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             # so that later in `post_init()` it will load from the referred index_filename
             self._ref_index_abspath = ref_indexer.index_abspath
 
+    def post_init(self):
+        """int2ext_key and ext2int_key should not be serialized, thus they must be put into :func:`post_init`. """
+        super().post_init()
+        self.int2ext_key = None
+        self.ext2int_key = None
+
     @property
     def index_abspath(self) -> str:
         """Get the file path of the index storage
