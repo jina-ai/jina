@@ -15,6 +15,7 @@ sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>
              r'(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+' \
              r'(?:\.[0-9a-zA-Z-]+)*))?$'
 name_regex = r'^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{2,30}$'
+excepts_regex = r'\berror\b|\bfailed\b'
 
 
 def check_registry(registry, name, repo_prefix):
@@ -72,3 +73,7 @@ def get_exist_path(directory, s):
     r = os.path.join(directory, s)
     if os.path.exists(r):
         return r
+
+
+def is_error_message(s):
+    return re.search(excepts_regex, s, re.IGNORECASE | re.UNICODE) is not None
