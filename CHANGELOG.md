@@ -130,6 +130,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.4.12`)](#release-note-0412)
 - [Release Note (`0.4.13`)](#release-note-0413)
 - [Release Note (`0.4.14`)](#release-note-0414)
+- [Release Note (`0.4.15`)](#release-note-0415)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
