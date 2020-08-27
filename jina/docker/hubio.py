@@ -168,7 +168,6 @@ class HubIO:
                             for line in chunk['stream'].splitlines():
                                 if is_error_message(line):
                                     self.logger.critical(line)
-                                    is_build_success = False
                                     _excepts.append(line)
                                 elif 'warning' in line.lower():
                                     self.logger.warning(line)
@@ -176,6 +175,7 @@ class HubIO:
                                     self.logger.info(line)
                                 _logs.append(line)
                 except Exception as ex:
+                    # if pytest fails it should end up here as well
                     is_build_success = False
                     _excepts.append(str(ex))
 
