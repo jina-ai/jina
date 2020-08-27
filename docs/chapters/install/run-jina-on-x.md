@@ -1,6 +1,6 @@
-# Installing Jina on Other Linux Distributions
+# Can I Run Jina On ....?
 
-Linux distributions are like a box of chocolates. They're all different, and you never know what you're going to get.
+Linux distributions (not to mention notebooks and other Python environments) are like a box of chocolates. They're all different, and you never know what you're going to get.
 
 While installing Jina on Ubuntu is pretty straightforward, other distributions may have their quirks, either with Jina directly or with some of the tools around Jina (like Docker for example). This document aims to be a one-stop resource for any issues you may encounter on different distros, operating systems, or running in notebooks.
 
