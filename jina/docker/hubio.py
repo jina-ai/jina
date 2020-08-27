@@ -6,6 +6,7 @@ import tempfile
 import urllib.parse
 import webbrowser
 from typing import Dict
+import re
 
 from .checker import *
 from .helper import get_default_login
@@ -150,6 +151,7 @@ class HubIO:
             is_build_success, is_push_success = True, False
             _logs = []
             _excepts = []
+            _except_pat = re.compile(r'\b(error)|(failed)\b', re.IGNORECASE)
             with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger) as tc:
 
                 streamer = self._raw_client.build(
@@ -164,7 +166,7 @@ class HubIO:
                 for chunk in streamer:
                     if 'stream' in chunk:
                         for line in chunk['stream'].splitlines():
-                            if 'error' in line.lower():
+                            if _except_pat.search(line):
                                 self.logger.critical(line)
                                 is_build_success = False
                                 _excepts.append(line)
