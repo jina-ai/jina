@@ -15,7 +15,7 @@ sver_regex = r'^(=|>=|<=|=>|=<|>|<|!=|~|~>|\^)?(?P<major>0|[1-9]\d*)\.(?P<minor>
              r'(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+' \
              r'(?:\.[0-9a-zA-Z-]+)*))?$'
 name_regex = r'^[a-zA-Z_$][a-zA-Z_\s\-$0-9]{2,30}$'
-excepts_regex = r'\b(error)|(failed)|(FAILURES)\b'
+excepts_regex = r'\b(error|failed|FAILURES)\b'
 
 
 def check_registry(registry, name, repo_prefix):
