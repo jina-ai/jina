@@ -23,7 +23,6 @@ _allowed = {'name', 'description', 'author', 'url',
 
 _repo_prefix = 'jinahub/'
 _label_prefix = 'ai.jina.hub.'
-_excepts_pat = re.compile(r'\b(error)|(failed)|(FAILURES)\b', re.IGNORECASE)
 
 
 class HubIO:
@@ -167,7 +166,7 @@ class HubIO:
                     for chunk in streamer:
                         if 'stream' in chunk:
                             for line in chunk['stream'].splitlines():
-                                if _excepts_pat.search(line):
+                                if is_error_message(line):
                                     self.logger.critical(line)
                                     is_build_success = False
                                     _excepts.append(line)
