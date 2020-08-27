@@ -146,33 +146,38 @@ class HubIO:
         if self.args.dry_run:
             result = self.dry_run()
         else:
-            self._check_completeness()
             is_build_success, is_push_success = True, False
             _logs = []
             _excepts = []
-            with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger) as tc:
 
-                streamer = self._raw_client.build(
-                    decode=True,
-                    path=self.args.path,
-                    tag=self.canonical_name,
-                    pull=self.args.pull,
-                    dockerfile=self.dockerfile_path_revised,
-                    rm=True
-                )
+            with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
+                try:
+                    self._check_completeness()
 
-                for chunk in streamer:
-                    if 'stream' in chunk:
-                        for line in chunk['stream'].splitlines():
-                            if 'error' in line.lower():
-                                self.logger.critical(line)
-                                is_build_success = False
-                                _excepts.append(line)
-                            elif 'warning' in line.lower():
-                                self.logger.warning(line)
-                            else:
-                                self.logger.info(line)
-                            _logs.append(line)
+                    streamer = self._raw_client.build(
+                        decode=True,
+                        path=self.args.path,
+                        tag=self.canonical_name,
+                        pull=self.args.pull,
+                        dockerfile=self.dockerfile_path_revised,
+                        rm=True
+                    )
+
+                    for chunk in streamer:
+                        if 'stream' in chunk:
+                            for line in chunk['stream'].splitlines():
+                                if is_error_message(line):
+                                    self.logger.critical(line)
+                                    is_build_success = False
+                                    _excepts.append(line)
+                                elif 'warning' in line.lower():
+                                    self.logger.warning(line)
+                                else:
+                                    self.logger.info(line)
+                                _logs.append(line)
+                except Exception as ex:
+                    is_build_success = False
+                    _excepts.append(str(ex))
 
             if is_build_success:
                 # compile it again, but this time don't show the log
@@ -210,7 +215,7 @@ class HubIO:
                 self._raw_client.prune_images()
 
             result = {
-                'name': self.canonical_name,
+                'name': getattr(self, 'canonical_name', ''),
                 'path': self.args.path,
                 'details': _details,
                 'last_build_time': get_now_timestamp(),

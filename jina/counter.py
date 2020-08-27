@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import ctypes
 import random
-from collections import Iterator
+from typing import Iterator
 
 
 class BaseCounter(Iterator):
