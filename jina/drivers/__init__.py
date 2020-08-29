@@ -114,8 +114,7 @@ class DriverType(type):
     @staticmethod
     def register_class(cls):
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set:
-            # print('reg class: %s' % cls.__name__)
+        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
             cls.__init__ = store_init_kwargs(cls.__init__)
 
             reg_cls_set.add(cls.__name__)
