@@ -18,6 +18,9 @@ area/core:
 area/helper:
   - jina/*.py
 
+area/entrypoint:
+  - jina/__init__.py
+
 area/helloworld:
   - jina/helloworld/*
 
@@ -44,6 +47,9 @@ component/driver:
 
 component/executor:
   - jina/executors/**/*
+
+component/docker:
+  - jina/docker/**/*
 
 executor/meta:
   - jina/executors/*.py
@@ -78,3 +84,5 @@ component/proto:
 component/resource:
   - jina/resources/**/*
 
+component/hub:
+  - jina/hub/**/*

@@ -47,9 +47,7 @@ class EnumType(EnumMeta):
     @staticmethod
     def register_class(cls):
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set:
-            # print('reg class: %s' % cls.__name__)
-
+        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
         from .helper import yaml
