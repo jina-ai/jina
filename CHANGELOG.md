@@ -66,6 +66,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -130,6 +132,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.4.12`)](#release-note-0412)
 - [Release Note (`0.4.13`)](#release-note-0413)
 - [Release Note (`0.4.14`)](#release-note-0414)
+- [Release Note (`0.4.15`)](#release-note-0415)
+- [Release Note (`0.4.16`)](#release-note-0416)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -3825,4 +3829,59 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```6477bedf```](https://github.com/jina-ai/jina/commit/6477bedfda5a101f39f7b879a8a64db5fa374ade)] __-__ update submodule tracking (*Han Xiao*)
  - [[```51839917```](https://github.com/jina-ai/jina/commit/51839917cecb5063b6fc421acf05194032bbaad9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```5bea7ce4```](https://github.com/jina-ai/jina/commit/5bea7ce4ac988135cbcfd52d95bc28627336fc24)] __-__ __version__: the next version will be 0.4.15 (*Jina Dev Bot*)
+
+## Release Note (`0.4.16`)
+
+> Release time: 2020-08-28 05:56:37
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Alex C-G,  Han Xiao,  Joan Fontanals,  Joan Fontanals Martinez,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```3df63a51```](https://github.com/jina-ai/jina/commit/3df63a510a0c30daa587ed745480ce3392f64f53)] __-__ __readme__: remove broken example (*Alex C-G*)
+ - [[```950e5ddc```](https://github.com/jina-ai/jina/commit/950e5ddcc090f63ef24d3fa73d8f78d7f09caa2a)] __-__ __docker__: hub builder raise error (*Han Xiao*)
+ - [[```05636622```](https://github.com/jina-ai/jina/commit/05636622fd64ed4391f38a08426670d661522622)] __-__ __docker__: prune images (*Han Xiao*)
+ - [[```9c021ffd```](https://github.com/jina-ai/jina/commit/9c021ffd43f92e035986bf3235fca816d95635be)] __-__ __hubio__: fix hub io build (*Han Xiao*)
+ - [[```996e7c09```](https://github.com/jina-ai/jina/commit/996e7c0953da8653751e582347001db6e0c0d6d7)] __-__ go back to old sorting (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```3e56652f```](https://github.com/jina-ai/jina/commit/3e56652fbff0174b37a5ed1cf76885d28d6aac87)] __-__ move TransformEncoder back to core (*Joan Fontanals Martinez*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```9097468c```](https://github.com/jina-ai/jina/commit/9097468ca8d7f4478b6a2c9fbb41081816ced056)] __-__ add py38 back (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```962aadec```](https://github.com/jina-ai/jina/commit/962aadec87c248f18c40f4a27cfe858bd519688c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```489c552e```](https://github.com/jina-ai/jina/commit/489c552e8d3388239fb1b9b2845940e82b7ab7c0)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```39bc1155```](https://github.com/jina-ai/jina/commit/39bc1155a434636b724bf20fbf6cd8219aca61fc)] __-__ __version__: the next version will be 0.4.16 (*Jina Dev Bot*)
+ - [[```61c57c16```](https://github.com/jina-ai/jina/commit/61c57c165214cf0360a566f8f7986c340a87e7ff)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```36d4f952```](https://github.com/jina-ai/jina/commit/36d4f952db8c06bb4b56300446830a450cabba2e)] __-__ __version__: the next version will be 0.4.12 (*Jina Dev Bot*)
+ - [[```cdd0d2bc```](https://github.com/jina-ai/jina/commit/cdd0d2bcce9381ea83268ae2f6eda95be8893001)] __-__ hotfix fix release (*Han Xiao*)
+
+## Release Note (`0.4.17`)
+
+> Release time: 2020-08-30 07:06:41
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```65934e6d```](https://github.com/jina-ai/jina/commit/65934e6db8cc22aa8cf1fe811f7ade2886beac96)] __-__ __executor__: add force register for easy debug (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```58841979```](https://github.com/jina-ai/jina/commit/5884197954426ac9304285a4816e67240ee9b4b1)] __-__ hotfix fix release (*Han Xiao*)
+ - [[```f5ebcbc2```](https://github.com/jina-ai/jina/commit/f5ebcbc24294e45ad5c046b7b9fa55f5a3f9bd3f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d002f0e3```](https://github.com/jina-ai/jina/commit/d002f0e3ca6cc46c9f8367f60a0a9a0db89d40a5)] __-__ __version__: the next version will be 0.4.17 (*Jina Dev Bot*)
 
