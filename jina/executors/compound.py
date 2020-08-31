@@ -93,7 +93,7 @@ class CompoundExecutor(BaseExecutor):
         c[0].add(obj)
 
     .. note::
-        All components ``workspace` and ``replica_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
+        All components ``workspace`` and ``replica_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
 
     .. warning::
 

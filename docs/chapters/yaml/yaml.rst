@@ -8,7 +8,7 @@ Jina configurations use YAML syntax, and must have either a ``.yml`` or ``.yaml`
 :class:`Executor` YAML Syntax
 -----------------------------
 
-All executors defined in :mod:`jina.executors` can be loaded from a YAML config via :func:`jina.executors.BaseExecutor.load_config` or via the CLI :command:`jina pod --exec_uses`.
+All executors defined in :mod:`jina.executors` can be loaded from a YAML config via :func:`jina.executors.BaseExecutor.load_config` or via the CLI :command:`jina pod --uses`.
 
 The executor YAML config follows the syntax below.
 
@@ -18,7 +18,7 @@ The executor YAML config follows the syntax below.
     !BasePbIndexer
     with:
       index_filename: doc.gzip
-    metas:  # <- metas defined in :mod``
+    metas:  # <- metas defined in :mod`jina.executors.metas`
       name: doc_indexer  # a customized name
       workspace: $TEST_WORKDIR
 
@@ -157,60 +157,63 @@ In the YAML config, one can reference environment variables with ``$ENV``, or us
 :class:`Driver` YAML Sytanx
 ---------------------------
 
-:class:`jina.drivers.Driver` connects :class:`jina.peapods.pea.BasePod` and :mod:`jina.executors`. A driver map is a collection of driver groups which can be referred by the BasePod via CLI (``jina pod --driver_uses --driver-group``).
+:class:`jina.drivers.Driver` helps the :mod:`jina.executors` to handle the network traffic by interpreting the traffic data (e.g. Protobuf) into the format that the Executor can understand and handle (e.g. Numpy array). Drivers can be specified using keyword `requests` and `on`
 
 .. highlight:: yaml
 .. code-block:: yaml
 
-    # this YAML files is a "Driver Map"
-    drivers:
-      encode:  # <== this is a "Driver Group"
-        handlers:
-          /:
-            - handler_encode_doc: encode   # this is a "Driver" attached to a Executor function
+    !CompoundExecutor
+    components:
+      - !Splitter
+        metas:
+          name: splitter
+      - !Sentencizer
+        with:
+          min_sent_len: 3
+          max_sent_len: 128
+          punct_chars: '.,;!?:'
+        metas:
+          name: sentencizer
+    name: crafter
+    workspace: $WORKSPACE
+    metas:
+      py_modules: splitter.py
+    requests:
+      on:
+        [SearchRequest, IndexRequest]:
+          - !CraftDriver
+            with:
+              executor: splitter
+              method: craft
+          - !SegmentDriver
+            with:
+              executor: sentencizer
+        ControlRequest:
+          - !ControlReqDriver {}
 
-      segment:
-        handlers:
-          /:
-            - handler_segment: craft
 
-      index-chunk-and-meta:
-        handlers:
-          QueryRequest:
-            - handler_chunk_search: query
-            - handler_meta_search_chunk: meta_query
-          IndexRequest:
-            - handler_chunk_index: add
-            - handler_prune_chunk
-            - handler_meta_index_chunk: meta_add
+.. confval:: requests
 
+    .. confval:: on
 
-.. confval:: drivers
+        .. confval:: request_type
 
-    A map of the driver group to the handlers, the name can be referred in ``jina pod --driver-group``
+            Possible values are ``QueryRequest``, ``IndexRequest``, ``TrainRequest``, or a list of them.
 
-.. confval:: handlers
+            .. confval:: !SomeDriverClass
 
-    A map of request types to a list of handlers
+                The class of the driver, can be any class inherited from jina.drivers.BaseDriver. Note that it must starts with ! to tell the YAML parser that the section below is describing this class.
 
-    .. highlight:: yaml
-    .. code-block:: yaml
+            .. confval:: with
 
-        request_type:
-            - handler: executor_func
+                A list of arguments in the :func:`__init__` function of this driver. One can use environment variables here to expand the variables.
 
-    .. confval:: request_type
+            .. confval:: metas
 
-        Possible values are ``QueryRequest``, ``IndexRequest``, ``TrainRequest`` and ``/`` representing all requests.
+                A list of meta arguments defined in :mod:`jina.executors.metas`.
 
-    .. confval:: handler
-
-        All handler functions defined in :mod:`jina.drivers.handlers`
-
-    .. confval:: (optional) executor_func
-
-        If the handler is paired with certain executor function, then here should be the name of it
-
+.. note::
+    If no drivers are specified in the yaml file, default drivers defined in `executors.requests.*` files at :mod:`jina.resources` wii be used.
 
 :class:`Flow` YAML Sytanx
 ---------------------------
