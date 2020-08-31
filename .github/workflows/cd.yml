@@ -16,16 +16,6 @@ jobs:
     if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
     runs-on: ubuntu-latest
     steps:
-      - uses: technote-space/toc-generator@v2
-        with:
-          MAX_HEADER_LEVEL: 2
-          FOLDING: false
-          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
-          COMMIT_NAME: Jina Dev Bot
-          COMMIT_EMAIL: dev-bot@jina.ai
-          TOC_TITLE: ''
-          TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
-          COMMIT_MESSAGE: 'chore(docs): update TOC'
       - uses: peter-evans/dockerhub-description@v2.3.0
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
