@@ -25,7 +25,7 @@
 <p align="center">
   <a href="https://github.com/jina-ai/jina">English</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/README.ja.md">日本語</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.fr.md">français</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README.fr.md">Français</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/README.de.md">Deutsch</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/README.ru.md">Русский язык</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/README.zh.md">中文</a>
@@ -48,13 +48,13 @@ Want to build a search system backed by deep learning? You've come to the right 
 
 Jina is the easiest way to build neural search in the cloud. It provides an one-stop solution for multi-/cross-modality search. Jina has **long-term support** from a full-time, [venture-backed team](https://jina.ai). 
 
-⏱️ **Time Saver** - Bootstrapping an AI-powered search system with Jina takes just minutes, and saves engineers months of time! 
+⏱️ **Time Saver** - Bootstrapping an AI-powered search system with Jina takes minutes, and can save engineers months of time. 
 
-🧠 **First-class AI models** - Jina is a new design pattern for neural search systems, offering first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).  
+🧠 **First-Class AI Models** - Jina is a new design pattern for neural search systems, offering first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).  
 
-🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, you name it!
+🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, images, long/short text, music, source code, you name it!
 
-🚀 **Production Ready** - Cloud-native features come out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
+🚀 **Production-Ready** - Cloud-native features come out-of-the-box, like containerization, microservice, distributing, scaling, sharding, async IO, REST, and gRPC.
 
 🧩 **Plug & Play** - Extend Jina with simple Python scripts or Docker images optimized for your search domain. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) for more extensions.
 
@@ -128,7 +128,7 @@ The Docker image downloads the Fashion-MNIST training and test dataset and tells
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
-The implementation behind it is as simple as can be:
+The implementation behind it is simple:
 
 <table>
 <tr>
@@ -232,13 +232,14 @@ jina hello-world --help
 [Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
 
 
-## Build your own Project
+## Build Your Own Project
 
 ```bash
-pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
+pip install cookiecutter
+cookiecutter gh:jina-ai/cookiecutter-jina
 ```
 
-With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
+With [Cookiecutter](https://github.com/jina-ai/cookiecutter-jina) you can jumpstart a Jina project by answering a few questions from the command line. Cookiecutter will do the heavy lifting and generate (almost) ready-to-run templates and boilerplate code, including a Python entrypoint, YAML configs and a Dockerfile. All you need to do is set a few environment variables.
 
 ## Tutorials
 
@@ -253,7 +254,7 @@ With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily
 &nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Thing to Learn About Jina</a></h3>
 &nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ja.md">日本語</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">français</a> •
+  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">Français</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.pt.md">Português</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.de.md">Deutsch</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ru.md">Русский язык</a> •
@@ -278,7 +279,7 @@ Orchestrate Pods to work together: sequentially and in parallel; locally and rem
 <tr>
 <td>
 <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
-Use Jina's input and output functions
+Get data in and out of Jina
 </td>
 <td><h3>🐣</h3></td>
 </tr>
@@ -301,7 +302,7 @@ Extract feature vector data using any deep learning representation
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search System</a></h4>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build an NLP Semantic Search System</a></h4>
 Search South Park scripts and practice with Flows and Pods
 </td>
 <td><h3>🐣</h3></td>
@@ -343,7 +344,7 @@ Implement your own ideas as Jina plugins
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/hub/index.html">Run Jina Pod via Docker Container</a></h4>
+<h4><a href="https://docs.jina.ai/chapters/hub/index.html">Run Jina Pods via Docker Container</a></h4>
 Solve complex dependencies easily with Docker containers
 </td>
 <td><h3>🕊</h3></td>
@@ -352,7 +353,7 @@ Solve complex dependencies easily with Docker containers
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
-Search Pokemon with SOTA visual representation!
+Search Pokemon with SOTA visual representation
 </td>
 <td><h3>🚀</h3></td>
 </tr>
