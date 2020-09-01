@@ -78,6 +78,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
             for doc_id, score in docs_scores:
                 r = context_doc.matches.add()
                 r.id = int(doc_id)
+                r.level_depth = context_doc.level_depth
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__
@@ -110,7 +111,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def _apply_all(self, context_doc: 'jina_pb2.Document', *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """
 
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``

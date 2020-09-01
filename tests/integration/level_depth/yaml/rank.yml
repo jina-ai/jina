@@ -6,4 +6,5 @@ requests:
       - !CollectMatches2DocRankDriver
         with:
           traverse_on: matches
+          depth_range: [1, 2]
       - !LogInfoDriver {}

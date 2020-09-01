@@ -9,9 +9,6 @@ from jina.proto import jina_pb2
 
 class SimpleCollectMatchesRankDriver(CollectMatches2DocRankDriver):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -72,7 +69,7 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
     driver = SimpleCollectMatchesRankDriver()
     executor = MockLengthRanker()
     driver.attach(executor=executor, pea=None)
-    driver._apply_all(doc)
+    driver._apply_all([], context_doc=doc)
     assert len(doc.matches) == 2
     assert doc.matches[0].id == 20
     assert doc.matches[0].score.value == 3
@@ -100,7 +97,7 @@ def test_collect_matches2doc_ranker_driver_min_ranker():
                 min_value_20 = match.score.value
 
     assert min_value_30 < min_value_20
-    driver._apply_all(doc)
+    driver._apply_all([], context_doc=doc)
     assert len(doc.matches) == 2
     assert doc.matches[0].id == 30
     assert doc.matches[0].score.value == pytest.approx((1. / (1. + min_value_30)), 0.0000001)
@@ -116,7 +113,7 @@ def test_collect_matches2doc_ranker_driver_max_ranker():
     driver = SimpleCollectMatchesRankDriver()
     executor = MaxRanker()
     driver.attach(executor=executor, pea=None)
-    driver._apply_all(doc)
+    driver._apply_all([], context_doc=doc)
     assert len(doc.matches) == 2
     assert doc.matches[0].id == 20
     assert doc.matches[0].score.value == 40
