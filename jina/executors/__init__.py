@@ -70,8 +70,7 @@ class ExecutorType(type):
                     setattr(cls, f_name, wrapper(getattr(cls, f_name)))
 
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set:
-            # print('reg class: %s' % cls.__name__)
+        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
             cls.__init__ = store_init_kwargs(cls.__init__)
             # if 'JINA_PROFILING' in os.environ:
             #     wrap_func(prof_funcs, profiling)

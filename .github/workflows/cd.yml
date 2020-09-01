@@ -16,16 +16,6 @@ jobs:
     if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
     runs-on: ubuntu-latest
     steps:
-      - uses: technote-space/toc-generator@v2
-        with:
-          MAX_HEADER_LEVEL: 2
-          FOLDING: false
-          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
-          COMMIT_NAME: Jina Dev Bot
-          COMMIT_EMAIL: dev-bot@jina.ai
-          TOC_TITLE: ''
-          TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
-          COMMIT_MESSAGE: 'chore(docs): update TOC'
       - uses: peter-evans/dockerhub-description@v2.3.0
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
@@ -71,8 +61,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - name: Set up Docker Buildx
         id: buildx
         uses: crazy-max/ghaction-docker-buildx@v1
@@ -132,9 +120,9 @@ jobs:
         run: |
           pip install flake8
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/
       - name: Test docker install
         run: |
           docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .

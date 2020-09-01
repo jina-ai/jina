@@ -143,78 +143,105 @@ class HubIO:
 
     def build(self) -> Dict:
         """A wrapper of docker build """
-        self._check_completeness()
-        is_build_success, is_push_success = True, False
-        _logs = []
-        _excepts = []
-        with TimeContext(f'building {colored(self.canonical_name, "green")}', self.logger) as tc:
-
-            streamer = self._raw_client.build(
-                decode=True,
-                path=self.args.path,
-                tag=self.canonical_name,
-                pull=self.args.pull,
-                dockerfile=self.dockerfile_path_revised,
-                rm=True
-            )
-
-            for chunk in streamer:
-                if 'stream' in chunk:
-                    for line in chunk['stream'].splitlines():
-                        if 'error' in line.lower():
-                            self.logger.critical(line)
-                            is_build_success = False
-                            _excepts.append(line)
-                        elif 'warning' in line.lower():
-                            self.logger.warning(line)
-                        else:
-                            self.logger.info(line)
-                        _logs.append(line)
-
-        if is_build_success:
-            # compile it again, but this time don't show the log
-            image, log = self._client.images.build(path=self.args.path,
-                                                   tag=self.canonical_name,
-                                                   pull=self.args.pull,
-                                                   dockerfile=self.dockerfile_path_revised,
-                                                   rm=True)
-
-            # success
-
-            _details = {
-                'inspect': self._raw_client.inspect_image(image.tags[0]),
-                'tag': image.tags[0],
-                'hash': image.short_id,
-                'size': get_readable_size(image.attrs['Size']),
-            }
-
-            self.logger.success(
-                '🎉 built {tag} ({hash}) uncompressed size: {size}'.format_map(_details))
-
+        if self.args.dry_run:
+            result = self.dry_run()
         else:
-            self.logger.error(f'can not build the image, please double check the log')
-            _details = {}
+            is_build_success, is_push_success = True, False
+            _logs = []
+            _excepts = []
 
-        if is_build_success and self.args.push:
-            try:
-                self.push(image.tags[0], self.readme_path)
-                is_push_success = True
-            except Exception:
-                self.logger.error(f'can not push tot the registry')
+            with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
+                try:
+                    self._check_completeness()
 
-        return {
-            'name': self.canonical_name,
-            'path': self.args.path,
-            'details': _details,
-            'last_build_time': get_now_timestamp(),
-            'build_duration': tc.duration,
-            'is_build_success': is_build_success,
-            'is_push_success': is_push_success,
-            'build_logs': _logs,
-            'exception': _excepts
-        }
+                    streamer = self._raw_client.build(
+                        decode=True,
+                        path=self.args.path,
+                        tag=self.canonical_name,
+                        pull=self.args.pull,
+                        dockerfile=self.dockerfile_path_revised,
+                        rm=True
+                    )
 
-    def _check_completeness(self):
+                    for chunk in streamer:
+                        if 'stream' in chunk:
+                            for line in chunk['stream'].splitlines():
+                                if is_error_message(line):
+                                    self.logger.critical(line)
+                                    _excepts.append(line)
+                                elif 'warning' in line.lower():
+                                    self.logger.warning(line)
+                                else:
+                                    self.logger.info(line)
+                                _logs.append(line)
+                except Exception as ex:
+                    # if pytest fails it should end up here as well
+                    is_build_success = False
+                    _excepts.append(str(ex))
+
+            if is_build_success:
+                # compile it again, but this time don't show the log
+                image, log = self._client.images.build(path=self.args.path,
+                                                       tag=self.canonical_name,
+                                                       pull=self.args.pull,
+                                                       dockerfile=self.dockerfile_path_revised,
+                                                       rm=True)
+
+                # success
+
+                _details = {
+                    'inspect': self._raw_client.inspect_image(image.tags[0]),
+                    'tag': image.tags[0],
+                    'hash': image.short_id,
+                    'size': get_readable_size(image.attrs['Size']),
+                }
+
+                self.logger.success(
+                    '🎉 built {tag} ({hash}) uncompressed size: {size}'.format_map(_details))
+
+            else:
+                self.logger.error(f'can not build the image, please double check the log')
+                _details = {}
+
+            if is_build_success and self.args.push:
+                try:
+                    self.push(image.tags[0], self.readme_path)
+                    is_push_success = True
+                except Exception:
+                    self.logger.error(f'can not push tot the registry')
+
+            if self.args.prune_images:
+                self.logger.info('deleting unused images')
+                self._raw_client.prune_images()
+
+            result = {
+                'name': getattr(self, 'canonical_name', ''),
+                'path': self.args.path,
+                'details': _details,
+                'last_build_time': get_now_timestamp(),
+                'build_duration': tc.duration,
+                'is_build_success': is_build_success,
+                'is_push_success': is_push_success,
+                'build_logs': _logs,
+                'exception': _excepts
+            }
+        if not result['is_build_success'] and self.args.raise_error:
+            # remove the very verbose build log when throw error
+            result.pop('build_logs')
+            raise RuntimeError(result)
+        else:
+            return result
+
+    def dry_run(self) -> Dict:
+        try:
+            s = self._check_completeness()
+            s['is_build_success'] = True
+        except Exception as ex:
+            s = {'is_build_success': False,
+                 'exception': str(ex)}
+        return s
+
+    def _check_completeness(self) -> Dict:
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
@@ -231,15 +258,15 @@ class HubIO:
         completeness = {
             'Dockerfile': self.dockerfile_path,
             'manifest.yml': self.manifest_path,
-            'README.md': os.path.exists(self.readme_path),
-            'requirements.txt': os.path.exists(self.readme_path),
+            'README.md': self.readme_path,
+            'requirements.txt': self.requirements_path,
             '*.yml': yaml_glob,
             '*.py': py_glob,
             'tests': test_glob
         }
 
         self.logger.info(
-            f'a completeness check\n' +
+            f'completeness check\n' +
             '\n'.join('%4s %-20s %s' % (colored('✓', 'green') if v else colored('✗', 'red'), k, v) for k, v in
                       completeness.items()) + '\n')
 

@@ -29,9 +29,9 @@ class CraftDriver(BaseExecutableDriver):
                 else:
                     doc.blob.CopyFrom(array2pb(v))
             elif isinstance(protected_keys, dict) and k in protected_keys:
-                self.logger.warning(f'you are assigning a {k} in in {self.exec.__class__}, '
+                self.logger.warning(f'you are assigning a {k} in {self.exec.__class__}, '
                                     f'is it intentional? {k} will be overwritten by {self.__class__} '
-                                    f'anyway')
+                                    f'anyway.')
             elif isinstance(v, list) or isinstance(v, tuple):
                 doc.ClearField(k)
                 getattr(doc, k).extend(v)

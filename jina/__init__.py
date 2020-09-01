@@ -3,7 +3,8 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.4.12'
+__version__ = '0.5.1'
+
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -141,7 +142,7 @@ def import_classes(namespace: str, targets=None,
                     modules.add('.'.join([namespace, pkg, info.name]))
 
     # filter
-    ignored_module_pattern = r'\.tests|\.api'
+    ignored_module_pattern = r'\.tests|\.api|\.bump_version'
     modules = {m for m in modules if not re.findall(ignored_module_pattern, m)}
 
     from collections import defaultdict
@@ -203,7 +204,15 @@ def import_classes(namespace: str, targets=None,
         print_load_table(load_stat)
     else:
         if bad_imports:
-            default_logger.error(f'theses modules or classes can not be imported {bad_imports}')
+            if namespace != 'jina.hub':
+                default_logger.error(
+                    f'theses modules or classes can not be imported {bad_imports}. '
+                    f'You can use `jina check` to list all executors and drivers')
+            else:
+                default_logger.warning(
+                    f'due to the missing dependencies or bad implementations, {bad_imports} can not be imported '
+                    f'if you are using these executors/drivers, they wont work. '
+                    f'You can use `jina check` to list all executors and drivers')
 
     if namespace == 'jina.executors':
         JINA_GLOBAL.imported.executors = True
