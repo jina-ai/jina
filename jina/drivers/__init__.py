@@ -279,13 +279,13 @@ class BaseRecursiveDriver(BaseDriver):
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
-                if self._is_apply_all and _docs[0].granularity >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
         def pre_traverse(_docs, traverse_on, context_doc=None):
             if _docs:
                 # check first doc if in the required depth range
-                if self._is_apply_all and _docs[0].granularity >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
                 for d in _docs:
