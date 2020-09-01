@@ -79,6 +79,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
                 r = context_doc.matches.add()
                 r.id = int(doc_id)
                 r.granularity = context_doc.granularity
+                r.adjacency = context_doc.adjacency + 1
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__

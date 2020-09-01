@@ -272,10 +272,10 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 for d in _docs:
                     # check if apply to next level
-                    if d.granularity < self._depth_end:
+                    if getattr(d, depth_name) < self._depth_end:
                         post_traverse(getattr(d, traverse_on), traverse_on, d)
                     # check if apply to the current level
-                    if self._is_apply and self._depth_start <= d.granularity < self._depth_end:
+                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
@@ -290,10 +290,10 @@ class BaseRecursiveDriver(BaseDriver):
 
                 for d in _docs:
                     # check if apply on the current level
-                    if self._is_apply and self._depth_start <= d.granularity < self._depth_end:
+                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
                     # check if apply to the next level
-                    if d.granularity < self._depth_end:
+                    if getattr(d, depth_name) < self._depth_end:
                         pre_traverse(getattr(d, traverse_on), traverse_on, d)
 
         if self.recursion_order == 'post':
@@ -304,8 +304,11 @@ class BaseRecursiveDriver(BaseDriver):
             raise ValueError(f'{self.recursion_order}')
 
         if 'chunks' in self.traverse_fields:
+            depth_name = 'granularity'
             _traverse(docs, 'chunks')
+
         if 'matches' in self.traverse_fields:
+            depth_name = 'adjacency'
             for d in docs:
                 _traverse(d.matches, 'matches')
 
