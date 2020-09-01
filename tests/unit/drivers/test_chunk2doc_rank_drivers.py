@@ -52,7 +52,7 @@ def create_document_to_score():
 
 
 def create_chunk_matches_to_score():
-    # doc: (id: 100, level_depth=0)
+    # doc: (id: 100, granularity=0)
     # |- chunks: (id: 10)
     # |  |- matches: (id: 11, parent_id: 1, score.value: 2),
     # |  |- matches: (id: 12, parent_id: 1, score.value: 3),
@@ -61,15 +61,15 @@ def create_chunk_matches_to_score():
     #    |- matches: (id: 22, parent_id: 2, score.value: 5)
     doc = jina_pb2.Document()
     doc.id = 100
-    doc.level_depth = 0
+    doc.granularity = 0
     num_matches = 2
     for parent_id in range(1, 3):
         chunk = doc.chunks.add()
         chunk.id = parent_id * 10
-        chunk.level_depth = doc.level_depth + 1
+        chunk.granularity = doc.granularity + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
             match = chunk.matches.add()
-            match.level_depth = chunk.level_depth
+            match.granularity = chunk.granularity
             match.parent_id = parent_id
             match.score.value = score_value
             match.score.ref_id = chunk.id
@@ -79,8 +79,8 @@ def create_chunk_matches_to_score():
 
 
 def create_chunk_chunk_matches_to_score():
-    # doc: (id: 100, level_depth=0)
-    # |- chunk: (id: 101, level_depth=1)
+    # doc: (id: 100, granularity=0)
+    # |- chunk: (id: 101, granularity=1)
     #       |- chunks: (id: 10)
     #       |   |- matches: (id: 11, parent_id: 1, score.value: 2),
     #       |   |- matches: (id: 12, parent_id: 1, score.value: 3),
@@ -89,15 +89,15 @@ def create_chunk_chunk_matches_to_score():
     #           |- matches: (id: 22, parent_id: 2, score.value: 5)
     doc = jina_pb2.Document()
     doc.id = 100
-    doc.level_depth = 0
+    doc.granularity = 0
     chunk = doc.chunks.add()
     chunk.id = 101
-    chunk.level_depth = doc.level_depth + 1
+    chunk.granularity = doc.granularity + 1
     num_matches = 2
     for parent_id in range(1, 3):
         chunk_chunk = chunk.chunks.add()
         chunk_chunk.id = parent_id * 10
-        chunk_chunk.level_depth = chunk.level_depth + 1
+        chunk_chunk.granularity = chunk.granularity + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
             match = chunk_chunk.matches.add()
             match.parent_id = parent_id
@@ -170,7 +170,7 @@ def test_chunk2doc_ranker_driver_min_ranker():
 
 def test_chunk2doc_ranker_driver_traverse_apply():
     docs = [create_chunk_matches_to_score(), ]
-    driver = SimpleChunk2DocRankDriver(depth_range=(0, 1))
+    driver = SimpleChunk2DocRankDriver(recurring_range=(0, 1))
     executor = MinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(docs)
@@ -183,7 +183,7 @@ def test_chunk2doc_ranker_driver_traverse_apply():
 
 def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
     docs = [create_chunk_chunk_matches_to_score(), ]
-    driver = SimpleChunk2DocRankDriver(depth_range=(0, 2))
+    driver = SimpleChunk2DocRankDriver(recurring_range=(0, 2))
     executor = MinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(docs)
@@ -192,13 +192,13 @@ def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.matches) == 2
-        min_level_depth_2 = chunk.matches[0].score.value
+        min_granularity_2 = chunk.matches[0].score.value
         for idx, m in enumerate(chunk.matches):
             # the score should be 1 / (1 + id * 2)
-            if m.score.value < min_level_depth_2:
-                min_level_depth_2 = m.score.value
+            if m.score.value < min_granularity_2:
+                min_granularity_2 = m.score.value
             assert m.score.value == pytest.approx(1. / (1 + m.id * 2.), 0.0001)
             assert m.score.ref_id == 101
         match = doc.matches[0]
         assert match.score.ref_id == 100
-        assert match.score.value == pytest.approx(1. / (1 + min_level_depth_2), 0.0001)
+        assert match.score.value == pytest.approx(1. / (1 + min_granularity_2), 0.0001)

@@ -1,16 +1,16 @@
 !Flow
 pods:
   segmenter:
-    uses: ${CUR_DIR_LEVEL_DEPTH}/yaml/segmenter.yml
+    uses: ${CUR_DIR_GRANULARITY}/yaml/segmenter.yml
     read_only: true
   encoder:
-    uses: ${CUR_DIR_LEVEL_DEPTH}/yaml/encoder.yml
+    uses: ${CUR_DIR_GRANULARITY}/yaml/encoder.yml
     timeout_ready: 60000
     read_only: true
   chunk_indexer:
-    uses: ${CUR_DIR_LEVEL_DEPTH}/yaml/index-chunk.yml
+    uses: ${CUR_DIR_GRANULARITY}/yaml/index-chunk.yml
   doc_indexer:
-    uses: ${CUR_DIR_LEVEL_DEPTH}/yaml/index-doc.yml
+    uses: ${CUR_DIR_GRANULARITY}/yaml/index-doc.yml
     needs: gateway
   join_all:
     uses: _merge

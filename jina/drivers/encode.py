@@ -30,13 +30,13 @@ class EncodeDriver(BaseEncodeDriver):
 
         if bad_doc_ids:
             self.logger.warning(f'these bad docs can not be added: {bad_doc_ids} '
-                                f'from level depth {docs[0].level_depth}')
+                                f'from level depth {docs[0].granularity}')
 
         if docs_pts:
             embeds = self.exec_fn(contents)
             if len(docs_pts) != embeds.shape[0]:
                 self.logger.error(
-                    f'mismatched {len(docs_pts)} docs from level {docs[0].level_depth} '
+                    f'mismatched {len(docs_pts)} docs from level {docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(docs_pts, embeds):
                 doc.embedding.CopyFrom(array2pb(embedding))
