@@ -61,5 +61,3 @@ def test_index_depth_0_search_depth_1():
     rm_files([os.path.join(os.getenv('TEST_WORKDIR'), 'test_workspace')])
     del os.environ['CUR_DIR_LEVEL_DEPTH']
     del os.environ['TEST_WORKDIR']
-
-test_index_depth_0_search_depth_1()
