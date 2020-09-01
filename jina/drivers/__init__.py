@@ -230,10 +230,10 @@ class BaseRecursiveDriver(BaseDriver):
         if isinstance(traverse_on, str):
             traverse_on = (traverse_on,)
         self.traverse_fields = set(traverse_on)
-        if apply_order in {'post'}:
+        if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
         else:
-            raise AttributeError('can only accept oder={"post"}')  # pre is not yet tested
+            raise AttributeError('can only accept oder={"pre", "post"}')
         self._is_apply = True
         self._is_apply_all = True
 
@@ -262,9 +262,10 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def chunk_traverse(_docs, context_doc=None):
+        def post_traverse(_docs, traverse_on, context_doc=None):
             """
             :param _docs: list of docs
+            :param traverse_on: "matches" or "chunks"
             :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
             :return:
             """
@@ -272,37 +273,41 @@ class BaseRecursiveDriver(BaseDriver):
                 for d in _docs:
                     # check if apply to next level
                     if d.level_depth < self._depth_end:
-                        chunk_traverse(d.chunks, d)
+                        post_traverse(getattr(d, traverse_on), traverse_on, d)
                     # check if apply to the current level
                     if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
-                        self._apply(doc=d, context_doc=context_doc, field='chunks', *args, **kwargs)
+                        self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
                 if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
-                    self._apply_all(docs=_docs, context_doc=context_doc, field='chunks', *args, **kwargs)
+                    self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
-        def match_apply(_docs, context_doc=None):
-            """
-            :param _docs: list of docs
-            :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
-            :return:
-            """
+        def pre_traverse(_docs, traverse_on, context_doc=None):
             if _docs:
-                for d in _docs:
-                    # check if apply to the current level
-                    if self._is_apply:
-                        self._apply(doc=d, context_doc=context_doc, field='matches', *args, **kwargs)
-
                 # check first doc if in the required depth range
-                if self._is_apply_all:
-                    self._apply_all(docs=_docs, context_doc=context_doc, field='matches', *args, **kwargs)
+                if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
+                    self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
+
+                for d in _docs:
+                    # check if apply on the current level
+                    if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
+                        self._apply(d, context_doc, traverse_on, *args, **kwargs)
+                    # check if apply to the next level
+                    if d.level_depth < self._depth_end:
+                        pre_traverse(getattr(d, traverse_on), traverse_on, d)
+
+        if self.recursion_order == 'post':
+            _traverse = post_traverse
+        elif self.recursion_order == 'pre':
+            _traverse = pre_traverse
+        else:
+            raise ValueError(f'{self.recursion_order}')
 
         if 'chunks' in self.traverse_fields:
-            chunk_traverse(docs)
+            _traverse(docs, 'chunks')
         if 'matches' in self.traverse_fields:
             for d in docs:
-                # depth should be expressed in a different way when related to matches
-                match_apply(d.matches, context_doc=d)
+                _traverse(d.matches, 'matches')
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
