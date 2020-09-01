@@ -93,17 +93,6 @@ class QuerySetReader:
             return self._get_parameter(name, default=self._init_kwargs_dict[name])
         raise AttributeError
 
-    # def __getattribute__(self, attr):
-    #     try:
-    #         return super().__getattribute__(attr)
-    #     except AttributeError:
-    #         if attr == '_init_kwargs_dict':
-    #             # raise attribute error to avoid recursive call
-    #             raise AttributeError
-    #         if attr in self._init_kwargs_dict:
-    #             return self._get_parameter(attr, default=self._init_kwargs_dict[name])
-    #         raise
-
 
 class DriverType(type):
 

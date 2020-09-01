@@ -15,12 +15,52 @@ from ...helper import batch_iterator, is_url
 from ...logging import default_logger
 from ...proto import jina_pb2
 
+if False:
+    from ...counter import BaseCounter
 
-def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterator[str]], batch_size: int = 0,
-              first_doc_id: int = 0, first_request_id: int = 0,
+
+def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document', 'np.ndarray', bytes, str], mode: str,
+                  doc_counter: 'BaseCounter', docs_in_same_batch: int, mime_type: str, buffer_sniff: bool,
+                  level_depth: int):
+    d = getattr(request, str(mode).lower()).docs.add()
+    if isinstance(content, jina_pb2.Document):
+        d.CopyFrom(content)
+    elif isinstance(content, np.ndarray):
+        d.blob.CopyFrom(array2pb(content))
+    elif isinstance(content, bytes):
+        d.buffer = content
+        if not mime_type and buffer_sniff:
+            try:
+                import magic
+                mime_type = magic.from_buffer(content, mime=True)
+            except Exception as ex:
+                default_logger.warning(f'can not sniff the MIME type due to the exception {ex}')
+    elif isinstance(content, str):
+        scheme = urllib.parse.urlparse(content).scheme
+        if ((scheme in {'http', 'https'} and is_url(content)) or (scheme in {'data'}) or os.path.exists(content)
+                or os.access(os.path.dirname(content), os.W_OK)):
+            d.uri = content
+            mime_type = guess_mime(content)
+        else:
+            d.text = content
+            mime_type = 'text/plain'
+    else:
+        raise TypeError(f'{type(content)} type of input is not supported')
+
+    if mime_type:
+        d.mime_type = mime_type
+
+    d.id = next(doc_counter)
+    d.weight = 1.0
+    d.length = docs_in_same_batch
+    d.level_depth = level_depth
+
+
+def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
+              batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
-              *args, **kwargs) -> Iterator['jina_pb2.Message']:
+              level_depth: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
     doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
     req_counter = SimpleCounter(first_request_id)
@@ -39,7 +79,7 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
 
-    for pi in batch_iterator(data, batch_size):
+    for batch in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
         req.request_id = next(req_counter)
         if queryset:
@@ -47,38 +87,10 @@ def _generate(data: Union[Iterator[bytes], Iterator['jina_pb2.Document'], Iterat
                 queryset = [queryset]
             req.queryset.extend(queryset)
 
-        for _raw in pi:
-            d = getattr(req, str(mode).lower()).docs.add()
-            if isinstance(_raw, jina_pb2.Document):
-                d.CopyFrom(_raw)
-            elif isinstance(_raw, np.ndarray):
-                d.blob.CopyFrom(array2pb(_raw))
-            elif isinstance(_raw, bytes):
-                d.buffer = _raw
-                if not mime_type and buffer_sniff:
-                    try:
-                        import magic
-                        mime_type = magic.from_buffer(_raw, mime=True)
-                    except Exception as ex:
-                        default_logger.warning(f'can not sniff the MIME type due to the exception {ex}')
-            elif isinstance(_raw, str):
-                scheme = urllib.parse.urlparse(_raw).scheme
-                if ((scheme in {'http', 'https'} and is_url(_raw)) or (scheme in {'data'}) or os.path.exists(_raw)
-                        or os.access(os.path.dirname(_raw), os.W_OK)):
-                    d.uri = _raw
-                    mime_type = guess_mime(_raw)
-                else:
-                    d.text = _raw
-                    mime_type = 'text/plain'
-            else:
-                raise TypeError(f'{type(_raw)} type of input is not supported')
-
-            if mime_type:
-                d.mime_type = mime_type
-
-            d.id = next(doc_counter)
-            d.weight = 1.0
-            d.length = batch_size
+        for content in batch:
+            _add_document(request=req, content=content, mode=mode, doc_counter=doc_counter,
+                          docs_in_same_batch=batch_size, mime_type=mime_type,
+                          buffer_sniff=buffer_sniff, level_depth=level_depth)
         yield req
 
 

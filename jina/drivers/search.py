@@ -70,7 +70,6 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
             for doc, topks, scores in zip(doc_pts, idx, dist):
                 for match_id, score in zip(topks, scores):
                     r = doc.matches.add()
-                    r.level_depth = doc.level_depth
                     r.id = match_id
                     r.score.ref_id = doc.id
                     r.score.value = score

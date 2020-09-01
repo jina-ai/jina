@@ -1,5 +1,0 @@
-!BaseExecutor
-requests:
-  on:
-    [IndexRequest, SearchRequest]:
-      - !UnarySegmentDriver {}

@@ -1,5 +1,4 @@
 import os
-import unittest
 
 from jina.enums import SocketType
 from jina.flow import Flow
@@ -145,7 +144,3 @@ class FlowFacesExamplesTestCase(JinaTestCase):
             assert node.tail_args.socket_in == SocketType.PULL_BIND
             assert node.tail_args.socket_out == SocketType.PUSH_BIND
             f.dry_run()
-
-
-if __name__ == '__main__':
-    unittest.main()

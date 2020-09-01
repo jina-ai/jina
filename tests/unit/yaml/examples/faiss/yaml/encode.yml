@@ -1,5 +1,0 @@
-!BaseEncoder
-requests:
-  on:
-    [IndexRequest, SearchRequest]:
-      - !EncodeDriver {}
