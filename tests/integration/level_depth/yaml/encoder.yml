@@ -7,11 +7,11 @@ requests:
       - !EncodeDriver
         with:
           traverse_on: chunks
-          depth_range: [0, 1]
+          recurring_range: [0, 1]
       - !LogInfoDriver {}
     SearchRequest:
       - !EncodeDriver
         with:
           traverse_on: chunks
-          depth_range: [1, 1]
+          recurring_range: [1, 1]
       - !LogInfoDriver {}

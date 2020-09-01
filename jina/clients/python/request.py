@@ -21,7 +21,7 @@ if False:
 
 def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document', 'np.ndarray', bytes, str], mode: str,
                   doc_counter: 'BaseCounter', docs_in_same_batch: int, mime_type: str, buffer_sniff: bool,
-                  level_depth: int):
+                  granularity: int):
     d = getattr(request, str(mode).lower()).docs.add()
     if isinstance(content, jina_pb2.Document):
         d.CopyFrom(content)
@@ -53,14 +53,14 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
     d.id = next(doc_counter)
     d.weight = 1.0
     d.length = docs_in_same_batch
-    d.level_depth = level_depth
+    d.granularity = granularity
 
 
 def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
               batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
               random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
-              level_depth: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
+              granularity: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
     doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
     req_counter = SimpleCounter(first_request_id)
@@ -90,7 +90,7 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
         for content in batch:
             _add_document(request=req, content=content, mode=mode, doc_counter=doc_counter,
                           docs_in_same_batch=batch_size, mime_type=mime_type,
-                          buffer_sniff=buffer_sniff, level_depth=level_depth)
+                          buffer_sniff=buffer_sniff, granularity=granularity)
         yield req
 
 

@@ -89,8 +89,8 @@ class VectorSearchDriverTestCase(JinaTestCase):
             assert len(chunk.matches) == 2
             assert chunk.matches[0].id == chunk.id * 100
             assert chunk.matches[1].id == chunk.id * 1000
-            assert chunk.matches[0].level_depth == chunk.level_depth
-            assert chunk.matches[1].level_depth == chunk.level_depth
+            assert chunk.matches[0].granularity == chunk.granularity
+            assert chunk.matches[1].granularity == chunk.granularity
             assert chunk.matches[0].score.ref_id == chunk.id
             assert chunk.matches[1].score.ref_id == chunk.id
             self.assertAlmostEqual(chunk.matches[0].score.value, chunk.id * 0.01)

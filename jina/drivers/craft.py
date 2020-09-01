@@ -56,7 +56,7 @@ class SegmentDriver(CraftDriver):
         # for adding new chunks, preorder is safer
         self.recursion_order = 'pre'
         self._counter = RandomUintCounter() if random_chunk_id else SimpleCounter(first_chunk_id)
-        self._protected_fields = {'length', 'id', 'parent_id', 'level_depth', 'mime_type'}
+        self._protected_fields = {'length', 'id', 'parent_id', 'granularity', 'mime_type'}
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         _args_dict = pb_obj2dict(doc, self.exec.required_keys)
@@ -68,7 +68,7 @@ class SegmentDriver(CraftDriver):
                 c.length = len(ret)
                 c.id = next(self._counter)
                 c.parent_id = doc.id
-                c.level_depth = doc.level_depth + 1
+                c.granularity = doc.granularity + 1
                 c.mime_type = doc.mime_type
         else:
-            self.logger.warning(f'doc {doc.id} at level {doc.level_depth} gives no chunk')
+            self.logger.warning(f'doc {doc.id} at level {doc.granularity} gives no chunk')

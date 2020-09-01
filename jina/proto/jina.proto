@@ -50,8 +50,11 @@ message Document {
     // The unique document ID
     uint32 id = 1;
 
-    // the depth of the level
-    uint32 level_depth = 14;
+    // the depth of the recursive chunk structure
+    uint32 granularity = 14;
+
+    // the width of the recursive match structure
+    uint32 adjacency = 22;
 
     // the name of the level
     string level_name = 15;
@@ -76,7 +79,7 @@ message Document {
     // the weight of this document
     float weight = 5;
 
-    // total number of siblings of this document (docs that are in the same level_depth and parent_id)
+    // total number of siblings of this document (docs that are in the same granularity and parent_id)
     uint32 length = 6;
 
     // some binary meta information of this Doc in bytes

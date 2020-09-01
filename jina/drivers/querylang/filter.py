@@ -20,12 +20,12 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
             with:
                 lookups: {modality: mode2}
                 traverse_on: [chunks]
-                depth_range: [1, 2]
+                recurring_range: [1, 2]
         - !EncodeDriver
             with:
                 method: encode
                 traverse_on: [chunks]
-                depth_range: [1, 2]
+                recurring_range: [1, 2]
 
         ensures that the EncodeDriver will only get documents which modality field value is `mode2` by filtering
         those documents at the specific levels that do not comply with this condition

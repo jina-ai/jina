@@ -27,21 +27,21 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
     Input-Output ::
         Input:
-        document: {level_depth: k-1}
-                |- chunks: {level_depth: k}
-                |    |- matches: {level_depth: k}
+        document: {granularity: k-1}
+                |- chunks: {granularity: k}
+                |    |- matches: {granularity: k}
                 |
-                |- chunks: {level_depth: k}
-                    |- matches: {level_depth: k}
+                |- chunks: {granularity: k}
+                    |- matches: {granularity: k}
         Output:
-        document: {level_depth: k-1}
-            |- chunks: {level_depth: k}
-            |    |- matches: {level_depth: k}
+        document: {granularity: k-1}
+            |- chunks: {granularity: k}
+            |    |- matches: {granularity: k}
             |
-            |- chunks: {level_depth: k}
-            |    |- matches: {level_depth: k}
+            |- chunks: {granularity: k}
+            |    |- matches: {granularity: k}
             |
-            |-matches: {level_depth: k-1} (Ranked according to Ranker Executor)
+            |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
     def __init__(self, *args, **kwargs):
@@ -78,7 +78,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
             for doc_id, score in docs_scores:
                 r = context_doc.matches.add()
                 r.id = int(doc_id)
-                r.level_depth = context_doc.level_depth
+                r.granularity = context_doc.granularity
+                r.adjacency = context_doc.adjacency + 1
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__
@@ -89,19 +90,19 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     these matches by the documents at a lower depth level.
     Input-Output ::
         Input:
-        document: {level_depth: k}
-            |- matches: {level_depth: k}
+        document: {granularity: k}
+            |- matches: {granularity: k}
         Output:
-        document: {level_depth: k}
-            |- matches: {level_depth: k-1} (Sorted according to Ranker Executor)
+        document: {granularity: k}
+            |- matches: {granularity: k-1} (Sorted according to Ranker Executor)
 
     Imagine a case where we are querying a system with text documents chunked by sentences. When we query the system,
     we use sentences (chunks) to query it. So at some point we will have:
-    `query sentence (documents of level_depth 1):
+    `query sentence (documents of granularity 1):
         matches: indexed sentences (documents of level depth 1)`
     `
     But in the output we want to have the full document that better matches the `sentence`.
-    `query sentence (documents of level_depth 1):
+    `query sentence (documents of granularity 1):
         matches: indexed full documents (documents of level depth 0).
     `
     Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
