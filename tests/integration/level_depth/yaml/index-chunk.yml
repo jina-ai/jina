@@ -23,21 +23,21 @@ requests:
       - !VectorIndexDriver
         with:
           executor: vecidx
-          recurring_range: [1, 1]
+          recur_range: [1, 1]
       - !LogInfoDriver {}
       - !KVIndexDriver
         with:
           executor: chunkidx
-          recurring_range: [1, 1]
+          recur_range: [1, 1]
     SearchRequest:
       - !VectorSearchDriver
         with:
           executor: vecidx
           top_k: 1
-          recurring_range: [1, 1]
+          recur_range: [1, 1]
       - !LogInfoDriver {}
       - !KVSearchDriver
         with:
           executor: chunkidx
-          traverse_on: matches
+          recur_on: matches
       - !LogInfoDriver {}

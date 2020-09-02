@@ -6,10 +6,10 @@ requests:
     IndexRequest:
       - !EncodeDriver
         with:
-          recurring_range: [0, 1]
+          recur_range: [0, 1]
       - !LogInfoDriver {}
     SearchRequest:
       - !EncodeDriver
         with:
-          recurring_range: [1, 1]
+          recur_range: [1, 1]
       - !LogInfoDriver {}

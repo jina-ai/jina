@@ -5,5 +5,5 @@ requests:
       - !LogInfoDriver {}
       - !CollectMatches2DocRankDriver
         with:
-          recurring_range: [1, 2]
+          recur_range: [1, 2]
       - !LogInfoDriver {}
