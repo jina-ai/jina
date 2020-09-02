@@ -77,7 +77,7 @@ Jina is an open-source deep-learning powered search framework, empowering develo
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Install
+## Get Started
 
 ### From PyPi
 
@@ -89,7 +89,15 @@ pip install jina
 
 To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai).
 
-### ...or Run in a Docker Container
+### With Cookiecutter
+
+```bash
+pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
+```
+
+With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
+
+### In a Docker Container
 
 We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). Simply run:
 
