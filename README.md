@@ -100,8 +100,6 @@ We provide a universal Docker image that supports multiple architectures (includ
 docker run jinaai/jina --help
 ```
 
-### Learn Some Basics
-
 ## Jina "Hello, World!" 👋🌍
 
 As a starter, you can try out our "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
@@ -180,7 +178,7 @@ pods:
 </table>
 
 <details>
-<summary><h3>Explore sharding, containerization, concatenating embeddings, and more</summary>
+<summary><strong>Explore sharding, containerization, concatenating embeddings, and more</strong></summary>
 
 #### Adding Parallelism and Sharding
 
@@ -235,8 +233,6 @@ Intrigued? Play with different options:
 jina hello-world --help
 ```
 </details>
-
-[Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
 
 ## Tutorials
 
