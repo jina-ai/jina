@@ -134,7 +134,7 @@ The Docker image downloads the Fashion-MNIST training and test dataset and tells
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
-The implementation behind it is as simple as can be:
+The implementation behind it is simple:
 
 <table>
 <tr>
@@ -407,10 +407,10 @@ We welcome all kinds of contributions from the open-source community, individual
 ## Community
 
 - [Slack workspace](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
-- [Youtube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
+- [YouTube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
 - [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow us and interact with using hashtag `#JinaSearch`  
-- [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source!
+- [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source.
 
 ## Open Governance
 
@@ -421,7 +421,7 @@ As a part of open governance model, we host the [Engineering All Hands]((https:/
 - [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
 - [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
 
-The meeting will also be live-streamed and later published to our [Youtube channel](https://youtube.com/c/jina-ai).
+The meeting will also be live-streamed and later published to our [YouTube channel](https://youtube.com/c/jina-ai).
 
 ## Join Us
 
