@@ -1,0 +1,10 @@
+!MinRanker
+requests:
+  on:
+    SearchRequest:
+      - !LogInfoDriver {}
+      - !CollectMatches2DocRankDriver
+        with:
+          traverse_on: matches
+          recurring_range: [1, 2]
+      - !LogInfoDriver {}

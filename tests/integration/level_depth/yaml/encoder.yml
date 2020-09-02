@@ -1,0 +1,17 @@
+!OneHotTextEncoder
+metas:
+  name: encoder
+requests:
+  on:
+    IndexRequest:
+      - !EncodeDriver
+        with:
+          traverse_on: chunks
+          recurring_range: [0, 1]
+      - !LogInfoDriver {}
+    SearchRequest:
+      - !EncodeDriver
+        with:
+          traverse_on: chunks
+          recurring_range: [1, 1]
+      - !LogInfoDriver {}

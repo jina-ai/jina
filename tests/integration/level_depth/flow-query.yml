@@ -1,0 +1,14 @@
+!Flow
+pods:
+  encoder:
+    uses: ${CUR_DIR_GRANULARITY}/yaml/encoder.yml
+    read_only: true
+  chunk_indexer:
+    uses: ${CUR_DIR_GRANULARITY}/yaml/index-chunk.yml
+    read_only: true
+  ranker:
+    uses: ${CUR_DIR_GRANULARITY}/yaml/rank.yml
+    read_only: true
+  doc_indexer:
+    uses: ${CUR_DIR_GRANULARITY}/yaml/index-doc.yml
+    read_only: true

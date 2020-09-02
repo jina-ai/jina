@@ -1,4 +1,3 @@
-import os
 import time
 
 import numpy as np
@@ -6,15 +5,12 @@ import requests
 from jina.clients import py_client
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files, input_numpy
-from jina.drivers.helper import array2pb
 from jina.enums import ClientMode
 from jina.flow import Flow
 from jina.main.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class ClientTestCase(JinaTestCase):
@@ -96,8 +92,5 @@ class ClientTestCase(JinaTestCase):
             f.index(input_files('*.py'), validate_mime_type)
 
     def test_io_np(self):
-        print(type(np.random.random([100, 4])))
         PyClient.check_input(input_numpy(np.random.random([100, 4, 2])))
         PyClient.check_input(['asda', 'dsadas asdasd'])
-
-        print(type(array2pb(np.random.random([100, 4, 2]))))

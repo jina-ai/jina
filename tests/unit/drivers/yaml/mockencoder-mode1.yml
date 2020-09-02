@@ -1,4 +1,4 @@
-!MockEncoder
+!MockEncoderReduce
 requests:
   on:
     IndexRequest:
@@ -6,9 +6,9 @@ requests:
         with:
           lookups: {modality: mode1}
           traverse_on: [chunks]
-          depth_range: [1, 2]
+          recurring_range: [1, 2]
       - !EncodeDriver
         with:
           method: encode
           traverse_on: [chunks]
-          depth_range: [1, 2]
+          recurring_range: [1, 2]

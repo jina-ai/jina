@@ -93,17 +93,6 @@ class QuerySetReader:
             return self._get_parameter(name, default=self._init_kwargs_dict[name])
         raise AttributeError
 
-    # def __getattribute__(self, attr):
-    #     try:
-    #         return super().__getattribute__(attr)
-    #     except AttributeError:
-    #         if attr == '_init_kwargs_dict':
-    #             # raise attribute error to avoid recursive call
-    #             raise AttributeError
-    #         if attr in self._init_kwargs_dict:
-    #             return self._get_parameter(attr, default=self._init_kwargs_dict[name])
-    #         raise
-
 
 class DriverType(type):
 
@@ -226,18 +215,18 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, depth_range: Tuple[int] = (0, 1), apply_order: str = 'post',
+    def __init__(self, recurring_range: Tuple[int] = (0, 1), apply_order: str = 'post',
                  traverse_on: Tuple[str] = ('chunks',), *args, **kwargs):
         """
 
-        :param depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param recurring_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._depth_start = depth_range[0]
-        self._depth_end = depth_range[1]
+        self._depth_start = recurring_range[0]
+        self._depth_end = recurring_range[1]
         if isinstance(traverse_on, str):
             traverse_on = (traverse_on,)
         self.traverse_fields = set(traverse_on)
@@ -283,28 +272,28 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 for d in _docs:
                     # check if apply to next level
-                    if d.level_depth < self._depth_end:
+                    if getattr(d, depth_name) < self._depth_end:
                         post_traverse(getattr(d, traverse_on), traverse_on, d)
                     # check if apply to the current level
-                    if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
+                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
-                if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
         def pre_traverse(_docs, traverse_on, context_doc=None):
             if _docs:
                 # check first doc if in the required depth range
-                if self._is_apply_all and _docs[0].level_depth >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
                     self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
 
                 for d in _docs:
                     # check if apply on the current level
-                    if self._is_apply and self._depth_start <= d.level_depth < self._depth_end:
+                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
                         self._apply(d, context_doc, traverse_on, *args, **kwargs)
                     # check if apply to the next level
-                    if d.level_depth < self._depth_end:
+                    if getattr(d, depth_name) < self._depth_end:
                         pre_traverse(getattr(d, traverse_on), traverse_on, d)
 
         if self.recursion_order == 'post':
@@ -315,8 +304,11 @@ class BaseRecursiveDriver(BaseDriver):
             raise ValueError(f'{self.recursion_order}')
 
         if 'chunks' in self.traverse_fields:
+            depth_name = 'granularity'
             _traverse(docs, 'chunks')
+
         if 'matches' in self.traverse_fields:
+            depth_name = 'adjacency'
             for d in docs:
                 _traverse(d.matches, 'matches')
 

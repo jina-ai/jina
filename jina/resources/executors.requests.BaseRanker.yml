@@ -15,7 +15,7 @@ on:
         traverse_on: matches
     - !SliceQL
       with:
-        depth_range: [0, 1]  # prune root and 1st level
+        recurring_range: [0, 1]  # prune root and 1st level
         start: 0
         end: 50
         traverse_on: matches

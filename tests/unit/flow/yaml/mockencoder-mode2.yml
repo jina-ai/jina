@@ -6,9 +6,9 @@ requests:
         with:
           lookups: {modality__in: [mode2]}
           traverse_on: [chunks]
-          depth_range: [1, 2]
+          recurring_range: [1, 2]
       - !EncodeDriver
         with:
           method: encode
           traverse_on: [chunks]
-          depth_range: [1, 2]
+          recurring_range: [1, 2]

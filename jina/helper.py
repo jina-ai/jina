@@ -28,7 +28,7 @@ __all__ = ['batch_iterator', 'yaml',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source',
-           'cached_property']
+           'cached_property', 'is_url']
 
 
 def deprecated_alias(**aliases):
