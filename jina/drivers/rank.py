@@ -17,7 +17,7 @@ class BaseRankDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`rank` by default """
 
     def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
-        super().__init__(executor, method, *args, **kwargs)
+        super().__init__(executor, method, *args, traverse_on='matches', **kwargs)
         self._is_apply = False
 
 

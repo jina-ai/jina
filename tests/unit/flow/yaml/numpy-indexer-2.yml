@@ -20,7 +20,6 @@ requests:
       - !VectorIndexDriver
         with:
           recurring_range: [1, 2]
-          traverse_on: [chunks]
           executor: vecidx2
       - !ExcludeQL
         with:
