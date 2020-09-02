@@ -120,15 +120,13 @@ class MyTestCase(JinaTestCase):
             f.dry_run()
             f.index(input_fn=random_docs(1000))
 
-    @pytest.mark.skip('extract_docs throw an error')
     def test_container_volume(self):
-        time.sleep(5)
         f = (Flow()
              .add(name='dummyEncoder', uses=img_name, volumes='./abc',
                   uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_upd.yml')))
 
         with f:
-            f.index(input_fn=random_docs(10))
+            f.index(random_docs(10))
 
         out_file = 'abc/ext-mwu-encoder.bin'
         self.assertTrue(os.path.exists(os.path.join(cur_dir, out_file)))
