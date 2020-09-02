@@ -297,7 +297,7 @@ Improve performance using prefetching and sharding
 <td><h3>🚀</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
-Search Pokemon with SOTA visual representation
+Search Pokemon with state-of-the-art visual representation
 </td>
 </tr>
 </table>
