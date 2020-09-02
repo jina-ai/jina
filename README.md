@@ -64,9 +64,8 @@ Jina is an open-source deep-learning powered search framework, empowering develo
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Install](#install)
+- [Get Started](#get-started)
 - [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Build Your Own Project](#build-your-own-project)
 - [Tutorials](#tutorials)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
