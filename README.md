@@ -46,7 +46,7 @@
 
 Jina is an open-source deep-learning powered search framework, empowering developers to create **cross-modal or multi-modal search systems for text, images, video, and audio**. Jina is a cloud-native project, and provides long-term support from a [full-time, venture-backed team](http://www.jina.ai).
 
-⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes with [cookiecutter](#cookiecutter).
+⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes with [cookiecutter](#with-cookiecutter).
 
 🧠 **First-Class AI models** - Jina is a new design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html) like Faiss, Annoy, Onnx, and more.
 
