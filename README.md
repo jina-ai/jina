@@ -183,6 +183,9 @@ pods:
 </tr>
 </table>
 
+<details>
+<summary><h3>Explore sharding, containerization, concatenating embeddings, and more</summary>
+
 #### Adding Parallelism and Sharding
 
 ```python
@@ -235,6 +238,7 @@ Intrigued? Play with different options:
 ```bash
 jina hello-world --help
 ```
+</details>
 
 [Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
 
