@@ -320,11 +320,11 @@ The best way to learn Jina in depth is to read our documentation. Documentation 
 
 #### Reference
 
-- [Jina command line interface arguments explained](https://docs.jina.ai/chapters/cli/index.html)
-- [Jina Python API interface](https://docs.jina.ai/api/jina.html)
-- [Jina YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
-- [Jina Protobuf schema](https://docs.jina.ai/chapters/proto/index.html)
-- [Environment variables used in Jina](https://docs.jina.ai/chapters/envs.html)
+- [Command line interface arguments](https://docs.jina.ai/chapters/cli/index.html)
+- [Python API interface](https://docs.jina.ai/api/jina.html)
+- [YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
+- [Protobuf schema](https://docs.jina.ai/chapters/proto/index.html)
+- [Environment variables](https://docs.jina.ai/chapters/envs.html)
 - ... [and more](https://docs.jina.ai/index.html)
 
 Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
