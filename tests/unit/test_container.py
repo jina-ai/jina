@@ -128,12 +128,10 @@ class MyTestCase(JinaTestCase):
         with f:
             f.index(random_docs(10))
 
-        # it seems that this takes some time to write?
-        time.sleep(2)
-        out_file = 'abc/ext-mwu-encoder.bin'
+        out_file = 'ext-mwu-encoder.bin'
 
-        self.assertTrue(os.path.exists(os.path.join(cur_dir, out_file)))
-        self.add_tmpfile(out_file, './abc')
+        self.assertTrue(os.path.exists(os.path.join(os.path.abspath('./abc'), out_file)))
+        self.add_tmpfile(out_file, os.path.abspath('./abc'))
 
     def test_container_ping(self):
         a4 = set_pea_parser().parse_args(['--uses', img_name])
