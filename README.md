@@ -104,6 +104,8 @@ We provide a universal Docker image that supports multiple architectures (includ
 docker run jinaai/jina --help
 ```
 
+### Learn Some Basics
+
 ## Jina "Hello, World!" 👋🌍
 
 As a starter, you can try out our "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
@@ -265,30 +267,6 @@ jina hello-world --help
 
 <tr>
 <td>
-<h4><a href="https://docs.jina.ai/chapters/flow/index.html">Use Flow API to Compose Your Search Workflow</a></h4>
-Orchestrate Pods to work together: sequentially and in parallel; locally and remotely
-</td>
-<td><h3>🐣</h3></td>
-</tr>
-
-<tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
-Get data in and out of Jina
-</td>
-<td><h3>🐣</h3></td>
-</tr>
-
-<tr>
-<td>
-<h4><a href="https://github.com/jina-ai/dashboard">Use Dashboard to Get Insight of Jina Workflow</a></h4>
-Monitor workflows and get insights with Jina's dashboard
-</td>
-<td><h3>🐣</h3></td>
-</tr>
-
-<tr>
-<td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
 Extract feature vector data using any deep learning representation
 </td>
@@ -313,34 +291,8 @@ Search images, define your own executors, and run them in Docker
 
 <tr>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Video Semantic Search in Scale with Prefetching and Sharding</a></h4>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Scale Up Video Semantic Search</a></h4>
 Improve performance using prefetching and sharding
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-<tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
-Run Jina on remote instances and distribute your workflow
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-
-<tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/extend/executor.html">Extend Jina by Implementing Your Own Executor</a></h4>
-Implement your own ideas as Jina plugins
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-
-<tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/hub/index.html">Run Jina Pods via Docker Container</a></h4>
-Solve complex dependencies easily with Docker containers
 </td>
 <td><h3>🕊</h3></td>
 </tr>
@@ -362,6 +314,11 @@ Search Pokemon with SOTA visual representation
 
 The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release of the master branch. 
 
+- [Use Flow API to Compose Your Search Workflow](https://docs.jina.ai/chapters/flow/index.html) 
+- [Input and Output Functions in Jina](https://docs.jina.ai/chapters/io/index.html)
+- [Use Dashboard to Get Insight of Jina Workflow](https://github.com/jina-ai/dashboard)
+- [Distribute Your Workflow Remotely](https://docs.jina.ai/chapters/remote/index.html)
+- [Run Jina Pods via Docker Container](https://docs.jina.ai/chapters/hub/index.html)
 - [Jina command line interface arguments explained](https://docs.jina.ai/chapters/cli/index.html)
 - [Jina Python API interface](https://docs.jina.ai/api/jina.html)
 - [Jina YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
