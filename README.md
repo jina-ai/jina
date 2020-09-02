@@ -262,43 +262,43 @@ jina hello-world --help
 <tr><th width="90%">Tutorials</th><th width="10%">Level</th></tr><tr>
 
 <tr>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
-Extract feature vector data using any deep learning representation
-</td>
 <td><h3>🐣</h3></td>
-</tr>
-
-<tr>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build an NLP Semantic Search System</a></h4>
 Search South Park scripts and practice with Flows and Pods
 </td>
-<td><h3>🐣</h3></td>
 </tr>
 
 <tr>
+<td><h3>🐣</h3></td>
+<td>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
+Extract feature vector data using any deep learning representation
+</td>
+</tr>
+
+<tr>
+<td><h3>🐣</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System</a></h4>
 Search images, define your own executors, and run them in Docker
 </td>
-<td><h3>🐣</h3></td>
 </tr>
 
 <tr>
+<td><h3>🕊</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Scale Up Video Semantic Search</a></h4>
 Improve performance using prefetching and sharding
 </td>
-<td><h3>🕊</h3></td>
 </tr>
 
 <tr>
+<td><h3>🚀</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
 Search Pokemon with SOTA visual representation
 </td>
-<td><h3>🚀</h3></td>
 </tr>
 </table>
 
