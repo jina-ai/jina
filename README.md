@@ -36,27 +36,25 @@
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
   <a href="https://learn.jina.ai">Examples</a> •
-  <a href="mailto:newsletter+subscribe@jina.ai">Newsletter</a> • 
   <a href="https://github.com/jina-ai/jina-hub">Hub (beta)</a> •
   <a href="https://dashboard.jina.ai">Dashboard (beta)</a> •
-  <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton">Twitter</a> •
+  <a href="https://github.com/jina-ai/jinabox.js/">Jinabox (beta)</a> •
+  <a href="http://www.twitter.com/JinaAI_">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
 
 </p>
 
-Want to build a search system backed by deep learning? You've come to the right place!
+Jina is an open-source deep-learning powered search framework, empowering developers to create **cross-modal or multi-modal search systems for text, images, video, and audio**. Jina is a cloud-native project, and provides long-term support from a [full-time, venture-backed team](http://www.jina.ai).
 
-Jina is the easiest way to build neural search in the cloud. It provides an one-stop solution for multi-/cross-modality search. Jina has **long-term support** from a full-time, [venture-backed team](https://jina.ai). 
+⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes with [cookiecutter](#with-cookiecutter).
 
-⏱️ **Time Saver** - Bootstrapping an AI-powered search system with Jina takes minutes, and can save engineers months of time. 
+🧠 **First-Class AI models** - Jina is a new design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html) like Faiss, Annoy, Onnx, and more.
 
-🧠 **First-Class AI Models** - Jina is a new design pattern for neural search systems, offering first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).  
+🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, and more.
 
-🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, images, long/short text, music, source code, you name it!
+🚀 **Production Ready** - Cloud-native features out-of-the-box, like containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
 
-🚀 **Production-Ready** - Cloud-native features come out-of-the-box, like containerization, microservice, distributing, scaling, sharding, async IO, REST, and gRPC.
-
-🧩 **Plug & Play** - Extend Jina with simple Python scripts or Docker images optimized for your search domain. [Check out Jina Hub](https://github.com/jina-ai/jina-hub) for more extensions.
+🧩 **Plug & Play** - With [Jina Hub](https://github.com/jina-ai/jina-hub), you can extend Jina with simple Python scripts or Docker images optimized for your search domain.
 
 ## Contents
 
@@ -66,9 +64,8 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Install](#install)
+- [Get Started](#get-started)
 - [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Build Your Own Project](#build-your-own-project)
 - [Tutorials](#tutorials)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -79,9 +76,9 @@ Jina is the easiest way to build neural search in the cloud. It provides an one-
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Install
+## Get Started
 
-#### Install from PyPi
+### From PyPi
 
 On Linux/MacOS with Python >= 3.7:
 
@@ -91,7 +88,15 @@ pip install jina
 
 To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai).
 
-#### ...or Run in a Docker Container
+### With Cookiecutter
+
+```bash
+pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
+```
+
+With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
+
+### In a Docker Container
 
 We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). Simply run:
 
@@ -230,16 +235,6 @@ jina hello-world --help
 ```
 
 [Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
-
-
-## Build Your Own Project
-
-```bash
-pip install cookiecutter
-cookiecutter gh:jina-ai/cookiecutter-jina
-```
-
-With [Cookiecutter](https://github.com/jina-ai/cookiecutter-jina) you can jumpstart a Jina project by answering a few questions from the command line. Cookiecutter will do the heavy lifting and generate (almost) ready-to-run templates and boilerplate code, including a Python entrypoint, YAML configs and a Dockerfile. All you need to do is set a few environment variables.
 
 ## Tutorials
 
@@ -410,21 +405,21 @@ We welcome all kinds of contributions from the open-source community, individual
 ## Community
 
 - [Slack workspace](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - a communication platform for developers to discuss Jina
-- [Youtube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
+- [YouTube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
 - [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow us and interact with using hashtag `#JinaSearch`  
-- [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source!
+- [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source.
 
 ## Open Governance
 
 [GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to Jina's future improvements.
 
-As a part of open governance model, we host the [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) of Jina AI in public. This Zoom meeting recurs monthly on the second Tuesday, 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
+As part of our open governance model, we host Jina's [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) in public. This Zoom meeting recurs monthly on the second Tuesday of each month, at 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
 
 - [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
 - [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
 
-The meeting will also be live-streamed and later published to our [Youtube channel](https://youtube.com/c/jina-ai).
+The meeting will also be live-streamed and later published to our [YouTube channel](https://youtube.com/c/jina-ai).
 
 ## Join Us
 

@@ -35,6 +35,7 @@ jobs:
           python app.py config.yml export.yml
           cp README.md ../README.md
           cd ..
+          rm -rf wall
           git add README.md
           git commit -m 'chore: update contributors'
           git status
