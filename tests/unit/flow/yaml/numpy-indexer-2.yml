@@ -19,8 +19,7 @@ requests:
     IndexRequest:
       - !VectorIndexDriver
         with:
-          recurring_range: [1, 2]
-          traverse_on: [chunks]
+          recur_range: [1, 2]
           executor: vecidx2
       - !ExcludeQL
         with:
@@ -31,7 +30,7 @@ requests:
             - text
       - !KVIndexDriver
         with:
-          recurring_range: [1, 2]
+          recur_range: [1, 2]
           executor: kvidx2
     ControlRequest:
       - !ControlReqDriver {}

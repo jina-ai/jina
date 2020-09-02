@@ -215,21 +215,21 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, recurring_range: Tuple[int] = (0, 1), apply_order: str = 'post',
-                 traverse_on: Tuple[str] = ('chunks',), *args, **kwargs):
+    def __init__(self, recur_range: Tuple[int] = (0, 1), apply_order: str = 'post',
+                 recur_on: Tuple[str] = ('chunks',), *args, **kwargs):
         """
 
-        :param recurring_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param recur_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._depth_start = recurring_range[0]
-        self._depth_end = recurring_range[1]
-        if isinstance(traverse_on, str):
-            traverse_on = (traverse_on,)
-        self.traverse_fields = set(traverse_on)
+        self._depth_start = recur_range[0]
+        self._depth_end = recur_range[1]
+        if isinstance(recur_on, str):
+            recur_on = (recur_on,)
+        self.traverse_fields = set(recur_on)
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
         else:
@@ -262,10 +262,10 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def post_traverse(_docs, traverse_on, context_doc=None):
+        def post_traverse(_docs, recur_on, context_doc=None):
             """
             :param _docs: list of docs
-            :param traverse_on: "matches" or "chunks"
+            :param recur_on: "matches" or "chunks"
             :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
             :return:
             """
@@ -273,28 +273,28 @@ class BaseRecursiveDriver(BaseDriver):
                 for d in _docs:
                     # check if apply to next level
                     if getattr(d, depth_name) < self._depth_end:
-                        post_traverse(getattr(d, traverse_on), traverse_on, d)
+                        post_traverse(getattr(d, recur_on), recur_on, d)
                     # check if apply to the current level
                     if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
-                        self._apply(d, context_doc, traverse_on, *args, **kwargs)
+                        self._apply(d, context_doc, recur_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
                 if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
-                    self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
+                    self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
-        def pre_traverse(_docs, traverse_on, context_doc=None):
+        def pre_traverse(_docs, recur_on, context_doc=None):
             if _docs:
                 # check first doc if in the required depth range
                 if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
-                    self._apply_all(_docs, context_doc, traverse_on, *args, **kwargs)
+                    self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
                 for d in _docs:
                     # check if apply on the current level
                     if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
-                        self._apply(d, context_doc, traverse_on, *args, **kwargs)
+                        self._apply(d, context_doc, recur_on, *args, **kwargs)
                     # check if apply to the next level
                     if getattr(d, depth_name) < self._depth_end:
-                        pre_traverse(getattr(d, traverse_on), traverse_on, d)
+                        pre_traverse(getattr(d, recur_on), recur_on, d)
 
         if self.recursion_order == 'post':
             _traverse = post_traverse

@@ -13,7 +13,7 @@ concurrency = 10
 
 class MyTestCase(JinaTestCase):
 
-    @pytest.mark.skip('this tests hang up for unknown reason on github')
+    # @pytest.mark.skip('this tests hang up for unknown reason on github')
     def test_rest_gateway_concurrency(self):
         def _request(status_codes, durations, index):
             resp = requests.post(
@@ -56,7 +56,7 @@ class MyTestCase(JinaTestCase):
         rate = failed / success
         self.assertTrue(rate < 0.1)
 
-    @pytest.mark.skip('this tests hang up for unknown reason on github')
+    @pytest.mark.skip('raw grpc gateway is not stable enough under high concurrency')
     def test_grpc_gateway_concurrency(self):
         def _input_fn():
             return iter(['data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC',
@@ -90,12 +90,15 @@ class MyTestCase(JinaTestCase):
                 t = Thread(
                     target=_request, args=(
                         f, status_codes, durations, i))
+                threads.append(t)
                 t.daemon = True
                 t.start()
-                threads.append(t)
 
             for t in threads:
                 t.join()
+                print(f'terminate {t}')
+
+
 
         success = status_codes.count(0)
         failed = len(status_codes) - success

@@ -8,9 +8,7 @@ requests:
     ControlRequest:
       - !ControlReqDriver {}
     SearchRequest:
-      - !KVSearchDriver
-        with:
-          level: doc
+      - !KVSearchDriver {}
     IndexRequest:
       - !URI2DataURI
         with:
@@ -21,6 +19,4 @@ requests:
           fields:
             - buffer
             - chunks
-      - !KVIndexDriver
-        with:
-          level: doc
+      - !KVIndexDriver {}

@@ -2,6 +2,5 @@
   with:
     executor: blah
     method: goto
-    level: doc
 - !ControlReqDriver {}
 - !BaseDriver {}

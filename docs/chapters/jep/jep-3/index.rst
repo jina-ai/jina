@@ -279,7 +279,6 @@ The `sum_indexer.yml` is as below,
           - !PruneDriver {}
           - !KVIndexDriver
             with:
-              level: chunk
               executor: BasePbIndexer
               filter_by: summ
         SearchRequest:
@@ -290,7 +289,6 @@ The `sum_indexer.yml` is as below,
           - !PruneDriver {}
           - !KVSearchDriver
             with:
-              level: chunk
               executor: BasePbIndexer
               filter_by: summ
 

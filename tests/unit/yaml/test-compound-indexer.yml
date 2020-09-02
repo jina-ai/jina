@@ -2,14 +2,12 @@
 components:
   - !BasePbIndexer
     with:
-      level: chunk
       index_filename: tmp1
     metas:
       name: test1
   - !BasePbIndexer
     with:
       index_filename: tmp2
-      level: chunk
     metas:
       name: test2
 metas:

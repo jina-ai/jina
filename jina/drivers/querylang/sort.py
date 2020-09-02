@@ -17,17 +17,17 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         Example::
         - !ReduceAllDriver
             with:
-                traverse_on: matches
+                recur_on: matches
         - !SortQL
             with:
                 reverse: true
                 field: 'score.value'
-                traverse_on: matches
+                recur_on: matches
         - !SliceQL
             with:
                 start: 0
                 end: 50
-                traverse_on: matches
+                recur_on: matches
 
         `SortQL` will ensure that only the documents are sorted by the score value before slicing the first top 50 documents
     """

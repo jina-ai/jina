@@ -41,7 +41,7 @@ class ContainerPea(BasePea):
                 non_defaults['uses'] = '/' + os.path.basename(self.args.uses_internal)
                 _volumes[os.path.abspath(self.args.uses_internal)] = {'bind': non_defaults['uses'], 'mode': 'ro'}
             elif not valid_local_config_source(self.args.uses_internal):
-                raise FileNotFoundError(f'yaml_path {self.args.uses_internal} is not like a path, please check it')
+                raise FileNotFoundError(f'"uses_internal" {self.args.uses_internal} is not like a path, please check it')
         if self.args.volumes:
             for p in self.args.volumes:
                 Path(os.path.abspath(p)).mkdir(parents=True, exist_ok=True)

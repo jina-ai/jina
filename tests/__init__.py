@@ -37,7 +37,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
     for j in range(num_docs):
         d = jina_pb2.Document()
         d.id = j
-        d.meta_info = b'hello world'
+        d.text = b'hello world'
         d.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
         for k in range(chunks_per_doc):
             c = d.chunks.add()
