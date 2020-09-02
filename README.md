@@ -259,7 +259,10 @@ jina hello-world --help
 </table>
 
 <table>
-<tr><th width="90%">Tutorials</th><th width="10%">Level</th></tr><tr>
+<tr>
+<th width="10%">Level</th>
+<th width="90%">Tutorials</th>
+</tr>
 
 <tr>
 <td><h3>🐣</h3></td>
