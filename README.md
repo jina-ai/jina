@@ -44,9 +44,7 @@
 
 </p>
 
-Want to build a search system backed by deep learning? You've come to the right place!
-
-Jina is the easiest way to build neural search in the cloud. It provides an one-stop solution for multi-/cross-modality search. Jina has **long-term support** from a full-time, [venture-backed team](https://jina.ai). 
+Jina is an open-source deep-learning powered search framework, empowering developers to create **cross-modal or multi-modal search systems for text, images, video, and audio**. Jina is a cloud-native project, and provides long-term support from a [full-time, venture-backed team](http://www.jina.ai).
 
 ⏱️ **Time Saver** - Bootstrapping an AI-powered search system with Jina takes just minutes, and saves engineers months of time! 
 
