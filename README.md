@@ -4,11 +4,7 @@
 
 <p align="center">
 
-[![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-badge.svg?raw=true  "We fully commit to open-source")](https://jina.ai)
-[![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-hello-world-badge.svg?raw=true  "Run Jina 'Hello, World!' without installing anything")](#jina-hello-world-)
 [![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true  "Jina is licensed under Apache-2.0")](#license)
-[![Jina Docs](https://github.com/jina-ai/jina/blob/master/.github/badges/docs-badge.svg?raw=true  "Checkout our docs and learn Jina")](https://docs.jina.ai)
-[![We are hiring](https://github.com/jina-ai/jina/blob/master/.github/badges/jina-corp-badge-hiring.svg?raw=true  "We are hiring full-time position at Jina")](https://jobs.jina.ai)
 [![Python 3.7 3.8](https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true  "Jina supports Python 3.7 and above")](https://pypi.org/project/jina/)
 [![PyPI](https://img.shields.io/pypi/v/jina?color=%23099cec&label=PyPI%20package&logo=pypi&logoColor=white)](https://pypi.org/project/jina/)
 [![Docker](https://github.com/jina-ai/jina/blob/master/.github/badges/docker-badge.svg?raw=true  "Jina is multi-arch ready, can run on different architectures")](https://hub.docker.com/r/jinaai/jina/tags)
@@ -181,6 +177,9 @@ pods:
 </tr>
 </table>
 
+<details>
+<summary><strong>Explore sharding, containerization, concatenating embeddings, and more</strong></summary>
+
 #### Adding Parallelism and Sharding
 
 ```python
@@ -233,8 +232,7 @@ Intrigued? Play with different options:
 ```bash
 jina hello-world --help
 ```
-
-[Be sure to continue with our Jina 101 Guide](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - to understand all key concepts of Jina in 3 minutes!  
+</details>
 
 ## Tutorials
 
@@ -246,7 +244,7 @@ jina hello-world --help
     </a>
     </td>
     <td width="70%">
-&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Thing to Learn About Jina</a></h3>
+&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Things to Learn About Jina</a></h3>
 &nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ja.md">日本語</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">Français</a> •
@@ -261,96 +259,49 @@ jina hello-world --help
 </table>
 
 <table>
-<tr><th width="90%">Tutorials</th><th width="10%">Level</th></tr><tr>
-
 <tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/flow/index.html">Use Flow API to Compose Your Search Workflow</a></h4>
-Orchestrate Pods to work together: sequentially and in parallel; locally and remotely
-</td>
-<td><h3>🐣</h3></td>
+<th width="10%">Level</th>
+<th width="90%">Tutorials</th>
 </tr>
 
 <tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
-Get data in and out of Jina
-</td>
 <td><h3>🐣</h3></td>
-</tr>
-
-<tr>
-<td>
-<h4><a href="https://github.com/jina-ai/dashboard">Use Dashboard to Get Insight of Jina Workflow</a></h4>
-Monitor workflows and get insights with Jina's dashboard
-</td>
-<td><h3>🐣</h3></td>
-</tr>
-
-<tr>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
-Extract feature vector data using any deep learning representation
-</td>
-<td><h3>🐣</h3></td>
-</tr>
-
-<tr>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build an NLP Semantic Search System</a></h4>
 Search South Park scripts and practice with Flows and Pods
 </td>
-<td><h3>🐣</h3></td>
 </tr>
 
 <tr>
+<td><h3>🐣</h3></td>
+<td>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
+Extract feature vector data using any deep learning representation
+</td>
+</tr>
+
+<tr>
+<td><h3>🐣</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Build a Flower Image Search System</a></h4>
 Search images, define your own executors, and run them in Docker
 </td>
-<td><h3>🐣</h3></td>
 </tr>
 
 <tr>
+<td><h3>🕊</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Video Semantic Search in Scale with Prefetching and Sharding</a></h4>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Scale Up Video Semantic Search</a></h4>
 Improve performance using prefetching and sharding
 </td>
-<td><h3>🕊</h3></td>
 </tr>
 
 <tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
-Run Jina on remote instances and distribute your workflow
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-
-<tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/extend/executor.html">Extend Jina by Implementing Your Own Executor</a></h4>
-Implement your own ideas as Jina plugins
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-
-<tr>
-<td>
-<h4><a href="https://docs.jina.ai/chapters/hub/index.html">Run Jina Pods via Docker Container</a></h4>
-Solve complex dependencies easily with Docker containers
-</td>
-<td><h3>🕊</h3></td>
-</tr>
-
-<tr>
+<td><h3>🚀</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
-Search Pokemon with SOTA visual representation
+Search Pokemon with state-of-the-art visual representation
 </td>
-<td><h3>🚀</h3></td>
 </tr>
 </table>
 
@@ -362,11 +313,21 @@ Search Pokemon with SOTA visual representation
 
 The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release of the master branch. 
 
-- [Jina command line interface arguments explained](https://docs.jina.ai/chapters/cli/index.html)
-- [Jina Python API interface](https://docs.jina.ai/api/jina.html)
-- [Jina YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
-- [Jina Protobuf schema](https://docs.jina.ai/chapters/proto/index.html)
-- [Environment variables used in Jina](https://docs.jina.ai/chapters/envs.html)
+#### The Basics
+
+- [Use Flow API to Compose Your Search Workflow](https://docs.jina.ai/chapters/flow/index.html) 
+- [Input and Output Functions in Jina](https://docs.jina.ai/chapters/io/index.html)
+- [Use Dashboard to Get Insight of Jina Workflow](https://github.com/jina-ai/dashboard)
+- [Distribute Your Workflow Remotely](https://docs.jina.ai/chapters/remote/index.html)
+- [Run Jina Pods via Docker Container](https://docs.jina.ai/chapters/hub/index.html)
+
+#### Reference
+
+- [Command line interface arguments](https://docs.jina.ai/chapters/cli/index.html)
+- [Python API interface](https://docs.jina.ai/api/jina.html)
+- [YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
+- [Protobuf schema](https://docs.jina.ai/chapters/proto/index.html)
+- [Environment variables](https://docs.jina.ai/chapters/envs.html)
 - ... [and more](https://docs.jina.ai/index.html)
 
 Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
