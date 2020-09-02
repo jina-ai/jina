@@ -310,11 +310,16 @@ Search Pokemon with SOTA visual representation
 
 The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release of the master branch. 
 
+#### The Basics
+
 - [Use Flow API to Compose Your Search Workflow](https://docs.jina.ai/chapters/flow/index.html) 
 - [Input and Output Functions in Jina](https://docs.jina.ai/chapters/io/index.html)
 - [Use Dashboard to Get Insight of Jina Workflow](https://github.com/jina-ai/dashboard)
 - [Distribute Your Workflow Remotely](https://docs.jina.ai/chapters/remote/index.html)
 - [Run Jina Pods via Docker Container](https://docs.jina.ai/chapters/hub/index.html)
+
+#### Reference
+
 - [Jina command line interface arguments explained](https://docs.jina.ai/chapters/cli/index.html)
 - [Jina Python API interface](https://docs.jina.ai/api/jina.html)
 - [Jina YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
