@@ -10,6 +10,7 @@ from typing import Dict
 from .checker import *
 from .helper import get_default_login
 from ..clients.python import ProgressBar
+from ..excepts import PeaFailToStart
 from ..helper import colored, get_readable_size, get_now_timestamp
 from ..logging import get_logger
 from ..logging.profile import TimeContext
@@ -203,12 +204,21 @@ class HubIO:
                 self.logger.error(f'can not build the image, please double check the log')
                 _details = {}
 
+            if self.args.test_uses:
+                try:
+                    from jina.flow import Flow
+                    with Flow().add(uses=image.tags[0]):
+                        pass
+                except PeaFailToStart:
+                    self.logger.error(f'can not use it in the Flow')
+                    is_build_success = False
+
             if is_build_success and self.args.push:
                 try:
                     self.push(image.tags[0], self.readme_path)
                     is_push_success = True
                 except Exception:
-                    self.logger.error(f'can not push tot the registry')
+                    self.logger.error(f'can not push to the registry')
 
             if self.args.prune_images:
                 self.logger.info('deleting unused images')

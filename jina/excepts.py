@@ -16,6 +16,10 @@ class ExecutorFailToLoad(SystemError):
     """When the executor can not be loaded in pea/pod"""
 
 
+class PeaFailToStart(SystemError):
+    """When pea/pod is failed to started"""
+
+
 class MemoryOverHighWatermark(Exception):
     """When the memory usage is over the defined high water mark"""
 
@@ -90,10 +94,6 @@ class GRPCServerError(Exception):
 
 class GatewayPartialMessage(Exception):
     """Gateway receives a multi-part message but it can not handle it"""
-
-
-class MilvusDBException(Exception):
-    """Any time Milvus client returns Status not OK"""
 
 
 class UndefinedModel(Exception):

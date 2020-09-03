@@ -101,6 +101,8 @@ def set_hub_build_parser(parser=None):
                         help='prune unused images after building, this often saves disk space')
     parser.add_argument('--raise-error', action='store_true', default=False,
                         help='raise any error and exit with code 1')
+    parser.add_argument('--test-uses', action='store_true', default=False,
+                        help='after the build, test the image in "uses" with Flow API')
     return parser
 
 
