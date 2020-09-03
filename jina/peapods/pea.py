@@ -364,12 +364,14 @@ class BasePea(metaclass=PeaMeta):
 
     def close(self) -> None:
         """Gracefully close this pea and release all resources """
-        if self.is_ready.is_set() and hasattr(self, 'ctrl_addr'):
-            send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                              timeout=self.args.timeout_ctrl)
+
         self.teardown()
-        self.unset_ready()
         self.is_shutdown.set()
+        if self.is_ready.is_set():
+            self.unset_ready()
+            if hasattr(self, 'ctrl_addr'):
+                send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                                  timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
