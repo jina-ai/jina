@@ -98,7 +98,3 @@ class MilvusDBException(Exception):
 
 class UndefinedModel(Exception):
     """Any time a non-defined model is tried to be used """
-
-
-class PodIdleException(Exception):
-    """Any time a pod is found in an idle state and needs to be stopped"""

@@ -58,7 +58,7 @@ class BasePod(ExitStack):
         """Check every second if the pod is in idle, if yes, then close the pod"""
         while True:
             if self.is_idle:
-                raise PodIdleException('Pod has been found idle, needs to exit its context')
+                self.close()
             time.sleep(1)
 
     @property
