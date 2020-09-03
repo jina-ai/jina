@@ -28,7 +28,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
 .. confval:: JINA_PROFILING
 
-    Set to any non-empty value to turn on service-level time profiling for JINA.
+    Set to any non-empty value to turn on service-level time profiling for Jina.
 
     :default: unset
 

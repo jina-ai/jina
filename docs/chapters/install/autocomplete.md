@@ -1,6 +1,6 @@
 # Autocomplete commands on Bash, Zsh and Fish
 
-After installing Jina via `pip`, you should be able to use autocomplete feature while using Jina CLI. For example,
+After installing Jina via `pip`, you should be able to use your shell's autocomplete feature while using Jina's CLI. For example, typing `jina` then hitting your Tab key will provide the following suggestions:
 
 ```bash
 
@@ -19,11 +19,11 @@ The autocomplete is context-aware. It also works when you type a second-level ar
 ```
 
 
-Currently, the feature is enabled automatically on Bash, Zsh and Fish. It requires your ".bashrc" path to be standard.
+Currently, the feature is enabled automatically on Bash, Zsh and Fish. It requires you to have a standard shell path as follows:
 
-| Shell | ".bashrc" Path |
-| --- | --- |
-| Bash | `~/.bashrc` |
-| Zsh | `~/.zshrc` |
-| Fish | `~/.config/fish/config.fish` |
+| Shell | Configuration file path      |
+| ---   | ---                          |
+| Bash  | `~/.bashrc`                  |
+| Zsh   | `~/.zshrc`                   |
+| Fish  | `~/.config/fish/config.fish` |
 
