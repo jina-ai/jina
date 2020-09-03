@@ -14,7 +14,6 @@ from .gateway import GatewayPea, RESTGatewayPea
 from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
-from ..excepts import PodIdleException
 from ..enums import *
 from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, valid_local_config_source
 from ..main.parser import set_pod_parser, set_gateway_parser
