@@ -14,13 +14,14 @@ from .gateway import GatewayPea, RESTGatewayPea
 from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
+from ..excepts import PodIdleException
 from ..enums import *
 from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, valid_local_config_source
 from ..main.parser import set_pod_parser, set_gateway_parser
 from argparse import Namespace
 
 
-class BasePod:
+class BasePod(ExitStack):
     """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
@@ -30,6 +31,7 @@ class BasePod:
 
         :param args: arguments parsed from the CLI
         """
+        super().__init__()
         self.peas = []
         self.is_head_router = False
         self.is_tail_router = False
@@ -56,8 +58,7 @@ class BasePod:
         """Check every second if the pod is in idle, if yes, then close the pod"""
         while True:
             if self.is_idle:
-                self.close()
-                break  # only run once
+                raise PodIdleException('Pod has been found idle, needs to exit its context')
             time.sleep(1)
 
     @property
@@ -185,17 +186,16 @@ class BasePod:
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
         which is inherited from :class:`jina.peapods.peas.BasePea`
         """
-        self.stack = ExitStack()
         # start head and tail
         if self.peas_args['head']:
             p = HeadPea(self.peas_args['head'])
             self.peas.append(p)
-            self.stack.enter_context(p)
+            self.enter_context(p)
 
         if self.peas_args['tail']:
             p = TailPea(self.peas_args['tail'])
             self.peas.append(p)
-            self.stack.enter_context(p)
+            self.enter_context(p)
 
         # start real peas and accumulate the storage id
         if len(self.peas_args['peas']) > 1:
@@ -209,7 +209,7 @@ class BasePod:
             _args.role = role
             p = Pea(_args, allow_remote=False)
             self.peas.append(p)
-            self.stack.enter_context(p)
+            self.enter_context(p)
 
         self.start_sentinels()
         return self
@@ -256,7 +256,7 @@ class BasePod:
         return True
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self.close()
+        super().__exit__(exc_type, exc_val, exc_tb)
 
     def join(self):
         """Wait until all peas exit"""
@@ -267,9 +267,6 @@ class BasePod:
             pass
         finally:
             self.peas.clear()
-
-    def close(self) -> None:
-        self.stack.close()
 
 
 class MutablePod(BasePod):
@@ -374,8 +371,7 @@ class FlowPod(BasePod):
         else:
             from .remote import RemoteMutablePod
             _remote_pod = RemoteMutablePod(self.peas_args)
-            self.stack = ExitStack()
-            self.stack.enter_context(_remote_pod)
+            self.enter_context(_remote_pod)
             self.start_sentinels()
             return self
 
@@ -479,11 +475,10 @@ class GatewayPod(BasePod):
     """A :class:`BasePod` that holds a Gateway """
 
     def start(self) -> 'GatewayPod':
-        self.stack = ExitStack()
         for s in self.all_args:
             p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else GatewayPea(s)
             self.peas.append(p)
-            self.stack.enter_context(p)
+            self.enter_context(p)
 
         self.start_sentinels()
         return self
