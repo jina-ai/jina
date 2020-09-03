@@ -318,8 +318,8 @@ class BasePea(metaclass=PeaMeta):
             from ..helper import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
-    def loop_teardown(self):
-        """Stop the request loop """
+    def teardown(self):
+        """Properly close executors and zmqlet """
         if hasattr(self, 'executor'):
             if not self.args.exit_no_dump:
                 self.save_executor(dump_interval=0)
@@ -332,23 +332,23 @@ class BasePea(metaclass=PeaMeta):
         try:
             self.post_init()
             self.loop_body()
-        except ExecutorFailToLoad:
+        except ExecutorFailToLoad as ex:
             self.logger.critical(f'can not start a executor from {self.args.uses}')
+            raise ex
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
             pass
         except DriverError as ex:
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
-        except zmq.error.ZMQError:
+            raise ex
+        except zmq.error.ZMQError as ex:
             self.logger.critical('zmqlet can not be initiated')
+            raise ex
         except Exception as ex:
             # this captures the general exception from the following places:
             # - self.zmqlet.recv_message
             # - self.zmqlet.send_message
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
-        finally:
-            self.loop_teardown()
-            self.unset_ready()
-            self.is_shutdown.set()
+            raise ex
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -365,8 +365,11 @@ class BasePea(metaclass=PeaMeta):
     def close(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready.is_set() and hasattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                     timeout=self.args.timeout_ctrl)
+            send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                              timeout=self.args.timeout_ctrl)
+        self.teardown()
+        self.unset_ready()
+        self.is_shutdown.set()
 
     @property
     def status(self):

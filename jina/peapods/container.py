@@ -92,7 +92,7 @@ class ContainerPea(BasePea):
         except docker.errors.NotFound:
             self.logger.error('the container can not be started, check your arguments, entrypoint')
 
-    def loop_teardown(self):
+    def teardown(self):
         """Stop the container """
         if getattr(self, '_container', None):
             import docker
