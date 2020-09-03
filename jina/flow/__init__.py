@@ -143,7 +143,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
         return op_flow
 
 
-class Flow:
+class Flow(ExitStack):
     def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
         """Initialize a flow object
 
@@ -164,6 +164,7 @@ class Flow:
         as the head and tail routers are removed.
         
         """
+        super().__init__()
         self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
@@ -462,7 +463,10 @@ class Flow:
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+        super().__exit__(exc_type, exc_val, exc_tb)
+        self._build_level = FlowBuildLevel.EMPTY
+        self.logger.success(
+            f'flow is closed and all resources should be released already, current build level is {self._build_level}')
 
     def _start_log_server(self):
         try:
@@ -499,9 +503,8 @@ class Flow:
             self.logger.info('start logserver...')
             self._start_log_server()
 
-        self._pod_stack = ExitStack()
         for v in self._pod_nodes.values():
-            self._pod_stack.enter_context(v)
+            self.enter_context(v)
 
         self.logger.info('%d Pods (i.e. %d Peas) are running in this Flow' % (
             self.num_pods,
@@ -520,14 +523,6 @@ class Flow:
     def num_peas(self) -> int:
         """Get the number of peas (parallel count) in this flow"""
         return sum(v.num_peas for v in self._pod_nodes.values())
-
-    def close(self):
-        """Close the flow and release all resources associated to it. """
-        if hasattr(self, '_pod_stack'):
-            self._pod_stack.close()
-        self._build_level = FlowBuildLevel.EMPTY
-        self.logger.success(
-            f'flow is closed and all resources should be released already, current build level is {self._build_level}')
 
     def __eq__(self, other: 'Flow'):
         """
