@@ -4,20 +4,20 @@ Gracefully Exit Jina
 In Python
 ---------
 
-If you use ``with`` scope to start a flow, then all resources (including pods of all kinds) of the flow will be released after your move out from the scope.
+If you use ``with`` scope to start a Flow, then all resources (including Pods of all kinds) of the Flow will be released after your move out from the scope.
 
-If you use :meth:`start` method to start the flow, then you have to call :meth:`close` to shutdown the flow when you don't use it anymore.
+If you use :meth:`start` method to start the Flow, then you have to call :meth:`close` to shut down the Flow when you don't use it anymore.
 
 
 In the Console
 --------------
 
-If you running Jina locally (e.g. :command:`jina flow`), you can :kbd:`Control-c` or :kbd:`Command-c` to terminate it at any time. All :class:`BasePod` will receive this signal and shutdown accordingly.
+If you are running Jina locally (e.g. :command:`jina flow`), you can :kbd:`Control-c` or :kbd:`Command-c` to terminate it at any time. All :class:`BasePod` will receive this signal and shut down accordingly.
 
-Container pods and remote pods sometimes take longer to shutdown. When you open many replicas or many pods, it may also take some time to release all resources.
+Container Pods and remote Pods sometimes take longer to shut down. When you open many replicas or many Pods, it may also take some time to release all resources.
 
 
-Rule of thumb, for individual Pod/Pea, when you see the following output from the console, then it is shutdown already.
+Rule of thumb, for an individual Pod/Pea, when you see the following output from the console, then it is already shut down.
 
 .. highlight:: bash
 .. code-block:: bash
