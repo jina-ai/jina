@@ -59,7 +59,7 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install pytest pytest-subtests pytest-xdist==1.34.0 pytest-timeout pytest-cov flaky
+          pip install .[test]
           pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 30
@@ -96,7 +96,7 @@ jobs:
           docker ps
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install pytest pytest-subtests pytest-xdist==1.34.0 pytest-timeout pytest-cov flaky
+          pip install .[test]
           pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/integration
           mv coverage.xml integration-test-coverage.xml
         timeout-minutes: 30
