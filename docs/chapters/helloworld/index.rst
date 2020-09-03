@@ -2,7 +2,7 @@
 Jina "Hello, World!" 👋🌍
 *************************
 
-As a starter, we invite you to try Jina's "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply do:
+As a starter, we invite you to try Jina's "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply run:
 
 .. highlight:: bash
 .. code-block:: bash
@@ -10,7 +10,7 @@ As a starter, we invite you to try Jina's "Hello, World" - a simple demo of imag
     jina hello-world
 
 
-or even easier for Docker users, *no install required*, simply for MacOS:
+Or even easier for Docker users, *no install required*, simply for MacOS:
 
 
 .. highlight:: bash
@@ -18,7 +18,7 @@ or even easier for Docker users, *no install required*, simply for MacOS:
 
     docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
 
-or for Linux:
+On Linux:
 
 .. highlight:: bash
 .. code-block:: bash
@@ -31,14 +31,14 @@ or for Linux:
    :align: center
 
 
-It downloads Fashion-MNIST training and test data and tells Jina to *index* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, asks Jina to retrieve relevant results. After about 1 minute, it will open a webpage and show results like this:
+This downloads the Fashion-MNIST training and test data and tells Jina to *index* 60,000 images from the training set. Then, it randomly samples images from the test set as *queries*, and asks Jina to retrieve relevant results. After about 1 minute, it opens a web page and show results like this:
 
 
 .. image:: hello-world.gif
    :width: 70%
    :align: center
 
-And the implementation behind? As simple as it should be:
+And the implementation behind it? It's simple:
 
 .. confval:: Python API
 
@@ -73,7 +73,7 @@ And the implementation behind? As simple as it should be:
     .. image:: hello-world-flow.png
        :align: center
 
-All big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas & shards happened in just one minute!
+All the big words you can name: computer vision, neural IR, microservice, message queue, elastic, replicas, and shards all happened in just one minute!
 
 View "Hello World" in Jina Dashboard
 ====================================
@@ -87,7 +87,7 @@ View "Hello World" in Jina Dashboard
     jina hello-world --logserver
 
 
-or if you use Docker:
+Or if you use Docker:
 
 
 
@@ -99,7 +99,7 @@ or if you use Docker:
 
 
 
-More Options on "Hello, World"
+More Options for "Hello, World"
 ==============================
 
 Intrigued? Play with different options via:
