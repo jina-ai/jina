@@ -50,6 +50,3 @@ def test_reduce_cls_tail():
     for data, mask, result in zip(test_data, test_mask, results):
         num_valid_tokens = int(sum(mask))
         np.testing.assert_array_equal(data[num_valid_tokens-1, :], result)
-
-if __name__=="__main__":
-    test_reduce_cls_tail()
