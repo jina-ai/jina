@@ -93,26 +93,6 @@ These are the extra dependencies used by Jina:
 |`ngt` | `index` | `Neighborhood Graph and Tree for Indexing High-dimensional Data.`
 |`uvloop` | `òptimization` | `Fast implementation of asyncio event loop on top of libuv.`
 
-## Install Jina on Raspberry Pi or Other Linux Systems
-
-On Raspbian or other Linux systems, you can install Jina via:
-
-```bash
-pip install jina
-```
-
-On some Linux systems, PyPi may not provide the wheels. In this case, you may want to pre-install some dependencies via `apt`/`yum` (not via `pip`), since the packages on `apt`/`yum` are often pre-compiled and require much less time to install. Fortunately Jina has minimal dependencies and their corresponding `apt`/`yum` packages are listed as follows:
-
-| PyPi Name | Debian Package Name | Alpine Package Name |
-|---|---|---|
-|`numpy`| `python3-numpy` | `py3-numpy` |
-|`pyzmq>=17.1.0`| `python3-zmq` | `py3-pyzmq`|
-|`protobuf`| `python3-protobuf`| `py3-protobuf`|
-|`grpcio`| `python3-grpcio`| `grpc` |
-|`ruamel.yaml>=0.15.89`| `python3-ruamel.yaml`| `py3-ruamel.yaml`|
-
-If you have Docker installed on your Linux, then an easier way is probably to [run Jina in a Docker container](via-docker.md).
-
 ## On Windows and Other OSes
 
 Currently we do not support Windows.
