@@ -1,10 +1,10 @@
 # Install Jina via `pip`
 
-If you prefer run Jina natively on the host, please make sure you have Python >= 3.7 installed on the host.
+If you prefer to run Jina natively on your host, please make sure you have Python >= 3.7 installed.
 
 ## Install from PyPi
 
-On Linux/Mac, simply do:
+On Linux/Mac, simply run:
  
 ```bash
 pip install jina
@@ -12,13 +12,15 @@ pip install jina
 
 ## Install from the Master Branch
 
-If you want to keep track on the master of our development repository:
+If you want to keep track of the master branch of our development repository:
 
 ```bash
 pip install git+https://github.com/jina-ai/jina.git
 ```
 
-## Install from Your Local Folk/Clone
+Be aware that the master branch may not be stable. We only recommend this branch for testing new features.
+
+## Install from Your Local Fork/Clone
 
 If you are a developer and want to test your changes on-the-fly: 
 
@@ -27,16 +29,17 @@ git clone https://github.com/jina-ai/jina
 cd jina && pip install -e .
 ``` 
 
-In the dev mode, if you later switch to the other ways of Jina installation, remember to first uninstall the editable version from the system:
-  ```bash
-  pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
-  ```
+In the dev mode, if you later switch to a different method of Jina installation, remember to first uninstall the version you edited:
 
-## Cherry Pick Extra Dependencies
+```bash
+pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
+```
 
-Jina only requires five dependencies `numpy`, `pyzmq`, `protobuf`, `grpcio` and `ruamel.yaml`. No third-party pretrained models, deep learning/NLP/CV packages will be installed. 
+## Cherry-Pick Extra Dependencies
 
-Some of the Executors may require extra dependencies. The full table of the extra dependencies can be found in `extra-requirements.txt`. You can cherry-pick what you want to install, e.g.
+Jina requires only five dependencies `numpy`, `pyzmq`, `protobuf`, `grpcio` and `ruamel.yaml`. No third-party pre-trained models, deep learning/NLP/CV packages will be installed. 
+
+However, some Executors may require extra dependencies. The full table of these extra dependencies can be found in `extra-requirements.txt`. You can cherry-pick what you want to install, e.g.
 
 ```bash
 pip install "jina[nlp+cv]"
@@ -50,14 +53,15 @@ Though not recommended, you can install Jina with full dependencies via:
 pip install "jina[all]"
 ``` 
 
-### To install cherry-picked dependencies from master branch
+### To Install Cherry-Picked Dependencies From the Master Branch
 
 ```bash
 pip install "git+https://github.com/jina-ai/jina.git#egg=jina[http]" 
 ```
 
-### Extra dependencies explained
-These are the extra dependencies used by jina.
+### Extra Dependencies Explained
+
+These are the extra dependencies used by Jina:
 
 | PyPi Name | Required by | Description | Compatibility
 |---|---|---|---|
@@ -89,15 +93,15 @@ These are the extra dependencies used by jina.
 |`ngt` | `index` | `Neighborhood Graph and Tree for Indexing High-dimensional Data.`
 |`uvloop` | `òptimization` | `Fast implementation of asyncio event loop on top of libuv.`
 
-## Install Jina on Raspberry Pi and other Linux Systems
+## Install Jina on Raspberry Pi or Other Linux Systems
 
-On Raspbian or other Linux systems, you can also install Jina via:
+On Raspbian or other Linux systems, you can install Jina via:
 
 ```bash
 pip install jina
 ```
 
-On some Linux systems, PyPi may not provide the wheels on that OS. In this case, you may want to pre-install some dependencies via `apt`/`yum` not via `pip`. Since the packages on `apt`/`yum` are often pre-compiled and require much less time to install. Fortunately Jina have minimal dependencies and their corresponding `apt`/`yum` packages are listed as follows:
+On some Linux systems, PyPi may not provide the wheels. In this case, you may want to pre-install some dependencies via `apt`/`yum` (not via `pip`), since the packages on `apt`/`yum` are often pre-compiled and require much less time to install. Fortunately Jina has minimal dependencies and their corresponding `apt`/`yum` packages are listed as follows:
 
 | PyPi Name | Debian Package Name | Alpine Package Name |
 |---|---|---|
@@ -107,10 +111,10 @@ On some Linux systems, PyPi may not provide the wheels on that OS. In this case,
 |`grpcio`| `python3-grpcio`| `grpc` |
 |`ruamel.yaml>=0.15.89`| `python3-ruamel.yaml`| `py3-ruamel.yaml`|
 
-If you can have Docker installed on your Linux, then an easier way is probably [run Jina with Docker container](via-docker.md).
+If you have Docker installed on your Linux, then an easier way is probably to [run Jina in a Docker container](via-docker.md).
 
-## On Windows and Other OS
+## On Windows and Other OSes
 
 Currently we do not support Windows.
 
-If you are a Windows user, one workaround is to [use Jina with Docker container](via-docker.md). If you manage to run Jina on Windows after some tweaks, welcome to submit your changes [here](https://github.com/jina-ai/jina/issues/new).
+If you are a Windows user, one workaround is to [run Jina in a Docker container](via-docker.md). If you manage to run Jina on Windows after some tweaks, please submit your changes [here](https://github.com/jina-ai/jina/issues/new).
