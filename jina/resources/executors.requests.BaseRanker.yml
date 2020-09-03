@@ -12,10 +12,10 @@ on:
     - !SortQL
       with:
         field: 'score.value'
-        traverse_on: matches
+        recur_on: matches
     - !SliceQL
       with:
-        recurring_range: [0, 1]  # prune root and 1st level
+        recur_range: [0, 1]  # prune root and 1st level
         start: 0
         end: 50
-        traverse_on: matches
+        recur_on: matches

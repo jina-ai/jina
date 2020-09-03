@@ -25,6 +25,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
     """Extract matches score from chunks and use the executor to compute the rank and assign the resulting matches to the
     level above.
 
+    Note that it traverses on ``chunks`` not on ``matches``
+
     Input-Output ::
         Input:
         document: {granularity: k-1}
@@ -45,7 +47,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, recur_on='chunks', **kwargs)
         self.recursion_order = 'post'
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):

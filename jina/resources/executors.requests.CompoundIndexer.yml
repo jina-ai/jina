@@ -13,8 +13,8 @@ on:
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
-        traverse_on: matches
-        recurring_range: [0, 1]
+        recur_on: matches
+        recur_range: [0, 1]
   IndexRequest:
     - !VectorIndexDriver
       with:

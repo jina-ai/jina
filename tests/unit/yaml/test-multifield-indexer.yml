@@ -23,14 +23,12 @@ requests:
           filter_by: $FILTER_BY
       - !PruneDriver
         with:
-          level: chunk
           pruned:
             - embedding
             - blob
             - text
       - !KVIndexDriver
         with:
-          level: chunk
           executor: BasePbIndexer
           filter_by: $FILTER_BY
     SearchRequest:
@@ -40,13 +38,11 @@ requests:
           filter_by: $FILTER_BY
       - !PruneDriver
         with:
-          level: chunk
           pruned:
             - embedding
             - blob
             - text
       - !KVSearchDriver
         with:
-          level: chunk
           executor: BasePbIndexer
           filter_by: $FILTER_BY

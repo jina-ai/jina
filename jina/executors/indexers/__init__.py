@@ -241,7 +241,6 @@ class CompoundIndexer(CompoundExecutor):
                 executor: BaseVectorIndexer
             - !PruneDriver
               with:
-                level: chunk
                 pruned:
                   - embedding
                   - buffer
@@ -250,14 +249,12 @@ class CompoundIndexer(CompoundExecutor):
             - !KVSearchDriver
               with:
                 executor: BaseKVIndexer
-                level: chunk
-          IndexRequest:
+            IndexRequest:
             - !VectorIndexDriver
               with:
                 executor: BaseVectorIndexer
             - !PruneDriver
               with:
-                level: chunk
                 pruned:
                   - embedding
                   - buffer
@@ -265,7 +262,6 @@ class CompoundIndexer(CompoundExecutor):
                   - text
             - !KVIndexDriver
               with:
-                level: chunk
                 executor: BaseKVIndexer
           ControlRequest:
             - !ControlReqDriver {}

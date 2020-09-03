@@ -60,7 +60,7 @@ class ConcatDriverTestCase(JinaTestCase):
         # simulate two encoders
         flow = (Flow().add(name='a')
                 .add(name='b', needs='gateway')
-                .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {recurring_range: [0, 1]}'))
+                .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {recur_range: [0, 1]}'))
 
         with flow:
             flow.index(input_fn=input_fn, output_fn=validate, callback_on_body=True)

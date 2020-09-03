@@ -13,7 +13,7 @@ from tests import JinaTestCase, random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-built = False
+built = True
 img_name = 'jina/mwu-encoder'
 
 defaulthost = '0.0.0.0'
@@ -21,7 +21,7 @@ localhost = defaulthost if (platform == "linux" or platform == "linux2") else 'h
 
 
 def build_image():
-    if not built:
+    if built:
         import docker
         client = docker.from_env()
         client.images.build(path=os.path.join(cur_dir, 'mwu-encoder/'), tag=img_name)
@@ -120,19 +120,18 @@ class MyTestCase(JinaTestCase):
             f.dry_run()
             f.index(input_fn=random_docs(1000))
 
-    @pytest.mark.skip('extract_docs throw an error')
     def test_container_volume(self):
-        time.sleep(5)
         f = (Flow()
-             .add(name='dummyEncoder', uses=img_name, volumes='./abc',
+             .add(uses=img_name, volumes='./abc',
                   uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_upd.yml')))
 
         with f:
-            f.index(input_fn=random_docs(10))
+            f.index(random_docs(10))
 
-        out_file = 'abc/ext-mwu-encoder.bin'
-        self.assertTrue(os.path.exists(os.path.join(cur_dir, out_file)))
-        self.add_tmpfile(out_file, './abc')
+        out_file = 'ext-mwu-encoder.bin'
+
+        self.assertTrue(os.path.exists(os.path.join(os.path.abspath('./abc'), out_file)))
+        self.add_tmpfile(out_file, os.path.abspath('./abc'))
 
     def test_container_ping(self):
         a4 = set_pea_parser().parse_args(['--uses', img_name])

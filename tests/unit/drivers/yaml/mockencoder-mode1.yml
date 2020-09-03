@@ -5,10 +5,8 @@ requests:
       - !FilterQL
         with:
           lookups: {modality: mode1}
-          traverse_on: [chunks]
-          recurring_range: [1, 2]
+          recur_range: [1, 2]
       - !EncodeDriver
         with:
           method: encode
-          traverse_on: [chunks]
-          recurring_range: [1, 2]
+          recur_range: [1, 2]

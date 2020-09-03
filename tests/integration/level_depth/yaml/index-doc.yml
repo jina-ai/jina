@@ -11,11 +11,11 @@ requests:
       - !KVIndexDriver
         with:
           executor: docIndexer
-          recurring_range: [0, 0]
+          recur_range: [0, 0]
     SearchRequest:
       - !LogInfoDriver {}
       - !KVSearchDriver
         with:
           executor: docIndexer
-          traverse_on: matches
+          recur_on: matches
       - !LogInfoDriver {}
