@@ -7,6 +7,7 @@ import os
 import threading
 import time
 import traceback
+from multiprocessing.synchronize import Event
 from queue import Empty
 from typing import Dict, Optional, Union
 
@@ -16,13 +17,12 @@ from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError
+from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart
 from ..executors import BaseExecutor
+from ..helper import valid_local_config_source
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
-from ..helper import valid_local_config_source
-from multiprocessing.synchronize import Event
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -190,8 +190,9 @@ class BasePea(metaclass=PeaMeta):
         """
         if self.args.uses:
             try:
-                self.executor = BaseExecutor.load_config(self.args.uses if valid_local_config_source(self.args.uses) else self.args.uses_internal,
-                                                         self.args.separated_workspace, self.args.replica_id)
+                self.executor = BaseExecutor.load_config(
+                    self.args.uses if valid_local_config_source(self.args.uses) else self.args.uses_internal,
+                    self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad
@@ -388,7 +389,10 @@ class BasePea(metaclass=PeaMeta):
 
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
-                self.logger.critical(f'fail to start {self.__class__} with name {self.name}')
+                # return too early and the shutdown is set, means something fails!!
+                self.logger.critical(f'fail to start {self.__class__} with name {self.name}, '
+                                     f'this often means the executor used in the pod is not valid')
+                raise PeaFailToStart
             return self
         else:
             raise TimeoutError(
