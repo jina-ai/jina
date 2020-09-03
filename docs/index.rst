@@ -4,7 +4,7 @@
 
 |
 
-Welcome to Jina Documentations!
+Welcome to Jina Documentation!
 ===============================
 
 .. toctree::
