@@ -192,7 +192,7 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(
                     self.args.uses if valid_local_config_source(self.args.uses) else self.args.uses_internal,
-                    self.args.separated_workspace, self.args.replica_id)
+                    self.args.separated_workspace, self.args.replica_id, self.args.device_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad

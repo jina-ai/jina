@@ -50,6 +50,7 @@ protobuf:                   core
 grpcio:                     core
 ruamel.yaml>=0.15.89:       core
 tornado>=5.1.0:             core
+GPUtil:                     core
 cookiecutter:               hub, devel
 pytest:                     test
 pytest-subtests:            test

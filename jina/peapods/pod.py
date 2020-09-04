@@ -15,7 +15,8 @@ from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, valid_local_config_source
+from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, \
+    valid_local_config_source, get_device_map
 from ..main.parser import set_pod_parser, set_gateway_parser
 from argparse import Namespace
 
@@ -89,6 +90,9 @@ class BasePod(ExitStack):
             peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
         else:
+            if not isinstance(self, (GatewayFlowPod, GatewayPod)):
+                device_map = get_device_map(1, args.device_map)
+                args.device_id = device_map[0]
             peas_args['peas'] = [args]
 
         # note that peas_args['peas'][0] exist either way and carries the original property
@@ -377,6 +381,7 @@ class FlowPod(BasePod):
 
 def _set_peas_args(args: Namespace, head_args: Namespace, tail_args: Namespace) -> List[Namespace]:
     result = []
+    device_map = get_device_map(args.parallel, args.device_map)
     for _ in range(args.parallel):
         _args = copy.deepcopy(args)
         _args.port_in = head_args.port_out

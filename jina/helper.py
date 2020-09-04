@@ -28,7 +28,7 @@ __all__ = ['batch_iterator', 'yaml',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source',
-           'cached_property', 'is_url']
+           'cached_property', 'is_url', 'get_parsed_args', 'get_non_defaults_args', 'get_device_map']
 
 
 def deprecated_alias(**aliases):
@@ -693,3 +693,23 @@ class cached_property:
 def get_now_timestamp():
     now = datetime.now()
     return int(datetime.timestamp(now))
+
+
+def get_device_map(parallel, custom_device_map):
+    run_on_gpu = False
+    device_map = [-1] * parallel
+    try:
+        import GPUtil
+        num_all_gpu = len(GPUtil.getGPUs())
+        avail_gpu = GPUtil.getAvailable(order='memory', limit=min(num_all_gpu, parallel),
+                                        maxMemory=0.9, maxLoad=0.9)
+        num_avail_gpu = len(avail_gpu)
+
+        if num_avail_gpu >= 0:
+            run_on_gpu = True
+
+        if run_on_gpu:
+            device_map = ((custom_device_map or avail_gpu) * parallel)[:parallel]
+    except FileNotFoundError:
+        pass
+    return device_map

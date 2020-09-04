@@ -24,10 +24,10 @@ def set_base_parser():
 
     parser = argparse.ArgumentParser(
         epilog=f'Jina (v{colored(__version__, "green")}) is the cloud-native neural search solution '
-               'powered by AI and deep learning technology.\n'
-               'It provides a universal solution for large-scale index and query '
-               'of media contents.\n'
-               f'{url_str}',
+        'powered by AI and deep learning technology.\n'
+        'It provides a universal solution for large-scale index and query '
+        'of media contents.\n'
+        f'{url_str}',
         formatter_class=_chf,
         description='Jina Command Line Interface'
     )
@@ -101,8 +101,6 @@ def set_hub_build_parser(parser=None):
                         help='prune unused images after building, this often saves disk space')
     parser.add_argument('--raise-error', action='store_true', default=False,
                         help='raise any error and exit with code 1')
-    parser.add_argument('--test-uses', action='store_true', default=False,
-                        help='after the build, test the image in "uses" with Flow API')
     return parser
 
 
@@ -217,6 +215,9 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--py-modules', type=str, nargs='*',
                      help='the customized python modules need to be imported before loading the'
                           ' executor')
+    gp0.add_argument('--device-id', type=int, default=-1,
+                     help='the id for GPU/CPU device, id >= 0, it means the DL model loads on GPU, '
+                          'id = -1 means it loads on CPU. default -1')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--uses-internal', type=str, default='BaseExecutor',
@@ -345,6 +346,10 @@ def set_pod_parser(parser=None):
                           'accepted type follows "--uses"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
+    gp4.add_argument('--device-map', type=int, nargs='+', default=[],
+                     help='specify the list of GPU device ids that will be used (id starts from 0). \
+                            If parallel > len(device_map), then device will be reused; \
+                            if parallel < len(device_map), then device_map[:parallel] will be used')
 
     # disable the pod level logserver for now
     # gp5 = add_arg_group(parser, 'pod log-server arguments')
