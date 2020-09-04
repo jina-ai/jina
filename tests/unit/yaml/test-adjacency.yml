@@ -1,0 +1,41 @@
+!NumpyIndexer
+with:
+  index_filename: tmp2
+metas:
+  name: test2
+  workspace: test-index-file
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver { }
+    SearchRequest:
+      - !VectorSearchDriver { }  # first match on the doc
+      - !SliceQL
+        with:
+          start: 0
+          end: 5
+          recur_on: matches
+      - !VectorFillDriver
+        with:
+          recur_on: matches
+      - !VectorSearchDriver  # then go for the first-degree matches
+        with:
+          recur_on: matches
+          recur_range: [ 0, 1 ]
+      - !SliceQL
+        with:
+          start: 0
+          end: 5
+          recur_on: matches
+          recur_range: [ 0, 2 ]
+      - !VectorFillDriver
+        with:
+          recur_on: matches
+          recur_range: [ 0, 3 ]
+    IndexRequest:
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks
+      - !VectorIndexDriver { }

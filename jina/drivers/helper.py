@@ -88,7 +88,7 @@ def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
     bad_doc_ids = []
 
     if embedding:
-        _extract_fn = lambda doc: doc.embedding.buffer and pb2array(doc.embedding)
+        _extract_fn = lambda doc: (doc.embedding.buffer or None) and pb2array(doc.embedding)
     else:
         _extract_fn = lambda doc: doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
 
