@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver, QuerySetReader
-from .helper import extract_docs
+from .helper import extract_docs, array2pb
 
 if False:
     from ..proto import jina_pb2
@@ -16,6 +16,8 @@ class BaseSearchDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'query', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply = False
+        # search driver recursion apply in pre-order
+        self.recursion_order = 'pre'
 
 
 class KVSearchDriver(BaseSearchDriver):
@@ -47,6 +49,19 @@ class KVSearchDriver(BaseSearchDriver):
         # delete non-existed matches in reverse
         for j in reversed(miss_idx):
             del docs[j]
+
+
+class VectorFillDriver(QuerySetReader, BaseSearchDriver):
+    """ Fill in the embedding by their id
+    """
+
+    def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
+        super().__init__(executor, method, *args, **kwargs)
+
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        embeds = self.exec_fn([d.id for d in docs])
+        for doc, embedding in zip(docs, embeds):
+            doc.embedding.CopyFrom(array2pb(embedding))
 
 
 class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
