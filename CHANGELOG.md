@@ -70,6 +70,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4036,4 +4037,35 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```04225268```](https://github.com/jina-ai/jina/commit/042252683f72d9e7a51b82a50d3bee2e5adf6472)] __-__ revert it back to previous commit (*Han Xiao*)
  - [[```af97ad73```](https://github.com/jina-ai/jina/commit/af97ad7347a4887e809ae7381b77491323fe67f4)] __-__ __version__: the next version will be 0.4.10 (*Jina Dev Bot*)
  - [[```9c1c304e```](https://github.com/jina-ai/jina/commit/9c1c304e5d6e7f612337df6485df52fa65bd56bc)] __-__ __version__: the next version will be 0.4.8 (*Jina Dev Bot*)
+
+## Release Note (`0.5.2`)
+
+> Release time: 2020-09-04 20:24:23
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ hanxiao,  Jina Dev Bot,  Han Xiao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```66878e78```](https://github.com/jina-ai/jina/commit/66878e7807ad7e9928aa5af118287f7bc6a32c45)] __-__ __driver__: add VectorFillDriver (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```feab03f5```](https://github.com/jina-ai/jina/commit/feab03f55692fe16e444e1a3157134d7610fa631)] __-__ __flow__: remove unused collision detection (*Han Xiao*)
+ - [[```f7d8ea0b```](https://github.com/jina-ai/jina/commit/f7d8ea0b873de8d90756b2326cfcfebb2ecff7ac)] __-__ __gateway__: remove another daemon thread from gateway (*Han Xiao*)
+ - [[```f9e0e9cc```](https://github.com/jina-ai/jina/commit/f9e0e9cc2d0963c1257ff7455ffa5a806027245e)] __-__ __peapod__: fix eventloop and shutdown logic (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```9bd4c072```](https://github.com/jina-ai/jina/commit/9bd4c0728ad7cf43f0b0050f5efc0c47d34d2d80)] __-__ add high order match (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```29b85811```](https://github.com/jina-ai/jina/commit/29b85811d2cdddb34d038e0ba3e6f4c4d5d5d027)] __-__ hotfix release (*hanxiao*)
+ - [[```d2584b95```](https://github.com/jina-ai/jina/commit/d2584b959ea850b20b6745d4ec62c4915c7ac6aa)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```c4b62be4```](https://github.com/jina-ai/jina/commit/c4b62be47069b799cfa6c1df65bd93209dae8851)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7f4ff380```](https://github.com/jina-ai/jina/commit/7f4ff38035895939275c21543acc566a9aadbacc)] __-__ __version__: the next version will be 0.5.2 (*Jina Dev Bot*)
 

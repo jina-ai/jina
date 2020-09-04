@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.5.2'
+__version__ = '0.5.3'
 
 
 # do not change this line manually
