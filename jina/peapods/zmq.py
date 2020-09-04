@@ -175,11 +175,11 @@ class Zmqlet:
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
         if not self.is_closed:
+            self.is_closed = True
             self.close_sockets()
             if hasattr(self, 'ctx'):
                 self.ctx.term()
             self.print_stats()
-            self.is_closed = True
 
     def print_stats(self):
         """Print out the network stats of of itself """
@@ -313,6 +313,8 @@ class ZmqStreamlet(Zmqlet):
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
         if not self.is_closed:
+            # wait until the close signal is received
+            time.sleep(.01)
             for s in self.opened_socks:
                 s.flush()
             super().close()

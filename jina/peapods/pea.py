@@ -110,7 +110,7 @@ class BasePea(metaclass=PeaMeta):
         super().__init__()
         self.args = args
         self.name = self.__class__.__name__  #: this is the process name
-        self.daemon = True
+        # self.daemon = True
 
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
@@ -268,14 +268,19 @@ class BasePea(metaclass=PeaMeta):
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self.zmqlet.send_message(self._callback(msg))
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
+            # save executor
+            if hasattr(self, 'executor'):
+                if not self.args.exit_no_dump:
+                    self.save_executor(dump_interval=0)
+                self.executor.close()
+
+            self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
             # serious error happen in callback, we need to break the event loop
             self.zmqlet.send_message(msg)
             # note, the logger can only be put on the second last line before `close`, as when
             # `close` is called, the callback is unregistered and everything after `close` can not be reached
             # some black magic in eventloop i guess?
-            self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
-
-            self.zmqlet.close()
+            self.loop_teardown()
         except MemoryOverHighWatermark:
             self.logger.critical(
                 f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
@@ -320,10 +325,6 @@ class BasePea(metaclass=PeaMeta):
 
     def loop_teardown(self):
         """Stop the request loop """
-        if hasattr(self, 'executor'):
-            if not self.args.exit_no_dump:
-                self.save_executor(dump_interval=0)
-            self.executor.close()
         if hasattr(self, 'zmqlet'):
             self.zmqlet.close()
 
@@ -403,3 +404,4 @@ class BasePea(metaclass=PeaMeta):
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
+        self.join()
