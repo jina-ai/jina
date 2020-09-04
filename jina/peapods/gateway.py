@@ -50,8 +50,9 @@ class GatewayPea:
         self.init_server(args)
 
     def init_server(self, args):
+        self._ae = AsyncioExecutor()
         self._server = grpc.server(
-            AsyncioExecutor(),
+            self._ae,
             options=[('grpc.max_send_message_length', args.max_message_size),
                      ('grpc.max_receive_message_length', args.max_message_size)])
 
@@ -73,6 +74,7 @@ class GatewayPea:
         self.close()
 
     def close(self):
+        self._ae.shutdown()
         self._p_servicer.close()
         self._server.stop(None)
         self._stop_event.set()

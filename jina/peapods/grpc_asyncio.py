@@ -14,11 +14,10 @@ from ..helper import show_ioloop_backend, use_uvloop
 use_uvloop()
 
 
-def _loop_mgr(loop: asyncio.AbstractEventLoop):
+def _loop_mgr(loop: 'asyncio.AbstractEventLoop'):
     asyncio.set_event_loop(loop)
     if not loop.is_running():
         loop.run_forever()
-
     # If we reach here, the loop was stopped.
     # We should gather any remaining tasks and finish them.
     pending = asyncio.all_tasks(loop)
@@ -37,11 +36,12 @@ class AsyncioExecutor(futures.Executor):
         self._shutdown = False
         try:
             self._loop = loop or asyncio.get_event_loop()
+            if self._loop.is_closed():
+                raise RuntimeError
         except RuntimeError:
             self._loop = asyncio.new_event_loop()
         show_ioloop_backend(self._loop)
-        self._thread = threading.Thread(target=_loop_mgr, args=(self._loop,),
-                                        daemon=True)
+        self._thread = threading.Thread(target=_loop_mgr, args=(self._loop,))
         self._thread.start()
 
     def submit(self, fn, *args, **kwargs):
@@ -61,14 +61,9 @@ class AsyncioExecutor(futures.Executor):
             return self._loop.run_in_executor(None, func)
 
     def shutdown(self, wait=True):
-        if not self._loop.is_closed():
-            self._loop.close()
-
+        self._loop.call_soon_threadsafe(self._loop.stop)
+        self._thread.join()
         self._shutdown = True
-        if wait:
-            self._thread.join()
-        else:
-            self._thread.join(0)
 
 
 async def _call_behavior(rpc_event, state, behavior, argument, request_deserializer):
