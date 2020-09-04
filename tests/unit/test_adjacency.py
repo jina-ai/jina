@@ -1,10 +1,13 @@
+import os
+import shutil
+
 import numpy as np
 
 from jina.drivers.helper import array2pb
 from jina.flow import Flow
 from jina.proto import jina_pb2
 
-f = Flow().add(uses='yaml/test-adjacency.yml')
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def random_docs(num_docs):
@@ -16,8 +19,22 @@ def random_docs(num_docs):
         yield d
 
 
-with f:
-    f.index(random_docs(100))
+def test_high_order_matches():
+    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'yaml/test-adjacency.yml'))
 
-with f:
-    f.search(random_docs(10), output_fn=print)
+    with f:
+        f.index(random_docs(100))
+
+    with f:
+        f.search(random_docs(1), output_fn=validate)
+
+    shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
+
+
+def validate(req):
+    assert len(req.docs) == 1
+    assert len(req.docs[0].matches) == 5
+    assert len(req.docs[0].matches) == 5
+    assert len(req.docs[0].matches[0].matches) == 5
+    assert len(req.docs[0].matches[-1].matches) == 5
+    assert len(req.docs[0].matches[0].matches[0].matches) == 0
