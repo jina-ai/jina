@@ -31,6 +31,18 @@ def test_high_order_matches():
     shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
 
 
+def test_high_order_matches_integrated():
+    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'yaml/test-adjacency-integrated.yml'))
+
+    with f:
+        f.index(random_docs(100))
+
+    with f:
+        f.search(random_docs(1), output_fn=validate)
+
+    shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
+
+
 def validate(req):
     assert len(req.docs) == 1
     assert len(req.docs[0].matches) == 5
@@ -38,6 +50,3 @@ def validate(req):
     assert len(req.docs[0].matches[0].matches) == 5
     assert len(req.docs[0].matches[-1].matches) == 5
     assert len(req.docs[0].matches[0].matches[0].matches) == 0
-
-
-test_high_order_matches()
