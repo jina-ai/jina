@@ -38,3 +38,6 @@ def validate(req):
     assert len(req.docs[0].matches[0].matches) == 5
     assert len(req.docs[0].matches[-1].matches) == 5
     assert len(req.docs[0].matches[0].matches[0].matches) == 0
+
+
+test_high_order_matches()

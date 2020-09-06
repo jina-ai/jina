@@ -35,6 +35,9 @@ class MockIndexer(BaseVectorIndexer):
         dist = np.hstack((dist_top_1, dist_top_2))
         return idx, dist
 
+    def query_by_id(self, ids: 'np.ndarray', *args, **kwargs):
+        return np.random.random([len(ids), 7])
+
 
 class SimpleVectorSearchDriver(VectorSearchDriver):
 
@@ -95,3 +98,16 @@ class VectorSearchDriverTestCase(JinaTestCase):
             assert chunk.matches[1].score.ref_id == chunk.id
             self.assertAlmostEqual(chunk.matches[0].score.value, chunk.id * 0.01)
             self.assertAlmostEqual(chunk.matches[1].score.value, chunk.id * 0.1)
+            assert chunk.matches[-1].embedding.buffer == b''
+
+    def test_vectorsearch_driver_mock_indexer_with_fill(self):
+        doc = create_document_to_search()
+        driver = SimpleVectorSearchDriver(top_k=2, fill_embedding=True)
+        executor = MockIndexer()
+        driver.attach(executor=executor, pea=None)
+        driver._apply_all(doc.chunks)
+
+        for chunk in doc.chunks:
+            assert chunk.matches[0].embedding.shape == [7]
+            assert chunk.matches[-1].embedding.shape == [7]
+            assert chunk.matches[-1].embedding.buffer != b''

@@ -69,23 +69,34 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
     """
 
-    def __init__(self, top_k: int = 50, *args, **kwargs):
+    def __init__(self, top_k: int = 50, fill_embedding: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._top_k = top_k
+        self._fill_embedding = fill_embedding
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
+        fill_fn = getattr(self.exec, 'query_by_id', None)
+        if self._fill_embedding and not fill_fn:
+            self.logger.warning('"fill_embedding=True" but {} does not have "query_by_id" method')
+
         if doc_pts:
             if bad_doc_ids:
                 self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
-
             idx, dist = self.exec_fn(embed_vecs, top_k=self.top_k)
             op_name = self.exec.__class__.__name__
             for doc, topks, scores in zip(doc_pts, idx, dist):
-                for match_id, score in zip(topks, scores):
+
+                if fill_fn:
+                    topk_embed = fill_fn(topks)  # type: 'np.ndarray'
+                else:
+                    topk_embed = [None] * len(topks)
+                for match_id, score, vec in zip(topks, scores, topk_embed):
                     r = doc.matches.add()
                     r.id = match_id
                     r.score.ref_id = doc.id
                     r.score.value = score
                     r.score.op_name = op_name
+                    if vec is not None:
+                        r.embedding.CopyFrom(array2pb(vec))

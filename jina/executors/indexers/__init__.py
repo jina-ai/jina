@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple
+from typing import Tuple, Union, List
 
 import numpy as np
 
@@ -173,7 +173,7 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_id(self, ids: 'np.ndarray', *args, **kwargs):
+    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
         """ Get the vectors by id, return a subset of indexed vectors
 
         :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
