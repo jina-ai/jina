@@ -87,7 +87,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
         fill_fn = getattr(self.exec, 'query_by_id', None)
         if self._fill_embedding and not fill_fn:
-            self.logger.warning('"fill_embedding=True" but {} does not have "query_by_id" method')
+            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method')
 
         if doc_pts:
             if bad_doc_ids:
@@ -96,10 +96,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
             op_name = self.exec.__class__.__name__
             for doc, topks, scores in zip(doc_pts, idx, dist):
 
-                if fill_fn:
-                    topk_embed = fill_fn(topks)  # type: 'np.ndarray'
-                else:
-                    topk_embed = [None]
+                topk_embed = fill_fn(topks) if fill_fn else [None]
 
                 for match_id, score, vec in zip(topks, scores, topk_embed):
                     r = doc.matches.add()

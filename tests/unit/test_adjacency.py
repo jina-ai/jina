@@ -32,6 +32,7 @@ def test_high_order_matches():
 
 
 def test_high_order_matches_integrated():
+    # this is equivalent to the last test but with simplified YAML spec.
     f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'yaml/test-adjacency-integrated.yml'))
 
     with f:
