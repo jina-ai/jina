@@ -26,7 +26,7 @@ def test_index_depth_0_search_depth_1():
         'I am chunk 0 of doc 3, I am chunk 1 of doc 3, I am chunk 2 of doc 3, I am chunk 3 of doc 3',
     ]
 
-    index_flow = Flow().load_config(os.path.join(cur_dir, 'flow-index.yml'))
+    index_flow = Flow().load_config('flow-index.yml')
     with index_flow:
         index_flow.index(index_data)
 
@@ -54,7 +54,7 @@ def test_index_depth_0_search_depth_1():
         'I am chunk 3 of doc 3',
     ]
 
-    search_flow = Flow().load_config(os.path.join(cur_dir, 'flow-query.yml'))
+    search_flow = Flow().load_config('flow-query.yml')
     with search_flow:
         search_flow.search(input_fn=search_data, output_fn=validate_granularity_1, callback_on_body=True, granularity=1)
 

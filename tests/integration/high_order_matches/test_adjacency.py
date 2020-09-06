@@ -20,7 +20,20 @@ def random_docs(num_docs):
 
 
 def test_high_order_matches():
-    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'yaml/test-adjacency.yml'))
+    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
+
+    with f:
+        f.index(random_docs(100))
+
+    with f:
+        f.search(random_docs(1), output_fn=validate)
+
+    shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
+
+
+def test_high_order_matches_integrated():
+    # this is equivalent to the last test but with simplified YAML spec.
+    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
 
     with f:
         f.index(random_docs(100))

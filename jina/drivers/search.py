@@ -52,7 +52,7 @@ class KVSearchDriver(BaseSearchDriver):
 
 
 class VectorFillDriver(QuerySetReader, BaseSearchDriver):
-    """ Fill in the embedding by their id
+    """ Fill in the embedding by their doc id
     """
 
     def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
@@ -69,23 +69,41 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
     """
 
-    def __init__(self, top_k: int = 50, *args, **kwargs):
+    def __init__(self, top_k: int = 50, fill_embedding: bool = False, *args, **kwargs):
+        """
+
+        :param top_k: top-k doc id to retrieve
+        :param fill_embedding: fill in the embedding of the corresponding doc,
+                this requires the executor to implement :meth:`query_by_id`
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self._top_k = top_k
+        self._fill_embedding = fill_embedding
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
+        fill_fn = getattr(self.exec, 'query_by_id', None)
+        if self._fill_embedding and not fill_fn:
+            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method')
+
         if doc_pts:
             if bad_doc_ids:
                 self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
-
             idx, dist = self.exec_fn(embed_vecs, top_k=self.top_k)
             op_name = self.exec.__class__.__name__
             for doc, topks, scores in zip(doc_pts, idx, dist):
-                for match_id, score in zip(topks, scores):
+
+                topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
+
+                for match_id, score, vec in zip(topks, scores, topk_embed):
                     r = doc.matches.add()
                     r.id = match_id
+                    r.adjacency = doc.adjacency + 1
                     r.score.ref_id = doc.id
                     r.score.value = score
                     r.score.op_name = op_name
+                    if vec is not None:
+                        r.embedding.CopyFrom(array2pb(vec))

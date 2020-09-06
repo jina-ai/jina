@@ -15,7 +15,7 @@ from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, valid_local_config_source
+from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, is_valid_local_config_source
 from ..main.parser import set_pod_parser, set_gateway_parser
 from argparse import Namespace
 
@@ -450,7 +450,7 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     bind_local = (bind_args.host == '0.0.0.0')
     conn_local = (connect_args.host == '0.0.0.0')
-    conn_docker = (getattr(connect_args, 'uses', None) is not None and not valid_local_config_source(connect_args.uses))
+    conn_docker = (getattr(connect_args, 'uses', None) is not None and not is_valid_local_config_source(connect_args.uses))
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
     if platform == "linux" or platform == "linux2":
         local_host = '0.0.0.0'

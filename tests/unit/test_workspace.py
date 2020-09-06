@@ -12,7 +12,7 @@ class MyTestCase(JinaTestCase):
 
     def test_share_workspace(self):
         for j in range(3):
-            a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-workspace.yml'), True, j)
+            a = BaseExecutor.load_config('yaml/test-workspace.yml', True, j)
             a.touch()
             a.save()
             self.assertTrue(os.path.exists(f'{a.name}-{j}/{a.name}.bin'))
@@ -21,7 +21,7 @@ class MyTestCase(JinaTestCase):
 
     def test_compound_workspace(self):
         for j in range(3):
-            a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-workspace.yml'), True, j)
+            a = BaseExecutor.load_config('yaml/test-compound-workspace.yml', True, j)
             for c in a.components:
                 c.touch()
                 c.save()
@@ -36,7 +36,7 @@ class MyTestCase(JinaTestCase):
     def test_compound_indexer(self):
         all_subspace = set()
         for j in range(3):
-            a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer.yml'), True, j)
+            a = BaseExecutor.load_config('yaml/test-compound-indexer.yml', True, j)
             for c in a:
                 c.touch()
                 print(c.save_abspath)
@@ -60,7 +60,7 @@ class MyTestCase(JinaTestCase):
     def test_compound_indexer_rw(self):
         all_vecs = np.random.random([6, 5])
         for j in range(3):
-            a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'), True, j)
+            a = BaseExecutor.load_config('yaml/test-compound-indexer2.yml', True, j)
             assert a[0] == a['test_meta']
             self.assertFalse(a[0].is_updated)
             self.assertFalse(a.is_updated)
@@ -82,7 +82,7 @@ class MyTestCase(JinaTestCase):
 
         recovered_vecs = []
         for j in range(3):
-            a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'), True, j)
+            a = BaseExecutor.load_config('yaml/test-compound-indexer2.yml', True, j)
             recovered_vecs.append(a[1].query_handler)
 
         np.testing.assert_almost_equal(all_vecs, np.concatenate(recovered_vecs))

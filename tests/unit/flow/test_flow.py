@@ -229,7 +229,7 @@ class FlowTestCase(JinaTestCase):
         self.add_tmpfile('test1.yml')
 
     def test_flow_log_server(self):
-        f = Flow.load_config(os.path.join(cur_dir, '../yaml/test_log_server.yml'))
+        f = Flow.load_config('../yaml/test_log_server.yml')
         with f:
             self.assertTrue(hasattr(JINA_GLOBAL.logserver, 'ready'))
 

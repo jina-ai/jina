@@ -19,7 +19,7 @@ from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart
 from ..executors import BaseExecutor
-from ..helper import valid_local_config_source
+from ..helper import is_valid_local_config_source
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
@@ -191,7 +191,7 @@ class BasePea(metaclass=PeaMeta):
         if self.args.uses:
             try:
                 self.executor = BaseExecutor.load_config(
-                    self.args.uses if valid_local_config_source(self.args.uses) else self.args.uses_internal,
+                    self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
                     self.args.separated_workspace, self.args.replica_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:

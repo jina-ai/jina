@@ -18,7 +18,7 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_valid_local_config_source
+from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
 
@@ -382,7 +382,7 @@ class BaseExecutor(metaclass=ExecutorType):
         :return: an executor object
         """
         if not source: raise FileNotFoundError
-        source = get_valid_local_config_source(source)
+        source = get_local_config_source(source)
         # first scan, find if external modules are specified
         with (open(source, encoding='utf8') if isinstance(source, str) else source) as fp:
             # ignore all lines start with ! because they could trigger the deserialization of that class

@@ -36,7 +36,7 @@ class MyTestCase(JinaTestCase):
         self.add_tmpfile('test_driver.yml')
 
     def test_load_cust_with_driver(self):
-        a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
+        a = BaseExecutor.load_config('mwu-encoder/mwu_encoder_driver.yml')
         assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
         p = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
         with Pod(p):
@@ -44,7 +44,7 @@ class MyTestCase(JinaTestCase):
             pass
 
     def test_pod_new_api_from_kwargs(self):
-        a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
+        a = BaseExecutor.load_config('mwu-encoder/mwu_encoder_driver.yml')
         assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
 
         with Pod(uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
@@ -52,7 +52,7 @@ class MyTestCase(JinaTestCase):
             pass
 
     def test_load_yaml2(self):
-        a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-exec-with-driver.yml'))
+        a = BaseExecutor.load_config('yaml/test-exec-with-driver.yml')
         assert len(a._drivers) == 2
         # should be able to auto fill in ControlRequest
         self.assertTrue('ControlRequest' in a._drivers)

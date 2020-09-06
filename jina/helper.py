@@ -27,8 +27,8 @@ __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
-           'colored', 'kwargs2list', 'get_valid_local_config_source', 'valid_local_config_source',
-           'cached_property', 'is_url']
+           'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
+           'cached_property', 'is_url', 'complete_path']
 
 
 def deprecated_alias(**aliases):
@@ -535,18 +535,16 @@ def kwargs2list(kwargs: Dict) -> List[str]:
     return args
 
 
-def get_valid_local_config_source(path: str, to_stream: bool = False) -> Union[StringIO, TextIO, str]:
+def get_local_config_source(path: str, to_stream: bool = False) -> Union[StringIO, TextIO, str]:
     # priority, filepath > classname > default
     import io
     from pkg_resources import resource_filename
     if hasattr(path, 'read'):
         # already a readable stream
         return path
-    elif os.path.exists(path):
-        if to_stream:
-            return open(path, encoding='utf8')
-        else:
-            return path
+    elif path.endswith('.yml') or path.endswith('.yaml'):
+        _p = complete_path(path)
+        return open(_p, encoding='utf8') if to_stream else _p
     elif path.startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))):
         return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
@@ -566,15 +564,15 @@ def get_valid_local_config_source(path: str, to_stream: bool = False) -> Union[S
         # possible class name
         return io.StringIO(f'!{path}')
     else:
-        raise FileNotFoundError('%s can not be resolved, it should be a readable stream,'
-                                ' or a valid file path, or a supported class name.' % path)
+        raise FileNotFoundError(f'{path} can not be resolved, it should be a readable stream,'
+                                ' or a valid file path, or a supported class name.')
 
 
-def valid_local_config_source(path: str) -> bool:
+def is_valid_local_config_source(path: str) -> bool:
     try:
-        get_valid_local_config_source(path)
+        get_local_config_source(path)
         return True
-    except:
+    except FileNotFoundError:
         return False
 
 
@@ -693,3 +691,31 @@ class cached_property:
 def get_now_timestamp():
     now = datetime.now()
     return int(datetime.timestamp(now))
+
+
+def complete_path(path: str) -> str:
+    import inspect
+    _p = None
+
+    if os.path.exists(path):
+        # this checks both abs and relative paths already
+        _p = path
+    else:
+        search_paths = []
+        frame = inspect.currentframe()
+
+        # iterates on whoever calls me
+        while frame:
+            search_paths.append(os.path.dirname(inspect.getfile(frame)))
+            frame = frame.f_back
+        search_paths += os.environ['PATH'].split(os.pathsep)
+
+        # not in local path, search within all search paths
+        for p in search_paths:
+            _p = os.path.join(p, path)
+            if os.path.exists(_p):
+                break
+    if _p:
+        return _p
+    else:
+        raise FileNotFoundError(f'can not find {path}')
