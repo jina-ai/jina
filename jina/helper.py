@@ -28,7 +28,7 @@ __all__ = ['batch_iterator', 'yaml',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
-           'cached_property', 'is_url']
+           'cached_property', 'is_url', 'complete_path']
 
 
 def deprecated_alias(**aliases):
@@ -537,35 +537,14 @@ def kwargs2list(kwargs: Dict) -> List[str]:
 
 def get_local_config_source(path: str, to_stream: bool = False) -> Union[StringIO, TextIO, str]:
     # priority, filepath > classname > default
-    import io, inspect
+    import io
     from pkg_resources import resource_filename
     if hasattr(path, 'read'):
         # already a readable stream
         return path
     elif path.endswith('.yml') or path.endswith('.yaml'):
-        _p = None
-        if os.path.exists(path):
-            # this checks both abs and relative paths already
-            _p = path
-        else:
-            search_paths = []
-            frame = inspect.currentframe()
-
-            # iterates on whoever calls me
-            while frame:
-                search_paths.append(os.path.dirname(inspect.getfile(frame)))
-                frame = frame.f_back
-            search_paths += os.environ['PATH'].split(os.pathsep)
-
-            # not in local path, search within all search paths
-            for p in search_paths:
-                _p = os.path.join(p, path)
-                if os.path.exists(_p):
-                    break
-        if _p:
-            return open(_p, encoding='utf8') if to_stream else _p
-        else:
-            raise FileNotFoundError('can not find {path}')
+        _p = complete_path(path)
+        return open(_p, encoding='utf8') if to_stream else _p
     elif path.startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))):
         return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
@@ -712,3 +691,31 @@ class cached_property:
 def get_now_timestamp():
     now = datetime.now()
     return int(datetime.timestamp(now))
+
+
+def complete_path(path: str) -> str:
+    import inspect
+    _p = None
+
+    if os.path.exists(path):
+        # this checks both abs and relative paths already
+        _p = path
+    else:
+        search_paths = []
+        frame = inspect.currentframe()
+
+        # iterates on whoever calls me
+        while frame:
+            search_paths.append(os.path.dirname(inspect.getfile(frame)))
+            frame = frame.f_back
+        search_paths += os.environ['PATH'].split(os.pathsep)
+
+        # not in local path, search within all search paths
+        for p in search_paths:
+            _p = os.path.join(p, path)
+            if os.path.exists(_p):
+                break
+    if _p:
+        return _p
+    else:
+        raise FileNotFoundError(f'can not find {path}')

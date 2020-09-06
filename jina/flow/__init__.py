@@ -17,7 +17,7 @@ from ruamel.yaml import StringIO
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, random_port
+from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, random_port, complete_path
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
@@ -263,6 +263,7 @@ class Flow(ExitStack):
         if not filename: raise FileNotFoundError
         if isinstance(filename, str):
             # deserialize from the yaml
+            filename = complete_path(filename)
             with open(filename, encoding='utf8') as fp:
                 return yaml.load(fp)
         else:
