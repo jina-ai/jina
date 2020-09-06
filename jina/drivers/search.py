@@ -52,7 +52,7 @@ class KVSearchDriver(BaseSearchDriver):
 
 
 class VectorFillDriver(QuerySetReader, BaseSearchDriver):
-    """ Fill in the embedding by their id
+    """ Fill in the embedding by their doc id
     """
 
     def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
@@ -70,6 +70,14 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
     """
 
     def __init__(self, top_k: int = 50, fill_embedding: bool = False, *args, **kwargs):
+        """
+
+        :param top_k: top-k doc id to retrieve
+        :param fill_embedding: fill in the embedding of the corresponding doc,
+                this requires the executor to implement :meth:`query_by_id`
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self._top_k = top_k
         self._fill_embedding = fill_embedding
