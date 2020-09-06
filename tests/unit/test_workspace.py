@@ -12,7 +12,7 @@ class MyTestCase(JinaTestCase):
 
     def test_share_workspace(self):
         for j in range(3):
-            a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-workspace.yml'), True, j)
+            a = BaseExecutor.load_config('yaml/test-workspace.yml', True, j)
             a.touch()
             a.save()
             self.assertTrue(os.path.exists(f'{a.name}-{j}/{a.name}.bin'))

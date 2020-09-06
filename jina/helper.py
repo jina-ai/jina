@@ -537,7 +537,7 @@ def kwargs2list(kwargs: Dict) -> List[str]:
 
 def get_local_config_source(path: str, to_stream: bool = False) -> Union[StringIO, TextIO, str]:
     # priority, filepath > classname > default
-    import io
+    import io, inspect
     from pkg_resources import resource_filename
     if hasattr(path, 'read'):
         # already a readable stream
@@ -545,10 +545,20 @@ def get_local_config_source(path: str, to_stream: bool = False) -> Union[StringI
     elif path.endswith('.yml') or path.endswith('.yaml'):
         _p = None
         if os.path.exists(path):
+            # this checks both abs and relative paths already
             _p = path
         else:
-            # not in local path, then use "PATH" is os.environ
-            for p in os.environ['PATH'].split(os.pathsep):
+            search_paths = []
+            frame = inspect.currentframe()
+
+            # iterates on whoever calls me
+            while frame:
+                search_paths.append(os.path.dirname(inspect.getfile(frame)))
+                frame = frame.f_back
+            search_paths += os.environ['PATH'].split(os.pathsep)
+
+            # not in local path, search within all search paths
+            for p in search_paths:
                 _p = os.path.join(p, path)
                 if os.path.exists(_p):
                     break

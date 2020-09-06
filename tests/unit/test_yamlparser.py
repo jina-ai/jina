@@ -78,7 +78,7 @@ class MyTestCase(JinaTestCase):
         self.assertIsNotNone(_defaults)
 
     def test_joint_indexer(self):
-        b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
+        b = BaseExecutor.load_config('yaml/test-joint.yml')
         print(b[0].name)
         print(type(b[0]))
         print(b._drivers['SearchRequest'][0]._executor_name)

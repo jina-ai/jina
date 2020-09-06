@@ -10,7 +10,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class FlowFacesExamplesTestCase(JinaTestCase):
 
     def test_index(self):
-        f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-index.yml'))
+        f = Flow.load_config('../yaml/examples/faces/flow-index.yml')
         with f:
             node = f._pod_nodes['gateway']
             assert node.head_args.socket_in == SocketType.PULL_CONNECT
@@ -78,7 +78,7 @@ class FlowFacesExamplesTestCase(JinaTestCase):
             f.dry_run()
 
     def test_query(self):
-        f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-query.yml'))
+        f = Flow.load_config('../yaml/examples/faces/flow-query.yml')
         with f:
             node = f._pod_nodes['gateway']
             assert node.head_args.socket_in == SocketType.PULL_CONNECT
