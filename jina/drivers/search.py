@@ -91,10 +91,12 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
                 if fill_fn:
                     topk_embed = fill_fn(topks)  # type: 'np.ndarray'
                 else:
-                    topk_embed = [None] * len(topks)
+                    topk_embed = [None]
+
                 for match_id, score, vec in zip(topks, scores, topk_embed):
                     r = doc.matches.add()
                     r.id = match_id
+                    r.adjacency = doc.adjacency + 1
                     r.score.ref_id = doc.id
                     r.score.value = score
                     r.score.op_name = op_name
