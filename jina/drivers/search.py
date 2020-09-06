@@ -96,7 +96,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
             op_name = self.exec.__class__.__name__
             for doc, topks, scores in zip(doc_pts, idx, dist):
 
-                topk_embed = fill_fn(topks) if fill_fn else [None]
+                topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None]
 
                 for match_id, score, vec in zip(topks, scores, topk_embed):
                     r = doc.matches.add()
