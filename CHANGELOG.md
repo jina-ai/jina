@@ -71,6 +71,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4069,4 +4070,40 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d2584b95```](https://github.com/jina-ai/jina/commit/d2584b959ea850b20b6745d4ec62c4915c7ac6aa)] __-__ update contributors (*Jina Dev Bot*)
  - [[```c4b62be4```](https://github.com/jina-ai/jina/commit/c4b62be47069b799cfa6c1df65bd93209dae8851)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```7f4ff380```](https://github.com/jina-ai/jina/commit/7f4ff38035895939275c21543acc566a9aadbacc)] __-__ __version__: the next version will be 0.5.2 (*Jina Dev Bot*)
+
+## Release Note (`0.5.3`)
+
+> Release time: 2020-09-07 12:12:09
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals Martinez,  Sreerag-ibtl,  🙇
+
+
+### 🆕 New Features
+
+ - [[```02cdcf59```](https://github.com/jina-ai/jina/commit/02cdcf59650f07ae8f30c4ade874e3fa40af6ac0)] __-__ __cli__: add daemon as argument of pea (*Han Xiao*)
+ - [[```236ae37f```](https://github.com/jina-ai/jina/commit/236ae37f65bc7b7c57bb1f1b5c70df954ef5c86d)] __-__ __driver__: add fill_embedding in index driver (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```67cde7f7```](https://github.com/jina-ai/jina/commit/67cde7f7e1aea7ae97c2f759954e69417f1475df)] __-__ __helper__: add search path to the load_config (*Han Xiao*)
+ - [[```b67eaa2b```](https://github.com/jina-ai/jina/commit/b67eaa2b82a62e407f2a63827311312cc103cbb8)] __-__ __helper__: refactor local_config_source logic (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```02c948c7```](https://github.com/jina-ai/jina/commit/02c948c7400e27c8bbaf000f22d458aaf98a2526)] __-__ correct syntax issue in helloworld (*Sreerag-ibtl*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```dc523639```](https://github.com/jina-ai/jina/commit/dc523639b7beb62b3f2fc4bcfa64282f3f676375)] __-__ add tests with executor that sleeps on save (*Joan Fontanals Martinez*)
+ - [[```10f2f652```](https://github.com/jina-ai/jina/commit/10f2f6527be8c3757416eef8b9a1b0908d3a156a)] __-__ move high order match to integrated tests (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```08ef4026```](https://github.com/jina-ai/jina/commit/08ef4026cd04705e9c7768767a5efae808149c81)] __-__ hotfix add daemon (*Han Xiao*)
+ - [[```8b006f2c```](https://github.com/jina-ai/jina/commit/8b006f2cd3ce39b253a303a0b06ae7ef79256a3e)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```0e7014a2```](https://github.com/jina-ai/jina/commit/0e7014a2ca0ed21e676e8b0970c9097b2797dc7b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```abc83c7c```](https://github.com/jina-ai/jina/commit/abc83c7ceb3aa76e0ce3e8b27d445118aeef2ffd)] __-__ __version__: the next version will be 0.5.3 (*Jina Dev Bot*)
 
