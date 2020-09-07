@@ -258,6 +258,20 @@ class BasePea(metaclass=PeaMeta):
             self.pre_hook(msg).handle(msg).post_hook(msg)
         return msg
 
+    def _handle_terminate_signal(self, msg):
+        # save executor
+        if hasattr(self, 'executor'):
+            if not self.args.exit_no_dump:
+                self.save_executor(dump_interval=0)
+            self.executor.close()
+
+        # serious error happen in callback, we need to break the event loop
+        self.zmqlet.send_message(msg)
+        # note, the logger can only be put on the second last line before `close`, as when
+        # `close` is called, the callback is unregistered and everything after `close` can not be reached
+        # some black magic in eventloop i guess?
+        self.loop_teardown()
+
     def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
         """Callback function after receiving the message
 
@@ -269,18 +283,8 @@ class BasePea(metaclass=PeaMeta):
             self.zmqlet.send_message(self._callback(msg))
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # save executor
-            if hasattr(self, 'executor'):
-                if not self.args.exit_no_dump:
-                    self.save_executor(dump_interval=0)
-                self.executor.close()
-
             self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
-            # serious error happen in callback, we need to break the event loop
-            self.zmqlet.send_message(msg)
-            # note, the logger can only be put on the second last line before `close`, as when
-            # `close` is called, the callback is unregistered and everything after `close` can not be reached
-            # some black magic in eventloop i guess?
-            self.loop_teardown()
+            self._handle_terminate_signal(msg)
         except MemoryOverHighWatermark:
             self.logger.critical(
                 f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
