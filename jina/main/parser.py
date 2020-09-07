@@ -75,8 +75,8 @@ def set_hub_new_parser(parser=None):
                         help='where to output the generated project dir into.')
     parser.add_argument('--template', type=str, default='https://github.com/jina-ai/cookiecutter-jina-hub.git',
                         help='s directory containing a project template directory, or a URL to a git repository.')
-    parser.add_argument('--type', type=str, default='pod',
-                        help='(pod|app) create a template for executor hub pod or jina app using cookiecutter.')
+    parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app'],
+                        help='create a template for executor hub pod or jina app using cookiecutter.')
     parser.add_argument('--overwrite', action='store_true', default=False,
                         help='overwrite the contents of output directory if it exists')
     return parser

@@ -36,5 +36,5 @@ def test_hub_build_no_pymodules():
     assert not HubIO(args).build()['is_build_success']
 
 def test_hub_new():
-    args = set_hub_new_parser().parse_args('--template','--type')
+    args = set_hub_new_parser().parse_args(['--output-dir','.','--type','app'])
     HubIO(args).new()
