@@ -719,3 +719,26 @@ def complete_path(path: str) -> str:
         return _p
     else:
         raise FileNotFoundError(f'can not find {path}')
+
+
+def get_device_map(parallel: int, custom_device_map: List):
+    device_map = [-1] * parallel
+    try:
+        import GPUtil
+        num_all_gpu = len(GPUtil.getGPUs())
+        avail_gpu = GPUtil.getAvailable(order='memory', limit=min(num_all_gpu, parallel),
+                                        maxMemory=0.9, maxLoad=0.9)
+        if len(avail_gpu) >= 0:
+            if custom_device_map:
+                device_map = custom_device_map
+                for device_id in custom_device_map:
+                    if device_id not in avail_gpu:
+                        device_map = avail_gpu
+                        break
+            else:
+                device_map = avail_gpu
+
+            device_map = (device_map * parallel)[:parallel]
+    except FileNotFoundError:
+        pass
+    return device_map

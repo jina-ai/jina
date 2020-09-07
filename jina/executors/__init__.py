@@ -372,13 +372,14 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def load_config(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
-                    replica_id: int = 0) -> AnyExecutor:
+                    replica_id: int = 0, device_id: int = -1) -> AnyExecutor:
         """Build an executor from a YAML file.
 
-        :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
+        :param source: the file path of the YAML file or a ``TextIO`` stream to be loaded from
         :param separated_workspace: the dump and data files associated to this executor will be stored separately for
                 each replica, which will be indexed by the ``replica_id``
         :param replica_id: the id of the storage of this replica, only effective when ``separated_workspace=True``
+        :param device_id: the id of device, -1 means CPU, otherwise, it means GPU
         :return: an executor object
         """
         if not source: raise FileNotFoundError
@@ -407,6 +408,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
                 tmp['metas']['separated_workspace'] = separated_workspace
                 tmp['metas']['replica_id'] = replica_id
+                tmp['metas']['device_id'] = device_id
 
             else:
                 raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')

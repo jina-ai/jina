@@ -15,7 +15,8 @@ from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, is_valid_local_config_source
+from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, get_device_map, \
+    is_valid_local_config_source
 from ..main.parser import set_pod_parser, set_gateway_parser
 from argparse import Namespace
 
@@ -89,6 +90,9 @@ class BasePod(ExitStack):
             peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
         else:
+            if not isinstance(self, (GatewayFlowPod, GatewayPod)):
+                device_map = get_device_map(1, args.device_map)
+                args.device_id = device_map[0]
             peas_args['peas'] = [args]
 
         # note that peas_args['peas'][0] exist either way and carries the original property
@@ -377,11 +381,15 @@ class FlowPod(BasePod):
 
 def _set_peas_args(args: Namespace, head_args: Namespace, tail_args: Namespace) -> List[Namespace]:
     result = []
-    for _ in range(args.parallel):
+    device_map = get_device_map(args.parallel, args.device_map)
+    for device_id in device_map:
         _args = copy.deepcopy(args)
         _args.port_in = head_args.port_out
         _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
+
+        _args.device_id = device_id
+
         _args.identity = get_random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
@@ -450,7 +458,8 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     bind_local = (bind_args.host == '0.0.0.0')
     conn_local = (connect_args.host == '0.0.0.0')
-    conn_docker = (getattr(connect_args, 'uses', None) is not None and not is_valid_local_config_source(connect_args.uses))
+    conn_docker = (
+                getattr(connect_args, 'uses', None) is not None and not is_valid_local_config_source(connect_args.uses))
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
     if platform == "linux" or platform == "linux2":
         local_host = '0.0.0.0'

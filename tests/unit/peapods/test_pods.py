@@ -98,3 +98,11 @@ def test_pod_gracefully_close_idle():
     end_time = time.time()
     elapsed_time = end_time - start_time
     assert elapsed_time > 4
+
+
+def test_pod_device_map():
+    args = set_pod_parser().parse_args(['--name', 'pod',
+                                        '--parallel', '4'])
+    args.device_map = [1, 2]
+    with BasePod(args):
+        pass
