@@ -119,6 +119,8 @@ def import_classes(namespace: str, targets=None,
     try:
         path = os.path.dirname(pkgutil.get_loader(namespace).path)
     except AttributeError:
+        if namespace == 'jina.hub':
+            default_logger.debug(f'hub submodule is not initialized. Please try "git submodule update --init"')
         return {}
 
     modules = set()
