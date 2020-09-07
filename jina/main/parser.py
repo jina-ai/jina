@@ -75,6 +75,8 @@ def set_hub_new_parser(parser=None):
                         help='where to output the generated project dir into.')
     parser.add_argument('--template', type=str, default='https://github.com/jina-ai/cookiecutter-jina-hub.git',
                         help='s directory containing a project template directory, or a URL to a git repository.')
+    parser.add_argument('--type', type=str, default='pod',
+                        help='(pod|app) create a template for executor hub pod or jina app using cookiecutter.')
     parser.add_argument('--overwrite', action='store_true', default=False,
                         help='overwrite the contents of output directory if it exists')
     return parser
@@ -555,8 +557,8 @@ def get_main_parser():
                                         'to get detailed information about each sub-command', required=True)
 
     set_hub_new_parser(
-        spp.add_parser('new', help='create a new Hub executor using cookiecutter',
-                       description='Create a new Hub executor using cookiecutter',
+        spp.add_parser('new', help='create a new Hub executor(pod) or Jina app using cookiecutter',
+                       description='Create a new Hub executor(pod) or Jina app using cookiecutter',
                        formatter_class=_chf))
 
     set_hub_build_parser(

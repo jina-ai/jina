@@ -59,7 +59,10 @@ class HubIO:
             self.logger.critical('requires "cookiecutter" dependency, please install it via "pip install cookiecutter"')
             raise
 
-        cookiecutter(self.args.template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+        template = self.args.template
+        if self.args.type == 'app':
+            template = 'https://github.com/jina-ai/cookiecutter-jina.git'
+        cookiecutter(template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
 
     def push(self, name: str = None, readme_path: str = None):
         """A wrapper of docker push """
