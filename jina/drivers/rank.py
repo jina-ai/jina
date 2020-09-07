@@ -148,3 +148,55 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__
+
+
+class Matches2DocRankDriver(BaseRankDriver):
+    """ This driver is intended to only resort the given matches on the 0 level granularity for a document.
+    It gets the scores from a Ranking Executor, which does only change the scores of matches.
+    Afterwards, the Matches2DocRankDriver resorts all matches for a document.
+    Input-Output ::
+        Input:
+        document: {granularity: 0, adjacency: k}
+            |- matches: {granularity: 0, adjacency: k-1}
+        Output:
+        document: {granularity: 0, adjacency: k}
+            |- matches: {granularity: 0, adjacency: k-1} (Sorted according to scores from Ranker Executor)
+    """
+
+    def __init__(self, reverse=False, *args, **kwargs):
+        super().__init__(recur_on='matches', *args, **kwargs)
+        self.recursion_order = 'post'
+        self.reverse = reverse
+
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
+        """ Call executer for score and sort afterwards here. """
+
+        # if at the top-level already, no need to aggregate further
+        if context_doc is None:
+            return
+
+        query_meta = pb_obj2dict(context_doc, self.exec.required_keys)
+        old_match_scores = {match.id: match.score.value for match in docs}
+        match_meta = {pb_obj2dict(match, self.exec.required_keys) for match in docs}
+
+        # if there are no matches, no need to sort them
+        if not old_match_scores:
+            return
+
+        new_match_scores = self.exec.score(query_meta, old_match_scores, match_meta)
+
+        self._sort_matches_in_place(context_doc, new_match_scores)
+
+    def _sort_matches_in_place(self, context_doc, match_scores):
+        sorted_scores = self._sort(match_scores)
+
+        context_doc.ClearField('matches')
+        for match_id, score in sorted_scores:
+            new_match = context_doc.matches.add()
+            new_match.id = int(match_id)
+            new_match.ref_id = context_doc.id
+            new_match.value = score
+            new_match.op_name = exec.__class__.__name__
+
+    def _sort(self, docs_scores: 'np.ndarray'):
+        return docs_scores[docs_scores[:, -1].argsort()[::-1]]

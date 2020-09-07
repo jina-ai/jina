@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict
+from typing import Dict, List
 
 import numpy as np
 
@@ -94,3 +94,15 @@ class Chunk2DocRanker(BaseRanker):
 
     def get_doc_id(self, match_with_same_doc_id):
         return match_with_same_doc_id[0, self.col_doc_id]
+
+
+class Match2DocRanker(BaseRanker):
+    """ TODO: proper doc-string. possible concrete implementations:
+
+        - IdentityRanker
+        - ReverseRanker
+        - BucketShuffleRanker
+    """
+
+    def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':
+        raise NotImplementedError
