@@ -2,7 +2,7 @@ import os
 
 import pytest
 from jina.docker.hubio import HubIO
-from jina.main.parser import set_hub_build_parser, set_hub_pushpull_parser
+from jina.main.parser import set_hub_build_parser, set_hub_pushpull_parser, set_hub_new_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -34,3 +34,7 @@ def test_hub_build_no_pymodules():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull', '--push', '--test-uses'])
     assert not HubIO(args).build()['is_build_success']
+
+def test_hub_new():
+    args = set_hub_new_parser().parse_args('--template','--type')
+    HubIO(args).new()
