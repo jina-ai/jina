@@ -28,7 +28,6 @@ def build_image():
         client.close()
 
 
-# @unittest.skipUnless(os.getenv('JINA_TEST_CONTAINER', False), 'skip the container test if not set')
 class MyTestCase(JinaTestCase):
 
     def tearDown(self) -> None:
@@ -59,14 +58,14 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_with_one_container_pod(self):
         f = (Flow()
-             .add(name='dummyEncoder', uses=img_name))
+             .add(name='dummyEncoder1', uses=img_name))
 
         with f:
             f.index(input_fn=random_docs(10))
 
     def test_flow_with_one_container_ext_yaml(self):
         f = (Flow()
-             .add(name='dummyEncoder', uses=img_name,
+             .add(name='dummyEncoder2', uses=img_name,
                   uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml')))
 
         with f:
@@ -74,7 +73,7 @@ class MyTestCase(JinaTestCase):
 
     def test_flow_with_replica_container_ext_yaml(self):
         f = (Flow()
-             .add(name='dummyEncoder',
+             .add(name='dummyEncoder3',
                   uses=img_name,
                   uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_ext.yml'),
                   parallel=3))

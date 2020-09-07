@@ -103,6 +103,8 @@ def set_hub_build_parser(parser=None):
                         help='raise any error and exit with code 1')
     parser.add_argument('--test-uses', action='store_true', default=False,
                         help='after the build, test the image in "uses" with Flow API')
+    parser.add_argument('--daemon', action='store_true', default=False,
+                        help='run the test Pea/Pod as a daemon process, see "jina pea --help" for details')
     return parser
 
 
@@ -306,6 +308,9 @@ def set_pea_parser(parser=None):
     gp6.add_argument('--max-idle-time', type=int, default=60,
                      help='label this pea as inactive when it does not '
                           'process any request after certain time (in second)')
+    gp6.add_argument('--daemon', action='store_true', default=False,
+                     help='when a process exits, it attempts to terminate all of its daemonic child processes. '
+                          'setting it to true basically tell the context manager do not wait on this Pea')
 
     gp7 = add_arg_group(parser, 'logging arguments')
     gp7.add_argument('--log-sse', action='store_true', default=False,
