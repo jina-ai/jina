@@ -119,8 +119,6 @@ def import_classes(namespace: str, targets=None,
     try:
         path = os.path.dirname(pkgutil.get_loader(namespace).path)
     except AttributeError:
-        if namespace == 'jina.hub':
-            default_logger.error(f'hub submodule is not initialized. Please try "git submodule update --init"')
         return {}
 
     modules = set()
@@ -241,7 +239,7 @@ except ImportError:  # Windows
     res = None
 
 
-def raise_nofile(nofile_atleast=4096):
+def set_nofile(nofile_atleast=4096):
     """
     sets nofile soft limit to at least 4096, useful for running matlplotlib/seaborn on
     parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256
@@ -275,4 +273,4 @@ def raise_nofile(nofile_atleast=4096):
     return soft, hard
 
 
-raise_nofile()
+set_nofile()
