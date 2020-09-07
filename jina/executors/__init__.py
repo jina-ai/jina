@@ -408,6 +408,8 @@ class BaseExecutor(metaclass=ExecutorType):
 
                 tmp['metas']['separated_workspace'] = separated_workspace
                 tmp['metas']['replica_id'] = replica_id
+                # we force set the device id to metas,
+                # cause we don't want to let user to identify it, if we put it in resources meta
                 tmp['metas']['device_id'] = device_id
 
             else:
