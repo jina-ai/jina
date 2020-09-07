@@ -103,6 +103,8 @@ def set_hub_build_parser(parser=None):
                         help='raise any error and exit with code 1')
     parser.add_argument('--test-uses', action='store_true', default=False,
                         help='after the build, test the image in "uses" with Flow API')
+    parser.add_argument('--daemon', action='store_true', default=False,
+                        help='run the test Pea/Pod as a daemon process, see "jina pea --help" for details')
     return parser
 
 

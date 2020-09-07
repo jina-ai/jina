@@ -208,8 +208,12 @@ class HubIO:
                 if self.args.test_uses:
                     try:
                         from jina.flow import Flow
-                        with Flow().add(uses=image.tags[0]):
-                            pass
+                        if self.args.daemon:
+                            with Flow().add(uses=image.tags[0], daemon=True):
+                                pass
+                        else:
+                            with Flow().add(uses=image.tags[0]):
+                                pass
                     except PeaFailToStart:
                         self.logger.error(f'can not use it in the Flow')
                         is_build_success = False
