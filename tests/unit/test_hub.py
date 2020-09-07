@@ -37,4 +37,7 @@ def test_hub_build_no_pymodules():
 
 def test_hub_new():
     args = set_hub_new_parser().parse_args(['--output-dir','.','--type','app'])
-    HubIO(args).new()
+    HubIO(args).new(create_cookiecutter=False)
+
+    args = set_hub_new_parser().parse_args(['--output-dir','.','--type','pod'])
+    HubIO(args).new(create_cookiecutter=False)
