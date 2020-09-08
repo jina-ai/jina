@@ -74,6 +74,6 @@ To help users quickly use these patterns, we reserved the following keywords for
 
 ## How to use built-in Simple Executors?
 
-You can directly use this executor by specifying `--uses=_clear`, or use it in `--uses-reducing` after collecting results from replicas.
+You can directly use this executor by specifying `--uses=_clear`, or use it in `--uses-after` after collecting results from replicas.
 
 Where ever you need to use `uses` in Jina, you can take any one from the table to fill in.

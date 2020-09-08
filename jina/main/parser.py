@@ -347,8 +347,11 @@ def set_pod_parser(parser=None):
     gp4.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                      default=SchedulerType.LOAD_BALANCE,
                      help='the strategy of scheduling workload among peas')
-    gp4.add_argument('--uses-reducing', type=str, default='_merge',
-                     help='the executor used for reducing the result from all parallel, '
+    gp4.add_argument('--uses-before', type=str,
+                     help='the executor used before sending to all parallels, '
+                          'accepted type follows "--uses"')
+    gp4.add_argument('--uses-after', type=str,
+                     help='the executor used after receiving from all parallels, '
                           'accepted type follows "--uses"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')

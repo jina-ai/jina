@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import argparse
 import copy
 import time
+from argparse import Namespace
 from contextlib import ExitStack
 from queue import Empty
 from threading import Thread
@@ -15,9 +16,9 @@ from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
 from ..enums import *
-from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, is_valid_local_config_source
+from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, \
+    is_valid_local_config_source
 from ..main.parser import set_pod_parser, set_gateway_parser
-from argparse import Namespace
 
 
 class BasePod(ExitStack):
@@ -38,7 +39,7 @@ class BasePod(ExitStack):
         self.deducted_tail = None
         if hasattr(args, 'polling') and args.polling.is_push:
             # ONLY reset when it is push
-            args.uses_reducing = '_pass'
+            args.uses_after = '_pass'
 
         if getattr(args, 'parallel', 1) > 1:
             self.is_head_router = True
@@ -411,16 +412,16 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
             if as_router:
-                _head_args.uses = '_pass'
+                _head_args.uses = args.uses_before or '_pass'
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
             if as_router:
-                _head_args.uses = '_route'
+                _head_args.uses = args.uses_before or '_route'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
         _head_args.num_part = args.parallel
         if as_router:
-            _head_args.uses = '_pass'
+            _head_args.uses = args.uses_before or '_pass'
 
     if as_router:
         _head_args.name = args.name or ''
@@ -438,7 +439,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args.socket_in = SocketType.PULL_BIND
     _tail_args.uses = None
     if as_router:
-        _tail_args.uses = args.uses_reducing
+        _tail_args.uses = args.uses_after or '_merge'
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
 
@@ -450,7 +451,8 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     bind_local = (bind_args.host == '0.0.0.0')
     conn_local = (connect_args.host == '0.0.0.0')
-    conn_docker = (getattr(connect_args, 'uses', None) is not None and not is_valid_local_config_source(connect_args.uses))
+    conn_docker = (
+                getattr(connect_args, 'uses', None) is not None and not is_valid_local_config_source(connect_args.uses))
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
     if platform == "linux" or platform == "linux2":
         local_host = '0.0.0.0'

@@ -48,7 +48,7 @@ class FlowTestCase(JinaTestCase):
             pass
         time.sleep(2)
         f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=parallel,
-                       separated_workspace=True, polling='all', uses_reducing='_merge_all')
+                       separated_workspace=True, polling='all', uses_after='_merge_all')
         with f:
             f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
                      callback_on_body=True)
