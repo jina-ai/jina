@@ -11,6 +11,7 @@ In this guide we're going to go through the steps for each kind of contribution,
 
 
 - [🏁 Before you Start](#-before-you-start)
+- [Contributing 101](#contributing-101)
 - [🐞 Bugs and Issues](#-bugs-and-issues)
 - [🥇 Making Your First Submission](#-making-your-first-submission)
 - [☑️ Naming Conventions](#-naming-conventions)
