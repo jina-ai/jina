@@ -14,24 +14,25 @@ requests:
         with:
           start: 0
           end: 5
-          recur_on: matches
+          recur_depth_range: [0, 0]
+          recur_adjacency_range: [0, 1]
       - !VectorFillDriver
         with:
           recur_on: matches
       - !VectorSearchDriver  # then go for the first-degree matches
         with:
-          recur_on: matches
-          recur_range: [ 0, 1 ]
+          recur_depth_range: [0, 0]
+          recur_adjacency_range: [0, 1]
       - !SliceQL
         with:
           start: 0
           end: 5
-          recur_on: matches
-          recur_range: [ 0, 2 ]
+          recur_depth_range: [0, 0]
+          recur_adjacency_range: [0, 2]
       - !VectorFillDriver
         with:
-          recur_on: matches
-          recur_range: [ 0, 3 ]
+          recur_depth_range: [0, 0]
+          recur_adjacency_range: [0, 3]
     IndexRequest:
       - !ExcludeQL
         with:

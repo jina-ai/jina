@@ -219,8 +219,12 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, recur_depth_range: Tuple[int, int] = (0, 1), recur_adjacency_range: Tuple[int, int] = (0, 0),
-                 apply_order: str = 'post', *args, **kwargs):
+    def __init__(self,
+                 recur_depth_range: Tuple[int, int] = (0, 1),
+                 recur_adjacency_range: Tuple[int, int] = (0, 0),
+                 apply_order: str = 'post',
+                 *args,
+                 **kwargs):
         """
 
         :param recur_depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only

@@ -13,17 +13,16 @@ requests:
         with:
           top_k: 5
           fill_embedding: true
-          recur_on: chunks
       - !VectorSearchDriver
         with:
           top_k: 5
           fill_embedding: true
-          recur_on: matches
-          recur_range: [0, 1]
+          recur_depth_range: [0, 0]
+          recur_adjacency_range: [0, 1]
     IndexRequest:
       - !ExcludeQL
         with:
           fields:
             - buffer
             - chunks
-      - !VectorIndexDriver { }
+      - !VectorIndexDriver {}
