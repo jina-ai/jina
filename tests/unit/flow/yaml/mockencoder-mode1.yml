@@ -5,8 +5,8 @@ requests:
       - !FilterQL
         with:
           lookups: {modality__in: [mode1]}
-          recur_range: [1, 2]
+          recur_depth_range: [1, 2]
       - !EncodeDriver
         with:
           method: encode
-          recur_range: [1, 2]
+          recur_depth_range: [1, 2]
