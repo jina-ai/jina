@@ -7,9 +7,9 @@ metas:
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver { }
+      - !ControlReqDriver {}
     SearchRequest:
-      - !VectorSearchDriver { }  # first match on the doc
+      - !VectorSearchDriver {}  # first match on the doc
       - !SliceQL
         with:
           start: 0
@@ -39,4 +39,4 @@ requests:
           fields:
             - buffer
             - chunks
-      - !VectorIndexDriver { }
+      - !VectorIndexDriver {}

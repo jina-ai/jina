@@ -7,7 +7,7 @@ metas:
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver { }
+      - !ControlReqDriver {}
     SearchRequest:
       - !VectorSearchDriver
         with:
