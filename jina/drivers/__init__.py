@@ -219,7 +219,7 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, recur_depth_range: Tuple[int] = (0, 1), recur_adjacency_range: Tuple[int] = (0, 0),
+    def __init__(self, recur_depth_range: Tuple[int, int] = (0, 1), recur_adjacency_range: Tuple[int, int] = (0, 0),
                  apply_order: str = 'post', *args, **kwargs):
         """
 
@@ -307,13 +307,13 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
-        if (self._depth_start[0] < self._depth_start[1]) or \
-                (self._depth_start[0] == self._depth_start[1] and self._depth_start[0] > 0):
+        if (self._depth_start < self._depth_end) or \
+                (self._depth_start == self._depth_end and self._depth_start > 0):
             depth_name = 'granularity'
             _traverse(docs, 'chunks')
 
-        if (self._adjacency_start[0] < self._adjacency_start[1]) or \
-                (self._adjacency_start[0] == self._adjacency_start[1] and self._adjacency_start[0] > 0):
+        if (self._adjacency_start < self._adjacency_end) or \
+                (self._adjacency_start == self._adjacency_end and self._adjacency_start > 0):
 
             if self.request_type == 'IndexRequest':
                 self.logger.warning(f'Trying to recurse on matches on an IndexRequest, please double check your '
