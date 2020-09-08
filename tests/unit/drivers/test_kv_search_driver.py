@@ -5,7 +5,6 @@ from jina.drivers.search import KVSearchDriver
 from jina.drivers.helper import array2pb, pb2array
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from tests import JinaTestCase
 
 
 class MockIndexer(BaseKVIndexer):
@@ -52,7 +51,7 @@ class MockIndexer(BaseKVIndexer):
 
 class SimpleKVSearchDriver(KVSearchDriver):
 
-    def __init__(self, top_k,  *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @property
@@ -69,31 +68,90 @@ def create_document_to_search():
     #        - chunk: 5 - will be missing from KV indexer
     # ....
     doc = jina_pb2.Document()
+    doc.granularity = 0
     doc.id = 0
     for c in range(5):
         chunk = doc.chunks.add()
+        chunk.granularity = doc.granularity + 1
         chunk.id = c + 1
     return doc
 
 
-class VectorSearchDriverTestCase(JinaTestCase):
+def create_document_to_search_with_matches_on_chunks():
+    # 1-D embedding
+    # doc: 0 - chunk: 1
+    #        - chunk: 2
+    #        - chunk: 3
+    #        - chunk: 4
+    #        - chunk: 5 - will be missing from KV indexer
+    # ....
+    doc = jina_pb2.Document()
+    doc.id = 0
+    doc.granularity = 0
+    chunk = doc.chunks.add()
+    chunk.id = 1
+    chunk.granularity = doc.granularity + 1
+    for m in range(5):
+        match = chunk.matches.add()
+        match.id = chunk.id + m + 1
+    return doc
 
-    def test_vectorsearch_driver_mock_indexer(self):
-        doc = create_document_to_search()
-        driver = SimpleKVSearchDriver(top_k=2)
-        executor = MockIndexer()
-        driver.attach(executor=executor, pea=None)
 
-        assert len(doc.chunks) == 5
-        for chunk in doc.chunks:
-            assert chunk.embedding.buffer == b''
+def test_vectorsearch_driver_mock_indexer_apply_all():
+    doc = create_document_to_search()
+    driver = SimpleKVSearchDriver()
 
-        driver._apply_all(doc.chunks)
+    executor = MockIndexer()
+    driver.attach(executor=executor, pea=None)
 
-        # chunk idx: 5 had no matched and is removed as missing idx
-        assert len(doc.chunks) == 4
-        for chunk in doc.chunks:
-            self.assertNotEqual(chunk.embedding.buffer, b'')
-            embedding_array = pb2array(chunk.embedding)
-            np.testing.assert_equal(embedding_array, np.array([chunk.id]))
+    assert len(doc.chunks) == 5
+    for chunk in doc.chunks:
+        assert chunk.embedding.buffer == b''
+
+    driver._apply_all(doc.chunks)
+
+    # chunk idx: 5 had no matched and is removed as missing idx
+    assert len(doc.chunks) == 4
+    for chunk in doc.chunks:
+        assert chunk.embedding.buffer != b''
+        embedding_array = pb2array(chunk.embedding)
+        np.testing.assert_equal(embedding_array, np.array([chunk.id]))
+
+
+def test_vectorsearch_driver_mock_indexer_traverse_apply():
+    doc = create_document_to_search()
+    driver = SimpleKVSearchDriver()
+
+    executor = MockIndexer()
+    driver.attach(executor=executor, pea=None)
+
+    assert len(doc.chunks) == 5
+    for chunk in doc.chunks:
+        assert chunk.embedding.buffer == b''
+
+    driver._traverse_apply(doc.chunks)
+
+    # chunk idx: 5 had no matched and is removed as missing idx
+    assert len(doc.chunks) == 4
+    for chunk in doc.chunks:
+        assert chunk.embedding.buffer != b''
+        embedding_array = pb2array(chunk.embedding)
+        np.testing.assert_equal(embedding_array, np.array([chunk.id]))
+
+
+def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
+    driver = SimpleKVSearchDriver(recur_depth_range=[1, 1], recur_adjacency_range=[0, 1])
+    executor = MockIndexer()
+    driver.attach(executor=executor, pea=None)
+    doc = create_document_to_search_with_matches_on_chunks()
+
+    driver._traverse_apply([doc])
+
+    assert len(doc.chunks) == 1
+    chunk = doc.chunks[0]
+    assert len(chunk.matches) == 3 # 2 missed
+    for match in chunk.matches:
+        assert match.embedding.buffer != b''
+        embedding_array = pb2array(match.embedding)
+        np.testing.assert_equal(embedding_array, np.array([match.id]))
 

@@ -1,12 +1,12 @@
 from typing import Tuple
 
 import numpy as np
+import pytest
 
 from jina.drivers.helper import array2pb
 from jina.drivers.search import VectorSearchDriver
 from jina.executors.indexers import BaseVectorIndexer
 from jina.proto import jina_pb2
-from tests import JinaTestCase
 
 
 class MockIndexer(BaseVectorIndexer):
@@ -70,44 +70,44 @@ def create_document_to_search():
     return doc
 
 
-class VectorSearchDriverTestCase(JinaTestCase):
+def test_vectorsearch_driver_mock_queryset():
+    # no queryset
+    driver = VectorSearchDriver(top_k=3)
+    assert driver.top_k == 3
 
-    def test_vectorsearch_driver_mock_queryset(self):
-        # no queryset
-        driver = VectorSearchDriver(top_k=3)
-        assert driver.top_k == 3
+    # with queryset
+    driver = SimpleVectorSearchDriver(top_k=3)
+    assert driver.top_k == 4
 
-        # with queryset
-        driver = SimpleVectorSearchDriver(top_k=3)
-        assert driver.top_k == 4
 
-    def test_vectorsearch_driver_mock_indexer(self):
-        doc = create_document_to_search()
-        driver = SimpleVectorSearchDriver(top_k=2)
-        executor = MockIndexer()
-        driver.attach(executor=executor, pea=None)
-        driver._apply_all(doc.chunks)
+def test_vectorsearch_driver_mock_indexer():
+    doc = create_document_to_search()
+    driver = SimpleVectorSearchDriver(top_k=2)
+    executor = MockIndexer()
+    driver.attach(executor=executor, pea=None)
+    driver._apply_all(doc.chunks)
 
-        for chunk in doc.chunks:
-            assert len(chunk.matches) == 2
-            assert chunk.matches[0].id == chunk.id * 100
-            assert chunk.matches[1].id == chunk.id * 1000
-            assert chunk.matches[0].granularity == chunk.granularity
-            assert chunk.matches[1].granularity == chunk.granularity
-            assert chunk.matches[0].score.ref_id == chunk.id
-            assert chunk.matches[1].score.ref_id == chunk.id
-            self.assertAlmostEqual(chunk.matches[0].score.value, chunk.id * 0.01)
-            self.assertAlmostEqual(chunk.matches[1].score.value, chunk.id * 0.1)
-            assert chunk.matches[-1].embedding.buffer == b''
+    for chunk in doc.chunks:
+        assert len(chunk.matches) == 2
+        assert chunk.matches[0].id == chunk.id * 100
+        assert chunk.matches[1].id == chunk.id * 1000
+        assert chunk.matches[0].granularity == chunk.granularity
+        assert chunk.matches[1].granularity == chunk.granularity
+        assert chunk.matches[0].score.ref_id == chunk.id
+        assert chunk.matches[1].score.ref_id == chunk.id
+        assert chunk.matches[0].score.value == pytest.approx(chunk.id * 0.01, 0.0001)
+        assert chunk.matches[1].score.value == pytest.approx(chunk.id * 0.1, 0.0001)
+        assert chunk.matches[-1].embedding.buffer == b''
 
-    def test_vectorsearch_driver_mock_indexer_with_fill(self):
-        doc = create_document_to_search()
-        driver = SimpleVectorSearchDriver(top_k=2, fill_embedding=True)
-        executor = MockIndexer()
-        driver.attach(executor=executor, pea=None)
-        driver._apply_all(doc.chunks)
 
-        for chunk in doc.chunks:
-            assert chunk.matches[0].embedding.shape == [7]
-            assert chunk.matches[-1].embedding.shape == [7]
-            assert chunk.matches[-1].embedding.buffer != b''
+def test_vectorsearch_driver_mock_indexer_with_fill():
+    doc = create_document_to_search()
+    driver = SimpleVectorSearchDriver(top_k=2, fill_embedding=True)
+    executor = MockIndexer()
+    driver.attach(executor=executor, pea=None)
+    driver._apply_all(doc.chunks)
+
+    for chunk in doc.chunks:
+        assert chunk.matches[0].embedding.shape == [7]
+        assert chunk.matches[-1].embedding.shape == [7]
+        assert chunk.matches[-1].embedding.buffer != b''
