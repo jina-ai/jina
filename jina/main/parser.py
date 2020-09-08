@@ -177,7 +177,7 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
     from pkg_resources import resource_filename
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
