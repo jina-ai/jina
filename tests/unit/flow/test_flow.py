@@ -2,12 +2,12 @@ import os
 import unittest
 
 import requests
+
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel, SocketType
 from jina.flow import Flow
 from jina.main.checker import NetworkChecker
-from jina.main.parser import set_pea_parser, set_ping_parser
-from jina.main.parser import set_pod_parser
+from jina.main.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto.jina_pb2 import Document
@@ -410,7 +410,6 @@ class FlowTestCase(JinaTestCase):
                 assert node.peas_args['peas'][0] == node.head_args
                 assert node.peas_args['peas'][0] == node.tail_args
 
-
     def test_refactor_num_part_proxy(self):
         f = (Flow().add(name='r1', uses='_logforward')
              .add(name='r2', uses='_logforward', needs='r1')
@@ -437,7 +436,6 @@ class FlowTestCase(JinaTestCase):
             for name, node in f._pod_nodes.items():
                 assert node.peas_args['peas'][0] == node.head_args
                 assert node.peas_args['peas'][0] == node.tail_args
-
 
     def test_refactor_num_part_proxy_2(self):
         f = (Flow().add(name='r1', uses='_logforward')
@@ -502,7 +500,7 @@ class FlowTestCase(JinaTestCase):
             doc3.modality = 'mode3'
             return [doc1, doc2, doc3]
 
-        flow = Flow().add(name='chunk_seg', parallel=3, uses='_pass').\
+        flow = Flow().add(name='chunk_seg', parallel=3, uses='_pass'). \
             add(name='encoder12', parallel=2,
                 uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, recur_range: [0, 1]}')
         with flow:
@@ -512,6 +510,13 @@ class FlowTestCase(JinaTestCase):
         f = Flow.load_config('yaml/test-flow-port.yml')
         with f:
             assert f.port_expose == 12345
+
+    def test_load_flow_from_cli(self):
+        a = set_flow_parser().parse_args(['--uses', 'yaml/test-flow-port.yml'])
+        f = Flow.load_config(a.uses)
+        with f:
+            assert f.port_expose == 12345
+
 
 if __name__ == '__main__':
     unittest.main()
