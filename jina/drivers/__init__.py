@@ -148,10 +148,6 @@ class BaseDriver(metaclass=DriverType):
         return self.pea.request
 
     @property
-    def request_type(self) -> str:
-        return self.req.__class__.__name__
-
-    @property
     def msg(self) -> 'jina_pb2.Message':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message
@@ -318,10 +314,6 @@ class BaseRecursiveDriver(BaseDriver):
 
         if (self._adjacency_start < self._adjacency_end) or \
                 (self._adjacency_start == self._adjacency_end and self._adjacency_start > 0):
-
-            if self.request_type == 'IndexRequest':
-                self.logger.warning(f'Trying to recurse on matches on an IndexRequest, please double check your '
-                                    f'Driver design')
 
             depth_name = 'adjacency'
             for d in docs:
