@@ -148,6 +148,10 @@ class BaseDriver(metaclass=DriverType):
         return self.pea.request
 
     @property
+    def request_type(self) -> str:
+        return self.req.__class__.__name__
+
+    @property
     def msg(self) -> 'jina_pb2.Message':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message
@@ -215,8 +219,8 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, recur_range: Tuple[int] = (0, 1), apply_order: str = 'post',
-                 recur_on: Tuple[str] = ('chunks',), *args, **kwargs):
+    def __init__(self, recur_depth_range: Tuple[int] = (0, 1), recur_adjacency_range: Tuple[int] = (0, 0),
+                 apply_order: str = 'post', *args, **kwargs):
         """
 
         :param recur_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
@@ -225,11 +229,10 @@ class BaseRecursiveDriver(BaseDriver):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._depth_start = recur_range[0]
-        self._depth_end = recur_range[1]
-        if isinstance(recur_on, str):
-            recur_on = (recur_on,)
-        self.traverse_fields = set(recur_on)
+        self._depth_start = recur_depth_range[0]
+        self._depth_end = recur_depth_range[1]
+        self._adjacency_start = recur_adjacency_range[0]
+        self._adjacency_end = recur_adjacency_range[1]
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
         else:
@@ -303,14 +306,26 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
-        if 'chunks' in self.traverse_fields:
+        if (self._depth_start[0] < self._depth_start[1]) or \
+                (self._depth_start[0] == self._depth_start[1] and self._depth_start[0] > 0):
             depth_name = 'granularity'
             _traverse(docs, 'chunks')
 
-        if 'matches' in self.traverse_fields:
+        if (self._adjacency_start[0] < self._adjacency_start[1]) or \
+                (self._adjacency_start[0] == self._adjacency_start[1] and self._adjacency_start[0] > 0):
+
+            if self.request_type == 'IndexRequest':
+                self.logger.warning(f'Trying to recurse on matches on an IndexRequest, please double check your '
+                                    f'Driver design')
+
             depth_name = 'adjacency'
             for d in docs:
-                _traverse(d.matches, 'matches')
+                # Move to starting depth range
+                # assume that these search docs have a maximum of one chunk per document (common pattern in search)
+                working_doc = d
+                while working_doc.level_depth < self._depth_start[0]:
+                    working_doc = working_doc.chunks[0]
+                _traverse(working_doc.matches, 'matches')
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
