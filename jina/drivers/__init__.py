@@ -223,7 +223,8 @@ class BaseRecursiveDriver(BaseDriver):
                  apply_order: str = 'post', *args, **kwargs):
         """
 
-        :param recur_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param recur_depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param recur_adjacency_range: right-exclusive range of the recursion adjacency, (0, 1) for single matches
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:

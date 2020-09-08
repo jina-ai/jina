@@ -15,17 +15,20 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
         Example::
         - !ReduceAllDriver
             with:
-                recur_on: matches
+                recur_depth_range: [0, 0]
+                recur_adjacency_range: [0, 1]
         - !SortQL
             with:
                 reverse: true
                 field: 'score.value'
-                recur_on: matches
+                recur_depth_range: [0, 0]
+                recur_adjacency_range: [0, 1]
         - !SliceQL
             with:
                 start: 0
                 end: 50
-                recur_on: matches
+                recur_depth_range: [0, 0]
+                recur_adjacency_range: [0, 1]
 
         `SliceQL` will ensure that only the first 50 documents are returned from this `Pod`
     """

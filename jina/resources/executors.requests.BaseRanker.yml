@@ -12,10 +12,11 @@ on:
     - !SortQL
       with:
         field: 'score.value'
-        recur_on: matches
+        recur_depth_range: [0, 0]
+        recur_adjacency_range: [0, 1]
     - !SliceQL
       with:
-        recur_range: [0, 1]  # prune root and 1st level
+        recur_depth_range: [0, 0]
+        recur_adjacency_range: [0, 1]
         start: 0
         end: 50
-        recur_on: matches
