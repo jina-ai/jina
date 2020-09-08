@@ -80,7 +80,7 @@ def flow(args):
     """Start a Flow from a YAML file or a docker image"""
     from ..flow import Flow
     if args.yaml_path:
-        f = Flow.load_config(args.uses)
+        f = Flow.load_config(args.yaml_path)
         f._update_args(args)
         with f:
             f.block()
