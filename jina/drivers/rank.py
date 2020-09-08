@@ -157,10 +157,10 @@ class Matches2DocRankDriver(BaseRankDriver):
     Input-Output ::
         Input:
         document: {granularity: 0, adjacency: k}
-            |- matches: {granularity: 0, adjacency: k-1}
+            |- matches: {granularity: 0, adjacency: k+1}
         Output:
         document: {granularity: 0, adjacency: k}
-            |- matches: {granularity: 0, adjacency: k-1} (Sorted according to scores from Ranker Executor)
+            |- matches: {granularity: 0, adjacency: k+1} (Sorted according to scores from Ranker Executor)
     """
 
     def __init__(self, reverse=False, *args, **kwargs):
