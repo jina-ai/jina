@@ -96,7 +96,7 @@ def test_filter_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {id: 2}, recur_depth_range: [0, 0], recur_adjacency_range: [0, 0]}'))
+        uses='- !FilterQL | {lookups: {id: 2}, recur_depth_range: [0, 1], recur_adjacency_range: [0, 1]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
@@ -138,7 +138,7 @@ def test_filter_compose_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {id: 2, text__contains: hello}, recur_depth_range: [0, 0], recur_adjacency_range: [0, 0]}'))
+        uses='- !FilterQL | {lookups: {id: 2, text__contains: hello}, recur_depth_range: [0, 1], recur_adjacency_range: [0, 1]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
