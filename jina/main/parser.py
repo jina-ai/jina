@@ -177,7 +177,7 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
     from pkg_resources import resource_filename
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
@@ -560,7 +560,7 @@ def get_main_parser():
                                         'to get detailed information about each sub-command', required=True)
 
     set_hub_new_parser(
-        spp.add_parser('new', help='create a new Hub executor using cookiecutter',
+        spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor using cookiecutter',
                        description='Create a new Hub executor using cookiecutter',
                        formatter_class=_chf))
 

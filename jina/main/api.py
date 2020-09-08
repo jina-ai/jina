@@ -79,17 +79,18 @@ def hello_world(args):
 def flow(args):
     """Start a Flow from a YAML file or a docker image"""
     from ..flow import Flow
-    if args.yaml_path:
-        f = Flow.load_config(args.yaml_path)
+    if args.uses:
+        f = Flow.load_config(args.uses)
         f._update_args(args)
         with f:
             f.block()
     else:
         from jina.logging import default_logger
-        default_logger.critical('start a flow from CLI requires a valid "--yaml-path"')
+        default_logger.critical('start a flow from CLI requires a valid "--uses"')
 
 
 def hub(args):
     """Start a hub builder for build, push, pull"""
     from jina.docker.hubio import HubIO
     getattr(HubIO(args), args.hub)()
+
