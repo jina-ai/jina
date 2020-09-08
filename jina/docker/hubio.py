@@ -59,12 +59,18 @@ class HubIO:
             self.logger.critical('requires "cookiecutter" dependency, please install it via "pip install cookiecutter"')
             raise
 
+        import click
         cookiecutter_template = self.args.template
         if self.args.type == 'app':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina.git'
         elif self.args.type == 'pod':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
         cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+        
+        try:
+            cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+        except click.exceptions.Abort:
+            self.logger.info('nothing is created, bye!')
 
     def push(self, name: str = None, readme_path: str = None):
         """A wrapper of docker push """
@@ -213,7 +219,7 @@ class HubIO:
                 if self.args.test_uses:
                     try:
                         from jina.flow import Flow
-                        with Flow().add(uses=image.tags[0]):
+                        with Flow().add(uses=image.tags[0], daemon=self.args.daemon):
                             pass
                     except PeaFailToStart:
                         self.logger.error(f'can not use it in the Flow')
@@ -364,3 +370,7 @@ class HubIO:
         for k in revised_dockerfile:
             self.logger.debug(k)
         return f
+
+    # alias of "new" in cli
+    create = new
+    init = new

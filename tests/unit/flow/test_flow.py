@@ -1,11 +1,7 @@
 import os
-import time
 import unittest
-from time import sleep
 
-import pytest
 import requests
-
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel, SocketType
 from jina.flow import Flow
@@ -511,6 +507,11 @@ class FlowTestCase(JinaTestCase):
                 uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, recur_range: [0, 1]}')
         with flow:
             flow.index(input_fn=input_fn, output_fn=validate)
+
+    def test_load_flow_with_port(self):
+        f = Flow.load_config('yaml/test-flow-port.yml')
+        with f:
+            assert f.port_expose == 12345
 
 if __name__ == '__main__':
     unittest.main()

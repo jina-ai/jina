@@ -105,6 +105,8 @@ def set_hub_build_parser(parser=None):
                         help='raise any error and exit with code 1')
     parser.add_argument('--test-uses', action='store_true', default=False,
                         help='after the build, test the image in "uses" with Flow API')
+    parser.add_argument('--daemon', action='store_true', default=False,
+                        help='run the test Pea/Pod as a daemon process, see "jina pea --help" for details')
     return parser
 
 
@@ -177,7 +179,7 @@ def set_flow_parser(parser=None):
     from ..enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
-    gp.add_argument('--yaml-path', type=str, help='a yaml file represents a flow')
+    gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
     from pkg_resources import resource_filename
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
@@ -308,6 +310,9 @@ def set_pea_parser(parser=None):
     gp6.add_argument('--max-idle-time', type=int, default=60,
                      help='label this pea as inactive when it does not '
                           'process any request after certain time (in second)')
+    gp6.add_argument('--daemon', action='store_true', default=False,
+                     help='when a process exits, it attempts to terminate all of its daemonic child processes. '
+                          'setting it to true basically tell the context manager do not wait on this Pea')
 
     gp7 = add_arg_group(parser, 'logging arguments')
     gp7.add_argument('--log-sse', action='store_true', default=False,
@@ -557,7 +562,7 @@ def get_main_parser():
                                         'to get detailed information about each sub-command', required=True)
 
     set_hub_new_parser(
-        spp.add_parser('new', help='create a new Hub executor or app using cookiecutter',
+        spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor or app using cookiecutter',
                        description='Create a new Hub executor or app using cookiecutter',
                        formatter_class=_chf))
 
