@@ -51,7 +51,7 @@ class HubIO:
             self.logger.critical('requires "docker" dependency, please install it via "pip install jina[docker]"')
             raise
 
-    def new(self, create_cookiecutter: bool = True):
+    def new(self):
         """Create a new executor using cookiecutter template """
         try:
             from cookiecutter.main import cookiecutter
@@ -64,8 +64,7 @@ class HubIO:
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina.git'
         elif self.args.type == 'pod':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
-        if create_cookiecutter:
-            cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+        cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
 
     def push(self, name: str = None, readme_path: str = None):
         """A wrapper of docker push """

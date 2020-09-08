@@ -34,10 +34,3 @@ def test_hub_build_no_pymodules():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull', '--push', '--test-uses'])
     assert not HubIO(args).build()['is_build_success']
-
-def test_hub_new():
-    args = set_hub_new_parser().parse_args(['--output-dir','.','--type','app'])
-    HubIO(args).new(create_cookiecutter=False)
-
-    args = set_hub_new_parser().parse_args(['--output-dir','.','--type','pod'])
-    HubIO(args).new(create_cookiecutter=False)
