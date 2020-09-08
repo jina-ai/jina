@@ -28,8 +28,6 @@ def test_high_order_matches():
     with f:
         f.search(random_docs(1), output_fn=validate)
 
-    shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
-
 
 def test_high_order_matches_integrated():
     # this is equivalent to the last test but with simplified YAML spec.
@@ -41,10 +39,9 @@ def test_high_order_matches_integrated():
     with f:
         f.search(random_docs(1), output_fn=validate)
 
-    shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
-
 
 def validate(req):
+    shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
     assert len(req.docs) == 1
     assert len(req.docs[0].matches) == 5
     assert len(req.docs[0].matches) == 5

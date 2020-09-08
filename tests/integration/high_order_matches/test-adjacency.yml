@@ -18,7 +18,8 @@ requests:
           recur_adjacency_range: [0, 1]
       - !VectorFillDriver
         with:
-          recur_on: matches
+          recur_depth_range: [0, 0]
+          recur_adjacency_range: [0, 1]
       - !VectorSearchDriver  # then go for the first-degree matches
         with:
           recur_depth_range: [0, 0]

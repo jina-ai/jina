@@ -266,7 +266,7 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def post_traverse(_docs, recur_on, context_doc=None):
+        def post_traverse(_docs, recur_on, context_doc=None, depth_name='granularity', recur_start=0, recur_end=1):
             """
             :param _docs: list of docs
             :param recur_on: "matches" or "chunks"
@@ -276,29 +276,29 @@ class BaseRecursiveDriver(BaseDriver):
             if _docs:
                 for d in _docs:
                     # check if apply to next level
-                    if getattr(d, depth_name) < self._depth_end:
-                        post_traverse(getattr(d, recur_on), recur_on, d)
+                    if getattr(d, depth_name) < recur_end:
+                        post_traverse(getattr(d, recur_on), recur_on, d, depth_name, recur_start, recur_end)
                     # check if apply to the current level
-                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
+                    if self._is_apply and recur_start <= getattr(d, depth_name) < recur_end:
                         self._apply(d, context_doc, recur_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
-                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= recur_start:
                     self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
-        def pre_traverse(_docs, recur_on, context_doc=None):
+        def pre_traverse(_docs, recur_on, context_doc=None, depth_name='granularity', recur_start=0, recur_end=1):
             if _docs:
                 # check first doc if in the required depth range
-                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= recur_start:
                     self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
                 for d in _docs:
                     # check if apply on the current level
-                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
+                    if self._is_apply and recur_start <= getattr(d, depth_name) < recur_end:
                         self._apply(d, context_doc, recur_on, *args, **kwargs)
                     # check if apply to the next level
-                    if getattr(d, depth_name) < self._depth_end:
-                        pre_traverse(getattr(d, recur_on), recur_on, d)
+                    if getattr(d, depth_name) < recur_end:
+                        pre_traverse(getattr(d, recur_on), recur_on, d, depth_name, recur_start, recur_end)
 
         if self.recursion_order == 'post':
             _traverse = post_traverse
@@ -309,20 +309,18 @@ class BaseRecursiveDriver(BaseDriver):
 
         if (self._depth_start < self._depth_end) or \
                 (self._depth_start == self._depth_end and self._depth_start > 0):
-            depth_name = 'granularity'
-            _traverse(docs, 'chunks')
+            _traverse(docs, 'chunks', None, 'granularity', self._depth_start, self._depth_end)
 
         if (self._adjacency_start < self._adjacency_end) or \
                 (self._adjacency_start == self._adjacency_end and self._adjacency_start > 0):
 
-            depth_name = 'adjacency'
             for d in docs:
                 # Move to starting depth range
                 # assume that these search docs have a maximum of one chunk per document (common pattern in search)
                 working_doc = d
                 while working_doc.granularity < self._depth_start:
                     working_doc = working_doc.chunks[0]
-                _traverse(working_doc.matches, 'matches')
+                _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
