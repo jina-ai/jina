@@ -59,7 +59,11 @@ class HubIO:
             self.logger.critical('requires "cookiecutter" dependency, please install it via "pip install cookiecutter"')
             raise
 
-        cookiecutter(self.args.template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+        import click
+        try:
+            cookiecutter(self.args.template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+        except click.exceptions.Abort:
+            self.logger.info('nothing is created, bye!')
 
     def push(self, name: str = None, readme_path: str = None):
         """A wrapper of docker push """
@@ -359,3 +363,7 @@ class HubIO:
         for k in revised_dockerfile:
             self.logger.debug(k)
         return f
+
+    # alias of "new" in cli
+    create = new
+    init = new

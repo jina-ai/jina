@@ -560,7 +560,7 @@ def get_main_parser():
                                         'to get detailed information about each sub-command', required=True)
 
     set_hub_new_parser(
-        spp.add_parser('new', help='create a new Hub executor using cookiecutter',
+        spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor using cookiecutter',
                        description='Create a new Hub executor using cookiecutter',
                        formatter_class=_chf))
 

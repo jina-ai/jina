@@ -93,3 +93,4 @@ def hub(args):
     """Start a hub builder for build, push, pull"""
     from jina.docker.hubio import HubIO
     getattr(HubIO(args), args.hub)()
+
