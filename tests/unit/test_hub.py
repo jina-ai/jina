@@ -2,7 +2,7 @@ import os
 
 import pytest
 from jina.docker.hubio import HubIO
-from jina.main.parser import set_hub_build_parser, set_hub_pushpull_parser
+from jina.main.parser import set_hub_build_parser, set_hub_pushpull_parser, set_hub_new_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

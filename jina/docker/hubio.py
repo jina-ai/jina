@@ -60,8 +60,15 @@ class HubIO:
             raise
 
         import click
+        cookiecutter_template = self.args.template
+        if self.args.type == 'app':
+            cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina.git'
+        elif self.args.type == 'pod':
+            cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
+        cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+        
         try:
-            cookiecutter(self.args.template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+            cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
         except click.exceptions.Abort:
             self.logger.info('nothing is created, bye!')
 
