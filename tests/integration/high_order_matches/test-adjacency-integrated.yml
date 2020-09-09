@@ -17,7 +17,7 @@ requests:
         with:
           top_k: 5
           fill_embedding: true
-          depth_range: [0, 0]
+          granularity_range: [0, 0]
           adjacency_range: [0, 1]
     IndexRequest:
       - !ExcludeQL

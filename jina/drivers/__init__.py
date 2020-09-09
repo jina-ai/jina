@@ -216,21 +216,21 @@ class BaseDriver(metaclass=DriverType):
 class BaseRecursiveDriver(BaseDriver):
 
     def __init__(self,
-                 depth_range: Tuple[int, int] = (0, 1),
+                 granularity_range: Tuple[int, int] = (0, 1),
                  adjacency_range: Tuple[int, int] = (0, 0),
                  apply_order: str = 'post',
                  *args,
                  **kwargs):
         """
 
-        :param depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param granularity_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
         :param adjacency_range: right-exclusive range of the recursion adjacency, (0, 1) for single matches
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._depth_start, self._depth_end = depth_range
+        self._granularity_start, self._granularity_end = granularity_range
         self._adjacency_start, self._adjacency_end = adjacency_range
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
@@ -319,9 +319,9 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
-        if (self._depth_start < self._depth_end) or \
-                (self._depth_start == self._depth_end and self._depth_start > 0):
-            _traverse(docs, 'chunks', None, 'granularity', self._depth_start, self._depth_end)
+        if (self._granularity_start < self._granularity_end) or \
+                (self._granularity_start == self._granularity_end and self._granularity_start > 0):
+            _traverse(docs, 'chunks', None, 'granularity', self._granularity_start, self._granularity_end)
 
         if (self._adjacency_start < self._adjacency_end) or \
                 (self._adjacency_start == self._adjacency_end and self._adjacency_start > 0):
@@ -330,7 +330,7 @@ class BaseRecursiveDriver(BaseDriver):
                 # Move to starting depth range
                 # assume that these search docs have a maximum of one chunk per document (common pattern in search)
                 working_doc = d
-                while working_doc.granularity < self._depth_start:
+                while working_doc.granularity < self._granularity_start:
                     working_doc = working_doc.chunks[0]
                 _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
 

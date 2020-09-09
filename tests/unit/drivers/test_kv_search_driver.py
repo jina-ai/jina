@@ -140,7 +140,7 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply():
 
 
 def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
-    driver = SimpleKVSearchDriver(depth_range=[1, 1], adjacency_range=[0, 1])
+    driver = SimpleKVSearchDriver(granularity_range=[1, 1], adjacency_range=[0, 1])
     executor = MockIndexer()
     driver.attach(executor=executor, pea=None)
     doc = create_document_to_search_with_matches_on_chunks()

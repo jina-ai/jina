@@ -46,7 +46,7 @@ class SegmentDriver(CraftDriver):
     def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = True,
                  level_names: List[str] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if isinstance(level_names, list) and (self._depth_end - self._depth_start + 1) != len(self.level_names):
+        if isinstance(level_names, list) and (self._granularity_end - self._granularity_start + 1) != len(self.level_names):
             self.level_names = level_names
         elif level_names is None:
             pass

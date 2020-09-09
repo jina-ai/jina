@@ -5,8 +5,8 @@ requests:
       - !FilterQL
         with:
           lookups: {modality__in: [mode2]}
-          depth_range: [1, 2]
+          granularity_range: [1, 2]
       - !EncodeDriver
         with:
           method: encode
-          depth_range: [1, 2]
+          granularity_range: [1, 2]

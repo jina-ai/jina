@@ -13,7 +13,7 @@ on:
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
-        depth_range: [0, 0]
+        granularity_range: [0, 0]
         adjacency_range: [0, 1]
   IndexRequest:
     - !VectorIndexDriver
