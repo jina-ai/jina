@@ -90,7 +90,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         """
         vecs = self.raw_ndarray
         if vecs is not None:
-            return self.build_advanced_index(vecs)
+            index = self.build_advanced_index(vecs)
+            del vecs
+            return index
         else:
             return None
 
