@@ -7,13 +7,13 @@ components:
       index_filename: vec.idx
     metas:
       name: my_vec_indexer  # a customized name
-      workspace: $TEST_WORKDIR
+      workspace: 'test-workspace'
   - !BinaryPbIndexer
     with:
       index_filename: chunk.gzip
     metas:
       name: chunk_meta_indexer
-      workspace: $TEST_WORKDIR
+      workspace: 'test-workspace'
 with:
   routes:
     meta_add:
@@ -26,4 +26,4 @@ with:
       my_vec_indexer: add
 metas:
   name: chunk_compound_indexer
-  workspace: $TEST_WORKDIR
+  workspace: 'test-workspace'
