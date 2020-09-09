@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict
+from typing import Dict, List
 
 import numpy as np
 
@@ -94,3 +94,28 @@ class Chunk2DocRanker(BaseRanker):
 
     def get_doc_id(self, match_with_same_doc_id):
         return match_with_same_doc_id[0, self.col_doc_id]
+
+
+class Match2DocRanker(BaseRanker):
+    """
+    Re-scores the matches for a document. This Ranker is only responsible for
+    calculating new scores and not for the actual sorting. The sorting is handled
+    in the respective ``Matches2DocRankDriver``.
+    Possible implementations:
+        - ReverseRanker (reverse scores of all matches)
+        - BucketShuffleRanker (first buckets matches and then sort each bucket)
+    """
+
+    def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':
+        """
+        This function calculated the new scores for matches and returns them.
+        :query_meta: a dictionary containing all the query meta information
+            requested by the `required_keys` class_variable.
+        :old_match_scores: contains old scores in the format {match_id: score}
+        :match_meta: a dictionary containing all the matches meta information
+            requested by the `required_keys` class_variable.
+            Format: {match_id: {attribute: attribute_value}}e.g.{5: {"length": 3}}
+        :return: a `np.ndarray` in the shape of [N x 2] where `N` is the length of
+            the `old_match_scores`. Semantic: [[match_id, new_score]]
+        """
+        raise NotImplementedError
