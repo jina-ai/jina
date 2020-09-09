@@ -1,12 +1,12 @@
 import numpy as np
 
 from jina.drivers.rank import Matches2DocRankDriver
-from jina.executors.rankers import Chunk2DocRanker
+from jina.executors.rankers import Match2DocRanker
 
 from jina.proto import jina_pb2
 
 
-class MockAbsoluteLengthRanker(Chunk2DocRanker):
+class MockAbsoluteLengthRanker(Match2DocRanker):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.required_keys = {'length'}
