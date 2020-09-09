@@ -64,7 +64,7 @@ class QuerySetReader:
     prefix.
 
     .. note::
-        - To set default value of ``arg1``, use ``self._arg1 = ``, note the underscore in the front.
+        - To set default value of ``arg1``, use ``self._arg1 =``, note the underscore in the front.
         - To access ``arg1``, simply use ``self.arg1``. It automatically switch between default ``_arg1`` and ``arg1`` from the request.
 
     For successful value reading, the following condition must be met:

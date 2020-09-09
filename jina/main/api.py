@@ -81,7 +81,6 @@ def flow(args):
     from ..flow import Flow
     if args.uses:
         f = Flow.load_config(args.uses)
-        f._update_args(args)
         with f:
             f.block()
     else:
