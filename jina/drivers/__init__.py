@@ -266,11 +266,15 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def post_traverse(_docs, recur_on, context_doc=None, depth_name='granularity', recur_start=0, recur_end=1):
+        def post_traverse(_docs, recur_on, context_doc=None,
+                          depth_name='granularity', recur_start=0, recur_end=1):
             """
             :param _docs: list of docs
             :param recur_on: "matches" or "chunks"
             :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
+            :param depth_name: Options are granularity or adjacency. Relates to the direction of recursion
+            :param recur_start: Starting level of recursion
+            :param recur_end: Final level of recursion
             :return:
             """
             if _docs:
@@ -286,7 +290,17 @@ class BaseRecursiveDriver(BaseDriver):
                 if self._is_apply_all and getattr(_docs[0], depth_name) >= recur_start:
                     self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
-        def pre_traverse(_docs, recur_on, context_doc=None, depth_name='granularity', recur_start=0, recur_end=1):
+        def pre_traverse(_docs, recur_on, context_doc=None,
+                         depth_name='granularity', recur_start=0, recur_end=1):
+            """
+            :param _docs: list of docs
+            :param recur_on: "matches" or "chunks"
+            :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
+            :param depth_name: Options are granularity or adjacency. Relates to the direction of recursion
+            :param recur_start: Starting level of recursion
+            :param recur_end: Final level of recursion
+            :return:
+            """
             if _docs:
                 # check first doc if in the required depth range
                 if self._is_apply_all and getattr(_docs[0], depth_name) >= recur_start:
