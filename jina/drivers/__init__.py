@@ -230,10 +230,8 @@ class BaseRecursiveDriver(BaseDriver):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._depth_start = recur_depth_range[0]
-        self._depth_end = recur_depth_range[1]
-        self._adjacency_start = recur_adjacency_range[0]
-        self._adjacency_end = recur_adjacency_range[1]
+        self._depth_start, self._depth_end = recur_depth_range
+        self._adjacency_start, self._adjacency_end = recur_adjacency_range
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
         else:
