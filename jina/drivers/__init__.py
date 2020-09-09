@@ -216,22 +216,22 @@ class BaseDriver(metaclass=DriverType):
 class BaseRecursiveDriver(BaseDriver):
 
     def __init__(self,
-                 recur_depth_range: Tuple[int, int] = (0, 1),
-                 recur_adjacency_range: Tuple[int, int] = (0, 0),
+                 depth_range: Tuple[int, int] = (0, 1),
+                 adjacency_range: Tuple[int, int] = (0, 0),
                  apply_order: str = 'post',
                  *args,
                  **kwargs):
         """
 
-        :param recur_depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
-        :param recur_adjacency_range: right-exclusive range of the recursion adjacency, (0, 1) for single matches
+        :param depth_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param adjacency_range: right-exclusive range of the recursion adjacency, (0, 1) for single matches
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._depth_start, self._depth_end = recur_depth_range
-        self._adjacency_start, self._adjacency_end = recur_adjacency_range
+        self._depth_start, self._depth_end = depth_range
+        self._adjacency_start, self._adjacency_end = adjacency_range
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
         else:

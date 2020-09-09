@@ -19,7 +19,7 @@ requests:
     IndexRequest:
       - !VectorIndexDriver
         with:
-          recur_depth_range: [1, 2]
+          depth_range: [1, 2]
           executor: vecidx1
       - !ExcludeQL
         with:
@@ -30,7 +30,7 @@ requests:
             - text
       - !KVIndexDriver
         with:
-          recur_depth_range: [1, 2]
+          depth_range: [1, 2]
           executor: kvidx1
     ControlRequest:
       - !ControlReqDriver {}

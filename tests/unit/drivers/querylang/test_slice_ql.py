@@ -88,7 +88,7 @@ def random_docs_with_chunks_and_matches(num_docs):
 
 def test_slice_ql_on_chunks():
     docs = random_docs_with_chunks(10)
-    driver = SliceQL(start=0, end=2, recur_depth_range=(0, 2))
+    driver = SliceQL(start=0, end=2, depth_range=(0, 2))
     driver._traverse_apply(docs)
     assert len(docs) == 2
     assert len(docs[0].chunks) == 2  # slice on level 1
@@ -101,7 +101,7 @@ def test_slice_ql_on_chunks():
 
 def test_slice_ql_on_matches_and_chunks():
     docs = random_docs_with_chunks_and_matches(10)
-    driver = SliceQL(start=0, end=2, recur_depth_range=(0, 2), recur_adjacency_range=(0, 2))
+    driver = SliceQL(start=0, end=2, depth_range=(0, 2), adjacency_range=(0, 2))
     assert len(docs) == 10
     assert len(docs[0].chunks) == 10
     assert len(docs[-1].chunks) == 10

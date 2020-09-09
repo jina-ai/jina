@@ -17,20 +17,20 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         Example::
         - !ReduceAllDriver
             with:
-                recur_depth_range: [0, 0]
-                recur_adjacency_range: [0, 1]
+                depth_range: [0, 0]
+                adjacency_range: [0, 1]
         - !SortQL
             with:
                 reverse: true
                 field: 'score.value'
-                recur_depth_range: [0, 0]
-                recur_adjacency_range: [0, 1]
+                depth_range: [0, 0]
+                adjacency_range: [0, 1]
         - !SliceQL
             with:
                 start: 0
                 end: 50
-                recur_depth_range: [0, 0]
-                recur_adjacency_range: [0, 1]
+                depth_range: [0, 0]
+                adjacency_range: [0, 1]
 
         `SortQL` will ensure that only the documents are sorted by the score value before slicing the first top 50 documents
     """

@@ -47,8 +47,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
     """
 
     def __init__(self, *args, **kwargs):
-        if 'recur_adjacency_range' not in kwargs:
-            kwargs['recur_adjacency_range'] = (0, 1)
+        if 'adjacency_range' not in kwargs:
+            kwargs['adjacency_range'] = (0, 1)
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
