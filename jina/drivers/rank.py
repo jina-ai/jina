@@ -187,12 +187,11 @@ class Matches2DocRankDriver(BaseRankDriver):
 
     def _sort_matches_in_place(self, context_doc, match_scores):
         sorted_scores = self._sort(match_scores)
-
+        old_matches = {match.id: match for match in context_doc.matches}
         context_doc.ClearField('matches')
         for match_id, score in sorted_scores:
             new_match = context_doc.matches.add()
-            new_match.id = int(match_id)
-            new_match.score.ref_id = context_doc.id
+            new_match.CopyFrom(old_matches[match_id])
             new_match.score.value = score
             new_match.score.op_name = exec.__class__.__name__
 
