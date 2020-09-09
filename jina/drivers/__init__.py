@@ -215,21 +215,23 @@ class BaseDriver(metaclass=DriverType):
 
 class BaseRecursiveDriver(BaseDriver):
 
-    def __init__(self, recur_range: Tuple[int] = (0, 1), apply_order: str = 'post',
-                 recur_on: Tuple[str] = ('chunks',), *args, **kwargs):
+    def __init__(self,
+                 granularity_range: Tuple[int, int] = (0, 1),
+                 adjacency_range: Tuple[int, int] = (0, 0),
+                 apply_order: str = 'post',
+                 *args,
+                 **kwargs):
         """
 
-        :param recur_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param granularity_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
+        :param adjacency_range: right-exclusive range of the recursion adjacency, (0, 1) for single matches
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self._depth_start = recur_range[0]
-        self._depth_end = recur_range[1]
-        if isinstance(recur_on, str):
-            recur_on = (recur_on,)
-        self.traverse_fields = set(recur_on)
+        self._granularity_start, self._granularity_end = granularity_range
+        self._adjacency_start, self._adjacency_end = adjacency_range
         if apply_order in {'post', 'pre'}:
             self.recursion_order = apply_order
         else:
@@ -262,39 +264,53 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs, *args, **kwargs):
         """often useful when you delete a recursive structure """
 
-        def post_traverse(_docs, recur_on, context_doc=None):
+        def post_traverse(_docs, recur_on, context_doc=None,
+                          depth_name='granularity', recur_start=0, recur_end=1):
             """
             :param _docs: list of docs
             :param recur_on: "matches" or "chunks"
             :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
+            :param depth_name: Options are granularity or adjacency. Relates to the direction of recursion
+            :param recur_start: Starting level of recursion
+            :param recur_end: Final level of recursion
             :return:
             """
             if _docs:
                 for d in _docs:
                     # check if apply to next level
-                    if getattr(d, depth_name) < self._depth_end:
-                        post_traverse(getattr(d, recur_on), recur_on, d)
+                    if getattr(d, depth_name) < recur_end:
+                        post_traverse(getattr(d, recur_on), recur_on, d, depth_name, recur_start, recur_end)
                     # check if apply to the current level
-                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
+                    if self._is_apply and recur_start <= getattr(d, depth_name) < recur_end:
                         self._apply(d, context_doc, recur_on, *args, **kwargs)
 
                 # check first doc if in the required depth range
-                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= recur_start:
                     self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
-        def pre_traverse(_docs, recur_on, context_doc=None):
+        def pre_traverse(_docs, recur_on, context_doc=None,
+                         depth_name='granularity', recur_start=0, recur_end=1):
+            """
+            :param _docs: list of docs
+            :param recur_on: "matches" or "chunks"
+            :param context_doc: the owner of ``_docs``, if None, then it is at the very top-level
+            :param depth_name: Options are granularity or adjacency. Relates to the direction of recursion
+            :param recur_start: Starting level of recursion
+            :param recur_end: Final level of recursion
+            :return:
+            """
             if _docs:
                 # check first doc if in the required depth range
-                if self._is_apply_all and getattr(_docs[0], depth_name) >= self._depth_start:
+                if self._is_apply_all and getattr(_docs[0], depth_name) >= recur_start:
                     self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
                 for d in _docs:
                     # check if apply on the current level
-                    if self._is_apply and self._depth_start <= getattr(d, depth_name) < self._depth_end:
+                    if self._is_apply and recur_start <= getattr(d, depth_name) < recur_end:
                         self._apply(d, context_doc, recur_on, *args, **kwargs)
                     # check if apply to the next level
-                    if getattr(d, depth_name) < self._depth_end:
-                        pre_traverse(getattr(d, recur_on), recur_on, d)
+                    if getattr(d, depth_name) < recur_end:
+                        pre_traverse(getattr(d, recur_on), recur_on, d, depth_name, recur_start, recur_end)
 
         if self.recursion_order == 'post':
             _traverse = post_traverse
@@ -303,14 +319,20 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
-        if 'chunks' in self.traverse_fields:
-            depth_name = 'granularity'
-            _traverse(docs, 'chunks')
+        if (self._granularity_start < self._granularity_end) or \
+                (self._granularity_start == self._granularity_end and self._granularity_start > 0):
+            _traverse(docs, 'chunks', None, 'granularity', self._granularity_start, self._granularity_end)
 
-        if 'matches' in self.traverse_fields:
-            depth_name = 'adjacency'
+        if (self._adjacency_start < self._adjacency_end) or \
+                (self._adjacency_start == self._adjacency_end and self._adjacency_start > 0):
+
             for d in docs:
-                _traverse(d.matches, 'matches')
+                # Move to starting depth range
+                # assume that these search docs have a maximum of one chunk per document (common pattern in search)
+                working_doc = d
+                while working_doc.granularity < self._granularity_start:
+                    working_doc = working_doc.chunks[0]
+                _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

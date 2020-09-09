@@ -14,7 +14,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class MockSegmenterReduce(BaseSegmenter):
 
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
-        print(f'MockSegmenter craft {text}')
         split = text.split(',')
         chunks = [dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
                   dict(text=split[1], offset=1, weight=1.0, modality='mode2')]
@@ -57,7 +56,7 @@ def test_merge_chunks_with_different_modality():
     flow = Flow().add(name='crafter', uses='MockSegmenterReduce'). \
         add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
         add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
-        add(name='reducer', uses='- !ReduceAllDriver | {recur_on: [chunks], recur_range: [0, 1]}',
+        add(name='reducer', uses='- !ReduceAllDriver | {granularity_range: [0, 1], adjacency_range: [0, 0]}',
             needs=['encoder1', 'encoder2'])
 
     with flow:

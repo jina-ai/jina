@@ -47,7 +47,9 @@ class Chunk2DocRankDriver(BaseRankDriver):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, recur_on='chunks', **kwargs)
+        if 'adjacency_range' not in kwargs:
+            kwargs['adjacency_range'] = (0, 1)
+        super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):

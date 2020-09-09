@@ -53,13 +53,13 @@ def test_select_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !SelectQL | {fields: [uri, matches, chunks], recur_on: [chunks, matches], recur_range: [0, 2]}'))
+        uses='- !SelectQL | {fields: [uri, matches, chunks], granularity_range: [0, 2], adjacency_range: [0, 2]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
 
     f = (Flow().add(uses='DummySegmenter')
-         .add(uses='- !ExcludeQL | {fields: [text], recur_on: [chunks, matches], recur_range: [0, 2]}'))
+         .add(uses='- !ExcludeQL | {fields: [text], granularity_range: [0, 2], adjacency_range: [0, 2]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
@@ -73,15 +73,15 @@ def test_sort_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !SortQL | {field: id, reverse: true, recur_on: [chunks, matches], recur_range: [0, 2]}'))
+        uses='- !SortQL | {field: id, reverse: true, granularity_range: [0, 2], adjacency_range: [0, 2]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
 
     f = (Flow().add(uses='DummySegmenter')
          .add(
-        uses='- !SortQL | {field: id, reverse: false, recur_on: [chunks, matches], recur_range: [0, 2]}')
-         .add(uses='- !ReverseQL | {recur_on: [chunks, matches], recur_range: [0, 2]}'))
+        uses='- !SortQL | {field: id, reverse: false, granularity_range: [0, 2], adjacency_range: [0, 2]}')
+         .add(uses='- !ReverseQL | {granularity_range: [0, 2], adjacency_range: [0, 2]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
@@ -96,7 +96,7 @@ def test_filter_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {id: 2}, recur_on: [chunks, matches], recur_range: [0, 0] }'))
+        uses='- !FilterQL | {lookups: {id: 2}, granularity_range: [0, 1], adjacency_range: [0, 1]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
@@ -109,7 +109,7 @@ def test_filter_ql_modality_wrong_depth():
 
     f = (Flow().add(uses='DummyModeIdSegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {modality: mode2}, recur_on: [chunks], recur_range: [0, 1]}'))
+        uses='- !FilterQL | {lookups: {modality: mode2}, granularity_range: [0, 1]}'))
 
     with f:
         f.index(random_docs_with_chunks(), output_fn=validate, callback_on_body=True)
@@ -124,7 +124,7 @@ def test_filter_ql_modality():
 
     f = (Flow().add(uses='DummyModeIdSegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {modality: mode2}, recur_on: [chunks], recur_range: [1, 2]}'))
+        uses='- !FilterQL | {lookups: {modality: mode2}, granularity_range: [1, 2]}'))
 
     with f:
         f.index(random_docs_with_chunks(), output_fn=validate, callback_on_body=True)
@@ -138,7 +138,7 @@ def test_filter_compose_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {id: 2, text__contains: hello}, recur_on: [matches, chunks], recur_range: [0, 0]}'))
+        uses='- !FilterQL | {lookups: {id: 2, text__contains: hello}, granularity_range: [0, 1], adjacency_range: [0, 1]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
