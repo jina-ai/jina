@@ -20,7 +20,7 @@ pods:
   chunk_indexer:
     polling: all
     parallel: 1
-    uses_reducing: _merge_topk_chunks
+    uses_after: _merge_topk_chunks
   ranker:
     uses: MinRanker
   doc_indexer:
