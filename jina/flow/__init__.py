@@ -143,6 +143,11 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
         return op_flow
 
 
+def _stop_log_server():
+    import urllib.request
+    urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
+
+
 class Flow(ExitStack):
     def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
         """Initialize a flow object
@@ -462,6 +467,9 @@ class Flow(ExitStack):
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.args.logserver:
+            _stop_log_server()
+            self._sse_logger.join()
         super().__exit__(exc_type, exc_val, exc_tb)
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
@@ -483,7 +491,7 @@ class Flow(ExitStack):
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
                 f'use pip install "jina[http]" (with double quotes) to install the dependencies')
-        except:
+        except Exception:
             self.logger.error('logserver fails to start')
 
     def start(self):
@@ -505,10 +513,7 @@ class Flow(ExitStack):
         for v in self._pod_nodes.values():
             self.enter_context(v)
 
-        self.logger.info('%d Pods (i.e. %d Peas) are running in this Flow' % (
-            self.num_pods,
-            self.num_peas))
-
+        self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
         self.logger.success(f'flow is now ready for use, current build_level is {self._build_level}')
 
         return self
