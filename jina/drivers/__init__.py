@@ -329,10 +329,14 @@ class BaseRecursiveDriver(BaseDriver):
             for d in docs:
                 # Move to starting depth range
                 # assume that these search docs have a maximum of one chunk per document (common pattern in search)
-                working_doc = d
-                while working_doc.granularity < self._granularity_start:
-                    working_doc = working_doc.chunks[0]
-                _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
+                working_docs = [d]
+                while working_docs[0].granularity < self._granularity_start:
+                    _temp = []
+                    for working_doc in working_docs:
+                        _temp.extend(working_doc.chunks)
+                    working_docs = _temp
+                for working_doc in working_docs:
+                    _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
