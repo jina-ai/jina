@@ -105,7 +105,7 @@ class BaseIndexer(BaseExecutor):
     @cached_property
     def query_handler(self):
         """A readable and indexable object, could be dict, map, list, numpy array etc. """
-        if self._query_handler is None and os.path.exists(self.index_abspath):
+        if self._query_handler is None:
             self._query_handler = self.get_query_handler()
             self.logger.info(f'indexer size: {self.size}')
 
