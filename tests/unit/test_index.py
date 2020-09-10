@@ -130,7 +130,6 @@ class MyTestCase(JinaTestCase):
             t2.start()
             time.sleep(5)
 
-
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):
         f = Flow().add(uses='_pass')
