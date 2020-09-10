@@ -34,3 +34,14 @@ def get_default_login():
             login_info[k] = _decode(v)
 
     return login_info
+
+
+def handle_dot_in_keys(document):
+    updated_document = {}
+    for key, value in document.items():
+        if isinstance(value, dict):
+            value = handle_dot_in_keys(value)
+        if isinstance(value, list) and len(value) > 0 and isinstance(value[0], dict):
+            value[0] = handle_dot_in_keys(value[0])
+        updated_document[key.replace('.', '_')] = value
+    return updated_document

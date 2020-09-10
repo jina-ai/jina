@@ -8,7 +8,8 @@ import webbrowser
 from typing import Dict
 
 from .checker import *
-from .helper import get_default_login
+from .database import MongoDBHandler
+from .helper import get_default_login, handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
 from ..helper import colored, get_readable_size, get_now_timestamp
@@ -73,7 +74,46 @@ class HubIO:
             self.logger.info('nothing is created, bye!')
 
     def push(self, name: str = None, readme_path: str = None):
-        """A wrapper of docker push """
+        """ A wrapper of docker push """
+        is_build_success, is_push_success = True, False
+        try:
+            # self._push(name, readme_path)
+            is_push_success = True
+        except Exception:
+            self.logger.error(f'can not push to the registry')
+        
+        file_path = f'/tmp/{self.args.name.replace("/", "_")}.json'
+        if os.path.isfile(file_path):
+            import json
+            with open(file_path) as f:
+                result = json.load(f)
+        
+        else:
+            image = self._client.images.get(name)
+            _details = {
+                'inspect': self._raw_client.inspect_image(image.tags[0]),
+                'tag': image.tags[0],
+                'hash': image.short_id,
+                'size': get_readable_size(image.attrs['Size']),
+            }
+            
+            result = {
+                'name': name,
+                'path': getattr(self.args, 'path', ''),
+                'details': _details,
+                'last_build_time': get_now_timestamp(),
+                'build_duration': '',
+                'is_build_success': is_build_success,
+                'is_push_success': is_push_success,
+                'build_logs': [],
+                'exception': []
+            }
+        
+        if result['is_build_success']:
+            self._write_summary_to_db(summary=result)
+
+    def _push(self, name: str = None, readme_path: str = None):
+        """ Helper push function """
         name = name or self.args.name
         check_registry(self.args.registry, name, _repo_prefix)
         self._check_docker_image(name)
@@ -227,7 +267,7 @@ class HubIO:
 
                 if self.args.push:
                     try:
-                        self.push(image.tags[0], self.readme_path)
+                        self._push(image.tags[0], self.readme_path)
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
@@ -251,6 +291,10 @@ class HubIO:
             # remove the very verbose build log when throw error
             result.pop('build_logs')
             raise RuntimeError(result)
+        if result['is_build_success'] and self.args.push:
+            self._write_summary_to_db(summary=result)
+        elif result['is_build_success']:
+            self._write_summary_to_file(summary=result)
         else:
             return result
 
@@ -263,6 +307,27 @@ class HubIO:
                  'exception': str(ex)}
         return s
 
+    def _write_summary_to_db(self, summary):
+        if not db_env_variables_set():
+            self.logger.critical(f'DB environment variables are not set! bookkeeping skipped.')
+            return
+    
+        build_summary = handle_dot_in_keys(document=summary)
+        with MongoDBHandler(hostname=os.environ['db_hostname'], 
+                            username=os.environ['db_username'],
+                            password=os.environ['db_password'],
+                            database_name=os.environ['db_name'],
+                            collection_name=os.environ['db_collection']) as db:
+            inserted_id = db.insert(document=build_summary)
+            self.logger.debug(f'Inserted the build + push summary in db with id {inserted_id}')
+            
+    def _write_summary_to_file(self, summary): 
+        import json
+        file_path = f'/tmp/{summary["name"].replace("/", "_")}.json'
+        with open(file_path, 'w+') as f:
+            json.dump(summary, f)
+        self.logger.debug(f'Stored the summary from build in local disk')
+        
     def _check_completeness(self) -> Dict:
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')

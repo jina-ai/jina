@@ -98,3 +98,7 @@ class GatewayPartialMessage(Exception):
 
 class UndefinedModel(Exception):
     """Any time a non-defined model is tried to be used """
+
+
+class MongoDBException(Exception):
+    """ Any errors raised by MongoDb """
