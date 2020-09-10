@@ -8,7 +8,7 @@ import numpy as np
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
-from ...helper import call_obj_fn, cached_property
+from ...helper import call_obj_fn, cached_property, get_readable_size
 
 
 class BaseIndexer(BaseExecutor):
@@ -154,7 +154,7 @@ class BaseIndexer(BaseExecutor):
 
     def close(self):
         """Close all file-handlers and release all resources. """
-        self.logger.info(f'indexer size: {self.size}')
+        self.logger.info(f'indexer size: {self.size} physical size: {get_readable_size(self.physical_size)}')
         self.flush()
         call_obj_fn(self.write_handler, 'close')
         call_obj_fn(self.query_handler, 'close')

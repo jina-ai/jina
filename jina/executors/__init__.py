@@ -276,6 +276,12 @@ class BaseExecutor(metaclass=ExecutorType):
         Path(self.current_workspace).mkdir(parents=True, exist_ok=True)
         return os.path.join(self.current_workspace, name)
 
+    @property
+    def physical_size(self) -> int:
+        """Return the size of the workspace in bytes"""
+        root_directory = Path(self.current_workspace)
+        return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
+
     def __getstate__(self):
         d = dict(self.__dict__)
         del d['logger']
