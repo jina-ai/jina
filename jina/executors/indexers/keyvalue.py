@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import glob
 import gzip
 import json
 import shelve
@@ -88,7 +89,12 @@ class ShelfPbIndexer(BasePbIndexer):
         self.write_handler.update(keys)
 
     def flush(self):
-        call_obj_fn(self._write_handler, 'sync')
+        call_obj_fn(self.write_handler, 'sync')
+
+    @property
+    def is_exist(self) -> bool:
+        """Check if the database is exist or not"""
+        return len(list(glob.glob(self.index_abspath + '.*'))) > 0
 
 
 class JsonPbIndexer(BasePbIndexer):

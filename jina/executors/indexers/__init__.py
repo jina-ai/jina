@@ -82,8 +82,6 @@ class BaseIndexer(BaseExecutor):
     def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
         self.index_filename = self.index_filename or self.name
-        self._query_handler = None
-        self._write_handler = None
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
@@ -105,29 +103,31 @@ class BaseIndexer(BaseExecutor):
     @cached_property
     def query_handler(self):
         """A readable and indexable object, could be dict, map, list, numpy array etc. """
-        if self._query_handler is None:
-            self._query_handler = self.get_query_handler()
-            self.logger.info(f'indexer size: {self.size}')
+        if self.is_exist:
+            r = self.get_query_handler()
+            if r is None:
+                self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
+                                    'If you are indexing data from scratch then it is fine. '
+                                    'If you are querying data then the index file must be empty or broken.')
+            else:
+                self.logger.info(f'indexer size: {self.size}')
+            return r
 
-        if self._query_handler is None:
-            self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
-                                'If you are indexing data from scratch then it is fine. '
-                                'If you are querying data then the index file must be empty or broken.')
-        return self._query_handler
+    @property
+    def is_exist(self) -> bool:
+        """Check if the database is exist or not"""
+        return os.path.exists(self.index_abspath)
 
     @cached_property
     def write_handler(self):
         """A writable and indexable object, could be dict, map, list, numpy array etc. """
 
-        if self._write_handler is None:
-            if os.path.exists(self.index_abspath):
-                self._write_handler = self.get_add_handler()
-            else:
-                self._write_handler = self.get_create_handler()
-        if self._write_handler is None:
+        r = self.get_add_handler() if self.is_exist else self.get_create_handler()
+
+        if r is None:
             self.logger.warning('"write_handler" is None, you may not add data to this index, '
                                 'unless "write_handler" is later assigned with a meaningful value')
-        return self._write_handler
+        return r
 
     def get_query_handler(self):
         """Get a *readable* index handler when the ``index_abspath`` already exist, need to be overrided
@@ -156,13 +156,13 @@ class BaseIndexer(BaseExecutor):
         """Close all file-handlers and release all resources. """
         self.logger.info(f'indexer size: {self.size}')
         self.flush()
-        call_obj_fn(self._write_handler, 'close')
-        call_obj_fn(self._query_handler, 'close')
+        call_obj_fn(self.write_handler, 'close')
+        call_obj_fn(self.query_handler, 'close')
         super().close()
 
     def flush(self):
         """Flush all buffered data to ``index_abspath`` """
-        call_obj_fn(self._write_handler, 'flush')
+        call_obj_fn(self.write_handler, 'flush')
 
 
 class BaseVectorIndexer(BaseIndexer):
