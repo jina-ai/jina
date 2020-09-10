@@ -77,3 +77,13 @@ def get_exist_path(directory, s):
 
 def is_error_message(s):
     return re.search(excepts_regex, s, re.IGNORECASE | re.UNICODE) is not None
+
+
+def db_env_variables_set():
+    """ Checks if any of the db env variables are not set """
+    none_exists = None in [
+        os.environ.get('db_username', None), os.environ.get('db_password', None),
+        os.environ.get('db_hostname', None), os.environ.get('db_name', None),
+        os.environ.get('db_collection', None)
+    ]
+    return not none_exists
