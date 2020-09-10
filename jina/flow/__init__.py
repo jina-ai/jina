@@ -143,11 +143,6 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
         return op_flow
 
 
-def _stop_log_server():
-    import urllib.request
-    urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
-
-
 class Flow(ExitStack):
     def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
         """Initialize a flow object
@@ -468,12 +463,16 @@ class Flow(ExitStack):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.args.logserver:
-            _stop_log_server()
-            self._sse_logger.join()
+            self._stop_log_server()
         super().__exit__(exc_type, exc_val, exc_tb)
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
+
+    def _stop_log_server(self):
+        import urllib.request
+        urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
+        self._sse_logger.join()
 
     def _start_log_server(self):
         try:
@@ -485,14 +484,15 @@ class Flow(ExitStack):
                                                       self.yaml_spec))
             self._sse_logger.start()
             time.sleep(1)
-            urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
-            self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
+            response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
+            if response.status == 200:
+                self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
                 f'use pip install "jina[http]" (with double quotes) to install the dependencies')
-        except Exception:
-            self.logger.error('logserver fails to start')
+        except Exception as ex:
+            self.logger.error(f'logserver fails to start: {repr(ex)}')
 
     def start(self):
         """Start to run all Pods in this Flow.
@@ -507,7 +507,7 @@ class Flow(ExitStack):
             self.build(copy_flow=False)
 
         if self.args.logserver:
-            self.logger.info('start logserver...')
+            self.logger.info('starting logserver...')
             self._start_log_server()
 
         for v in self._pod_nodes.values():
