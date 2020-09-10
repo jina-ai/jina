@@ -184,21 +184,7 @@
         {% endblock %}
       </nav>
 
-      <div class="card table-of-contents">
-          <span class="card-title" onclick="showhide_littlenavbar()">Table of Contents</span>
-            <div id="little-navbar" class="card-content">
-            {{ toc }}
-            </div>
-        <a href="https://github.com/jina-ai/jina/">
-          <span class="toc-card-footer" >
-            <span>Visit us on Github</span>
-          </span>
-        </a>
-      </div>
-
-      <div id="showhide-navbar-btn" onclick="showhide_navbar()">
-      </div>
-
+   
       <div class="wy-nav-content">
       {%- block content %}
         {% if theme_style_external_links|tobool %}
