@@ -2,15 +2,13 @@ from jina.executors.indexers.keyvalue import ShelfPbIndexer
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import random_docs
-import time
+
 
 def test_shelf():
     docs = list(random_docs(10))
     with ShelfPbIndexer('test-shelf') as spi:
-        print(spi.index_abspath)
         spi.add(docs)
 
-    time.sleep(2)
     with ShelfPbIndexer('test-shelf') as spi:
         print(spi.index_abspath)
         assert spi.query(1) == docs[1]
