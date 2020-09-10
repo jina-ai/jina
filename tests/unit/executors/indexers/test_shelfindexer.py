@@ -13,6 +13,7 @@ def test_shelf():
         print(spi.index_abspath)
         assert spi.query(1) == docs[1]
         assert spi.query(11) is None
+        assert spi.size == 10
 
 
 def test_shelf_in_flow():

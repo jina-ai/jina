@@ -64,7 +64,9 @@ class ShelfPbIndexer(BasePbIndexer):
         return shelve.open(self.index_abspath, 'n')
 
     def get_query_handler(self):
-        return shelve.open(self.index_abspath, 'r')
+        r = shelve.open(self.index_abspath, 'r')
+        self._size = len(r)
+        return r
 
     def query(self, key: int) -> Optional['jina_pb2.Document']:
         """ Find the protobuf chunk/doc using id
@@ -72,7 +74,7 @@ class ShelfPbIndexer(BasePbIndexer):
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
-        if self.query_handler is not None:
+        if self.query_handler:
             r = self.query_handler.get(str(key), None)
             if r:
                 d = jina_pb2.Document()
@@ -94,7 +96,8 @@ class ShelfPbIndexer(BasePbIndexer):
     @property
     def is_exist(self) -> bool:
         """Check if the database is exist or not"""
-        return len(list(glob.glob(self.index_abspath + '.*'))) > 0
+        r = list(glob.glob(self.index_abspath + '*', recursive=True))
+        return len(r) > 0
 
 
 class JsonPbIndexer(BasePbIndexer):
