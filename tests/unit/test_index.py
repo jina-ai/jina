@@ -85,7 +85,7 @@ class MyTestCase(JinaTestCase):
         a.add()
         a.save()
         self.assertTrue(os.path.exists(a.save_abspath))
-        self.assertFalse(os.path.exists(a.index_abspath))
+        self.assertTrue(os.path.exists(a.index_abspath))
         self.add_tmpfile(a.save_abspath, a.index_abspath)
 
         b = DummyIndexer2(index_filename='testb.bin')
@@ -129,7 +129,6 @@ class MyTestCase(JinaTestCase):
             t1.start()
             t2.start()
             time.sleep(5)
-
 
     @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
     def test_two_client_route(self):

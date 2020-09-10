@@ -8,7 +8,7 @@ import numpy as np
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
-from ...helper import call_obj_fn, cached_property
+from ...helper import call_obj_fn, cached_property, get_readable_size
 
 
 class BaseIndexer(BaseExecutor):
@@ -50,6 +50,7 @@ class BaseIndexer(BaseExecutor):
         """
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
+        self.handler_mutex = True  #: only one handler at a time by default
         self._size = 0
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
@@ -60,30 +61,10 @@ class BaseIndexer(BaseExecutor):
         """
         raise NotImplementedError
 
-    def _validate_key_vector_shapes(self, keys, vectors):
-        if len(vectors.shape) != 2:
-            raise ValueError(f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2')
-
-        if not getattr(self, 'num_dim', None):
-            self.num_dim = vectors.shape[1]
-            self.dtype = vectors.dtype.name
-        elif self.num_dim != vectors.shape[1]:
-            raise ValueError(
-                f'vectors shape {vectors.shape} does not match with indexers\'s dim: {self.num_dim}')
-        elif self.dtype != vectors.dtype.name:
-            raise TypeError(
-                f'vectors\' dtype {vectors.dtype.name} does not match with indexers\'s dtype: {self.dtype}')
-        elif keys.shape[0] != vectors.shape[0]:
-            raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
-        elif self.key_dtype != keys.dtype.name:
-            raise TypeError(
-                f'keys\' dtype {keys.dtype.name} does not match with indexers keys\'s dtype: {self.key_dtype}')
-
     def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
         self.index_filename = self.index_filename or self.name
-        self._query_handler = None
-        self._write_handler = None
+        self.is_handler_loaded = False
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
@@ -104,30 +85,47 @@ class BaseIndexer(BaseExecutor):
 
     @cached_property
     def query_handler(self):
-        """A readable and indexable object, could be dict, map, list, numpy array etc. """
-        if self._query_handler is None and os.path.exists(self.index_abspath):
-            self._query_handler = self.get_query_handler()
-            self.logger.info(f'indexer size: {self.size}')
+        """A readable and indexable object, could be dict, map, list, numpy array etc.
 
-        if self._query_handler is None:
-            self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
-                                'If you are indexing data from scratch then it is fine. '
-                                'If you are querying data then the index file must be empty or broken.')
-        return self._query_handler
+        .. note::
+            :attr:`query_handler` and :attr:`write_handler` are by default mutex
+        """
+        if (not self.handler_mutex or not self.is_handler_loaded) and self.is_exist:
+            r = self.get_query_handler()
+            if r is None:
+                self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
+                                    'If you are indexing data from scratch then it is fine. '
+                                    'If you are querying data then the index file must be empty or broken.')
+            else:
+                self.logger.info(f'indexer size: {self.size}')
+                self.is_handler_loaded = True
+            return r
+
+    @property
+    def is_exist(self) -> bool:
+        """Check if the database is exist or not"""
+        return os.path.exists(self.index_abspath)
 
     @cached_property
     def write_handler(self):
-        """A writable and indexable object, could be dict, map, list, numpy array etc. """
+        """A writable and indexable object, could be dict, map, list, numpy array etc.
 
-        if self._write_handler is None:
-            if os.path.exists(self.index_abspath):
-                self._write_handler = self.get_add_handler()
+        .. note::
+            :attr:`query_handler` and :attr:`write_handler` are by default mutex
+        """
+
+        # ! a || ( a && b )
+        # =
+        # ! a || b
+        if not self.handler_mutex or not self.is_handler_loaded:
+            r = self.get_add_handler() if self.is_exist else self.get_create_handler()
+
+            if r is None:
+                self.logger.warning('"write_handler" is None, you may not add data to this index, '
+                                    'unless "write_handler" is later assigned with a meaningful value')
             else:
-                self._write_handler = self.get_create_handler()
-        if self._write_handler is None:
-            self.logger.warning('"write_handler" is None, you may not add data to this index, '
-                                'unless "write_handler" is later assigned with a meaningful value')
-        return self._write_handler
+                self.is_handler_loaded = True
+            return r
 
     def get_query_handler(self):
         """Get a *readable* index handler when the ``index_abspath`` already exist, need to be overrided
@@ -154,15 +152,15 @@ class BaseIndexer(BaseExecutor):
 
     def close(self):
         """Close all file-handlers and release all resources. """
-        self.logger.info(f'indexer size: {self.size}')
+        self.logger.info(f'indexer size: {self.size} physical size: {get_readable_size(self.physical_size)}')
         self.flush()
-        call_obj_fn(self._write_handler, 'close')
-        call_obj_fn(self._query_handler, 'close')
+        call_obj_fn(self.write_handler, 'close')
+        call_obj_fn(self.query_handler, 'close')
         super().close()
 
     def flush(self):
         """Flush all buffered data to ``index_abspath`` """
-        call_obj_fn(self._write_handler, 'flush')
+        call_obj_fn(self.write_handler, 'flush')
 
 
 class BaseVectorIndexer(BaseIndexer):
