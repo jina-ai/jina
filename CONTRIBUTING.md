@@ -35,34 +35,6 @@ We're happy for any contributions, code or not. If you'd like to write a blog po
 
 ## Contributing 101
 
-### Start contributing and create up your first jina app using two simple steps
-
-```bash
-git clone https://github.com/jina-ai/jina.git
-
-pip install jina
-jina hub new --type='app'
-```
-
-It will start a wizard in CLI to guide you create your first app. The resulted file structure should look like the following:
-
-```text
-- MyAwesomeApp/
-    |
-    |- Dockerfile
-    |- README.md
-    |- requirements.txt
-    |- app.py
-    |- flows/
-        |- index.yml
-        |- query.yml
-    |- pods/
-        |- craft.yml
-        |- chunk.yml
-        |- doc.yml
-        |- encode.yml
-```
-
 ## 🐞 Bugs and Issues
 
 ### Submitting Issues
