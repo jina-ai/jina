@@ -32,7 +32,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## This module deals with code regarding handling the double
 ## underscore separated keys
-from typing import Tuple, Union
+from typing import Tuple
+from google.protobuf.struct_pb2 import Struct
+from google.protobuf import json_format
 
 from .helper import *
 
@@ -109,6 +111,10 @@ def dunder_get(_dict, key):
     :rtype       : (mixed) value corresponding to the key
 
     """
+
+    if isinstance(_dict, Struct):
+        return dunder_get(json_format.MessageToDict(_dict), key)
+
     parts = key.split('__', 1)
 
     try:
@@ -118,6 +124,8 @@ def dunder_get(_dict, key):
 
     if isinstance(parts[0], int):
         result = guard_iter(_dict)[parts[0]]
+    elif isinstance(_dict, dict):
+        result = _dict[parts[0]]
     else:
         result = getattr(_dict, parts[0])
     return result if len(parts) == 1 else dunder_get(result, parts[1])
