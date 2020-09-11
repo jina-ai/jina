@@ -479,7 +479,7 @@ class Flow(ExitStack):
             import urllib.request
             import flask, flask_cors
             self._sse_logger = threading.Thread(name='sentinel-sse-logger',
-                                                target=start_sse_logger, daemon=True,
+                                                target=start_sse_logger, daemon=False,
                                                 args=(self.args.logserver_config,
                                                       self.yaml_spec))
             self._sse_logger.start()
