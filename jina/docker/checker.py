@@ -5,8 +5,10 @@ import os
 import re
 import unicodedata
 
-from ..helper import yaml
+import tempfile
 from pkg_resources import resource_stream
+
+from ..helper import yaml
 
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
 required = {'name', 'description'}
@@ -74,6 +76,15 @@ def get_exist_path(directory, s):
     if os.path.exists(r):
         return r
 
+def get_summary_path(image_name: str):
+    return os.path.join(tempfile.gettempdir(), image_name.replace('/', '_') + '_summary.json')
+
 
 def is_error_message(s):
     return re.search(excepts_regex, s, re.IGNORECASE | re.UNICODE) is not None
+
+
+def is_db_envs_set():
+    """ Checks if any of the db env variables are not set """
+    keys = ['JINA_DB_HOSTNAME', 'JINA_DB_USERNAME', 'JINA_DB_PASSWORD', 'JINA_DB_NAME', 'JINA_DB_COLLECTION']
+    return all(k in os.environ for k in keys)
