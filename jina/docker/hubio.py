@@ -75,45 +75,31 @@ class HubIO:
             self.logger.info('nothing is created, bye!')
 
     def push(self, name: str = None, readme_path: str = None):
-        """ A wrapper of docker push """
-        is_build_success, is_push_success = True, False
+        """ A wrapper of docker push 
+        - Checks for the tempfile, returns without push if it cannot find
+        - Pushes to docker hub, returns withput writing to db if it fails
+        - Writes to the db
+        """
+        name = name or self.args.name
+        file_path = get_summary_path(name)
+        if not os.path.isfile(file_path):
+            self.logger.error(f'can not find the build summary file')
+            return
+        
         try:
             self._push_docker_hub(name, readme_path)
-            is_push_success = True
         except:
             self.logger.error(f'can not push to the registry')
-
-        file_path = get_summary_path(name)
-        if os.path.isfile(file_path):
-            with open(file_path) as f:
-                result = json.load(f)
-        else:
-            image = self._client.images.get(name)
-            _details = {
-                'inspect': self._raw_client.inspect_image(image.tags[0]),
-                'tag': image.tags[0],
-                'hash': image.short_id,
-                'size': get_readable_size(image.attrs['Size']),
-            }
-
-            result = {
-                'name': name,
-                'path': getattr(self.args, 'path', ''),
-                'details': _details,
-                'last_build_time': get_now_timestamp(),
-                'build_duration': '',
-                'is_build_success': is_build_success,
-                'is_push_success': is_push_success,
-                'build_logs': [],
-                'exception': []
-            }
-
+            return
+        
+        with open(file_path) as f:
+            result = json.load(f)
         if result['is_build_success']:
             self._write_summary_to_db(summary=result)
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None):
         """ Helper push function """
-        name = name or self.args.name
+        name = name
         check_registry(self.args.registry, name, _repo_prefix)
         self._check_docker_image(name)
         self.login()
@@ -264,9 +250,9 @@ class HubIO:
                         self.logger.error(f'can not use it in the Flow')
                         is_build_success = False
 
-                if is_build_success and self.args.push:
+                if self.args.push:
                     try:
-                        self.push(image.tags[0], self.readme_path)
+                        self._push_docker_hub(image.tags[0], self.readme_path)
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
@@ -286,9 +272,13 @@ class HubIO:
                 'build_logs': _logs,
                 'exception': _excepts
             }
+            
             # only successful build (NOT dry run) writes the summary to disk
-            self._write_summary_to_file(result)
-
+            if result['is_build_success']:
+                self._write_summary_to_file(summary=result)
+                if self.args.push:
+                    self._write_summary_to_db(summary=result)
+           
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
             result.pop('build_logs')
