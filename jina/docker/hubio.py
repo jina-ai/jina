@@ -77,7 +77,7 @@ class HubIO:
         """ A wrapper of docker push """
         is_build_success, is_push_success = True, False
         try:
-            # self._push(name, readme_path)
+            self._push(name, readme_path)
             is_push_success = True
         except Exception:
             self.logger.error(f'can not push to the registry')
@@ -295,8 +295,8 @@ class HubIO:
             self._write_summary_to_db(summary=result)
         elif result['is_build_success']:
             self._write_summary_to_file(summary=result)
-        else:
-            return result
+        
+        return result
 
     def dry_run(self) -> Dict:
         try:
