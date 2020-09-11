@@ -77,7 +77,7 @@ def get_exist_path(directory, s):
         return r
 
 def get_summary_path(image_name: str):
-    return os.path.join(tempfile.gettempdir(), image_name.replace('/', '_'), 'summary.json')
+    return os.path.join(tempfile.gettempdir(), image_name.replace('/', '_') + '_summary.json')
 
 
 def is_error_message(s):
