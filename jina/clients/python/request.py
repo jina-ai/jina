@@ -92,7 +92,8 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
                 raise ValueError('"top_k: %d" is not a valid number' % top_k)
             else:
                 top_k_queryset = jina_pb2.QueryLang()
-                top_k_queryset.name = 'KVSearchDriver'
+                top_k_queryset.name = 'VectorSearchDriver'
+                top_k_queryset.priority = 1
                 top_k_queryset.parameters['top_k'] = top_k
                 req.queryset.extend([top_k_queryset])
 
