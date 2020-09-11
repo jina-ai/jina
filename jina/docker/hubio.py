@@ -88,7 +88,6 @@ class HubIO:
         if os.path.isfile(file_path):
             with open(file_path) as f:
                 result = json.load(f)
-
         else:
             image = self._client.images.get(name)
             _details = {
@@ -266,9 +265,9 @@ class HubIO:
                         self.logger.error(f'can not use it in the Flow')
                         is_build_success = False
 
-                if self.args.push:
+                if is_build_success and self.args.push:
                     try:
-                        self._push_docker_hub(image.tags[0], self.readme_path)
+                        self.push(image.tags[0], self.readme_path)
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
@@ -288,14 +287,13 @@ class HubIO:
                 'build_logs': _logs,
                 'exception': _excepts
             }
+            # only successful build (NOT dry run) writes the summary to disk
+            self._write_summary_to_file(result)
+
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
             result.pop('build_logs')
             raise RuntimeError(result)
-        if result['is_build_success'] and self.args.push:
-            self._write_summary_to_db(summary=result)
-        elif result['is_build_success']:
-            self._write_summary_to_file(summary=result)
 
         return result
 
@@ -309,7 +307,7 @@ class HubIO:
         return s
 
     def _write_summary_to_db(self, summary):
-        if not db_env_variables_set():
+        if not is_db_envs_set():
             self.logger.critical(f'DB environment variables are not set! bookkeeping skipped.')
             return
 
@@ -325,7 +323,7 @@ class HubIO:
     def _get_summary_path(self, image_name: str):
         return os.path.join(tempfile.gettempdir(), image_name.replace('/', '_'), 'summary.json')
 
-    def _write_summary_to_file(self, summary):
+    def _write_summary_to_file(self, summary: Dict):
         file_path = self._get_summary_path(summary['name'])
         with open(file_path, 'w+') as f:
             json.dump(summary, f)
