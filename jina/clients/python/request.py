@@ -58,7 +58,7 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
 
 def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
               batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               granularity: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
@@ -86,6 +86,14 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
             if isinstance(queryset, jina_pb2.QueryLang):
                 queryset = [queryset]
             req.queryset.extend(queryset)
+
+        if mode == ClientMode.SEARCH:
+            if top_k <= 0:
+                raise ValueError('"top_k: %d" is not a valid number' % top_k)
+            else:
+                top_k_queryset = jina_pb2.QueryLang()
+                top_k_queryset.parameters.update({'top_k': top_k})
+                req.queryset.extend([top_k_queryset])
 
         for content in batch:
             _add_document(request=req, content=content, mode=mode, doc_counter=doc_counter,
