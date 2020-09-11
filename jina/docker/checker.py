@@ -5,6 +5,7 @@ import os
 import re
 import unicodedata
 
+import tempfile
 from pkg_resources import resource_stream
 
 from ..helper import yaml
@@ -74,6 +75,9 @@ def get_exist_path(directory, s):
     r = os.path.join(directory, s)
     if os.path.exists(r):
         return r
+
+def get_summary_path(image_name: str):
+    return os.path.join(tempfile.gettempdir(), image_name.replace('/', '_'), 'summary.json')
 
 
 def is_error_message(s):

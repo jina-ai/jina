@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import glob
 import json
-import tempfile
 import urllib.parse
 import webbrowser
 from typing import Dict
@@ -84,7 +83,7 @@ class HubIO:
         except:
             self.logger.error(f'can not push to the registry')
 
-        file_path = self._get_summary_path(name)
+        file_path = get_summary_path(name)
         if os.path.isfile(file_path):
             with open(file_path) as f:
                 result = json.load(f)
@@ -308,7 +307,7 @@ class HubIO:
 
     def _write_summary_to_db(self, summary):
         if not is_db_envs_set():
-            self.logger.critical(f'DB environment variables are not set! bookkeeping skipped.')
+            self.logger.error('DB environment variables are not set! bookkeeping skipped.')
             return
 
         build_summary = handle_dot_in_keys(document=summary)
@@ -320,14 +319,11 @@ class HubIO:
             inserted_id = db.insert(document=build_summary)
             self.logger.debug(f'Inserted the build + push summary in db with id {inserted_id}')
 
-    def _get_summary_path(self, image_name: str):
-        return os.path.join(tempfile.gettempdir(), image_name.replace('/', '_'), 'summary.json')
-
     def _write_summary_to_file(self, summary: Dict):
-        file_path = self._get_summary_path(summary['name'])
+        file_path = get_summary_path(summary['name'])
         with open(file_path, 'w+') as f:
             json.dump(summary, f)
-        self.logger.debug(f'Stored the summary from build in local disk')
+        self.logger.debug(f'stored the summary from build to {file_path}')
 
     def _check_completeness(self) -> Dict:
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
