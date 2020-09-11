@@ -58,4 +58,4 @@ pytest-timeout:             test
 pytest-cov:                 test
 flaky:                      test
 mock:                       test
-pymongo[srv]:               hub
+pymongo[srv]:               hub, devel

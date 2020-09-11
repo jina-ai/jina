@@ -313,11 +313,11 @@ class HubIO:
             return
     
         build_summary = handle_dot_in_keys(document=summary)
-        with MongoDBHandler(hostname=os.environ['db_hostname'], 
-                            username=os.environ['db_username'],
-                            password=os.environ['db_password'],
-                            database_name=os.environ['db_name'],
-                            collection_name=os.environ['db_collection']) as db:
+        with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'], 
+                            username=os.environ['JINA_DB_USERNAME'],
+                            password=os.environ['JINA_DB_PASSWORD'],
+                            database_name=os.environ['JINA_DB_NAME'],
+                            collection_name=os.environ['JINA_DB_COLLECTION']) as db:
             inserted_id = db.insert(document=build_summary)
             self.logger.debug(f'Inserted the build + push summary in db with id {inserted_id}')
             

@@ -5,7 +5,7 @@ from ..excepts import MongoDBException
 from ..logging import get_logger
 
 
-class MongoDBHandler():
+class MongoDBHandler:
     """
     Mongodb Handler to connect to the database & insert documents in the collection
     """
@@ -29,9 +29,9 @@ class MongoDBHandler():
             self.client.admin.command('ismaster')
             self.logger.info('Successfully connected to the database')
         except pymongo.errors.ConnectionFailure:
-            raise MongoDBException("Database server is not available")
+            raise MongoDBException('Database server is not available')
         except pymongo.errors.ConfigurationError:
-            raise MongoDBException("Credentials passed are not correct!")
+            raise MongoDBException('Credentials passed are not correct!')
         except pymongo.errors.PyMongoError as exp:
             raise MongoDBException(exp)
         return self

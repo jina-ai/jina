@@ -81,9 +81,8 @@ def is_error_message(s):
 
 def db_env_variables_set():
     """ Checks if any of the db env variables are not set """
-    none_exists = None in [
-        os.environ.get('db_username', None), os.environ.get('db_password', None),
-        os.environ.get('db_hostname', None), os.environ.get('db_name', None),
-        os.environ.get('db_collection', None)
-    ]
-    return not none_exists
+    keys = ['JINA_DB_HOSTNAME', 'JINA_DB_USERNAME', 'JINA_DB_PASSWORD', 'JINA_DB_NAME', 'JINA_DB_COLLECTION']
+    for k in keys:
+        if k not in os.environ:
+            return False
+    return True
