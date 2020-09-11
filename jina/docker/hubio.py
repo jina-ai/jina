@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import glob
+import json
 import tempfile
 import urllib.parse
 import webbrowser
@@ -67,9 +68,10 @@ class HubIO:
         elif self.args.type == 'pod':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
         cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
-        
+
         try:
-            cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
+            cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite,
+                         output_dir=self.args.output_dir)
         except click.exceptions.Abort:
             self.logger.info('nothing is created, bye!')
 
@@ -77,17 +79,16 @@ class HubIO:
         """ A wrapper of docker push """
         is_build_success, is_push_success = True, False
         try:
-            self._push(name, readme_path)
+            self._push_docker_hub(name, readme_path)
             is_push_success = True
-        except Exception:
+        except:
             self.logger.error(f'can not push to the registry')
-        
-        file_path = f'/tmp/{self.args.name.replace("/", "_")}.json'
+
+        file_path = self._get_summary_path(name)
         if os.path.isfile(file_path):
-            import json
             with open(file_path) as f:
                 result = json.load(f)
-        
+
         else:
             image = self._client.images.get(name)
             _details = {
@@ -96,7 +97,7 @@ class HubIO:
                 'hash': image.short_id,
                 'size': get_readable_size(image.attrs['Size']),
             }
-            
+
             result = {
                 'name': name,
                 'path': getattr(self.args, 'path', ''),
@@ -108,11 +109,11 @@ class HubIO:
                 'build_logs': [],
                 'exception': []
             }
-        
+
         if result['is_build_success']:
             self._write_summary_to_db(summary=result)
 
-    def _push(self, name: str = None, readme_path: str = None):
+    def _push_docker_hub(self, name: str = None, readme_path: str = None):
         """ Helper push function """
         name = name or self.args.name
         check_registry(self.args.registry, name, _repo_prefix)
@@ -267,7 +268,7 @@ class HubIO:
 
                 if self.args.push:
                     try:
-                        self._push(image.tags[0], self.readme_path)
+                        self._push_docker_hub(image.tags[0], self.readme_path)
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
@@ -295,7 +296,7 @@ class HubIO:
             self._write_summary_to_db(summary=result)
         elif result['is_build_success']:
             self._write_summary_to_file(summary=result)
-        
+
         return result
 
     def dry_run(self) -> Dict:
@@ -311,23 +312,25 @@ class HubIO:
         if not db_env_variables_set():
             self.logger.critical(f'DB environment variables are not set! bookkeeping skipped.')
             return
-    
+
         build_summary = handle_dot_in_keys(document=summary)
-        with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'], 
+        with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
                             username=os.environ['JINA_DB_USERNAME'],
                             password=os.environ['JINA_DB_PASSWORD'],
                             database_name=os.environ['JINA_DB_NAME'],
                             collection_name=os.environ['JINA_DB_COLLECTION']) as db:
             inserted_id = db.insert(document=build_summary)
             self.logger.debug(f'Inserted the build + push summary in db with id {inserted_id}')
-            
-    def _write_summary_to_file(self, summary): 
-        import json
-        file_path = f'/tmp/{summary["name"].replace("/", "_")}.json'
+
+    def _get_summary_path(self, image_name: str):
+        return os.path.join(tempfile.gettempdir(), image_name.replace('/', '_'), 'summary.json')
+
+    def _write_summary_to_file(self, summary):
+        file_path = self._get_summary_path(summary['name'])
         with open(file_path, 'w+') as f:
             json.dump(summary, f)
         self.logger.debug(f'Stored the summary from build in local disk')
-        
+
     def _check_completeness(self) -> Dict:
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')

@@ -9,7 +9,7 @@ class MongoDBHandler:
     """
     Mongodb Handler to connect to the database & insert documents in the collection
     """
-    def __init__(self, hostname: str, username: int, password: str,
+    def __init__(self, hostname: str, username: str, password: str,
                  database_name: str, collection_name: str):
         self.logger = get_logger(self.__class__.__name__)
         self.hostname = hostname
