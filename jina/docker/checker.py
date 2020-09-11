@@ -5,8 +5,9 @@ import os
 import re
 import unicodedata
 
-from ..helper import yaml
 from pkg_resources import resource_stream
+
+from ..helper import yaml
 
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
 required = {'name', 'description'}
@@ -79,10 +80,7 @@ def is_error_message(s):
     return re.search(excepts_regex, s, re.IGNORECASE | re.UNICODE) is not None
 
 
-def db_env_variables_set():
+def is_db_envs_set():
     """ Checks if any of the db env variables are not set """
     keys = ['JINA_DB_HOSTNAME', 'JINA_DB_USERNAME', 'JINA_DB_PASSWORD', 'JINA_DB_NAME', 'JINA_DB_COLLECTION']
-    for k in keys:
-        if k not in os.environ:
-            return False
-    return True
+    return all(k in os.environ for k in keys)
