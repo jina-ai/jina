@@ -7,9 +7,6 @@ on:
       with:
         fields:
           - embedding
-          - buffer
-          - blob
-          - text
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
@@ -23,9 +20,6 @@ on:
       with:
         fields:
           - embedding
-          - buffer
-          - blob
-          - text
     - !KVIndexDriver
       with:
         executor: BaseKVIndexer
