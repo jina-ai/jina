@@ -59,4 +59,4 @@ pytest-cov:                 test
 pytest-repeat:              test
 flaky:                      test
 mock:                       test
-pymongo[srv]:               hub
+pymongo[srv]:               hub, devel
