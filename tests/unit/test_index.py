@@ -159,7 +159,7 @@ class MyTestCase(JinaTestCase):
 
         time.sleep(3)
         with f:
-            f.search(input_fn=random_docs(2), output_fn=get_result)
+            f.search(input_fn=random_docs(2), output_fn=get_result, top_k=50)
 
     def test_chunk_joint_idx(self):
         f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml'))
