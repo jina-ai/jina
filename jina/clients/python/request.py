@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import mimetypes
 import os
 import urllib.parse
-from typing import Iterator, Union
+from typing import Iterator, Union, Optional
 
 import numpy as np
 
@@ -58,7 +58,7 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
 
 def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
               batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: int = 50,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: Optional[int] = None,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               granularity: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
@@ -87,9 +87,9 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
                 queryset = [queryset]
             req.queryset.extend(queryset)
 
-        if mode == ClientMode.SEARCH:
+        if top_k and mode == ClientMode.SEARCH:
             if top_k <= 0:
-                raise ValueError('"top_k: %d" is not a valid number' % top_k)
+                raise ValueError(f'"top_k: {top_k}" is not a valid number')
             else:
                 top_k_queryset = jina_pb2.QueryLang()
                 top_k_queryset.name = 'VectorSearchDriver'
