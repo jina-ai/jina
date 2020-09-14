@@ -12,7 +12,7 @@ from .database import MongoDBHandler
 from .helper import get_default_login, handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
-from ..helper import colored, get_readable_size, get_now_timestamp
+from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version
 from ..logging import get_logger
 from ..logging.profile import TimeContext
 
@@ -256,6 +256,14 @@ class HubIO:
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
+                        
+                info, env_info = get_full_version()
+                _host_info = {
+                    'jina': info,
+                    'jina_envs': env_info,
+                    'docker': self._raw_client.info(),
+                    'build_args': vars(self.args)
+                }
 
             if self.args.prune_images:
                 self.logger.info('deleting unused images')
@@ -264,6 +272,7 @@ class HubIO:
             result = {
                 'name': getattr(self, 'canonical_name', ''),
                 'path': self.args.path,
+                'host_info': _host_info,
                 'details': _details,
                 'last_build_time': get_now_timestamp(),
                 'build_duration': tc.duration,
