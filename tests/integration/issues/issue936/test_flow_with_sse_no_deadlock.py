@@ -21,3 +21,12 @@ def test_flow_with_sse_no_deadlock():
     with f:
         assert hasattr(f, '_sse_logger')
         pass
+
+
+@pytest.mark.repeat(10)
+def test_flow_with_sse_no_deadlock_one_pod():
+    f = Flow(logserver=True). \
+        add(uses='BaseExecutor', parallel=1, name='crafter')
+    with f:
+        assert hasattr(f, '_sse_logger')
+        pass
