@@ -37,6 +37,8 @@ class MongoDBHandler:
             raise MongoDBException('Credentials passed are not correct!')
         except pymongo.errors.PyMongoError as exp:
             raise MongoDBException(exp)
+        except Exception as exp:
+            raise MongoDBException(exp)
         return self
         
     @property
