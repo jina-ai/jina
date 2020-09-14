@@ -323,6 +323,9 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
+        if not docs:
+            return
+
         if 'chunks' in self._recur_on:
             working_docs = docs
             while working_docs[0].adjacency < self._adjacency_start:
