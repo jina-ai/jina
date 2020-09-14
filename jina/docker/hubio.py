@@ -256,14 +256,18 @@ class HubIO:
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
-                        
-                info, env_info = get_full_version()
-                _host_info = {
-                    'jina': info,
-                    'jina_envs': env_info,
-                    'docker': self._raw_client.info(),
-                    'build_args': vars(self.args)
-                }
+                
+                if self.args.host_info:
+                    info, env_info = get_full_version()
+                    _host_info = {
+                        'jina': info,
+                        'jina_envs': env_info,
+                        'docker': self._raw_client.info(),
+                        'build_args': vars(self.args)
+                    }
+                else:
+                    _host_info = ''
+                    self.logger.debug('Skipping writing host_info to database')
 
             if self.args.prune_images:
                 self.logger.info('deleting unused images')
