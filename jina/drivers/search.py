@@ -46,9 +46,9 @@ class KVSearchDriver(BaseSearchDriver):
             else:
                 miss_idx.append(idx)
 
-        # # delete non-existed matches in reverse
-        # for j in reversed(miss_idx):
-        #     del docs[j]
+        # delete non-existed matches in reverse
+        for j in reversed(miss_idx):
+            del docs[j]
 
 
 class VectorFillDriver(QuerySetReader, BaseSearchDriver):
