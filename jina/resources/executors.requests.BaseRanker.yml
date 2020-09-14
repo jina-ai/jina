@@ -6,9 +6,6 @@ on:
       with:
         fields:
           - embedding
-          - buffer
-          - blob
-          - text
     - !SortQL
       with:
         field: 'score.value'
