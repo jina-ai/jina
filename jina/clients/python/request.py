@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import mimetypes
 import os
 import urllib.parse
-from typing import Iterator, Union
+from typing import Iterator, Union, Optional
 
 import numpy as np
 
@@ -58,7 +58,7 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
 
 def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
               batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX,
+              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: Optional[int] = None,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               granularity: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
@@ -86,6 +86,16 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
             if isinstance(queryset, jina_pb2.QueryLang):
                 queryset = [queryset]
             req.queryset.extend(queryset)
+
+        if top_k and mode == ClientMode.SEARCH:
+            if top_k <= 0:
+                raise ValueError(f'"top_k: {top_k}" is not a valid number')
+            else:
+                top_k_queryset = jina_pb2.QueryLang()
+                top_k_queryset.name = 'VectorSearchDriver'
+                top_k_queryset.priority = 1
+                top_k_queryset.parameters['top_k'] = top_k
+                req.queryset.extend([top_k_queryset])
 
         for content in batch:
             _add_document(request=req, content=content, mode=mode, doc_counter=doc_counter,
