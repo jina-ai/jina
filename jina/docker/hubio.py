@@ -265,25 +265,10 @@ class HubIO:
                     'docker': self._raw_client.info(),
                     'build_args': vars(self.args)
                 }
-                _manifest_info = {
-                    'description': self._get_key_from_manifest(self.manifest, 'description'),
-                    'kind': self._get_key_from_manifest(self.manifest, 'kind'),
-                    'type': self._get_key_from_manifest(self.manifest, 'type'),
-                    'keywords': self._get_key_from_manifest(self.manifest, 'keywords'),
-                    'author': self._get_key_from_manifest(self.manifest, 'author'),
-                    'license': self._get_key_from_manifest(self.manifest, 'license'),
-                    'url': self._get_key_from_manifest(self.manifest, 'url'),
-                    'vendor': self._get_key_from_manifest(self.manifest, 'vendor'),
-                    'documentation': self._get_key_from_manifest(self.manifest, 'documentation')          
-                }
-            else:
-                _version = ''
-                _manifest_info = ''
-                _host_info = ''
                 
             _build_history = {
                 'time': get_now_timestamp(),
-                'host_info': _host_info if self.args.host_info else '',
+                'host_info': _host_info if is_build_success and self.args.host_info else '',
                 'duration': tc.duration,
                 'logs': _logs,
                 'exception': _excepts
@@ -295,9 +280,9 @@ class HubIO:
 
             result = {
                 'name': getattr(self, 'canonical_name', ''),
-                'version': _version,
+                'version': self.manifest['version'] if is_build_success and 'version' in self.manifest else '0.0.1',
                 'path': self.args.path,
-                'manifest_info': _manifest_info,
+                'manifest_info': self.manifest if is_build_success else '',
                 'details': _details,
                 'is_build_success': is_build_success,
                 'is_push_success': is_push_success,
@@ -397,9 +382,6 @@ class HubIO:
         self.canonical_name = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}'.format(**self.manifest))
         return completeness
 
-    def _get_key_from_manifest(self, manifest: dict, key: str):
-        return manifest[key] if key in manifest else ''
-    
     def _read_manifest(self, path: str, validate: bool = True):
         with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
             tmp = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
