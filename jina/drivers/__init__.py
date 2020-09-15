@@ -216,7 +216,7 @@ class BaseDriver(metaclass=DriverType):
 class BaseRecursiveDriver(BaseDriver):
 
     def __init__(self,
-                 recur_on: Union[str, Tuple[str, str]] = ('chunks', ),
+                 recur_on: Union[str, Tuple[str, str]] = ('chunks', 'matches'),
                  granularity_range: Tuple[int, int] = (0, 1),
                  adjacency_range: Tuple[int, int] = (0, 0),
                  apply_order: str = 'post',
@@ -342,7 +342,15 @@ class BaseRecursiveDriver(BaseDriver):
                 for working_doc in working_docs:
                     _temp.extend(working_doc.chunks)
                 working_docs = _temp
-            _traverse(working_docs, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
+
+            if 'chunks' in self._recur_on and self._granularity_start == 0 and self._adjacency_start == 0:
+                # Prevent double calling of _traverse for the for the full input list, since it
+                # is done already in the `if 'chunks' in self._recur_on` case.
+                if self._adjacency_end > 0:
+                    for working_doc in working_docs:
+                        _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
+            else:
+                _traverse(working_docs, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
