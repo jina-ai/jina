@@ -125,22 +125,9 @@ class BasePea(metaclass=PeaMeta):
         self._request = None
         self._message = None
 
-        if isinstance(args, argparse.Namespace):
-            if args.name:
-                self.name = args.name
-            if args.role == PeaRoleType.REPLICA:
-                self.name = '%s-%d' % (self.name, args.replica_id)
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
-            if not args.log_with_own_name and args.name:
-                # everything in this Pea (process) will use the same name for display the log
-                os.environ['JINA_POD_NAME'] = args.name
-            self.logger = get_logger(self.name, **vars(args))
-        else:
-            self.logger = get_logger(self.name)
-
     def __str__(self):
         r = self.name
-        if self.executor is not None:
+        if getattr(self, 'executor', None):
             r += f'({str(self.executor)})'
         return r
 
@@ -365,7 +352,18 @@ class BasePea(metaclass=PeaMeta):
         process/thread as the request loop.
 
         """
-        pass
+        if isinstance(self.args, argparse.Namespace):
+            if self.args.name:
+                self.name = self.args.name
+            if self.args.role == PeaRoleType.REPLICA:
+                self.name = '%s-%d' % (self.name, self.args.replica_id)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
+            if not self.args.log_with_own_name and self.args.name:
+                # everything in this Pea (process) will use the same name for display the log
+                os.environ['JINA_POD_NAME'] = self.args.name
+            self.logger = get_logger(self.name, **vars(self.args))
+        else:
+            self.logger = get_logger(self.name)
 
     def close(self) -> None:
         """Gracefully close this pea and release all resources """

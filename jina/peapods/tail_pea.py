@@ -12,10 +12,19 @@ class TailPea(BasePea):
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
         self.name = self.__class__.__name__
-        if isinstance(args, argparse.Namespace):
-            if args.name:
-                self.name = args.name
+
+    def post_init(self):
+        """Post initializer after the start of the request loop via :func:`run`, so that they can be kept in the same
+        process/thread as the request loop.
+
+        """
+        if isinstance(self.args, argparse.Namespace):
+            if self.args.name:
+                self.name = self.args.name
                 self.name = f'{self.name}-tail'
-            self.logger = get_logger(self.name, **vars(args))
+            self.logger = get_logger(self.name, **vars(self.args))
         else:
             self.logger = get_logger(self.name)
+
+    def __str__(self):
+        return self.name
