@@ -1,6 +1,5 @@
 import gzip
 import os
-import shutil
 from typing import List, Dict
 
 import numpy as np
@@ -10,17 +9,9 @@ from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
+from tests import rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
 class MockSegmenter(BaseSegmenter):

@@ -3,11 +3,12 @@ __license__ = "Apache-2.0"
 
 import gzip
 from os import path
-from typing import Optional, List, Union, Tuple
+from typing import Optional, List, Union, Tuple, Dict
 
 import numpy as np
 
 from . import BaseVectorIndexer
+from ..decorators import batching
 from ...helper import cached_property
 
 
@@ -47,11 +48,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             # so that later in `post_init()` it will load from the referred index_filename
             self._ref_index_abspath = ref_indexer.index_abspath
 
-    def post_init(self):
-        """int2ext_key and ext2int_key should not be serialized, thus they must be put into :func:`post_init`. """
-        super().post_init()
-        self.int2ext_key = None
-        self.ext2int_key = None
 
     @property
     def index_abspath(self) -> str:
@@ -139,30 +135,22 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     @cached_property
     def raw_ndarray(self) -> Optional['np.ndarray']:
-        vecs = self._load_gzip(self.index_abspath)
-        if vecs is None:
-            return None
-
-        if self.key_bytes and self.key_dtype:
-            self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
-
-        if self.int2ext_key is not None and vecs is not None and vecs.ndim == 2:
-            if self.int2ext_key.shape[0] != vecs.shape[0]:
-                self.logger.error(
-                    f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
-                    f'did you write to this index twice? or did you forget to save indexer?')
-                return None
-            if vecs.shape[0] == 0:
-                self.logger.warning(f'an empty index is loaded')
-
-            self.ext2int_key = {k: idx for idx, k in enumerate(self.int2ext_key)}
-            return vecs
-        else:
-            return None
+        return self._load_gzip(self.index_abspath)
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        int_ids = np.array([self.ext2int_key[j] for j in ids])
+        int_ids = np.array([self.ext2int_id[j] for j in ids])
         return self.raw_ndarray[int_ids]
+
+    @cached_property
+    def int2ext_id(self) -> 'np.ndarray':
+        """Convert internal ids (0,1,2,3,4,...) to external ids (random index) """
+        if self.key_bytes and self.key_dtype:
+            return np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+
+    @cached_property
+    def ext2int_id(self) -> Dict:
+        """Convert external ids (random index) to internal ids (0,1,2,3,4,...) """
+        return {k: idx for idx, k in enumerate(self.int2ext_id)}
 
 
 def _ext_arrs(A, B):
@@ -212,7 +200,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         self.metric = metric
         self.backend = backend
 
-    def query(self, keys: np.ndarray, top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """ Find the top-k vectors with smallest ``metric`` and return their ids.
 
         :return: a tuple of two ndarray.
@@ -225,20 +213,34 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         """
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
-            try:
-                from scipy.spatial.distance import cdist
-                dist = cdist(keys, self.query_handler, metric=self.metric)
-            except ModuleNotFoundError:
-                self.logger.error(f'your metric {self.metric} requires scipy, but scipy is not found')
+            dist = self._cdist(keys, self.query_handler)
         elif self.metric == 'euclidean':
-            dist = _euclidean(keys, self.query_handler)
+            dist = self._euclidean(keys, self.query_handler)
         elif self.metric == 'cosine':
-            dist = _cosine(keys, self.query_handler)
+            dist = self._cosine(keys, self.query_handler)
+        else:
+            raise NotImplementedError(f'{self.metric} is not implemented')
 
-        # idx = np.argpartition(dist, kth=top_k, axis=1)[:, :top_k] # To be changed when Doc2DocRanker is available
+        print('dist done')
         idx = dist.argsort(axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
-        return self.int2ext_key[idx], dist
+        return self.int2ext_id[idx], dist
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         return vecs
+
+    @batching(merge_over_axis=1, slice_on=2)
+    def _euclidean(self, *args, **kwargs):
+        return _euclidean(*args, **kwargs)
+
+    @batching(merge_over_axis=1, slice_on=2)
+    def _cosine(self, *args, **kwargs):
+        return _cosine(*args, **kwargs)
+
+    @batching(merge_over_axis=1, slice_on=2)
+    def _cdist(self, *args, **kwargs):
+        try:
+            from scipy.spatial.distance import cdist
+            return cdist(*args, **kwargs, metric=self.metric)
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(f'your metric {self.metric} requires scipy, but scipy is not found')

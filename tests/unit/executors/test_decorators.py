@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 import pytest
 
@@ -117,6 +118,38 @@ def test_batching():
 
     instance = A(5)
     result = instance.f([1, 1, 1, 1])
+    assert result == [1, 1, 1, 1]
+    assert len(instance.batch_sizes) == 1
+    assert instance.batch_sizes[0] == 4
+
+
+def test_batching_slice_on():
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+            self.batch_sizes = []
+
+        @batching(slice_on=2)
+        def f(self, key, data):
+            self.batch_sizes.append(len(data))
+            return data
+
+    instance = A(1)
+    result = instance.f(None, [1, 1, 1, 1])
+    assert result == [[1], [1], [1], [1]]
+    assert len(instance.batch_sizes) == 4
+    for batch_size in instance.batch_sizes:
+        assert batch_size == 1
+
+    instance = A(3)
+    result = instance.f(None, [1, 1, 1, 1])
+    assert result == [[1, 1, 1], [1]]
+    assert len(instance.batch_sizes) == 2
+    assert instance.batch_sizes[0] == 3
+    assert instance.batch_sizes[1] == 1
+
+    instance = A(5)
+    result = instance.f(None, [1, 1, 1, 1])
     assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 1
     assert instance.batch_sizes[0] == 4
