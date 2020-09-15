@@ -257,30 +257,36 @@ class HubIO:
                     except Exception:
                         self.logger.error(f'can not push to the registry')
                 
-            info, env_info = get_full_version()
-            _host_info = {
-                'jina': info,
-                'jina_envs': env_info,
-                'docker': self._raw_client.info(),
-                'build_args': vars(self.args)
-            }
+                _version = self.manifest['version'] if 'version' in self.manifest else '0.0.1'
+                info, env_info = get_full_version()
+                _host_info = {
+                    'jina': info,
+                    'jina_envs': env_info,
+                    'docker': self._raw_client.info(),
+                    'build_args': vars(self.args)
+                }
+                _manifest_info = {
+                    'description': self._get_key_from_manifest(self.manifest, 'description'),
+                    'kind': self._get_key_from_manifest(self.manifest, 'kind'),
+                    'type': self._get_key_from_manifest(self.manifest, 'type'),
+                    'keywords': self._get_key_from_manifest(self.manifest, 'keywords'),
+                    'author': self._get_key_from_manifest(self.manifest, 'author'),
+                    'license': self._get_key_from_manifest(self.manifest, 'license'),
+                    'url': self._get_key_from_manifest(self.manifest, 'url'),
+                    'vendor': self._get_key_from_manifest(self.manifest, 'vendor'),
+                    'documentation': self._get_key_from_manifest(self.manifest, 'documentation')          
+                }
+            else:
+                _version = ''
+                _manifest_info = ''
+                _host_info = ''
+                
             _build_history = {
                 'time': get_now_timestamp(),
                 'host_info': _host_info if self.args.host_info else '',
                 'duration': tc.duration,
                 'logs': _logs,
                 'exception': _excepts
-            }
-            _manifest_info = {
-                'description': self._get_key_from_manifest(self.manifest, 'description'),
-                'kind': self._get_key_from_manifest(self.manifest, 'kind'),
-                'type': self._get_key_from_manifest(self.manifest, 'type'),
-                'keywords': self._get_key_from_manifest(self.manifest, 'keywords'),
-                'author': self._get_key_from_manifest(self.manifest, 'author'),
-                'license': self._get_key_from_manifest(self.manifest, 'license'),
-                'url': self._get_key_from_manifest(self.manifest, 'url'),
-                'vendor': self._get_key_from_manifest(self.manifest, 'vendor'),
-                'documentation': self._get_key_from_manifest(self.manifest, 'documentation')          
             }
 
             if self.args.prune_images:
@@ -289,7 +295,7 @@ class HubIO:
 
             result = {
                 'name': getattr(self, 'canonical_name', ''),
-                'version': self.manifest['version'] if 'version' in self.manifest else '0.0.1',
+                'version': _version,
                 'path': self.args.path,
                 'manifest_info': _manifest_info,
                 'details': _details,
