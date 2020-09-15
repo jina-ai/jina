@@ -130,10 +130,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         raise NotImplementedError
 
     def _load_gzip(self, abspath: str) -> Optional['np.ndarray']:
-        if not path.exists(abspath):
-            self.logger.warning('numpy data not found: {}'.format(abspath))
-            return
-
         self.logger.info(f'loading index from {abspath}...')
         result = None
         try:
@@ -147,6 +143,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     @cached_property
     def raw_ndarray(self) -> Optional['np.ndarray']:
+        if not path.exists(self.index_abspath):
+            return
+
         if self.compress_level > 0:
             return self._load_gzip(self.index_abspath)
         else:
@@ -157,7 +156,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         return self.raw_ndarray[int_ids]
 
     @cached_property
-    def int2ext_id(self) -> 'np.ndarray':
+    def int2ext_id(self) -> Optional['np.ndarray']:
         """Convert internal ids (0,1,2,3,4,...) to external ids (random index) """
         if self.key_bytes and self.key_dtype:
             r = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
@@ -170,7 +169,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                     f'did you write to this index twice? or did you forget to save indexer?')
 
     @cached_property
-    def ext2int_id(self) -> Dict:
+    def ext2int_id(self) -> Optional[Dict]:
         """Convert external ids (random index) to internal ids (0,1,2,3,4,...) """
         if self.int2ext_id is not None:
             return {k: idx for idx, k in enumerate(self.int2ext_id)}
