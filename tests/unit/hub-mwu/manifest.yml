@@ -7,8 +7,9 @@ version: 0.0.6
 vendor: Jina AI Limited
 license: apache-2.0
 update: nightly
-keywords:
+keywords: 
   - example
   - demo
   - toy-example
 kind: encoder
+type: app
