@@ -73,3 +73,49 @@ def test_pod_with_sse_no_deadlock_thread():
     with p:
         time.sleep(1)
         pass
+
+
+# Child process is not capable to get the released RLock
+def test_issue_python():
+    import os, sys, threading, time
+
+    class ThreadStuff(threading.Thread):
+        def __init(self):
+            print(f' ThreadStuff: init')
+            threading.Thread.__init__(self)
+
+        def start_doing_stuff(self):
+            self.start()
+
+        def run(self):
+            print(f'ThreadStuff id: {threading.get_ident()}')
+
+            print("ThreadStuff: running (rlock = %s)" % global_rlock)
+
+            global_rlock.acquire()
+            print("ThreadStuff: I OWN THE LOCK")
+            time.sleep(5)
+            global_rlock.release()
+            print("ThreadStuff: dropped it.  Sleeping forever")
+            time.sleep(86400)
+
+    # ---
+
+    global_rlock = threading.RLock(verbose=True)
+    print(f'global_rlock {global_rlock}')
+
+    ts = ThreadStuff()
+    ts.start()
+
+    time.sleep(1)
+    print("forking")
+    pid = os.fork()
+    if pid:
+        print("parent: running (rlock = %s)" % global_rlock)
+    else:
+        print("child: running (rlock = %s) getting the lock..." % global_rlock)
+        global_rlock.acquire()
+        print("child: got the lock")
+        sys.exit(0)
+
+    time.sleep(10)
