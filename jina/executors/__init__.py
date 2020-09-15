@@ -439,7 +439,7 @@ class BaseExecutor(metaclass=ExecutorType):
         except EOFError:
             raise BadPersistantFile(f'broken file {filename} can not be loaded')
 
-    def close(self):
+    def close(self) -> None:
         """
         Release the resources as executor is destroyed, need to be overrided
         """
@@ -512,7 +512,7 @@ class BaseExecutor(metaclass=ExecutorType):
         return obj, data, load_from_dump
 
     @staticmethod
-    def _get_dump_path_from_config(meta_config: Dict):
+    def _get_dump_path_from_config(meta_config: Dict) -> str:
         if 'name' in meta_config:
             if meta_config.get('separated_workspace', False) is True:
                 if 'replica_id' in meta_config and isinstance(meta_config['replica_id'], int):
@@ -529,7 +529,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     return dump_path
 
     @staticmethod
-    def _dump_instance_to_yaml(data):
+    def _dump_instance_to_yaml(data: Dict) -> Dict:
         # note: we only save non-default property for the sake of clarity
         _defaults = get_default_metas()
         p = {k: getattr(data, k) for k, v in _defaults.items() if getattr(data, k) != v}

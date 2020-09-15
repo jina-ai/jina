@@ -99,7 +99,7 @@ class ReduceAllDriver(ReduceDriver):
             self._traverse_apply(r.docs, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
-                   **kwargs):
+                   **kwargs) -> None:
         if context_doc:
             getattr(self.doc_pointers[context_doc.id], field).extend(docs)
 

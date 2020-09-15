@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import time
 from collections import defaultdict
 from functools import wraps
+from typing import Callable
 
 from ..helper import colored
 
@@ -24,10 +25,10 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
         from . import default_logger
         default_logger.error('module "resource" can not be found and you are likely running it on Windows, '
                              'i will return 0')
-        return 0
+        return 0.
 
 
-def profiling(func):
+def profiling(func: Callable) -> Callable:
     """Decorator to mark a function for profiling. The time and memory usage will be recorded and printed.
 
     Example:

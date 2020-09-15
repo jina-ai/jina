@@ -36,12 +36,12 @@ def reduce_min(data: 'np.ndarray', mask_2d: 'np.ndarray') -> 'np.ndarray':
     return np.min(output, axis=1)
 
 
-def reduce_cls(data: 'np.ndarray', mask_2d: 'np.ndarray', cls_pos='head'):
+def reduce_cls(data: 'np.ndarray', mask_2d: 'np.ndarray', cls_pos='head') -> 'np.ndarray':
     mask_pruned = prune_mask(mask_2d, cls_pos)
     return reduce_mean(data, mask_pruned)
 
 
-def prune_mask(mask, cls_pos='head'):
+def prune_mask(mask: 'np.ndarray', cls_pos: str='head') -> 'np.ndarray':
     result = np.zeros(mask.shape)
     if cls_pos == 'head':
         mask_row = np.zeros((1, mask.shape[1]))

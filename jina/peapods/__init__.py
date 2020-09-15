@@ -12,7 +12,7 @@ if False:
     import argparse
 
 
-def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
+def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs) -> Union['RemotePea', 'ContainerPea', 'HeadPea', 'TailPea', 'BasePea']:
     """Initialize a :class:`BasePea`, :class:`RemotePea` or :class:`ContainerPea`
 
     :param args: arguments from CLI
@@ -47,7 +47,7 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
         return BasePea(args)
 
 
-def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = True, **kwargs):
+def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = True, **kwargs) -> Union['MutablePod', 'RemoteMutablePod', 'RemotePod', 'BasePod']:
     """Initialize a :class:`BasePod`, :class:`RemotePod`, :class:`MutablePod` or :class:`RemoteMutablePod`
 
     :param args: arguments from CLI

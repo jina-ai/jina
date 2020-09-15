@@ -160,7 +160,7 @@ def get_logger(context: str, context_len: int = 15,
 
     """
     from .. import __uptime__
-    from .queue import __sse_queue__, __profile_queue__, __log_queue__
+    from .log_queue import __sse_queue__, __profile_queue__, __log_queue__
     if not fmt_str:
         title = os.environ.get('JINA_POD_NAME', context)
         if 'JINA_LOG_LONG' in os.environ:

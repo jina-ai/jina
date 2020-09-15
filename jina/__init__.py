@@ -29,6 +29,7 @@ from datetime import datetime
 import random
 from types import SimpleNamespace
 import os
+from typing import Dict, Union, Tuple
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -83,7 +84,7 @@ JINA_GLOBAL.logserver = SimpleNamespace()
 
 
 def import_classes(namespace: str, targets=None,
-                   show_import_table: bool = False, import_once: bool = False):
+                   show_import_table: bool = False, import_once: bool = False) -> Union[None, Dict]:
     """
     Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML
     constructor beforehand. It can be also used to import third-part or external executors.
@@ -241,7 +242,7 @@ except ImportError:  # Windows
     res = None
 
 
-def set_nofile(nofile_atleast=4096):
+def set_nofile(nofile_atleast: int=4096) -> Tuple:
     """
     sets nofile soft limit to at least 4096, useful for running matlplotlib/seaborn on
     parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256

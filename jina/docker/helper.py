@@ -6,6 +6,7 @@ import base64
 from .. import __binary_delimiter__
 from ..helper import yaml
 from pkg_resources import resource_stream
+from typing import Dict
 
 
 def _encode(clear, key=__binary_delimiter__.decode()):
@@ -27,7 +28,7 @@ def _decode(enc, key=__binary_delimiter__.decode()):
     return ''.join(dec)
 
 
-def get_default_login():
+def get_default_login() -> Dict:
     with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'login.yml'))) as fp:
         login_info = yaml.load(fp)
         for k, v in login_info.items():
@@ -36,7 +37,7 @@ def get_default_login():
     return login_info
 
 
-def handle_dot_in_keys(document):
+def handle_dot_in_keys(document: dict) -> Union[dict, list]:
     updated_document = {}
     for key, value in document.items():
         if isinstance(value, dict):

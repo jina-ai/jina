@@ -54,7 +54,7 @@ class BasePod(ExitStack):
         """
         return all(p.is_idle for p in self.peas if p.is_ready.is_set())
 
-    def close_if_idle(self):
+    def close_if_idle(self) -> None:
         """Check every second if the pod is in idle, if yes, then close the pod"""
         while True:
             if self.is_idle:
@@ -96,7 +96,7 @@ class BasePod(ExitStack):
         return peas_args
 
     @property
-    def head_args(self):
+    def head_args(self) -> Dict:
         """Get the arguments for the `head` of this BasePod. """
         if self.is_head_router and self.peas_args['head']:
             return self.peas_args['head']
@@ -108,7 +108,7 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous head node, maybe it is deducted already?')
 
     @head_args.setter
-    def head_args(self, args):
+    def head_args(self, args) -> Dict:
         """Set the arguments for the `head` of this BasePod. """
         if self.is_head_router and self.peas_args['head']:
             self.peas_args['head'] = args
@@ -120,7 +120,7 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous head node, maybe it is deducted already?')
 
     @property
-    def tail_args(self):
+    def tail_args(self) -> Dict:
         """Get the arguments for the `tail` of this BasePod. """
         if self.is_tail_router and self.peas_args['tail']:
             return self.peas_args['tail']
@@ -132,7 +132,7 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
     @tail_args.setter
-    def tail_args(self, args):
+    def tail_args(self, args) -> Dict:
         """Get the arguments for the `tail` of this BasePod. """
         if self.is_tail_router and self.peas_args['tail']:
             self.peas_args['tail'] = args
@@ -155,10 +155,10 @@ class BasePod(ExitStack):
         """Get the number of running :class:`BasePea`"""
         return len(self.peas)
 
-    def __eq__(self, other: 'BasePod'):
+    def __eq__(self, other: 'BasePod') -> 'bool':
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def set_runtime(self, runtime: str):
+    def set_runtime(self, runtime: str) -> None:
         """Set the parallel runtime of this BasePod.
 
         :param runtime: possible values: process, thread
@@ -215,7 +215,7 @@ class BasePod(ExitStack):
         return self
 
     @property
-    def log_iterator(self):
+    def log_iterator(self) -> None:
         """Get the last log using iterator
 
         The :class:`BasePod` log iterator goes through all peas :attr:`log_iterator` and
@@ -227,7 +227,7 @@ class BasePod(ExitStack):
             The log may not strictly follow the time order given that we are polling the log
             from all peas in the sequential manner.
         """
-        from ..logging.queue import __log_queue__
+        from ..logging.log_queue import __log_queue__
         while not self.is_shutdown:
             try:
                 yield __log_queue__.get_nowait()
@@ -255,10 +255,10 @@ class BasePod(ExitStack):
             p.is_ready.wait()
         return True
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type, exc_val, exc_tb):
         super().__exit__(exc_type, exc_val, exc_tb)
 
-    def join(self):
+    def join(self) -> None:
         """Wait until all peas exit"""
         try:
             for s in self.peas:
@@ -272,7 +272,7 @@ class BasePod(ExitStack):
 class MutablePod(BasePod):
     """A :class:`MutablePod` is a pod where all peas and their connections are given"""
 
-    def _parse_args(self, args):
+    def _parse_args(self, args) -> dict:
         return args
 
 
@@ -294,7 +294,7 @@ class FlowPod(BasePod):
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
         self._kwargs = get_non_defaults_args(self._args, _parser)
 
-    def to_cli_command(self):
+    def to_cli_command(self) -> str:
         if isinstance(self, GatewayPod):
             cmd = 'jina gateway'
         else:
@@ -332,7 +332,7 @@ class FlowPod(BasePod):
         else:
             raise NotImplementedError(f'{first_socket_type!r} is not supported here')
 
-    def connect_to_tail_of(self, pod: 'BasePod'):
+    def connect_to_tail_of(self, pod: 'BasePod') -> None:
         """Eliminate the head node by connecting prev_args node directly to peas """
         if self._args.parallel > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
@@ -348,7 +348,7 @@ class FlowPod(BasePod):
         else:
             raise ValueError('the current pod has no head router, deducting the head is confusing')
 
-    def connect_to_head_of(self, pod: 'BasePod'):
+    def connect_to_head_of(self, pod: 'BasePod') -> None:
         """Eliminate the tail node by connecting next_args node directly to peas """
         if self._args.parallel > 1 and self.is_tail_router:
             # keep the port_out and socket_out of next_arts

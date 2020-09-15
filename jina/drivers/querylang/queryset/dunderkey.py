@@ -39,7 +39,7 @@ from google.protobuf import json_format
 from .helper import *
 
 
-def dunderkey(*args):
+def dunderkey(*args) -> str:
     """Produces a nested key from multiple args separated by double
     underscore
 
@@ -69,7 +69,7 @@ def dunder_partition(key: str) -> Union[Tuple[str, str], Tuple[str, None]]:
     return tuple(parts) if len(parts) > 1 else (parts[0], None)
 
 
-def dunder_init(key):
+def dunder_init(key: str) -> str:
     """Returns the initial part of the dunder key
 
         >>> dunder_init('a__b__c')
@@ -81,7 +81,7 @@ def dunder_init(key):
     return dunder_partition(key)[0]
 
 
-def dunder_last(key):
+def dunder_last(key: str) -> str:
     """Returns the last part of the dunder key
 
         >>> dunder_last('a__b__c')
@@ -93,7 +93,7 @@ def dunder_last(key):
     return dunder_partition(key)[1]
 
 
-def dunder_get(_dict, key):
+def dunder_get(_dict: Dict, key: str) -> Any:
     """Returns value for a specified dunderkey
 
     A "dunderkey" is just a fieldname that may or may not contain
@@ -131,7 +131,7 @@ def dunder_get(_dict, key):
     return result if len(parts) == 1 else dunder_get(result, parts[1])
 
 
-def undunder_keys(_dict):
+def undunder_keys(_dict: Dict) -> Dict:
     """Returns dict with the dunder keys converted back to nested dicts
 
     eg::
@@ -160,7 +160,7 @@ def undunder_keys(_dict):
     return result
 
 
-def dunder_truncate(_dict):
+def dunder_truncate(_dict: Dict) -> Dict:
     """Returns dict with dunder keys truncated to only the last part
 
     In other words, replaces the dunder keys with just last part of

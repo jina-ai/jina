@@ -13,6 +13,8 @@ from ..clients.python import ProgressBar
 from ..helper import colored
 from ..logging import default_logger
 
+from typing import Dict
+
 result_html = []
 
 
@@ -49,7 +51,7 @@ def write_html(html_path):
         f'🤩 Intrigued? Play with "jina hello-world --help" and learn more about Jina at {colored_url}')
 
 
-def download_data(targets, download_proxy=None):
+def download_data(targets: Dict, download_proxy: bool=None) -> None:
     opener = urllib.request.build_opener()
     if download_proxy:
         proxy = urllib.request.ProxyHandler({'http': download_proxy, 'https': download_proxy})
@@ -62,6 +64,6 @@ def download_data(targets, download_proxy=None):
             v['data'] = load_mnist(v['filename'])
 
 
-def load_mnist(path):
+def load_mnist(path: str) -> 'np.ndarray':
     with gzip.open(path, 'rb') as fp:
         return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 784])

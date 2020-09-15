@@ -64,7 +64,7 @@ class GrpcClient:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def start(self, *args, **kwargs):
+    def start(self, *args, **kwargs) -> 'GrpcClient':
         """Wrapping :meth:`call` and provide exception captures
         """
 
@@ -88,7 +88,7 @@ class GrpcClient:
 
         return self
 
-    def close(self):
+    def close(self) -> None:
         """Gracefully shutdown the client and release all gRPC-related resources """
         if not self.is_closed:
             self._channel.close()

@@ -5,6 +5,7 @@ from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
+from typing import Dict
 
 PY37 = 'py37'
 PY38 = 'py38'
@@ -32,7 +33,7 @@ except FileNotFoundError:
     _long_description = ''
 
 
-def get_extra_requires(path, add_all=True):
+def get_extra_requires(path: str, add_all: bool=True) -> Dict:
     import re
     from collections import defaultdict
     try:

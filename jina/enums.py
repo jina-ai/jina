@@ -157,7 +157,7 @@ class SocketType(BetterEnum):
         return self.value in {0, 1, 4, 5}
 
     @property
-    def is_pubsub(self):
+    def is_pubsub(self) -> bool:
         """
 
         :return: if this socket is used for publish or subscribe data

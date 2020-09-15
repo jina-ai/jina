@@ -2,12 +2,12 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from . import default_logger
-from .queue import __sse_queue__, __profile_queue__
+from .log_queue import __sse_queue__, __profile_queue__
 from .. import JINA_GLOBAL, __version__
 from ..helper import yaml
 
 
-def start_sse_logger(server_config_path: str, flow_yaml: str = None):
+def start_sse_logger(server_config_path: str, flow_yaml: str = None) -> None:
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
     :param host: host address of the server

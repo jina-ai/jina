@@ -26,7 +26,7 @@ class MongoDBHandler:
     def __enter__(self):
         return self.connect()
     
-    def connect(self):
+    def connect(self) -> 'MongoDBHandler':
         try:
             self.client = pymongo.MongoClient(self.connection_string)
             self.client.admin.command('ismaster')
@@ -47,7 +47,7 @@ class MongoDBHandler:
     def collection(self):
         return self.database[self.collection_name]
     
-    def insert(self, document: str):
+    def insert(self, document: str) -> str:
         result = self.collection.insert_one(document)
         self.logger.info(f'Pushed current summary to the database')
         return result.inserted_id

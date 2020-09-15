@@ -13,7 +13,7 @@ from datetime import datetime
 from io import StringIO
 from itertools import islice
 from types import SimpleNamespace
-from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
+from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Pattern, IO
 
 import numpy as np
 from ruamel.yaml import YAML, nodes
@@ -43,7 +43,7 @@ def deprecated_alias(**aliases):
     return deco
 
 
-def rename_kwargs(func_name: str, kwargs, aliases):
+def rename_kwargs(func_name: str, kwargs: Dict, aliases: Dict) -> None:
     from .logging import default_logger
     for alias, new in aliases.items():
         if alias in kwargs:
@@ -66,7 +66,7 @@ def get_readable_size(num_bytes: int) -> str:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
-def print_load_table(load_stat: Dict[str, List[Any]]):
+def print_load_table(load_stat: Dict[str, List[Any]]) -> None:
     from .logging import default_logger
 
     load_table = []
@@ -86,7 +86,7 @@ def print_load_table(load_stat: Dict[str, List[Any]]):
         default_logger.info('\n'.join(load_table))
 
 
-def print_load_csv_table(load_stat: Dict[str, List[Any]]):
+def print_load_csv_table(load_stat: Dict[str, List[Any]]) -> None:
     from .logging import default_logger
 
     load_table = []
@@ -99,7 +99,7 @@ def print_load_csv_table(load_stat: Dict[str, List[Any]]):
         default_logger.info('\n'.join(load_table))
 
 
-def print_dep_tree_rst(fp, dep_tree, title='Executor'):
+def print_dep_tree_rst(fp: IO, dep_tree: Dict, title='Executor') -> None:
     tableview = set()
     treeview = []
 
@@ -232,7 +232,7 @@ class PathImporter:
         return module_name
 
     @staticmethod
-    def add_modules(*paths) -> 'types.ModuleType':
+    def add_modules(*paths: List) -> 'types.ModuleType':
         for p in paths:
             if not os.path.exists(p):
                 raise FileNotFoundError('cannot import module from %s, file not exist', p)
@@ -295,7 +295,7 @@ def random_port() -> int:
     return _port
 
 
-def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
+def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id) -> List:
     config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
     _all = {}
     _ports = set()
@@ -309,7 +309,7 @@ def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
     return list(_ports)
 
 
-def deregister_all_ports(stack_id: int = JINA_GLOBAL.stack.id):
+def deregister_all_ports(stack_id: int = JINA_GLOBAL.stack.id) -> None:
     config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
     _all = {'stacks': []}
     if os.path.exists(config_path):
@@ -324,7 +324,7 @@ def deregister_all_ports(stack_id: int = JINA_GLOBAL.stack.id):
         yaml.dump(_all, fp)
 
 
-def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id):
+def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id) -> None:
     config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
     _all = None
     if os.path.exists(config_path):
@@ -357,7 +357,7 @@ def get_random_identity() -> str:
 yaml = _get_yaml()
 
 
-def expand_env_var(v: str) -> str:
+def expand_env_var(v: str) -> Union[str, Any]:
     if isinstance(v, str):
         return parse_arg(os.path.expandvars(v))
     else:
@@ -440,7 +440,7 @@ _COLORS = {
 _RESET = '\033[0m'
 
 
-def build_url_regex_pattern():
+def build_url_regex_pattern() -> Pattern:
     ul = '\u00a1-\uffff'  # Unicode letters range (must not be a raw string).
 
     # IP patterns
@@ -473,7 +473,7 @@ def build_url_regex_pattern():
 url_pat = build_url_regex_pattern()
 
 
-def is_url(text):
+def is_url(text: str) -> bool:
     return url_pat.match(text) is not None
 
 
@@ -642,7 +642,7 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
     return version_info + '\n' + env_info
 
 
-def use_uvloop():
+def use_uvloop() -> None:
     if 'JINA_DISABLE_UVLOOP' not in os.environ:
         try:
             import asyncio
@@ -668,7 +668,7 @@ def rsetattr(obj, attr: str, val):
     return setattr(rgetattr(obj, pre) if pre else obj, post, val)
 
 
-def rgetattr(obj, attr: str, *args):
+def rgetattr(obj, attr: str, *args: Namespace):
     def _getattr(obj, attr):
         return getattr(obj, attr, *args)
 
@@ -688,7 +688,7 @@ class cached_property:
         return value
 
 
-def get_now_timestamp():
+def get_now_timestamp() -> int:
     now = datetime.now()
     return int(datetime.timestamp(now))
 

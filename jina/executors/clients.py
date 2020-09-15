@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict
+from typing import Dict, Any
 
 import grpc
 
@@ -11,6 +11,7 @@ if False:
     from tensorflow_serving.apis import predict_pb2
     from tensorflow_serving.apis import classification_pb2
     from tensorflow_serving.apis import regression_pb2
+    from ..proto import jina_pb2
 
 
 class BaseClientExecutor(BaseExecutor):
@@ -96,7 +97,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         from tensorflow_serving.apis import prediction_service_pb2_grpc
         self._stub = prediction_service_pb2_grpc.PredictionServiceStub(self._channel)
 
-    def get_request(self, data):
+    def get_request(self, data: Any) -> 'jina_pb2.Request':
         """
         Construct the gRPC request to the tf server.
 
@@ -115,7 +116,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         """
         raise NotImplementedError
 
-    def get_response(self, request: 'predict_pb2.PredictRequest'):
+    def get_response(self, request: 'predict_pb2.PredictRequest') -> 'tfResponse':
         """
         Get the response from the tf server and postprocess the response
         """
@@ -125,7 +126,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
             raise ValueError
         return self.get_output(_response)
 
-    def get_output(self, response: grpc.UnaryUnaryMultiCallable):
+    def get_output(self, response: grpc.UnaryUnaryMultiCallable) -> None:
         """
         Postprocess the response from the tf server
         """

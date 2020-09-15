@@ -5,7 +5,7 @@ import glob
 import gzip
 import json
 import shelve
-from typing import Iterator, Optional
+from typing import Iterator, Optional, IO, Dict
 
 from google.protobuf.json_format import Parse
 
@@ -22,13 +22,13 @@ class BasePbIndexer(BaseKVIndexer):
     flush_on_add = True  #: When set to true, the indexer is flushed on every add, it is safer but slower
     mode = 't'  #: r/w mode, `t` for text, `b` for binary
 
-    def get_add_handler(self):
+    def get_add_handler(self) -> IO:
         """Append to the existing gzip file using text appending mode """
 
         # note this write mode must be append, otherwise the index will be overwrite in the search time
         return gzip.open(self.index_abspath, 'a' + self.mode, compresslevel=self.compress_level)
 
-    def get_create_handler(self):
+    def get_create_handler(self) -> IO:
         """Create a new gzip file
 
         :return: a gzip file stream
@@ -44,15 +44,15 @@ class BasePbIndexer(BaseKVIndexer):
         if self.query_handler is not None:
             return self.query_handler.get(key, None)
 
-    def get_query_handler(self):
+    def get_query_handler(self) -> None:
         raise NotImplementedError
 
-    def add(self, *args, **kwargs):
+    def add(self, *args, **kwargs) -> None:
         self._add(*args, **kwargs)
         if self.flush_on_add:
             self.flush()
 
-    def _add(self, *args, **kwargs):
+    def _add(self, *args, **kwargs) -> None:
         raise NotImplementedError
 
 
@@ -81,7 +81,7 @@ class ShelfPbIndexer(BasePbIndexer):
                 d.ParseFromString(r)
                 return d
 
-    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs):
+    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs) -> None:
         """Add a JSON-friendly object to the indexer
 
         :param obj: an object can be jsonified
@@ -90,7 +90,7 @@ class ShelfPbIndexer(BasePbIndexer):
         self._size += len(keys)
         self.write_handler.update(keys)
 
-    def flush(self):
+    def flush(self) -> None:
         call_obj_fn(self.write_handler, 'sync')
 
     @property
@@ -103,7 +103,7 @@ class ShelfPbIndexer(BasePbIndexer):
 class JsonPbIndexer(BasePbIndexer):
     """Storing and querying protobuf chunk/document in JSON using gzip and Python dict. """
 
-    def get_query_handler(self):
+    def get_query_handler(self) -> Dict:
         r = {}
         with gzip.open(self.index_abspath, 'rt') as fp:
             for l in fp:
@@ -114,7 +114,7 @@ class JsonPbIndexer(BasePbIndexer):
                         self._size += 1
         return r
 
-    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs):
+    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs) -> None:
         """Add a JSON-friendly object to the indexer
 
         :param obj: an object can be jsonified
@@ -134,7 +134,7 @@ class BinaryPbIndexer(BasePbIndexer):
 
     mode = 'b'
 
-    def get_query_handler(self):
+    def get_query_handler(self) -> Dict:
         with gzip.open(self.index_abspath, 'rb') as fp:
             tmp = fp.read()
         if tmp.endswith(__binary_delimiter__):
@@ -148,7 +148,7 @@ class BinaryPbIndexer(BasePbIndexer):
             self._size += 1
         return r
 
-    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs):
+    def _add(self, keys: Iterator['jina_pb2.Document'], *args, **kwargs) -> None:
         """Add a object to the indexer
 
         :param obj: an object

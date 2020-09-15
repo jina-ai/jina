@@ -14,7 +14,7 @@ from ..helper import show_ioloop_backend, use_uvloop
 use_uvloop()
 
 
-def _loop_mgr(loop: 'asyncio.AbstractEventLoop'):
+def _loop_mgr(loop: 'asyncio.AbstractEventLoop') -> None:
     asyncio.set_event_loop(loop)
     if not loop.is_running():
         loop.run_forever()

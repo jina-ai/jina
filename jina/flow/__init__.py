@@ -10,6 +10,7 @@ from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
+from argparse import Namespace
 
 import ruamel.yaml
 from ruamel.yaml import StringIO
@@ -144,7 +145,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
 
 
 class Flow(ExitStack):
-    def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
+    def __init__(self, args: 'Namespace' = None, **kwargs):
         """Initialize a flow object
 
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
@@ -173,7 +174,7 @@ class Flow(ExitStack):
 
         self._update_args(args, **kwargs)
 
-    def _update_args(self, args, **kwargs):
+    def _update_args(self, args: Namespace, **kwargs):
         from ..main.parser import set_flow_parser
         _flow_parser = set_flow_parser()
         if args is None:
@@ -467,7 +468,7 @@ class Flow(ExitStack):
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
 
-    def _start_log_server(self):
+    def _start_log_server(self) -> None:
         try:
             import urllib.request
             import flask, flask_cors
@@ -486,7 +487,7 @@ class Flow(ExitStack):
         except:
             self.logger.error('logserver fails to start')
 
-    def start(self):
+    def start(self) -> 'Flow':
         """Start to run all Pods in this Flow.
 
         Remember to close the Flow with :meth:`close`.
@@ -544,7 +545,7 @@ class Flow(ExitStack):
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _get_client(self, **kwargs):
+    def _get_client(self, **kwargs) -> 'PyClient':
         kwargs.update(self._common_kwargs)
         from ..clients import py_client
         if 'port_expose' not in kwargs:
@@ -556,7 +557,7 @@ class Flow(ExitStack):
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None,
-              **kwargs):
+              **kwargs) -> None:
         """Do training on the current flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`train`.
@@ -595,7 +596,7 @@ class Flow(ExitStack):
 
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                       output_fn: Callable[['jina_pb2.Message'], None] = None,
-                      **kwargs):
+                      **kwargs) -> None:
         """Using numpy ndarray as the index source for the current flow
 
         :param array: the numpy ndarray data source
@@ -610,7 +611,7 @@ class Flow(ExitStack):
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        output_fn: Callable[['jina_pb2.Message'], None] = None,
-                       **kwargs):
+                       **kwargs) -> None:
         """Use a numpy ndarray as the query source for searching on the current flow
 
         :param array: the numpy ndarray data source
@@ -626,7 +627,7 @@ class Flow(ExitStack):
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
                     output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                    **kwargs) -> None:
         """ Use a list of lines as the index source for indexing on the current flow
 
         :param lines: a list of strings, each is considered as d document
@@ -645,7 +646,7 @@ class Flow(ExitStack):
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
                     output_fn: Callable[['jina_pb2.Message'], None] = None,
-                    **kwargs):
+                    **kwargs) -> None:
         """ Use a set of files as the index source for indexing on the current flow
 
         :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
@@ -665,7 +666,7 @@ class Flow(ExitStack):
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
                      output_fn: Callable[['jina_pb2.Message'], None] = None,
-                     **kwargs):
+                     **kwargs) -> None:
         """ Use a set of files as the query source for searching on the current flow
 
         :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
@@ -685,7 +686,7 @@ class Flow(ExitStack):
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
                      output_fn: Callable[['jina_pb2.Message'], None] = None,
-                     **kwargs):
+                     **kwargs) -> None:
         """ Use a list of files as the query source for searching on the current flow
 
         :param filepath: a text file that each line contains a document
@@ -704,7 +705,7 @@ class Flow(ExitStack):
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None,
-              **kwargs):
+              **kwargs) -> None:
         """Do indexing on the current flow
 
         Example,
@@ -744,7 +745,7 @@ class Flow(ExitStack):
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None,
-               **kwargs):
+               **kwargs) -> None:
         """Do searching on the current flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`search`.
@@ -782,14 +783,14 @@ class Flow(ExitStack):
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
-    def dry_run(self, **kwargs):
+    def dry_run(self, **kwargs) -> None:
         """Send a DRYRUN request to this flow, passing through all pods in this flow,
         useful for testing connectivity and debugging"""
         self.logger.warning('calling dry_run() on a flow is depreciated, it will be removed in the future version. '
                             'calling index(), search(), train() will trigger a dry_run()')
 
     @build_required(FlowBuildLevel.GRAPH)
-    def to_swarm_yaml(self, path: TextIO):
+    def to_swarm_yaml(self, path: TextIO) -> None:
         """
         Generate the docker swarm YAML compose file
 

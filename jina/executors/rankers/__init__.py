@@ -11,7 +11,7 @@ from .. import BaseExecutor
 class BaseRanker(BaseExecutor):
     """The base class for a `Ranker`"""
 
-    def score(self, *args, **kwargs):
+    def score(self, *args, **kwargs) -> None:
         raise NotImplementedError
 
 
@@ -64,7 +64,7 @@ class Chunk2DocRanker(BaseRanker):
             r.append((_doc_id, _doc_score))
         return self.sort_doc_by_score(r)
 
-    def group_by_doc_id(self, match_idx):
+    def group_by_doc_id(self, match_idx: 'np.ndarray') -> 'np.ndarray':
         """
         Group the ``match_idx`` by ``doc_id``
         :return: an iterator over the groups
@@ -72,7 +72,7 @@ class Chunk2DocRanker(BaseRanker):
         return self._group_by(match_idx, self.col_doc_id)
 
     @staticmethod
-    def _group_by(match_idx, col):
+    def _group_by(match_idx: 'np.ndarray', col: int) -> 'np.ndarray':
         # sort by ``col``
         _sorted_m = match_idx[match_idx[:, col].argsort()]
         _, _doc_counts = np.unique(_sorted_m[:, col], return_counts=True)
@@ -83,7 +83,7 @@ class Chunk2DocRanker(BaseRanker):
         raise NotImplementedError
 
     @staticmethod
-    def sort_doc_by_score(r):
+    def sort_doc_by_score(r: list) -> 'np.ndarray':
         """
         Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
         :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
@@ -92,7 +92,7 @@ class Chunk2DocRanker(BaseRanker):
         r = r[r[:, -1].argsort()[::-1]]
         return r
 
-    def get_doc_id(self, match_with_same_doc_id):
+    def get_doc_id(self, match_with_same_doc_id: 'np.ndarray') -> Any:
         return match_with_same_doc_id[0, self.col_doc_id]
 
 

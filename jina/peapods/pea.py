@@ -56,7 +56,7 @@ class PeaMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
-def _get_event(obj: 'BasePea') -> Event:
+def _get_event(obj: 'BasePea') -> Union[Event, None]:
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):
@@ -175,16 +175,16 @@ class BasePea(metaclass=PeaMeta):
         return self._request.__class__.__name__
 
     @property
-    def log_iterator(self):
+    def log_iterator(self) -> None:
         """Get the last log using iterator """
-        from ..logging.queue import __log_queue__
+        from ..logging.log_queue import __log_queue__
         while self.is_ready.is_set():
             try:
                 yield __log_queue__.get_nowait()
             except Empty:
                 pass
 
-    def load_executor(self):
+    def load_executor(self) -> None:
         """Load the executor to this BasePea, specified by ``uses`` CLI argument.
 
         """
@@ -200,11 +200,11 @@ class BasePea(metaclass=PeaMeta):
             self.logger.warning('this BasePea has no executor attached, you may want to double-check '
                                 'if it is a mistake or on purpose (using this BasePea as router/map-reduce)')
 
-    def print_stats(self):
+    def print_stats(self) -> None:
         self.logger.info(
             ' '.join('%s: %.2f' % (k, v / self._timer.accum_time['loop']) for k, v in self._timer.accum_time.items()))
 
-    def save_executor(self, dump_interval: int = 0):
+    def save_executor(self, dump_interval: int = 0) -> None:
         """Save the contained executor
 
         :param dump_interval: the time interval for saving
@@ -243,22 +243,22 @@ class BasePea(metaclass=PeaMeta):
         self.check_memory_watermark()
         return self
 
-    def set_ready(self, *args, **kwargs):
+    def set_ready(self, *args, **kwargs) -> None:
         """Set the status of the pea to ready """
         self.is_ready.set()
         self.logger.success(__ready_msg__)
 
-    def unset_ready(self, *args, **kwargs):
+    def unset_ready(self, *args, **kwargs) -> None:
         """Set the status of the pea to shutdown """
         self.is_ready.clear()
         self.logger.success(__stop_msg__)
 
-    def _callback(self, msg):
+    def _callback(self, msg: 'jina_pb2.Message') -> 'jina_pb2.Message':
         if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
             self.pre_hook(msg).handle(msg).post_hook(msg)
         return msg
 
-    def _handle_terminate_signal(self, msg):
+    def _handle_terminate_signal(self, msg: 'jina_pb2.Message') -> None:
         # save executor
         if hasattr(self, 'executor'):
             if not self.args.exit_no_dump:
@@ -308,7 +308,7 @@ class BasePea(metaclass=PeaMeta):
             self.logger.error(ex, exc_info=True)
             self.zmqlet.send_message(msg)
 
-    def loop_body(self):
+    def loop_body(self) -> None:
         """The body of the request loop
 
         .. note::
@@ -322,12 +322,12 @@ class BasePea(metaclass=PeaMeta):
         self.set_ready()
         self.zmqlet.start(self.msg_callback)
 
-    def load_plugins(self):
+    def load_plugins(self) -> None:
         if self.args.py_modules:
             from ..helper import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
-    def loop_teardown(self):
+    def loop_teardown(self) -> None:
         """Stop the request loop """
         if hasattr(self, 'zmqlet'):
             self.zmqlet.close()

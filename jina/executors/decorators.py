@@ -5,7 +5,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List
+from typing import Callable, Any, Union, Iterator, List, Tuple
 
 import numpy as np
 
@@ -13,7 +13,7 @@ from .metas import get_default_metas
 from ..helper import batch_iterator
 
 
-def as_update_method(func: Callable):
+def as_update_method(func: Callable) -> Callable:
     """Mark the function as the updating function of this executor,
     calling this function will change the executor so later you can save the change via :func:`save`
     Will set the is_updated property after function is called.
@@ -28,7 +28,7 @@ def as_update_method(func: Callable):
     return arg_wrapper
 
 
-def as_train_method(func: Callable):
+def as_train_method(func: Callable) -> Callable:
     """Mark a function as the training function of this executor.
     Will set the is_trained property after function is called.
     """
@@ -45,7 +45,7 @@ def as_train_method(func: Callable):
     return arg_wrapper
 
 
-def as_ndarray(func: Callable, dtype=np.float32):
+def as_ndarray(func: Callable, dtype=np.float32) -> Callable:
     """Convert an :class:`BaseExecutor` function returns to a ``numpy.ndarray``,
     the following type are supported: `EagerTensor`, `Tensor`, `list`
 
@@ -65,7 +65,7 @@ def as_ndarray(func: Callable, dtype=np.float32):
     return arg_wrapper
 
 
-def require_train(func: Callable):
+def require_train(func: Callable) -> Callable:
     """Mark an :class:`BaseExecutor` function as training required, so it can only be called
     after the function decorated by ``@as_train_method``. """
 
@@ -82,7 +82,7 @@ def require_train(func: Callable):
     return arg_wrapper
 
 
-def store_init_kwargs(func):
+def store_init_kwargs(func: Callable) -> Callable:
     """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
 
     @wraps(func)
@@ -217,7 +217,7 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
         return _batching
 
 
-def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> int:
+def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> Union[Tuple, int, None]:
     if isinstance(data, np.ndarray):
         total_size = data.shape[axis]
     elif hasattr(data, '__len__'):

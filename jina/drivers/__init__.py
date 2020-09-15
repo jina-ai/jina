@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Any, Dict, Callable, Tuple, Iterable, Iterator
+from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, List
 
 import ruamel.yaml.constructor
 
@@ -173,7 +173,7 @@ class BaseDriver(metaclass=DriverType):
         raise NotImplementedError
 
     @staticmethod
-    def _dump_instance_to_yaml(data):
+    def _dump_instance_to_yaml(data) -> Dict:
         # note: we only save non-default property for the sake of clarity
         a = {k: v for k, v in data._init_kwargs_dict.items()}
         r = {}
@@ -200,7 +200,7 @@ class BaseDriver(metaclass=DriverType):
         obj = cls(**data.get('with', {}))
         return obj
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.__class__ == other.__class__
 
     def __getstate__(self) -> Dict[str, Any]:
@@ -248,7 +248,7 @@ class BaseRecursiveDriver(BaseDriver):
         """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
-                   **kwargs):
+                   **kwargs) -> None:
         """ Apply function works on a list of docs, modify the docs in-place
 
         Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
@@ -261,11 +261,11 @@ class BaseRecursiveDriver(BaseDriver):
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
-    def _traverse_apply(self, docs, *args, **kwargs):
+    def _traverse_apply(self, docs: List, *args, **kwargs) -> None:
         """often useful when you delete a recursive structure """
 
-        def post_traverse(_docs, recur_on, context_doc=None,
-                          depth_name='granularity', recur_start=0, recur_end=1):
+        def post_traverse(_docs: List, recur_on: str, context_doc: str=None,
+                          depth_name: str='granularity', recur_start: int=0, recur_end: int=1) -> None:
             """
             :param _docs: list of docs
             :param recur_on: "matches" or "chunks"
@@ -288,8 +288,8 @@ class BaseRecursiveDriver(BaseDriver):
                 if self._is_apply_all and getattr(_docs[0], depth_name) >= recur_start:
                     self._apply_all(_docs, context_doc, recur_on, *args, **kwargs)
 
-        def pre_traverse(_docs, recur_on, context_doc=None,
-                         depth_name='granularity', recur_start=0, recur_end=1):
+        def pre_traverse(_docs: List, recur_on: str, context_doc: str=None,
+                         depth_name: str='granularity', recur_start: int=0, recur_end: int=1) -> None:
             """
             :param _docs: list of docs
             :param recur_on: "matches" or "chunks"

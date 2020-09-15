@@ -113,7 +113,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         else:
             return None
 
-    def build_advanced_index(self, vecs: 'np.ndarray'):
+    def build_advanced_index(self, vecs: 'np.ndarray') -> None:
         """
         Build advanced index structure based on in-memory numpy ndarray, e.g. graph, tree, etc.
 
@@ -165,7 +165,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         return self.raw_ndarray[int_ids]
 
 
-def _ext_arrs(A, B):
+def _ext_arrs(A: 'np.ndarray', B: 'np.ndarray') -> Tuple['np.ndarray', 'np.ndarray']:
     nA, dim = A.shape
     A_ext = np.ones((nA, dim * 3))
     A_ext[:, dim:2 * dim] = A
@@ -178,13 +178,13 @@ def _ext_arrs(A, B):
     return A_ext, B_ext
 
 
-def _euclidean(A, B):
+def _euclidean(A: 'np.ndarray', B: 'np.ndarray') -> 'np.ndarray':
     A_ext, B_ext = _ext_arrs(A, B)
     sqdist = A_ext.dot(B_ext).clip(min=0)
     return np.sqrt(sqdist)
 
 
-def _cosine(A, B):
+def _cosine(A: 'np.ndarray', B: 'np.ndarray') -> 'np.ndarray':
     A_ext, B_ext = _ext_arrs(A / np.linalg.norm(A, ord=2, axis=1, keepdims=True),
                              B / np.linalg.norm(B, ord=2, axis=1, keepdims=True))
     return A_ext.dot(B_ext).clip(min=0) / 2
@@ -240,5 +240,5 @@ class NumpyIndexer(BaseNumpyIndexer):
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_key[idx], dist
 
-    def build_advanced_index(self, vecs: 'np.ndarray'):
+    def build_advanced_index(self, vecs: 'np.ndarray') -> 'np.ndarray':
         return vecs

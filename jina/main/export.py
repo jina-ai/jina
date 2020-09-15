@@ -2,9 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+from typing import Dict, List
 
-
-def api_to_dict():
+def api_to_dict() -> Dict[str, List[Dict]]:
     from ..enums import BetterEnum
     from .. import __version__
     from .parser import get_main_parser

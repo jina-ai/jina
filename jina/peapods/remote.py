@@ -11,6 +11,7 @@ from ..clients.python import GrpcClient
 from ..helper import kwargs2list
 from ..logging import get_logger
 from ..proto import jina_pb2
+from typing import Dict
 
 if False:
     import argparse
@@ -39,7 +40,7 @@ class PeaSpawnHelper(GrpcClient):
         getattr(req, self.body_tag).args.extend(kwargs2list(vars(self.args)))
         self.remote_logging(req, set_ready)
 
-    def remote_logging(self, req: 'jina_pb2.SpawnRequest', set_ready: Callable = None):
+    def remote_logging(self, req: 'jina_pb2.Request', set_ready: Callable = None) -> None:
         try:
             for resp in self._stub.Spawn(req):
                 if set_ready and self.callback_on_first:
@@ -96,7 +97,7 @@ class MutablePodSpawnHelper(PodSpawnHelper):
         self.remote_logging(peas_args2mutable_pod_req(self.args), set_ready)
 
 
-def peas_args2mutable_pod_req(peas_args: Dict):
+def peas_args2mutable_pod_req(peas_args: Dict) -> 'jina_pb2.SpawnRequest':
     def pod2pea_args_list(args):
         return kwargs2list(vars(args))
 
@@ -112,7 +113,7 @@ def peas_args2mutable_pod_req(peas_args: Dict):
     return req
 
 
-def mutable_pod_req2peas_args(req):
+def mutable_pod_req2peas_args(req: 'jina_pb2.Request') -> Dict:
     from ..main.parser import set_pea_parser
     return {
         'head': set_pea_parser().parse_known_args(req.head.args)[0] if req.head.args else None,

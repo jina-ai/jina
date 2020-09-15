@@ -42,7 +42,7 @@ class BaseQueryLangDriver(BaseDriver):
         else:
             raise ValueError(f'do not support {type(filtered)} return type')
 
-    def parse(self, raw_filter):
+    def parse(self, raw_filter) -> None:
         raise NotImplementedError
 
     def execute(self, docs: Iterator['jina_pb2.Document'], driver_query, req_query) -> Optional[

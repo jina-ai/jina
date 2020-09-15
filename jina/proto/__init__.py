@@ -8,7 +8,7 @@ The :mod:`jina.proto` defines the protobuf used in jina. It is the core message 
 from .jina_pb2 import Request
 
 
-def is_data_request(req: 'Request') -> bool:
+def is_data_request(req: 'jina_pb2.Request') -> bool:
     """check if the request is data request
 
     DRY_RUN is a ControlRequest but considered as data request
