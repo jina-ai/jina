@@ -21,6 +21,7 @@ requests:
         with:
           granularity_range: [1, 2]
           executor: vecidx1
+          recur_on: chunks
       - !ExcludeQL
         with:
           fields:
