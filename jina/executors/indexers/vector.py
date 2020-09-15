@@ -13,7 +13,13 @@ from ...helper import cached_property
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
-    """:class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file """
+    """:class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file
+
+    .. note::
+
+        Setting :attr:`compress_level` to ``0`` will enable :func:`mmap`, which often gives smaller memory footprint.
+
+    """
 
     def __init__(self,
                  compress_level: int = 1,
@@ -62,14 +68,20 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         :return: a gzip file stream
         """
-        return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
+        if self.compress_level > 0:
+            return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
+        else:
+            return open(self.index_abspath, 'ab')
 
-    def get_create_handler(self) -> 'gzip.GzipFile':
+    def get_create_handler(self):
         """Create a new gzip file for adding new vectors
 
         :return: a gzip file stream
         """
-        return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
+        if self.compress_level > 0:
+            return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
+        else:
+            return open(self.index_abspath, 'wb')
 
     def _validate_key_vector_shapes(self, keys, vectors):
         if len(vectors.shape) != 2:
@@ -118,10 +130,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         raise NotImplementedError
 
     def _load_gzip(self, abspath: str) -> Optional['np.ndarray']:
-        self.logger.info(f'loading index from {abspath}...')
         if not path.exists(abspath):
             self.logger.warning('numpy data not found: {}'.format(abspath))
-            return None
+            return
+
+        self.logger.info(f'loading index from {abspath}...')
         result = None
         try:
             if self.num_dim and self.dtype:
@@ -134,7 +147,10 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     @cached_property
     def raw_ndarray(self) -> Optional['np.ndarray']:
-        return self._load_gzip(self.index_abspath)
+        if self.compress_level > 0:
+            return self._load_gzip(self.index_abspath)
+        else:
+            return np.memmap(self.index_abspath, dtype=self.dtype, mode='r', shape=(self._size, self.num_dim))
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
         int_ids = np.array([self.ext2int_id[j] for j in ids])
@@ -149,7 +165,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 return r
             else:
                 self.logger.error(
-                    f'the size of the keys and vectors are inconsistent ({r.shape[0]} != {self._size}), '
+                    f'the size of the keys and vectors are inconsistent '
+                    f'({r.shape[0]}, {self._size}, {self.raw_ndarray.shape[0]}), '
                     f'did you write to this index twice? or did you forget to save indexer?')
 
     @cached_property
@@ -187,8 +204,11 @@ def _cosine(A, B):
 class NumpyIndexer(BaseNumpyIndexer):
     """An exhaustive vector indexers implemented with numpy and scipy. """
 
+    batch_size = 512
+
     def __init__(self, metric: str = 'euclidean',
                  backend: str = 'numpy',
+                 compress_level: int = 0,
                  *args, **kwargs):
         """
         :param metric: The distance metric to use. `braycurtis`, `canberra`, `chebyshev`, `cityblock`, `correlation`,
@@ -202,7 +222,7 @@ class NumpyIndexer(BaseNumpyIndexer):
             Metrics other than `cosine` and `euclidean` requires ``scipy`` installed.
 
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, compress_level=compress_level, **kwargs)
         self.metric = metric
         self.backend = backend
 
