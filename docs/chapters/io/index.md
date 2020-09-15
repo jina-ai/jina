@@ -1,6 +1,6 @@
 # Input and Output Functions in Jina
 
-This document explains the input and output functions of Jina's Flow API.
+This chapter explains the input and output functions of Jina's Flow API.
 
 ## Input Function
 
@@ -23,7 +23,7 @@ with f:
 
 `input_fn` is `Iterator[bytes]`, each of which corresponds to a bytes representation of a Document.
 
-A simple `input_fn` can be defined as follows:for
+A simple `input_fn` can be defined as follows:
 
 ```python
 def input_fn():
