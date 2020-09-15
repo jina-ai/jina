@@ -89,7 +89,7 @@ class HubIO:
         try:
             self._push_docker_hub(name, readme_path)
         except:
-            self.logger.error(f'can not push to the registry')
+            self.logger.error('can not push to the registry')
             return
         
         with open(file_path) as f:
@@ -194,7 +194,7 @@ class HubIO:
                     streamer = self._raw_client.build(
                         decode=True,
                         path=self.args.path,
-                        tag=self.canonical_name,
+                        tag=self.tag,
                         pull=self.args.pull,
                         dockerfile=self.dockerfile_path_revised,
                         rm=True
@@ -219,7 +219,7 @@ class HubIO:
             if is_build_success:
                 # compile it again, but this time don't show the log
                 image, log = self._client.images.build(path=self.args.path,
-                                                       tag=self.canonical_name,
+                                                       tag=self.tag,
                                                        pull=self.args.pull,
                                                        dockerfile=self.dockerfile_path_revised,
                                                        rm=True)
@@ -257,17 +257,31 @@ class HubIO:
                     except Exception:
                         self.logger.error(f'can not push to the registry')
                 
-                if self.args.host_info:
-                    info, env_info = get_full_version()
-                    _host_info = {
-                        'jina': info,
-                        'jina_envs': env_info,
-                        'docker': self._raw_client.info(),
-                        'build_args': vars(self.args)
-                    }
-                else:
-                    _host_info = ''
-                    self.logger.debug('Skipping writing host_info to database')
+            info, env_info = get_full_version()
+            _host_info = {
+                'jina': info,
+                'jina_envs': env_info,
+                'docker': self._raw_client.info(),
+                'build_args': vars(self.args)
+            }
+            _build_history = {
+                'time': get_now_timestamp(),
+                'host_info': _host_info,
+                'duration': tc.duration,
+                'logs': _logs,
+                'exception': _excepts
+            }
+            _manifest_info = {
+                'description': self._get_key_from_manifest(self.manifest, 'description'),
+                'kind': self._get_key_from_manifest(self.manifest, 'kind'),
+                'type': self._get_key_from_manifest(self.manifest, 'type'),
+                'keywords': self._get_key_from_manifest(self.manifest, 'keywords'),
+                'author': self._get_key_from_manifest(self.manifest, 'author'),
+                'license': self._get_key_from_manifest(self.manifest, 'license'),
+                'url': self._get_key_from_manifest(self.manifest, 'url'),
+                'vendor': self._get_key_from_manifest(self.manifest, 'vendor'),
+                'documentation': self._get_key_from_manifest(self.manifest, 'documentation')          
+            }
 
             if self.args.prune_images:
                 self.logger.info('deleting unused images')
@@ -275,17 +289,15 @@ class HubIO:
 
             result = {
                 'name': getattr(self, 'canonical_name', ''),
+                'version': self.manifest['version'] if 'version' in self.manifest else '0.0.1',
                 'path': self.args.path,
-                'host_info': _host_info,
+                'manifest_info': _manifest_info,
                 'details': _details,
-                'last_build_time': get_now_timestamp(),
-                'build_duration': tc.duration,
                 'is_build_success': is_build_success,
                 'is_push_success': is_push_success,
-                'build_logs': _logs,
-                'exception': _excepts
+                'build_history': [_build_history]
             }
-            
+
             # only successful build (NOT dry run) writes the summary to disk
             if result['is_build_success']:
                 self._write_summary_to_file(summary=result)
@@ -294,7 +306,7 @@ class HubIO:
            
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
-            result.pop('build_logs')
+            result['build_history'].pop('logs')
             raise RuntimeError(result)
 
         return result
@@ -308,22 +320,32 @@ class HubIO:
                  'exception': str(ex)}
         return s
 
-    def _write_summary_to_db(self, summary):
+    def _write_summary_to_db(self, summary: Dict):
+        """ Inserts / Updates summary document in mongodb """
         if not is_db_envs_set():
             self.logger.error('DB environment variables are not set! bookkeeping skipped.')
             return
 
         build_summary = handle_dot_in_keys(document=summary)
+        _build_query = {'name': build_summary['name'], 'version': build_summary['version']}
+        _current_build_history = build_summary['build_history']
         with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
                             username=os.environ['JINA_DB_USERNAME'],
                             password=os.environ['JINA_DB_PASSWORD'],
                             database_name=os.environ['JINA_DB_NAME'],
                             collection_name=os.environ['JINA_DB_COLLECTION']) as db:
-            inserted_id = db.insert(document=build_summary)
-            self.logger.debug(f'Inserted the build + push summary in db with id {inserted_id}')
+            existing_doc = db.find(query=_build_query)
+            if existing_doc:
+                build_summary['build_history'] = existing_doc['build_history'] + _current_build_history
+                _modified_count = db.replace(document=build_summary,
+                                             query=_build_query)
+                self.logger.debug(f'Updated the build + push summary in db. {_modified_count} documents modified')
+            else:
+                _inserted_id = db.insert(document=build_summary)
+                self.logger.debug(f'Inserted the build + push summary in db with id {_inserted_id}')
 
     def _write_summary_to_file(self, summary: Dict):
-        file_path = get_summary_path(summary['name'])
+        file_path = get_summary_path(f'{summary["name"]}:{summary["version"]}')
         with open(file_path, 'w+') as f:
             json.dump(summary, f)
         self.logger.debug(f'stored the summary from build to {file_path}')
@@ -363,11 +385,15 @@ class HubIO:
             self.logger.critical('Dockerfile or manifest.yml is not given, can not build')
             raise FileNotFoundError('Dockerfile or manifest.yml is not given, can not build')
 
-        tmp = self._read_manifest(self.manifest_path)
-        self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, tmp)
-        self.canonical_name = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}:{version}'.format(**tmp))
+        self.manifest = self._read_manifest(self.manifest_path)
+        self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
+        self.tag = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}:{version}'.format(**self.manifest))
+        self.canonical_name = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}'.format(**self.manifest))
         return completeness
 
+    def _get_key_from_manifest(self, manifest: dict, key: str):
+        return manifest[key] if key in manifest else ''
+    
     def _read_manifest(self, path: str, validate: bool = True):
         with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
             tmp = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
@@ -410,8 +436,6 @@ class HubIO:
         for k, v in manifest.items():
             if v and isinstance(v, str):
                 manifest[k] = remove_control_characters(v)
-            elif v and isinstance(v, list):
-                manifest[k] = ','.join(v)
 
         # show manifest key-values
         for k, v in manifest.items():
