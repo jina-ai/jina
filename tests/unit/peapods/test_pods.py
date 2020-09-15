@@ -1,86 +1,64 @@
+import pytest
+
 from jina.main.parser import set_pod_parser, set_gateway_parser
 from jina.peapods.pod import BasePod, GatewayPod, MutablePod, GatewayFlowPod, FlowPod
 
 
-def test_pod_context(subtests):
-    def _test_pod_context(runtime):
-        args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
-        with BasePod(args):
-            pass
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_context(runtime):
+    args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
+    with BasePod(args):
+        pass
 
-        BasePod(args).start().close()
-
-    for j in ('process', 'thread'):
-        with subtests.test(runtime=j):
-            _test_pod_context(j)
+    BasePod(args).start().close()
 
 
-def test_gateway_pod(subtests):
-    def _test_gateway_pod(runtime):
-        args = set_gateway_parser().parse_args(['--runtime', runtime])
-        with GatewayPod(args):
-            pass
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_gateway_pod(runtime):
+    args = set_gateway_parser().parse_args(['--runtime', runtime])
+    with GatewayPod(args):
+        pass
 
-        GatewayPod(args).start().close()
-
-    for j in ('process', 'thread'):
-        with subtests.test(runtime=j):
-            _test_gateway_pod(j)
+    GatewayPod(args).start().close()
 
 
-def test_gatewayflow_pod(subtests):
-    def _test_gateway_pod(runtime):
-        with GatewayFlowPod({'runtime': runtime}):
-            pass
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_gateway_pod(runtime):
+    with GatewayFlowPod({'runtime': runtime}):
+        pass
 
-        GatewayFlowPod({'runtime': runtime}).start().close()
-
-    for j in ('process', 'thread'):
-        with subtests.test(runtime=j):
-            _test_gateway_pod(j)
+    GatewayFlowPod({'runtime': runtime}).start().close()
 
 
-def test_mutable_pod(subtests):
-    def _test_mutable_pod(runtime):
-        args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_mutable_pod(runtime):
+    args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
 
-        with MutablePod(BasePod(args).peas_args):
-            pass
+    with MutablePod(BasePod(args).peas_args):
+        pass
 
-        MutablePod(BasePod(args).peas_args).start().close()
-
-    for j in ('process', 'thread'):
-        with subtests.test(runtime=j):
-            _test_mutable_pod(j)
+    MutablePod(BasePod(args).peas_args).start().close()
 
 
-def test_flow_pod(subtests):
-    def _test_flow_pod(runtime):
-        args = {'runtime': runtime, 'parallel': 2}
-        with FlowPod(args):
-            pass
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_flow_pod(runtime):
+    args = {'runtime': runtime, 'parallel': 2}
+    with FlowPod(args):
+        pass
 
-        FlowPod(args).start().close()
-
-    for j in ('process', 'thread'):
-        with subtests.test(runtime=j):
-            _test_flow_pod(j)
+    FlowPod(args).start().close()
 
 
-def test_pod_context_autoshutdown(subtests):
-    def _test_pod_context(runtime):
-        args = set_pod_parser().parse_args(['--runtime', runtime,
-                                            '--parallel', '2',
-                                            '--max-idle-time', '5',
-                                            '--shutdown-idle'])
-        with BasePod(args) as bp:
-            bp.join()
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_context(runtime):
+    args = set_pod_parser().parse_args(['--runtime', runtime,
+                                        '--parallel', '2',
+                                        '--max-idle-time', '5',
+                                        '--shutdown-idle'])
+    with BasePod(args) as bp:
+        bp.join()
 
-        BasePod(args).start().close()
-
-    for j in ('process', 'thread'):
-        with subtests.test(runtime=j):
-            _test_pod_context(j)
+    BasePod(args).start().close()
 
 
 def test_pod_gracefully_close_idle():

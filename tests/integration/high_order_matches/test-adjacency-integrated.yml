@@ -12,10 +12,12 @@ requests:
       - !VectorSearchDriver
         with:
           top_k: 5
+          priority: 4
           fill_embedding: true
       - !VectorSearchDriver
         with:
           top_k: 5
+          priority: 4
           fill_embedding: true
           granularity_range: [0, 0]
           adjacency_range: [0, 1]
