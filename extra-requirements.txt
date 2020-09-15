@@ -59,3 +59,4 @@ pytest-repeat:              test
 flaky:                      test
 mock:                       test
 pymongo[srv]:               hub, devel
+pytest-ordering:            test

@@ -278,7 +278,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @property
     def physical_size(self) -> int:
-        """Return the size of the workspace in bytes"""
+        """Return the size of the current workspace in bytes"""
         root_directory = Path(self.current_workspace)
         return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
