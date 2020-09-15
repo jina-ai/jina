@@ -266,7 +266,7 @@ class HubIO:
             }
             _build_history = {
                 'time': get_now_timestamp(),
-                'host_info': _host_info,
+                'host_info': _host_info if self.args.host_info else '',
                 'duration': tc.duration,
                 'logs': _logs,
                 'exception': _excepts
