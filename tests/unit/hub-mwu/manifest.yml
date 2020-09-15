@@ -1,3 +1,4 @@
+manifest_version: 1
 name: Dummy MWU Encoder
 description: a minimum working unit of a containerized encoder, used for tutorial only
 author: Jina AI Dev-Team (dev-team@jina.ai)
@@ -7,8 +8,9 @@ version: 0.0.6
 vendor: Jina AI Limited
 license: apache-2.0
 update: nightly
-keywords:
+keywords: 
   - example
   - demo
   - toy-example
 kind: encoder
+type: pod
