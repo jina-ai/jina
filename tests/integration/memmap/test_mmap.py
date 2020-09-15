@@ -15,11 +15,12 @@ queries = np.random.random([100, num_dim])
 vec_idx = np.random.randint(0, high=num_data, size=[num_data])
 vec = np.random.random([num_data, num_dim])
 filename = 'a.gz'
+summary_file = 'summary.json'
 
 
 @pytest.mark.run(order=5)
 def test_check_summary():
-    with open('summary.json') as fp:
+    with open(summary_file) as fp:
         t = [json.loads(v) for v in fp]
         if t[0]['name'] == 'naive':
             assert t[0]['memory'] > t[1]['memory']
@@ -30,13 +31,16 @@ def test_check_summary():
 
 
 @pytest.mark.run(order=3)
+@pytest.mark.timeout(360)
 def test_standard():
     with NumpyIndexer(index_filename=filename) as ni:
+        ni.batch_size = 512
         ni.add(vec_idx, vec)
         ni.save('a.bin')
 
 
 @pytest.mark.run(order=4)
+@pytest.mark.timeout(360)
 def test_standard_query():
     mem1 = used_memory(1)
     with NumpyIndexer.load('a.bin') as ni:
@@ -44,19 +48,21 @@ def test_standard_query():
         print(ni.raw_ndarray.shape)
         print(used_memory_readable())
         with TimeContext('query topk') as ti:
-            ni.query(queries, top_k=10)
+            result = ni.query(queries, top_k=10)
             mem2 = used_memory(1)
-        with open('summary.txt', 'a') as fp:
+            print(result[0].shape)
+        with open(summary_file, 'a') as fp:
             json.dump({'name': 'naive',
                        'memory': mem2 - mem1,
                        'readable': get_readable_size(mem2 - mem1),
                        'time': ti.duration}, fp)
             fp.write('\n')
 
-    rm_files([ni.index_abspath, ni.save_abspath])
+    rm_files([ni.index_abspath, ni.save_abspath, 'a.bin', 'a.gz'])
 
 
 @pytest.mark.run(order=1)
+@pytest.mark.timeout(360)
 def test_memmap():
     with MmapNumpyIndexer(index_filename=filename) as ni:
         ni.add(vec_idx, vec)
@@ -64,6 +70,7 @@ def test_memmap():
 
 
 @pytest.mark.run(order=2)
+@pytest.mark.timeout(360)
 def test_memmap_query():
     mem1 = used_memory(1)
     with MmapNumpyIndexer.load('a.bin') as ni:
@@ -73,11 +80,11 @@ def test_memmap_query():
         with TimeContext('query topk') as ti:
             ni.query(queries, top_k=10)
             mem2 = used_memory(1)
-        with open('summary.json', 'a') as fp:
+        with open(summary_file, 'a') as fp:
             json.dump({'name': 'memmap',
                        'memory': mem2 - mem1,
                        'readable': get_readable_size(mem2 - mem1),
                        'time': ti.duration}, fp)
             fp.write('\n')
 
-    rm_files([ni.index_abspath, ni.save_abspath])
+    rm_files([ni.index_abspath, ni.save_abspath, 'a.bin', 'a.gz'])

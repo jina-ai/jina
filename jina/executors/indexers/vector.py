@@ -48,7 +48,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             # so that later in `post_init()` it will load from the referred index_filename
             self._ref_index_abspath = ref_indexer.index_abspath
 
-
     @property
     def index_abspath(self) -> str:
         """Get the file path of the index storage
@@ -145,12 +144,19 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def int2ext_id(self) -> 'np.ndarray':
         """Convert internal ids (0,1,2,3,4,...) to external ids (random index) """
         if self.key_bytes and self.key_dtype:
-            return np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+            r = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+            if r.shape[0] == self.size == self.raw_ndarray.shape[0]:
+                return r
+            else:
+                self.logger.error(
+                    f'the size of the keys and vectors are inconsistent ({r.shape[0]} != {self._size}), '
+                    f'did you write to this index twice? or did you forget to save indexer?')
 
     @cached_property
     def ext2int_id(self) -> Dict:
         """Convert external ids (random index) to internal ids (0,1,2,3,4,...) """
-        return {k: idx for idx, k in enumerate(self.int2ext_id)}
+        if self.int2ext_id is not None:
+            return {k: idx for idx, k in enumerate(self.int2ext_id)}
 
 
 def _ext_arrs(A, B):
@@ -221,7 +227,6 @@ class NumpyIndexer(BaseNumpyIndexer):
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
-        print('dist done')
         idx = dist.argsort(axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_id[idx], dist
