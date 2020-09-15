@@ -52,7 +52,6 @@ ruamel.yaml>=0.15.89:       core
 tornado>=5.1.0:             core
 cookiecutter:               hub, devel
 pytest:                     test
-pytest-subtests:            test
 pytest-xdist==1.34.0:       test
 pytest-timeout:             test
 pytest-cov:                 test
