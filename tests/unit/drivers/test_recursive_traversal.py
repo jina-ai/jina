@@ -54,9 +54,9 @@ def test_only_granularity():
     driver._traverse_apply(docs)
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
-    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].chunks[0].chunks) == 1
     assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
@@ -72,12 +72,12 @@ def test_only_adjacency():
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
+    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches) == 1
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches) == 1
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
 
 
 def test_adjacency_chunks():
@@ -96,12 +96,12 @@ def test_adjacency_chunks():
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
+    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
 
 
 def test_granularity_matches():
@@ -120,12 +120,12 @@ def test_granularity_matches():
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
+    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
 
 
 def test_both_from_0():
@@ -140,9 +140,9 @@ def test_both_from_0():
     driver._traverse_apply(docs)
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
-    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].chunks[0].chunks) == 1
     assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches) == 1
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches) == 1
@@ -150,7 +150,6 @@ def test_both_from_0():
 
 
 def test_adjacency0_granularity1():
-    """ Mindblowing start here. To be fixed tomorrow with a fresh mind. """
     docs = build_docs()
     driver = SliceQL(
         start=0,
@@ -161,11 +160,41 @@ def test_adjacency0_granularity1():
     )
     driver._traverse_apply(docs)
     assert len(docs) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].matches) == 1
+    assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].chunks) == 1
     assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].matches) == 1
+    assert len(docs[0].chunks[0].matches) == 1
+    assert len(docs[0].chunks[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches[0].matches) == 1
+    assert len(docs[0].chunks[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].matches[0].matches) == 1
+    assert len(docs[0].matches[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
+
+
+def test_adjacency1_granularity1():
+    docs = build_docs()
+    driver = SliceQL(
+        start=0,
+        end=1,
+        adjacency_range=(1, 2),
+        granularity_range=(1, 2),
+        recur_on=["chunks", "matches"]
+    )
+    driver._traverse_apply(docs)
+    assert len(docs) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches) == 1
+    assert len(docs[0].chunks[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches[0].matches) == 1
+    assert len(docs[0].chunks[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].matches[0].chunks) == 1
+    assert len(docs[0].matches[0].chunks[0].chunks) == 1
+    assert len(docs[0].matches[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].matches[0].matches) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
+
