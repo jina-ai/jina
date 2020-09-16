@@ -55,7 +55,8 @@ def rename_kwargs(func_name: str, kwargs: Dict, aliases: Dict) -> None:
             kwargs[new] = kwargs.pop(alias)
 
 
-def get_readable_size(num_bytes: int) -> str:
+def get_readable_size(num_bytes: Union[int, float]) -> str:
+    num_bytes = int(num_bytes)
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
     elif num_bytes < 1024 ** 2:

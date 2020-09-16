@@ -1,3 +1,4 @@
+manifest_version: 1
 name: Dummy MWU Encoder
 description: a minimum working unit of a containerized encoder, used for tutorial only
 author: Jina AI Dev-Team (dev-team@jina.ai)

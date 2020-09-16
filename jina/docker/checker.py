@@ -87,4 +87,4 @@ def is_error_message(s):
 def is_db_envs_set():
     """ Checks if any of the db env variables are not set """
     keys = ['JINA_DB_HOSTNAME', 'JINA_DB_USERNAME', 'JINA_DB_PASSWORD', 'JINA_DB_NAME', 'JINA_DB_COLLECTION']
-    return all(k in os.environ for k in keys)
+    return all(len(os.environ.get(k, '')) > 0 for k in keys)

@@ -37,6 +37,8 @@ class MongoDBHandler:
             raise MongoDBException('Credentials passed are not correct!')
         except pymongo.errors.PyMongoError as exp:
             raise MongoDBException(exp)
+        except Exception as exp:
+            raise MongoDBException(exp)
         return self
         
     @property
@@ -51,7 +53,28 @@ class MongoDBHandler:
         result = self.collection.insert_one(document)
         self.logger.info(f'Pushed current summary to the database')
         return result.inserted_id
+
+    def find(self, query: dict) -> None:
+        try:
+            return self.collection.find_one(query)
+        except pymongo.errors.PyMongoError as exp:
+            self.logger.error(f'got an error while finding a document in the db {exp}')
     
+    def insert(self, document: str) -> None:
+        try:
+            result = self.collection.insert_one(document)
+            self.logger.info(f'Pushed current summary to the database')
+            return result.inserted_id
+        except pymongo.errors.PyMongoError as exp:
+            self.logger.error(f'got an error while inserting a document in the db {exp}')
+    
+    def replace(self, document: dict, query: dict):
+        try:
+            result = self.collection.replace_one(query, document)
+            return result.modified_count
+        except pymongo.errors.PyMongoError as exp:
+            self.logger.error(f'got an error while replacing a document in the db {exp}')
+
     def __exit__(self,  exc_type, exc_val, exc_tb):
         try:
             self.client.close()

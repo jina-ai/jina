@@ -6,7 +6,7 @@ from collections import defaultdict
 from functools import wraps
 from typing import Callable
 
-from ..helper import colored
+from ..helper import colored, get_readable_size
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -14,7 +14,7 @@ if False:
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
-    """Get the memory usage of the current process and all sub-processes.
+    """Get the memory usage of the current process.
 
     :param unit: unit of the memory, default in Gigabytes
     """
@@ -27,8 +27,16 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
                              'i will return 0')
         return 0.
 
-
 def profiling(func: Callable) -> Callable:
+
+def used_memory_readable() -> str:
+    """ Get the memory usage of the current process in a human-readable format
+
+    :return:
+    """
+    return get_readable_size(used_memory(1))
+
+def profiling(func):
     """Decorator to mark a function for profiling. The time and memory usage will be recorded and printed.
 
     Example:
@@ -46,14 +54,14 @@ def profiling(func: Callable) -> Callable:
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
         start_t = time.perf_counter()
-        start_mem = used_memory(unit=1024 * 1024)
+        start_mem = used_memory(unit=1)
         r = func(*args, **kwargs)
         elapsed = time.perf_counter() - start_t
-        end_mem = used_memory(unit=1024 * 1024)
+        end_mem = used_memory(unit=1)
         # level_prefix = ''.join('-' for v in inspect.stack() if v and v.index is not None and v.index >= 0)
         level_prefix = ''
-        mem_status = 'memory Δ %4.2fMB %4.2fMB -> %4.2fMB' % (end_mem - start_mem, start_mem, end_mem)
-        default_logger.info('%s%s time: %3.3fs %s' % (level_prefix, func.__qualname__, elapsed, mem_status))
+        mem_status = f'memory Δ {get_readable_size(end_mem - start_mem)} {get_readable_size(start_mem)} -> {get_readable_size(end_mem)}'
+        default_logger.info(f'{level_prefix} {func.__qualname__} time: {elapsed}s {mem_status}')
         return r
 
     return arg_wrapper
