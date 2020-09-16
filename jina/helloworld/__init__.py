@@ -40,6 +40,7 @@ def hello_world(args):
     # this envs are referred in index and query flow YAMLs
     os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
     os.environ['SHARDS'] = str(args.shards)
+    os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = args.workdir
     os.environ['WITH_LOGSERVER'] = str(args.logserver)
 
