@@ -68,13 +68,13 @@ def test_flow_with_modalities():
     with flow:
         flow.index(input_fn=input_fn)
 
-    with gzip.open('vec1.gz', 'rb') as fp:
+    with open('vec1.gz', 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(result, np.array([[0.0, 0.0, 0.0],
                                                   [0.0, 0.0, 0.0],
                                                   [0.0, 0.0, 0.0]]))
 
-    with gzip.open('vec2.gz', 'rb') as fp:
+    with open('vec2.gz', 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(result, np.array([[1.0, 1.0, 1.0],
                                                   [1.0, 1.0, 1.0],
