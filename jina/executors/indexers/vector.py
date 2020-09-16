@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import gzip
+from functools import lru_cache
 from os import path
 from typing import Optional, List, Union, Tuple, Dict
 
@@ -117,8 +118,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         vecs = self.raw_ndarray
         if vecs is not None:
             return self.build_advanced_index(vecs)
-        else:
-            return None
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """
@@ -130,26 +129,24 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         raise NotImplementedError
 
     def _load_gzip(self, abspath: str) -> Optional['np.ndarray']:
-        self.logger.info(f'loading index from {abspath}...')
-        result = None
         try:
-            if self.num_dim and self.dtype:
-                with gzip.open(abspath, 'rb') as fp:
-                    result = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
+            self.logger.info(f'loading index from {abspath}...')
+            with gzip.open(abspath, 'rb') as fp:
+                return np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
         except EOFError:
             self.logger.error(
                 f'{abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
-        return result
 
     @cached_property
     def raw_ndarray(self) -> Optional['np.ndarray']:
-        if not path.exists(self.index_abspath):
+        if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
 
         if self.compress_level > 0:
             return self._load_gzip(self.index_abspath)
-        else:
-            return np.memmap(self.index_abspath, dtype=self.dtype, mode='r', shape=(self._size, self.num_dim))
+        elif self.size is not None:
+            self.logger.success('memmap is enabled')
+            return np.memmap(self.index_abspath, dtype=self.dtype, mode='r', shape=(self.size, self.num_dim))
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
         int_ids = np.array([self.ext2int_id[j] for j in ids])
@@ -175,29 +172,39 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return {k: idx for idx, k in enumerate(self.int2ext_id)}
 
 
-def _ext_arrs(A, B):
+@lru_cache(maxsize=3)
+def _get_ones(x, y):
+    return np.ones((x, y))
+
+
+def _ext_A(A):
     nA, dim = A.shape
-    A_ext = np.ones((nA, dim * 3))
+    A_ext = _get_ones(nA, dim * 3)
     A_ext[:, dim:2 * dim] = A
     A_ext[:, 2 * dim:] = A ** 2
+    return A_ext
 
-    nB = B.shape[0]
-    B_ext = np.ones((dim * 3, nB))
+
+def _ext_B(B):
+    nB, dim = B.shape
+    B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
     B_ext[dim:2 * dim] = -2.0 * B.T
-    return A_ext, B_ext
+    del B
+    return B_ext
 
 
-def _euclidean(A, B):
-    A_ext, B_ext = _ext_arrs(A, B)
+def _euclidean(A_ext, B_ext):
     sqdist = A_ext.dot(B_ext).clip(min=0)
     return np.sqrt(sqdist)
 
 
-def _cosine(A, B):
-    A_ext, B_ext = _ext_arrs(A / np.linalg.norm(A, ord=2, axis=1, keepdims=True),
-                             B / np.linalg.norm(B, ord=2, axis=1, keepdims=True))
-    return A_ext.dot(B_ext).clip(min=0) / 2
+def _norm(A):
+    return A / np.linalg.norm(A, ord=2, axis=1, keepdims=True)
+
+
+def _cosine(A_norm_ext, B_norm_ext):
+    return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
 
 
 class NumpyIndexer(BaseNumpyIndexer):
@@ -240,9 +247,11 @@ class NumpyIndexer(BaseNumpyIndexer):
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
             dist = self._cdist(keys, self.query_handler)
         elif self.metric == 'euclidean':
-            dist = self._euclidean(keys, self.query_handler)
+            _keys = _ext_A(keys)
+            dist = self._euclidean(_keys, self.query_handler)
         elif self.metric == 'cosine':
-            dist = self._cosine(keys, self.query_handler)
+            _keys = _ext_A(_norm(keys))
+            dist = self._cosine(_keys, self.query_handler)
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
@@ -254,12 +263,14 @@ class NumpyIndexer(BaseNumpyIndexer):
         return vecs
 
     @batching(merge_over_axis=1, slice_on=2)
-    def _euclidean(self, *args, **kwargs):
-        return _euclidean(*args, **kwargs)
+    def _euclidean(self, cached_A, raw_B):
+        data = _ext_B(raw_B)
+        return _euclidean(cached_A, data)
 
     @batching(merge_over_axis=1, slice_on=2)
-    def _cosine(self, *args, **kwargs):
-        return _cosine(*args, **kwargs)
+    def _cosine(self, cached_A, raw_B):
+        data = _ext_B(_norm(raw_B))
+        return _cosine(cached_A, data)
 
     @batching(merge_over_axis=1, slice_on=2)
     def _cdist(self, *args, **kwargs):
