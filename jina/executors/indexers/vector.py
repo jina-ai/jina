@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import gzip
+import os
 from functools import lru_cache
 from os import path
 from typing import Optional, List, Union, Tuple, Dict
@@ -144,8 +145,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         if self.compress_level > 0:
             return self._load_gzip(self.index_abspath)
-        elif self.size is not None:
-            self.logger.success('memmap is enabled')
+        elif self.size is not None and os.stat(self.index_abspath).st_size:
+            self.logger.success(f'memmap is enabled for {self.index_abspath}')
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r', shape=(self.size, self.num_dim))
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
