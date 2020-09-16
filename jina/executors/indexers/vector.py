@@ -150,7 +150,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r', shape=(self.size, self.num_dim))
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        int_ids = np.array([self.ext2int_id[j] for j in ids])
+        int_ids = [self.ext2int_id[j] for j in ids]
         return self.raw_ndarray[int_ids]
 
     @cached_property
