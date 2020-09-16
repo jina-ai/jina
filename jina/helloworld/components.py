@@ -13,6 +13,7 @@ class MyEncoder(BaseImageEncoder):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        np.random.seed(1337)
         # generate a random orthogonal matrix
         H = np.random.rand(784, 64)
         u, s, vh = np.linalg.svd(H, full_matrices=False)

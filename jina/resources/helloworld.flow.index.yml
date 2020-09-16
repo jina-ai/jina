@@ -5,6 +5,7 @@ with:
 pods:
   encode:
     uses: $RESOURCE_DIR/helloworld.encoder.yml
+    parallel: $PARALLEL
   index:
     uses: $RESOURCE_DIR/helloworld.indexer.yml
     shards: $SHARDS
