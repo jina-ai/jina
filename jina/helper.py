@@ -138,13 +138,16 @@ def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size
         yield data
         return
     if isinstance(data, np.ndarray):
-        if batch_size >= data.shape[axis]:
+        _l = data.shape[axis]
+        _d = data.ndim
+        if batch_size >= _l:
             yield data
             return
-        for _ in range(0, data.shape[axis], batch_size):
-            start = _
-            end = min(len(data), _ + batch_size)
-            yield np.take(data, range(start, end), axis, mode='clip')
+        for start in range(0, _l, batch_size):
+            end = min(_l, start + batch_size)
+            sl = [slice(None)] * _d
+            sl[axis] = slice(start, end)
+            yield data[tuple(sl)]
     elif hasattr(data, '__len__'):
         if batch_size >= len(data):
             yield data
