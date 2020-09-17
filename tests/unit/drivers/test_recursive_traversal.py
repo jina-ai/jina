@@ -198,3 +198,22 @@ def test_adjacency1_granularity1():
     assert len(docs[0].matches[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
+
+def test_adjacency_on_chunks():
+    docs = build_docs()
+    doc = docs[0]
+    doc.ClearField('matches')
+    docs = [doc, ]
+    driver = SliceQL(
+        start=0,
+        end=1,
+        adjacency_range=(1, 1),
+        granularity_range=(1, 2),
+        recur_on=["chunks", ]
+    )
+    driver._traverse_apply(docs)
+    assert len(docs) == 1
+    assert len(docs[0].chunks) == 1
+    assert len(docs[0].chunks[0].chunks) == 1
+    assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
+    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL

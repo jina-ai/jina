@@ -331,7 +331,10 @@ class BaseRecursiveDriver(BaseDriver):
             while working_docs[0].adjacency < self._adjacency_start:
                 _temp = []
                 for working_doc in working_docs:
-                    _temp.extend(working_doc.matches)
+                    if working_doc.matches:
+                        _temp.extend(working_doc.matches)
+                if not _temp:
+                    break
                 working_docs = _temp
             _traverse(working_docs, 'chunks', None, 'granularity', self._granularity_start, self._granularity_end)
 
