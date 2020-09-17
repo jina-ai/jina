@@ -11,6 +11,7 @@ from .checker import *
 from .database import MongoDBHandler
 from .helper import get_default_login, handle_dot_in_keys
 from ..clients.python import ProgressBar
+from ..excepts import PeaFailToStart
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name
 from ..logging import get_logger
 from ..logging.profile import TimeContext
@@ -242,6 +243,7 @@ class HubIO:
             if is_build_success:
                 if self.args.test_uses:
                     try:
+                        is_build_success = False
                         from jina.flow import Flow
                         p_name = random_name()
                         with Flow().add(name=p_name, uses=image.tags[0], daemon=self.args.daemon):
@@ -249,9 +251,11 @@ class HubIO:
                         if self.args.daemon:
                             self._raw_client.stop(p_name)
                         self._raw_client.prune_containers()
+                        is_build_success = True
+                    except PeaFailToStart:
+                        self.logger.error(f'can not use it in the Flow, please check your file bundle')
                     except Exception as ex:
-                        self.logger.error(f'can not use it in the Flow {repr(ex)}')
-                        is_build_success = False
+                        self.logger.error(f'something wrong but it is probably not your fault. {repr(ex)}')
 
                 if self.args.push:
                     try:
