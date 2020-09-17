@@ -12,7 +12,7 @@ from .database import MongoDBHandler
 from .helper import get_default_login, handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
-from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version
+from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name
 from ..logging import get_logger
 from ..logging.profile import TimeContext
 
@@ -85,13 +85,13 @@ class HubIO:
         if not os.path.isfile(file_path):
             self.logger.error(f'can not find the build summary file')
             return
-        
+
         try:
             self._push_docker_hub(name, readme_path)
         except:
             self.logger.error('can not push to the registry')
             return
-        
+
         with open(file_path) as f:
             result = json.load(f)
         if result['is_build_success']:
@@ -243,13 +243,19 @@ class HubIO:
             if is_build_success:
                 if self.args.test_uses:
                     try:
-                        from jina.flow import Flow
-                        with Flow().add(uses=image.tags[0], daemon=self.args.daemon):
-                            pass
-                        self._raw_client.prune_containers()
-                    except PeaFailToStart:
-                        self.logger.error(f'can not use it in the Flow')
                         is_build_success = False
+                        from jina.flow import Flow
+                        p_name = random_name()
+                        with Flow().add(name=p_name, uses=image.tags[0], daemon=self.args.daemon):
+                            pass
+                        if self.args.daemon:
+                            self._raw_client.stop(p_name)
+                        self._raw_client.prune_containers()
+                        is_build_success = True
+                    except PeaFailToStart:
+                        self.logger.error(f'can not use it in the Flow, please check your file bundle')
+                    except Exception as ex:
+                        self.logger.error(f'something wrong but it is probably not your fault. {repr(ex)}')
 
                 if self.args.push:
                     try:
@@ -257,7 +263,7 @@ class HubIO:
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
-                
+
                 _version = self.manifest['version'] if 'version' in self.manifest else '0.0.1'
                 info, env_info = get_full_version()
                 _host_info = {
@@ -266,7 +272,7 @@ class HubIO:
                     'docker': self._raw_client.info(),
                     'build_args': vars(self.args)
                 }
-                
+
             _build_history = {
                 'time': get_now_timestamp(),
                 'host_info': _host_info if is_build_success and self.args.host_info else '',
@@ -295,7 +301,7 @@ class HubIO:
                 self._write_summary_to_file(summary=result)
                 if self.args.push:
                     self._write_summary_to_db(summary=result)
-           
+
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
             result['build_history'].pop('logs')
