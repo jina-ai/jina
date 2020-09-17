@@ -474,16 +474,15 @@ class Flow(ExitStack):
         try:
             #it may have been shutdown from the outside
             urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
-        except:
-            pass
-        self._sse_logger.join()
+        except Exception as ex:
+            self.logger.info(f'Failed to connect to shutdown log sse server: {repr(ex)}')
 
     def _start_log_server(self):
         try:
             import urllib.request
             import flask, flask_cors
             self._sse_logger = threading.Thread(name='sentinel-sse-logger',
-                                                target=start_sse_logger, daemon=False,
+                                                target=start_sse_logger, daemon=True,
                                                 args=(self.args.logserver_config,
                                                       self.yaml_spec))
             self._sse_logger.start()
