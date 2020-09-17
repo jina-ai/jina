@@ -8,6 +8,7 @@ from .pea import BasePea
 from .. import __ready_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import get_logger
+from ..logging.queue import clear_queues
 
 
 class ContainerPea(BasePea):
@@ -103,3 +104,9 @@ class ContainerPea(BasePea):
                     'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()
+
+    def close(self) -> None:
+        self.send_terminate_signal()
+        if not self.daemon:
+             clear_queues()
+             self.join()

@@ -463,28 +463,40 @@ class Flow(ExitStack):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         super().__exit__(exc_type, exc_val, exc_tb)
+        if self.args.logserver:
+            self._stop_log_server()
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
+
+    def _stop_log_server(self):
+        import urllib.request
+        try:
+            #it may have been shutdown from the outside
+            urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
+        except:
+            pass
+        self._sse_logger.join()
 
     def _start_log_server(self):
         try:
             import urllib.request
             import flask, flask_cors
             self._sse_logger = threading.Thread(name='sentinel-sse-logger',
-                                                target=start_sse_logger, daemon=True,
+                                                target=start_sse_logger, daemon=False,
                                                 args=(self.args.logserver_config,
                                                       self.yaml_spec))
             self._sse_logger.start()
             time.sleep(1)
-            urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
-            self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
+            response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
+            if response.status == 200:
+                self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
                 f'use pip install "jina[http]" (with double quotes) to install the dependencies')
-        except:
-            self.logger.error('logserver fails to start')
+        except Exception as ex:
+            self.logger.error(f'logserver fails to start: {repr(ex)}')
 
     def start(self):
         """Start to run all Pods in this Flow.
@@ -499,16 +511,13 @@ class Flow(ExitStack):
             self.build(copy_flow=False)
 
         if self.args.logserver:
-            self.logger.info('start logserver...')
+            self.logger.info('starting logserver...')
             self._start_log_server()
 
         for v in self._pod_nodes.values():
             self.enter_context(v)
 
-        self.logger.info('%d Pods (i.e. %d Peas) are running in this Flow' % (
-            self.num_pods,
-            self.num_peas))
-
+        self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
         self.logger.success(f'flow is now ready for use, current build_level is {self._build_level}')
 
         return self

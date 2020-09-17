@@ -1,7 +1,6 @@
-import gzip
 import os
 import pytest
-import shutil
+
 from typing import List, Dict
 
 import numpy as np

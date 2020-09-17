@@ -74,6 +74,7 @@ class OldErrorPea(BasePea):
     def _handle_terminate_signal(self, msg):
         self.zmqlet.send_message(msg)
         self.zmqlet.close()
+        self.is_shutdown.set()
 
 
 @patch(target='jina.peapods.pea.BasePea', new=OldErrorPea)

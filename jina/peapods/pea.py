@@ -23,6 +23,7 @@ from ..helper import is_valid_local_config_source
 from ..logging import get_logger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
+from ..logging.queue import clear_queues
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -125,22 +126,22 @@ class BasePea(metaclass=PeaMeta):
         self._request = None
         self._message = None
 
-        if isinstance(args, argparse.Namespace):
-            if args.name:
-                self.name = args.name
-            if args.role == PeaRoleType.REPLICA:
-                self.name = '%s-%d' % (self.name, args.replica_id)
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(args)
-            if not args.log_with_own_name and args.name:
+        if isinstance(self.args, argparse.Namespace):
+            if self.args.name:
+                self.name = self.args.name
+            if self.args.role == PeaRoleType.REPLICA:
+                self.name = '%s-%d' % (self.name, self.args.replica_id)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
+            if not self.args.log_with_own_name and self.args.name:
                 # everything in this Pea (process) will use the same name for display the log
-                os.environ['JINA_POD_NAME'] = args.name
-            self.logger = get_logger(self.name, **vars(args))
+                os.environ['JINA_POD_NAME'] = self.args.name
+            self.logger = get_logger(self.name, **vars(self.args))
         else:
             self.logger = get_logger(self.name)
 
     def __str__(self):
         r = self.name
-        if self.executor is not None:
+        if getattr(self, 'executor', None):
             r += f'({str(self.executor)})'
         return r
 
@@ -271,6 +272,7 @@ class BasePea(metaclass=PeaMeta):
         # `close` is called, the callback is unregistered and everything after `close` can not be reached
         # some black magic in eventloop i guess?
         self.loop_teardown()
+        self.is_shutdown.set()
 
     def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
         """Callback function after receiving the message
@@ -339,7 +341,8 @@ class BasePea(metaclass=PeaMeta):
             self.loop_body()
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.uses}')
-        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
+        except (SystemError, KeyboardInterrupt):
+            self.logger.info('EXCEPTION')
             pass
         except DriverError as ex:
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
@@ -351,6 +354,7 @@ class BasePea(metaclass=PeaMeta):
             # - self.zmqlet.send_message
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
+            # if an exception occurs this unsets ready and shutting down
             self.loop_teardown()
             self.unset_ready()
             self.is_shutdown.set()
@@ -367,7 +371,7 @@ class BasePea(metaclass=PeaMeta):
         """
         pass
 
-    def close(self) -> None:
+    def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready.is_set() and hasattr(self, 'ctrl_addr'):
             return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
@@ -406,7 +410,12 @@ class BasePea(metaclass=PeaMeta):
     def __enter__(self) -> 'BasePea':
         return self.start()
 
+    def close(self) -> None:
+        self.send_terminate_signal()
+        self.is_shutdown.wait()
+        if not self.daemon:
+            clear_queues()
+            self.join()
+
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
-        if not self.daemon:
-            self.join()

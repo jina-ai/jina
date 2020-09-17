@@ -7,7 +7,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_index():
-    f = Flow.load_config('../yaml/examples/faces/flow-index.yml')
+    f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-index.yml'))
     with f:
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.PULL_CONNECT
@@ -76,7 +76,7 @@ def test_index():
 
 
 def test_query():
-    f = Flow.load_config('../yaml/examples/faces/flow-query.yml')
+    f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-query.yml'))
     with f:
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.PULL_CONNECT

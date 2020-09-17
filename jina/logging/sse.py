@@ -10,10 +10,8 @@ from ..helper import yaml
 def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
-    :param host: host address of the server
-    :param port: port of the server
-    :param endpoint_log: endpoint for the log
-    :param endpoint_yaml: endpoint for the yaml
+    :param server_config_path: Path to the server configuration file path
+    :param flow_yaml: Flow yaml description
 
     Example:
 
@@ -124,5 +122,6 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
 
     try:
         server.serve_forever()
+        gevent.get_hub().join()
     except Exception as ex:
         default_logger.error(ex)

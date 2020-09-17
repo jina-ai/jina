@@ -8,14 +8,17 @@ from ..logging import get_logger
 
 
 class HeadPea(BasePea):
-    
+
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
         self.name = self.__class__.__name__
-        if isinstance(args, argparse.Namespace):
-            if args.name:
-                self.name = args.name
+        if isinstance(self.args, argparse.Namespace):
+            if self.args.name:
+                self.name = self.args.name
                 self.name = f'{self.name}-head'
-            self.logger = get_logger(self.name, **vars(args))
+            self.logger = get_logger(self.name, **vars(self.args))
         else:
             self.logger = get_logger(self.name)
+
+    def __str__(self):
+        return self.name
