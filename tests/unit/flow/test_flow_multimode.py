@@ -1,5 +1,6 @@
 import gzip
 import os
+import pytest
 import shutil
 from typing import List, Dict
 
@@ -43,6 +44,13 @@ class MockEncoder(BaseEncoder):
                 output.append([1.0, 1.0, 1.0])
 
         return np.array(output)
+
+
+@pytest.fixture(autouse=True)
+def run_around_tests():
+    yield
+    rm_files(['vec1.gz', 'vec2.gz', 'chunk1.gz', 'chunk2.gz',
+              'vecidx1.bin', 'vecidx2.bin', 'kvidx1.bin', 'kvidx2.bin'])
 
 
 def test_flow_with_modalities():
@@ -91,6 +99,3 @@ def test_flow_with_modalities():
     for key, pb in chunkIndexer2.query_handler.items():
         for chunk in pb.chunks:
             assert chunk.modality == 'mode2'
-
-    rm_files(['vec1.gz', 'vec2.gz', 'chunk1.gz', 'chunk2.gz',
-              'vecidx1.bin', 'vecidx2.bin', 'kvidx1.bin', 'kvidx2.bin'])
