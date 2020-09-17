@@ -216,7 +216,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     else:
                         setattr(self, k, v)
 
-    def post_init(self):
+    def post_init(self) -> None:
         """
         Initialize class attributes/members that can/should not be (de)serialized in standard way.
 
@@ -301,13 +301,13 @@ class BaseExecutor(metaclass=ExecutorType):
             self.logger.warning('ImportError is often caused by a missing component, '
                                 'which often can be solved by "pip install" relevant package. %s' % ex, exc_info=True)
 
-    def train(self, *args, **kwargs):
+    def train(self, *args, **kwargs) -> None:
         """
         Train this executor, need to be overrided
         """
         pass
 
-    def touch(self):
+    def touch(self) -> None:
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
@@ -439,7 +439,7 @@ class BaseExecutor(metaclass=ExecutorType):
         except EOFError:
             raise BadPersistantFile(f'broken file {filename} can not be loaded')
 
-    def close(self):
+    def close(self) -> None:
         """
         Release the resources as executor is destroyed, need to be overrided
         """
