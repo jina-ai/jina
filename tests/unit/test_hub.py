@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from jina.helper import yaml
 from jina.docker.hubio import HubIO
 from jina.main.parser import set_hub_build_parser, set_hub_pushpull_parser, set_hub_new_parser
 
@@ -17,6 +18,23 @@ def test_hub_build_pull():
 
     args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder:0.0.6'])
     HubIO(args).pull()
+
+
+def test_hub_build_push():
+    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--push', '--host-info'])
+    summary = HubIO(args).build()
+    
+    with open(os.path.join(cur_dir, 'hub-mwu', 'manifest.yml')) as fp:
+        manifest = yaml.load(fp)
+
+    assert summary['is_build_success']
+    assert manifest['version'] == summary['version']
+    assert manifest['description'] == summary['manifest_info']['description']
+    assert manifest['author'] == summary['manifest_info']['author']
+    assert manifest['kind'] == summary['manifest_info']['kind']
+    assert manifest['type'] == summary['manifest_info']['type']
+    assert manifest['vendor'] == summary['manifest_info']['vendor']
+    assert manifest['keywords'] == summary['manifest_info']['keywords']
 
 
 def test_hub_build_failures():

@@ -20,7 +20,8 @@ requests:
           priority: 4
           fill_embedding: true
           granularity_range: [0, 0]
-          adjacency_range: [0, 1]
+          adjacency_range: [1, 1]
+          recur_on: matches
     IndexRequest:
       - !ExcludeQL
         with:
