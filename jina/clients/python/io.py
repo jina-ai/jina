@@ -88,5 +88,5 @@ def input_numpy(array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: b
     for r in array:
         yield r
         d += 1
-        if size is not None and d > size:
+        if size is not None and d >= size:
             break
