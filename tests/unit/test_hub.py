@@ -28,6 +28,11 @@ def test_hub_build_uses():
     # build again it shall not fail
     HubIO(args).build()
 
+    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--pull', '--test-uses', '--daemon'])
+    HubIO(args).build()
+    # build again it shall not fail
+    HubIO(args).build()
+
 
 def test_hub_build_push():
     args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--push', '--host-info'])
