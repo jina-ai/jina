@@ -37,6 +37,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          RELEASE_VER=1.0.1 envsubst < ./.github/slack-pypi.json
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             sudo apt-get install libsndfile1
           fi
