@@ -8,16 +8,10 @@ from ..logging import get_logger
 
 
 class HeadPea(BasePea):
-    
+
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
         self.name = self.__class__.__name__
-
-    def post_init(self):
-        """Post initializer after the start of the request loop via :func:`run`, so that they can be kept in the same
-        process/thread as the request loop.
-
-        """
         if isinstance(self.args, argparse.Namespace):
             if self.args.name:
                 self.name = self.args.name
