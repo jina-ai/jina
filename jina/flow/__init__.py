@@ -471,7 +471,11 @@ class Flow(ExitStack):
 
     def _stop_log_server(self):
         import urllib.request
-        urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
+        try:
+            #it may have been shutdown from the outside
+            urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
+        except:
+            pass
         self._sse_logger.join()
 
     def _start_log_server(self):
