@@ -95,3 +95,4 @@ def test_scipy_indexer(batch_size, compress_level):
         assert idx.shape == (num_query, 4)
 
     rm_files([index_abspath, save_abspath])
+
