@@ -246,6 +246,7 @@ class HubIO:
                         from jina.flow import Flow
                         with Flow().add(uses=image.tags[0], daemon=self.args.daemon):
                             pass
+                        self._raw_client.prune_containers()
                     except PeaFailToStart:
                         self.logger.error(f'can not use it in the Flow')
                         is_build_success = False
