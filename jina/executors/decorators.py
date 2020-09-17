@@ -1,6 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from ..logging import default_logger
+from ..logging.profile import used_memory_readable
+
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
 
 import inspect
@@ -119,7 +122,7 @@ def store_init_kwargs(func):
 
 def batching(func: Callable[[Any], np.ndarray] = None, *,
              batch_size: Union[int, Callable] = None, num_batch=None,
-             split_over_axis: int = 0, merge_over_axis: int = 0):
+             split_over_axis: int = 0, merge_over_axis: int = 0, slice_on: int = 1):
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
 
@@ -128,6 +131,8 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
     :param num_batch: number of batches to take, the rest will be ignored
     :param split_over_axis: split over which axis into batches
     :param merge_over_axis: merge over which axis into a single result
+    :param slice_on: the location of the data. When using inside a class,
+            ``slice_on`` should take ``self`` into consideration.
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
@@ -149,20 +154,22 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
 
     def _batching(func):
         @wraps(func)
-        def arg_wrapper(self, data, label=None, *args, **kwargs):
+        def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
-            b_size = (batch_size(data) if callable(batch_size) else batch_size) or getattr(self, 'batch_size', None)
+            # by default data is in args[0]
+            data = args[slice_on]
+            args = list(args)
+
+            label = kwargs.get('label', None)
+
+            b_size = (batch_size(data) if callable(batch_size) else batch_size) or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
             if b_size is None:
-                if label is None:
-                    return func(self, data, *args, **kwargs)
-                else:
-                    return func(self, data, label, *args, **kwargs)
+                return func(*args, **kwargs)
 
-            if hasattr(self, 'logger'):
-                self.logger.info(
-                    'batching enabled for %s(). batch_size=%s\tnum_batch=%s\taxis=%s' % (
-                        func.__qualname__, b_size, num_batch, split_over_axis))
+            default_logger.info(
+                f'batching enabled for {func.__qualname__} batch_size={b_size} '
+                f'num_batch={num_batch} axis={split_over_axis}')
 
             total_size1 = _get_size(data, split_over_axis)
             total_size2 = b_size * num_batch if num_batch else None
@@ -177,11 +184,23 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
             if label is not None:
                 data = (data, label)
 
-            for b in batch_iterator(data[:total_size], b_size, split_over_axis):
+            yield_slice = isinstance(data, np.memmap)
+
+            for b in batch_iterator(data[:total_size], b_size, split_over_axis, yield_slice=yield_slice):
+                if yield_slice:
+                    new_memmap = np.memmap(data.filename, dtype=data.dtype, mode='r', shape=data.shape)
+                    b = new_memmap[b]
+
                 if label is None:
-                    r = func(self, b, *args, **kwargs)
+                    args[slice_on] = b
+                    r = func(*args, **kwargs)
                 else:
-                    r = func(self, b[0], b[1], *args, **kwargs)
+                    args[slice_on] = b
+                    kwargs['label'] = b[1]
+                    r = func(*args, **kwargs)
+
+                if yield_slice:
+                    del new_memmap
 
                 if r is not None:
                     final_result.append(r)
