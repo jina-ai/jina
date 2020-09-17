@@ -236,4 +236,5 @@ def test_granularity_on_matches():
     assert len(docs[0].matches) == 1
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches) == 1
+    # For the chunks of the matches, the matches of these chunks are not effected by the apply()
     assert len(docs[0].matches[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
