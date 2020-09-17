@@ -224,8 +224,8 @@ class BaseRecursiveDriver(BaseDriver):
                  **kwargs):
         """
         :param recur_on: "matches" or "chunks" or both, the actual directions where to recur on
-        :param granularity_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
-        :param adjacency_range: right-exclusive range of the recursion adjacency, (0, 1) for single matches
+        :param granularity_range: right-inclusive range of the recursion depth, (0, 0) for root-level only
+        :param adjacency_range: right-inclusive range of the recursion adjacency, (0, 0) for single matches
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
