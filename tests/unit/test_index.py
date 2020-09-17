@@ -176,10 +176,10 @@ class MyTestCase(JinaTestCase):
         with g:
             g.search(random_docs(10), output_fn=lambda x: validate(x, 'NumpyIndexer'))
 
-        g = Flow(timeout_ready=-1).add(uses=os.path.join(cur_dir, 'yaml/test-joint-wrap.yml'))
+        # g = Flow(timeout_ready=-1).add(uses=os.path.join(cur_dir, 'yaml/test-joint-wrap.yml'))
 
-        with g:
-            g.search(random_docs(10), output_fn=lambda x: validate(x, 'AnnoyIndexer'))
+        # with g:
+        #     g.search(random_docs(10), output_fn=lambda x: validate(x, 'AnnoyIndexer'))
 
         self.add_tmpfile('vec.gz', 'vecidx.bin', 'chunk.gz', 'chunkidx.bin')
 
