@@ -16,7 +16,7 @@ from .metas import get_default_metas
 from ..helper import batch_iterator
 
 
-def as_update_method(func: Callable) -> Callable:
+def as_update_method(func: Callable):
     """Mark the function as the updating function of this executor,
     calling this function will change the executor so later you can save the change via :func:`save`
     Will set the is_updated property after function is called.
@@ -31,7 +31,7 @@ def as_update_method(func: Callable) -> Callable:
     return arg_wrapper
 
 
-def as_train_method(func: Callable) -> Callable:
+def as_train_method(func: Callable):
     """Mark a function as the training function of this executor.
     Will set the is_trained property after function is called.
     """
@@ -48,7 +48,7 @@ def as_train_method(func: Callable) -> Callable:
     return arg_wrapper
 
 
-def as_ndarray(func: Callable, dtype=np.float32) -> Callable:
+def as_ndarray(func: Callable, dtype=np.float32):
     """Convert an :class:`BaseExecutor` function returns to a ``numpy.ndarray``,
     the following type are supported: `EagerTensor`, `Tensor`, `list`
 
@@ -68,7 +68,7 @@ def as_ndarray(func: Callable, dtype=np.float32) -> Callable:
     return arg_wrapper
 
 
-def require_train(func: Callable) -> Callable:
+def require_train(func: Callable):
     """Mark an :class:`BaseExecutor` function as training required, so it can only be called
     after the function decorated by ``@as_train_method``. """
 
@@ -85,7 +85,7 @@ def require_train(func: Callable) -> Callable:
     return arg_wrapper
 
 
-def store_init_kwargs(func: Callable) -> Callable:
+def store_init_kwargs(func):
     """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
 
     @wraps(func)
@@ -121,8 +121,8 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 def batching(func: Callable[[Any], np.ndarray] = None, *,
-             batch_size: Union[int, Callable] = None, num_batch: int = None,
-             split_over_axis: int = 0, merge_over_axis: int = 0, slice_on: int = 1) -> Any:
+             batch_size: Union[int, Callable] = None, num_batch=None,
+             split_over_axis: int = 0, merge_over_axis: int = 0, slice_on: int = 1):
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
 
