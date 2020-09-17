@@ -111,4 +111,3 @@ def test_grpc_gateway_concurrency():
     rate = failed / success
     assert rate < 0.1
 
-test_grpc_gateway_concurrency()
