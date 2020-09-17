@@ -341,9 +341,10 @@ class BasePea(metaclass=PeaMeta):
             self.loop_body()
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.uses}')
-        except (SystemError, KeyboardInterrupt):
-            self.logger.info('EXCEPTION')
-            pass
+        except KeyboardInterrupt:
+            self.logger.info('Loop interrupted by user')
+        except SystemError as ex:
+            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
         except DriverError as ex:
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
         except zmq.error.ZMQError:
