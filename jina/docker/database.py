@@ -6,6 +6,7 @@ import pymongo
 
 from ..excepts import MongoDBException
 from ..logging import get_logger
+from typing import Optional, Dict
 
 
 class MongoDBHandler:
@@ -26,7 +27,7 @@ class MongoDBHandler:
     def __enter__(self):
         return self.connect()
     
-    def connect(self):
+    def connect(self) -> 'MongoDBHandler':
         try:
             self.client = pymongo.MongoClient(self.connection_string)
             self.client.admin.command('ismaster')
@@ -49,13 +50,13 @@ class MongoDBHandler:
     def collection(self):
         return self.database[self.collection_name]
     
-    def find(self, query: dict):
+    def find(self, query: Dict) -> None:
         try:
             return self.collection.find_one(query)
         except pymongo.errors.PyMongoError as exp:
             self.logger.error(f'got an error while finding a document in the db {exp}')
     
-    def insert(self, document: str):
+    def insert(self, document: str) -> Optional[str]:
         try:
             result = self.collection.insert_one(document)
             self.logger.info(f'Pushed current summary to the database')
@@ -63,7 +64,7 @@ class MongoDBHandler:
         except pymongo.errors.PyMongoError as exp:
             self.logger.error(f'got an error while inserting a document in the db {exp}')
     
-    def replace(self, document: dict, query: dict):
+    def replace(self, document: Dict, query: Dict):
         try:
             result = self.collection.replace_one(query, document)
             return result.modified_count
