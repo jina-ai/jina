@@ -341,7 +341,8 @@ class BasePea(metaclass=PeaMeta):
             self.loop_body()
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.uses}')
-        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt):
+        except (SystemError, KeyboardInterrupt):
+            self.logger.info('EXCEPTION')
             pass
         except DriverError as ex:
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
@@ -353,8 +354,10 @@ class BasePea(metaclass=PeaMeta):
             # - self.zmqlet.send_message
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
+            # if an exception occurs this unsets ready and shutting down
             self.loop_teardown()
             self.unset_ready()
+            self.is_shutdown.set()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
@@ -411,9 +414,8 @@ class BasePea(metaclass=PeaMeta):
         self.send_terminate_signal()
         self.is_shutdown.wait()
         if not self.daemon:
-             clear_queues()
-             self.join()
+            clear_queues()
+            self.join()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
-
