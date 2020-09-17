@@ -170,7 +170,6 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
             default_logger.info(
                 f'batching enabled for {func.__qualname__} batch_size={b_size} '
                 f'num_batch={num_batch} axis={split_over_axis}')
-            # print(used_memory_readable())
 
             total_size1 = _get_size(data, split_over_axis)
             total_size2 = b_size * num_batch if num_batch else None
@@ -185,8 +184,13 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
             if label is not None:
                 data = (data, label)
 
-            for b in batch_iterator(data[:total_size], b_size, split_over_axis):
-                # print(used_memory_readable())
+            yield_slice = isinstance(data, np.memmap)
+
+            for b in batch_iterator(data[:total_size], b_size, split_over_axis, yield_slice=yield_slice):
+                if yield_slice:
+                    new_memmap = np.memmap(data.filename, dtype=data.dtype, mode='r', shape=data.shape)
+                    b = new_memmap[b]
+
                 if label is None:
                     args[slice_on] = b
                     r = func(*args, **kwargs)
@@ -194,6 +198,9 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                     args[slice_on] = b
                     kwargs['label'] = b[1]
                     r = func(*args, **kwargs)
+
+                if yield_slice:
+                    del new_memmap
 
                 if r is not None:
                     final_result.append(r)

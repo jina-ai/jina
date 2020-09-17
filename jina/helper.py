@@ -133,7 +133,8 @@ def touch_dir(base_dir: str) -> None:
         os.makedirs(base_dir)
 
 
-def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size: int, axis: int = 0) -> Iterator[Any]:
+def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size: int, axis: int = 0,
+                   yield_slice: bool = False) -> Iterator[Any]:
     if not batch_size or batch_size <= 0:
         yield data
         return
@@ -147,7 +148,10 @@ def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size
             end = min(_l, start + batch_size)
             sl = [slice(None)] * _d
             sl[axis] = slice(start, end)
-            yield data[tuple(sl)]
+            if yield_slice:
+                yield tuple(sl)
+            else:
+                yield data[tuple(sl)]
     elif hasattr(data, '__len__'):
         if batch_size >= len(data):
             yield data
