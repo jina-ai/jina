@@ -210,12 +210,12 @@ class CompoundExecutor(BaseExecutor):
         return (self.components and any(c.is_updated for c in self.components)) or self._is_updated
 
     @is_updated.setter
-    def is_updated(self, val: bool) -> bool:
+    def is_updated(self, val: bool):
         """Set :attr:`is_updated` for this :class:`CompoundExecutor`. Note, not to all its components """
         self._is_updated = val
 
     @is_trained.setter
-    def is_trained(self, val: bool) -> bool:
+    def is_trained(self, val: bool):
         """Set :attr:`is_trained` for all components of this :class:`CompoundExecutor` """
         for c in self.components:
             c.is_trained = val
@@ -242,7 +242,7 @@ class CompoundExecutor(BaseExecutor):
         return self._components
 
     @components.setter
-    def components(self, comps: Callable[[], List]) -> None:
+    def components(self, comps: Callable[[], List]):
         """Set the components of this executors
 
         :param comps: a function returns a list of executors
@@ -260,20 +260,20 @@ class CompoundExecutor(BaseExecutor):
         else:
             self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
 
-    def _set_comp_workspace(self) -> None:
+    def _set_comp_workspace(self):
         # overrider the workspace setting for all components
         for c in self.components:
             c.separated_workspace = self.separated_workspace
             c.workspace = self.workspace
             c.replica_workspace = self.current_workspace
 
-    def _resolve_routes(self) -> None:
+    def _resolve_routes(self):
         if self._routes:
             for f, v in self._routes.items():
                 for kk, vv in v.items():
                     self.add_route(f, kk, vv)
 
-    def add_route(self, fn_name: str, comp_name: str, comp_fn_name: str, is_stored: bool = False) -> None:
+    def add_route(self, fn_name: str, comp_name: str, comp_fn_name: str, is_stored: bool = False):
         """Create a new function for this executor which refers to the component's function
 
         This will create a new function :func:`fn_name` which actually refers to ``components[comp_name].comp_fn_name``.
@@ -332,7 +332,7 @@ class CompoundExecutor(BaseExecutor):
         if bad_routes:
             self.logger.warning(f'unresolvable functions: {bad_routes!r}')
 
-    def close(self) -> None:
+    def close(self):
         """Close all components and release the resources"""
         if self.components:
             for c in self.components:

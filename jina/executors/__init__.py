@@ -216,7 +216,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     else:
                         setattr(self, k, v)
 
-    def post_init(self) -> None:
+    def post_init(self):
         """
         Initialize class attributes/members that can/should not be (de)serialized in standard way.
 
@@ -301,13 +301,13 @@ class BaseExecutor(metaclass=ExecutorType):
             self.logger.warning('ImportError is often caused by a missing component, '
                                 'which often can be solved by "pip install" relevant package. %s' % ex, exc_info=True)
 
-    def train(self, *args, **kwargs) -> None:
+    def train(self, *args, **kwargs):
         """
         Train this executor, need to be overrided
         """
         pass
 
-    def touch(self) -> None:
+    def touch(self):
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
@@ -439,7 +439,7 @@ class BaseExecutor(metaclass=ExecutorType):
         except EOFError:
             raise BadPersistantFile(f'broken file {filename} can not be loaded')
 
-    def close(self) -> None:
+    def close(self):
         """
         Release the resources as executor is destroyed, need to be overrided
         """
@@ -512,7 +512,7 @@ class BaseExecutor(metaclass=ExecutorType):
         return obj, data, load_from_dump
 
     @staticmethod
-    def _get_dump_path_from_config(meta_config: Dict) -> Optional[str]:
+    def _get_dump_path_from_config(meta_config: Dict):
         if 'name' in meta_config:
             if meta_config.get('separated_workspace', False) is True:
                 if 'replica_id' in meta_config and isinstance(meta_config['replica_id'], int):
