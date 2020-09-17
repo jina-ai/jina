@@ -462,9 +462,9 @@ class Flow(ExitStack):
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        super().__exit__(exc_type, exc_val, exc_tb)
         if self.args.logserver:
             self._stop_log_server()
-        super().__exit__(exc_type, exc_val, exc_tb)
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
