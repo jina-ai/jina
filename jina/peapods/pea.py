@@ -139,8 +139,6 @@ class BasePea(metaclass=PeaMeta):
         else:
             self.logger = get_logger(self.name)
 
-        self.logger.info('Pea just finished __init__')
-
     def __str__(self):
         r = self.name
         if getattr(self, 'executor', None):

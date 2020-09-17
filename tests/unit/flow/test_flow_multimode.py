@@ -1,4 +1,3 @@
-import gzip
 import os
 import pytest
 
