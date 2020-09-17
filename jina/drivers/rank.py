@@ -52,7 +52,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """
 
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -116,7 +116,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """
 
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -170,7 +170,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         self.recursion_order = 'post'
         self.reverse = reverse
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """ Call executer for score and sort afterwards here. """
 
         # if at the top-level already, no need to aggregate further
