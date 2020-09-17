@@ -178,7 +178,8 @@ class HubIO:
             # use default login
             self._client.login(**get_default_login(), registry=self.args.registry)
 
-    def list(self, name: str = None, kind: str = None, type: str = 'pod'):
+    def list(self, name: str = None, kind: str = None, type: str = 'pod', keywords: list = ["numeric", "sklearn"]):
+        """Lists executors allowing filters for name, kind, type and keywords """
         if not is_db_envs_set():
             self.logger.error('DB environment variables are not set! aborting list command.')
             return
@@ -192,9 +193,11 @@ class HubIO:
         if name:
             name_query = {'manifest_info.name': name}
             sub_query = f'{sub_query}, {name_query}'
+        if keywords:
+            keyword_query = {"manifest_info.keywords":  { $all: keywords } }
+            sub_query = f'{keyword_query}, {name_query}'
 
         _executor_query = '{ $and: [' + f"""{sub_query}""" + ' ] }'
-        # _keyword_query = {"manifest_info.keywords":  { $all: ["numeric", "sklearn"] } }
         with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
                             username=os.environ['JINA_DB_USERNAME'],
                             password=os.environ['JINA_DB_PASSWORD'],

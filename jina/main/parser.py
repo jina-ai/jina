@@ -91,6 +91,8 @@ def set_hub_list_parser(parser=None):
     parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app', 'template'],
                         help='executor type for listing.')
     parser.add_argument('--kind', type=str, default='.*',  help='kind of executor.')
+    parser.add_argument('--name', type=str, default='.*',  help='name of executor.')
+    
     return parser
 
 
