@@ -18,8 +18,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     """:class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file
 
     .. note::
+        :attr:`compress_level` balances between time and space. By default, :classL`NumpyIndexer` has
+        :attr:`compress_level` = 0.
 
-        Setting :attr:`compress_level` to ``0`` will enable :func:`mmap`, which often gives smaller memory footprint.
+        Setting :attr:`compress_level`>0 gives a smaller file size on the disk in the index time. However, in the query
+        time it loads all data into memory at once. Not ideal for large scale application.
+
+        Setting :attr:`compress_level`=0 enables :func:`np.memmap`, which loads data in an on-demanding way and
+        gives smaller memory footprint in the query time. However, it often gives larger file size on the disk.
+
 
     """
 
