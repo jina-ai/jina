@@ -368,7 +368,7 @@ def get_random_identity() -> str:
 yaml = _get_yaml()
 
 
-def expand_env_var(v: str) -> Union[str, Any]:
+def expand_env_var(v: str) -> Any:
     if isinstance(v, str):
         return parse_arg(os.path.expandvars(v))
     else:

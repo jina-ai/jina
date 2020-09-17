@@ -8,7 +8,7 @@ from ..logging.profile import used_memory_readable
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List, Tuple
+from typing import Callable, Any, Union, Iterator, List, Tuple, Optional
 
 import numpy as np
 
@@ -236,7 +236,7 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
         return _batching
 
 
-def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> Union[Tuple, int, None]:
+def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> Optional[Tuple, int]:
     if isinstance(data, np.ndarray):
         total_size = data.shape[axis]
     elif hasattr(data, '__len__'):

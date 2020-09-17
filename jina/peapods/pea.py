@@ -56,7 +56,7 @@ class PeaMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
-def _get_event(obj: 'BasePea') -> Union[Event, None]:
+def _get_event(obj: 'BasePea') -> Optional[Event]:
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):

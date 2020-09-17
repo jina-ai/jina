@@ -126,7 +126,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
             raise ValueError
         return self.get_output(_response)
 
-    def get_output(self, response: grpc.UnaryUnaryMultiCallable) -> None:
+    def get_output(self, response: grpc.UnaryUnaryMultiCallable):
         """
         Postprocess the response from the tf server
         """

@@ -44,7 +44,7 @@ class BasePbIndexer(BaseKVIndexer):
         if self.query_handler is not None:
             return self.query_handler.get(key, None)
 
-    def get_query_handler(self) -> None:
+    def get_query_handler(self):
         raise NotImplementedError
 
     def add(self, *args, **kwargs) -> None:

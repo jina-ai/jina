@@ -312,7 +312,6 @@ class HubIO:
         return s
 
     def _write_summary_to_db(self, summary: Dict) -> None:
-    def _write_summary_to_db(self, summary: Dict):
         """ Inserts / Updates summary document in mongodb """
 
         if not is_db_envs_set():
@@ -337,9 +336,6 @@ class HubIO:
                 _inserted_id = db.insert(document=build_summary)
                 self.logger.debug(f'Inserted the build + push summary in db with id {_inserted_id}')
 
-    def _write_summary_to_file(self, summary: Dict) -> None:
-        file_path = get_summary_path(summary['name'])
-    
     def _write_summary_to_file(self, summary: Dict) -> None:
         file_path = get_summary_path(f'{summary["name"]}:{summary["version"]}')
 

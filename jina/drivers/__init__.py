@@ -265,7 +265,7 @@ class BaseRecursiveDriver(BaseDriver):
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
-    def _traverse_apply(self, docs: List, *args, **kwargs) -> None:
+    def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         """often useful when you delete a recursive structure """
 
         def post_traverse(_docs: List, recur_on: str, context_doc: str=None,
