@@ -82,6 +82,18 @@ def set_hub_new_parser(parser=None):
     return parser
 
 
+def set_hub_list_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument('--keywords', type=list, default=['numeric', 'example', 'sklearn'],
+                        help='keywords for listing.')
+    parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app', 'template'],
+                        help='executor type for listing.')
+    parser.add_argument('--kind', type=str, default='.*',  help='kind of executor.')
+    return parser
+
+
 def set_hub_build_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -569,6 +581,11 @@ def get_main_parser():
     set_hub_new_parser(
         spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor or app using cookiecutter',
                        description='Create a new Hub executor or app using cookiecutter',
+                       formatter_class=_chf))
+
+    set_hub_list_parser(
+        spp.add_parser('list', help='list hub executors',
+                       description='List set of executors',
                        formatter_class=_chf))
 
     set_hub_build_parser(

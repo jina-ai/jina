@@ -178,13 +178,23 @@ class HubIO:
             # use default login
             self._client.login(**get_default_login(), registry=self.args.registry)
 
-    def list(self, name: str = '.*', kind: str = '.*', type: str = 'pod'):
+    def list(self, name: str = None, kind: str = None, type: str = 'pod'):
         if not is_db_envs_set():
             self.logger.error('DB environment variables are not set! aborting list command.')
             return
 
+        if kind:
+            kind_query = {'manifest_info.kind': kind}
+            sub_query = f'{kind_query}'
+        if type:
+            type_query = {'manifest_info.type': type}
+            sub_query = f'{sub_query}, {type_query}'
+        if name:
+            name_query = {'manifest_info.name': name}
+            sub_query = f'{sub_query}, {name_query}'
+
+        _executor_query = '{ $and: [' + f"""{sub_query}""" + ' ] }'
         # _keyword_query = {"manifest_info.keywords":  { $all: ["numeric", "sklearn"] } }
-        _executor_query = { $and: [ {'manifest_info.kind':  kind}, {'manifest_info.type':  type}, {'manifest_info.name': {$regex : '.*' + name + '.*'} } ] }
         with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
                             username=os.environ['JINA_DB_USERNAME'],
                             password=os.environ['JINA_DB_PASSWORD'],
@@ -357,29 +367,6 @@ class HubIO:
         with open(file_path, 'w+') as f:
             json.dump(summary, f)
         self.logger.debug(f'stored the summary from build to {file_path}')
-
-    def _write_executor_details_to_db(self, manifest: Dict):
-        """ Inserts / Updates executor details in mongodb """
-        if not is_db_envs_set():
-            self.logger.error('DB environment variables are not set! updating executor details skipped.')
-            return
-
-        executor_summary = handle_dot_in_keys(document=manifest)
-        _executor_query = {'kind': executor_summary['kind'], 'type': executor_summary['type'], 'keywords': executor_summary['keywords']}
-        _current_build_history = executor_summary['build_history']
-        with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
-                            username=os.environ['JINA_DB_USERNAME'],
-                            password=os.environ['JINA_DB_PASSWORD'],
-                            database_name=os.environ['JINA_DB_NAME'],
-                            collection_name=os.environ['JINA_DB_COLLECTION']) as db:
-            existing_doc = db.find(query=_executor_query)
-            if existing_doc:
-                _modified_count = db.replace(document=executor_summary,
-                                             query=_executor_query)
-                self.logger.debug(f'Updated the executor details in db. {_modified_count} documents modified')
-            else:
-                _inserted_id = db.insert(document=executor_summary)
-                self.logger.debug(f'Inserted the executor details in db with id {_inserted_id}')
 
     def _check_completeness(self) -> Dict:
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
