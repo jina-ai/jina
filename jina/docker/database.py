@@ -6,7 +6,7 @@ import pymongo
 
 from ..excepts import MongoDBException
 from ..logging import get_logger
-from typing import Optional, Dict
+from typing import Optional, Dict, List, Union
 
 
 class MongoDBHandler:
@@ -50,7 +50,7 @@ class MongoDBHandler:
     def collection(self):
         return self.database[self.collection_name]
     
-    def find(self, query: Dict) -> None:
+    def find(self, query: Dict[str, Union[Dict, List]]) -> None:
         try:
             return self.collection.find_one(query)
         except pymongo.errors.PyMongoError as exp:
