@@ -26,7 +26,7 @@ class DummySegment(BaseSegmenter):
 def validate(req):
     chunk_ids = [c.id for d in req.index.docs for c in d.chunks]
     assert len(chunk_ids) == len(set(chunk_ids))
-    assert len(chunk_ids) == 8
+    assert len(chunk_ids) == 80
 
 
 @pytest.mark.skip('this should fail as explained in https://github.com/jina-ai/jina/pull/730')
