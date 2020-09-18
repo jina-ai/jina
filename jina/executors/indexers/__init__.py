@@ -61,7 +61,7 @@ class BaseIndexer(BaseExecutor):
         """
         raise NotImplementedError
 
-    def post_init(self) -> None:
+    def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
         self.index_filename = self.index_filename or self.name
         self.is_handler_loaded = False
@@ -150,7 +150,7 @@ class BaseIndexer(BaseExecutor):
         self.flush()
         return d
 
-    def close(self) -> None:
+    def close(self):
         """Close all file-handlers and release all resources. """
         self.logger.info(f'indexer size: {self.size} physical size: {get_readable_size(self.physical_size)}')
         self.flush()
@@ -158,7 +158,7 @@ class BaseIndexer(BaseExecutor):
         call_obj_fn(self.query_handler, 'close')
         super().close()
 
-    def flush(self) -> None:
+    def flush(self):
         """Flush all buffered data to ``index_abspath`` """
         call_obj_fn(self.write_handler, 'flush')
 
