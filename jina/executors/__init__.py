@@ -142,7 +142,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     'on_gpu=True, but you dont have CUDA compatible GPU, i will reset on_gpu=False ')
                 self.on_gpu = False
 
-    def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
+    def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True) -> None:
         with TimeContext('post initiating, this may take some time', self.logger):
             if fill_in_metas:
                 if not _metas:
