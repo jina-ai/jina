@@ -94,6 +94,7 @@ jobs:
         run: |
           # make sure docker exist
           docker ps
+          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
