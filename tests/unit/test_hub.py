@@ -57,15 +57,15 @@ def test_hub_build_push():
 def test_hub_build_failures():
     for j in ['bad-dockerfile', 'bad-pythonfile', 'missing-dockerfile', 'missing-manifest']:
         args = set_hub_build_parser().parse_args(
-            [os.path.join(cur_dir, 'hub-mwu-bad', j), '--pull', '--push'])
+            [os.path.join(cur_dir, 'hub-mwu-bad', j), '--pull'])
         assert not HubIO(args).build()['is_build_success']
 
 
 def test_hub_build_no_pymodules():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull', '--push'])
+        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull'])
     assert HubIO(args).build()['is_build_success']
 
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull', '--push', '--test-uses'])
+        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull', '--test-uses'])
     assert not HubIO(args).build()['is_build_success']
