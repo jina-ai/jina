@@ -5,6 +5,7 @@ from sys import platform
 import pytest
 
 from jina.flow import Flow
+from jina.helper import random_name
 from jina.main.checker import NetworkChecker
 from jina.main.parser import set_pea_parser, set_ping_parser
 from jina.peapods.container import ContainerPea
@@ -121,7 +122,7 @@ class MyTestCase(JinaTestCase):
 
     def test_container_volume(self):
         f = (Flow()
-             .add(uses=img_name, volumes='./abc',
+             .add(name=random_name(), uses=img_name, volumes='./abc',
                   uses_internal=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_upd.yml')))
 
         with f:
