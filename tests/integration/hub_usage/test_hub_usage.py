@@ -15,22 +15,20 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def test_simple_use_abs_import_shall_fail():
     with pytest.raises(ModuleNotFoundError):
-        from .dummyhub_abs_import import DummyImageResizer
-        DummyImageResizer()
+        from .dummyhub_abs import DummyHubExecutorAbs
+        DummyHubExecutorAbs()
 
     with pytest.raises(PeaFailToStart):
-        with Flow().add(uses='DummyImageResizer'):
+        with Flow().add(uses='DummyHubExecutorAbs'):
             pass
 
 
 def test_simple_use_relative_import():
-    from .dummyhub_relative_import import DummyImageResizer
-    DummyImageResizer()
+    from .dummyhub import DummyHubExecutor
+    DummyHubExecutor()
 
-    with Flow().add(uses='DummyImageResizer'):
+    with Flow().add(uses='DummyHubExecutor'):
         pass
-
-
 
 
 def test_use_from_local_dir_exe_level():
@@ -54,7 +52,7 @@ def test_use_from_local_dir_flow_container_level():
         [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error'])
     HubIO(args).build()
 
-    with Flow().add(uses='jinahub/pod.crafter.imageresizer:0.0.0'):
+    with Flow().add(uses='jinahub/pod.crafter.dummyhubexecutor:0.0.0'):
         pass
 
 
