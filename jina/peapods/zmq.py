@@ -436,7 +436,8 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
         else:
             for chunk_byte_type in chunk_byte_types:
                 _msg.append(chunk_byte_type)
-        _msg.append([*doc_bytes, *chunk_bytes])
+        _msg += [*doc_bytes, *chunk_bytes]
+
         _msg, num_bytes = _prepare_send_msg(c_id, _msg, compress_hwm, compress_lwm)
 
     return _msg, num_bytes
@@ -727,7 +728,6 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
     for d in docs:
         doc_bytes.append(d.buffer)
         d.ClearField('buffer')
-
         for c in d.chunks:
             # oneof content {
             # string text = 2;
@@ -755,11 +755,12 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
 def _fill_buffer_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: int = 3):
     doc_bytes_len = int(msg_data[offset])
     chunk_bytes_len = int(msg_data[offset + 1])
+
     chunk_byte_types = []
     for i in range(chunk_bytes_len):
-        chunk_byte_types.append(msg_data[offset + i + 2].decode())
+        chunk_byte_types.append(msg_data[offset + 2 + i].decode())
 
-    init_idx_doc_bytes = offset + 2 + chunk_bytes_len
+    init_idx_doc_bytes = offset + 3 + chunk_bytes_len
     end_idx_doc_bytes = init_idx_doc_bytes + doc_bytes_len
     doc_bytes = msg_data[init_idx_doc_bytes:end_idx_doc_bytes]
     chunk_bytes = msg_data[end_idx_doc_bytes:]

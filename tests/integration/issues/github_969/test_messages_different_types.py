@@ -4,7 +4,8 @@ from jina.proto import jina_pb2
 from jina.drivers.helper import array2pb, pb2array
 
 random_np_array = np.random.rand(50, 10)
-buffer = 'text'.encode()
+buffer = 'text_buffer'.encode()
+text = 'text_content'
 
 
 def test_message_docs_different_chunk_types():
@@ -30,7 +31,7 @@ def test_message_docs_different_chunk_types():
 
         chunk0 = doc.chunks[0]
         assert chunk0.id == 10
-        assert chunk0.text == 'text'
+        assert chunk0.text == text
 
         chunk1 = doc.chunks[1]
         assert chunk1.id == 20
@@ -49,7 +50,7 @@ def test_message_docs_different_matches_types():
         doc = jina_pb2.Document()
         match0 = doc.matches.add()
         match0.id = 10
-        match0.text = 'text'
+        match0.text = text
         match1 = doc.matches.add()
         match1.id = 20
         match1.blob.CopyFrom(array2pb(random_np_array))
@@ -66,7 +67,7 @@ def test_message_docs_different_matches_types():
 
         match0 = doc.matches[0]
         assert match0.id == 10
-        assert match0.text == 'text'
+        assert match0.text == text
 
         match1 = doc.matches[1]
         assert match1.id == 20
@@ -85,7 +86,7 @@ def test_message_docs_different_chunks_and_matches_types():
         doc = jina_pb2.Document()
         chunk0 = doc.chunks.add()
         chunk0.id = 10
-        chunk0.text = 'text'
+        chunk0.text = text
         chunk1 = doc.chunks.add()
         chunk1.id = 20
         chunk1.blob.CopyFrom(array2pb(random_np_array))
@@ -94,7 +95,7 @@ def test_message_docs_different_chunks_and_matches_types():
         chunk2.buffer = buffer
         match0 = doc.matches.add()
         match0.id = 10
-        match0.text = 'text'
+        match0.text = text
         match1 = doc.matches.add()
         match1.id = 20
         match1.blob.CopyFrom(array2pb(random_np_array))
@@ -111,7 +112,7 @@ def test_message_docs_different_chunks_and_matches_types():
 
         chunk0 = doc.chunks[0]
         assert chunk0.id == 10
-        assert chunk0.text == 'text'
+        assert chunk0.text == text
 
         chunk1 = doc.chunks[1]
         assert chunk1.id == 20
@@ -125,7 +126,7 @@ def test_message_docs_different_chunks_and_matches_types():
 
         match0 = doc.matches[0]
         assert match0.id == 10
-        assert match0.text == 'text'
+        assert match0.text == text
 
         match1 = doc.matches[1]
         assert match1.id == 20
