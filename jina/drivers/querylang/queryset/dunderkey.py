@@ -32,14 +32,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## This module deals with code regarding handling the double
 ## underscore separated keys
-from typing import Tuple, Dict, Any
+from typing import Tuple
 from google.protobuf.struct_pb2 import Struct
 from google.protobuf import json_format
 
 from .helper import *
 
 
-def dunderkey(*args: str) -> str:
+def dunderkey(*args):
     """Produces a nested key from multiple args separated by double
     underscore
 
@@ -69,7 +69,7 @@ def dunder_partition(key: str) -> Union[Tuple[str, str], Tuple[str, None]]:
     return tuple(parts) if len(parts) > 1 else (parts[0], None)
 
 
-def dunder_init(key: str) -> str:
+def dunder_init(key):
     """Returns the initial part of the dunder key
 
         >>> dunder_init('a__b__c')
@@ -81,7 +81,7 @@ def dunder_init(key: str) -> str:
     return dunder_partition(key)[0]
 
 
-def dunder_last(key: str) -> str:
+def dunder_last(key):
     """Returns the last part of the dunder key
 
         >>> dunder_last('a__b__c')
@@ -93,7 +93,7 @@ def dunder_last(key: str) -> str:
     return dunder_partition(key)[1]
 
 
-def dunder_get(_dict: Dict, key: str) -> Any:
+def dunder_get(_dict, key):
     """Returns value for a specified dunderkey
 
     A "dunderkey" is just a fieldname that may or may not contain
@@ -131,7 +131,7 @@ def dunder_get(_dict: Dict, key: str) -> Any:
     return result if len(parts) == 1 else dunder_get(result, parts[1])
 
 
-def undunder_keys(_dict: Dict) -> Dict:
+def undunder_keys(_dict):
     """Returns dict with the dunder keys converted back to nested dicts
 
     eg::
@@ -160,7 +160,7 @@ def undunder_keys(_dict: Dict) -> Dict:
     return result
 
 
-def dunder_truncate(_dict: Dict) -> Dict:
+def dunder_truncate(_dict):
     """Returns dict with dunder keys truncated to only the last part
 
     In other words, replaces the dunder keys with just last part of
