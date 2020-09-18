@@ -210,12 +210,12 @@ class CompoundExecutor(BaseExecutor):
         return (self.components and any(c.is_updated for c in self.components)) or self._is_updated
 
     @is_updated.setter
-    def is_updated(self, val: bool) -> bool:
+    def is_updated(self, val: bool) -> None:
         """Set :attr:`is_updated` for this :class:`CompoundExecutor`. Note, not to all its components """
         self._is_updated = val
 
     @is_trained.setter
-    def is_trained(self, val: bool) -> bool:
+    def is_trained(self, val: bool) -> None:
         """Set :attr:`is_trained` for all components of this :class:`CompoundExecutor` """
         for c in self.components:
             c.is_trained = val
