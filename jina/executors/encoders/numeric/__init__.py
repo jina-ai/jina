@@ -29,7 +29,7 @@ class TransformEncoder(BaseNumericEncoder):
         self.output_dim = output_dim
         self.random_state = random_state
 
-    def post_init(self):
+    def post_init(self) -> None:
         import pickle
         self.model = None
         if self.model_path:
@@ -37,7 +37,7 @@ class TransformEncoder(BaseNumericEncoder):
                 self.model = pickle.load(model_file)
 
     @batching
-    def train(self, data: 'np.ndarray', *args, **kwargs):
+    def train(self, data: 'np.ndarray', *args, **kwargs) -> None:
         if not self.model:
             raise UndefinedModel(
                 'Model is not defined: Provide a loadable pickled model, or defined any specific TransformEncoder')
