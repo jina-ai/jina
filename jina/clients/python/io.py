@@ -10,7 +10,7 @@ import numpy as np
 
 
 def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = None, sampling_rate: float = None,
-                read_mode='r'):
+                read_mode='r') -> None:
     """ Input function that iterates over list of strings, it can be used in the Flow API
 
     :param filepath: a text file that each line contains a document
@@ -40,7 +40,7 @@ def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = N
 
 
 def input_files(patterns: Union[str, List[str]], recursive: bool = True,
-                size: int = None, sampling_rate: float = None, read_mode: str = None):
+                size: int = None, sampling_rate: float = None, read_mode: str = None) -> None:
     """ Input function that iterates over files, it can be used in the Flow API
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
@@ -73,7 +73,7 @@ def input_files(patterns: Union[str, List[str]], recursive: bool = True,
             break
 
 
-def input_numpy(array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False):
+def input_numpy(array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False) -> None:
     """ Input function that iterates over a numpy array, it can be used in the Flow API
 
     :param array: the numpy ndarray data source
