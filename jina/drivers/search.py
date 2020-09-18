@@ -37,7 +37,7 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
             r = self.exec_fn(retrieved_doc.id)
@@ -58,7 +58,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
     def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         embeds = self.exec_fn([d.id for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding.CopyFrom(array2pb(embedding))
@@ -82,7 +82,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
         fill_fn = getattr(self.exec, 'query_by_id', None)

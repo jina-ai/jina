@@ -21,7 +21,7 @@ class CraftDriver(BaseExecutableDriver):
         if ret:
             self.set_doc_attr(doc, ret)
 
-    def set_doc_attr(self, doc: 'jina_pb2.Document', doc_info: Dict, protected_keys: Set = None) -> None:
+    def set_doc_attr(self, doc: 'jina_pb2.Document', doc_info: Dict, protected_keys: Set = None):
         for k, v in doc_info.items():
             if k == 'blob':
                 if isinstance(v, jina_pb2.NdArray):
