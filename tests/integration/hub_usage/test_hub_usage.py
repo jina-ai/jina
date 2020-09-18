@@ -15,7 +15,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def test_simple_use_abs_import_shall_fail():
     with pytest.raises(ModuleNotFoundError):
-        from .testhub_abs_import import ImageResizer
+        from .dummyhub_abs_import import ImageResizer
         ImageResizer()
 
     with pytest.raises(PeaFailToStart):
@@ -24,7 +24,7 @@ def test_simple_use_abs_import_shall_fail():
 
 
 def test_simple_use_relative_import():
-    from .testhub_relative_import import ImageResizer
+    from .dummyhub_relative_import import ImageResizer
     ImageResizer()
 
     with Flow().add(uses='ImageResizer'):
@@ -37,24 +37,24 @@ def test_use_from_hub_dir():
 
 
 def test_use_from_local_dir_exe_level():
-    with BaseExecutor.load_config('testhub/config.yml'):
+    with BaseExecutor.load_config('dummyhub/config.yml'):
         pass
 
 
 def test_use_from_local_dir_pod_level():
-    a = set_pod_parser().parse_args(['--uses', 'testhub/config.yml'])
+    a = set_pod_parser().parse_args(['--uses', 'dummyhub/config.yml'])
     with Pod(a):
         pass
 
 
 def test_use_from_local_dir_flow_level():
-    with Flow().add(uses='testhub/config.yml'):
+    with Flow().add(uses='dummyhub/config.yml'):
         pass
 
 
 def test_use_from_local_dir_flow_container_level():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'testhub'), '--test-uses', '--raise-error'])
+        [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error'])
     HubIO(args).build()
 
     with Flow().add(uses='jinahub/pod.crafter.imageresizer:0.0.0'):
@@ -63,5 +63,5 @@ def test_use_from_local_dir_flow_container_level():
 
 def test_use_from_cli_level():
     subprocess.check_call(['jina', 'pod', '--uses',
-                           os.path.join(cur_dir, 'testhub/config.yml'),
+                           os.path.join(cur_dir, 'dummyhub/config.yml'),
                            '--shutdown-idle', '--max-idle-time', '5'])
