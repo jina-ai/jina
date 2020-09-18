@@ -9,7 +9,7 @@ from jina.executors.crafters import BaseCrafter
 from helper import _load_image, _move_channel_axis, _resize_short
 
 
-class ImageResizer(BaseCrafter):
+class DummyImageResizer(BaseCrafter):
     """
     :class:`ImageResizer` resize the image to the given size.
     """

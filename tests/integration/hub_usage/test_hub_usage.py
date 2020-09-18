@@ -15,25 +15,22 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def test_simple_use_abs_import_shall_fail():
     with pytest.raises(ModuleNotFoundError):
-        from .dummyhub_abs_import import ImageResizer
-        ImageResizer()
+        from .dummyhub_abs_import import DummyImageResizer
+        DummyImageResizer()
 
     with pytest.raises(PeaFailToStart):
-        with Flow().add(uses='ImageResizer'):
+        with Flow().add(uses='DummyImageResizer'):
             pass
 
 
 def test_simple_use_relative_import():
-    from .dummyhub_relative_import import ImageResizer
-    ImageResizer()
+    from .dummyhub_relative_import import DummyImageResizer
+    DummyImageResizer()
 
-    with Flow().add(uses='ImageResizer'):
+    with Flow().add(uses='DummyImageResizer'):
         pass
 
 
-def test_use_from_hub_dir():
-    with Flow().add(uses='jina/hub/crafters/image/ImageResizer/config.yml'):
-        pass
 
 
 def test_use_from_local_dir_exe_level():
