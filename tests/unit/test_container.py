@@ -2,8 +2,6 @@ import os
 import time
 from sys import platform
 
-import pytest
-
 from jina.flow import Flow
 from jina.helper import random_name
 from jina.main.checker import NetworkChecker
@@ -29,11 +27,15 @@ def build_image():
         client.close()
 
 
+
 class MyTestCase(JinaTestCase):
 
     def tearDown(self) -> None:
         super().tearDown()
         time.sleep(2)
+        import docker
+        client = docker.from_env()
+        client.containers.prune()
 
     def setUp(self) -> None:
         super().setUp()
