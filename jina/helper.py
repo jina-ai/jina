@@ -274,7 +274,7 @@ _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young',
 
 
 def random_name() -> str:
-    return '-'.join(random.choice(_random_names[j]) for j in range(2))
+    return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
 def random_port() -> int:
