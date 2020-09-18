@@ -12,7 +12,7 @@ from .database import MongoDBHandler
 from .helper import get_default_login, handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
-from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name
+from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
 from ..logging import get_logger
 from ..logging.profile import TimeContext
 
@@ -299,6 +299,7 @@ class HubIO:
             # only successful build (NOT dry run) writes the summary to disk
             if result['is_build_success']:
                 self._write_summary_to_file(summary=result)
+                self._read_slack_template(result)
                 if self.args.push:
                     self._write_summary_to_db(summary=result)
 
@@ -454,6 +455,19 @@ class HubIO:
         for k in revised_dockerfile:
             self.logger.debug(k)
         return f
+
+    def _read_slack_template(self, result: Dict):
+
+        def _expand_fn(v):
+            if isinstance(v, str):
+                for k, vv in result.items():
+                    if isinstance(vv, str):
+                        v.replace(f'${k}', vv)
+
+        with resource_stream('jina', '/'.join(('resources', 'hub-builder-success', 'slack-template.json'))) as fp:
+            tmp = json.load(fp)
+            tmp = expand_dict(tmp, _expand_fn)
+            print(tmp)
 
     # alias of "new" in cli
     create = new

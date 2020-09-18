@@ -375,7 +375,7 @@ def expand_env_var(v: str) -> str:
         return v
 
 
-def expand_dict(d: Dict) -> Dict[str, Any]:
+def expand_dict(d: Dict, expand_fn=expand_env_var) -> Dict[str, Any]:
     expand_map = SimpleNamespace()
 
     def _scan(sub_d: Union[Dict, List], p):
@@ -407,14 +407,14 @@ def expand_dict(d: Dict) -> Dict[str, Any]:
                     _replace(v, p.__dict__[k])
                 else:
                     if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[k] = expand_env_var(v.format(root=expand_map, this=p))
+                        sub_d[k] = expand_fn(v.format(root=expand_map, this=p))
         elif isinstance(sub_d, List):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict) or isinstance(v, list):
                     _replace(v, p[idx])
                 else:
                     if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[idx] = expand_env_var(v.format(root=expand_map, this=p))
+                        sub_d[idx] = expand_fn(v.format(root=expand_map, this=p))
 
     _scan(d, expand_map)
     _replace(d, expand_map)
