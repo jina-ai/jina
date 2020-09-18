@@ -1,20 +1,12 @@
 import os
-import shutil
+
 import pytest
 
 from jina.executors import BaseExecutor
 from jina.executors.compound import CompoundExecutor
+from tests import rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
 class DummyA(BaseExecutor):

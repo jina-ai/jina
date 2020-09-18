@@ -12,7 +12,7 @@ from .database import MongoDBHandler
 from .helper import get_default_login, handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
-from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version
+from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name
 from ..logging import get_logger
 from ..logging.profile import TimeContext
 
@@ -52,7 +52,7 @@ class HubIO:
             self.logger.critical('requires "docker" dependency, please install it via "pip install jina[docker]"')
             raise
 
-    def new(self):
+    def new(self) -> None:
         """Create a new executor using cookiecutter template """
         try:
             from cookiecutter.main import cookiecutter
@@ -74,7 +74,7 @@ class HubIO:
         except click.exceptions.Abort:
             self.logger.info('nothing is created, bye!')
 
-    def push(self, name: str = None, readme_path: str = None):
+    def push(self, name: str = None, readme_path: str = None) -> None:
         """ A wrapper of docker push 
         - Checks for the tempfile, returns without push if it cannot find
         - Pushes to docker hub, returns withput writing to db if it fails
@@ -85,19 +85,19 @@ class HubIO:
         if not os.path.isfile(file_path):
             self.logger.error(f'can not find the build summary file')
             return
-        
+
         try:
             self._push_docker_hub(name, readme_path)
         except:
             self.logger.error('can not push to the registry')
             return
-        
+
         with open(file_path) as f:
             result = json.load(f)
         if result['is_build_success']:
             self._write_summary_to_db(summary=result)
 
-    def _push_docker_hub(self, name: str = None, readme_path: str = None):
+    def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
         name = name
         check_registry(self.args.registry, name, _repo_prefix)
@@ -135,7 +135,7 @@ class HubIO:
             self.logger.info(
                 f'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!')
 
-    def pull(self):
+    def pull(self) -> None:
         """A wrapper of docker pull """
         check_registry(self.args.registry, self.args.name, _repo_prefix)
         self.login()
@@ -147,7 +147,7 @@ class HubIO:
         self.logger.success(
             f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
 
-    def _check_docker_image(self, name: str):
+    def _check_docker_image(self, name: str) -> None:
         # check local image
         image = self._client.images.get(name)
         for r in _allowed:
@@ -164,7 +164,7 @@ class HubIO:
 
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
 
-    def login(self):
+    def login(self) -> None:
         """A wrapper of docker login """
         try:
             password = self.args.password  # or (self.args.password_stdin and self.args.password_stdin.read())
@@ -183,7 +183,7 @@ class HubIO:
         if not is_db_envs_set():
             self.logger.error('DB environment variables are not set! aborting list command.')
             return
-
+        sub_query = ''
         if kind:
             kind_query = {'manifest_info.kind': kind}
             sub_query = f'{kind_query}'
@@ -194,7 +194,7 @@ class HubIO:
             name_query = {'manifest_info.name': name}
             sub_query = f'{sub_query}, {name_query}'
         if keywords:
-            keyword_query = {"manifest_info.keywords":  { $all: keywords } }
+            keyword_query = {'manifest_info.keywords':  { '$any': keywords } }
             sub_query = f'{keyword_query}, {name_query}'
 
         _executor_query = '{ $and: [' + f"""{sub_query}""" + ' ] }'
@@ -273,12 +273,19 @@ class HubIO:
             if is_build_success:
                 if self.args.test_uses:
                     try:
-                        from jina.flow import Flow
-                        with Flow().add(uses=image.tags[0], daemon=self.args.daemon):
-                            pass
-                    except PeaFailToStart:
-                        self.logger.error(f'can not use it in the Flow')
                         is_build_success = False
+                        from jina.flow import Flow
+                        p_name = random_name()
+                        with Flow().add(name=p_name, uses=image.tags[0], daemon=self.args.daemon):
+                            pass
+                        if self.args.daemon:
+                            self._raw_client.stop(p_name)
+                        self._raw_client.prune_containers()
+                        is_build_success = True
+                    except PeaFailToStart:
+                        self.logger.error(f'can not use it in the Flow, please check your file bundle')
+                    except Exception as ex:
+                        self.logger.error(f'something wrong but it is probably not your fault. {repr(ex)}')
 
                 if self.args.push:
                     try:
@@ -286,7 +293,7 @@ class HubIO:
                         is_push_success = True
                     except Exception:
                         self.logger.error(f'can not push to the registry')
-                
+
                 _version = self.manifest['version'] if 'version' in self.manifest else '0.0.1'
                 info, env_info = get_full_version()
                 _host_info = {
@@ -295,7 +302,7 @@ class HubIO:
                     'docker': self._raw_client.info(),
                     'build_args': vars(self.args)
                 }
-                
+
             _build_history = {
                 'time': get_now_timestamp(),
                 'host_info': _host_info if is_build_success and self.args.host_info else '',
@@ -324,10 +331,10 @@ class HubIO:
                 self._write_summary_to_file(summary=result)
                 if self.args.push:
                     self._write_summary_to_db(summary=result)
-           
+
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
-            result['build_history'].pop('logs')
+            result['build_history'][0].pop('logs')
             raise RuntimeError(result)
 
         return result
@@ -341,7 +348,7 @@ class HubIO:
                  'exception': str(ex)}
         return s
 
-    def _write_summary_to_db(self, summary: Dict):
+    def _write_summary_to_db(self, summary: Dict) -> None:
         """ Inserts / Updates summary document in mongodb """
         if not is_db_envs_set():
             self.logger.error('DB environment variables are not set! bookkeeping skipped.')
@@ -365,7 +372,7 @@ class HubIO:
                 _inserted_id = db.insert(document=build_summary)
                 self.logger.debug(f'Inserted the build + push summary in db with id {_inserted_id}')
 
-    def _write_summary_to_file(self, summary: Dict):
+    def _write_summary_to_file(self, summary: Dict) -> None:
         file_path = get_summary_path(f'{summary["name"]}:{summary["version"]}')
         with open(file_path, 'w+') as f:
             json.dump(summary, f)
@@ -412,7 +419,7 @@ class HubIO:
         self.canonical_name = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}'.format(**self.manifest))
         return completeness
 
-    def _read_manifest(self, path: str, validate: bool = True):
+    def _read_manifest(self, path: str, validate: bool = True) -> Dict:
         with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
             tmp = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
@@ -424,7 +431,7 @@ class HubIO:
 
         return tmp
 
-    def _validate_manifest(self, manifest: Dict):
+    def _validate_manifest(self, manifest: Dict) -> None:
         required = {'name', 'type', 'version'}
 
         # check the required field in manifest
@@ -459,7 +466,7 @@ class HubIO:
         for k, v in manifest.items():
             self.logger.debug(f'{k}: {v}')
 
-    def _get_revised_dockerfile(self, dockerfile_path: str, manifest: Dict):
+    def _get_revised_dockerfile(self, dockerfile_path: str, manifest: Dict) -> str:
         # modify dockerfile
         revised_dockerfile = []
         with open(dockerfile_path) as fp:

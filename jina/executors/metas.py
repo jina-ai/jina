@@ -123,6 +123,10 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
 """
 
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
+
 from typing import Dict, Union, List
 
 _defaults = None

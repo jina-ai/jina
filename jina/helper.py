@@ -133,18 +133,28 @@ def touch_dir(base_dir: str) -> None:
         os.makedirs(base_dir)
 
 
-def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size: int, axis: int = 0) -> Iterator[Any]:
+def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size: int, axis: int = 0,
+                   yield_slice: bool = False) -> Iterator[Any]:
     if not batch_size or batch_size <= 0:
         yield data
         return
     if isinstance(data, np.ndarray):
-        if batch_size >= data.shape[axis]:
-            yield data
+        _l = data.shape[axis]
+        _d = data.ndim
+        sl = [slice(None)] * _d
+        if batch_size >= _l:
+            if yield_slice:
+                yield tuple(sl)
+            else:
+                yield data
             return
-        for _ in range(0, data.shape[axis], batch_size):
-            start = _
-            end = min(len(data), _ + batch_size)
-            yield np.take(data, range(start, end), axis, mode='clip')
+        for start in range(0, _l, batch_size):
+            end = min(_l, start + batch_size)
+            sl[axis] = slice(start, end)
+            if yield_slice:
+                yield tuple(sl)
+            else:
+                yield data[tuple(sl)]
     elif hasattr(data, '__len__'):
         if batch_size >= len(data):
             yield data
@@ -264,7 +274,7 @@ _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young',
 
 
 def random_name() -> str:
-    return '-'.join(random.choice(_random_names[j]) for j in range(2))
+    return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
 def random_port() -> int:

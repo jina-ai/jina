@@ -55,6 +55,8 @@ pytest:                     test
 pytest-xdist==1.34.0:       test
 pytest-timeout:             test
 pytest-cov:                 test
+pytest-repeat:              test
 flaky:                      test
 mock:                       test
 pymongo[srv]:               hub, devel
+pytest-ordering:            test

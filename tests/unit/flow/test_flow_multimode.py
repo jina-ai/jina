@@ -1,6 +1,6 @@
-import gzip
 import os
-import shutil
+import pytest
+
 from typing import List, Dict
 
 import numpy as np
@@ -10,17 +10,9 @@ from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
+from tests import rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
 class MockSegmenter(BaseSegmenter):
@@ -43,6 +35,13 @@ class MockEncoder(BaseEncoder):
                 output.append([1.0, 1.0, 1.0])
 
         return np.array(output)
+
+
+@pytest.fixture(autouse=True)
+def run_around_tests():
+    yield
+    rm_files(['vec1.gz', 'vec2.gz', 'chunk1.gz', 'chunk2.gz',
+              'vecidx1.bin', 'vecidx2.bin', 'kvidx1.bin', 'kvidx2.bin'])
 
 
 def test_flow_with_modalities():
@@ -68,13 +67,13 @@ def test_flow_with_modalities():
     with flow:
         flow.index(input_fn=input_fn)
 
-    with gzip.open('vec1.gz', 'rb') as fp:
+    with open('vec1.gz', 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(result, np.array([[0.0, 0.0, 0.0],
                                                   [0.0, 0.0, 0.0],
                                                   [0.0, 0.0, 0.0]]))
 
-    with gzip.open('vec2.gz', 'rb') as fp:
+    with open('vec2.gz', 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(result, np.array([[1.0, 1.0, 1.0],
                                                   [1.0, 1.0, 1.0],
@@ -91,6 +90,3 @@ def test_flow_with_modalities():
     for key, pb in chunkIndexer2.query_handler.items():
         for chunk in pb.chunks:
             assert chunk.modality == 'mode2'
-
-    rm_files(['vec1.gz', 'vec2.gz', 'chunk1.gz', 'chunk2.gz',
-              'vecidx1.bin', 'vecidx2.bin', 'kvidx1.bin', 'kvidx2.bin'])

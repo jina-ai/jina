@@ -9,7 +9,7 @@ __profile_queue__ = multiprocessing.Queue()  #: the global profile log queue
 __log_queue__ = multiprocessing.Queue()  #: the global log queue
 
 
-def clear_queue():
+def clear_queues():
     """Clear the log queue and profile queue when the program exit
 
     This is only used when server-side event (SSE) logging is turned on.
@@ -28,4 +28,4 @@ def clear_queue():
         pass
 
 
-atexit.register(clear_queue)  #: clear the log queue when exit
+atexit.register(clear_queues)  #: clear the log queue when exit

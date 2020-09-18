@@ -142,7 +142,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     'on_gpu=True, but you dont have CUDA compatible GPU, i will reset on_gpu=False ')
                 self.on_gpu = False
 
-    def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True):
+    def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True) -> None:
         with TimeContext('post initiating, this may take some time', self.logger):
             if fill_in_metas:
                 if not _metas:
@@ -278,7 +278,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @property
     def physical_size(self) -> int:
-        """Return the size of the workspace in bytes"""
+        """Return the size of the current workspace in bytes"""
         root_directory = Path(self.current_workspace)
         return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
@@ -301,13 +301,13 @@ class BaseExecutor(metaclass=ExecutorType):
             self.logger.warning('ImportError is often caused by a missing component, '
                                 'which often can be solved by "pip install" relevant package. %s' % ex, exc_info=True)
 
-    def train(self, *args, **kwargs):
+    def train(self, *args, **kwargs) -> None:
         """
         Train this executor, need to be overrided
         """
         pass
 
-    def touch(self):
+    def touch(self) -> None:
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
@@ -439,7 +439,7 @@ class BaseExecutor(metaclass=ExecutorType):
         except EOFError:
             raise BadPersistantFile(f'broken file {filename} can not be loaded')
 
-    def close(self):
+    def close(self) -> None:
         """
         Release the resources as executor is destroyed, need to be overrided
         """
@@ -529,7 +529,7 @@ class BaseExecutor(metaclass=ExecutorType):
                     return dump_path
 
     @staticmethod
-    def _dump_instance_to_yaml(data):
+    def _dump_instance_to_yaml(data) -> Dict[str, Dict]:
         # note: we only save non-default property for the sake of clarity
         _defaults = get_default_metas()
         p = {k: getattr(data, k) for k, v in _defaults.items() if getattr(data, k) != v}

@@ -12,7 +12,7 @@ def random_docs(num_docs):
         d.uri = 'doc://'
         for m in range(10):
             dm = d.matches.add()
-            dm.text = 'match to hllo world'
+            dm.text = 'match to other world'
             dm.uri = 'doc://match'
             dm.id = m
             dm.score.ref_id = d.id

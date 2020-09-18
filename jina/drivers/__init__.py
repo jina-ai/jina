@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Any, Dict, Callable, Tuple, Iterable, Iterator
+from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, Union
 
 import ruamel.yaml.constructor
 
@@ -19,7 +19,7 @@ if False:
     import logging
 
 
-def store_init_kwargs(func):
+def store_init_kwargs(func: Callable) -> Callable:
     """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
 
     @wraps(func)
@@ -173,7 +173,7 @@ class BaseDriver(metaclass=DriverType):
         raise NotImplementedError
 
     @staticmethod
-    def _dump_instance_to_yaml(data):
+    def _dump_instance_to_yaml(data) -> Dict[str, Dict]:
         # note: we only save non-default property for the sake of clarity
         a = {k: v for k, v in data._init_kwargs_dict.items()}
         r = {}
@@ -216,20 +216,24 @@ class BaseDriver(metaclass=DriverType):
 class BaseRecursiveDriver(BaseDriver):
 
     def __init__(self,
+                 recur_on: Union[str, Tuple[str, str]] = ('chunks', 'matches'),
                  granularity_range: Tuple[int, int] = (0, 1),
                  adjacency_range: Tuple[int, int] = (0, 0),
                  apply_order: str = 'post',
                  *args,
                  **kwargs):
         """
-
-        :param granularity_range: right-exclusive range of the recursion depth, (0, 1) for root-level only
-        :param adjacency_range: right-exclusive range of the recursion adjacency, (0, 1) for single matches
+        :param recur_on: "matches" or "chunks" or both, the actual directions where to recur on
+        :param granularity_range: right-inclusive range of the recursion depth, (0, 0) for root-level only
+        :param adjacency_range: right-inclusive range of the recursion adjacency, (0, 0) for single matches
         :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
+        if isinstance(recur_on, str):
+            recur_on = (recur_on, )
+        self._recur_on = recur_on
         self._granularity_start, self._granularity_end = granularity_range
         self._adjacency_start, self._adjacency_end = adjacency_range
         if apply_order in {'post', 'pre'}:
@@ -248,7 +252,7 @@ class BaseRecursiveDriver(BaseDriver):
         """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
-                   **kwargs):
+                   **kwargs) -> None:
         """ Apply function works on a list of docs, modify the docs in-place
 
         Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
@@ -261,7 +265,7 @@ class BaseRecursiveDriver(BaseDriver):
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
-    def _traverse_apply(self, docs, *args, **kwargs):
+    def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         """often useful when you delete a recursive structure """
 
         def post_traverse(_docs, recur_on, context_doc=None,
@@ -319,20 +323,34 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             raise ValueError(f'{self.recursion_order}')
 
-        if (self._granularity_start < self._granularity_end) or \
-                (self._granularity_start == self._granularity_end and self._granularity_start > 0):
-            _traverse(docs, 'chunks', None, 'granularity', self._granularity_start, self._granularity_end)
+        if not docs:
+            return
 
-        if (self._adjacency_start < self._adjacency_end) or \
-                (self._adjacency_start == self._adjacency_end and self._adjacency_start > 0):
+        if 'chunks' in self._recur_on:
+            working_docs = docs
+            while working_docs[0].adjacency < self._adjacency_start:
+                _temp = []
+                for working_doc in working_docs:
+                    _temp.extend(working_doc.matches)
+                working_docs = _temp
+            _traverse(working_docs, 'chunks', None, 'granularity', self._granularity_start, self._granularity_end)
 
-            for d in docs:
-                # Move to starting depth range
-                # assume that these search docs have a maximum of one chunk per document (common pattern in search)
-                working_doc = d
-                while working_doc.granularity < self._granularity_start:
-                    working_doc = working_doc.chunks[0]
-                _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
+        if 'matches' in self._recur_on:
+            if 'chunks' in self._recur_on and self._granularity_start == 0 and self._adjacency_start == 0:
+                # Prevent double calling of _traverse for the for the full input list, since it
+                # is done already in the `if 'chunks' in self._recur_on` case.
+                if self._adjacency_end > 0:
+                    for working_doc in docs:
+                        _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
+
+            else:
+                working_docs = docs
+                while working_docs[0].granularity < self._granularity_start:
+                    _temp = []
+                    for working_doc in working_docs:
+                        _temp.extend(working_doc.chunks)
+                    working_docs = _temp
+                _traverse(working_docs, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

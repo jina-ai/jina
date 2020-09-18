@@ -1,9 +1,10 @@
 import os
 
 import pytest
-from jina.helper import yaml
+
 from jina.docker.hubio import HubIO
-from jina.main.parser import set_hub_build_parser, set_hub_pushpull_parser, set_hub_new_parser
+from jina.helper import yaml
+from jina.main.parser import set_hub_build_parser, set_hub_pushpull_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,10 +21,23 @@ def test_hub_build_pull():
     HubIO(args).pull()
 
 
+@pytest.mark.timeout(360)
+def test_hub_build_uses():
+    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--pull', '--test-uses'])
+    HubIO(args).build()
+    # build again it shall not fail
+    HubIO(args).build()
+
+    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--pull', '--test-uses', '--daemon'])
+    HubIO(args).build()
+    # build again it shall not fail
+    HubIO(args).build()
+
+
 def test_hub_build_push():
     args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
-    
+
     with open(os.path.join(cur_dir, 'hub-mwu', 'manifest.yml')) as fp:
         manifest = yaml.load(fp)
 

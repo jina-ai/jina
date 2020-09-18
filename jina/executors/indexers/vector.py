@@ -2,17 +2,33 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import gzip
+import os
+from functools import lru_cache
 from os import path
-from typing import Optional, List, Union, Tuple
+from typing import Optional, List, Union, Tuple, Dict
 
 import numpy as np
 
 from . import BaseVectorIndexer
+from ..decorators import batching
 from ...helper import cached_property
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
-    """:class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file """
+    """:class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file
+
+    .. note::
+        :attr:`compress_level` balances between time and space. By default, :classL`NumpyIndexer` has
+        :attr:`compress_level` = 0.
+
+        Setting :attr:`compress_level`>0 gives a smaller file size on the disk in the index time. However, in the query
+        time it loads all data into memory at once. Not ideal for large scale application.
+
+        Setting :attr:`compress_level`=0 enables :func:`np.memmap`, which loads data in an on-demanding way and
+        gives smaller memory footprint in the query time. However, it often gives larger file size on the disk.
+
+
+    """
 
     def __init__(self,
                  compress_level: int = 1,
@@ -47,12 +63,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             # so that later in `post_init()` it will load from the referred index_filename
             self._ref_index_abspath = ref_indexer.index_abspath
 
-    def post_init(self):
-        """int2ext_key and ext2int_key should not be serialized, thus they must be put into :func:`post_init`. """
-        super().post_init()
-        self.int2ext_key = None
-        self.ext2int_key = None
-
     @property
     def index_abspath(self) -> str:
         """Get the file path of the index storage
@@ -67,14 +77,20 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         :return: a gzip file stream
         """
-        return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
+        if self.compress_level > 0:
+            return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
+        else:
+            return open(self.index_abspath, 'ab')
 
-    def get_create_handler(self) -> 'gzip.GzipFile':
+    def get_create_handler(self):
         """Create a new gzip file for adding new vectors
 
         :return: a gzip file stream
         """
-        return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
+        if self.compress_level > 0:
+            return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
+        else:
+            return open(self.index_abspath, 'wb')
 
     def _validate_key_vector_shapes(self, keys, vectors):
         if len(vectors.shape) != 2:
@@ -110,8 +126,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         vecs = self.raw_ndarray
         if vecs is not None:
             return self.build_advanced_index(vecs)
-        else:
-            return None
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         """
@@ -123,78 +137,92 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         raise NotImplementedError
 
     def _load_gzip(self, abspath: str) -> Optional['np.ndarray']:
-        self.logger.info(f'loading index from {abspath}...')
-        if not path.exists(abspath):
-            self.logger.warning('numpy data not found: {}'.format(abspath))
-            return None
-        result = None
         try:
-            if self.num_dim and self.dtype:
-                with gzip.open(abspath, 'rb') as fp:
-                    result = np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
+            self.logger.info(f'loading index from {abspath}...')
+            with gzip.open(abspath, 'rb') as fp:
+                return np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
         except EOFError:
             self.logger.error(
                 f'{abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
-        return result
 
     @cached_property
     def raw_ndarray(self) -> Optional['np.ndarray']:
-        vecs = self._load_gzip(self.index_abspath)
-        if vecs is None:
-            return None
+        if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
+            return
 
-        if self.key_bytes and self.key_dtype:
-            self.int2ext_key = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
-
-        if self.int2ext_key is not None and vecs is not None and vecs.ndim == 2:
-            if self.int2ext_key.shape[0] != vecs.shape[0]:
-                self.logger.error(
-                    f'the size of the keys and vectors are inconsistent ({self.int2ext_key.shape[0]} != {vecs.shape[0]}), '
-                    f'did you write to this index twice? or did you forget to save indexer?')
-                return None
-            if vecs.shape[0] == 0:
-                self.logger.warning(f'an empty index is loaded')
-
-            self.ext2int_key = {k: idx for idx, k in enumerate(self.int2ext_key)}
-            return vecs
-        else:
-            return None
+        if self.compress_level > 0:
+            return self._load_gzip(self.index_abspath)
+        elif self.size is not None and os.stat(self.index_abspath).st_size:
+            self.logger.success(f'memmap is enabled for {self.index_abspath}')
+            return np.memmap(self.index_abspath, dtype=self.dtype, mode='r', shape=(self.size, self.num_dim))
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        int_ids = np.array([self.ext2int_key[j] for j in ids])
+        int_ids = [self.ext2int_id[j] for j in ids]
         return self.raw_ndarray[int_ids]
 
+    @cached_property
+    def int2ext_id(self) -> Optional['np.ndarray']:
+        """Convert internal ids (0,1,2,3,4,...) to external ids (random index) """
+        if self.key_bytes and self.key_dtype:
+            r = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+            if r.shape[0] == self.size == self.raw_ndarray.shape[0]:
+                return r
+            else:
+                self.logger.error(
+                    f'the size of the keys and vectors are inconsistent '
+                    f'({r.shape[0]}, {self._size}, {self.raw_ndarray.shape[0]}), '
+                    f'did you write to this index twice? or did you forget to save indexer?')
 
-def _ext_arrs(A, B):
+    @cached_property
+    def ext2int_id(self) -> Optional[Dict]:
+        """Convert external ids (random index) to internal ids (0,1,2,3,4,...) """
+        if self.int2ext_id is not None:
+            return {k: idx for idx, k in enumerate(self.int2ext_id)}
+
+
+@lru_cache(maxsize=3)
+def _get_ones(x, y):
+    return np.ones((x, y))
+
+
+def _ext_A(A):
     nA, dim = A.shape
-    A_ext = np.ones((nA, dim * 3))
+    A_ext = _get_ones(nA, dim * 3)
     A_ext[:, dim:2 * dim] = A
     A_ext[:, 2 * dim:] = A ** 2
+    return A_ext
 
-    nB = B.shape[0]
-    B_ext = np.ones((dim * 3, nB))
+
+def _ext_B(B):
+    nB, dim = B.shape
+    B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
     B_ext[dim:2 * dim] = -2.0 * B.T
-    return A_ext, B_ext
+    del B
+    return B_ext
 
 
-def _euclidean(A, B):
-    A_ext, B_ext = _ext_arrs(A, B)
+def _euclidean(A_ext, B_ext):
     sqdist = A_ext.dot(B_ext).clip(min=0)
     return np.sqrt(sqdist)
 
 
-def _cosine(A, B):
-    A_ext, B_ext = _ext_arrs(A / np.linalg.norm(A, ord=2, axis=1, keepdims=True),
-                             B / np.linalg.norm(B, ord=2, axis=1, keepdims=True))
-    return A_ext.dot(B_ext).clip(min=0) / 2
+def _norm(A):
+    return A / np.linalg.norm(A, ord=2, axis=1, keepdims=True)
+
+
+def _cosine(A_norm_ext, B_norm_ext):
+    return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
 
 
 class NumpyIndexer(BaseNumpyIndexer):
     """An exhaustive vector indexers implemented with numpy and scipy. """
 
+    batch_size = 512
+
     def __init__(self, metric: str = 'euclidean',
                  backend: str = 'numpy',
+                 compress_level: int = 0,
                  *args, **kwargs):
         """
         :param metric: The distance metric to use. `braycurtis`, `canberra`, `chebyshev`, `cityblock`, `correlation`,
@@ -208,11 +236,11 @@ class NumpyIndexer(BaseNumpyIndexer):
             Metrics other than `cosine` and `euclidean` requires ``scipy`` installed.
 
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, compress_level=compress_level, **kwargs)
         self.metric = metric
         self.backend = backend
 
-    def query(self, keys: np.ndarray, top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """ Find the top-k vectors with smallest ``metric`` and return their ids.
 
         :return: a tuple of two ndarray.
@@ -225,20 +253,37 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         """
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
-            try:
-                from scipy.spatial.distance import cdist
-                dist = cdist(keys, self.query_handler, metric=self.metric)
-            except ModuleNotFoundError:
-                self.logger.error(f'your metric {self.metric} requires scipy, but scipy is not found')
+            dist = self._cdist(keys, self.query_handler)
         elif self.metric == 'euclidean':
-            dist = _euclidean(keys, self.query_handler)
+            _keys = _ext_A(keys)
+            dist = self._euclidean(_keys, self.query_handler)
         elif self.metric == 'cosine':
-            dist = _cosine(keys, self.query_handler)
+            _keys = _ext_A(_norm(keys))
+            dist = self._cosine(_keys, self.query_handler)
+        else:
+            raise NotImplementedError(f'{self.metric} is not implemented')
 
-        # idx = np.argpartition(dist, kth=top_k, axis=1)[:, :top_k] # To be changed when Doc2DocRanker is available
         idx = dist.argsort(axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
-        return self.int2ext_key[idx], dist
+        return self.int2ext_id[idx], dist
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
         return vecs
+
+    @batching(merge_over_axis=1, slice_on=2)
+    def _euclidean(self, cached_A, raw_B):
+        data = _ext_B(raw_B)
+        return _euclidean(cached_A, data)
+
+    @batching(merge_over_axis=1, slice_on=2)
+    def _cosine(self, cached_A, raw_B):
+        data = _ext_B(_norm(raw_B))
+        return _cosine(cached_A, data)
+
+    @batching(merge_over_axis=1, slice_on=2)
+    def _cdist(self, *args, **kwargs):
+        try:
+            from scipy.spatial.distance import cdist
+            return cdist(*args, **kwargs, metric=self.metric)
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(f'your metric {self.metric} requires scipy, but scipy is not found')
