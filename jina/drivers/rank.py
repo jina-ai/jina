@@ -52,7 +52,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """
 
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -116,7 +116,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         super().__init__(*args, **kwargs)
         self.recursion_order = 'post'
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """
 
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -170,7 +170,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         self.recursion_order = 'post'
         self.reverse = reverse
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs):
         """ Call executer for score and sort afterwards here. """
 
         # if at the top-level already, no need to aggregate further
@@ -187,7 +187,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         new_match_scores = self.exec.score(query_meta, old_match_scores, match_meta)
         self._sort_matches_in_place(context_doc, new_match_scores)
 
-    def _sort_matches_in_place(self, context_doc: 'jina_pb2.Document', match_scores: 'np.ndarray') -> None:
+    def _sort_matches_in_place(self, context_doc, match_scores):
         sorted_scores = self._sort(match_scores)
         old_matches = {match.id: match for match in context_doc.matches}
         context_doc.ClearField('matches')
@@ -197,5 +197,5 @@ class Matches2DocRankDriver(BaseRankDriver):
             new_match.score.value = score
             new_match.score.op_name = exec.__class__.__name__
 
-    def _sort(self, docs_scores: 'np.ndarray') -> 'np.ndarray':
+    def _sort(self, docs_scores: 'np.ndarray'):
         return docs_scores[docs_scores[:, -1].argsort()[::-1]]

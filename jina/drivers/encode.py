@@ -25,7 +25,7 @@ class EncodeDriver(BaseEncodeDriver):
         super().__init__(*args, **kwargs)
         self._is_apply = False
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
         contents, docs_pts, bad_doc_ids = extract_docs(docs, embedding=False)
 
         if bad_doc_ids:

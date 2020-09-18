@@ -68,7 +68,7 @@ class ReduceDriver(BaseRecursiveDriver):
                 sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
             self.envelope.num_part.pop(-1)
 
-    def reduce(self, *args, **kwargs) -> None:
+    def reduce(self, *args, **kwargs):
         """ Reduce the message from all requests by merging their envelopes
         """
         # take unique routes by service identity
@@ -99,7 +99,7 @@ class ReduceAllDriver(ReduceDriver):
             self._traverse_apply(r.docs, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
-                   **kwargs) -> None:
+                   **kwargs):
         if context_doc:
             getattr(self.doc_pointers[context_doc.id], field).extend(docs)
 
