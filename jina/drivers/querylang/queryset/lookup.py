@@ -34,7 +34,6 @@ import re
 
 from .dunderkey import dunder_get, dunder_partition, undunder_keys, dunder_truncate
 from .helper import *
-from typing import List, Dict, Iterable, Any
 
 
 class QuerySet:
@@ -52,7 +51,7 @@ class QuerySet:
     def __init__(self, data):
         self.data = data
 
-    def filter(self, *args, **kwargs) -> 'QuerySet':
+    def filter(self, *args, **kwargs):
         """Filters data using the _lookup parameters
 
         Lookup parameters can be passed as,
@@ -100,7 +99,7 @@ class QuerySet:
         """
         return self.__class__(filter_items(self.data, *args, **kwargs))
 
-    def select(self, *args, **kwargs) -> 'QuerySet':
+    def select(self, *args, **kwargs):
         """Selects specific fields of the data
 
         e.g. to select just the keys 'framework' and 'type' from many
@@ -129,7 +128,7 @@ Collection = QuerySet
 
 ## filter and _lookup functions
 
-def filter_items(items: Iterable, *args, **kwargs) -> Iterable:
+def filter_items(items, *args, **kwargs):
     """Filters an iterable using _lookup parameters
 
     :param items  : iterable
@@ -145,7 +144,7 @@ def filter_items(items: Iterable, *args, **kwargs) -> Iterable:
     return (item for item in items if pred(item))
 
 
-def _lookup(key: str, val: Any, item: Dict) -> bool:
+def _lookup(key, val, item):
     """Checks if key-val pair exists in item using various _lookup types
 
     The _lookup types are derived from the `key` and then used to check
@@ -214,7 +213,7 @@ class LookupTreeElem:
     def __init__(self):
         self.negate = False
 
-    def evaluate(self, item: Dict) -> None:
+    def evaluate(self, item):
         raise NotImplementedError
 
     def __or__(self, other):
@@ -249,7 +248,7 @@ class LookupNode(LookupTreeElem):
     def add_child(self, child):
         self.children.append(child)
 
-    def evaluate(self, item: Dict) -> bool:
+    def evaluate(self, item):
         """Evaluates the expression represented by the object for the item
 
         :param item : (dict) item
@@ -275,7 +274,7 @@ class LookupLeaf(LookupTreeElem):
         super().__init__()
         self.lookups = kwargs
 
-    def evaluate(self, item: Dict) -> bool:
+    def evaluate(self, item):
         """Evaluates the expression represented by the object for the item
 
         :param item : (dict) item
@@ -297,7 +296,7 @@ Q = LookupLeaf
 
 ## functions that work on the keys in a dict
 
-def include_keys(items: Iterable[Dict], fields: List) -> Iterable[Dict]:
+def include_keys(items, fields):
     """Function to keep only specified fields in data
 
     Returns a list of dict with only the keys mentioned in the
