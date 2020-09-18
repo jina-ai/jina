@@ -235,6 +235,10 @@ class NumpyIndexer(BaseNumpyIndexer):
         .. note::
             Metrics other than `cosine` and `euclidean` requires ``scipy`` installed.
 
+            When querying with NumpyIndexer, the top_k closest documents to the embedding query are provided, but these top_k
+            documents are not guarantee to be sorted. If you want them to be sorted by the distance score you can use a SortQL
+            driver afterwards or use a downstream Ranker to fine-tune the ranking of the top_k matched documents.
+
         """
         super().__init__(*args, compress_level=compress_level, **kwargs)
         self.metric = metric
@@ -263,7 +267,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
-        idx = dist.argsort(axis=1)[:, :top_k]
+        idx = np.argpartition(dist, kth=top_k, axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_id[idx], dist
 
