@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, List
+from typing import Dict, List, Iterator
 
 import numpy as np
 
@@ -64,7 +64,7 @@ class Chunk2DocRanker(BaseRanker):
             r.append((_doc_id, _doc_score))
         return self.sort_doc_by_score(r)
 
-    def group_by_doc_id(self, match_idx):
+    def group_by_doc_id(self, match_idx: 'np.ndarray') -> Iterator:
         """
         Group the ``match_idx`` by ``doc_id``
         :return: an iterator over the groups
@@ -72,18 +72,18 @@ class Chunk2DocRanker(BaseRanker):
         return self._group_by(match_idx, self.col_doc_id)
 
     @staticmethod
-    def _group_by(match_idx, col):
+    def _group_by(match_idx: 'np.ndarray', col: int) -> 'np.ndarray':
         # sort by ``col``
         _sorted_m = match_idx[match_idx[:, col].argsort()]
         _, _doc_counts = np.unique(_sorted_m[:, col], return_counts=True)
         # group by ``col``
         return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+    def _get_score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs) -> None:
         raise NotImplementedError
 
     @staticmethod
-    def sort_doc_by_score(r):
+    def sort_doc_by_score(r: List) -> 'np.ndarray':
         """
         Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
         :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
@@ -92,7 +92,7 @@ class Chunk2DocRanker(BaseRanker):
         r = r[r[:, -1].argsort()[::-1]]
         return r
 
-    def get_doc_id(self, match_with_same_doc_id):
+    def get_doc_id(self, match_with_same_doc_id: 'np.ndarray') -> int:
         return match_with_same_doc_id[0, self.col_doc_id]
 
 

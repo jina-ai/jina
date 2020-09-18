@@ -5,8 +5,7 @@ import gzip
 import os
 from functools import lru_cache
 from os import path
-from typing import Optional, List, Union, Tuple, Dict
-
+from typing import Optional, List, Union, Tuple, Dict, IO
 import numpy as np
 
 from . import BaseVectorIndexer
@@ -72,7 +71,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         """
         return getattr(self, '_ref_index_abspath', None) or self.get_file_from_workspace(self.index_filename)
 
-    def get_add_handler(self):
+    def get_add_handler(self) -> IO:
         """Open a binary gzip file for adding new vectors
 
         :return: a gzip file stream
@@ -82,7 +81,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         else:
             return open(self.index_abspath, 'ab')
 
-    def get_create_handler(self):
+    def get_create_handler(self) -> IO:
         """Create a new gzip file for adding new vectors
 
         :return: a gzip file stream
@@ -92,7 +91,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         else:
             return open(self.index_abspath, 'wb')
 
-    def _validate_key_vector_shapes(self, keys, vectors):
+    def _validate_key_vector_shapes(self, keys: 'np.ndarray', vectors: 'np.ndarray') -> None:
         if len(vectors.shape) != 2:
             raise ValueError(f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2')
 
@@ -181,11 +180,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
 
 @lru_cache(maxsize=3)
-def _get_ones(x, y):
+def _get_ones(x: int, y: int) -> 'np.ndarray':
     return np.ones((x, y))
 
 
-def _ext_A(A):
+def _ext_A(A: 'np.ndarray') -> 'np.ndarray':
     nA, dim = A.shape
     A_ext = _get_ones(nA, dim * 3)
     A_ext[:, dim:2 * dim] = A
@@ -193,7 +192,7 @@ def _ext_A(A):
     return A_ext
 
 
-def _ext_B(B):
+def _ext_B(B: 'np.ndarray') -> 'np.ndarray':
     nB, dim = B.shape
     B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
@@ -202,16 +201,16 @@ def _ext_B(B):
     return B_ext
 
 
-def _euclidean(A_ext, B_ext):
+def _euclidean(A_ext: 'np.ndarray', B_ext: 'np.ndarray') -> 'np.ndarray':
     sqdist = A_ext.dot(B_ext).clip(min=0)
     return np.sqrt(sqdist)
 
 
-def _norm(A):
+def _norm(A: 'np.ndarray')-> 'np.ndarray':
     return A / np.linalg.norm(A, ord=2, axis=1, keepdims=True)
 
 
-def _cosine(A_norm_ext, B_norm_ext):
+def _cosine(A_norm_ext: 'np.ndarray', B_norm_ext: 'np.ndarray') -> 'np.ndarray':
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
 
 
@@ -267,16 +266,16 @@ class NumpyIndexer(BaseNumpyIndexer):
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_id[idx], dist
 
-    def build_advanced_index(self, vecs: 'np.ndarray'):
+    def build_advanced_index(self, vecs: 'np.ndarray') -> 'np.ndarray':
         return vecs
 
     @batching(merge_over_axis=1, slice_on=2)
-    def _euclidean(self, cached_A, raw_B):
+    def _euclidean(self, cached_A: 'np.ndarray', raw_B: 'np.ndarray') -> 'np.ndarray':
         data = _ext_B(raw_B)
         return _euclidean(cached_A, data)
 
     @batching(merge_over_axis=1, slice_on=2)
-    def _cosine(self, cached_A, raw_B):
+    def _cosine(self, cached_A: 'np.ndarray', raw_B: 'np.ndarray') -> 'np.ndarray':
         data = _ext_B(_norm(raw_B))
         return _cosine(cached_A, data)
 
