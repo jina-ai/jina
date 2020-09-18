@@ -256,9 +256,8 @@ class PathImporter:
     def _path_import(absolute_path: str) -> 'types.ModuleType':
         import importlib.util
         try:
-            module_name = PathImporter._get_module_name(absolute_path)
-            if not module_name:
-                module_name = PathImporter._get_module_name(absolute_path, use_abspath=True)
+            module_name = (PathImporter._get_module_name(absolute_path) or
+                           PathImporter._get_module_name(absolute_path, use_abspath=True) or 'jinahub')
             spec = importlib.util.spec_from_file_location(module_name, absolute_path)
             module = importlib.util.module_from_spec(spec)
             sys.modules[spec.name] = module  # add this line
