@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## This module deals with code regarding handling the double
 ## underscore separated keys
-from typing import Tuple, Dict, Any
+from typing import Tuple
 from google.protobuf.struct_pb2 import Struct
 from google.protobuf import json_format
 
