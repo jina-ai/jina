@@ -237,9 +237,11 @@ def load_contrib_module() -> List[Any]:
 class PathImporter:
 
     @staticmethod
-    def _get_module_name(absolute_path: str) -> str:
-        module_name = os.path.basename(absolute_path)
-        module_name = module_name.replace('.py', '')
+    def _get_module_name(path: str, use_abspath: bool = False, use_basename: bool = True) -> str:
+        module_name = os.path.dirname(os.path.abspath(path) if use_abspath else path)
+        if use_basename:
+            module_name = os.path.basename(module_name)
+        module_name = module_name.replace('/', '.').strip('.')
         return module_name
 
     @staticmethod
@@ -253,12 +255,17 @@ class PathImporter:
     @staticmethod
     def _path_import(absolute_path: str) -> 'types.ModuleType':
         import importlib.util
-        module_name = PathImporter._get_module_name(absolute_path)
-        spec = importlib.util.spec_from_file_location(module_name, absolute_path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        sys.modules[spec.name] = module
-        return module
+        try:
+            module_name = PathImporter._get_module_name(absolute_path)
+            if not module_name:
+                module_name = PathImporter._get_module_name(absolute_path, use_abspath=True)
+            spec = importlib.util.spec_from_file_location(module_name, absolute_path)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[spec.name] = module  # add this line
+            spec.loader.exec_module(module)
+            return module
+        except ModuleNotFoundError:
+            pass
 
 
 _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young', 'early', 'major', 'clear', 'black',
@@ -274,7 +281,7 @@ _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young',
 
 
 def random_name() -> str:
-    return '-'.join(random.choice(_random_names[j]) for j in range(2))
+    return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
 def random_port() -> int:

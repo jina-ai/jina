@@ -11,7 +11,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.mark.timeout(360)
 def test_hub_build_pull():
-    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--pull', '--push', '--test-uses'])
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--pull', '--push', '--test-uses', '--raise-error'])
     HubIO(args).build()
 
     args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder'])
@@ -23,12 +24,14 @@ def test_hub_build_pull():
 
 @pytest.mark.timeout(360)
 def test_hub_build_uses():
-    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--pull', '--test-uses'])
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--pull', '--test-uses', '--raise-error'])
     HubIO(args).build()
     # build again it shall not fail
     HubIO(args).build()
 
-    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--pull', '--test-uses', '--daemon'])
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--pull', '--test-uses', '--daemon', '--raise-error'])
     HubIO(args).build()
     # build again it shall not fail
     HubIO(args).build()
