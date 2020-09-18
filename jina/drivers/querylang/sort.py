@@ -46,6 +46,6 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         self._field = field
         self.is_apply = False
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         docs.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)
 
