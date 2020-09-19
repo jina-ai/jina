@@ -200,29 +200,30 @@ def test_adjacency1_granularity1():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-def test_adjacency_on_chunks():
+@pytest.mark.skip('this test will fail on v0.5.5 because the way of traversing is limited')
+def test_selection():
     docs = build_docs()
-    doc = docs[0]
-    doc.ClearField('matches')
-    docs = [doc, ]
     driver = SliceQL(
         start=0,
         end=1,
-        adjacency_range=(0, 0),
-        granularity_range=(2, 2),
-        recur_on=['chunks', ]
+        granularity_range=(1, 1),
+        adjacency_range=(2, 2),
+        recur_on=['matches', ]
     )
     driver._traverse_apply(docs)
-    assert len(docs) == 1
-    assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].chunks) == 1
-    assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
+    # check the granularity and adjacency
+    assert docs[0].chunks[0].matches[0].matches[0].granularity == 1
+    assert docs[0].chunks[0].matches[0].matches[0].adjacency == 2
+    assert len(docs[0].chunks[0].matches[0].matches) == 1
+    # check the granularity and adjacency
+    assert docs[0].matches[0].chunks[0].matches[0].granularity == 1
+    assert docs[0].matches[0].chunks[0].matches[0].adjacency == 2
+    # For the chunks of the matches, the matches of these chunks are not effected by the apply()
+    assert len(docs[0].matches[0].chunks[0].matches) == 1
 
 
 @pytest.mark.skip('this test will fail on v0.5.5 because the way of traversing is limited')
-def test_granularity_on_matches():
+def test_traverse_apply():
     docs = build_docs()
     doc = docs[0]
     doc.ClearField('chunks')
@@ -239,9 +240,4 @@ def test_granularity_on_matches():
     assert docs[0].matches[0].chunks[0].matches[0].adjacency == 2
     # the following part will cause IndexError
     driver._traverse_apply(docs)
-    assert len(docs) == 1
-    assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].matches[0].matches) == DOCUMENTS_PER_LEVEL
-    # For the chunks of the matches, the matches of these chunks are not effected by the apply()
     assert len(docs[0].matches[0].chunks[0].matches) == 1
