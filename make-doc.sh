@@ -19,7 +19,7 @@ cd ${DOC_DIR} && make html && cd -
 
 if [[ $1 == "commit" ]]; then
   cd ${DOC_DIR}
-  cp README.md jinahub.jpg jina-logo-dark.png ${HTML_DIR}/
+  cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
   echo docs.jina.ai > CNAME
@@ -33,7 +33,7 @@ if [[ $1 == "commit" ]]; then
   cd -
 elif [[ $1 == "release" ]]; then
   cd ${DOC_DIR}
-  cp README.md jinahub.jpg jina-logo-dark.png ${HTML_DIR}/
+  cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
   echo docs.jina.ai > CNAME
