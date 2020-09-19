@@ -5,7 +5,6 @@ __license__ = "Apache-2.0"
 # this is managed by git tag and updated on every release
 __version__ = '0.5.6'
 
-
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
 __proto_version__ = '0.0.59'
@@ -94,7 +93,7 @@ def import_classes(namespace: str, targets=None,
     :param import_once: import everything only once, to avoid repeated import
     """
 
-    import os, sys, re
+    import os, re
     from .logging import default_logger
 
     if namespace == 'jina.executors':
@@ -126,20 +125,15 @@ def import_classes(namespace: str, targets=None,
     modules = set()
 
     for info in iter_modules([path]):
-        if not info.ispkg:
+        if (namespace != 'jina.hub' and not info.ispkg) or (namespace == 'jina.hub' and info.ispkg):
             modules.add('.'.join([namespace, info.name]))
 
     for pkg in find_packages(path):
         modules.add('.'.join([namespace, pkg]))
         pkgpath = path + '/' + pkg.replace('.', '/')
-        if sys.version_info.major == 2 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
-            for _, name, ispkg in iter_modules([pkgpath]):
-                if not ispkg:
-                    modules.add('.'.join([namespace, pkg, name]))
-        else:
-            for info in iter_modules([pkgpath]):
-                if not info.ispkg:
-                    modules.add('.'.join([namespace, pkg, info.name]))
+        for info in iter_modules([pkgpath]):
+            if (namespace != 'jina.hub' and not info.ispkg) or (namespace == 'jina.hub' and info.ispkg):
+                modules.add('.'.join([namespace, pkg, info.name]))
 
     # filter
     ignored_module_pattern = r'\.tests|\.api|\.bump_version'

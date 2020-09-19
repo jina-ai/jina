@@ -73,7 +73,7 @@ class PipelineEncoder(CompoundExecutor):
             data = be.encode(data, *args, **kwargs)
         return data
 
-    def train(self, data, *args, **kwargs):
+    def train(self, data: Any, *args, **kwargs) -> None:
         if not self.components:
             raise NotImplementedError
         for idx, be in enumerate(self.components):

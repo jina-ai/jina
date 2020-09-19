@@ -340,7 +340,7 @@ class BasePea(metaclass=PeaMeta):
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:
-            self.logger.critical(f'can not start a executor from {self.args.uses}')
+            self.logger.critical(f'can not start a executor from {self.args.uses}', exc_info=True)
         except KeyboardInterrupt:
             self.logger.info('Loop interrupted by user')
         except SystemError as ex:

@@ -19,7 +19,7 @@ if False:
     import logging
 
 
-def store_init_kwargs(func):
+def store_init_kwargs(func: Callable) -> Callable:
     """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
 
     @wraps(func)
@@ -173,7 +173,7 @@ class BaseDriver(metaclass=DriverType):
         raise NotImplementedError
 
     @staticmethod
-    def _dump_instance_to_yaml(data):
+    def _dump_instance_to_yaml(data) -> Dict[str, Dict]:
         # note: we only save non-default property for the sake of clarity
         a = {k: v for k, v in data._init_kwargs_dict.items()}
         r = {}
@@ -252,7 +252,7 @@ class BaseRecursiveDriver(BaseDriver):
         """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
-                   **kwargs):
+                   **kwargs) -> None:
         """ Apply function works on a list of docs, modify the docs in-place
 
         Depending on the value of ``order`` of :class:`BaseRecursiveDriver`, :meth:`apply_all` applies before or after :meth:`apply`
@@ -265,7 +265,7 @@ class BaseRecursiveDriver(BaseDriver):
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
-    def _traverse_apply(self, docs, *args, **kwargs):
+    def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         """often useful when you delete a recursive structure """
 
         def post_traverse(_docs, recur_on, context_doc=None,

@@ -56,7 +56,7 @@ class PyClient(GrpcClient):
         return self._mode
 
     @mode.setter
-    def mode(self, value: ClientMode):
+    def mode(self, value: ClientMode) -> None:
         if isinstance(value, ClientMode):
             self._mode = value
             self.args.mode = value
@@ -64,7 +64,7 @@ class PyClient(GrpcClient):
             raise ValueError(f'{value} must be one of {ClientMode}')
 
     @staticmethod
-    def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None):
+    def check_input(input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None) -> None:
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
@@ -145,7 +145,7 @@ class PyClient(GrpcClient):
             raise BadClient('input_fn is empty or not set')
 
     @input_fn.setter
-    def input_fn(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]):
+    def input_fn(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]) -> None:
         if self._input_fn:
             self.logger.warning('input_fn is not empty, overrided')
         if hasattr(bytes_gen, '__call__'):
@@ -188,7 +188,7 @@ class PyClient(GrpcClient):
         return False
 
     def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
+              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.TRAIN
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
@@ -196,7 +196,7 @@ class PyClient(GrpcClient):
         self.start(output_fn, **kwargs)
 
     def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
+               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.SEARCH
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
@@ -204,7 +204,7 @@ class PyClient(GrpcClient):
         self.start(output_fn, **kwargs)
 
     def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs):
+              output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
