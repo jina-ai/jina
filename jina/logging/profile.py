@@ -5,9 +5,8 @@ import time
 from collections import defaultdict
 from functools import wraps
 
-import dateutil.relativedelta
 
-from ..helper import colored, get_readable_size
+from ..helper import colored, get_readable_size, get_readable_time
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -148,13 +147,8 @@ class TimeContext:
 
     def __exit__(self, typ, value, traceback):
         self.duration = time.perf_counter() - self.start
-        delta = dateutil.relativedelta.relativedelta(seconds=self.duration)
 
-        readable_delta = ' and '.join(
-            ['%d %s' % (getattr(delta, t), getattr(delta, t) > 1 and t or t[:-1]) for t in
-             self.time_attrs if getattr(delta, t)])
-
-        self.readable_duration = readable_delta
+        self.readable_duration = get_readable_time(seconds=self.duration)
 
         self._exit_msg()
 
