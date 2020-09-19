@@ -1,11 +1,10 @@
+import os
 import unittest
 
 import ruamel.yaml
-import os
 
 from jina.executors import BaseExecutor
 from jina.helper import expand_env_var
-from jina.logging import default_logger
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -42,9 +41,7 @@ class MyTestCase(JinaTestCase):
         assert b.__class__.__name__ == 'DummyExternalIndexer'
 
     def test_expand_env(self):
-        print(expand_env_var('${PATH}-${AA}'))
-        default_logger.info('aa')
-        default_logger.success('aa')
+        assert expand_env_var('$PATH-${AA}') != '$PATH-${AA}'
 
 
 if __name__ == '__main__':

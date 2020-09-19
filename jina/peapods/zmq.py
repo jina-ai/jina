@@ -600,7 +600,7 @@ def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
     if check_version:
         _check_msg_version(msg)
 
-    # now we have a barebone msg, we need to fill in data
+    # now we have a barebone task_name, we need to fill in data
     if len(msg_data) > 3:
         _fill_buffer_to_msg(msg, msg_data, offset=3)
 

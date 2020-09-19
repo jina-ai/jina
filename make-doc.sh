@@ -18,9 +18,9 @@ docker run --rm \
 cd ${DOC_DIR} && make html && cd -
 
 if [[ $1 == "commit" ]]; then
-  cp ${DOC_DIR}/README.md ${HTML_DIR}/
-  cp ${DOC_DIR}/jina-logo-dark.png ${HTML_DIR}/
-  cp ${DOC_DIR}/jinahub.png ${HTML_DIR}/
+  cd ${DOC_DIR}
+  cp README.md jinahub.jpg jina-logo-dark.png ${HTML_DIR}/
+  cd -
   cd ${HTML_DIR}
   echo docs.jina.ai > CNAME
   git init
@@ -32,9 +32,9 @@ if [[ $1 == "commit" ]]; then
   git status
   cd -
 elif [[ $1 == "release" ]]; then
-  cp ${DOC_DIR}/README.md ${HTML_DIR}/
-  cp ${DOC_DIR}/jina-logo-dark.png ${HTML_DIR}/
-  cp ${DOC_DIR}/jinahub.png ${HTML_DIR}/
+  cd ${DOC_DIR}
+  cp README.md jinahub.jpg jina-logo-dark.png ${HTML_DIR}/
+  cd -
   cd ${HTML_DIR}
   echo docs.jina.ai > CNAME
   git init

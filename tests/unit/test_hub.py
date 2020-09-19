@@ -69,3 +69,4 @@ def test_hub_build_no_pymodules():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull', '--test-uses'])
     assert not HubIO(args).build()['is_build_success']
+

@@ -40,7 +40,7 @@ class MyTestCase(JinaTestCase):
         assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
         p = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
         with Pod(p):
-            # will print a cust msg from the driver when terminate
+            # will print a cust task_name from the driver when terminate
             pass
 
     def test_pod_new_api_from_kwargs(self):
@@ -48,7 +48,7 @@ class MyTestCase(JinaTestCase):
         assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
 
         with Pod(uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
-            # will print a cust msg from the driver when terminate
+            # will print a cust task_name from the driver when terminate
             pass
 
     def test_load_yaml2(self):
