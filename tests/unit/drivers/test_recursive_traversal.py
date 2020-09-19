@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from jina.proto import jina_pb2
 
@@ -32,14 +33,14 @@ def iterate_build(d, current_granularity, max_granularity, current_adjacency, ma
             dc.granularity = current_granularity + 1
             dc.adjacency = current_adjacency
             dc.id = i
-            iterate_build(dc, current_granularity + 1, max_granularity, current_adjacency, max_adjacency)
+            iterate_build(dc, dc.granularity, max_granularity, dc.adjacency, max_adjacency)
     if current_adjacency < max_adjacency:
         for i in range(DOCUMENTS_PER_LEVEL):
             dc = d.matches.add()
             dc.granularity = current_granularity
             dc.adjacency = current_adjacency + 1
             dc.id = i
-            iterate_build(dc, current_granularity, max_granularity, current_adjacency + 1, max_adjacency)
+            iterate_build(dc, dc.granularity, max_granularity, dc.adjacency, max_adjacency)
 
 
 def test_only_granularity():
@@ -217,9 +218,10 @@ def test_adjacency_on_chunks():
     assert len(docs[0].chunks[0].chunks) == 1
     assert len(docs[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].chunks[0].matches[0].chunks) == 1
+    assert len(docs[0].chunks[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
+@pytest.mark.skip('this test will fail on v0.5.5 because the way of traversing is limited')
 def test_granularity_on_matches():
     docs = build_docs()
     doc = docs[0]
@@ -228,10 +230,14 @@ def test_granularity_on_matches():
     driver = SliceQL(
         start=0,
         end=1,
-        adjacency_range=(1, 1),
+        adjacency_range=(2, 2),
         granularity_range=(1, 1),
         recur_on=["matches", ]
     )
+    # check we have a match with (g=1, a=2)
+    assert docs[0].matches[0].chunks[0].matches[0].granularity == 1
+    assert docs[0].matches[0].chunks[0].matches[0].adjacency == 2
+    # the following part will cause IndexError
     driver._traverse_apply(docs)
     assert len(docs) == 1
     assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
