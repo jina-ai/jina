@@ -415,22 +415,23 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
                 if isinstance(v, dict) or isinstance(v, list):
                     _replace(v, p.__dict__[k])
                 else:
-                    sub_d[k] = _sub(v, p) or sub_d[k]
+                    if isinstance(v, str) and pat.findall(v):
+                        sub_d[k] = _sub(v, p)
         elif isinstance(sub_d, List):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict) or isinstance(v, list):
                     _replace(v, p[idx])
                 else:
-                    sub_d[idx] = _sub(v, p) or sub_d[idx]
+                    if isinstance(v, str) and pat.findall(v):
+                        sub_d[idx] = _sub(v, p)
 
     def _sub(v, p):
-        if isinstance(v, str) and pat.findall(v):
-            if resolve_cycle_ref:
-                try:
-                    v = v.format(root=expand_map, this=p)
-                except KeyError:
-                    pass
-            return expand_fn(v)
+        if resolve_cycle_ref:
+            try:
+                v = v.format(root=expand_map, this=p)
+            except KeyError:
+                pass
+        return expand_fn(v)
 
     _scan(d, expand_map)
     _replace(d, expand_map)
