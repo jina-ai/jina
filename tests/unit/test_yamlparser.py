@@ -11,11 +11,19 @@ from jina.peapods.pea import BasePea
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 os.environ['TEST_WORKDIR'] = os.getcwd()
 
+
 def test_yaml_expand():
     with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
-    print(b)
+    assert b['quote_dict'] == {}
+    assert b['quote_string'].startswith('{')
+    assert b['quote_string'].endswith('}')
+    assert b['nest']['quote_dict'] == {}
+    assert b['nest']['quote_string'].startswith('{')
+    assert b['nest']['quote_string'].endswith('}')
+    assert b['exist_env'] != '$PATH'
+    assert b['non_exist_env'] == '$JINA_WHATEVER_ENV'
 
 
 def test_yaml_expand2():
@@ -35,7 +43,7 @@ def test_yaml_expand3():
     with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
-    print(b)
+    assert b['replica_workspace'] != '{root.workspace}/{root.name}-{this.replica_id}'
 
 
 def test_attr_dict():

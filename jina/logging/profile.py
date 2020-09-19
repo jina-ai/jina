@@ -5,6 +5,8 @@ import time
 from collections import defaultdict
 from functools import wraps
 
+import dateutil.relativedelta
+
 from ..helper import colored, get_readable_size
 
 if False:
@@ -112,10 +114,12 @@ class TimeDict:
 class TimeContext:
     """Timing a code snippet with a context manager """
 
-    def __init__(self, msg: str, logger: 'logging.Logger' = None):
+    time_attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
+
+    def __init__(self, task_name: str, logger: 'logging.Logger' = None):
         """
 
-        :param msg: the context/message
+        :param task_name: the context/message
         :param logger: use existing logger or use naive :func:`print`
 
         Example:
@@ -127,21 +131,35 @@ class TimeContext:
                 do_busy()
 
         """
-        self._msg = msg
+        self.task_name = task_name
         self._logger = logger
         self.duration = 0
 
     def __enter__(self):
         self.start = time.perf_counter()
-        if self._logger:
-            self._logger.info(self._msg + '...')
-        else:
-            print(self._msg, end=' ...\t', flush=True)
+        self._enter_msg()
         return self
+
+    def _enter_msg(self):
+        if self._logger:
+            self._logger.info(self.task_name + '...')
+        else:
+            print(self.task_name, end=' ...\t', flush=True)
 
     def __exit__(self, typ, value, traceback):
         self.duration = time.perf_counter() - self.start
+        delta = dateutil.relativedelta.relativedelta(seconds=self.duration)
+
+        readable_delta = ' and '.join(
+            ['%d %s' % (getattr(delta, t), getattr(delta, t) > 1 and t or t[:-1]) for t in
+             self.time_attrs if getattr(delta, t)])
+
+        self.readable_duration = readable_delta
+
+        self._exit_msg()
+
+    def _exit_msg(self):
         if self._logger:
-            self._logger.info('%s takes %3.3f secs' % (self._msg, self.duration))
+            self._logger.info(f'{self.task_name} takes {self.readable_duration}')
         else:
-            print(colored('    [%3.3f secs]' % self.duration, 'green'), flush=True)
+            print(colored(f'    {self.readable_duration}', 'green'), flush=True)

@@ -70,8 +70,3 @@ def test_hub_build_no_pymodules():
         [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--pull', '--test-uses'])
     assert not HubIO(args).build()['is_build_success']
 
-def test_hub_slack_notif():
-    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'hub-mwu'), '--pull'])
-    HubIO(args).build()
-
-test_hub_slack_notif()

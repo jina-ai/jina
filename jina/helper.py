@@ -383,8 +383,9 @@ def expand_env_var(v: str) -> str:
         return v
 
 
-def expand_dict(d: Dict, expand_fn=expand_env_var) -> Dict[str, Any]:
+def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Dict[str, Any]:
     expand_map = SimpleNamespace()
+    pat = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
     def _scan(sub_d: Union[Dict, List], p):
         if isinstance(sub_d, Dict):
@@ -414,15 +415,22 @@ def expand_dict(d: Dict, expand_fn=expand_env_var) -> Dict[str, Any]:
                 if isinstance(v, dict) or isinstance(v, list):
                     _replace(v, p.__dict__[k])
                 else:
-                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[k] = expand_fn(v.format(root=expand_map, this=p))
+                    sub_d[k] = _sub(v, p) or sub_d[k]
         elif isinstance(sub_d, List):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict) or isinstance(v, list):
                     _replace(v, p[idx])
                 else:
-                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[idx] = expand_fn(v.format(root=expand_map, this=p))
+                    sub_d[idx] = _sub(v, p) or sub_d[idx]
+
+    def _sub(v, p):
+        if isinstance(v, str) and pat.findall(v):
+            if resolve_cycle_ref:
+                try:
+                    v = v.format(root=expand_map, this=p)
+                except KeyError:
+                    pass
+            return expand_fn(v)
 
     _scan(d, expand_map)
     _replace(d, expand_map)

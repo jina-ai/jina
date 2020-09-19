@@ -6,9 +6,10 @@ import time
 
 from ...helper import colored
 from ...logging import profile_logger
+from ...logging.profile import TimeContext
 
 
-class ProgressBar:
+class ProgressBar(TimeContext):
     """A simple progress bar
 
     Example:
@@ -26,10 +27,9 @@ class ProgressBar:
         :param bar_len: total length of the bar
         :param task_name: the name of the task, will be displayed in front of the bar
         """
+        super().__init__(task_name, logger)
         self.bar_len = bar_len
-        self.task_name = task_name
         self.num_docs = 0
-        self.logger = logger
         self.batch_unit = batch_unit
 
     def update(self, progress: int = None, *args, **kwargs) -> None:
@@ -39,7 +39,7 @@ class ProgressBar:
         """
         self.num_reqs += 1
         sys.stdout.write('\r')
-        elapsed = time.perf_counter() - self.start_time
+        elapsed = time.perf_counter() - self.start
         num_bars = self.num_reqs % self.bar_len
         num_bars = self.bar_len if not num_bars and self.num_reqs else max(num_bars, 1)
         if progress:
@@ -70,16 +70,18 @@ class ProgressBar:
                               'elapsed': elapsed})
 
     def __enter__(self):
-        self.start_time = time.perf_counter()
+        super().__enter__()
         self.num_reqs = -1
         self.num_docs = 0
         self.update()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        elapsed = time.perf_counter() - self.start_time
+    def _enter_msg(self):
+        pass
+
+    def _exit_msg(self):
         if self.num_docs > 0:
-            speed = self.num_docs / elapsed
+            speed = self.num_docs / self.duration
         else:
-            speed = self.num_reqs / elapsed
-        sys.stdout.write('\t%s\n' % colored(f'✅ done in ⏱ {elapsed:3.1f}s 🐎 {speed:3.1f}/s', 'green'))
+            speed = self.num_reqs / self.duration
+        sys.stdout.write('\t%s\n' % colored(f'✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s', 'green'))

@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import glob
 import json
 import urllib.parse
+import urllib.request
 import webbrowser
 from typing import Dict
 
@@ -89,7 +90,7 @@ class HubIO:
         try:
             self._push_docker_hub(name, readme_path)
         except:
-            self.logger.error('can not push to the registry')
+            self.logger.error('can not push to the docker hub registry')
             return
 
         with open(file_path) as f:
@@ -99,7 +100,6 @@ class HubIO:
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
-        name = name
         check_registry(self.args.registry, name, _repo_prefix)
         self._check_docker_image(name)
         self.login()
@@ -257,13 +257,6 @@ class HubIO:
                     except Exception as ex:
                         self.logger.error(f'something wrong but it is probably not your fault. {repr(ex)}')
 
-                if self.args.push:
-                    try:
-                        self._push_docker_hub(image.tags[0], self.readme_path)
-                        is_push_success = True
-                    except Exception:
-                        self.logger.error(f'can not push to the registry')
-
                 _version = self.manifest['version'] if 'version' in self.manifest else '0.0.1'
                 info, env_info = get_full_version()
                 _host_info = {
@@ -276,7 +269,7 @@ class HubIO:
             _build_history = {
                 'time': get_now_timestamp(),
                 'host_info': _host_info if is_build_success and self.args.host_info else '',
-                'duration': tc.duration,
+                'duration': tc.readable_duration,
                 'logs': _logs,
                 'exception': _excepts
             }
@@ -292,16 +285,19 @@ class HubIO:
                 'manifest_info': self.manifest if is_build_success else '',
                 'details': _details,
                 'is_build_success': is_build_success,
-                'is_push_success': is_push_success,
                 'build_history': [_build_history]
             }
 
             # only successful build (NOT dry run) writes the summary to disk
             if result['is_build_success']:
                 self._write_summary_to_file(summary=result)
-                self._read_slack_template(result)
                 if self.args.push:
-                    self._write_summary_to_db(summary=result)
+                    try:
+                        self._push_docker_hub(image.tags[0], self.readme_path)
+                        self._write_summary_to_db(summary=result)
+                        self._write_slack_message(result, _details, _build_history)
+                    except Exception as ex:
+                        self.logger.error(f'can not complete the push due to {repr(ex)}')
 
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
@@ -322,7 +318,7 @@ class HubIO:
     def _write_summary_to_db(self, summary: Dict) -> None:
         """ Inserts / Updates summary document in mongodb """
         if not is_db_envs_set():
-            self.logger.error('DB environment variables are not set! bookkeeping skipped.')
+            self.logger.warning('MongoDB environment vars are not set! bookkeeping skipped.')
             return
 
         build_summary = handle_dot_in_keys(document=summary)
@@ -456,18 +452,26 @@ class HubIO:
             self.logger.debug(k)
         return f
 
-    def _read_slack_template(self, result: Dict):
-
+    def _write_slack_message(self, *args):
         def _expand_fn(v):
             if isinstance(v, str):
-                for k, vv in result.items():
-                    if isinstance(vv, str):
-                        v.replace(f'${k}', vv)
+                for d in args:
+                    try:
+                        v = v.format(**d)
+                    except KeyError:
+                        pass
+            return v
 
-        with resource_stream('jina', '/'.join(('resources', 'hub-builder-success', 'slack-template.json'))) as fp:
-            tmp = json.load(fp)
-            tmp = expand_dict(tmp, _expand_fn)
-            print(tmp)
+        if 'JINAHUB_SLACK_WEBHOOK' in os.environ:
+            with resource_stream('jina', '/'.join(('resources', 'hub-builder-success', 'slack-jinahub.json'))) as fp:
+                tmp = expand_dict(json.load(fp), _expand_fn, resolve_cycle_ref=False)
+                req = urllib.request.Request(os.environ['JINAHUB_SLACK_WEBHOOK'])
+                req.add_header('Content-Type', 'application/json; charset=utf-8')
+                jdb = json.dumps(tmp).encode('utf-8')  # needs to be bytes
+                req.add_header('Content-Length', str(len(jdb)))
+                with urllib.request.urlopen(req, jdb) as f:
+                    res = f.read()
+                    self.logger.info(f'push to Slack: {res}')
 
     # alias of "new" in cli
     create = new
