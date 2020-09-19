@@ -50,7 +50,7 @@ function git_commit {
 }
 
 function slack_notif {
-    envsubst < ./.github/slack-pypi.json | curl -X POST -H 'Content-type: application/json' --data "@-" $SLACK_WEBHOOK
+    envsubst < ./.github/slack-pypi.json | curl -X POST -H 'Content-type: application/json' --data "@-" $JINA_SLACK_WEBHOOK
 }
 
 
