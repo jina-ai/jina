@@ -6,8 +6,7 @@ import os
 import sys
 import tempfile
 import time
-from typing import List, Callable, Optional, Union
-from typing import Tuple
+from typing import List, Callable, Optional, Union, Tuple, Iterable
 
 import zmq
 import zmq.asyncio
@@ -607,7 +606,8 @@ def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
 
     # now we have a barebone msg, we need to fill in data
     if len(msg_data) > 3:
-        _fill_buffer_to_msg(msg, msg_data, offset=3)
+        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
+        _fill_buffer_to_msg(msg_data, docs, offset=3)
 
     return msg, num_bytes
 
@@ -752,7 +752,7 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
     return doc_bytes, chunk_bytes, chunk_byte_types
 
 
-def _fill_buffer_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: int = 3):
+def _fill_buffer_to_msg(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
     doc_bytes_len = int(msg_data[offset])
     chunk_bytes_len = int(msg_data[offset + 1])
 
@@ -771,7 +771,6 @@ def _fill_buffer_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: 
 
     c_idx = 0
     d_idx = 0
-    docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
     for d in docs:
         if doc_bytes and doc_bytes[d_idx]:
             d.buffer = doc_bytes[d_idx]
