@@ -399,7 +399,6 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message'
     num_bytes = 0
     try:
         _msg, num_bytes = _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout)
-
         sock.send_multipart(_msg)
     except zmq.error.Again:
         raise TimeoutError(
@@ -429,13 +428,8 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
         doc_bytes, chunk_bytes, chunk_byte_types = _extract_bytes_from_msg(msg)
         # now buffer are removed from message, hoping for faster de/serialization
         _msg = [msg.SerializeToString(),  # 1
-                b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes)]  # 2, 3
-        if len(chunk_byte_types) == 0:
-            _msg.append(b'')
-        else:
-            for chunk_byte_type in chunk_byte_types:
-                _msg.append(chunk_byte_type)
-        _msg += [*doc_bytes, *chunk_bytes]
+                b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 2, 3
+                *chunk_byte_types, *doc_bytes, *chunk_bytes]
 
         _msg, num_bytes = _prepare_send_msg(c_id, _msg, compress_hwm, compress_lwm)
 
@@ -753,14 +747,23 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
 
 
 def _fill_buffer_to_msg(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
+    """
+    Message comes split in different parts (that's why it comes as an Iterable, Each element
+            can be any sendable object (Frame, bytes, buffer-providers)):
+    Parts 0 and 1 contain information about potentially the receiver (if DEALER) and wether it is compressed or not.
+    Part 2 has a msg representation
+    Parts 3 and 4 (that is why offset is 3) contain the length of the doc_bytes and chunk_bytes respectively.
+    Take into account that `chunk_bytes` length is actually twice the number of chunks, because it contains both the content and the embedding.
+    Then N number of Parts come with the chunk types
+    Then M number of Parts with doc bytes followed by the chunk bytes
+    """
     doc_bytes_len = int(msg_data[offset])
     chunk_bytes_len = int(msg_data[offset + 1])
 
-    chunk_byte_types = []
-    for i in range(chunk_bytes_len):
-        chunk_byte_types.append(msg_data[offset + 2 + i].decode())
+    chunk_bytes_types_length = int(chunk_bytes_len / 2)  # chunk_bytes include embedding so 2 sources per chunk
+    chunk_byte_types = [data.decode() for data in msg_data[offset + 2: offset + 2 + chunk_bytes_types_length]]
 
-    init_idx_doc_bytes = offset + 3 + chunk_bytes_len
+    init_idx_doc_bytes = offset + 2 + chunk_bytes_types_length
     end_idx_doc_bytes = init_idx_doc_bytes + doc_bytes_len
     doc_bytes = msg_data[init_idx_doc_bytes:end_idx_doc_bytes]
     chunk_bytes = msg_data[end_idx_doc_bytes:]

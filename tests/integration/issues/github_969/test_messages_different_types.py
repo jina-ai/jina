@@ -14,7 +14,7 @@ def test_message_docs_different_chunk_types():
         doc.id = 1
         chunk0 = doc.chunks.add()
         chunk0.id = 10
-        chunk0.text = 'text'
+        chunk0.text = text
         chunk1 = doc.chunks.add()
         chunk1.id = 20
         chunk1.blob.CopyFrom(array2pb(random_np_array))
@@ -27,7 +27,7 @@ def test_message_docs_different_chunk_types():
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
         assert doc.id == 1
-        assert len(doc.chunks) == 2
+        assert len(doc.chunks) == 3
 
         chunk0 = doc.chunks[0]
         assert chunk0.id == 10
@@ -63,7 +63,7 @@ def test_message_docs_different_matches_types():
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
         assert doc.id == 1
-        assert len(doc.matches) == 2
+        assert len(doc.matches) == 3
 
         match0 = doc.matches[0]
         assert match0.id == 10
@@ -108,7 +108,7 @@ def test_message_docs_different_chunks_and_matches_types():
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
         assert doc.id == 1
-        assert len(doc.chunks) == 2
+        assert len(doc.chunks) == 3
 
         chunk0 = doc.chunks[0]
         assert chunk0.id == 10
@@ -122,7 +122,7 @@ def test_message_docs_different_chunks_and_matches_types():
         assert chunk2.id == 30
         assert chunk2.buffer == buffer
 
-        assert len(doc.matches) == 2
+        assert len(doc.matches) == 3
 
         match0 = doc.matches[0]
         assert match0.id == 10
