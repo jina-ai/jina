@@ -1,4 +1,4 @@
-FROM jinaai/jina:devel
+FROM jinaai/jina::test-pip
 
 sadasdasdADD *.py mwu_encoder.yml ./
 
