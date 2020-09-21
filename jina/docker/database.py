@@ -55,6 +55,13 @@ class MongoDBHandler:
             return self.collection.find_one(query)
         except pymongo.errors.PyMongoError as exp:
             self.logger.error(f'got an error while finding a document in the db {exp}')
+
+    def find_many(self, query: Dict[str, Union[Dict, List]]) -> None:
+        try:
+            #return self.collection.find_one(query)  find_one=False
+            return self.collection.find(query, allow_partial_results=False)
+        except pymongo.errors.PyMongoError as exp:
+            self.logger.error(f'got an error while finding a document in the db {exp}')
     
     def insert(self, document: str) -> Optional[str]:
         try:

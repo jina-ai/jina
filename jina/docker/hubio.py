@@ -195,7 +195,7 @@ class HubIO:
             sub_query = f'{sub_query}, {name_query}'
         if keywords:
             keyword_query = {'manifest_info.keywords':  { '$any': keywords } }
-            sub_query = f'{keyword_query}, {name_query}'
+            sub_query = f'{sub_query}, {keyword_query}'
 
         _executor_query = '{ $and: [' + f"""{sub_query}""" + ' ] }'
         with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
@@ -203,10 +203,11 @@ class HubIO:
                             password=os.environ['JINA_DB_PASSWORD'],
                             database_name=os.environ['JINA_DB_NAME'],
                             collection_name=os.environ['JINA_DB_COLLECTION']) as db:
-            existing_doc = db.find(query=_executor_query)
+            existing_doc = db.find_many(query=_executor_query)
             if existing_doc:
                 executor_detail = existing_doc['manifest_info']
                 self.logger.debug(f'Listing executor info. {executor_detail}')
+            return existing_doc
  
     def build(self) -> Dict:
         """A wrapper of docker build """
