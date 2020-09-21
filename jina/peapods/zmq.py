@@ -599,7 +599,7 @@ def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
     if check_version:
         _check_msg_version(msg)
 
-    # now we have a barebone msg, we need to fill in data
+    # now we have a barebone task_name, we need to fill in data
     if len(msg_data) > 3:
         docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
         _fill_buffer_to_msg(msg_data, docs, offset=3)

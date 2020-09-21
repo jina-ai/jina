@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import functools
+import math
 import os
 import random
 import re
@@ -237,9 +238,11 @@ def load_contrib_module() -> List[Any]:
 class PathImporter:
 
     @staticmethod
-    def _get_module_name(absolute_path: str) -> str:
-        module_name = os.path.basename(absolute_path)
-        module_name = module_name.replace('.py', '')
+    def _get_module_name(path: str, use_abspath: bool = False, use_basename: bool = True) -> str:
+        module_name = os.path.dirname(os.path.abspath(path) if use_abspath else path)
+        if use_basename:
+            module_name = os.path.basename(module_name)
+        module_name = module_name.replace('/', '.').strip('.')
         return module_name
 
     @staticmethod
@@ -253,12 +256,18 @@ class PathImporter:
     @staticmethod
     def _path_import(absolute_path: str) -> 'types.ModuleType':
         import importlib.util
-        module_name = PathImporter._get_module_name(absolute_path)
-        spec = importlib.util.spec_from_file_location(module_name, absolute_path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        sys.modules[spec.name] = module
-        return module
+        try:
+            # module_name = (PathImporter._get_module_name(absolute_path) or
+            #                PathImporter._get_module_name(absolute_path, use_abspath=True) or 'jinahub')
+
+            # I dont want to trust user path based on directory structure, "jinahub", period
+            spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[spec.name] = module  # add this line
+            spec.loader.exec_module(module)
+            return module
+        except ModuleNotFoundError:
+            pass
 
 
 _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young', 'early', 'major', 'clear', 'black',
@@ -375,8 +384,9 @@ def expand_env_var(v: str) -> str:
         return v
 
 
-def expand_dict(d: Dict) -> Dict[str, Any]:
+def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Dict[str, Any]:
     expand_map = SimpleNamespace()
+    pat = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
     def _scan(sub_d: Union[Dict, List], p):
         if isinstance(sub_d, Dict):
@@ -406,15 +416,23 @@ def expand_dict(d: Dict) -> Dict[str, Any]:
                 if isinstance(v, dict) or isinstance(v, list):
                     _replace(v, p.__dict__[k])
                 else:
-                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[k] = expand_env_var(v.format(root=expand_map, this=p))
+                    if isinstance(v, str) and pat.findall(v):
+                        sub_d[k] = _sub(v, p)
         elif isinstance(sub_d, List):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict) or isinstance(v, list):
                     _replace(v, p[idx])
                 else:
-                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        sub_d[idx] = expand_env_var(v.format(root=expand_map, this=p))
+                    if isinstance(v, str) and pat.findall(v):
+                        sub_d[idx] = _sub(v, p)
+
+    def _sub(v, p):
+        if resolve_cycle_ref:
+            try:
+                v = v.format(root=expand_map, this=p)
+            except KeyError:
+                pass
+        return expand_fn(v)
 
     _scan(d, expand_map)
     _replace(d, expand_map)
@@ -730,3 +748,19 @@ def complete_path(path: str) -> str:
         return _p
     else:
         raise FileNotFoundError(f'can not find {path}')
+
+
+def get_readable_time(*args, **kwargs):
+    import datetime
+    secs = float(datetime.timedelta(*args, **kwargs).total_seconds())
+    units = [('day', 86400), ('hour', 3600), ('minute', 60), ('second', 1)]
+    parts = []
+    for unit, mul in units:
+        if secs / mul >= 1 or mul == 1:
+            if mul > 1:
+                n = int(math.floor(secs / mul))
+                secs -= n * mul
+            else:
+                n = int(secs)
+            parts.append(f'{n} {unit}' + ('' if n == 1 else 's'))
+    return ' and '.join(parts)

@@ -1,0 +1,71 @@
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": ":package: {name} is just released on Jina Hub!",
+        "emoji": true
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Use `docker pull {tag}` to download the image"
+      },
+      "accessory": {
+        "type": "image",
+        "image_url": "https://docs.jina.ai/jinahub.jpg",
+        "alt_text": "jina hub logo"
+      }
+    },
+    {
+      "type": "section",
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*name*: {name}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*version*: {version}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*hash*: {hash}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*size*: {size}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*duration*: {duration}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*source*: {path}"
+        }
+      ]
+    },
+    {
+      "type": "context",
+      "elements": [
+        {
+          "type": "mrkdwn",
+          "text": "<https://github.com/jina-ai/jina-hub/|:package: Check out Jina Hub>"
+        }
+      ]
+    },
+    {
+      "type": "context",
+      "elements": [
+        {
+          "type": "mrkdwn",
+          "text": "<https://get.jina.ai|:star: Give Jina a star>"
+        }
+      ]
+    }
+  ]
+}

@@ -169,9 +169,10 @@ jobs:
           # make sure docker exist
           docker ps
           jina check
+          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
-          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/integration
+          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 --ignore-glob='tests/integration/hub_usage/dummyhub*' -v tests/integration
           mv coverage.xml integration-test-coverage.xml
         timeout-minutes: 30
       - name: Upload coverage result from integration-test
