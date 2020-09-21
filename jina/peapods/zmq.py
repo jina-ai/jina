@@ -780,16 +780,16 @@ def _fill_buffer_to_msg(msg_data: List[bytes], docs: Iterable['jina_pb2.Document
             d_idx += 1
 
         for c in d.chunks:
-            if chunk_bytes and chunk_bytes[c_idx]:
-                c.embedding.buffer = chunk_bytes[c_idx]
-            c_idx += 1
+            c.embedding.buffer = chunk_bytes[2*c_idx]
 
-            if chunk_byte_types[c_idx - 1] == 'buffer':
-                c.buffer = chunk_bytes[c_idx]
-            elif chunk_byte_types[c_idx - 1] == 'blob':
-                c.blob.buffer = chunk_bytes[c_idx]
-            elif chunk_byte_types[c_idx - 1] == 'text':
-                c.text = chunk_bytes[c_idx].decode()
+            if chunk_byte_types[c_idx] == 'buffer':
+                c.buffer = chunk_bytes[2*c_idx + 1]
+            elif chunk_byte_types[c_idx] == 'blob':
+                c.blob.buffer = chunk_bytes[2*c_idx + 1]
+            elif chunk_byte_types[c_idx] == 'text':
+                c.text = chunk_bytes[2*c_idx + 1].decode()
+
+            c_idx += 1
 
 
 def remove_envelope(m: 'jina_pb2.Message') -> 'jina_pb2.Request':

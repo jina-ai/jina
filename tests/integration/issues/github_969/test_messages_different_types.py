@@ -3,7 +3,7 @@ import numpy as np
 from jina.proto import jina_pb2
 from jina.drivers.helper import array2pb, pb2array
 
-random_np_array = np.random.rand(50, 10)
+random_np_array = np.random.randint(10, size=(50, 10))
 buffer = 'text_buffer'.encode()
 text = 'text_content'
 
@@ -15,6 +15,7 @@ def test_message_docs_different_chunk_types():
         chunk0 = doc.chunks.add()
         chunk0.id = 10
         chunk0.text = text
+        chunk0.embedding.CopyFrom(array2pb(random_np_array))
         chunk1 = doc.chunks.add()
         chunk1.id = 20
         chunk1.blob.CopyFrom(array2pb(random_np_array))
@@ -32,6 +33,7 @@ def test_message_docs_different_chunk_types():
         chunk0 = doc.chunks[0]
         assert chunk0.id == 10
         assert chunk0.text == text
+        np.testing.assert_almost_equal(random_np_array, pb2array(chunk0.embedding))
 
         chunk1 = doc.chunks[1]
         assert chunk1.id == 20
@@ -51,6 +53,7 @@ def test_message_docs_different_matches_types():
         match0 = doc.matches.add()
         match0.id = 10
         match0.text = text
+        match0.embedding.CopyFrom(array2pb(random_np_array))
         match1 = doc.matches.add()
         match1.id = 20
         match1.blob.CopyFrom(array2pb(random_np_array))
@@ -68,6 +71,7 @@ def test_message_docs_different_matches_types():
         match0 = doc.matches[0]
         assert match0.id == 10
         assert match0.text == text
+        np.testing.assert_almost_equal(random_np_array, pb2array(match0.embedding))
 
         match1 = doc.matches[1]
         assert match1.id == 20
@@ -87,6 +91,7 @@ def test_message_docs_different_chunks_and_matches_types():
         chunk0 = doc.chunks.add()
         chunk0.id = 10
         chunk0.text = text
+        chunk0.embedding.CopyFrom(array2pb(random_np_array))
         chunk1 = doc.chunks.add()
         chunk1.id = 20
         chunk1.blob.CopyFrom(array2pb(random_np_array))
@@ -96,6 +101,7 @@ def test_message_docs_different_chunks_and_matches_types():
         match0 = doc.matches.add()
         match0.id = 10
         match0.text = text
+        match0.embedding.CopyFrom(array2pb(random_np_array))
         match1 = doc.matches.add()
         match1.id = 20
         match1.blob.CopyFrom(array2pb(random_np_array))
@@ -113,6 +119,7 @@ def test_message_docs_different_chunks_and_matches_types():
         chunk0 = doc.chunks[0]
         assert chunk0.id == 10
         assert chunk0.text == text
+        np.testing.assert_almost_equal(random_np_array, pb2array(chunk0.embedding))
 
         chunk1 = doc.chunks[1]
         assert chunk1.id == 20
@@ -127,6 +134,7 @@ def test_message_docs_different_chunks_and_matches_types():
         match0 = doc.matches[0]
         assert match0.id == 10
         assert match0.text == text
+        np.testing.assert_almost_equal(random_np_array, pb2array(match0.embedding))
 
         match1 = doc.matches[1]
         assert match1.id == 20
