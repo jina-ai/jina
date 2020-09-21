@@ -425,7 +425,8 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
     if array_in_pb:
         _msg, num_bytes = _prepare_send_msg(c_id, [msg.SerializeToString()], compress_hwm, compress_lwm)
     else:
-        doc_bytes, chunk_bytes, chunk_byte_types = _extract_bytes_from_msg(msg)
+        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
+        doc_bytes, chunk_bytes, chunk_byte_types = _extract_bytes_from_msg(docs)
         # now buffer are removed from message, hoping for faster de/serialization
         _msg = [msg.SerializeToString(),  # 1
                 b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 2, 3
@@ -712,12 +713,11 @@ def _check_msg_version(msg: 'jina_pb2.Message'):
                                 'the message is probably sent from a very outdated JINA version')
 
 
-def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
+def _extract_bytes_from_msg(docs: Iterable['jina_pb2.Document']) -> Tuple:
     doc_bytes = []
     chunk_bytes = []
     chunk_byte_types = []
 
-    docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
     # for train request
     for d in docs:
         doc_bytes.append(d.buffer)
