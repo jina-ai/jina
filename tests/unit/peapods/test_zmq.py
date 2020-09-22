@@ -28,7 +28,7 @@ def test_extract_bytes_from_msg_no_chunks():
         return [doc0, doc1, doc2]
 
     documents = docs()
-    doc_bytes, chunk_bytes, chunk_byte_types = _extract_bytes_from_msg(documents)
+    doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(documents)
     assert len(doc_bytes) == 3
     assert len(chunk_bytes) == 6
     assert chunk_bytes[0] == b''
@@ -37,4 +37,4 @@ def test_extract_bytes_from_msg_no_chunks():
     assert chunk_bytes[3] == text.encode()
     assert chunk_bytes[4] == b''
     assert chunk_bytes[5] == buffer
-    assert len(chunk_byte_types) == 3
+    assert chunk_byte_type == b'buffer'
