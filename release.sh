@@ -94,5 +94,5 @@ pub_pypi
 VER_TAG_NEXT=$VER_TAG"'"${NEXT_VER#"v"}"'"
 update_ver_line "$VER_TAG" "$VER_TAG_NEXT" $INIT_FILE
 git_commit
-
+slack_notif
 

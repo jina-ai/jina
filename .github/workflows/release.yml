@@ -1,13 +1,13 @@
 name: Release Cycle
 
-#on:
-#  schedule:
-#    - cron: "55 5 * * 5"
-
 on:
-  push:
-    branches-ignore:
-      - '**'  # temporally disable this action
+  schedule:
+    - cron: "55 5 * * 5"
+
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally disable this action
 
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-          JINA_SLACK_WEBHOOK: ${{ secrets.$JINA_SLACK_WEBHOOK }}
+          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
       - if: failure()
         run: echo "nothing to release"
       - name: bumping master version

@@ -139,13 +139,17 @@ class HubIO:
         """A wrapper of docker pull """
         check_registry(self.args.registry, self.args.name, _repo_prefix)
         self.login()
-        with TimeContext(f'pulling {self.args.name}', self.logger):
-            image = self._client.images.pull(self.args.name)
-        if isinstance(image, list):
-            image = image[0]
-        image_tag = image.tags[0] if image.tags else ""
-        self.logger.success(
-            f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
+        try:
+            with TimeContext(f'pulling {self.args.name}', self.logger):
+                image = self._client.images.pull(self.args.name)
+            if isinstance(image, list):
+                image = image[0]
+            image_tag = image.tags[0] if image.tags else ''
+            self.logger.success(
+                f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
+        except:
+            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry}')
+
 
     def _check_docker_image(self, name: str) -> None:
         # check local image
