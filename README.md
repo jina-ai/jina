@@ -300,7 +300,7 @@ Split documents in order to search on a finegrained level
 <td><h3>🕊</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/cross-modal-search">Mix and Match images and captions</a></h4>
-Search cross model to get images from captions and vice versa
+Search cross modal to get images from captions and vice versa
 </td>
 </tr>
 
