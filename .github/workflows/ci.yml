@@ -63,6 +63,9 @@ jobs:
           pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 30
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
       - name: Upload coverage result from unit-test
         if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
         uses: actions/upload-artifact@v1
@@ -101,6 +104,9 @@ jobs:
           pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration
           mv coverage.xml integration-test-coverage.xml
         timeout-minutes: 30
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
       - name: Upload coverage result from integration-test
         if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
         uses: actions/upload-artifact@v1

@@ -28,14 +28,6 @@ def _decode(enc, key=__binary_delimiter__.decode()):
     return ''.join(dec)
 
 
-def get_default_login() -> Dict:
-    with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'login.yml'))) as fp:
-        login_info = yaml.load(fp)
-        for k, v in login_info.items():
-            login_info[k] = _decode(v)
-
-    return login_info
-
 
 def handle_dot_in_keys(document: Dict[str, Union[Dict, List]]) -> Union[Dict, List]:
     updated_document = {}

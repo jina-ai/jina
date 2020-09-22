@@ -10,7 +10,7 @@ from typing import Dict
 
 from .checker import *
 from .database import MongoDBHandler
-from .helper import get_default_login, handle_dot_in_keys
+from .helper import handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
@@ -112,10 +112,9 @@ class HubIO:
         if False and readme_path:
             # unfortunately Docker Hub Personal Access Tokens cannot be used as they are not supported by the API
             _volumes = {os.path.dirname(os.path.abspath(readme_path)): {'bind': '/workspace'}}
-            _env = get_default_login()
             _env = {
-                'DOCKERHUB_USERNAME': _env['username'],
-                'DOCKERHUB_PASSWORD': _env['password'],
+                'DOCKERHUB_USERNAME': self.args.username,
+                'DOCKERHUB_PASSWORD': self.args.password,
                 'DOCKERHUB_REPOSITORY': name.split(':')[0],
                 'README_FILEPATH': '/workspace/README.md',
             }
@@ -149,6 +148,7 @@ class HubIO:
                 f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
         except:
             self.logger.error(f'can not pull image {self.args.name} from {self.args.registry}')
+            raise
 
 
     def _check_docker_image(self, name: str) -> None:
@@ -170,17 +170,11 @@ class HubIO:
 
     def login(self) -> None:
         """A wrapper of docker login """
-        try:
-            password = self.args.password  # or (self.args.password_stdin and self.args.password_stdin.read())
-        except ValueError:
-            password = ''
-
-        if self.args.username and password:
-            self._client.login(username=self.args.username, password=password,
+        if self.args.username and self.args.password:
+            self._client.login(username=self.args.username, password=self.args.password,
                                registry=self.args.registry)
         else:
-            # use default login
-            self._client.login(**get_default_login(), registry=self.args.registry)
+            raise ValueError('no username/password specified, docker login failed')
 
     def build(self) -> Dict:
         """A wrapper of docker build """
