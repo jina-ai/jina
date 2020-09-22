@@ -5,7 +5,6 @@ import numpy as np
 from jina.drivers.helper import array2pb, pb2array
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from tests import JinaTestCase
 
 parallel = 10
 
@@ -29,36 +28,33 @@ def random_docs():
         yield d
 
 
-def get_output(req):
-    np.random.seed(531)
+def test_quant():
+    def get_output(req):
+        np.random.seed(531)
 
-    err = 0
-    for d in req.docs:
-        for c in d.chunks:
-            recv = pb2array(c.embedding)
-            send = np.random.random([embed_dim])
-            err += np.sum(np.abs(recv - send)) / embed_dim
+        err = 0
+        for d in req.docs:
+            for c in d.chunks:
+                recv = pb2array(c.embedding)
+                send = np.random.random([embed_dim])
+                err += np.sum(np.abs(recv - send)) / embed_dim
 
-    print(f'reconstruction error: {err / num_docs:.6f}')
+        print(f'reconstruction error: {err / num_docs:.6f}')
 
-
-class MyTestCase(JinaTestCase):
-
-    def f1(self, quant):
+    def f1(quant):
         os.environ['JINA_ARRAY_QUANT'] = quant
 
         f = Flow(callback_on_body=True).add(uses='_pass')
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
 
-    def f2(self, quant):
+    def f2(quant):
         os.environ['JINA_ARRAY_QUANT'] = quant
 
         f = Flow(callback_on_body=True, compress_hwm=1024).add(uses='_pass')
         with f as fl:
             fl.index(random_docs, output_fn=get_output)
 
-    def test_quant(self):
-        for j in ('fp32', 'fp16', 'uint8'):
-            self.f1(j)
-            self.f2(j)
+    for j in ('fp32', 'fp16', 'uint8'):
+        f1(j)
+        f2(j)
