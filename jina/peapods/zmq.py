@@ -6,7 +6,7 @@ import os
 import sys
 import tempfile
 import time
-from typing import List, Callable, Optional, Union, Tuple, Iterable
+from typing import List, Callable, Optional, Union, Tuple
 
 import zmq
 import zmq.asyncio
@@ -399,6 +399,7 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message'
     num_bytes = 0
     try:
         _msg, num_bytes = _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout)
+
         sock.send_multipart(_msg)
     except zmq.error.Again:
         raise TimeoutError(
@@ -425,15 +426,14 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
     if array_in_pb:
         _msg, num_bytes = _prepare_send_msg(c_id, [msg.SerializeToString()], compress_hwm, compress_lwm)
     else:
-        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
-        doc_bytes, chunk_bytes, chunk_byte_types = _extract_bytes_from_msg(docs)
+        doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
         # now buffer are removed from message, hoping for faster de/serialization
         _msg = [msg.SerializeToString(),  # 1
-                b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 2, 3
-                *chunk_byte_types, *doc_bytes, *chunk_bytes]
+                chunk_byte_type,  # 2
+                b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 3, 4
+                *doc_bytes, *chunk_bytes]
 
         _msg, num_bytes = _prepare_send_msg(c_id, _msg, compress_hwm, compress_lwm)
-
     return _msg, num_bytes
 
 
@@ -601,8 +601,7 @@ def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
 
     # now we have a barebone task_name, we need to fill in data
     if len(msg_data) > 3:
-        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
-        _fill_buffer_to_msg(msg_data, docs, offset=3)
+        _fill_buffer_to_msg(msg, msg_data)
 
     return msg, num_bytes
 
@@ -713,15 +712,17 @@ def _check_msg_version(msg: 'jina_pb2.Message'):
                                 'the message is probably sent from a very outdated JINA version')
 
 
-def _extract_bytes_from_msg(docs: Iterable['jina_pb2.Document']) -> Tuple:
+def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
     doc_bytes = []
     chunk_bytes = []
-    chunk_byte_types = []
+    chunk_byte_type = b''
 
+    docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
     # for train request
     for d in docs:
         doc_bytes.append(d.buffer)
         d.ClearField('buffer')
+
         for c in d.chunks:
             # oneof content {
             # string text = 2;
@@ -732,7 +733,7 @@ def _extract_bytes_from_msg(docs: Iterable['jina_pb2.Document']) -> Tuple:
             c.embedding.ClearField('buffer')
 
             ctype = c.WhichOneof('content') or ''
-            chunk_byte_types.append(ctype.encode())
+            chunk_byte_type = ctype.encode()
             if ctype == 'buffer':
                 chunk_bytes.append(c.buffer)
                 c.ClearField('buffer')
@@ -743,35 +744,31 @@ def _extract_bytes_from_msg(docs: Iterable['jina_pb2.Document']) -> Tuple:
                 chunk_bytes.append(c.text.encode())
                 c.ClearField('text')
 
-    return doc_bytes, chunk_bytes, chunk_byte_types
+    return doc_bytes, chunk_bytes, chunk_byte_type
 
 
-def _fill_buffer_to_msg(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
+def _fill_buffer_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: int = 3):
     """
     Message comes split in different parts (that's why it comes as an Iterable, Each element
             can be any sendable object (Frame, bytes, buffer-providers)):
-    Parts 0 and 1 contain information about potentially the receiver (if DEALER) and wether it is compressed or not.
-    Part 2 has a msg representation
-    Parts 3 and 4 (that is why offset is 3) contain the length of the doc_bytes and chunk_bytes respectively.
-    Take into account that `chunk_bytes` length is actually twice the number of chunks, because it contains both the content and the embedding.
-    Then N number of Parts come with the chunk types
-    Then M number of Parts with doc bytes followed by the chunk bytes
+    Parts 0 and 1 contain information about potentially the receiver (if DEALER) and whether it is compressed or not.
+    Part 2 has a msg representation.
+    Part 3 (offset = 3) has the encoded name of the type of chunk bytes (Limitation: Only consider one chunk type for complete message)
+    Parts 4 and 5 contain the length of the doc_bytes and chunk_bytes respectively.
+    Then N number of Parts come with the doc bytes
+    Then M number of Parts com with the chunk bytes (chunk bytes length is twice the number of chunks in the message)
     """
-    doc_bytes_len = int(msg_data[offset])
-    chunk_bytes_len = int(msg_data[offset + 1])
-
-    chunk_bytes_types_length = int(chunk_bytes_len / 2)  # chunk_bytes include embedding so 2 sources per chunk
-    chunk_byte_types = [data.decode() for data in msg_data[offset + 2: offset + 2 + chunk_bytes_types_length]]
-
-    init_idx_doc_bytes = offset + 2 + chunk_bytes_types_length
-    end_idx_doc_bytes = init_idx_doc_bytes + doc_bytes_len
-    doc_bytes = msg_data[init_idx_doc_bytes:end_idx_doc_bytes]
-    chunk_bytes = msg_data[end_idx_doc_bytes:]
+    chunk_byte_type = msg_data[offset].decode()
+    doc_bytes_len = int(msg_data[offset + 1])
+    chunk_bytes_len = int(msg_data[offset + 2])
+    doc_bytes = msg_data[(offset + 3):(offset + 3 + doc_bytes_len)]
+    chunk_bytes = msg_data[(offset + 3 + doc_bytes_len):]
 
     if len(chunk_bytes) != chunk_bytes_len:
         raise ValueError('"chunk_bytes_len"=%d in message, but the actual length is %d' % (
             chunk_bytes_len, len(chunk_bytes)))
 
+    docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
     c_idx = 0
     d_idx = 0
     for d in docs:
@@ -780,16 +777,19 @@ def _fill_buffer_to_msg(msg_data: List[bytes], docs: Iterable['jina_pb2.Document
             d_idx += 1
 
         for c in d.chunks:
-            c.embedding.buffer = chunk_bytes[2*c_idx]
-
-            if chunk_byte_types[c_idx] == 'buffer':
-                c.buffer = chunk_bytes[2*c_idx + 1]
-            elif chunk_byte_types[c_idx] == 'blob':
-                c.blob.buffer = chunk_bytes[2*c_idx + 1]
-            elif chunk_byte_types[c_idx] == 'text':
-                c.text = chunk_bytes[2*c_idx + 1].decode()
-
+            if chunk_bytes and chunk_bytes[c_idx]:
+                c.embedding.buffer = chunk_bytes[c_idx]
             c_idx += 1
+
+            if chunk_byte_type == 'buffer':
+                c.buffer = chunk_bytes[c_idx]
+                c_idx += 1
+            elif chunk_byte_type == 'blob':
+                c.blob.buffer = chunk_bytes[c_idx]
+                c_idx += 1
+            elif chunk_byte_type == 'text':
+                c.text = chunk_bytes[c_idx].decode()
+                c_idx += 1
 
 
 def remove_envelope(m: 'jina_pb2.Message') -> 'jina_pb2.Request':
