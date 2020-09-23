@@ -327,8 +327,8 @@ Extract feature vector data using any deep learning representation
 Search Pokemon with state-of-the-art visual representation
 </td>
 </tr>
-</table>
  -->
+</table>
 ## Documentation
 
 <a href="https://docs.jina.ai/">
