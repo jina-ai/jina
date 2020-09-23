@@ -43,7 +43,7 @@ def iterate_build(d, current_granularity, max_granularity, current_adjacency, ma
             iterate_build(dc, dc.granularity, max_granularity, dc.adjacency, max_adjacency)
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_only_root():
     docs = build_docs()
     driver = SliceQL(
@@ -61,7 +61,7 @@ def test_only_root():
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_only_matches():
     docs = build_docs()
     driver = SliceQL(
@@ -79,7 +79,7 @@ def test_only_matches():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_only_chunks():
     docs = build_docs()
     driver = SliceQL(
@@ -97,7 +97,7 @@ def test_only_chunks():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_match_chunk():
     docs = build_docs()
     driver = SliceQL(
@@ -115,7 +115,7 @@ def test_match_chunk():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_chunk_match():
     docs = build_docs()
     driver = SliceQL(
@@ -133,7 +133,7 @@ def test_chunk_match():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_multi_paths():
     docs = build_docs()
     driver = SliceQL(
@@ -152,7 +152,7 @@ def test_multi_paths():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_both_from_0():
     docs = build_docs()
     driver = SliceQL(
@@ -172,7 +172,7 @@ def test_both_from_0():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_adjacency0_granularity1():
     docs = build_docs()
     driver = SliceQL(
@@ -195,7 +195,7 @@ def test_adjacency0_granularity1():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_adjacency1_granularity1():
     docs = build_docs()
     driver = SliceQL(
@@ -220,7 +220,7 @@ def test_adjacency1_granularity1():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_selection():
     docs = build_docs()
     driver = SliceQL(
@@ -237,7 +237,7 @@ def test_selection():
     assert len(docs[0].matches[0].chunks[0].matches) == 1
 
 
-@pytest.mark.skip('this is a test for the proposed new flow design')
+@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_traverse_apply():
     docs = build_docs()
     doc = docs[0]
