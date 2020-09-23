@@ -329,6 +329,7 @@ Search Pokemon with state-of-the-art visual representation
 </tr>
  -->
 </table>
+
 ## Documentation
 
 <a href="https://docs.jina.ai/">
