@@ -86,13 +86,15 @@ def set_hub_list_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--keywords', type=list, default=['numeric', 'example', 'sklearn'],
+    parser.add_argument('--keywords', type=list, default=['numeric', 'sklearn'],
                         help='keywords for listing.')
     parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app', 'template'],
                         help='executor type for listing.')
-    parser.add_argument('--kind', type=str, default='.*',  help='kind of executor.')
-    parser.add_argument('--name', type=str, default='.*',  help='name of executor.')
-    
+    parser.add_argument('--kind', type=str, default='',  help='kind of executor.')
+    parser.add_argument('--name', type=str, default='',  help='name of executor.')
+    parser.add_argument('--remote', action='store_true', default=False,
+                        help='displays Jina hub images executors info')
+
     return parser
 
 

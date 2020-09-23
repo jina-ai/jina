@@ -178,36 +178,50 @@ class HubIO:
             # use default login
             self._client.login(**get_default_login(), registry=self.args.registry)
 
-    def list(self, name: str = None, kind: str = None, type: str = 'pod', keywords: list = ["numeric", "sklearn"]):
-        """Lists executors allowing filters for name, kind, type and keywords """
-        if not is_db_envs_set():
-            self.logger.error('DB environment variables are not set! aborting list command.')
-            return
-        sub_query = ''
+    def construct_query(self, name: str = None, kind: str = None, executor_type: str = 'pod', keywords: list = ['sklearn', 'numeric']):
+        """Constructs executor query allowing filters for name, kind, type and keywords """
+        sub_query = []
         if kind:
             kind_query = {'manifest_info.kind': kind}
-            sub_query = f'{kind_query}'
-        if type:
-            type_query = {'manifest_info.type': type}
-            sub_query = f'{sub_query}, {type_query}'
+            sub_query.append(kind_query)
+        if executor_type:
+            type_query = {'manifest_info.type': executor_type}
+            sub_query.append(type_query)
         if name:
             name_query = {'manifest_info.name': name}
-            sub_query = f'{sub_query}, {name_query}'
+            sub_query.append(name_query)
         if keywords:
-            keyword_query = {'manifest_info.keywords':  { '$any': keywords } }
-            sub_query = f'{sub_query}, {keyword_query}'
+            keyword_query = {'manifest_info.keywords':  { '$all': keywords } }
+            sub_query.append(keyword_query)
 
-        _executor_query = '{ $and: [' + f"""{sub_query}""" + ' ] }'
-        with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
-                            username=os.environ['JINA_DB_USERNAME'],
-                            password=os.environ['JINA_DB_PASSWORD'],
-                            database_name=os.environ['JINA_DB_NAME'],
-                            collection_name=os.environ['JINA_DB_COLLECTION']) as db:
-            existing_doc = db.find_many(query=_executor_query)
-            if existing_doc:
-                executor_detail = existing_doc['manifest_info']
-                self.logger.debug(f'Listing executor info. {executor_detail}')
-            return existing_doc
+        executor_query = {'$and': sub_query}
+        return executor_query
+
+    def list(self):
+        """Lists executors allowing filters for name, kind, type and keywords """
+        executor_names = []
+        if self.args.remote:
+            executor_query = self.construct_query(self.args.name, self.args.kind, self.args.type, self.args.keywords)
+            if not is_db_envs_set():
+                self.logger.error('DB environment variables are not set! aborting list command.')
+                return
+            with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
+                                username=os.environ['JINA_DB_USERNAME'],
+                                password=os.environ['JINA_DB_PASSWORD'],
+                                database_name=os.environ['JINA_DB_NAME'],
+                                collection_name=os.environ['JINA_DB_COLLECTION']) as db:
+                existing_docs = db.find_many(query=executor_query)
+                if existing_docs:
+                    for doc in existing_docs:
+                        executor_names.append(doc['name'])
+                        print('* Name: ' + doc['name'])
+                        print('|--   Description: ' + doc['manifest_info']['description'])
+                        print('|--   Kind: ' + doc['manifest_info']['kind'])
+                        print('|--   Keywords: ' + str(doc['manifest_info']['keywords']))
+                        print('|--   Type: ' +  doc['manifest_info']['type'])
+                else:
+                    self.logger.debug('No executors found')
+            return executor_names
  
     def build(self) -> Dict:
         """A wrapper of docker build """
