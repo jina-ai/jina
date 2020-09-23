@@ -189,6 +189,8 @@ class BaseExecutor(metaclass=ExecutorType):
                         unresolved_attr = True
                 else:
                     setattr(self, k, v)
+            elif type(getattr(self, k)) == type(v):
+                setattr(self, k, v)
         if not getattr(self, 'name', None):
             _id = str(uuid.uuid4()).split('-')[0]
             _name = f'{self.__class__.__name__}-{_id}'

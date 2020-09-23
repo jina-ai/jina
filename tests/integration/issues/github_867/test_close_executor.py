@@ -28,7 +28,6 @@ class SlowSaveExecutor(BaseExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = 'slow-save-executor'
-        self.is_updated = True
 
     @property
     def save_abspath(self) -> str:
@@ -42,7 +41,7 @@ class SlowSaveExecutor(BaseExecutor):
 
 
 def test_close_and_load_executor():
-    with Flow().add(uses='!SlowSaveExecutor').build() as f:
+    with Flow().add(uses=os.path.join(cur_dir, 'yaml/slowexecutor.yml')).build() as f:
         pass
 
     exec = BaseExecutor.load(save_abs_path)
@@ -79,7 +78,7 @@ class OldErrorPea(BasePea):
 
 @patch(target='jina.peapods.pea.BasePea', new=OldErrorPea)
 def test_close_and_load_executor_daemon_failed():
-    with Flow().add(uses='!SlowSaveExecutor', daemon=True).build() as f:
+    with Flow().add(uses=os.path.join(cur_dir, 'yaml/slowexecutor.yml'), daemon=True).build() as f:
         pass
 
     with pytest.raises(BadPersistantFile):
