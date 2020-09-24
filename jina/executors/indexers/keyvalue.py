@@ -10,7 +10,11 @@ from . import BaseKVIndexer
 from ...proto import jina_pb2
 
 
-class BinaryPbIndexer(BaseKVIndexer):
+class BasePbIndexer(BaseKVIndexer):
+    """Depreciated, just for back-compat and for keeping the inheritance order unchanged"""
+
+
+class BinaryPbIndexer(BasePbIndexer):
     class FileHandler:
         def __init__(self, path, mode):
             self.body = open(path, mode)
@@ -63,10 +67,6 @@ class BinaryPbIndexer(BaseKVIndexer):
                 b = jina_pb2.Document()
                 b.ParseFromString(m[r:])
                 return b
-
-
-class BasePbIndexer(BinaryPbIndexer):
-    """Depreciated, just for back-compat """
 
 
 class DataURIPbIndexer(BinaryPbIndexer):

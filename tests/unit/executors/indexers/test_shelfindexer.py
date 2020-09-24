@@ -1,22 +1,23 @@
-from jina.executors.indexers.keyvalue import ShelfPbIndexer
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import random_docs
 
 
-def test_shelf():
+def test_binary_pb():
     docs = list(random_docs(10))
-    with ShelfPbIndexer('test-shelf') as spi:
+    with BinaryPbIndexer('test-shelf') as spi:
         spi.add(docs)
+        spi.save()
 
-    with ShelfPbIndexer('test-shelf') as spi:
+    with BinaryPbIndexer.load(spi.save_abspath) as spi:
         print(spi.index_abspath)
         assert spi.query(1) == docs[1]
         assert spi.query(11) is None
         assert spi.size == 10
 
 
-def test_shelf_in_flow():
+def test_binarypb_in_flow():
     docs = list(random_docs(10))
     f = Flow(callback_on_body=True).add(uses='shelfpb.yml')
 
@@ -31,3 +32,5 @@ def test_shelf_in_flow():
 
     with f:
         f.search([d], output_fn=validate)
+
+test_binarypb_in_flow()
