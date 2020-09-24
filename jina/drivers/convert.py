@@ -16,7 +16,6 @@ from .helper import guess_mime, array2pb, pb2array
 if False:
     from ..proto import jina_pb2
 
-
 class BaseConvertDriver(BaseRecursiveDriver):
 
     def __init__(self, target: str, override: bool = False, *args, **kwargs):
@@ -101,17 +100,16 @@ class Buffer2NdArray(BaseConvertDriver):
         d.blob.CopyFrom(array2pb(np.frombuffer(d.buffer)))
 
 
-class Blob2PngURI(BaseConvertDriver):
+class NdArray2PngURI(BaseConvertDriver):
     """Simple DocCrafter used in :command:`jina hello-world`,
-        it reads ``buffer`` into base64 png and stored in ``uri``"""
+        it reads ``NdArray`` into base64 png and stored in ``uri``"""
 
     def __init__(self, target='uri', width: int = 28, height: int = 28, *args, **kwargs):
         super().__init__(target, *args, **kwargs)
         self.width = width
         self.height = height
 
-    def convert(self, d):
-        arr = pb2array(d.blob)
+    def png_convertor(self, arr: np.array):
         pixels = []
         for p in arr[::-1]:
             pixels.extend([255 - int(p), 255 - int(p), 255 - int(p), 255])
@@ -134,8 +132,23 @@ class Blob2PngURI(BaseConvertDriver):
             png_pack(b'IHDR', struct.pack('!2I5B', self.width, self.height, 8, 6, 0, 0, 0)),
             png_pack(b'IDAT', zlib.compress(raw_data, 9)),
             png_pack(b'IEND', b'')])
-        d.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+    
+        return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
+    def convert(self, arr):
+        arr.uri = self.png_convertor(arr)
+
+
+class Blob2PngURI(NdArray2PngURI):
+    """Simple DocCrafter used in :command:`jina hello-world`,
+        it reads ``buffer`` into base64 png and stored in ``uri``"""
+
+    def __init__(self, target='uri', width: int = 28, height: int = 28, *args, **kwargs):
+        super().__init__(target, width, height, *args, **kwargs)
+
+    def convert(self, d):
+        arr = pb2array(d.blob)
+        d.uri = self.png_convertor(arr)
 
 class URI2Buffer(BaseConvertDriver):
     """ Convert local file path, remote URL doc to a buffer doc.
