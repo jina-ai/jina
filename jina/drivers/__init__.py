@@ -269,7 +269,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        if os.environ.get('JINA_USE_TREE_TRAVERSAL', False):
+        if os.getenv('JINA_USE_TREE_TRAVERSAL', 'False') == 'True':
             self._traverse_apply_explicit(docs, *args, **kwargs)
         else:
             self._traverse_apply_recur_on(docs, *args, **kwargs)
