@@ -39,6 +39,7 @@ def test_segment_driver():
     valid_doc.id = 1
     valid_doc.text = 'valid'
     valid_doc.length = 2
+    valid_doc.mime_type = 'image/png'
 
     driver = SimpleSegmentDriver(first_chunk_id=3)
     executor = MockSegmenter()
@@ -52,14 +53,14 @@ def test_segment_driver():
     assert valid_doc.chunks[0].blob == array2pb(np.array([0.0, 0.0, 0.0]))
     assert valid_doc.chunks[0].weight == 0
     assert valid_doc.chunks[0].length == 3
-    assert valid_doc.chunks[0].mime_type == "text/plain"
+    assert valid_doc.chunks[0].mime_type == 'text/plain'
 
     assert valid_doc.chunks[1].id == 4
     assert valid_doc.chunks[1].parent_id == valid_doc.id
     assert valid_doc.chunks[1].blob == array2pb(np.array([1.0, 1.0, 1.0]))
     assert valid_doc.chunks[1].weight == 1
     assert valid_doc.chunks[1].length == 3
-    assert valid_doc.chunks[1].mime_type == ""
+    assert valid_doc.chunks[1].mime_type == 'image/png'
 
     assert valid_doc.chunks[2].id == 5
     assert valid_doc.chunks[2].parent_id == valid_doc.id
