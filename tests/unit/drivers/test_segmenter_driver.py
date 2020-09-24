@@ -67,6 +67,7 @@ def test_segment_driver():
     assert valid_doc.chunks[2].blob == array2pb(np.array([2.0, 2.0, 2.0]))
     assert valid_doc.chunks[2].weight == 2
     assert valid_doc.chunks[2].length == 3
+    assert valid_doc.chunks[2].mime_type == 'image/png'
 
 
 
