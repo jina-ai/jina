@@ -13,6 +13,13 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 DOCUMENTS_PER_LEVEL = 2
 
 
+@pytest.fixture(autouse=True)
+def set_environment():
+    os.environ['JINA_USE_TREE_TRAVERSAL'] = 'True'
+    yield
+    os.environ['JINA_USE_TREE_TRAVERSAL'] = 'False'
+
+
 def build_docs():
     """ Builds up a complete chunk-match structure, with a depth of 2 in both directions recursively. """
     docs = []
@@ -43,7 +50,6 @@ def iterate_build(d, current_granularity, max_granularity, current_adjacency, ma
             iterate_build(dc, dc.granularity, max_granularity, dc.adjacency, max_adjacency)
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_only_root():
     docs = build_docs()
     driver = SliceQL(
@@ -52,7 +58,7 @@ def test_only_root():
         traversal_paths=['r']
     )
     driver._traverse_apply(docs)
-    assert len(docs) == DOCUMENTS_PER_LEVEL
+    assert len(docs) == 1
     assert len(docs[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].chunks[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].chunks[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
@@ -61,7 +67,6 @@ def test_only_root():
     assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_only_matches():
     docs = build_docs()
     driver = SliceQL(
@@ -79,7 +84,6 @@ def test_only_matches():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_only_chunks():
     docs = build_docs()
     driver = SliceQL(
@@ -97,7 +101,6 @@ def test_only_chunks():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_match_chunk():
     docs = build_docs()
     driver = SliceQL(
@@ -115,7 +118,6 @@ def test_match_chunk():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_chunk_match():
     docs = build_docs()
     driver = SliceQL(
@@ -133,7 +135,6 @@ def test_chunk_match():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_multi_paths():
     docs = build_docs()
     driver = SliceQL(
@@ -152,7 +153,6 @@ def test_multi_paths():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_both_from_0():
     docs = build_docs()
     driver = SliceQL(
@@ -172,7 +172,6 @@ def test_both_from_0():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_adjacency0_granularity1():
     docs = build_docs()
     driver = SliceQL(
@@ -195,13 +194,12 @@ def test_adjacency0_granularity1():
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_adjacency1_granularity1():
     docs = build_docs()
     driver = SliceQL(
         start=0,
         end=1,
-        traversal_paths=['cm', 'cmm' 'mcc']
+        traversal_paths=['cm', 'cmm', 'mcc']
     )
     driver._traverse_apply(docs)
     assert len(docs) == DOCUMENTS_PER_LEVEL
@@ -213,14 +211,13 @@ def test_adjacency1_granularity1():
     assert len(docs[0].chunks[0].matches[0].matches) == 1
     assert len(docs[0].chunks[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches) == DOCUMENTS_PER_LEVEL
-    assert len(docs[0].matches[0].chunks) == 1
+    assert len(docs[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].chunks[0].chunks) == 1
     assert len(docs[0].matches[0].chunks[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches) == DOCUMENTS_PER_LEVEL
     assert len(docs[0].matches[0].matches[0].chunks) == DOCUMENTS_PER_LEVEL
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_selection():
     docs = build_docs()
     driver = SliceQL(
@@ -237,7 +234,6 @@ def test_selection():
     assert len(docs[0].matches[0].chunks[0].matches) == 1
 
 
-@pytest.mark.skip(reason='this is a test for the proposed new flow design')
 def test_traverse_apply():
     docs = build_docs()
     doc = docs[0]

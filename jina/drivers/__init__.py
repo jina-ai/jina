@@ -2,8 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
+import os
 from functools import wraps
-from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, Union
+from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, Union, List
 
 import ruamel.yaml.constructor
 
@@ -220,6 +221,7 @@ class BaseRecursiveDriver(BaseDriver):
                  granularity_range: Tuple[int, int] = (0, 1),
                  adjacency_range: Tuple[int, int] = (0, 0),
                  apply_order: str = 'post',
+                 traversal_paths: List[str] = [],
                  *args,
                  **kwargs):
         """
@@ -242,6 +244,7 @@ class BaseRecursiveDriver(BaseDriver):
             raise AttributeError('can only accept oder={"pre", "post"}')
         self._is_apply = True
         self._is_apply_all = True
+        self._is_apply_path = False
 
     def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
         """ Apply function works on each doc, one by one, modify the doc in-place
@@ -266,6 +269,54 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+        if os.environ.get('JINA_USE_TREE_TRAVERSAL', False):
+            self._traverse_apply_explicit(docs, *args, **kwargs)
+        else:
+            self._traverse_apply_recur_on(docs, *args, **kwargs)
+
+    def _traverse_apply_explicit(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+        for path in self.traversal_paths:
+            if path[0] == 'r':
+                self._traverse_rec(docs, None, None, [])
+            for doc in docs:
+                self._traverse_rec([doc, ], None, None, path)
+
+    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path):
+        if self._should_apply_all_pre(path):
+            self._apply_all(docs, parent_doc, parent_edge_type)
+
+        if self._should_apply_pre(path):
+            for doc in docs:
+                self._apply(doc, parent_doc, parent_edge_type)
+
+        if path:
+            next_edge = path[0]
+            for doc in docs:
+                if next_edge == 'm':
+                    self._traverse_rec(doc.matches, doc, "matches", path[1:])
+                if next_edge == 'c':
+                    self._traverse_rec(doc.chunks, doc, "chunks", path[1:])
+        # print(path)
+        if self._should_apply_post(path):
+            for doc in docs:
+                self._apply(doc, parent_doc, parent_edge_type)
+
+        if self._should_apply_all_post(path):
+            self._apply_all(docs, parent_doc, parent_edge_type)
+
+    def _should_apply_pre(self, path):
+        return self.recursion_order == 'pre' and self._is_apply and (self._is_apply_path or not path)
+
+    def _should_apply_post(self, path):
+        return self.recursion_order == 'post' and self._is_apply and (self._is_apply_path or not path)
+
+    def _should_apply_all_pre(self, path):
+        return self.recursion_order == 'pre' and self._is_apply_all and (self._is_apply_path or not path)
+
+    def _should_apply_all_post(self, path):
+        return self.recursion_order == 'post' and self._is_apply_all and (self._is_apply_path or not path)
+
+    def _traverse_apply_recur_on(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         """often useful when you delete a recursive structure """
 
         def post_traverse(_docs, recur_on, context_doc=None,
