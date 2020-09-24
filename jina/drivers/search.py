@@ -21,7 +21,7 @@ class BaseSearchDriver(BaseExecutableDriver):
 
 
 class KVSearchDriver(BaseSearchDriver):
-    """Fill in the doc/chunk-level top-k results using the :class:`jina.executors.indexers.meta.BasePbIndexer`
+    """Fill in the doc/chunk-level top-k results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
 
     .. warning::
         This driver loops over all chunk/chunk's top-K results, each step fires a query.

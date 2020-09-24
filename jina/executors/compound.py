@@ -27,7 +27,7 @@ class CompoundExecutor(BaseExecutor):
             metas:
               name: vecidx_exec  # a customized name
               workspace: $TEST_WORKDIR
-          - !BasePbIndexer
+          - !BinaryPbIndexer
             with:
               index_filename: chunk.gz
             metas:

@@ -29,7 +29,7 @@ requests:
             - text
       - !KVIndexDriver
         with:
-          executor: BasePbIndexer
+          executor: BinaryPbIndexer
           filter_by: $FILTER_BY
     SearchRequest:
       - !VectorSearchDriver
@@ -44,5 +44,5 @@ requests:
             - text
       - !KVSearchDriver
         with:
-          executor: BasePbIndexer
+          executor: BinaryPbIndexer
           filter_by: $FILTER_BY

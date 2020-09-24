@@ -2,13 +2,16 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, Union, List
+from typing import Tuple, Union, List, Iterator, Optional
 
 import numpy as np
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
 from ...helper import call_obj_fn, cached_property, get_readable_size
+
+if False:
+    from ...proto import jina_pb2
 
 
 class BaseIndexer(BaseExecutor):
@@ -53,12 +56,7 @@ class BaseIndexer(BaseExecutor):
         self.handler_mutex = True  #: only one handler at a time by default
         self._size = 0
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
-        """Add new chunks and their vector representations
-
-        :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
-        :param vectors: vector representations in B x D
-        """
+    def add(self, *args, **kwargs):
         raise NotImplementedError
 
     def post_init(self):
@@ -66,14 +64,7 @@ class BaseIndexer(BaseExecutor):
         self.index_filename = self.index_filename or self.name
         self.is_handler_loaded = False
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        """Find k-NN using query vectors, return chunk ids and chunk scores
-
-        :param keys: query vectors in ndarray, shape B x D
-        :param top_k: int, the number of nearest neighbour to return
-        :return: a tuple of two ndarray.
-            The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
-        """
+    def query(self, *args, **kwargs):
         raise NotImplementedError
 
     @property
@@ -181,6 +172,24 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
+    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+        """Add new chunks and their vector representations
+
+        :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
+        :param vectors: vector representations in B x D
+        """
+        raise NotImplementedError
+
+    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find k-NN using query vectors, return chunk ids and chunk scores
+
+        :param keys: query vectors in ndarray, shape B x D
+        :param top_k: int, the number of nearest neighbour to return
+        :return: a tuple of two ndarray.
+            The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
+        """
+        raise NotImplementedError
+
 
 class BaseKVIndexer(BaseIndexer):
     """An abstract class for key-value indexer.
@@ -189,6 +198,17 @@ class BaseKVIndexer(BaseIndexer):
 
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
+
+    def add(self, docs: Iterator['jina_pb2.Document'], *args, **kwargs):
+        raise NotImplementedError
+
+    def query(self, key: int) -> Optional['jina_pb2.Document']:
+        """ Find the protobuf chunk/doc using id
+
+        :param key: ``id``
+        :return: protobuf chunk or protobuf document
+        """
+        raise NotImplementedError
 
 
 class CompoundIndexer(CompoundExecutor):
@@ -217,7 +237,7 @@ class CompoundIndexer(CompoundExecutor):
             metas:
               name: vecidx  # a customized name
               workspace: $TEST_WORKDIR
-          - !BasePbIndexer
+          - !BinaryPbIndexer
             with:
               index_filename: chunk.gz
             metas:
