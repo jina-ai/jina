@@ -75,6 +75,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4462,4 +4463,46 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```29b85811```](https://github.com/jina-ai/jina/commit/29b85811d2cdddb34d038e0ba3e6f4c4d5d5d027)] __-__ hotfix release (*hanxiao*)
  - [[```36c7257e```](https://github.com/jina-ai/jina/commit/36c7257e2bacf66ea724b56a7f37416233d0b271)] __-__ __version__: the next version will be 0.5.1 (*Jina Dev Bot*)
  - [[```47cfb89e```](https://github.com/jina-ai/jina/commit/47cfb89e0472c563368a8843c54d1ff62249b093)] __-__ hotfix release v0.5.0 (*Han Xiao*)
+
+## Release Note (`0.5.7`)
+
+> Release time: 2020-09-25 05:59:06
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  rutujasurve94,  Susana Guzman,  Han Xiao,  Maximilian Werk,  🙇
+
+
+### 🆕 New Features
+
+ - [[```63b5fe30```](https://github.com/jina-ai/jina/commit/63b5fe30f00ddd46f1f423a9446ac3188918c7cf)] __-__ add ndarray to uri driver (*rutujasurve94*)
+ - [[```ded9e8c7```](https://github.com/jina-ai/jina/commit/ded9e8c74e145d300577081c9fa19be280ea2ecd)] __-__ add validation for mime type (*Susana Guzman*)
+
+### 🐞 Bug fixes
+
+ - [[```f4f75030```](https://github.com/jina-ai/jina/commit/f4f750306edaf3c8cc72ad77cbc9ff74bae6b8bd)] __-__ added missing reason (*Maximilian Werk*)
+ - [[```985fdb58```](https://github.com/jina-ai/jina/commit/985fdb58acd79f1fbff6d6380c0528511aeba1dd)] __-__ remove credential (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```c58cc311```](https://github.com/jina-ai/jina/commit/c58cc3117930fa0460c00ef999039f81760329b5)] __-__ style fix (*Han Xiao*)
+ - [[```3d771404```](https://github.com/jina-ai/jina/commit/3d771404d695cf1a60486be202c3258f00ef953d)] __-__ fix missing table tag (*Maximilian Werk*)
+ - [[```62080189```](https://github.com/jina-ai/jina/commit/62080189e2f2a4f6bbd73e5c7eb72ba7797b7173)] __-__ fix typo (*Maximilian Werk*)
+ - [[```6f426846```](https://github.com/jina-ai/jina/commit/6f4268461872ce437d0cfed2dcbba7ca58c9aa06)] __-__ update tutorial collection (*Maximilian Werk*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```a636eb99```](https://github.com/jina-ai/jina/commit/a636eb99e2303fa16d736cf1d58bf32dabea7427)] __-__ add test for 3rd chunk (*Susana Guzman*)
+ - [[```93268f96```](https://github.com/jina-ai/jina/commit/93268f96ceedff7bbc6de530e2137bc7d8c80b0d)] __-__ inherits from non empty parent doc (*Susana Guzman*)
+ - [[```cfedf6e0```](https://github.com/jina-ai/jina/commit/cfedf6e09aba4bc0c1ce00cfa95adced40fe2def)] __-__ change test, one for mime type, one that inherits from document (*Susana Guzman*)
+ - [[```7b4e502f```](https://github.com/jina-ai/jina/commit/7b4e502ff304f27f5a67703fc4e6818bf2c412d2)] __-__ add tests (*Susana Guzman*)
+ - [[```e2f13a43```](https://github.com/jina-ai/jina/commit/e2f13a439a23e9ab1b420a4b4711a49a4f3e7952)] __-__ proposal for the new flow traversal (*Maximilian Werk*)
+ - [[```615bbb00```](https://github.com/jina-ai/jina/commit/615bbb00ce8c856ae540ace05f88cbf6a6e49499)] __-__ add slack notif (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```9e6a5e05```](https://github.com/jina-ai/jina/commit/9e6a5e05049afd20dd02603218f0f779c84ab2f7)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```ae351fb6```](https://github.com/jina-ai/jina/commit/ae351fb65378f43ef0de1ff9a1d96a79732b5036)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```fecb9acb```](https://github.com/jina-ai/jina/commit/fecb9acbdade47492baa6b77f340e57ee30588b4)] __-__ __version__: the next version will be 0.5.7 (*Jina Dev Bot*)
 
