@@ -10,11 +10,7 @@ from . import BaseKVIndexer
 from ...proto import jina_pb2
 
 
-class BasePbIndexer(BaseKVIndexer):
-    """Depreciated, just for back-compat and for keeping the inheritance order unchanged"""
-
-
-class BinaryPbIndexer(BasePbIndexer):
+class BinaryPbIndexer(BaseKVIndexer):
     class WriteHandler:
         def __init__(self, path, mode):
             self.body = open(path, mode)

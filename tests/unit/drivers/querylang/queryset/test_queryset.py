@@ -27,7 +27,7 @@ def test_docs_filter_equal():
 
 def test_nested_chunks_filter():
     s = random_docs(10)
-    ss = QuerySet(s).filter(Q(chunks__filter=Q(id__lt=5, id__gt=3)))
+    ss = QuerySet(s).filter(Q(chunks__filter=Q(id__lt=35, id__gt=33)))
     ssr = list(ss)
     assert len(ssr) == 1
     for d in ssr:
