@@ -6,8 +6,7 @@ import os
 import sys
 import tempfile
 import time
-from typing import List, Callable, Optional, Union
-from typing import Tuple
+from typing import List, Callable, Optional, Union, Tuple, Iterable
 
 import zmq
 import zmq.asyncio
@@ -267,7 +266,7 @@ class AsyncZmqlet(Zmqlet):
             self.bytes_sent += num_bytes
             self.msg_sent += 1
         except (asyncio.CancelledError, TypeError) as ex:
-            self.logger.error(f'{ex}, gateway cancelled?')
+            self.logger.error(f'sending message error: {ex}, gateway cancelled?')
 
     async def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
         try:
@@ -277,7 +276,7 @@ class AsyncZmqlet(Zmqlet):
             if callback:
                 return callback(msg)
         except (asyncio.CancelledError, TypeError) as ex:
-            self.logger.error(f'{ex}, gateway cancelled?')
+            self.logger.error(f'receiving message error: {ex}, gateway cancelled?')
 
     def __enter__(self):
         time.sleep(.2)  # sleep a bit until handshake is done
@@ -427,7 +426,8 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
     if array_in_pb:
         _msg, num_bytes = _prepare_send_msg(c_id, [msg.SerializeToString()], compress_hwm, compress_lwm)
     else:
-        doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(msg)
+        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
+        doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_documents(docs)
         # now buffer are removed from message, hoping for faster de/serialization
         _msg = [msg.SerializeToString(),  # 1
                 chunk_byte_type,  # 2
@@ -602,7 +602,8 @@ def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
 
     # now we have a barebone task_name, we need to fill in data
     if len(msg_data) > 3:
-        _fill_buffer_to_msg(msg, msg_data, offset=3)
+        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
+        _fill_buffer_to_documents(msg_data, docs)
 
     return msg, num_bytes
 
@@ -713,12 +714,11 @@ def _check_msg_version(msg: 'jina_pb2.Message'):
                                 'the message is probably sent from a very outdated JINA version')
 
 
-def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
+def _extract_bytes_from_documents(docs: Iterable['jina_pb2.Document']) -> Tuple:
     doc_bytes = []
     chunk_bytes = []
     chunk_byte_type = b''
 
-    docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
     # for train request
     for d in docs:
         doc_bytes.append(d.buffer)
@@ -748,20 +748,29 @@ def _extract_bytes_from_msg(msg: 'jina_pb2.Message') -> Tuple:
     return doc_bytes, chunk_bytes, chunk_byte_type
 
 
-def _fill_buffer_to_msg(msg: 'jina_pb2.Message', msg_data: List[bytes], offset: int = 2):
+def _fill_buffer_to_documents(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
+    """
+    Message comes split in different parts (that's why it comes as an Iterable, Each element
+            can be any sendable object (Frame, bytes, buffer-providers)):
+    Parts 0 and 1 contain information about potentially the receiver (if DEALER) and whether it is compressed or not.
+    Part 2 has a msg representation.
+    Part 3 (offset = 3) has the encoded name of the type of chunk bytes (Limitation: Only consider one chunk type for complete message)
+    Parts 4 and 5 contain the length of the doc_bytes and chunk_bytes respectively.
+    Then N number of Parts come with the doc bytes
+    Then M number of Parts com with the chunk bytes (chunk bytes length is twice the number of chunks in the message)
+    """
     chunk_byte_type = msg_data[offset].decode()
     doc_bytes_len = int(msg_data[offset + 1])
     chunk_bytes_len = int(msg_data[offset + 2])
     doc_bytes = msg_data[(offset + 3):(offset + 3 + doc_bytes_len)]
     chunk_bytes = msg_data[(offset + 3 + doc_bytes_len):]
-    c_idx = 0
-    d_idx = 0
 
     if len(chunk_bytes) != chunk_bytes_len:
         raise ValueError('"chunk_bytes_len"=%d in message, but the actual length is %d' % (
             chunk_bytes_len, len(chunk_bytes)))
 
-    docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
+    c_idx = 0
+    d_idx = 0
     for d in docs:
         if doc_bytes and doc_bytes[d_idx]:
             d.buffer = doc_bytes[d_idx]
