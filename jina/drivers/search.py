@@ -37,7 +37,7 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def __init__(self, is_merge: bool = False, *args, **kwargs):
+    def __init__(self, is_merge: bool = True, *args, **kwargs):
         """
 
         :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
@@ -51,6 +51,8 @@ class KVSearchDriver(BaseSearchDriver):
         for idx, retrieved_doc in enumerate(docs):
             r = self.exec_fn(retrieved_doc.id)
             if r:
+                # TODO: this isn't perfect though, merge applies recursively on all children
+                #  it will duplicate embedding.shape if embedding is already there
                 if self._is_merge:
                     retrieved_doc.MergeFrom(r)
                 else:

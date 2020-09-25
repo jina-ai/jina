@@ -29,7 +29,7 @@ def test_binarypb_in_flow():
 
     def validate(req):
         for d, d0 in zip(req.docs, docs):
-          assert d.embedding == d0.embedding
+          assert d.embedding.buffer == d0.embedding.buffer
 
     with f:
         f.search(docs, output_fn=validate, override_doc_id=False)

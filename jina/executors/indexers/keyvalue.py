@@ -40,9 +40,11 @@ class BinaryPbIndexer(BasePbIndexer):
             self._body.close()
 
     def get_add_handler(self):
+        # keep _start position as in pickle serialization
         return self.WriteHandler(self.index_abspath, 'ab')
 
     def get_create_handler(self):
+        self._start = 0  # override _start position
         return self.WriteHandler(self.index_abspath, 'wb')
 
     def get_query_handler(self):
@@ -51,31 +53,31 @@ class BinaryPbIndexer(BasePbIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._total_byte_len = 0
+        self._start = 0
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
     def add(self, docs: Iterator['jina_pb2.Document'], *args, **kwargs):
-        _start = 0
         for d in docs:
             s = d.SerializeToString()
             l = len(s)  #: the length
-            p = int(_start / self._page_size) * self._page_size  #: offset of the page
-            r = _start % self._page_size  #: the reminder, i.e. the start position given the offset
+            p = int(self._start / self._page_size) * self._page_size  #: offset of the page
+            r = self._start % self._page_size  #: the reminder, i.e. the start position given the offset
             self.write_handler.header.write(np.array((d.id, p, r, r + l), dtype=np.uint64).tobytes())
-            _start += l
+            self._start += l
             self.write_handler.body.write(s)
             self._size += 1
-            print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
+            # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
 
     def query(self, key: int) -> Optional['jina_pb2.Document']:
-        print(f'key={key}')
+        # print(f'key={key}')
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info
             with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
-                print(f'{p}\t{r}\t{l}')
+                # print(f'{p}\t{r}\t{l}')
                 b = jina_pb2.Document()
                 b.ParseFromString(m[r:])
-                print(b)
+                # print(b)
                 return b
 
 
