@@ -19,7 +19,7 @@ def test_binary_pb():
 
 def test_binarypb_in_flow():
     docs = list(random_docs(10))
-    f = Flow(callback_on_body=True).add(uses='shelfpb.yml')
+    f = Flow(callback_on_body=True).add(uses='binarypb.yml')
 
     with f:
         f.index(docs, override_doc_id=False)

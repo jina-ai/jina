@@ -50,6 +50,8 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
     if mime_type:
         d.mime_type = mime_type
 
+    # TODO: I don't like this part, this change the original docs inplace!
+    #   why can't delegate this to crafter? (Han)
     if doc_counter is not None:
         d.id = next(doc_counter)
     d.weight = 1.0
@@ -99,9 +101,14 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
                 req.queryset.extend([top_k_queryset])
 
         for content in batch:
-            _add_document(request=req, content=content, mode=mode, doc_counter=doc_counter if override_doc_id else None,
-                          docs_in_same_batch=batch_size, mime_type=mime_type,
-                          buffer_sniff=buffer_sniff, granularity=granularity)
+            _add_document(request=req,
+                          content=content,
+                          mode=mode,
+                          doc_counter=doc_counter if override_doc_id else None,
+                          docs_in_same_batch=batch_size,
+                          mime_type=mime_type,
+                          buffer_sniff=buffer_sniff,
+                          granularity=granularity)
         yield req
 
 
