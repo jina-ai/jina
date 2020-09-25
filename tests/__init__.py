@@ -32,17 +32,17 @@ file_dir = os.path.dirname(__file__)
 sys.path.append(dirname(file_dir))
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-    c_id = 0
+def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
+    c_id = 3 * num_docs  # avoid collision with docs
     for j in range(num_docs):
         d = jina_pb2.Document()
         d.id = j
         d.text = b'hello world'
-        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
         for k in range(chunks_per_doc):
             c = d.chunks.add()
             c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
+            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
             c.id = c_id
             c.parent_id = j
             c_id += 1

@@ -5,16 +5,16 @@ from tests import random_docs
 
 
 def test_binary_pb():
-    docs = list(random_docs(10))
+    num_docs = 100
+    docs = list(random_docs(num_docs, jitter=50))
     with BinaryPbIndexer('test-shelf') as spi:
         spi.add(docs)
         spi.save()
 
     with BinaryPbIndexer.load(spi.save_abspath) as spi:
-        print(spi.index_abspath)
-        assert spi.query(1) == docs[1]
-        assert spi.query(11) is None
-        assert spi.size == 10
+        assert spi.size == num_docs
+        for j in range(num_docs):
+            assert spi.query(j) == docs[j]
 
 
 def test_binarypb_in_flow():
@@ -22,15 +22,15 @@ def test_binarypb_in_flow():
     f = Flow(callback_on_body=True).add(uses='shelfpb.yml')
 
     with f:
-        f.index(docs)
+        f.index(docs, override_doc_id=False)
 
     d = jina_pb2.Document()
     d.id = 1
 
     def validate(req):
-        assert req.docs[0].embedding == docs[0].embedding
+        for d, d0 in zip(req.docs, docs):
+          assert d.embedding == d0.embedding
 
     with f:
-        f.search([d], output_fn=validate)
+        f.search(docs, output_fn=validate, override_doc_id=False)
 
-test_binarypb_in_flow()

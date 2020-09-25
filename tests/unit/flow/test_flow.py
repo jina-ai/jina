@@ -1,9 +1,7 @@
 import os
 
-import requests
-import numpy as np
 import pytest
-import shutil
+import requests
 
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel, SocketType
@@ -13,35 +11,7 @@ from jina.main.parser import set_pea_parser, set_ping_parser, set_flow_parser, s
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto.jina_pb2 import Document
-from jina.drivers.helper import array2pb
-from jina.proto import jina_pb2
-
-
-def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
-
-
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10):
-    c_id = 0
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        d.id = j
-        d.text = b'hello world'
-        d.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim])))
-            c.id = c_id
-            c.parent_id = j
-            c_id += 1
-        yield d
-
+from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

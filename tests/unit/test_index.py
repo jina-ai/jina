@@ -169,19 +169,19 @@ class MyTestCase(JinaTestCase):
             assert req.search.docs[0].matches[0].score.op_name == indexer_name
 
         with f:
-            f.index(random_docs(100))
+            f.index(random_docs(100), override_doc_id=False)
 
         g = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml'))
 
         with g:
-            g.search(random_docs(10), output_fn=lambda x: validate(x, 'NumpyIndexer'))
+            g.search(random_docs(10), override_doc_id=False, output_fn=lambda x: validate(x, 'NumpyIndexer'))
 
         # g = Flow(timeout_ready=-1).add(uses=os.path.join(cur_dir, 'yaml/test-joint-wrap.yml'))
 
         # with g:
         #     g.search(random_docs(10), output_fn=lambda x: validate(x, 'AnnoyIndexer'))
 
-        self.add_tmpfile('vec.gz', 'vecidx.bin', 'chunk.gz', 'chunkidx.bin')
+        self.add_tmpfile('vec.gz', 'vecidx.bin', 'chunk.gz', 'chunk.gz.head', 'chunkidx.bin')
 
 
 if __name__ == '__main__':

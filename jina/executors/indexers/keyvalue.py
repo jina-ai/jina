@@ -15,7 +15,7 @@ class BasePbIndexer(BaseKVIndexer):
 
 
 class BinaryPbIndexer(BasePbIndexer):
-    class FileHandler:
+    class WriteHandler:
         def __init__(self, path, mode):
             self.body = open(path, mode)
             self.header = open(path + '.head', mode)
@@ -28,17 +28,25 @@ class BinaryPbIndexer(BasePbIndexer):
             self.body.flush()
             self.header.flush()
 
+    class ReadHandler:
+        def __init__(self, path):
+            with open(path + '.head', 'rb') as fp:
+                tmp = np.frombuffer(fp.read(), dtype=np.uint64).reshape([-1, 4])
+                self.header = {r[0]: r[1:] for r in tmp}
+            self._body = open(path, 'r+b')
+            self.body = self._body.fileno()
+
+        def close(self):
+            self._body.close()
+
     def get_add_handler(self):
-        return self.FileHandler(self.index_abspath, 'ab')
+        return self.WriteHandler(self.index_abspath, 'ab')
 
     def get_create_handler(self):
-        return self.FileHandler(self.index_abspath, 'wb')
+        return self.WriteHandler(self.index_abspath, 'wb')
 
     def get_query_handler(self):
-        with open(self.index_abspath + '.head', 'rb') as fp:
-            tmp = np.frombuffer(fp.read(), dtype=np.uint64).reshape([-1, 4])
-            d = {r[0]: r[1:] for r in tmp}
-        return d
+        return self.ReadHandler(self.index_abspath)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -56,16 +64,18 @@ class BinaryPbIndexer(BasePbIndexer):
             _start += l
             self.write_handler.body.write(s)
             self._size += 1
+            print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
 
     def query(self, key: int) -> Optional['jina_pb2.Document']:
-
-        pos_info = self.query_handler.get(key, None)
+        print(f'key={key}')
+        pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info
-            with open(self.index_abspath, 'r+b') as f, \
-                    mmap.mmap(f.fileno(), offset=p, length=l) as m:
+            with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
+                print(f'{p}\t{r}\t{l}')
                 b = jina_pb2.Document()
                 b.ParseFromString(m[r:])
+                print(b)
                 return b
 
 

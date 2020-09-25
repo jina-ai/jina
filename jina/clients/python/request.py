@@ -50,7 +50,8 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
     if mime_type:
         d.mime_type = mime_type
 
-    d.id = next(doc_counter)
+    if doc_counter is not None:
+        d.id = next(doc_counter)
     d.weight = 1.0
     d.length = docs_in_same_batch
     d.granularity = granularity
@@ -58,7 +59,7 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
 
 def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
               batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, mode: ClientMode = ClientMode.INDEX, top_k: Optional[int] = None,
+              random_doc_id: bool = False, override_doc_id: bool=True, mode: ClientMode = ClientMode.INDEX, top_k: Optional[int] = None,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               granularity: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
@@ -98,7 +99,7 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
                 req.queryset.extend([top_k_queryset])
 
         for content in batch:
-            _add_document(request=req, content=content, mode=mode, doc_counter=doc_counter,
+            _add_document(request=req, content=content, mode=mode, doc_counter=doc_counter if override_doc_id else None,
                           docs_in_same_batch=batch_size, mime_type=mime_type,
                           buffer_sniff=buffer_sniff, granularity=granularity)
         yield req

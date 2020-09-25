@@ -37,12 +37,24 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
+    def __init__(self, is_merge: bool = False, *args, **kwargs):
+        """
+
+        :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
+            otherwise, it overrides the current message using :meth:`CopyFrom`
+        """
+        super().__init__(*args, **kwargs)
+        self._is_merge = is_merge
+
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
             r = self.exec_fn(retrieved_doc.id)
             if r:
-                retrieved_doc.MergeFrom(r)
+                if self._is_merge:
+                    retrieved_doc.MergeFrom(r)
+                else:
+                    retrieved_doc.CopyFrom(r)
             else:
                 miss_idx.append(idx)
 
