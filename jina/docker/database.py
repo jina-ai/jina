@@ -28,6 +28,7 @@ class MongoDBHandler:
         return self.connect()
     
     def connect(self) -> 'MongoDBHandler':
+        """ Establishes connection to MongoDB with a connection string """
         try:
             self.client = pymongo.MongoClient(self.connection_string)
             self.client.admin.command('ismaster')
@@ -51,8 +52,16 @@ class MongoDBHandler:
         return self.database[self.collection_name]
     
     def find(self, query: Dict[str, Union[Dict, List]]) -> None:
+        """ Finds a sinle document in MongoDb """
         try:
             return self.collection.find_one(query)
+        except pymongo.errors.PyMongoError as exp:
+            self.logger.error(f'got an error while finding a document in the db {exp}')
+            
+    def find_many(self, query: Dict[str, Union[Dict, List]]) -> None:
+        """ Finds multiple documents in MongoDB with a limit on number of results """
+        try:
+            return self.collection.find(query, limit = 10)
         except pymongo.errors.PyMongoError as exp:
             self.logger.error(f'got an error while finding a document in the db {exp}')
     
