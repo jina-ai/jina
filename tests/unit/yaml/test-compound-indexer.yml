@@ -1,11 +1,11 @@
 !CompoundExecutor
 components:
-  - !BasePbIndexer
+  - !BinaryPbIndexer
     with:
       index_filename: tmp1
     metas:
       name: test1
-  - !BasePbIndexer
+  - !BinaryPbIndexer
     with:
       index_filename: tmp2
     metas:

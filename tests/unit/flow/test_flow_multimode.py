@@ -1,9 +1,8 @@
 import os
-import pytest
-
 from typing import List, Dict
 
 import numpy as np
+import pytest
 
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
@@ -79,14 +78,12 @@ def test_flow_with_modalities():
                                                   [1.0, 1.0, 1.0],
                                                   [1.0, 1.0, 1.0]]))
 
-    chunkIndexer1 = BinaryPbIndexer(index_filename='chunk1.gz')
-    assert len(chunkIndexer1.query_handler.items()) == 3
-    for key, pb in chunkIndexer1.query_handler.items():
-        for chunk in pb.chunks:
-            assert chunk.modality == 'mode1'
+    chunkIndexer1 = BinaryPbIndexer.load('kvidx1.bin')
+    assert chunkIndexer1.size == 6
+    d_id = list(chunkIndexer1.query_handler.header.keys())[0]
+    assert chunkIndexer1.query(d_id).modality == 'mode1'
 
-    chunkIndexer2 = BinaryPbIndexer(index_filename='chunk2.gz')
-    assert len(chunkIndexer2.query_handler.items()) == 3
-    for key, pb in chunkIndexer2.query_handler.items():
-        for chunk in pb.chunks:
-            assert chunk.modality == 'mode2'
+    chunkIndexer2 = BinaryPbIndexer.load('kvidx2.bin')
+    assert chunkIndexer2.size == 6
+    d_id = list(chunkIndexer2.query_handler.header.keys())[0]
+    assert chunkIndexer2.query(d_id).modality == 'mode2'

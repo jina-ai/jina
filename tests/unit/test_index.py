@@ -166,6 +166,7 @@ class MyTestCase(JinaTestCase):
 
         def validate(req, indexer_name):
             self.assertTrue(req.status.code < jina_pb2.Status.ERROR)
+            print(req.search.docs[0].matches[0].score.op_name)
             assert req.search.docs[0].matches[0].score.op_name == indexer_name
 
         with f:
@@ -181,7 +182,7 @@ class MyTestCase(JinaTestCase):
         # with g:
         #     g.search(random_docs(10), output_fn=lambda x: validate(x, 'AnnoyIndexer'))
 
-        self.add_tmpfile('vec.gz', 'vecidx.bin', 'chunk.gz', 'chunkidx.bin')
+        self.add_tmpfile('vec.gz', 'vecidx.bin', 'chunk.gz', 'chunk.gz.head', 'chunkidx.bin')
 
 
 if __name__ == '__main__':
