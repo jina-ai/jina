@@ -13,22 +13,21 @@ chunks_per_doc = 100
 embed_dim = 1000
 
 
-def random_docs():
-    c_id = 0
-    np.random.seed(531)
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            # force sending at non-quantization
-            c.embedding.CopyFrom(array2pb(np.random.random([embed_dim]), quantize=None))
-            c.id = c_id
-            c.id = j
-            c_id += 1
-        yield d
-
-
 def test_quant():
+    def random_docs():
+        c_id = 0
+        np.random.seed(531)
+        for j in range(num_docs):
+            d = jina_pb2.Document()
+            for k in range(chunks_per_doc):
+                c = d.chunks.add()
+                # force sending at non-quantization
+                c.embedding.CopyFrom(array2pb(np.random.random([embed_dim]), quantize=None))
+                c.id = c_id
+                c.id = j
+                c_id += 1
+            yield d
+            
     def get_output(req):
         np.random.seed(531)
 

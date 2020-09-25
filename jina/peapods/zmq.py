@@ -427,7 +427,7 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
         _msg, num_bytes = _prepare_send_msg(c_id, [msg.SerializeToString()], compress_hwm, compress_lwm)
     else:
         docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
-        doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_msg(docs)
+        doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_documents(docs)
         # now buffer are removed from message, hoping for faster de/serialization
         _msg = [msg.SerializeToString(),  # 1
                 chunk_byte_type,  # 2
@@ -603,7 +603,7 @@ def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
     # now we have a barebone task_name, we need to fill in data
     if len(msg_data) > 3:
         docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
-        _fill_buffer_to_msg(msg_data, docs)
+        _fill_buffer_to_documents(msg_data, docs)
 
     return msg, num_bytes
 
@@ -714,7 +714,7 @@ def _check_msg_version(msg: 'jina_pb2.Message'):
                                 'the message is probably sent from a very outdated JINA version')
 
 
-def _extract_bytes_from_msg(docs: Iterable['jina_pb2.Document']) -> Tuple:
+def _extract_bytes_from_documents(docs: Iterable['jina_pb2.Document']) -> Tuple:
     doc_bytes = []
     chunk_bytes = []
     chunk_byte_type = b''
@@ -748,7 +748,7 @@ def _extract_bytes_from_msg(docs: Iterable['jina_pb2.Document']) -> Tuple:
     return doc_bytes, chunk_bytes, chunk_byte_type
 
 
-def _fill_buffer_to_msg(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
+def _fill_buffer_to_documents(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
     """
     Message comes split in different parts (that's why it comes as an Iterable, Each element
             can be any sendable object (Frame, bytes, buffer-providers)):
