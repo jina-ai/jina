@@ -15,7 +15,7 @@ if False:
 
 
 class BaseIndexer(BaseExecutor):
-    """``BaseIndexer`` stores and searches with vectors.
+    """ base class for storing and searching any kind of data structure
 
     The key functions here are :func:`add` and :func:`query`.
     One can decorate them with :func:`jina.decorator.require_train`,
