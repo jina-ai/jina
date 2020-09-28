@@ -221,15 +221,15 @@
 
             <p class="mb-1">Use this image in Flow API</p>
             <pre class="example"><code class="python">from jina.flow import Flow
-f = Flow().add(image='{{image_name}}')</code></pre>
+f = Flow().add(uses='{{image_name}}')</code></pre>
             <p class="mb-1">Use this image in Flow API and override YAML</p>
             <pre class="example"><code class="python">from jina.flow import Flow
 # assuming you have a running gateway on 192.168.0.123:45678
-f = Flow().add(image='{{image_name}}', uses='my.yml')</code></pre>
+f = Flow().add(uses='{{image_name}}', uses_internal='my.yml')</code></pre>
             <p class="mb-1">Use this image remotely in Flow API</p>
             <pre class="example"><code class="python">from jina.flow import Flow
 # assuming you have a running gateway on 192.168.0.123:45678
-f = Flow().add(image='{{image_name}}', host='192.168.0.123', port_expose=45678)</code></pre>
+f = Flow().add(uses='{{image_name}}', host='192.168.0.123', port_expose=45678)</code></pre>
         </div>
         <div id="third">
             <div class="icon big">
