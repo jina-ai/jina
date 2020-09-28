@@ -1,0 +1,17 @@
+name: issue-hf2020
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+
+jobs:
+  automate-issues-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: hacktoberfest
+        uses: andymckay/labeler@master
+        with:
+          add-labels: "hacktoberfest, hacktoberfest2020"
