@@ -24,6 +24,7 @@ if False:
     # fix type-hint complain for sphinx and flake
     import argparse
     import logging
+    from ..proto.jina_pb2 import Message
 
 use_uvloop()
 
@@ -340,7 +341,7 @@ class ZmqStreamlet(Zmqlet):
 
     def start(self, callback: Callable[['jina_pb2.Message'], None]):
         def _callback(msg, sock_type):
-            msg, num_bytes = _prepare_recv_msg(sock_type, msg, self.args.check_version)
+            msg, num_bytes = _parse_from_frames(sock_type, msg, self.args.check_version)
             self.bytes_recv += num_bytes
             self.msg_recv += 1
 
@@ -385,7 +386,7 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
 
 
 def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message', timeout: int = -1,
-                 array_in_pb: bool = False, compress_hwm: int = -1, compress_lwm: float = 1., **kwargs) -> int:
+                 array_in_pb: bool = False, compress_hwm: float = -1, compress_lwm: float = 1., **kwargs) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
@@ -422,24 +423,15 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
         sock.setsockopt(zmq.SNDTIMEO, timeout)
     else:
         sock.setsockopt(zmq.SNDTIMEO, -1)
-    c_id = msg.envelope.receiver_id
-    if array_in_pb:
-        _msg, num_bytes = _prepare_send_msg(c_id, [msg.SerializeToString()], compress_hwm, compress_lwm)
-    else:
-        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
-        doc_bytes, chunk_bytes, chunk_byte_type = _extract_bytes_from_documents(docs)
-        # now buffer are removed from message, hoping for faster de/serialization
-        _msg = [msg.SerializeToString(),  # 1
-                chunk_byte_type,  # 2
-                b'%d' % len(doc_bytes), b'%d' % len(chunk_bytes),  # 3, 4
-                *doc_bytes, *chunk_bytes]
-
-        _msg, num_bytes = _prepare_send_msg(c_id, _msg, compress_hwm, compress_lwm)
-    return _msg, num_bytes
+    return _serialize_to_frames(msg.envelope.receiver_id,
+                                msg,
+                                compress_hwm,
+                                compress_lwm,
+                                array_in_pb)
 
 
 async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
-                             array_in_pb: bool = False, compress_hwm: int = -1, compress_lwm: float = 1.,
+                             array_in_pb: bool = False, compress_hwm: float = -1, compress_lwm: float = 1.,
                              **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
@@ -495,7 +487,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
 
         msg_data = sock.recv_multipart()
 
-        return _prepare_recv_msg(sock.type, msg_data, check_version)
+        return _parse_from_frames(sock.type, msg_data, check_version)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -529,7 +521,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
 
         msg_data = await sock.recv_multipart()
 
-        return _prepare_recv_msg(sock.type, msg_data, check_version)
+        return _parse_from_frames(sock.type, msg_data, check_version)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -549,61 +541,87 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
             pass
 
 
-def _prepare_send_msg(client_id, bodies: List[bytes], compress_hwm: int, compress_lwm: float):
+def _serialize_to_frames(client_id, msg: 'jina_pb2.Message',
+                         compress_hwm: float, compress_lwm: float,
+                         array_in_pb: bool) -> Tuple[List[bytes], int]:
+    """
+    Serialize a :class:`jina_pb2.Message` object into a list of frames. The list of frames (has length >=3) has the following structure:
+
+        - offset 0: the client id, can be empty
+        - offset 1: is the offset 2 frame compressed
+        - offset 2: the body of the serialized protobuf message
+
+    :param client_id: the client id
+    :param msg: the protobuf message object to be serialized
+    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
+    :param compress_lwm: the low watermark that enables the sending of a compressed message.
+    :param array_in_pb: (depreciated) do partial serialization only
+    :return:
+    """
+    _body = [msg.SerializeToString()]
     if isinstance(client_id, str):
         client_id = client_id.encode()
 
-    _size_before = sum(sys.getsizeof(m) for m in bodies)
+    _size_before = sum(sys.getsizeof(m) for m in _body)
     if _size_before > compress_hwm > 0:
         from ..logging import default_logger
         import lz4.frame
-        _bodies = [lz4.frame.compress(m) for m in bodies]
+        body = [lz4.frame.compress(m) for m in _body]
         is_compressed = b'1'
-        _size_after = sum(sys.getsizeof(m) for m in _bodies)
+        _size_after = sum(sys.getsizeof(m) for m in body)
         rate = _size_after / _size_before
         default_logger.debug(f'compressed, before: {_size_before} after: {_size_after}, '
                              f'ratio: {(_size_after / _size_before * 100):.0f}%')
         if rate > compress_lwm:
-            _bodies = bodies
+            body = _body
             is_compressed = b'0'
             default_logger.debug(f'ineffective compression as the rate {rate:.2f} is higher than {compress_lwm}')
     else:
-        _bodies = bodies
+        body = _body
         is_compressed = b'0'
 
-    _header = [client_id, is_compressed]
-    msg = _header + _bodies
-    num_bytes = sum(sys.getsizeof(m) for m in msg)
-    return msg, num_bytes
+    frames = [client_id, is_compressed] + body
+    num_bytes = sum(sys.getsizeof(m) for m in frames)
+    return frames, num_bytes
 
 
-def _prepare_recv_msg(sock_type, msg_data, check_version: bool):
+def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> Tuple['jina_pb2.Message', int]:
+    """
+    Build :class:`jina_pb2.Message` from a list of frames.
+
+    The list of frames (has length >=3) has the following structure:
+
+        - offset 0: the client id, can be empty
+        - offset 1: is the offset 2 frame compressed
+        - offset 2: the body of the serialized protobuf message
+
+    :param sock_type: the recv socket type
+    :param frames: list of bytes to parse from
+    :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
+    :return: a :class:`jina_pb2.Message` object and the size of the frames (in bytes)
+    """
     if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
-        msg_data = [' '] + msg_data
+        frames = [b' '] + frames
     elif sock_type == zmq.ROUTER:
         # the router appends dealer id when receive it, we need to remove it
-        msg_data.pop(0)
+        frames.pop(0)
 
-    if msg_data[1] == b'1':
+    # count the size before decompress
+    num_bytes = sum(sys.getsizeof(m) for m in frames)
+
+    if frames[1] == b'1':
         # body message is compressed
         import lz4.frame
-        for l in range(2, len(msg_data)):
-            msg_data[l] = lz4.frame.decompress(msg_data[l])
+        for l in range(2, len(frames)):
+            frames[l] = lz4.frame.decompress(frames[l])
 
     msg = jina_pb2.Message()
 
-    num_bytes = sum(sys.getsizeof(m) for m in msg_data)
-
-    msg.ParseFromString(msg_data[2])
+    msg.ParseFromString(frames[2])
 
     if check_version:
         _check_msg_version(msg)
-
-    # now we have a barebone task_name, we need to fill in data
-    if len(msg_data) > 3:
-        docs = msg.request.train.docs or msg.request.index.docs or msg.request.search.docs
-        _fill_buffer_to_documents(msg_data, docs)
 
     return msg, num_bytes
 
@@ -790,20 +808,6 @@ def _fill_buffer_to_documents(msg_data: List[bytes], docs: Iterable['jina_pb2.Do
             elif chunk_byte_type == 'text':
                 c.text = chunk_bytes[c_idx].decode()
                 c_idx += 1
-
-
-def remove_envelope(m: 'jina_pb2.Message') -> 'jina_pb2.Request':
-    """Remove the envelope and return only the request body """
-
-    # body.request_id = m.envelope.request_id
-    m.envelope.routes[0].end_time.GetCurrentTime()
-    # if self.args.route_table:
-    #     self.logger.info('route: %s' % router2str(m))
-    #     self.logger.info('route table: \n%s' % make_route_table(m.envelope.routes, include_gateway=True))
-    # if self.args.dump_route:
-    #     self.args.dump_route.write(MessageToJson(m.envelope, indent=0).replace('\n', '') + '\n')
-    #     self.args.dump_route.flush()
-    return m.request
 
 
 def _add_route(evlp, pod_name, identity):
