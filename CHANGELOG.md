@@ -76,6 +76,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4506,4 +4507,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```9e6a5e05```](https://github.com/jina-ai/jina/commit/9e6a5e05049afd20dd02603218f0f779c84ab2f7)] __-__ update contributors (*Jina Dev Bot*)
  - [[```ae351fb6```](https://github.com/jina-ai/jina/commit/ae351fb65378f43ef0de1ff9a1d96a79732b5036)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```fecb9acb```](https://github.com/jina-ai/jina/commit/fecb9acbdade47492baa6b77f340e57ee30588b4)] __-__ __version__: the next version will be 0.5.7 (*Jina Dev Bot*)
+
+## Release Note (`0.5.8`)
+
+> Release time: 2020-09-28 06:08:55
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Rutuja Surve,  Joan Fontanals,  Joan Fontanals Martinez,  Maximilian Werk,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a78bb68c```](https://github.com/jina-ai/jina/commit/a78bb68cd21d1894488203a5f8aa0c1153bccf6d)] __-__ new binarypbindexer based on memmap (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```d97748b9```](https://github.com/jina-ai/jina/commit/d97748b950d2f4a5c8c2670e09dc8e16b1fb86f6)] __-__ add database function find_many to mongodb (#985) (*Rutuja Surve*)
+ - [[```425686b5```](https://github.com/jina-ai/jina/commit/425686b5a6baf2c1a6bf5df4c21719d38c9491df)] __-__ fix set metas overriding default from client (*Joan Fontanals Martinez*)
+ - [[```f4f75030```](https://github.com/jina-ai/jina/commit/f4f750306edaf3c8cc72ad77cbc9ff74bae6b8bd)] __-__ added missing reason (*Maximilian Werk*)
+ - [[```985fdb58```](https://github.com/jina-ai/jina/commit/985fdb58acd79f1fbff6d6380c0528511aeba1dd)] __-__ remove credential (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```c58cc311```](https://github.com/jina-ai/jina/commit/c58cc3117930fa0460c00ef999039f81760329b5)] __-__ style fix (*Han Xiao*)
+ - [[```3d771404```](https://github.com/jina-ai/jina/commit/3d771404d695cf1a60486be202c3258f00ef953d)] __-__ fix missing table tag (*Maximilian Werk*)
+ - [[```62080189```](https://github.com/jina-ai/jina/commit/62080189e2f2a4f6bbd73e5c7eb72ba7797b7173)] __-__ fix typo (*Maximilian Werk*)
+ - [[```6f426846```](https://github.com/jina-ai/jina/commit/6f4268461872ce437d0cfed2dcbba7ca58c9aa06)] __-__ update tutorial collection (*Maximilian Werk*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```2af1263c```](https://github.com/jina-ai/jina/commit/2af1263c886146d7eeb49ca1c7bd415f46043cf8)] __-__ add test for multitype messages without optimization (#968) (*Joan Fontanals*)
+ - [[```e2f13a43```](https://github.com/jina-ai/jina/commit/e2f13a439a23e9ab1b420a4b4711a49a4f3e7952)] __-__ proposal for the new flow traversal (*Maximilian Werk*)
+ - [[```615bbb00```](https://github.com/jina-ai/jina/commit/615bbb00ce8c856ae540ace05f88cbf6a6e49499)] __-__ add slack notif (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```643166dd```](https://github.com/jina-ai/jina/commit/643166dd7d62c7fcf151f4187cee5049dd40e6da)] __-__ hotfix weekly release (*Han Xiao*)
+ - [[```5239ab2e```](https://github.com/jina-ai/jina/commit/5239ab2ef08d4292f76eb8b63a4000f5e260df6b)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```e84acbf9```](https://github.com/jina-ai/jina/commit/e84acbf916b7ca55a63fa41881aace037a6d3525)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```bf5c2759```](https://github.com/jina-ai/jina/commit/bf5c27599e02881cb19d3e1c3fc66f6c5f9c7372)] __-__ __version__: the next version will be 0.5.8 (*Jina Dev Bot*)
+ - [[```fecb9acb```](https://github.com/jina-ai/jina/commit/fecb9acbdade47492baa6b77f340e57ee30588b4)] __-__ __version__: the next version will be 0.5.7 (*Jina Dev Bot*)
+ - [[```5e4a7f26```](https://github.com/jina-ai/jina/commit/5e4a7f26068860dce3eb9a053e3c509332171011)] __-__ hotfix resume release (*Han Xiao*)
 
