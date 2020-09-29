@@ -113,7 +113,7 @@ def test_chunk2doc_ranker_driver_mock_exec():
     driver = SimpleChunk2DocRankDriver()
     executor = MockLengthRanker()
     driver.attach(executor=executor, pea=None)
-    driver._apply_all(doc.chunks, doc)
+    driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
     assert doc.matches[0].id == 70
     assert doc.matches[0].score.value == 7
@@ -133,7 +133,7 @@ def test_chunk2doc_ranker_driver_max_ranker():
     driver = SimpleChunk2DocRankDriver()
     executor = MaxRanker()
     driver.attach(executor=executor, pea=None)
-    driver._apply_all(doc.chunks, doc)
+    driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
     assert doc.matches[0].id == 70
     assert doc.matches[0].score.value == 7
@@ -153,7 +153,7 @@ def test_chunk2doc_ranker_driver_min_ranker():
     driver = SimpleChunk2DocRankDriver()
     executor = MinRanker()
     driver.attach(executor=executor, pea=None)
-    driver._apply_all(doc.chunks, doc)
+    driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
     assert doc.matches[0].id == 40
     assert doc.matches[0].score.value == pytest.approx(1 / (1 + 4), 0.0001)
@@ -170,7 +170,7 @@ def test_chunk2doc_ranker_driver_min_ranker():
 
 def test_chunk2doc_ranker_driver_traverse_apply():
     docs = [create_chunk_matches_to_score(), ]
-    driver = SimpleChunk2DocRankDriver(recur_range=(0, 1))
+    driver = SimpleChunk2DocRankDriver()
     executor = MinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(docs)
@@ -183,7 +183,7 @@ def test_chunk2doc_ranker_driver_traverse_apply():
 
 def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
     docs = [create_chunk_chunk_matches_to_score(), ]
-    driver = SimpleChunk2DocRankDriver(granularity_range=(0, 2))
+    driver = SimpleChunk2DocRankDriver(traversal_paths=['cc', 'c'])
     executor = MinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(docs)
