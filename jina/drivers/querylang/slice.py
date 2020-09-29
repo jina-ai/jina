@@ -20,8 +20,7 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
             with:
                 reverse: true
                 field: 'score.value'
-                granularity_range: [0, 0]
-                adjacency_range: [0, 1]
+                traversal_paths: ['m']
         - !SliceQL
             with:
                 start: 0
