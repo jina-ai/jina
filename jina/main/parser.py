@@ -286,9 +286,6 @@ def set_pea_parser(parser=None):
     gp5.add_argument('--check-version', action='store_true', default=False,
                      help='comparing the jina and proto version of incoming message with local setup, '
                           'mismatch raise an exception')
-    gp5.add_argument('--array-in-pb', action='store_true', default=False,
-                     help='sending buffer and numpy ndarray together within or separately from the protobuf message, '
-                          'the latter often yields a better network efficiency')
     gp5.add_argument('--compress-hwm', type=int, default=-1,
                      help='the high watermark that triggers the message compression. '
                           'message bigger than this HWM (in bytes) will be compressed by lz4 algorithm.'

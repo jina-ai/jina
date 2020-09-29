@@ -228,12 +228,6 @@ import signal
 
 signal.signal(signal.SIGINT, signal.default_int_handler)
 
-# !/usr/bin/env python
-try:
-    import resource as res
-except ImportError:  # Windows
-    res = None
-
 
 def set_nofile(nofile_atleast=4096):
     """
@@ -241,6 +235,12 @@ def set_nofile(nofile_atleast=4096):
     parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256
     temporary setting extinguishing with Python session.
     """
+
+    try:
+        import resource as res
+    except ImportError:  # Windows
+        res = None
+
     from .logging import default_logger
     if res is None:
         return (None,) * 2
