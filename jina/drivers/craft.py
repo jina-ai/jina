@@ -45,6 +45,8 @@ class SegmentDriver(CraftDriver):
 
     def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = True,
                  level_names: List[str] = None, *args, **kwargs):
+        # Important to do the overwrite before calling `super()__init__(...)`
+        kwargs.setdefault('traversal_paths', ['r', 'c'])
         super().__init__(*args, **kwargs)
         if isinstance(level_names, list) and (self._granularity_end - self._granularity_start + 1) != len(self.level_names):
             self.level_names = level_names

@@ -82,26 +82,29 @@ class ReduceAllDriver(ReduceDriver):
         It uses the last request as a reference.
     """
 
-    def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
-        if doc.id not in self.doc_pointers:
-            self.doc_pointers[doc.id] = doc
+    def __init__(self, *args, **kwargs):
+        super().__init__(use_tree_traversal=True, *args, **kwargs)
+        self._is_apply = False
 
     def reduce(self, *args, **kwargs):
-        self._is_apply, self._is_apply_all = True, False
-        # use docs in the last request to set the pointers
-        self.doc_pointers = {}
-        self._traverse_apply(self.req.docs, *args, **kwargs)
+        doc_pointers = {}
+        # reversed since the last response should collect the chunks/matches
+        for r in reversed(self.prev_reqs):
+            self._traverse_apply(r.docs, doc_pointers=doc_pointers, *args, **kwargs)
 
-        self._is_apply, self._is_apply_all = False, True
-
-        # traverse apply on ALL previous requests collected
-        for r in self.prev_reqs_exclude_last:
-            self._traverse_apply(r.docs, *args, **kwargs)
-
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
-                   **kwargs) -> None:
-        if context_doc:
-            getattr(self.doc_pointers[context_doc.id], field).extend(docs)
+    def _apply_all(
+        self,
+        docs: Iterable['jina_pb2.Document'],
+        context_doc: 'jina_pb2.Document',
+        field: str,
+        doc_pointers: Dict,
+        *args,
+        **kwargs
+    ) -> None:
+        if context_doc.id not in doc_pointers:
+            doc_pointers[context_doc.id] = context_doc
+        else:
+            getattr(doc_pointers[context_doc.id], field).extend(docs)
 
 
 class ConcatEmbedDriver(ReduceDriver):

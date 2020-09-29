@@ -32,8 +32,6 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
         else:
             self._fields = set(fields)
 
-        # for deleting field in a recursive structure, postorder is safer
-        self.recursion_order = 'post'
         self.is_apply_all = False
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):

@@ -17,8 +17,7 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         Example::
         - !ReduceAllDriver
             with:
-                granularity_range: [0, 0]
-                adjacency_range: [0, 1]
+                traversal_paths: ['m']
         - !SortQL
             with:
                 reverse: true

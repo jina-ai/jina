@@ -14,6 +14,8 @@ class BaseSearchDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(self, executor: str = None, method: str = 'query', *args, **kwargs):
+        # Important to do the overwrite before calling `super()__init__(...)`
+        kwargs.setdefault('traversal_paths', ['r', 'c'])
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply = False
         # search driver recursion apply in pre-order

@@ -220,8 +220,8 @@ class BaseRecursiveDriver(BaseDriver):
                  recur_on: Union[str, Tuple[str, str]] = ('chunks', 'matches'),
                  granularity_range: Tuple[int, int] = (0, 1),
                  adjacency_range: Tuple[int, int] = (0, 0),
-                 apply_order: str = 'post',
-                 traversal_paths: List[str] = [],
+                 recursion_order: str = 'post',
+                 traversal_paths: List[str] = ['c', 'r'],
                  use_tree_traversal: bool = False,
                  *args,
                  **kwargs):
@@ -229,7 +229,7 @@ class BaseRecursiveDriver(BaseDriver):
         :param recur_on: "matches" or "chunks" or both, the actual directions where to recur on
         :param granularity_range: right-inclusive range of the recursion depth, (0, 0) for root-level only
         :param adjacency_range: right-inclusive range of the recursion adjacency, (0, 0) for single matches
-        :param apply_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
+        :param recursion_order: the traverse and apply order. if 'post' then first traverse then call apply, if 'pre' then first apply then traverse
         :param args:
         :param kwargs:
         """
@@ -241,8 +241,8 @@ class BaseRecursiveDriver(BaseDriver):
         self._adjacency_start, self._adjacency_end = adjacency_range
         self._traversal_paths = traversal_paths
         self._use_tree_traversal = os.getenv('JINA_USE_TREE_TRAVERSAL', str(use_tree_traversal)) == "True"
-        if apply_order in {'post', 'pre'}:
-            self.recursion_order = apply_order
+        if recursion_order in {'post', 'pre'}:
+            self.recursion_order = recursion_order
         else:
             raise AttributeError('can only accept oder={"pre", "post"}')
         self._is_apply = True
@@ -279,25 +279,25 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply_explicit(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec(docs, None, None, [])
+                self._traverse_rec(docs, None, None, [], *args, **kwargs)
             for doc in docs:
-                self._traverse_rec([doc, ], None, None, path)
+                self._traverse_rec([doc, ], None, None, path, *args, **kwargs)
 
-    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path):
+    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, *args, **kwargs):
         if path:
             next_edge = path[0]
             for doc in docs:
                 if next_edge == 'm':
-                    self._traverse_rec(doc.matches, doc, "matches", path[1:])
+                    self._traverse_rec(doc.matches, doc, "matches", path[1:], *args, **kwargs)
                 if next_edge == 'c':
-                    self._traverse_rec(doc.chunks, doc, "chunks", path[1:])
+                    self._traverse_rec(doc.chunks, doc, "chunks", path[1:], *args, **kwargs)
         else:
             if self._is_apply:
                 for doc in docs:
-                    self._apply(doc, parent_doc, parent_edge_type)
+                    self._apply(doc, parent_doc, parent_edge_type, *args, **kwargs)
 
             if self._is_apply_all:
-                self._apply_all(docs, parent_doc, parent_edge_type)
+                self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
     def _traverse_apply_recur_on(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         """often useful when you delete a recursive structure """
