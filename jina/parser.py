@@ -9,8 +9,8 @@ def add_arg_group(parser, title):
 
 
 def set_base_parser():
-    from .. import __version__
-    from ..helper import colored, get_full_version, format_full_version_info
+    from . import __version__
+    from .helper import colored, get_full_version, format_full_version_info
     # create the top-level parser
     urls = {
         'Jina 101': ('🐣', 'https://101.jina.ai'),
@@ -128,7 +128,7 @@ def set_hub_pushpull_parser(parser=None):
 def set_hw_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..helper import get_random_identity
+    from .helper import get_random_identity
     from pkg_resources import resource_filename
 
     gp = add_arg_group(parser, 'general arguments')
@@ -181,7 +181,7 @@ def set_hw_parser(parser=None):
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..enums import FlowOutputType, FlowOptimizeLevel
+    from jina.enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
     gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
@@ -204,9 +204,9 @@ def set_flow_parser(parser=None):
 
 
 def set_pea_parser(parser=None):
-    from ..enums import SocketType, PeaRoleType, OnErrorSkip
-    from ..helper import random_port, get_random_identity
-    from .. import __default_host__
+    from .enums import SocketType, PeaRoleType, OnErrorSkip
+    from .helper import random_port, get_random_identity
+    from . import __default_host__
     import os
     show_all = 'JINA_FULL_CLI' in os.environ
     if not parser:
@@ -332,7 +332,7 @@ def set_pea_parser(parser=None):
 
 
 def set_pod_parser(parser=None):
-    from ..enums import PollingType, SchedulerType
+    from .enums import PollingType, SchedulerType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
@@ -413,8 +413,8 @@ def set_export_api_parser(parser=None):
 def _set_grpc_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..helper import random_port
-    from .. import __default_host__
+    from jina.helper import random_port
+    from jina import __default_host__
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
                      help=f'host address of the pea/gateway, by default it is {__default_host__}.')
@@ -457,7 +457,7 @@ def _set_grpc_parser(parser=None):
 
 
 def set_gateway_parser(parser=None):
-    from ..enums import SocketType
+    from jina.enums import SocketType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
@@ -486,7 +486,7 @@ def set_client_cli_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from ..enums import ClientMode
+    from .enums import ClientMode
 
     _set_grpc_parser(parser)
 
@@ -633,7 +633,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
             # add the heading if the section was non-empty
             if self.heading is not argparse.SUPPRESS and self.heading is not None:
-                from ..helper import colored
+                from .helper import colored
                 current_indent = self.formatter._current_indent
                 captial_heading = ' '.join(v[0].upper() + v[1:] for v in self.heading.split(' '))
                 heading = '⚙️  %*s%s\n' % (
@@ -654,7 +654,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         help = action.help
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
-                from ..helper import colored
+                from .helper import colored
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
 

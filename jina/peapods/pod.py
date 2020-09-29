@@ -18,7 +18,7 @@ from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, \
     is_valid_local_config_source
-from ..main.parser import set_pod_parser, set_gateway_parser
+from ..parser import set_pod_parser, set_gateway_parser
 
 
 class BasePod(ExitStack):

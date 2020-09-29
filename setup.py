@@ -132,7 +132,7 @@ setup(
     install_requires=list(all_deps['core'].union(all_deps['perf'])),
     extras_require=all_deps,
     entry_points={
-        'console_scripts': ['jina=jina.main:main'],
+        'console_scripts': ['jina=jina_cli:main'],
     },
     cmdclass={
         'develop': PostDevelopCommand,

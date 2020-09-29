@@ -1,5 +1,5 @@
 from jina.flow import Flow
-from jina.main.parser import set_pea_parser
+from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet, add_envelope
 from jina.proto import jina_pb2

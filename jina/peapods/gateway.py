@@ -18,7 +18,7 @@ from ..excepts import NoDriverForRequest, BadRequestType, GatewayPartialMessage
 from ..helper import use_uvloop
 from ..logging.base import get_logger
 from ..logging.profile import TimeContext
-from ..main.parser import set_pea_parser, set_pod_parser
+from ..parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
 
 use_uvloop()
