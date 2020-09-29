@@ -43,11 +43,16 @@ class SegmentDriver(CraftDriver):
     """Segment document into chunks using the executor
     """
 
-    def __init__(self, first_chunk_id: int = 0, random_chunk_id: bool = True,
-                 level_names: List[str] = None, *args, **kwargs):
-        # Important to do the overwrite before calling `super()__init__(...)`
-        kwargs.setdefault('traversal_paths', ['r', 'c'])
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        first_chunk_id: int = 0,
+        random_chunk_id: bool = True,
+        level_names: List[str] = None,
+        traversal_paths: List[str] = ['r', 'c'],
+        *args,
+        **kwargs
+    ):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         if isinstance(level_names, list) and (self._granularity_end - self._granularity_start + 1) != len(self.level_names):
             self.level_names = level_names
         elif level_names is None:
