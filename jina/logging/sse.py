@@ -93,7 +93,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     def get_podargs():
         """Get the default args of a pod"""
 
-        from jina.main.parser import set_pod_parser
+        from ..parser import set_pod_parser
         from argparse import _StoreAction, _StoreTrueAction
         port_attr = ('help', 'choices', 'default')
         d = {}

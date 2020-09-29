@@ -7,7 +7,7 @@ from jina.clients.python import PyClient
 from jina.clients.python.io import input_files, input_numpy
 from jina.enums import ClientMode
 from jina.flow import Flow
-from jina.main.parser import set_gateway_parser
+from jina.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
 from tests import JinaTestCase

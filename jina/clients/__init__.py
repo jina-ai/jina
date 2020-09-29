@@ -25,7 +25,7 @@ def py_client(**kwargs) -> 'PyClient':
         # to index
         py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
     """
-    from ..main.parser import set_client_cli_parser
+    from ..parser import set_client_cli_parser
     from ..helper import get_parsed_args
     from .python import PyClient
     _, args, _ = get_parsed_args(kwargs, set_client_cli_parser(), 'Client')

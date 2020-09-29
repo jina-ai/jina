@@ -9,7 +9,7 @@ from jina.clients import py_client
 from jina.clients.python.io import input_numpy
 from jina.flow import Flow
 from jina.helloworld import download_data
-from jina.main.parser import set_hw_parser
+from jina.parser import set_hw_parser
 from tests import JinaTestCase
 
 
@@ -21,7 +21,7 @@ class HelloWorldTestCase(JinaTestCase):
 
     @pytest.mark.timeout(360)
     def test_helloworld_py(self):
-        from jina.main.parser import set_hw_parser
+        from jina.parser import set_hw_parser
         from jina.helloworld import hello_world
         hello_world(set_hw_parser().parse_args([]))
 

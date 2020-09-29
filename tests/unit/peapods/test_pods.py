@@ -1,6 +1,6 @@
 import pytest
 
-from jina.main.parser import set_pod_parser, set_gateway_parser
+from jina.parser import set_pod_parser, set_gateway_parser
 from jina.peapods.pod import BasePod, GatewayPod, MutablePod, GatewayFlowPod, FlowPod
 
 

@@ -3,7 +3,7 @@ import os
 
 from jina.flow import Flow
 from jina.peapods import Pod
-from jina.main.parser import set_pod_parser
+from jina.parser import set_pod_parser
 
 """
 Github issue: https://github.com/jina-ai/jina/issues/936

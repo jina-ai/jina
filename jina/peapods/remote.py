@@ -113,7 +113,7 @@ def peas_args2mutable_pod_req(peas_args: Dict):
 
 
 def mutable_pod_req2peas_args(req):
-    from ..main.parser import set_pea_parser
+    from ..parser import set_pea_parser
     return {
         'head': set_pea_parser().parse_known_args(req.head.args)[0] if req.head.args else None,
         'tail': set_pea_parser().parse_known_args(req.tail.args)[0] if req.tail.args else None,

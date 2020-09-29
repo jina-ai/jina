@@ -4,8 +4,8 @@ from sys import platform
 
 from jina.flow import Flow
 from jina.helper import random_name
-from jina.main.checker import NetworkChecker
-from jina.main.parser import set_pea_parser, set_ping_parser
+from jina.checker import NetworkChecker
+from jina.parser import set_pea_parser, set_ping_parser
 from jina.peapods.container import ContainerPea
 from jina.peapods.pea import BasePea
 from tests import JinaTestCase, random_docs
