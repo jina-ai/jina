@@ -214,7 +214,7 @@ class LookupTreeElem:
     def __init__(self):
         self.negate = False
 
-    def evaluate(self, item: Dict) -> None:
+    def evaluate(self, item: Dict) -> bool:
         raise NotImplementedError
 
     def __or__(self, other):
@@ -297,7 +297,7 @@ Q = LookupLeaf
 
 ## functions that work on the keys in a dict
 
-def include_keys(items: Iterable[Dict], fields: List) -> Iterable[Dict]:
+def include_keys(items: Iterable[Dict[str, Any]], fields: Iterable[str]) -> Iterable[Dict]:
     """Function to keep only specified fields in data
 
     Returns a list of dict with only the keys mentioned in the
@@ -305,12 +305,15 @@ def include_keys(items: Iterable[Dict], fields: List) -> Iterable[Dict]:
 
         >>> include_keys(items, ['request__url', 'response__status'])
 
+    Note: the resulting keys are "dundered", as they appear in `fields`,
+    rather than nested as they are in `items`.
+
     :param items  : iterable of dicts
-    :param fields : (list) fieldnames to keep
+    :param fields : (iterable) fieldnames to keep
     :rtype        : lazy iterable
 
     """
-    return (dict((f, dunder_get(item, f)) for f in fields) for item in items)
+    return ({f: dunder_get(item, f) for f in fields} for item in items)
 
 
 guard_Q = partial(guard_type, Q)
