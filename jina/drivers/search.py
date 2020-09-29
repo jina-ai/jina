@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Iterable, List
 
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs, array2pb
@@ -13,8 +13,15 @@ if False:
 class BaseSearchDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
-    def __init__(self, executor: str = None, method: str = 'query', *args, **kwargs):
-        super().__init__(executor, method, *args, **kwargs)
+    def __init__(
+        self,
+        executor: str = None,
+        method: str = 'query',
+        traversal_paths: List[str] = ['r', 'c'],
+        *args,
+        **kwargs
+    ):
+        super().__init__(executor, method, traversal_paths=traversal_paths, *args, **kwargs)
         self._is_apply = False
         # search driver recursion apply in pre-order
         self.recursion_order = 'pre'

@@ -10,6 +10,7 @@ on:
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
+        traversal_paths: ['m']
         granularity_range: [0, 0]
         adjacency_range: [1, 1]
   IndexRequest:
