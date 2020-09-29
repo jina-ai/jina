@@ -18,15 +18,6 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
         ]
         return np.array(new_scores, dtype=np.float64)
 
-class SimpleMatches2DocRankDriver(Matches2DocRankDriver):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    @property
-    def exec_fn(self):
-        return self._exec_fn
-
 
 def create_document_to_score():
     # doc: 1
@@ -50,10 +41,10 @@ def create_document_to_score():
 
 def test_chunk2doc_ranker_driver_mock_exec():
     doc = create_document_to_score()
-    driver = SimpleMatches2DocRankDriver()
+    driver = Matches2DocRankDriver()
     executor = MockAbsoluteLengthRanker()
     driver.attach(executor=executor, pea=None)
-    driver._apply_all(doc.matches, doc)
+    driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
     assert doc.matches[0].id == 3
     assert doc.matches[0].score.value == -1

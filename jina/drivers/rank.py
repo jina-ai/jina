@@ -46,10 +46,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
             |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
-    def __init__(self, *args, **kwargs):
-        if 'adjacency_range' not in kwargs:
-            kwargs['adjacency_range'] = (0, 1)
-        super().__init__(*args, **kwargs)
+    def __init__(self, traversal_paths: Iterable[str] = ['c'], *args, **kwargs):
+        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
         """
@@ -58,10 +56,6 @@ class Chunk2DocRankDriver(BaseRankDriver):
         :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
         :return:
         """
-
-        # if at the top-level already, no need to aggregate further
-        if context_doc is None:
-            return
 
         match_idx = []
         query_chunk_meta = {}
@@ -111,8 +105,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
+        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
         """
@@ -130,7 +124,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}
         match_chunk_meta = {}
         # doc_id_to_match_map = {}
-        for match in context_doc.matches:
+        for match in docs:
             # doc_id_to_match_map[match.id] = index
             match_idx.append((match.parent_id, match.id, context_doc.id, match.score.value))
             query_chunk_meta[context_doc.id] = pb_obj2dict(context_doc, self.exec.required_keys)
@@ -163,14 +157,15 @@ class Matches2DocRankDriver(BaseRankDriver):
             |- matches: {granularity: 0, adjacency: k+1} (Sorted according to scores from Ranker Executor)
     """
 
-    def __init__(self, reverse=False, *args, **kwargs):
-        super().__init__(recur_on='matches', *args, **kwargs)
+    def __init__(self, reverse: bool = False, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
+        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
         """ Call executer for score and sort afterwards here. """
 
         # if at the top-level already, no need to aggregate further
+        print(len(docs))
         if context_doc is None:
             return
         query_meta = pb_obj2dict(context_doc, self.exec.required_keys)

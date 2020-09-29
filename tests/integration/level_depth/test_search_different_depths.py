@@ -1,12 +1,10 @@
 import os
-import shutil
 
 import pytest
 
 from jina.flow import Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
 
 
 @pytest.mark.skip('based on discussion on Sept. 1, 2020, we will refactor it in another way')
