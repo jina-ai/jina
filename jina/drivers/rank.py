@@ -165,9 +165,6 @@ class Matches2DocRankDriver(BaseRankDriver):
         """ Call executer for score and sort afterwards here. """
 
         # if at the top-level already, no need to aggregate further
-        print(len(docs))
-        if context_doc is None:
-            return
         query_meta = pb_obj2dict(context_doc, self.exec.required_keys)
 
         old_match_scores = {match.id: match.score.value for match in docs}
