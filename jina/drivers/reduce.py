@@ -83,6 +83,7 @@ class ReduceAllDriver(ReduceDriver):
     """
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('traversal_paths', ['c'])
         super().__init__(use_tree_traversal=True, *args, **kwargs)
         self._is_apply = False
 
