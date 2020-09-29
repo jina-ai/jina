@@ -4,13 +4,13 @@ __license__ = "Apache-2.0"
 import glob
 import itertools as it
 import random
-from typing import List, Union, Iterator
+from typing import List, Union, Iterator, Any
 
 import numpy as np
 
 
 def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = None, sampling_rate: float = None,
-                read_mode='r') -> None:
+                read_mode='r') -> Iterator[Union[str, bytes]]:
     """ Input function that iterates over list of strings, it can be used in the Flow API
 
     :param filepath: a text file that each line contains a document
@@ -20,27 +20,23 @@ def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = N
     :param read_mode: specifies the mode in which the file
             is opened. 'r' for reading in text mode, 'rb' for reading in binary
     """
+
+    def sample(iterable):
+        for i in iterable:
+            if sampling_rate is None or random.random() < sampling_rate:
+                yield i
+
     if filepath:
-        fp = open(filepath, read_mode)
+        with open(filepath, read_mode) as f:
+            return it.islice(sample(f), size)
     elif lines:
-        fp = lines
+        return it.islice(sample(lines), size)
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
 
-    d = 0
-    for l in fp:
-        if sampling_rate is None or random.random() < sampling_rate:
-            yield l
-            d += 1
-        if size is not None and d > size:
-            break
-
-    if filepath:
-        fp.close()
-
-
 def input_files(patterns: Union[str, List[str]], recursive: bool = True,
-                size: int = None, sampling_rate: float = None, read_mode: str = None) -> None:
+                size: int = None, sampling_rate: float = None,
+                read_mode: str = None) -> Iterator[Union[str, bytes]]:
     """ Input function that iterates over files, it can be used in the Flow API
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
@@ -73,7 +69,8 @@ def input_files(patterns: Union[str, List[str]], recursive: bool = True,
             break
 
 
-def input_numpy(array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False) -> None:
+def input_numpy(array: 'np.ndarray', axis: int = 0, size: int = None,
+                shuffle: bool = False) -> Iterator[Any]:
     """ Input function that iterates over a numpy array, it can be used in the Flow API
 
     :param array: the numpy ndarray data source
