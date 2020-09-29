@@ -174,7 +174,7 @@ class Flow(ExitStack):
         self._update_args(args, **kwargs)
 
     def _update_args(self, args, **kwargs):
-        from jina.parser import set_flow_parser
+        from ..parser import set_flow_parser
         _flow_parser = set_flow_parser()
         if args is None:
             from ..helper import get_parsed_args
