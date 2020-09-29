@@ -386,20 +386,19 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
 
 
 def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message', timeout: int = -1,
-                 array_in_pb: bool = False, compress_hwm: float = -1, compress_lwm: float = 1., **kwargs) -> int:
+                 compress_hwm: float = -1, compress_lwm: float = 1., **kwargs) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
-    :param array_in_pb: send the numpy array within the protobuf message, this often yields worse network efficiency
     :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
     :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     num_bytes = 0
     try:
-        _msg, num_bytes = _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout)
+        _msg, num_bytes = _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout)
 
         sock.send_multipart(_msg)
     except zmq.error.Again:
@@ -418,7 +417,7 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message'
     return num_bytes
 
 
-def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
+def _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout):
     if timeout > 0:
         sock.setsockopt(zmq.SNDTIMEO, timeout)
     else:
@@ -426,25 +425,23 @@ def _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout):
     return _serialize_to_frames(msg.envelope.receiver_id,
                                 msg,
                                 compress_hwm,
-                                compress_lwm,
-                                array_in_pb)
+                                compress_lwm)
 
 
 async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
-                             array_in_pb: bool = False, compress_hwm: float = -1, compress_lwm: float = 1.,
+                            compress_hwm: float = -1, compress_lwm: float = 1.,
                              **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
-    :param array_in_pb: send the numpy array within the protobuf message, this often yields worse network efficiency
     :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
     :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     try:
-        _msg, num_bytes = _prep_send_msg(array_in_pb, compress_hwm, compress_lwm, msg, sock, timeout)
+        _msg, num_bytes = _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout)
 
         await sock.send_multipart(_msg)
 
@@ -542,8 +539,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
 
 
 def _serialize_to_frames(client_id, msg: 'jina_pb2.Message',
-                         compress_hwm: float, compress_lwm: float,
-                         array_in_pb: bool) -> Tuple[List[bytes], int]:
+                         compress_hwm: float, compress_lwm: float) -> Tuple[List[bytes], int]:
     """
     Serialize a :class:`jina_pb2.Message` object into a list of frames. The list of frames (has length >=3) has the following structure:
 
@@ -555,12 +551,9 @@ def _serialize_to_frames(client_id, msg: 'jina_pb2.Message',
     :param msg: the protobuf message object to be serialized
     :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
     :param compress_lwm: the low watermark that enables the sending of a compressed message.
-    :param array_in_pb: (depreciated) do partial serialization only
     :return:
     """
     _body = [msg.SerializeToString()]
-    if isinstance(client_id, str):
-        client_id = client_id.encode()
 
     _size_before = sum(sys.getsizeof(m) for m in _body)
     if _size_before > compress_hwm > 0:
@@ -580,6 +573,8 @@ def _serialize_to_frames(client_id, msg: 'jina_pb2.Message',
         body = _body
         is_compressed = b'0'
 
+    if isinstance(client_id, str):
+        client_id = client_id.encode()
     frames = [client_id, is_compressed] + body
     num_bytes = sum(sys.getsizeof(m) for m in frames)
     return frames, num_bytes
