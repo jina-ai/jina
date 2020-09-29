@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Iterable, List
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
@@ -20,8 +20,8 @@ class ReverseQL(QuerySetReader, BaseRecursiveDriver):
 
         will reverse the order of the documents returned by the `Chunk2DocRankerDriver` before sending them to the next `Pod`
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, traversal_paths: List[str] = ['c'], *args, **kwargs):
+        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
         self.is_apply = False
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:

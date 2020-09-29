@@ -67,13 +67,13 @@ def test_select_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !SelectQL | {fields: [uri, matches, chunks], granularity_range: [0, 2], adjacency_range: [0, 2]}'))
+        uses='- !SelectQL | {fields: [uri, matches, chunks], traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
 
     f = (Flow().add(uses='DummySegmenter')
-         .add(uses='- !ExcludeQL | {fields: [text], granularity_range: [0, 2], adjacency_range: [0, 2]}'))
+         .add(uses='- !ExcludeQL | {fields: [text], traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
@@ -95,7 +95,7 @@ def test_sort_ql():
     f = (Flow().add(uses='DummySegmenter')
          .add(
         uses='- !SortQL | {field: id, reverse: false, granularity_range: [0, 2], adjacency_range: [0, 2]}')
-         .add(uses='- !ReverseQL | {granularity_range: [0, 2], adjacency_range: [0, 2]}'))
+         .add(uses='- !ReverseQL | traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
