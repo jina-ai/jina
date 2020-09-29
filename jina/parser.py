@@ -181,7 +181,7 @@ def set_hw_parser(parser=None):
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from jina.enums import FlowOutputType, FlowOptimizeLevel
+    from .enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
     gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
@@ -413,8 +413,8 @@ def set_export_api_parser(parser=None):
 def _set_grpc_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from jina.helper import random_port
-    from jina import __default_host__
+    from .helper import random_port
+    from . import __default_host__
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
                      help=f'host address of the pea/gateway, by default it is {__default_host__}.')
@@ -457,7 +457,7 @@ def _set_grpc_parser(parser=None):
 
 
 def set_gateway_parser(parser=None):
-    from jina.enums import SocketType
+    from .enums import SocketType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
