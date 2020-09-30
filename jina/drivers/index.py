@@ -16,8 +16,9 @@ class BaseIndexDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(self, executor: str = None, method: str = 'add', *args, **kwargs):
-        super().__init__(executor, method, use_tree_traversal=True, *args, **kwargs)
+        super().__init__(executor, method, *args, **kwargs)
         self._is_apply = False
+        self._use_tree_traversal = True
 
 
 class VectorIndexDriver(BaseIndexDriver):
