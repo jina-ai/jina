@@ -78,6 +78,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4598,4 +4599,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```621087f7```](https://github.com/jina-ai/jina/commit/621087f7d0d8cbaedd47ba5af175dba22148a448)] __-__ update contributors (*Jina Dev Bot*)
  - [[```a1d806f9```](https://github.com/jina-ai/jina/commit/a1d806f90b909411a52c1e1808ba73a10d7cf31b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```5fab4642```](https://github.com/jina-ai/jina/commit/5fab464215075136e1ffbf3b7ad44c7c5d044952)] __-__ __version__: the next version will be 0.5.9 (*Jina Dev Bot*)
+
+## Release Note (`0.6.2`)
+
+> Release time: 2020-09-30 07:39:58
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Maximilian Werk,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```e0dd57b5```](https://github.com/jina-ai/jina/commit/e0dd57b5529d49aeb0cf07e71e8c4ce64a37a3f8)] __-__ fixed double argument setting of use_tree_traversal (*Maximilian Werk*)
+
+### 🍹 Other Improvements
+
+ - [[```f249d9b3```](https://github.com/jina-ai/jina/commit/f249d9b35207aff3392754d8da3099c447369d02)] __-__ hotfix hello-world (*Han Xiao*)
+ - [[```cf9f0bef```](https://github.com/jina-ai/jina/commit/cf9f0bef3d655955eb6a9da3532bd12e6e774c3d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a7b84525```](https://github.com/jina-ai/jina/commit/a7b84525d799d8225dde29d29d38feec96afc207)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```2c89da26```](https://github.com/jina-ai/jina/commit/2c89da26e16c07167abdc7cde15f92ec6a5778fb)] __-__ __version__: the next version will be 0.6.2 (*Jina Dev Bot*)
 
