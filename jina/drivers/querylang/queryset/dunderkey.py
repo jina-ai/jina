@@ -101,7 +101,7 @@ def dunder_get(_dict: Dict, key: str) -> Any:
     a dict. eg::
 
          >>> data = {'a': {'b': 1}}
-         >>> nesget(data, 'a__b')
+         >>> dunder_get(data, 'a__b')
          1
 
     key 'b' can be referrenced as 'a__b'
@@ -144,19 +144,21 @@ def undunder_keys(_dict: Dict) -> Dict:
 
     """
 
-    def f(key, value):
-        parts = key.split('__')
-        return {
-            parts[0]: value if len(parts) == 1 else f(parts[1], value)
-        }
+    def f(keys, value):
+        return {keys[0]: f(keys[1:], value)} if keys else value
+
+    def merge(dict1, dict2):
+        key, val = list(dict2.items())[0]
+
+        if key in dict1:
+            merge(dict1[key], val)
+        else:
+            dict1[key] = val
 
     result = {}
-    for r in [f(k, v) for k, v in _dict.items()]:
-        rk = list(r.keys())[0]
-        if rk not in result:
-            result.update(r)
-        else:
-            result[rk].update(r[rk])
+    for k,v in _dict.items():
+        merge(result, f(k.split('__'), v))
+
     return result
 
 
