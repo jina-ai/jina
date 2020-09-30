@@ -167,6 +167,7 @@ class Flow(ExitStack):
         super().__init__()
         self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
+        self._pod_needs = []
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
@@ -400,10 +401,13 @@ class Flow(ExitStack):
 
         needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
 
+
+
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
         op_flow.set_last_pod(pod_name, False)
+        op_flow._pod_needs.append(needs)
 
         return op_flow
 
@@ -789,6 +793,24 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
+
+    def flow_visualization(self):
+        """
+            Output the mermaid graph for visualization
+            :return: a mermaid-formatted string
+            """
+
+        mermaid_graph = OrderedDict()
+        cls_dict = defaultdict(set)
+
+        i = 0
+        for k in self._pod_nodes.items():
+            print("**** node: ", k, " needs: ", self._pod_needs[i])
+            i = i+1
+
+
+        mermaid_str = ''
+        return mermaid_str
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow,
