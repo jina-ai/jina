@@ -26,13 +26,14 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
 
         :param fields: the pruned field names in tuple
         """
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         if isinstance(fields, str):
             self._fields = {fields, }
         else:
             self._fields = set(fields)
 
         self.is_apply_all = False
+        self._use_tree_traversal = True
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in self.fields:
