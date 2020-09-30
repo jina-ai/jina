@@ -11,7 +11,7 @@ requests:
       - !KVIndexDriver
         with:
           executor: docIndexer
-          recur_range: [0, 0]
+          traversal_paths: ['r']
     SearchRequest:
       - !LogInfoDriver {}
       - !KVSearchDriver

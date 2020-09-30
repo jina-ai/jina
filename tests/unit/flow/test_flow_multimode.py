@@ -79,11 +79,13 @@ def test_flow_with_modalities():
                                                   [1.0, 1.0, 1.0]]))
 
     chunkIndexer1 = BinaryPbIndexer.load('kvidx1.bin')
-    assert chunkIndexer1.size == 6
+    assert chunkIndexer1.size == 3
     d_id = list(chunkIndexer1.query_handler.header.keys())[0]
+    assert chunkIndexer1.query(d_id).text == 'title: this is mode1 from doc1'
     assert chunkIndexer1.query(d_id).modality == 'mode1'
 
     chunkIndexer2 = BinaryPbIndexer.load('kvidx2.bin')
-    assert chunkIndexer2.size == 6
+    assert chunkIndexer2.size == 3
     d_id = list(chunkIndexer2.query_handler.header.keys())[0]
+    assert chunkIndexer2.query(d_id).text == ' body: this is mode2 from doc1'
     assert chunkIndexer2.query(d_id).modality == 'mode2'

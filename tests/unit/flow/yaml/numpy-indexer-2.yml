@@ -19,9 +19,8 @@ requests:
     IndexRequest:
       - !VectorIndexDriver
         with:
-          granularity_range: [1, 2]
+          traversal_paths: ['c']
           executor: vecidx2
-          recur_on: chunks
       - !ExcludeQL
         with:
           fields:
@@ -31,7 +30,7 @@ requests:
             - text
       - !KVIndexDriver
         with:
-          granularity_range: [1, 2]
+          traversal_paths: ['c']
           executor: kvidx2
     ControlRequest:
       - !ControlReqDriver {}
