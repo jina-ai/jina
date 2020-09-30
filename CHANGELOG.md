@@ -77,6 +77,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -153,6 +155,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.5.6`)](#release-note-056)
 - [Release Note (`0.5.7`)](#release-note-057)
 - [Release Note (`0.5.8`)](#release-note-058)
+- [Release Note (`0.6.1`)](#release-note-061)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -4551,4 +4554,70 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```bf5c2759```](https://github.com/jina-ai/jina/commit/bf5c27599e02881cb19d3e1c3fc66f6c5f9c7372)] __-__ __version__: the next version will be 0.5.8 (*Jina Dev Bot*)
  - [[```fecb9acb```](https://github.com/jina-ai/jina/commit/fecb9acbdade47492baa6b77f340e57ee30588b4)] __-__ __version__: the next version will be 0.5.7 (*Jina Dev Bot*)
  - [[```5e4a7f26```](https://github.com/jina-ai/jina/commit/5e4a7f26068860dce3eb9a053e3c509332171011)] __-__ hotfix resume release (*Han Xiao*)
+
+## Release Note (`0.6.1`)
+
+> Release time: 2020-09-30 06:42:07
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Maximilian Werk,  🙇
+
+
+### 🆕 New Features
+
+ - [[```c6fec38f```](https://github.com/jina-ai/jina/commit/c6fec38f36367e1f4231edbb65c2c6a71d23725f)] __-__ added tree traversal for ranker (*Maximilian Werk*)
+ - [[```423ae31a```](https://github.com/jina-ai/jina/commit/423ae31ac05daea730897222f860cafb4014f80a)] __-__ tree traversal default for SliceQL (*Maximilian Werk*)
+ - [[```525bf0e4```](https://github.com/jina-ai/jina/commit/525bf0e4d4a692708bfad56d2673b19609b29e3e)] __-__ new tree traversal structure (#983) (*Maximilian Werk*)
+
+### 🐞 Bug fixes
+
+ - [[```7013c672```](https://github.com/jina-ai/jina/commit/7013c6720b3b111a14fc5b1066128b1b1a4da876)] __-__ cleanup print fragments (*Maximilian Werk*)
+ - [[```c82924af```](https://github.com/jina-ai/jina/commit/c82924afed8df76f8519a4dac1394ee80df13e00)] __-__ __dockerfile__: add jina_cli to dockefile (*Han Xiao*)
+ - [[```25b1a5d1```](https://github.com/jina-ai/jina/commit/25b1a5d1c45d5e86f92fe2beb3e4fd53ccf45601)] __-__ #973 (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```08e79391```](https://github.com/jina-ai/jina/commit/08e793915f32b94eb53d595d5a750900bbbd6878)] __-__ remove serialization (*Han Xiao*)
+ - [[```d563b50d```](https://github.com/jina-ai/jina/commit/d563b50dfba47b8214648a6cc0de1cd4e7e06602)] __-__ move cli interface out of jina module (*Han Xiao*)
+ - [[```6596c7c0```](https://github.com/jina-ai/jina/commit/6596c7c02a2157a9f55027912c81a401d918113f)] __-__ remove array_in_pb arg (*Han Xiao*)
+ - [[```89d518b3```](https://github.com/jina-ai/jina/commit/89d518b352fdbcae7f8db478f13f306eae7a8a3c)] __-__ remove array_in_pb trick for now (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```e6412209```](https://github.com/jina-ai/jina/commit/e6412209c23ff49f3266490722e3403059e5b0f3)] __-__ migrate flow intro from example to docs (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```e701cc97```](https://github.com/jina-ai/jina/commit/e701cc97a7feb7fb2fc6d017836701f6bc04649d)] __-__ add hacktoberfest.yml (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```01ff747a```](https://github.com/jina-ai/jina/commit/01ff747a1ae0f9e39ea4e47db0eb80530bdec7a8)] __-__ hotfix release 0.6.1 (*Han Xiao*)
+ - [[```38a1b340```](https://github.com/jina-ai/jina/commit/38a1b340ea947719269473ffd4692635e707d5d7)] __-__ hotfix release 0.6.0 (*Han Xiao*)
+ - [[```621087f7```](https://github.com/jina-ai/jina/commit/621087f7d0d8cbaedd47ba5af175dba22148a448)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```a1d806f9```](https://github.com/jina-ai/jina/commit/a1d806f90b909411a52c1e1808ba73a10d7cf31b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5fab4642```](https://github.com/jina-ai/jina/commit/5fab464215075136e1ffbf3b7ad44c7c5d044952)] __-__ __version__: the next version will be 0.5.9 (*Jina Dev Bot*)
+
+## Release Note (`0.6.2`)
+
+> Release time: 2020-09-30 07:39:58
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Maximilian Werk,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```e0dd57b5```](https://github.com/jina-ai/jina/commit/e0dd57b5529d49aeb0cf07e71e8c4ce64a37a3f8)] __-__ fixed double argument setting of use_tree_traversal (*Maximilian Werk*)
+
+### 🍹 Other Improvements
+
+ - [[```f249d9b3```](https://github.com/jina-ai/jina/commit/f249d9b35207aff3392754d8da3099c447369d02)] __-__ hotfix hello-world (*Han Xiao*)
+ - [[```cf9f0bef```](https://github.com/jina-ai/jina/commit/cf9f0bef3d655955eb6a9da3532bd12e6e774c3d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a7b84525```](https://github.com/jina-ai/jina/commit/a7b84525d799d8225dde29d29d38feec96afc207)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```2c89da26```](https://github.com/jina-ai/jina/commit/2c89da26e16c07167abdc7cde15f92ec6a5778fb)] __-__ __version__: the next version will be 0.6.2 (*Jina Dev Bot*)
 

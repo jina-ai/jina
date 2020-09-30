@@ -94,7 +94,7 @@ def test_sort_ql():
 
     f = (Flow().add(uses='DummySegmenter')
          .add(uses='- !SortQL | {field: id, reverse: false, traversal_paths: [r, c, m]}')
-         .add(uses='- !ReverseQL | traversal_paths: [r, c, m]}'))
+         .add(uses='- !ReverseQL | {traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
