@@ -18,12 +18,10 @@ requests:
           adjacency_range: [0, 1]
       - !VectorFillDriver
         with:
-          granularity_range: [0, 0]
-          adjacency_range: [0, 1]
+          traversal_paths: ['r', 'm']
       - !VectorSearchDriver  # then go for the first-degree matches
         with:
-          granularity_range: [0, 0]
-          adjacency_range: [1, 1]
+          traversal_paths: ['m']
       - !SliceQL
         with:
           start: 0
@@ -32,8 +30,7 @@ requests:
           adjacency_range: [0, 2]
       - !VectorFillDriver
         with:
-          granularity_range: [0, 0]
-          adjacency_range: [0, 3]
+          traversal_paths: ['r', 'm', 'mm', 'mmm']
     IndexRequest:
       - !ExcludeQL
         with:

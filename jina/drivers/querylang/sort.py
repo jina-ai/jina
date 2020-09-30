@@ -39,10 +39,11 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         :param reverse: sort the value from big to small
         """
 
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._reverse = reverse
         self._field = field
         self.is_apply = False
+        self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         docs.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)

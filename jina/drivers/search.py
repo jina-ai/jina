@@ -21,10 +21,17 @@ class BaseSearchDriver(BaseExecutableDriver):
         *args,
         **kwargs
     ):
-        super().__init__(executor, method, traversal_paths=traversal_paths, *args, **kwargs)
+        super().__init__(
+            executor,
+            method,
+            traversal_paths=traversal_paths,
+            *args,
+            **kwargs
+        )
         self._is_apply = False
         # search driver recursion apply in pre-order
         self.recursion_order = 'pre'
+        self._use_tree_traversal = True
 
 
 class KVSearchDriver(BaseSearchDriver):

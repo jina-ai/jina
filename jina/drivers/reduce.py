@@ -83,8 +83,9 @@ class ReduceAllDriver(ReduceDriver):
     """
 
     def __init__(self, traversal_paths: List[str] = ['c'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_apply = False
+        self._use_tree_traversal = True
 
     def reduce(self, *args, **kwargs):
         doc_pointers = {}
