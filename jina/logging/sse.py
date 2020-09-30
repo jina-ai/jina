@@ -1,8 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import time
+
 from . import default_logger
-from .queue import __sse_queue__, __profile_queue__
 from .. import JINA_GLOBAL, __version__
 from ..helper import yaml
 
@@ -55,24 +56,26 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     server = WSGIServer((_config['host'], _config['port']), app, log=None)
 
     def _log_stream():
-        while True:
-            try:
-                gevent.sleep(0)
-                message = __sse_queue__.get()
-                yield f'data: {message.msg}\n\n'
-            except EOFError:
-                yield 'LOG ENDS\n\n'
-                break
+        with open(_config['file']['log']) as fp:
+            fp.seek(0, 2)
+
+            while True:
+                line = fp.readline().strip()
+                if line:
+                    yield f'data: {line}\n\n'
+                else:
+                    time.sleep(0.1)
 
     def _profile_stream():
-        while True:
-            try:
-                gevent.sleep(0)
-                message = __profile_queue__.get()
-                yield f'data: {message.msg}\n\n'
-            except EOFError:
-                yield 'PROFILE ENDS\n\n'
-                break
+        with open(_config['file']['profile']) as fp:
+            fp.seek(0, 2)
+
+            while True:
+                line = fp.readline().strip()
+                if line:
+                    yield f'data: {line}\n\n'
+                else:
+                    time.sleep(0.1)
 
     @app.route(_config['endpoints']['log'])
     def get_log():
