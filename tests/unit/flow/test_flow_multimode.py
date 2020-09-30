@@ -2,14 +2,12 @@ import os
 from typing import List, Dict
 
 import numpy as np
-import pytest
 
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
-from tests import rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,14 +34,9 @@ class MockEncoder(BaseEncoder):
         return np.array(output)
 
 
-@pytest.fixture(autouse=True)
-def run_around_tests():
-    yield
-    rm_files(['vec1.gz', 'vec2.gz', 'chunk1.gz', 'chunk2.gz',
-              'vecidx1.bin', 'vecidx2.bin', 'kvidx1.bin', 'kvidx2.bin'])
+def test_flow_with_modalities(tmpdir):
+    os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE'] = str(tmpdir)
 
-
-def test_flow_with_modalities():
     def input_fn():
         doc1 = Document()
         doc1.id = 1
@@ -66,25 +59,25 @@ def test_flow_with_modalities():
     with flow:
         flow.index(input_fn=input_fn)
 
-    with open('vec1.gz', 'rb') as fp:
+    with open(tmpdir.join('vec1.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(result, np.array([[0.0, 0.0, 0.0],
                                                   [0.0, 0.0, 0.0],
                                                   [0.0, 0.0, 0.0]]))
 
-    with open('vec2.gz', 'rb') as fp:
+    with open(tmpdir.join('vec2.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(result, np.array([[1.0, 1.0, 1.0],
                                                   [1.0, 1.0, 1.0],
                                                   [1.0, 1.0, 1.0]]))
 
-    chunkIndexer1 = BinaryPbIndexer.load('kvidx1.bin')
+    chunkIndexer1 = BinaryPbIndexer.load(tmpdir.join('kvidx1.bin'))
     assert chunkIndexer1.size == 3
     d_id = list(chunkIndexer1.query_handler.header.keys())[0]
     assert chunkIndexer1.query(d_id).text == 'title: this is mode1 from doc1'
     assert chunkIndexer1.query(d_id).modality == 'mode1'
 
-    chunkIndexer2 = BinaryPbIndexer.load('kvidx2.bin')
+    chunkIndexer2 = BinaryPbIndexer.load(tmpdir.join('kvidx2.bin'))
     assert chunkIndexer2.size == 3
     d_id = list(chunkIndexer2.query_handler.header.keys())[0]
     assert chunkIndexer2.query(d_id).text == ' body: this is mode2 from doc1'
