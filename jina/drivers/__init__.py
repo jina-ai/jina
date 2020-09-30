@@ -17,7 +17,7 @@ if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.pea import BasePea
     from ..executors import AnyExecutor
-    from ..logging.jina_logger import JinaLogger
+    from ..logging.logger import JinaLogger
 
 
 def store_init_kwargs(func: Callable) -> Callable:

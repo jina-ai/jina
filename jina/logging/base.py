@@ -1,4 +1,4 @@
-from .jina_logger import JinaLogger
+from .logger import JinaLogger
 
 
 def get_logger(*args, **kwargs):

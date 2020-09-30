@@ -181,11 +181,9 @@ class JinaLogger:
             self.logger.setLevel(verbose_level.value)
 
             if log_profile:
-                from fluent import handler as fluenthandler
                 from fluent import asynchandler as fluentasynchandler
                 h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
-                formatter = ProfileFormatter(fmt_str)
-                h.setFormatter(formatter)
+                h.setFormatter(ProfileFormatter(fmt_str))
                 self.logger.addHandler(h)
 
             if event_trigger is not None:
@@ -194,11 +192,9 @@ class JinaLogger:
                 self.logger.addHandler(h)
 
             if ('JINA_LOG_SSE' in os.environ) or log_sse:
-                from fluent import handler as fluenthandler
                 from fluent import asynchandler as fluentasynchandler
                 h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
-                formatter = fluenthandler.FluentRecordFormatter(fmt_str)
-                h.setFormatter(formatter)
+                h.setFormatter(ColorFormatter(fmt_str))
                 self.logger.addHandler(h)
 
             if os.environ.get('JINA_LOG_FILE') == 'TXT':
