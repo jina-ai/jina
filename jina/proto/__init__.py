@@ -22,7 +22,7 @@ def is_data_request(req: 'Request') -> bool:
     return req_type != Request.ControlRequest
 
 
-def get_doc_hash(doc: 'Document') -> int:
+def new_doc_hash(doc: 'Document') -> int:
     d = doc
     if doc_field_mask:
         d = Document()
@@ -30,8 +30,8 @@ def get_doc_hash(doc: 'Document') -> int:
     return hash(d.SerializeToString())
 
 
-def get_doc_id(doc: 'Document') -> str:
-    return hash2id(get_doc_hash(doc))
+def new_doc_id(doc: 'Document') -> str:
+    return hash2id(new_doc_hash(doc))
 
 
 def hash2bytes(value: int) -> bytes:

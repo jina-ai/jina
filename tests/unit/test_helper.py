@@ -54,8 +54,8 @@ def test_hash():
     ds = random_docs(10)
     tmp = []
     for d in ds:
-        h = get_doc_hash(d)
-        id = get_doc_id(d)
+        h = new_doc_hash(d)
+        id = new_doc_id(d)
         print(f'{id}: {h}')
         assert id2hash(id) == h
         assert hash2id(h) == id
