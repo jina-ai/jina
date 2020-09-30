@@ -1,9 +1,10 @@
 import time
-from binascii import unhexlify
+
+import numpy as np
 
 from jina.helper import cached_property
 from jina.logging.profile import TimeContext
-from jina.proto import HashProto
+from jina.proto import *
 from tests import random_docs
 
 
@@ -49,38 +50,16 @@ def test_time_context():
     assert tc.readable_duration == '2 seconds'
 
 
-def test_hash_counter():
-    num_docs = 10
-    num_chunks_per_doc = 5
-    get_docs = lambda: random_docs(num_docs, num_chunks_per_doc)
+def test_hash():
+    ds = random_docs(10)
+    tmp = []
+    for d in ds:
+        h = get_doc_hash(d)
+        id = get_doc_id(d)
+        print(f'{id}: {h}')
+        assert id2hash(id) == h
+        assert hash2id(h) == id
+        tmp.append(h)
 
-    hc = HashProto()
-    hashes = set(hc(d) for d in get_docs())
-    assert len(hashes) == num_docs
-
-    hc = HashProto()
-    hashes = set(hc(c) for d in get_docs() for c in d.chunks)
-    # all docs have same text, they should be hashed into one
-    assert len(hashes) == num_docs * num_chunks_per_doc
-
-    # and now with field mask
-    hc = HashProto(paths=['text'])
-    hashes = set(hc(d) for d in get_docs())
-    # all docs have same text, they should be hashed into one
-    assert len(hashes) == 1
-
-    hc = HashProto(paths=['parent_id'])
-    hashes = set(hc(c) for d in get_docs() for c in d.chunks)
-    # they have different parents
-    assert len(hashes) == num_docs
-
-    # no chunk set tags, so they will be hashed into one
-    hc = HashProto(paths=['tags'])
-    hashes = set(hc(c) for d in get_docs() for c in d.chunks)
-    assert len(hashes) == 1
-
-    # no chunk set tags, but as the context hash is given, they will be hashed into num_docs
-    hc_d = HashProto()
-    hc = HashProto(paths=['tags'])
-    hashes = set(hc(c, context_hash=unhexlify(hc_d(d))) for d in get_docs() for c in d.chunks)
-    assert len(hashes) == num_docs
+    tmp = np.array(tmp)
+    assert tmp.dtype == np.int64

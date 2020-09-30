@@ -30,17 +30,29 @@ def get_doc_hash(doc: 'Document') -> int:
     return hash(d.SerializeToString())
 
 
+def get_doc_id(doc: 'Document') -> str:
+    return hash2id(get_doc_hash(doc))
+
+
 def hash2bytes(value: int) -> bytes:
     return value.to_bytes(8, 'big', signed=True)
 
 
-def hash2hex(value: int) -> str:
-    return hash2bytes(value).hex()
+def bytes2hash(value: bytes) -> int:
+    return int.from_bytes(value, 'big', signed=True)
 
 
-def hex2bytes(value: str) -> bytes:
+def id2bytes(value: str) -> bytes:
     return unhexlify(value)
 
 
-def bytes2hash(value: bytes) -> int:
-    return int.from_bytes(value, 'big', signed=True)
+def bytes2id(value: bytes) -> str:
+    return value.hex()
+
+
+def hash2id(value: int) -> str:
+    return bytes2id(hash2bytes(value))
+
+
+def id2hash(value: str) -> int:
+    return bytes2hash(id2bytes(value))
