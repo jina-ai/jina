@@ -801,15 +801,14 @@ class Flow(ExitStack):
             """
 
         mermaid_graph = list()
-
         i = 0
         for k in self._pod_nodes.items():
             for need_pod in self._pod_needs[i]:
-                curr_line = "Pod" + need_pod + "[" + need_pod + "]" + "-->" + "Pod" + k[0] + "[" + k[0] + "]"
+                curr_line = "Pod" + need_pod + "[" + need_pod + "]" + " --> " + "Pod" + k[0] + "[" + k[0] + "]"
                 mermaid_graph.append(curr_line)
             i = i+1
-
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
+
         return mermaid_str
 
     def mermaidstr_to_url(self, **kwargs) -> str:
@@ -818,11 +817,13 @@ class Flow(ExitStack):
         :param kwargs: keyword arguments of :py:meth:`to_mermaid`
         :return: the url points to a SVG
         """
+
         import base64
         mermaid_str = self.flow_visualization(**kwargs)
+        print("mermaid_str: ", mermaid_str)
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
 
-        return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/%s' % encoded_str
+        return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str
 
     def mermaidstr_to_jpg(self, path: str = 'flow.jpg', **kwargs) -> None:
         """
