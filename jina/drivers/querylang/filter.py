@@ -28,7 +28,7 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
     """
 
     def __init__(self, lookups: Dict[str, Any], traversal_paths: List[str] = ['c'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         """
         :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
         an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
@@ -36,6 +36,7 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         """
         self._lookups = Q(**lookups) if lookups else None
         self.is_apply = False
+        self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         if self.lookups:

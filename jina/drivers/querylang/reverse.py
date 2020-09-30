@@ -21,8 +21,9 @@ class ReverseQL(QuerySetReader, BaseRecursiveDriver):
         will reverse the order of the documents returned by the `Chunk2DocRankerDriver` before sending them to the next `Pod`
     """
     def __init__(self, traversal_paths: List[str] = ['c'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.is_apply = False
+        self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         prev_len = len(docs)
