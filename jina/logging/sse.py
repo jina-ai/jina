@@ -55,19 +55,8 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     CORS(app)
     server = WSGIServer((_config['host'], _config['port']), app, log=None)
 
-    def _log_stream():
-        with open(_config['file']['log']) as fp:
-            fp.seek(0, 2)
-
-            while True:
-                line = fp.readline().strip()
-                if line:
-                    yield f'data: {line}\n\n'
-                else:
-                    time.sleep(0.1)
-
-    def _profile_stream():
-        with open(_config['file']['profile']) as fp:
+    def _log_stream(path):
+        with open(path) as fp:
             fp.seek(0, 2)
 
             while True:
@@ -80,7 +69,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     @app.route(_config['endpoints']['log'])
     def get_log():
         """Get the logs, endpoint `/log/stream`  """
-        return Response(_log_stream(), mimetype="text/event-stream")
+        return Response(_log_stream(_config['files']['log']), mimetype="text/event-stream")
 
     @app.route(_config['endpoints']['yaml'])
     def get_yaml():
@@ -90,7 +79,7 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     @app.route(_config['endpoints']['profile'])
     def get_profile():
         """Get the profile logs, endpoint `/profile/stream`  """
-        return Response(_profile_stream(), mimetype='text/event-stream')
+        return Response(_log_stream(_config['files']['profile']), mimetype='text/event-stream')
 
     @app.route(_config['endpoints']['podapi'])
     def get_podargs():
