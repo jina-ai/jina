@@ -24,7 +24,6 @@ class BaseSearchDriver(BaseExecutableDriver):
         super().__init__(
             executor,
             method,
-            use_tree_traversal=True,
             traversal_paths=traversal_paths,
             *args,
             **kwargs
@@ -32,6 +31,7 @@ class BaseSearchDriver(BaseExecutableDriver):
         self._is_apply = False
         # search driver recursion apply in pre-order
         self.recursion_order = 'pre'
+        self._use_tree_traversal = True
 
 
 class KVSearchDriver(BaseSearchDriver):
