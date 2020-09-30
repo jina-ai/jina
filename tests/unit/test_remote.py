@@ -3,7 +3,7 @@ import time
 import unittest
 
 from jina.logging import get_logger
-from jina.main.parser import set_gateway_parser, set_pea_parser
+from jina.parser import set_gateway_parser, set_pea_parser
 from jina.peapods.pod import GatewayPod
 from jina.peapods.remote import PeaSpawnHelper
 from tests import JinaTestCase

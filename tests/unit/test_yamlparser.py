@@ -5,7 +5,7 @@ from pkg_resources import resource_filename
 from jina.executors import BaseExecutor
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import yaml, expand_dict
-from jina.main.parser import set_pea_parser
+from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

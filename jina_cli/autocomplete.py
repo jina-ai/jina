@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 
 def _update_autocomplete():
-    from jina.main.parser import get_main_parser
+    from jina.parser import get_main_parser
 
     def _gaa(parser):
         _compl = []

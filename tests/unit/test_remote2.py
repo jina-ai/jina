@@ -5,7 +5,7 @@ import unittest
 from multiprocessing import Process
 
 from jina.logging import get_logger
-from jina.main.parser import set_gateway_parser, set_pea_parser, set_pod_parser
+from jina.parser import set_gateway_parser, set_pea_parser, set_pod_parser
 from jina.peapods.pod import GatewayPod, BasePod
 from jina.peapods.remote import RemotePea, PodSpawnHelper, PeaSpawnHelper, MutablePodSpawnHelper, RemotePod, \
     RemoteMutablePod

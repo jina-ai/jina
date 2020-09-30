@@ -29,8 +29,8 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
     def __init__(self, lookups: Dict[str, Any], traversal_paths: List[str] = ['c'], *args, **kwargs):
         super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
         """
-        :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a 
-        an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create 
+        :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
+        an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
         an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
         """
         self._lookups = Q(**lookups) if lookups else None
