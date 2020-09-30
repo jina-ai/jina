@@ -10,11 +10,14 @@ from copy import copy
 from logging import Formatter
 from logging.handlers import QueueHandler
 from typing import Union
+from typing_extensions import Protocol
 
 from .profile import used_memory
 from ..enums import LogVerbosity
 from ..helper import colored
 
+success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
+logging.addLevelName(success_level, 'SUCCESS')
 
 class ColorFormatter(Formatter):
     """Format the log into colored logs based on the log-level. """
@@ -136,6 +139,20 @@ class NTLogger:
         if self.log_level <= LogVerbosity.SUCCESS:
             sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
+class SuccessLogger(Protocol):
+    """
+    Protocol representing NTLogger and (monkey-patched) Logger
+    """
+
+    def info(self, msg: str, **kwargs): ...
+    def critical(self, msg: str, **kwargs): ...
+    def debug(self, msg: str, **kwargs): ...
+    def error(self, msg: str, **kwargs): ...
+    def warning(self, msg: str, **kwargs): ...
+    def success(self, msg: str, **kwargs): ...
+
+
+setattr(logging.Logger, 'success', lambda self, message: self.log(success_level, message))
 
 def get_logger(context: str, context_len: int = 15,
                log_profile: bool = False,
@@ -143,7 +160,7 @@ def get_logger(context: str, context_len: int = 15,
                log_remote: bool = False,
                fmt_str: str = None,
                event_trigger=None,
-               **kwargs) -> Union['logging.Logger', 'NTLogger']:
+               **kwargs) -> SuccessLogger:
     """Get a logger with configurations
 
     :param context: the name prefix of the log
@@ -186,6 +203,7 @@ def get_logger(context: str, context_len: int = 15,
     logger.handlers = []
     logger.setLevel(verbose_level.value)
 
+    h: 'logging.Handler'
     if log_profile:
         h = QueueHandler(__profile_queue__)
         # profile logger always use debug level
@@ -194,7 +212,7 @@ def get_logger(context: str, context_len: int = 15,
         logger.addHandler(h)
 
         # profile logger do not need other handler
-        return logger
+        return logger # type: ignore
 
     if event_trigger is not None:
         h = EventHandler(event_trigger)
@@ -224,8 +242,4 @@ def get_logger(context: str, context_len: int = 15,
     console_handler.setFormatter(ColorFormatter(fmt_str))
     logger.addHandler(console_handler)
 
-    success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
-    logging.addLevelName(success_level, 'SUCCESS')
-    setattr(logger, 'success', lambda message: logger.log(success_level, message))
-
-    return logger
+    return logger # type: ignore
