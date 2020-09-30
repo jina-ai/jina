@@ -109,7 +109,7 @@ def test_filter_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {id: 2}, granularity_range: [0, 1], adjacency_range: [0, 1]}'))
+        uses='- !FilterQL | {lookups: {id: 2}, traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
@@ -122,7 +122,7 @@ def test_filter_ql_in_tags():
         assert json_format.MessageToDict(req.docs[0].tags)['id'] == 2
 
     f = (Flow().add(
-        uses='- !FilterQL | {lookups: {tags__id: 2}}'))
+        uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs_with_tags(), output_fn=validate, callback_on_body=True)
@@ -135,7 +135,7 @@ def test_filter_ql_modality_wrong_depth():
 
     f = (Flow().add(uses='DummyModeIdSegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {modality: mode2}, granularity_range: [0, 1]}'))
+        uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs_to_chunk(), output_fn=validate, callback_on_body=True)
@@ -150,7 +150,7 @@ def test_filter_ql_modality():
 
     f = (Flow().add(uses='DummyModeIdSegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {modality: mode2}, granularity_range: [1, 2]}'))
+        uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [c]}'))
 
     with f:
         f.index(random_docs_to_chunk(), output_fn=validate, callback_on_body=True)
@@ -164,7 +164,7 @@ def test_filter_compose_ql():
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {id: 2, text__contains: hello}, granularity_range: [0, 1], adjacency_range: [0, 1]}'))
+        uses='- !FilterQL | {lookups: {id: 2, text__contains: hello}, traversal_paths: [r, c, m]}'))
 
     with f:
         f.index(random_docs(10), output_fn=validate, callback_on_body=True)
