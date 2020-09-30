@@ -7,6 +7,7 @@ import os
 import re
 import sys
 from copy import copy
+from pkg_resources import resource_filename
 from logging import Formatter
 
 from .profile import used_memory
@@ -160,10 +161,24 @@ class LoggerWrapper:
         self.logger.success(msg, **kwargs)
 
 
+def get_fluentd_handler(context: str, fmt_str: str, log_fluentd_config_path: str):
+    from fluent import asynchandler as fluentasynchandler
+    import yaml
+    with open(log_fluentd_config_path) as fp:
+        config = yaml.load(fp)
+    handler = fluentasynchandler.FluentHandler(f'{context}', host=config['host'],
+                                               port=config['port'], queue_circular=True)
+    handler.setFormatter(ColorFormatter(fmt_str))
+    return handler
+
+
 class JinaLogger(LoggerWrapper):
 
-    def __init__(self, context: str, context_len: int = 15, log_profile: bool = False, log_sse: bool = False,
-                 fmt_str: str = None, event_trigger=None, **kwargs):
+    def __init__(self, context: str, context_len: int = 15, log_sse: bool = False,
+                 fmt_str: str = None, event_trigger=None,
+                 log_fluentd_config_path: str = resource_filename('jina',
+                                                                  '/'.join(('resources', 'logging.fluentd.yml'))),
+                 **kwargs):
         """Get a logger with configurations
 
             :param context: the name prefix of the log
@@ -202,22 +217,13 @@ class JinaLogger(LoggerWrapper):
         self.logger.handlers = []
         self.logger.setLevel(verbose_level.value)
 
-        if log_profile:
-            from fluent import asynchandler as fluentasynchandler
-            h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
-            h.setFormatter(ProfileFormatter(fmt_str))
-            self.logger.addHandler(h)
-
         if event_trigger is not None:
             h = EventHandler(event_trigger)
             h.setFormatter(ColorFormatter(fmt_str))
             self.logger.addHandler(h)
 
         if ('JINA_LOG_SSE' in os.environ) or log_sse:
-            from fluent import asynchandler as fluentasynchandler
-            h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
-            h.setFormatter(ColorFormatter(fmt_str))
-            self.logger.addHandler(h)
+            self.logger.addHandler(get_fluentd_handler(context, fmt_str, log_fluentd_config_path))
 
         if os.environ.get('JINA_LOG_FILE') == 'TXT':
             h = logging.FileHandler(f'jina-{__uptime__}.log', delay=True)
@@ -249,8 +255,10 @@ class JinaLogger(LoggerWrapper):
 
 class ProfileLogger(LoggerWrapper):
 
-    def __init__(self, context: str, context_len: int = 15, fmt_str: str = None, **kwargs):
-        from fluent import asynchandler as fluentasynchandler
+    def __init__(self, context: str, context_len: int = 15,
+                 fmt_str: str = None, log_fluentd_config_path: str = resource_filename('jina',
+                                                                                       '/'.join(
+                ('resources', 'logging.fluentd.yml'))), **kwargs):
         if not fmt_str:
             title = os.environ.get('JINA_POD_NAME', context)
             if 'JINA_LOG_LONG' in os.environ:
@@ -259,8 +267,6 @@ class ProfileLogger(LoggerWrapper):
             else:
                 fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
                           f'[%(levelname).1s]:%(message)s'
-
-        timed_fmt_str = f'%(asctime)s:' + fmt_str
 
         verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
 
@@ -272,10 +278,7 @@ class ProfileLogger(LoggerWrapper):
         self.logger.propagate = False
         self.logger.handlers = []
         self.logger.setLevel(verbose_level.value)
-
-        h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
-        h.setFormatter(ProfileFormatter(fmt_str))
-        self.logger.addHandler(h)
+        self.logger.addHandler(get_fluentd_handler(context, fmt_str, log_fluentd_config_path))
 
     def __enter__(self):
         return self

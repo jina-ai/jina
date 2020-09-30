@@ -1,0 +1,4 @@
+# this configuration describes where is the fluentD daemon running and waiting for logs to be emitted.
+# FluentD then will have its own configuration to forward the messages according to its own syntax
+host: 0.0.0.0
+port: 24224
