@@ -805,13 +805,42 @@ class Flow(ExitStack):
         i = 0
         for k in self._pod_nodes.items():
             for need_pod in self._pod_needs[i]:
-                curr_line = "Pod" + need_pod + "[" + need_pod + "]" + " --> " + "Pod" + k[0] + "[" + k[0] + "]"
+                curr_line = "Pod" + need_pod + "[" + need_pod + "]" + "-->" + "Pod" + k[0] + "[" + k[0] + "]"
                 mermaid_graph.append(curr_line)
             i = i+1
 
-        mermaid_str = '\n'.join(mermaid_graph)
-        #print("mermaid_str\n", mermaid_str)
+        mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
         return mermaid_str
+
+    def mermaidstr_to_url(self, **kwargs) -> str:
+        """
+        Rendering the current flow as a url points to a SVG, it needs internet connection
+        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+        :return: the url points to a SVG
+        """
+        import base64
+        mermaid_str = self.flow_visualization(**kwargs)
+        encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
+
+        return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/%s' % encoded_str
+
+    def mermaidstr_to_jpg(self, path: str = 'flow.jpg', **kwargs) -> None:
+        """
+        Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
+        :param path: the file path of the image
+        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+        :return:
+        """
+
+        from urllib.request import Request, urlopen
+        encoded_str = self.mermaidstr_to_url().replace('https://mermaidjs.github.io/mermaid-live-editor/#/view/', '')
+        self.logger.warning('jpg exporting relies on https://mermaid.ink/, but it is not very stable. '
+                            'some syntax are not supported, please use with caution.')
+        self.logger.info('downloading as jpg...')
+        req = Request('https://mermaid.ink/img/%s' % encoded_str, headers={'User-Agent': 'Mozilla/5.0'})
+        with open(path, 'wb') as fp:
+            fp.write(urlopen(req).read())
+        self.logger.info('done')
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow,
