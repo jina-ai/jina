@@ -29,8 +29,6 @@ class BaseSearchDriver(BaseExecutableDriver):
             **kwargs
         )
         self._is_apply = False
-        # search driver recursion apply in pre-order
-        self.recursion_order = 'pre'
         self._use_tree_traversal = True
 
 

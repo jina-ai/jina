@@ -27,8 +27,7 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
             with:
                 start: 0
                 end: 50
-                granularity_range: [0, 0]
-                adjacency_range: [0, 1]
+                traversal_paths: ['m']
 
         `SortQL` will ensure that only the documents are sorted by the score value before slicing the first top 50 documents
     """

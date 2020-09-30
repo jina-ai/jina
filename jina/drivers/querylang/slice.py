@@ -25,8 +25,7 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
             with:
                 start: 0
                 end: 50
-                granularity_range: [0, 0]
-                adjacency_range: [0, 1]
+                traversal_paths: ['m']
 
         `SliceQL` will ensure that only the first 50 documents are returned from this `Pod`
     """
@@ -43,6 +42,7 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
         self._start = int(start)
         self._end = int(end)
         self.is_apply = False
+        self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
