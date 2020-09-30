@@ -415,7 +415,9 @@ class BasePea(metaclass=PeaMeta):
         self.send_terminate_signal()
         self.is_shutdown.wait()
         if not self.daemon:
+            # TODO: remove clear_queues when queues are totally removed
             clear_queues()
+            self.logger.close()
             self.join()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
