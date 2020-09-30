@@ -135,7 +135,32 @@ class NTLogger:
             sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
 
-class JinaLogger:
+class LoggerWrapper:
+    def info(self, msg: str, **kwargs):
+        self.logger.info(msg, **kwargs)
+
+    def critical(self, msg: str, **kwargs):
+        """log critical-level message"""
+        self.logger.critical(msg, **kwargs)
+
+    def debug(self, msg: str, **kwargs):
+        """log debug-level message"""
+        self.logger.debug(msg, **kwargs)
+
+    def error(self, msg: str, **kwargs):
+        """log error-level message"""
+        self.logger.error(msg, **kwargs)
+
+    def warning(self, msg: str, **kwargs):
+        """log warn-level message"""
+        self.logger.warning(msg, **kwargs)
+
+    def success(self, msg: str, **kwargs):
+        """log success-level message"""
+        self.logger.success(msg, **kwargs)
+
+
+class JinaLogger(LoggerWrapper):
 
     def __init__(self, context: str, context_len: int = 15, log_profile: bool = False, log_sse: bool = False,
                  fmt_str: str = None, event_trigger=None, **kwargs):
@@ -168,74 +193,89 @@ class JinaLogger:
 
         verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
 
-        if os.name == 'nt':  # for Windows
-            self.logger = NTLogger(context, verbose_level)
-        else:
-            # Remove all handlers associated with the root logger object.
-            for handler in logging.root.handlers[:]:
-                logging.root.removeHandler(handler)
+        # Remove all handlers associated with the root logger object.
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
 
-            self.logger = logging.getLogger(context)
-            self.logger.propagate = False
-            self.logger.handlers = []
-            self.logger.setLevel(verbose_level.value)
+        self.logger = logging.getLogger(context)
+        self.logger.propagate = False
+        self.logger.handlers = []
+        self.logger.setLevel(verbose_level.value)
 
-            if log_profile:
-                from fluent import asynchandler as fluentasynchandler
-                h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
-                h.setFormatter(ProfileFormatter(fmt_str))
-                self.logger.addHandler(h)
+        if log_profile:
+            from fluent import asynchandler as fluentasynchandler
+            h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
+            h.setFormatter(ProfileFormatter(fmt_str))
+            self.logger.addHandler(h)
 
-            if event_trigger is not None:
-                h = EventHandler(event_trigger)
-                h.setFormatter(ColorFormatter(fmt_str))
-                self.logger.addHandler(h)
+        if event_trigger is not None:
+            h = EventHandler(event_trigger)
+            h.setFormatter(ColorFormatter(fmt_str))
+            self.logger.addHandler(h)
 
-            if ('JINA_LOG_SSE' in os.environ) or log_sse:
-                from fluent import asynchandler as fluentasynchandler
-                h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
-                h.setFormatter(ColorFormatter(fmt_str))
-                self.logger.addHandler(h)
+        if ('JINA_LOG_SSE' in os.environ) or log_sse:
+            from fluent import asynchandler as fluentasynchandler
+            h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
+            h.setFormatter(ColorFormatter(fmt_str))
+            self.logger.addHandler(h)
 
-            if os.environ.get('JINA_LOG_FILE') == 'TXT':
-                h = logging.FileHandler(f'jina-{__uptime__}.log', delay=True)
-                h.setFormatter(PlainFormatter(timed_fmt_str))
-                self.logger.addHandler(h)
-            elif os.environ.get('JINA_LOG_FILE') == 'JSON':
-                h = logging.FileHandler(f'jina-{__uptime__}.json', delay=True)
-                h.setFormatter(JsonFormatter(timed_fmt_str))
-                self.logger.addHandler(h)
+        if os.environ.get('JINA_LOG_FILE') == 'TXT':
+            h = logging.FileHandler(f'jina-{__uptime__}.log', delay=True)
+            h.setFormatter(PlainFormatter(timed_fmt_str))
+            self.logger.addHandler(h)
+        elif os.environ.get('JINA_LOG_FILE') == 'JSON':
+            h = logging.FileHandler(f'jina-{__uptime__}.json', delay=True)
+            h.setFormatter(JsonFormatter(timed_fmt_str))
+            self.logger.addHandler(h)
 
-            console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setFormatter(ColorFormatter(fmt_str))
-            self.logger.addHandler(console_handler)
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(ColorFormatter(fmt_str))
+        self.logger.addHandler(console_handler)
 
-            success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
-            logging.addLevelName(success_level, 'SUCCESS')
-            setattr(self.logger, 'success', lambda message: self.logger.log(success_level, message))
+        success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
+        logging.addLevelName(success_level, 'SUCCESS')
+        setattr(self.logger, 'success', lambda message: self.logger.log(success_level, message))
 
-    def info(self, msg: str, **kwargs):
-        self.logger.info(msg, **kwargs)
+    def __enter__(self):
+        return self
 
-    def critical(self, msg: str, **kwargs):
-        """log critical-level message"""
-        self.logger.critical(msg, **kwargs)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
-    def debug(self, msg: str, **kwargs):
-        """log debug-level message"""
-        self.logger.debug(msg, **kwargs)
+    def close(self):
+        for handler in self.logger.handlers:
+            handler.close()
 
-    def error(self, msg: str, **kwargs):
-        """log error-level message"""
-        self.logger.error(msg, **kwargs)
 
-    def warning(self, msg: str, **kwargs):
-        """log warn-level message"""
-        self.logger.warning(msg, **kwargs)
+class ProfileLogger(LoggerWrapper):
 
-    def success(self, msg: str, **kwargs):
-        """log success-level message"""
-        self.logger.success(msg, **kwargs)
+    def __init__(self, context: str, context_len: int = 15, fmt_str: str = None, **kwargs):
+        from fluent import asynchandler as fluentasynchandler
+        if not fmt_str:
+            title = os.environ.get('JINA_POD_NAME', context)
+            if 'JINA_LOG_LONG' in os.environ:
+                fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
+                          f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
+            else:
+                fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
+                          f'[%(levelname).1s]:%(message)s'
+
+        timed_fmt_str = f'%(asctime)s:' + fmt_str
+
+        verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
+
+        # Remove all handlers associated with the root logger object.
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+
+        self.logger = logging.getLogger(context)
+        self.logger.propagate = False
+        self.logger.handlers = []
+        self.logger.setLevel(verbose_level.value)
+
+        h = fluentasynchandler.FluentHandler(f'{context}', host='host', port=24224, queue_circular=True)
+        h.setFormatter(ProfileFormatter(fmt_str))
+        self.logger.addHandler(h)
 
     def __enter__(self):
         return self
