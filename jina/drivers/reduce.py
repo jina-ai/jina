@@ -20,6 +20,7 @@ class ReduceDriver(BaseRecursiveDriver):
         self._prev_requests = None
         self._prev_messages = None
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
+        self._use_tree_traversal = True
 
     @property
     def prev_reqs(self) -> List['jina_pb2.Request']:
