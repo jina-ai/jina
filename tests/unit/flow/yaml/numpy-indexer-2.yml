@@ -25,9 +25,6 @@ requests:
         with:
           fields:
             - embedding
-            - buffer
-            - blob
-            - text
       - !KVIndexDriver
         with:
           traversal_paths: ['c']
