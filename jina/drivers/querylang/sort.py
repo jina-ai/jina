@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable, List
 
+from .queryset.dunderkey import dunder_get
 from .. import QuerySetReader, BaseRecursiveDriver
-from ...helper import rgetattr
 
 if False:
     from ...proto import jina_pb2
@@ -46,5 +46,4 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        docs.sort(key=lambda x: rgetattr(x, self.field), reverse=self.reverse)
-
+        docs.sort(key=lambda x: dunder_get(x, self.field), reverse=self.reverse)

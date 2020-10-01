@@ -35,6 +35,8 @@ class CraftDriver(BaseExecutableDriver):
             elif isinstance(v, list) or isinstance(v, tuple):
                 doc.ClearField(k)
                 getattr(doc, k).extend(v)
+            elif isinstance(v, dict):
+                getattr(doc, k).update(v)
             else:
                 setattr(doc, k, v)
 

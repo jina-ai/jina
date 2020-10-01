@@ -61,7 +61,6 @@ def random_docs_with_chunks_and_matches(num_docs):
                 cm.uri = 'doc://chunk/match'
                 cm.tags['id'] = m
                 cm.granularity = dc.granularity
-                # cm.score.ref_id = dc.id
                 for mc in range(10):
                     cmc = cm.chunks.add()
                     cmc.text = 'chunk to match to chunk to hello-world'
@@ -74,7 +73,6 @@ def random_docs_with_chunks_and_matches(num_docs):
             dm.uri = 'doc://match'
             dm.tags['id'] = m
             dm.granularity = d.granularity
-            # dm.score.ref_id = d.id
             for c in range(10):
                 dmc = dm.chunks.add()
                 dmc.text = 'chunk to match to hello-world'

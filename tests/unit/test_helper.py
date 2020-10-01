@@ -1,8 +1,11 @@
 import random
 import time
+from types import SimpleNamespace
 
 import numpy as np
 
+from jina.clients.python import PyClient
+from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.helper import cached_property
 from jina.logging.profile import TimeContext
 from jina.proto.uid import *
@@ -69,3 +72,14 @@ def test_hash():
 
     tmp = np.array(tmp)
     assert tmp.dtype == np.int64
+
+
+def test_random_docs():
+    ds = random_docs(100)
+    PyClient.check_input(ds)
+
+
+def test_dunder_get():
+    a = SimpleNamespace()
+    a.b = {'c': 1}
+    assert dunder_get(a, 'b__c') == 1

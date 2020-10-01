@@ -19,8 +19,6 @@ from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextI
 import numpy as np
 from ruamel.yaml import YAML, nodes
 
-from . import JINA_GLOBAL
-
 if False:
     from uvloop import Loop
 
@@ -644,7 +642,10 @@ def rsetattr(obj, attr: str, val):
 
 def rgetattr(obj, attr: str, *args):
     def _getattr(obj, attr):
-        return getattr(obj, attr, *args)
+        if isinstance(obj, dict):
+            return obj.get(attr, None)
+        else:
+            return getattr(obj, attr, *args)
 
     return functools.reduce(_getattr, [obj] + attr.split('.'))
 
