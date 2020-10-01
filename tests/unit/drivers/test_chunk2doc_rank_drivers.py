@@ -1,10 +1,10 @@
 import pytest
+from jina.hub.rankers.MaxRanker import MaxRanker
+from jina.hub.rankers.MinRanker import MinRanker
 
 from jina.drivers.rank import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
-from jina.hub.rankers.MaxRanker import MaxRanker
-from jina.hub.rankers.MinRanker import MinRanker
-from jina.proto import jina_pb2
+from jina.proto import jina_pb2, uid
 
 
 class MockLengthRanker(Chunk2DocRanker):
@@ -36,18 +36,19 @@ def create_document_to_score():
     #    |- matches: (id: 6, parent_id: 60, score.value: 6),
     #    |- matches: (id: 7, parent_id: 70, score.value: 7)
     doc = jina_pb2.Document()
-    doc.id = 1
+    doc.tags['id'] = 1
     for c in range(2):
         chunk = doc.chunks.add()
-        chunk.id = doc.id + c + 1
+        chunk.tags['id'] = doc.tags['id'] + c + 1
+        chunk.id = uid.new_doc_id(chunk)
         for m in range(2):
             match = chunk.matches.add()
-            match.id = 2 * chunk.id + m
-            match.parent_id = 10 * match.id
-            match.length = match.id
+            match.tags['id'] = 2 * chunk.tags['id'] + m
+            match.parent_id = uid.new_doc_id(match)
+            match.length = m
             # to be used by MaxRanker and MinRanker
             match.score.ref_id = chunk.id
-            match.score.value = match.id
+            match.score.value = match.tags['id']
     return doc
 
 
@@ -115,13 +116,13 @@ def test_chunk2doc_ranker_driver_mock_exec():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == 70
+    # assert int(doc.matches[0].tags['id']) == 70
     assert doc.matches[0].score.value == 7
-    assert doc.matches[1].id == 60
+    # assert int(doc.matches[1].tags['id']) == 60
     assert doc.matches[1].score.value == 6
-    assert doc.matches[2].id == 50
+    # assert int(doc.matches[2].tags['id']) == 50
     assert doc.matches[2].score.value == 5
-    assert doc.matches[3].id == 40
+    # assert int(doc.matches[3].tags['id']) == 40
     assert doc.matches[3].score.value == 4
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
