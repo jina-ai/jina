@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
+from typing import Tuple, List
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
@@ -21,18 +21,19 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
         ExcludeQL will avoid `buffer` and `chunks` fields to be sent to the next `Pod`
     """
 
-    def __init__(self, fields: Tuple, *args, **kwargs):
+    def __init__(self, fields: Tuple, traversal_paths: List[str] = ['c'], *args, **kwargs):
         """
 
         :param fields: the pruned field names in tuple
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         if isinstance(fields, str):
             self._fields = {fields, }
         else:
             self._fields = set(fields)
 
         self.is_apply_all = False
+        self._use_tree_traversal = True
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in self.fields:

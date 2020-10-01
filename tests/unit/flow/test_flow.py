@@ -513,12 +513,12 @@ def test_flow_with_modalitys_simple():
         doc2 = Document()
         doc2.modality = 'mode2'
         doc3 = Document()
-        doc3.modality = 'mode3'
+        doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 
     flow = Flow().add(name='chunk_seg', parallel=3, uses='_pass'). \
         add(name='encoder12', parallel=2,
-            uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, recur_range: [0, 1]}')
+            uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
     with flow:
         flow.index(input_fn=input_fn, output_fn=validate)
 

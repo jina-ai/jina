@@ -14,6 +14,7 @@ class CraftDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply_all = False
+        self._use_tree_traversal = True
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         ret = self.exec_fn(**pb_obj2dict(doc, self.exec.required_keys))
@@ -43,22 +44,16 @@ class SegmentDriver(CraftDriver):
     """
 
     def __init__(
-            self,
-            level_names: List[str] = None,
-            traversal_paths: List[str] = ['r', 'c'],
-            *args,
-            **kwargs):
+        self,
+        first_chunk_id: int = 0,
+        random_chunk_id: bool = True,
+        traversal_paths: List[str] = ['r'],
+        *args,
+        **kwargs
+    ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
-        if isinstance(level_names, list) and (self._granularity_end - self._granularity_start + 1) != len(
-                self.level_names):
-            self.level_names = level_names
-        elif level_names is None:
-            pass
-        else:
-            raise ValueError(f'bad level names: {level_names}, the length of it should match the recursive depth + 1')
 
-        # for adding new chunks, preorder is safer
-        self.recursion_order = 'pre'
+        self._counter = RandomUintCounter() if random_chunk_id else SimpleCounter(first_chunk_id)
         self._protected_fields = {'length', 'id', 'parent_id', 'granularity'}
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):

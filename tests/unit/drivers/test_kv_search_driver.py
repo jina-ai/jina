@@ -61,12 +61,12 @@ class SimpleKVSearchDriver(KVSearchDriver):
 
 def create_document_to_search():
     # 1-D embedding
-    # doc: 0 - chunk: 1
-    #        - chunk: 2
-    #        - chunk: 3
-    #        - chunk: 4
-    #        - chunk: 5 - will be missing from KV indexer
-    # ....
+    # doc: 0
+    #   - chunk: 1
+    #   - chunk: 2
+    #   - chunk: 3
+    #   - chunk: 4
+    #   - chunk: 5 - will be missing from KV indexer
     doc = jina_pb2.Document()
     doc.granularity = 0
     doc.id = 0
@@ -79,12 +79,13 @@ def create_document_to_search():
 
 def create_document_to_search_with_matches_on_chunks():
     # 1-D embedding
-    # doc: 0 - chunk: 1
-    #        - chunk: 2
-    #        - chunk: 3
-    #        - chunk: 4
-    #        - chunk: 5 - will be missing from KV indexer
-    # ....
+    # doc: 0
+    #   - chunk: 1
+    #     - match: 2
+    #     - match: 3
+    #     - match: 4
+    #     - match: 5 - will be missing from KV indexer
+    #     - match: 6 - will be missing from KV indexer
     doc = jina_pb2.Document()
     doc.id = 0
     doc.granularity = 0
@@ -140,7 +141,7 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply():
 
 
 def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
-    driver = SimpleKVSearchDriver(granularity_range=[1, 1], adjacency_range=[0, 1])
+    driver = SimpleKVSearchDriver(traversal_paths=['cm'])
     executor = MockIndexer()
     driver.attach(executor=executor, pea=None)
     doc = create_document_to_search_with_matches_on_chunks()
@@ -149,7 +150,7 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
 
     assert len(doc.chunks) == 1
     chunk = doc.chunks[0]
-    assert len(chunk.matches) == 3 # 2 missed
+    assert len(chunk.matches) == 3
     for match in chunk.matches:
         assert match.embedding.buffer != b''
         embedding_array = pb2array(match.embedding)
