@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 if False:
     from .python import PyClient
 
+
 def py_client(**kwargs) -> 'PyClient':
     """A simple Python client for connecting to the gateway.
 

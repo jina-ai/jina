@@ -1,3 +1,4 @@
+from jina.clients.python import PyClient
 from jina.drivers import QuerySetReader, BaseDriver
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -6,22 +7,24 @@ from jina.proto import jina_pb2
 def random_docs(num_docs):
     for j in range(num_docs):
         d = jina_pb2.Document()
-        d.id = j
+        d.tags['id'] = j
         d.text = 'hello world'
         d.uri = 'doc://'
         for m in range(10):
             dm = d.matches.add()
             dm.text = 'match to hello world'
             dm.uri = 'doc://match'
-            dm.id = m
+            dm.tags['id'] = m
             dm.score.ref_id = d.id
             for mm in range(10):
                 dmm = dm.matches.add()
                 dmm.text = 'nested match to match'
                 dmm.uri = 'doc://match/match'
-                dmm.id = mm
-                dmm.score.ref_id = m
+                dmm.tags['id'] = mm
+                dmm.score.ref_id = dm.id
         yield d
+
+PyClient.check_input(random_docs(10))
 
 
 class DummyDriver(QuerySetReader, BaseDriver):
