@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, List
+from typing import Iterable, Tuple
 
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs, array2pb
@@ -17,7 +17,7 @@ class BaseSearchDriver(BaseExecutableDriver):
         self,
         executor: str = None,
         method: str = 'query',
-        traversal_paths: List[str] = ['r', 'c'],
+        traversal_paths: Tuple[str] = ('r', 'c'),
         *args,
         **kwargs
     ):
