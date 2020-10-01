@@ -192,6 +192,9 @@ def set_flow_parser(parser=None):
                     default=resource_filename('jina',
                                               '/'.join(('resources', 'logserver.default.yml'))),
                     help='the yaml config of the log server')
+    gp.add_argument('--start-fluentd', action='store_true', default=False,
+                    help='start fluentd with the default configuration in jina resources. Only active if --logserver '
+                         'activated')
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
                             and hence not allow multiple clients connected to the gateway at the same time.')

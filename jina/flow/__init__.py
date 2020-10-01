@@ -465,6 +465,8 @@ class Flow(ExitStack):
         super().__exit__(exc_type, exc_val, exc_tb)
         if self.args.logserver:
             self._stop_log_server()
+            if hasattr(self, 'fluentd_process'):
+                self.fluentd_process.kill()
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
@@ -476,6 +478,14 @@ class Flow(ExitStack):
             urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
         except Exception as ex:
             self.logger.info(f'Failed to connect to shutdown log sse server: {repr(ex)}')
+
+    def _start_fluentd_daemon(self):
+        from subprocess import Popen, DEVNULL
+        from pkg_resources import resource_filename
+        self.fluentd_process = Popen(['fluentd', '-c', resource_filename('jina',
+                                                                         '/'.join(('resources', 'fluent.conf')))],
+                                     stdout=DEVNULL,
+                                     stderr=DEVNULL)
 
     def _start_log_server(self):
         try:
@@ -510,6 +520,9 @@ class Flow(ExitStack):
             self.build(copy_flow=False)
 
         if self.args.logserver:
+            if self.args.start_fluentd:
+                self.logger.info('starting fluentd...')
+                self._start_fluentd_daemon()
             self.logger.info('starting logserver...')
             self._start_log_server()
 
