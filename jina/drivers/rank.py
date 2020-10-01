@@ -48,8 +48,11 @@ class Chunk2DocRankDriver(BaseRankDriver):
             |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
+
     def __init__(self, traversal_paths: Iterable[str] = ['c'], *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
+        self.hash2id = uid.hash2id
+        self.id2hash = uid.id2hash
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
                    **kwargs) -> None:
@@ -68,9 +71,9 @@ class Chunk2DocRankDriver(BaseRankDriver):
         for c in docs:
             for match in c.matches:
                 match_idx.append(
-                    (uid.id2hash(match.parent_id), uid.id2hash(match.id), uid.id2hash(c.id), match.score.value))
-                query_chunk_meta[uid.id2hash(c.id)] = pb_obj2dict(c, self.exec.required_keys)
-                match_chunk_meta[uid.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
+                    (self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(c.id), match.score.value))
+                query_chunk_meta[self.id2hash(c.id)] = pb_obj2dict(c, self.exec.required_keys)
+                match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(match_idx, dtype=np.float64)
@@ -81,7 +84,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
             for doc_hash, score in docs_scores:
                 r = context_doc.matches.add()
-                r.id = uid.hash2id(doc_hash)
+                r.id = self.hash2id(doc_hash)
                 r.granularity = context_doc.granularity
                 r.adjacency = context_doc.adjacency + 1
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
