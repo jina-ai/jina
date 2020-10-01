@@ -57,7 +57,6 @@ def build_docs():
         document = jina_pb2.Document()
         document.granularity = 0
         document.adjacency = 0
-        document.id = base_id
         docs.append(document)
         iterate_build(document, 0, 0)
     return docs
