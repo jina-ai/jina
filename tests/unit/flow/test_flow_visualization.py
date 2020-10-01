@@ -17,3 +17,5 @@ def test_visualization():
     flow_created = Image.open(os.path.join(cur_dir, 'flow.jpg'))
     assert flow_original.size == flow_created.size
     np.testing.assert_array_almost_equal(flow_original, flow_created)
+    flow_created.close()
+    flow_original.close()
