@@ -92,7 +92,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
                 r.score.op_name = exec.__class__.__name__
 
 
-class CollectMatches2DocRankDriver(BaseRankDriver):
+class CollectMatches2DocRankDriver(Chunk2DocRankDriver):
     """This Driver is intended to take a `document` with matches at a `given level depth > 0`, clear those matches and substitute
     these matches by the documents at a lower depth level.
     Input-Output ::
