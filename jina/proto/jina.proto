@@ -40,15 +40,15 @@ message Relevance {
     string op_name = 2; // the name of the operator/score function
     string description = 3; // text description of the score
     repeated Relevance operands = 4; // the score can be nested
-    uint32 ref_id = 5; // the score is computed between doc `id` and `ref_id`
+    string ref_id = 5; // the score is computed between doc `id` and `ref_id`
 }
 
 /**
  * Represents a Document
  */
 message Document {
-    // The unique document ID
-    uint32 id = 1;
+    // A hexdigest that represents a unique document ID
+    string id = 1;
 
     // the depth of the recursive chunk structure
     uint32 granularity = 14;
@@ -60,7 +60,7 @@ message Document {
     string level_name = 15;
 
     // the parent id from the previous level
-    uint32 parent_id = 16;
+    string parent_id = 16;
 
     oneof content {
         // the raw binary content of this document, which often represents the original document when comes into jina
