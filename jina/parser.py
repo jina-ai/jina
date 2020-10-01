@@ -491,7 +491,6 @@ def set_client_cli_parser(parser=None):
     _set_grpc_parser(parser)
 
     gp1 = add_arg_group(parser, 'client-specific arguments')
-    _gp = gp1.add_mutually_exclusive_group()
 
     gp1.add_argument('--batch-size', type=int, default=100,
                      help='the number of documents in each request')
