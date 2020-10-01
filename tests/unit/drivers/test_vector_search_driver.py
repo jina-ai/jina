@@ -62,11 +62,11 @@ def create_document_to_search():
     #        - chunk: 5 - embedding(5.0)
     # ....
     doc = jina_pb2.Document()
-    doc.id = 1
+    doc.id = '1'
     for c in range(10):
         chunk = doc.chunks.add()
-        chunk.id = doc.id + c + 1
-        chunk.embedding.CopyFrom(array2pb(np.array([chunk.id])))
+        chunk.id = str(c + 2)
+        chunk.embedding.CopyFrom(array2pb(np.array([int(chunk.id)])))
     return doc
 
 
@@ -89,14 +89,12 @@ def test_vectorsearch_driver_mock_indexer():
 
     for chunk in doc.chunks:
         assert len(chunk.matches) == 2
-        assert chunk.matches[0].id == chunk.id * 100
-        assert chunk.matches[1].id == chunk.id * 1000
         assert chunk.matches[0].granularity == chunk.granularity
         assert chunk.matches[1].granularity == chunk.granularity
-        assert chunk.matches[0].score.ref_id == chunk.id
-        assert chunk.matches[1].score.ref_id == chunk.id
-        assert chunk.matches[0].score.value == pytest.approx(chunk.id * 0.01, 0.0001)
-        assert chunk.matches[1].score.value == pytest.approx(chunk.id * 0.1, 0.0001)
+        assert chunk.matches[0].score.ref_id == str(chunk.id)
+        assert chunk.matches[1].score.ref_id == str(chunk.id)
+        assert chunk.matches[0].score.value == pytest.approx(int(chunk.id) * 0.01, 0.0001)
+        assert chunk.matches[1].score.value == pytest.approx(int(chunk.id) * 0.1, 0.0001)
         assert chunk.matches[-1].embedding.buffer == b''
 
 
