@@ -2,9 +2,9 @@
 
 Remarks on the ``id``, we have three views for it
 
-- ``str`` is a hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable. it will be used as the major view.
-- ``bytes`` is the binary format of str, it has 8 bytes fixed length, so it can be used in the dense file storage, e.g. BinaryPbIndexer, as it requires the key has to be fixed length.
-- ``int64`` is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
+- ``id``: ``str`` is a hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable. it will be used as the major view.
+- ``bytes``: ``bytes`` is the binary format of str, it has 8 bytes fixed length, so it can be used in the dense file storage, e.g. BinaryPbIndexer, as it requires the key has to be fixed length.
+- ``hash``:``int64`` is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
 
 """
 
@@ -14,11 +14,10 @@ __license__ = "Apache-2.0"
 import sys
 from binascii import unhexlify
 from hashlib import blake2b
-from typing import Optional
 
 from .jina_pb2 import Document
 
-_doc_field_mask = None  # type: Optional['FieldMask']
+_doc_field_mask = None
 _digest_size = 8
 
 
