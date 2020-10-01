@@ -17,7 +17,7 @@ if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.pea import BasePea
     from ..executors import AnyExecutor
-    import logging
+    from ..logging.logger import JinaLogger
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -166,7 +166,7 @@ class BaseDriver(metaclass=DriverType):
         return self.msg.envelope
 
     @property
-    def logger(self) -> 'logging.Logger':
+    def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.pea.logger``"""
         return self.pea.logger
 
