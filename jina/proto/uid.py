@@ -11,6 +11,7 @@ Remarks on the ``id``, we have three views for it
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import sys
 from binascii import unhexlify
 from hashlib import blake2b
 from typing import Optional
@@ -18,6 +19,7 @@ from typing import Optional
 from .jina_pb2 import Document
 
 _doc_field_mask = None  # type: Optional['FieldMask']
+_digest_size = 8
 
 
 def new_doc_hash(doc: 'Document') -> int:
@@ -37,7 +39,7 @@ def new_doc_id(doc: 'Document') -> str:
     if _doc_field_mask:
         d = Document()
         _doc_field_mask.MergeMessage(doc, d)
-    return blake2b(d.SerializeToString(), digest_size=8).hexdigest()
+    return blake2b(d.SerializeToString(), digest_size=_digest_size).hexdigest()
 
 
 def new_doc_bytes(doc: 'Document') -> bytes:
@@ -45,11 +47,11 @@ def new_doc_bytes(doc: 'Document') -> bytes:
 
 
 def hash2bytes(value: int) -> bytes:
-    return value.to_bytes(8, 'big', signed=True)
+    return int(value).to_bytes(_digest_size, sys.byteorder, signed=True)
 
 
 def bytes2hash(value: bytes) -> int:
-    return int.from_bytes(value, 'big', signed=True)
+    return int.from_bytes(value, sys.byteorder, signed=True)
 
 
 def id2bytes(value: str) -> bytes:

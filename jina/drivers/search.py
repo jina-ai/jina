@@ -5,6 +5,7 @@ from typing import Iterable, List
 
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs, array2pb
+from ..proto import uid
 
 if False:
     from ..proto import jina_pb2
@@ -14,12 +15,12 @@ class BaseSearchDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(
-        self,
-        executor: str = None,
-        method: str = 'query',
-        traversal_paths: List[str] = ['r', 'c'],
-        *args,
-        **kwargs
+            self,
+            executor: str = None,
+            method: str = 'query',
+            traversal_paths: List[str] = ['r', 'c'],
+            *args,
+            **kwargs
     ):
         super().__init__(executor, method, traversal_paths=traversal_paths, *args, **kwargs)
         self._is_apply = False
@@ -80,7 +81,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        embeds = self.exec_fn([d.id for d in docs])
+        embeds = self.exec_fn([uid.id2hash(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding.CopyFrom(array2pb(embedding))
 
@@ -119,9 +120,9 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
                 topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
 
-                for match_id, score, vec in zip(topks, scores, topk_embed):
+                for match_hash, score, vec in zip(topks, scores, topk_embed):
                     r = doc.matches.add()
-                    r.id = match_id
+                    r.id = uid.hash2id(match_hash)
                     r.adjacency = doc.adjacency + 1
                     r.score.ref_id = doc.id
                     r.score.value = score

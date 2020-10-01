@@ -3,13 +3,12 @@ import os
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from jina.proto import jina_pb2
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def random_docs(num_docs):
-    for j in range(num_docs):
-        yield jina_pb2.Document()
+
 
 
 class DummySegment(BaseSegmenter):
@@ -26,16 +25,16 @@ def validate(req):
 def test_dummy_seg():
     f = Flow().add(uses='DummySegment')
     with f:
-        f.index(input_fn=random_docs(10), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
 
 
 def test_dummy_seg_random():
     f = Flow().add(uses=os.path.join(cur_dir, '../../yaml/dummy-seg-random.yml'))
     with f:
-        f.index(input_fn=random_docs(10), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
 
 
 def test_dummy_seg_not_random():
     f = Flow().add(uses=os.path.join(cur_dir, '../../yaml/dummy-seg-not-random.yml'))
     with f:
-        f.index(input_fn=random_docs(10), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)

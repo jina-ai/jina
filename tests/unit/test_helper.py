@@ -1,10 +1,11 @@
+import random
 import time
 
 import numpy as np
 
 from jina.helper import cached_property
 from jina.logging.profile import TimeContext
-from jina.proto import *
+from jina.proto.uid import *
 from tests import random_docs
 
 
@@ -48,6 +49,11 @@ def test_time_context():
 
     assert int(tc.duration) == 2
     assert tc.readable_duration == '2 seconds'
+
+
+def test_np_int():
+    a = random.randint(0, 100000)
+    assert hash2bytes(np.int64(a)) == hash2bytes(a)
 
 
 def test_hash():
