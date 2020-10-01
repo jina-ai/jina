@@ -9,4 +9,4 @@ requests:
       - !EncodeDriver
         with:
           method: encode
-          granularity_range: [1, 2]
+          traversal_paths: ['c']
