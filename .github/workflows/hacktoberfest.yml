@@ -3,7 +3,7 @@ name: issue-hf2020
 on:
   issues:
     types: [opened]
-  pull_request:
+  pull_request_target:
     types: [opened]
 
 
