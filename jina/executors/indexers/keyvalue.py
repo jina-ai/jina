@@ -7,7 +7,7 @@ from typing import Iterator, Optional
 import numpy as np
 
 from . import BaseKVIndexer
-from ...proto import jina_pb2
+from ...proto import jina_pb2, uid
 
 
 class BinaryPbIndexer(BaseKVIndexer):
@@ -58,7 +58,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             l = len(s)  #: the length
             p = int(self._start / self._page_size) * self._page_size  #: offset of the page
             r = self._start % self._page_size  #: the reminder, i.e. the start position given the offset
-            self.write_handler.header.write(np.array((d.id, p, r, r + l), dtype=np.int64).tobytes())
+            self.write_handler.header.write(np.array((uid.id2hash(d.id), p, r, r + l), dtype=np.int64).tobytes())
             self._start += l
             self.write_handler.body.write(s)
             self._size += 1
