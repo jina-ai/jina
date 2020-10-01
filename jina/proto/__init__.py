@@ -6,6 +6,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from binascii import unhexlify
+from hashlib import blake2b
 from typing import Optional
 
 from .jina_pb2 import Request, Document
@@ -23,15 +24,15 @@ def is_data_request(req: 'Request') -> bool:
 
 
 def new_doc_hash(doc: 'Document') -> int:
+    return id2hash(new_doc_id(doc))
+
+
+def new_doc_id(doc: 'Document') -> str:
     d = doc
     if doc_field_mask:
         d = Document()
         doc_field_mask.MergeMessage(doc, d)
-    return hash(d.SerializeToString())
-
-
-def new_doc_id(doc: 'Document') -> str:
-    return hash2id(new_doc_hash(doc))
+    return blake2b(d.SerializeToString(), digest_size=8).hexdigest()
 
 
 def hash2bytes(value: int) -> bytes:
