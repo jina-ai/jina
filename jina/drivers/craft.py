@@ -44,16 +44,13 @@ class SegmentDriver(CraftDriver):
     """
 
     def __init__(
-        self,
-        first_chunk_id: int = 0,
-        random_chunk_id: bool = True,
-        traversal_paths: List[str] = ['r'],
-        *args,
-        **kwargs
+            self,
+            traversal_paths: List[str] = ['r'],
+            *args,
+            **kwargs
     ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-        self._counter = RandomUintCounter() if random_chunk_id else SimpleCounter(first_chunk_id)
         self._protected_fields = {'length', 'id', 'parent_id', 'granularity'}
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):

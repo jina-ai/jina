@@ -1,12 +1,12 @@
 from typing import Dict, List
+
 import numpy as np
 import pytest
 
 from jina.drivers.craft import SegmentDriver
-from jina.executors.crafters import BaseSegmenter
 from jina.drivers.helper import array2pb
+from jina.executors.crafters import BaseSegmenter
 from jina.proto import jina_pb2
-from tests import JinaTestCase
 
 
 class MockSegmenter(BaseSegmenter):
@@ -26,9 +26,6 @@ class MockSegmenter(BaseSegmenter):
 
 class SimpleSegmentDriver(SegmentDriver):
 
-    def __init__(self, first_chunk_id, *args, **kwargs):
-        super().__init__(first_chunk_id=first_chunk_id, random_chunk_id=False, *args, **kwargs)
-
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -41,7 +38,7 @@ def test_segment_driver():
     valid_doc.length = 2
     valid_doc.mime_type = 'image/png'
 
-    driver = SimpleSegmentDriver(first_chunk_id=3)
+    driver = SimpleSegmentDriver()
     executor = MockSegmenter()
     driver.attach(executor=executor, pea=None)
     driver._apply(valid_doc)
@@ -70,9 +67,8 @@ def test_segment_driver():
     assert valid_doc.chunks[2].mime_type == 'image/png'
 
 
-
 def test_broken_document():
-    driver = SimpleSegmentDriver(first_chunk_id=3)
+    driver = SimpleSegmentDriver()
     executor = MockSegmenter()
     driver.attach(executor=executor, pea=None)
 
