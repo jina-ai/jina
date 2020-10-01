@@ -2,6 +2,7 @@ import os
 import numpy as np
 
 from PIL import Image
+
 from jina.flow import Flow
 
 
@@ -13,9 +14,7 @@ def test_visualization():
             .join(needs=['pod_a', 'pod_b']))
 
     flow.mermaidstr_to_jpg()
-    flow_original = Image.open(os.path.join(cur_dir, 'flow_original.jpg'))
-    flow_created = Image.open(os.path.join(cur_dir, 'flow.jpg'))
-    assert flow_original.size == flow_created.size
-    np.testing.assert_array_almost_equal(flow_original, flow_created)
-    flow_created.close()
-    flow_original.close()
+    with Image.open(os.path.join(cur_dir, 'flow_original.jpg')) as flow_original:
+        with Image.open(os.path.join(cur_dir, 'flow.jpg')) as flow_created:
+            assert flow_original.size == flow_created.size
+            np.testing.assert_array_almost_equal(flow_original, flow_created)
