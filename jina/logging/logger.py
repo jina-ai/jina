@@ -161,14 +161,25 @@ class LoggerWrapper:
         self.logger.success(msg, **kwargs)
 
 
-def get_fluentd_handler(context: str, fmt_str: str, log_fluentd_config_path: str):
+def get_fluentd_handler(context: str, log_fluentd_config_path: str, profile: bool):
+    custom_format = {
+        'host': '%(hostname)s',
+        'name': f'{context}',
+        'process': '%(process)s',
+        'type': '%(levelname)s',
+    }
     from fluent import asynchandler as fluentasynchandler
+    from fluent.handler import FluentRecordFormatter
     import yaml
     with open(log_fluentd_config_path) as fp:
         config = yaml.load(fp)
-    handler = fluentasynchandler.FluentHandler(f'{context}', host=config['host'],
+
+    tag_key = 'tag' if not profile else 'profile-tag'
+    tag = config[tag_key] if tag_key in config else context
+    handler = fluentasynchandler.FluentHandler(f'{tag}', host=config['host'],
                                                port=config['port'], queue_circular=True)
-    handler.setFormatter(ColorFormatter(fmt_str))
+    formatter = FluentRecordFormatter(custom_format)
+    handler.setFormatter(formatter)
     return handler
 
 
@@ -223,7 +234,7 @@ class JinaLogger(LoggerWrapper):
             self.logger.addHandler(h)
 
         if ('JINA_LOG_SSE' in os.environ) or log_sse:
-            self.logger.addHandler(get_fluentd_handler(context, fmt_str, log_fluentd_config_path))
+            self.logger.addHandler(get_fluentd_handler(context, log_fluentd_config_path, False))
 
         if os.environ.get('JINA_LOG_FILE') == 'TXT':
             h = logging.FileHandler(f'jina-{__uptime__}.log', delay=True)
@@ -278,7 +289,7 @@ class ProfileLogger(LoggerWrapper):
         self.logger.propagate = False
         self.logger.handlers = []
         self.logger.setLevel(verbose_level.value)
-        self.logger.addHandler(get_fluentd_handler(context, fmt_str, log_fluentd_config_path))
+        self.logger.addHandler(get_fluentd_handler(context, log_fluentd_config_path, True))
 
     def __enter__(self):
         return self
