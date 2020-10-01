@@ -15,3 +15,4 @@ jobs:
         uses: andymckay/labeler@master
         with:
           add-labels: "hacktoberfest, hacktoberfest2020"
+          repo-token: "${{ secrets.JINA_DEV_BOT }}"
