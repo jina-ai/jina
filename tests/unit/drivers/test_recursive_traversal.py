@@ -20,7 +20,6 @@ def build_docs():
         d = jina_pb2.Document()
         d.granularity = 0
         d.adjacency = 0
-        d.id = base_id
         docs.append(d)
         iterate_build(d, 0, 2, 0, 2)
     return docs
@@ -32,14 +31,12 @@ def iterate_build(d, current_granularity, max_granularity, current_adjacency, ma
             dc = d.chunks.add()
             dc.granularity = current_granularity + 1
             dc.adjacency = current_adjacency
-            dc.id = i
             iterate_build(dc, dc.granularity, max_granularity, dc.adjacency, max_adjacency)
     if current_adjacency < max_adjacency:
         for i in range(DOCUMENTS_PER_LEVEL):
             dc = d.matches.add()
             dc.granularity = current_granularity
             dc.adjacency = current_adjacency + 1
-            dc.id = i
             iterate_build(dc, dc.granularity, max_granularity, dc.adjacency, max_adjacency)
 
 
@@ -50,7 +47,7 @@ def test_only_granularity():
         end=1,
         adjacency_range=(0, 0),
         granularity_range=(0, 2),
-        recur_on=["chunks"]
+        recur_on=['chunks']
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
@@ -69,7 +66,7 @@ def test_only_adjacency():
         end=1,
         adjacency_range=(0, 2),
         granularity_range=(0, 0),
-        recur_on=["matches"]
+        recur_on=['matches']
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
@@ -93,7 +90,7 @@ def test_adjacency_chunks():
         end=1,
         adjacency_range=(0, 1),
         granularity_range=(0, 0),
-        recur_on=["chunks"]
+        recur_on=['chunks']
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
@@ -117,7 +114,7 @@ def test_granularity_matches():
         end=1,
         adjacency_range=(0, 0),
         granularity_range=(0, 1),
-        recur_on=["matches"]
+        recur_on=['matches']
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
@@ -136,7 +133,7 @@ def test_both_from_0():
         end=1,
         adjacency_range=(0, 2),
         granularity_range=(0, 2),
-        recur_on=["chunks", "matches"]
+        recur_on=['chunks', 'matches']
     )
     driver._traverse_apply(docs)
     assert len(docs) == 1
@@ -157,7 +154,7 @@ def test_adjacency0_granularity1():
         end=1,
         adjacency_range=(0, 2),
         granularity_range=(1, 2),
-        recur_on=["chunks", "matches"]
+        recur_on=['chunks', 'matches']
     )
     driver._traverse_apply(docs)
     assert len(docs) == DOCUMENTS_PER_LEVEL
@@ -181,7 +178,7 @@ def test_adjacency1_granularity1():
         end=1,
         adjacency_range=(1, 2),
         granularity_range=(1, 2),
-        recur_on=["chunks", "matches"]
+        recur_on=['chunks', 'matches']
     )
     driver._traverse_apply(docs)
     assert len(docs) == DOCUMENTS_PER_LEVEL
@@ -233,7 +230,7 @@ def test_traverse_apply():
         end=1,
         adjacency_range=(2, 2),
         granularity_range=(1, 1),
-        recur_on=["matches", ]
+        recur_on=['matches', ]
     )
     # check we have a match with (g=1, a=2)
     assert docs[0].matches[0].chunks[0].matches[0].granularity == 1

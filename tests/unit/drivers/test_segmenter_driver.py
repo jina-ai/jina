@@ -6,7 +6,7 @@ import pytest
 from jina.drivers.craft import SegmentDriver
 from jina.drivers.helper import array2pb
 from jina.executors.crafters import BaseSegmenter
-from jina.proto import jina_pb2
+from jina.proto import jina_pb2, uid
 
 
 class MockSegmenter(BaseSegmenter):
@@ -17,9 +17,10 @@ class MockSegmenter(BaseSegmenter):
     def craft(self, text: str, *args, **kwargs) -> List[Dict]:
         if text == 'valid':
             # length, parent_id and id are protected keys that won't affect the segments
-            return [{'blob': np.array([0.0, 0.0, 0.0]), 'weight': 0, 'mime_type': "text/plain"},
-                    {'blob': np.array([1.0, 1.0, 1.0]), 'weight': 1},
-                    {'blob': np.array([2.0, 2.0, 2.0]), 'weight': 2, 'length': 10, 'parent_id': 50, 'id': 10}]
+            return [{'blob': np.array([0.0, 0.0, 0.0]), 'weight': 0, 'mime_type': 'text/plain', 'tags': {'id': 3}},
+                    {'blob': np.array([1.0, 1.0, 1.0]), 'weight': 1, 'tags': {'id': 4}},
+                    {'blob': np.array([2.0, 2.0, 2.0]), 'weight': 2, 'length': 10, 'parent_id': '50', 'id': '10',
+                     'tags': {'id': 5}}]
         else:
             return [{'non_existing_key': 1}]
 
@@ -33,7 +34,7 @@ class SimpleSegmentDriver(SegmentDriver):
 
 def test_segment_driver():
     valid_doc = jina_pb2.Document()
-    valid_doc.id = 1
+    valid_doc.id = uid.new_doc_id(valid_doc)
     valid_doc.text = 'valid'
     valid_doc.length = 2
     valid_doc.mime_type = 'image/png'
@@ -45,21 +46,21 @@ def test_segment_driver():
 
     assert valid_doc.length == 2
 
-    assert valid_doc.chunks[0].id == 3
+    assert valid_doc.chunks[0].tags['id'] == 3
     assert valid_doc.chunks[0].parent_id == valid_doc.id
     assert valid_doc.chunks[0].blob == array2pb(np.array([0.0, 0.0, 0.0]))
     assert valid_doc.chunks[0].weight == 0
     assert valid_doc.chunks[0].length == 3
     assert valid_doc.chunks[0].mime_type == 'text/plain'
 
-    assert valid_doc.chunks[1].id == 4
+    assert valid_doc.chunks[1].tags['id'] == 4
     assert valid_doc.chunks[1].parent_id == valid_doc.id
     assert valid_doc.chunks[1].blob == array2pb(np.array([1.0, 1.0, 1.0]))
     assert valid_doc.chunks[1].weight == 1
     assert valid_doc.chunks[1].length == 3
     assert valid_doc.chunks[1].mime_type == 'image/png'
 
-    assert valid_doc.chunks[2].id == 5
+    assert valid_doc.chunks[2].tags['id'] == 5
     assert valid_doc.chunks[2].parent_id == valid_doc.id
     assert valid_doc.chunks[2].blob == array2pb(np.array([2.0, 2.0, 2.0]))
     assert valid_doc.chunks[2].weight == 2
@@ -73,7 +74,7 @@ def test_broken_document():
     driver.attach(executor=executor, pea=None)
 
     invalid_doc = jina_pb2.Document()
-    invalid_doc.id = 2
+    invalid_doc.id = uid.new_doc_id(invalid_doc)
     invalid_doc.text = 'invalid'
     invalid_doc.length = 2
 
