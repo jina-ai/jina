@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Iterable, List
 
 from . import BaseExecutableDriver
 from .helper import extract_docs, array2pb
@@ -15,6 +15,7 @@ class BaseEncodeDriver(BaseExecutableDriver):
 
     def __init__(self, executor: str = None, method: str = 'encode', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
+        self._use_tree_traversal = True
 
 
 class EncodeDriver(BaseEncodeDriver):
