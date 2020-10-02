@@ -1,32 +1,20 @@
 import os
 import shutil
 
-import numpy as np
-
-from jina.drivers.helper import array2pb
 from jina.flow import Flow
-from jina.proto import jina_pb2
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def random_docs(num_docs):
-    vecs = np.random.random([num_docs, 2])
-    for j in range(num_docs):
-        d = jina_pb2.Document()
-        d.id = j
-        d.embedding.CopyFrom(array2pb(vecs[j]))
-        yield d
-
-
-def test_high_order_matches():
-    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
-
-    with f:
-        f.index(random_docs(100))
-
-    with f:
-        f.search(random_docs(1), output_fn=validate)
+# def test_high_order_matches():
+#     f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
+#
+#     with f:
+#         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
+#
+#     with f:
+#         f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), output_fn=validate)
 
 
 def test_high_order_matches_integrated():
@@ -34,10 +22,10 @@ def test_high_order_matches_integrated():
     f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
 
     with f:
-        f.index(random_docs(100))
+        f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
 
     with f:
-        f.search(random_docs(1), output_fn=validate)
+        f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), output_fn=validate)
 
 
 def validate(req):

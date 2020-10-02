@@ -11,7 +11,7 @@ from tests import random_docs
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.mark.parametrize('uses', ['binarypb.yml', 'shelfpb.yml'])
+@pytest.mark.parametrize('uses', ['binarypb.yml'])
 def test_shelf_in_flow(uses):
     m1 = used_memory()
     # shelve does not support embed > 1000??
@@ -25,7 +25,6 @@ def test_shelf_in_flow(uses):
 
     m2 = used_memory()
     d = jina_pb2.Document()
-    d.id = 9523
 
     def validate(req):
         m4 = used_memory()

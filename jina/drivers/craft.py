@@ -5,8 +5,7 @@ from typing import Dict, Set, Tuple
 
 from . import BaseExecutableDriver
 from .helper import array2pb, pb_obj2dict
-from ..counter import RandomUintCounter, SimpleCounter
-from ..proto import jina_pb2
+from ..proto import jina_pb2, uid
 
 
 class CraftDriver(BaseExecutableDriver):
@@ -36,6 +35,8 @@ class CraftDriver(BaseExecutableDriver):
             elif isinstance(v, list) or isinstance(v, tuple):
                 doc.ClearField(k)
                 getattr(doc, k).extend(v)
+            elif isinstance(v, dict):
+                getattr(doc, k).update(v)
             else:
                 setattr(doc, k, v)
 
@@ -45,16 +46,13 @@ class SegmentDriver(CraftDriver):
     """
 
     def __init__(
-        self,
-        first_chunk_id: int = 0,
-        random_chunk_id: bool = True,
-        traversal_paths: Tuple[str] = ('r',),
-        *args,
-        **kwargs
+            self,
+            traversal_paths: Tuple[str] = ('r',),
+            *args,
+            **kwargs
     ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-        self._counter = RandomUintCounter() if random_chunk_id else SimpleCounter(first_chunk_id)
         self._protected_fields = {'length', 'id', 'parent_id', 'granularity'}
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
@@ -65,11 +63,11 @@ class SegmentDriver(CraftDriver):
                 c = doc.chunks.add()
                 self.set_doc_attr(c, r, self._protected_fields)
                 c.length = len(ret)
-                c.id = next(self._counter)
                 c.parent_id = doc.id
                 c.granularity = doc.granularity + 1
                 if not c.mime_type:
                     c.mime_type = doc.mime_type
+                c.id = uid.new_doc_id(c)
 
         else:
             self.logger.warning(f'doc {doc.id} at level {doc.granularity} gives no chunk')
