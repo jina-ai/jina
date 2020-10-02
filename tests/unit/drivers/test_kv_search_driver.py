@@ -42,10 +42,10 @@ class MockIndexer(BaseKVIndexer):
         doc4.id = '4'
         doc4.embedding.CopyFrom(array2pb(np.array([int(doc4.id)])))
         self.db = {
-            '1': doc1,
-            '2': doc2,
-            '3': doc3,
-            '4': doc4
+            1: doc1,
+            2: doc2,
+            3: doc3,
+            4: doc4
         }
 
 
@@ -53,6 +53,9 @@ class SimpleKVSearchDriver(KVSearchDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.hash2id = lambda x: str(int(x))
+        self.id2hash = lambda x: int(x)
 
     @property
     def exec_fn(self):

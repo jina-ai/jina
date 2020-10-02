@@ -32,6 +32,9 @@ class BaseSearchDriver(BaseExecutableDriver):
         self._is_apply = False
         self._use_tree_traversal = True
 
+        self.hash2id = uid.hash2id
+        self.id2hash = uid.id2hash
+
 
 class KVSearchDriver(BaseSearchDriver):
     """Fill in the doc/chunk-level top-k results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
@@ -62,7 +65,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            r = self.exec_fn(uid.id2hash(retrieved_doc.id))
+            r = self.exec_fn(self.id2hash(retrieved_doc.id))
             if r:
                 # TODO: this isn't perfect though, merge applies recursively on all children
                 #  it will duplicate embedding.shape if embedding is already there
@@ -85,7 +88,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        embeds = self.exec_fn([uid.id2hash(d.id) for d in docs])
+        embeds = self.exec_fn([self.id2hash(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding.CopyFrom(array2pb(embedding))
 
@@ -128,7 +131,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
             for match_hash, score, vec in zip(topks, scores, topk_embed):
                 r = doc.matches.add()
-                r.id = uid.hash2id(match_hash)
+                r.id = self.hash2id(match_hash)
                 r.adjacency = doc.adjacency + 1
                 r.score.ref_id = doc.id
                 r.score.value = score
