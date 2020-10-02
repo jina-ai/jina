@@ -62,7 +62,6 @@ class Chunk2DocRankDriver(BaseRankDriver):
         :return:
         """
 
-
         match_idx = []  # type: List[Tuple[int, int, int, float]]
         query_chunk_meta = {}  # type: Dict[int, Dict]
         match_chunk_meta = {}  # type: Dict[int, Dict]
@@ -133,10 +132,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         # doc_id_to_match_map = {}
         for match in docs:
             # doc_id_to_match_map[match.id] = index
-            match_idx.append(
-                (
-                    self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(context_doc.id),
-                    match.score.value))
+            match_idx.append((self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(context_doc.id),
+                              match.score.value))
             query_chunk_meta[self.id2hash(context_doc.id)] = pb_obj2dict(context_doc, self.exec.required_keys)
             match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
