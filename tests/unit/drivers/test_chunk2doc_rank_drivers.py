@@ -185,6 +185,7 @@ def test_chunk2doc_ranker_driver_traverse_apply():
             assert m.score.value == pytest.approx(1. / (1 + float(m.id) * 2.), 0.0001)
 
 
+@pytest.mark.skip('TODO: https://github.com/jina-ai/jina/issues/1014')
 def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
     docs = [create_chunk_chunk_matches_to_score(), ]
     driver = SimpleChunk2DocRankDriver(traversal_paths=['cc', 'c'])
