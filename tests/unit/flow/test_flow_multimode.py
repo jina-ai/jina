@@ -82,3 +82,5 @@ def test_flow_with_modalities(tmpdir):
     d_id = list(chunkIndexer2.query_handler.header.keys())[0]
     assert chunkIndexer2.query(d_id).text == ' body: this is mode2 from doc1'
     assert chunkIndexer2.query(d_id).modality == 'mode2'
+
+    del os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE']
