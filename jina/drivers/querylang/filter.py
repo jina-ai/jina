@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Any, Iterable, List
+from typing import Dict, Any, Iterable, Tuple
 
 from .queryset.lookup import Q
 from .. import QuerySetReader, BaseRecursiveDriver
@@ -27,7 +27,7 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         those documents at the specific levels that do not comply with this condition
     """
 
-    def __init__(self, lookups: Dict[str, Any], traversal_paths: List[str] = ['c'], *args, **kwargs):
+    def __init__(self, lookups: Dict[str, Any], traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         """
         :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a

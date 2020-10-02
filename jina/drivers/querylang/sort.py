@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, List
+from typing import Iterable, Tuple
 
 from .. import QuerySetReader, BaseRecursiveDriver
 from ...helper import rgetattr
@@ -27,13 +27,12 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
             with:
                 start: 0
                 end: 50
-                granularity_range: [0, 0]
-                adjacency_range: [0, 1]
+                traversal_paths: ['m']
 
         `SortQL` will ensure that only the documents are sorted by the score value before slicing the first top 50 documents
     """
 
-    def __init__(self, field: str, reverse: bool = False, traversal_paths: List[str] = ['c'], *args, **kwargs):
+    def __init__(self, field: str, reverse: bool = False, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         """
         :param field: the value of the field drives the sort of the iterable docs
         :param reverse: sort the value from big to small

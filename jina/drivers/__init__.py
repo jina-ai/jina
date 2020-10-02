@@ -221,7 +221,7 @@ class BaseRecursiveDriver(BaseDriver):
                  granularity_range: Tuple[int, int] = (0, 1),
                  adjacency_range: Tuple[int, int] = (0, 0),
                  recursion_order: str = 'post',
-                 traversal_paths: List[str] = ['c', 'r'],
+                 traversal_paths: Tuple[str] = ('c', 'r'),
                  *args,
                  **kwargs):
         """

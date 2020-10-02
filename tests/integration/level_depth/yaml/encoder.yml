@@ -6,10 +6,8 @@ requests:
     IndexRequest:
       - !EncodeDriver
         with:
-          recur_range: [0, 1]
-      - !LogInfoDriver {}
+          traversal_paths: ['c']
     SearchRequest:
       - !EncodeDriver
         with:
-          recur_range: [1, 1]
-      - !LogInfoDriver {}
+          traversal_paths: ['r']
