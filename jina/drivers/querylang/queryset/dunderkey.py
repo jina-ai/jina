@@ -32,7 +32,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## This module deals with code regarding handling the double
 ## underscore separated keys
-from typing import Tuple, Dict, Any
+
+from typing import Tuple, Dict, Any, Optional
 
 from google.protobuf.struct_pb2 import Struct
 
@@ -52,7 +53,7 @@ def dunderkey(*args: str) -> str:
     return '__'.join(args)
 
 
-def dunder_partition(key: str) -> Union[Tuple[str, str], Tuple[str, None]]:
+def dunder_partition(key: str) -> Tuple[str, Optional[str]]:
     """Splits a dunderkey into 2 parts
 
     The first part is everything before the final double underscore
@@ -65,8 +66,13 @@ def dunder_partition(key: str) -> Union[Tuple[str, str], Tuple[str, None]]:
     :rtype        : 2 Tuple
 
     """
-    parts = key.rsplit('__', 1)
-    return tuple(parts) if len(parts) > 1 else (parts[0], None)
+    part1: str
+    part2: Optional[str]
+    try:
+        part1, part2 = key.rsplit('__', 1)
+    except ValueError:
+        part1, part2 = key, None
+    return part1, part2
 
 
 def dunder_init(key: str) -> str:
@@ -81,23 +87,23 @@ def dunder_init(key: str) -> str:
     return dunder_partition(key)[0]
 
 
-def dunder_last(key: str) -> str:
+def dunder_last(key: str) -> Optional[str]:
     """Returns the last part of the dunder key
 
         >>> dunder_last('a__b__c')
         >>> 'c'
 
     :param neskey : String
-    :rtype        : String
+    :rtype        : Optional String
     """
     return dunder_partition(key)[1]
 
 
-def dunder_get(_dict: Dict, key: str) -> Any:
+def dunder_get(_dict: Any, key: str) -> Any:
     """Returns value for a specified dunderkey
 
     A "dunderkey" is just a fieldname that may or may not contain
-    double underscores (dunderscores!) for referrencing nested keys in
+    double underscores (dunderscores!) for referencing nested keys in
     a dict. eg::
 
          >>> data = {'a': {'b': 1}}
@@ -106,28 +112,31 @@ def dunder_get(_dict: Dict, key: str) -> Any:
 
     key 'b' can be referrenced as 'a__b'
 
-    :param _dict : (dict)
+    :param _dict : (dict, list, struct or object) which we want to index into
     :param key   : (str) that represents a first level or nested key in the dict
     :rtype       : (mixed) value corresponding to the key
 
     """
 
-    parts = key.split('__', 1)
 
     try:
-        parts[0] = int(parts[0])  # parse int parameter
+        part1, part2 = key.split('__', 1)
+    except ValueError:
+        part1, part2 = key, ''
+
+    try:
+        part1 = int(part1)  # parse int parameter
     except ValueError:
         pass
 
-    if isinstance(parts[0], int):
-        result = guard_iter(_dict)[parts[0]]
+    if isinstance(part1, int):
+        result = guard_iter(_dict)[part1]
     elif isinstance(_dict, dict) or isinstance(_dict, Struct):
-        result = _dict[parts[0]]
+        result = _dict[part1]
     else:
-        result = getattr(_dict, parts[0])
+        result = getattr(_dict, part1)
 
-    return result if len(parts) == 1 else dunder_get(result, parts[1])
-
+    return dunder_get(result, part2) if part2 else result
 
 def undunder_keys(_dict: Dict) -> Dict:
     """Returns dict with the dunder keys converted back to nested dicts
