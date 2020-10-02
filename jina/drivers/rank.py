@@ -48,7 +48,6 @@ class Chunk2DocRankDriver(BaseRankDriver):
             |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
-
     def __init__(self, traversal_paths: Iterable[str] = ['c'], *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.hash2id = uid.hash2id
@@ -117,6 +116,44 @@ class CollectMatches2DocRankDriver(Chunk2DocRankDriver):
 
     def __init__(self, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
+
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+                   **kwargs) -> None:
+        """
+
+        :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
+        :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
+        :return:
+        """
+
+        # if at the top-level already, no need to aggregate further
+        if context_doc is None:
+            return
+
+        match_idx = []
+        query_chunk_meta = {}
+        match_chunk_meta = {}
+        # doc_id_to_match_map = {}
+        for match in docs:
+            # doc_id_to_match_map[match.id] = index
+            match_idx.append(
+                (
+                self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(context_doc.id), match.score.value))
+            query_chunk_meta[self.id2hash(context_doc.id)] = pb_obj2dict(context_doc, self.exec.required_keys)
+            match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
+
+        if match_idx:
+            match_idx = np.array(match_idx, dtype=np.float64)
+
+            docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
+            # These ranker will change the current matches
+            context_doc.ClearField('matches')
+            for doc_hash, score in docs_scores:
+                r = context_doc.matches.add()
+                r.id = self.hash2id(doc_hash)
+                r.score.ref_id = context_doc.id  # label the score is computed against doc
+                r.score.value = score
+                r.score.op_name = exec.__class__.__name__
 
 
 class Matches2DocRankDriver(BaseRankDriver):
