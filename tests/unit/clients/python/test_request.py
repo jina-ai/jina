@@ -21,7 +21,6 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
 
     def test_request_generate_lines_from_list(self):
@@ -36,7 +35,6 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
 
     def test_request_generate_lines_with_fake_url(self):
@@ -52,7 +50,6 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(doc.text, f'https://github.com i\'m dummy doc {index}')
 
     def test_request_generate_bytes(self):
@@ -68,7 +65,6 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(doc.buffer.decode(), f'i\'m dummy doc {index}')
 
     def test_request_generate_docs(self):
@@ -78,7 +74,7 @@ class RequestTestCase(JinaTestCase):
                 doc.text = f'i\'m dummy doc {j}'
                 doc.offset = 1000
                 doc.id = 1000  # this will be ignored
-                doc.granularity = 3  # this will be ignored
+
                 doc.mime_type = 'mime_type'
                 yield doc
 
@@ -90,7 +86,6 @@ class RequestTestCase(JinaTestCase):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'mime_type')
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
             self.assertEqual(doc.offset, 1000)
 
@@ -105,7 +100,6 @@ class RequestTestCase(JinaTestCase):
         for index, doc in enumerate(request.index.docs, 1):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 5)
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(pb2array(doc.blob).shape, (10,))
             self.assertEqual(doc.blob.shape, [10])
 
@@ -114,7 +108,6 @@ class RequestTestCase(JinaTestCase):
         for index, doc in enumerate(request.index.docs, 1):
             self.assertEqual(doc.id, 5 + index)
             self.assertEqual(doc.length, 5)
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(pb2array(doc.blob).shape, (10,))
             self.assertEqual(doc.blob.shape, [10])
 
@@ -133,7 +126,6 @@ class RequestTestCase(JinaTestCase):
         for index, doc in enumerate(request.index.docs, 1):
             self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 5)
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(pb2array(doc.blob).shape, (10, ))
             self.assertEqual(doc.blob.shape, [10])
 
@@ -142,29 +134,5 @@ class RequestTestCase(JinaTestCase):
         for index, doc in enumerate(request.index.docs, 1):
             self.assertEqual(doc.id, 5 + index)
             self.assertEqual(doc.length, 5)
-            self.assertEqual(doc.granularity, 0)
             self.assertEqual(pb2array(doc.blob).shape, (10, ))
             self.assertEqual(doc.blob.shape, [10])
-
-    def test_request_generate_docs_with_different_granularity(self):
-        def random_docs(num_docs):
-            for j in range(1, num_docs + 1):
-                doc = jina_pb2.Document()
-                doc.text = f'i\'m dummy doc {j}'
-                doc.offset = 1000
-                doc.id = 1000  # this will be ignored
-                doc.granularity = 3  # this will be overriden by _generate granularity param
-                doc.mime_type = 'mime_type'
-                yield doc
-
-        req = _generate(data=random_docs(100), batch_size=100, granularity=5)
-
-        request = next(req)
-        self.assertEqual(len(request.index.docs), 100)
-        for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
-            self.assertEqual(doc.length, 100)
-            self.assertEqual(doc.mime_type, 'mime_type')
-            self.assertEqual(doc.granularity, 5)
-            self.assertEqual(doc.text, f'i\'m dummy doc {index}')
-            self.assertEqual(doc.offset, 1000)
