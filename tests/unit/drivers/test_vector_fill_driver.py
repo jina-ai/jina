@@ -24,7 +24,6 @@ def create_documents_to_encode(num_docs):
     docs = []
     for idx in range(num_docs):
         doc = jina_pb2.Document()
-        doc.id = idx + 1
         docs.append(doc)
     return docs
 

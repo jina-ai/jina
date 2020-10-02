@@ -491,7 +491,6 @@ def set_client_cli_parser(parser=None):
     _set_grpc_parser(parser)
 
     gp1 = add_arg_group(parser, 'client-specific arguments')
-    _gp = gp1.add_mutually_exclusive_group()
 
     gp1.add_argument('--batch-size', type=int, default=100,
                      help='the number of documents in each request')
@@ -508,11 +507,6 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--first-request-id', type=int,
                      default=0,
                      help='the starting number of request id, the consequent request_id will increment by one')
-    _gp.add_argument('--first-doc-id', type=int,
-                     default=0,
-                     help='the starting number of the first doc, the consequent id will increment by one')
-    _gp.add_argument('--random-doc-id', action='store_true', default=False,
-                     help='randomize document id, if this is set then `first_request_id` is ignored')
     gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
     gp1.add_argument('--filter-by', type=str, nargs='*',

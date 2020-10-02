@@ -13,17 +13,12 @@ from ...drivers.helper import array2pb, guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
 from ...logging import default_logger
-from ...proto import jina_pb2
-
-if False:
-    from ...counter import BaseCounter
+from ...proto import jina_pb2, uid
 
 
-def _add_document(
-    request: 'jina_pb2.Request',
-    content: Union['jina_pb2.Document', 'np.ndarray', bytes, str],
-    mode: str,
-    doc_counter: 'BaseCounter',
+
+def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document', 'np.ndarray', bytes, str], mode: str,
+
     docs_in_same_batch: int,
     mime_type: str,
     buffer_sniff: bool,
@@ -65,34 +60,20 @@ def _add_document(
 
     # TODO: I don't like this part, this change the original docs inplace!
     #   why can't delegate this to crafter? (Han)
-    if doc_counter is not None:
-        d.id = next(doc_counter)
     d.weight = 1.0
     d.length = docs_in_same_batch
+    d.id = uid.new_doc_id(d)
 
 
-def _generate(
-    data: Union[
-        Iterator['jina_pb2.Document'],
-        Iterator[bytes],
-        Iterator['np.ndarray'],
-        Iterator[str],
-        'np.ndarray',
-    ],
-    batch_size: int = 0,
-    first_doc_id: int = 0,
-    first_request_id: int = 0,
-    random_doc_id: bool = False,
-    override_doc_id: bool = True,
-    mode: ClientMode = ClientMode.INDEX,
-    top_k: Optional[int] = None,
-    mime_type: str = None,
-    queryset: Iterator['jina_pb2.QueryLang'] = None,
-    *args,
+def _generate(data: Union[
+    Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray',],
+              batch_size: int = 0, first_request_id: int = 0, mode: ClientMode = ClientMode.INDEX,
+              top_k: Optional[int] = None,
+              mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
+              *args,
     **kwargs,
 ) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
-    doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
     req_counter = SimpleCounter(first_request_id)
 
     try:
@@ -131,15 +112,13 @@ def _generate(
                 req.queryset.extend([top_k_queryset])
 
         for content in batch:
-            _add_document(
-                request=req,
-                content=content,
-                mode=mode,
-                doc_counter=doc_counter if override_doc_id else None,
-                docs_in_same_batch=batch_size,
-                mime_type=mime_type,
-                buffer_sniff=buffer_sniff,
-            )
+            _add_document(request=req,
+                          content=content,
+                          mode=mode,
+                          docs_in_same_batch=batch_size,
+                          mime_type=mime_type,
+                          buffer_sniff=buffer_sniff,
+                          )
         yield req
 
 

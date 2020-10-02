@@ -18,7 +18,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 100)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
@@ -32,7 +31,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 100)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
@@ -47,7 +45,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 100)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
             self.assertEqual(doc.text, f'https://github.com i\'m dummy doc {index}')
@@ -62,7 +59,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 100)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'text/plain')
             self.assertEqual(doc.buffer.decode(), f'i\'m dummy doc {index}')
@@ -73,8 +69,7 @@ class RequestTestCase(JinaTestCase):
                 doc = jina_pb2.Document()
                 doc.text = f'i\'m dummy doc {j}'
                 doc.offset = 1000
-                doc.id = 1000  # this will be ignored
-
+                doc.tags['id'] = 1000  # this will be ignored
                 doc.mime_type = 'mime_type'
                 yield doc
 
@@ -83,7 +78,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 100)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 100)
             self.assertEqual(doc.mime_type, 'mime_type')
             self.assertEqual(doc.text, f'i\'m dummy doc {index}')
@@ -98,7 +92,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 5)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(pb2array(doc.blob).shape, (10,))
             self.assertEqual(doc.blob.shape, [10])
@@ -106,7 +99,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 5)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, 5 + index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(pb2array(doc.blob).shape, (10,))
             self.assertEqual(doc.blob.shape, [10])
@@ -124,7 +116,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 5)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(pb2array(doc.blob).shape, (10, ))
             self.assertEqual(doc.blob.shape, [10])
@@ -132,7 +123,6 @@ class RequestTestCase(JinaTestCase):
         request = next(req)
         self.assertEqual(len(request.index.docs), 5)
         for index, doc in enumerate(request.index.docs, 1):
-            self.assertEqual(doc.id, 5 + index)
             self.assertEqual(doc.length, 5)
             self.assertEqual(pb2array(doc.blob).shape, (10, ))
             self.assertEqual(doc.blob.shape, [10])
