@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 # lift the chunk-level topk to doc-level topk
-from typing import Iterable
+from typing import Iterable, Tuple
 
 import numpy as np
 
@@ -19,6 +19,7 @@ class BaseRankDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply = False
+        self._use_tree_traversal = True
 
 
 class Chunk2DocRankDriver(BaseRankDriver):
@@ -46,8 +47,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
             |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
-    def __init__(self, traversal_paths: Iterable[str] = ['c'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+    def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
         """
@@ -105,8 +106,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
     """
 
-    def __init__(self, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+    def __init__(self, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
         """
@@ -157,8 +158,8 @@ class Matches2DocRankDriver(BaseRankDriver):
             |- matches: {granularity: 0, adjacency: k+1} (Sorted according to scores from Ranker Executor)
     """
 
-    def __init__(self, reverse: bool = False, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+    def __init__(self, reverse: bool = False, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:

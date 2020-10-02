@@ -221,8 +221,7 @@ class BaseRecursiveDriver(BaseDriver):
                  granularity_range: Tuple[int, int] = (0, 1),
                  adjacency_range: Tuple[int, int] = (0, 0),
                  recursion_order: str = 'post',
-                 traversal_paths: List[str] = ['c', 'r'],
-                 use_tree_traversal: bool = False,
+                 traversal_paths: Tuple[str] = ('c', 'r'),
                  *args,
                  **kwargs):
         """
@@ -240,7 +239,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._granularity_start, self._granularity_end = granularity_range
         self._adjacency_start, self._adjacency_end = adjacency_range
         self._traversal_paths = traversal_paths
-        self._use_tree_traversal = os.getenv('JINA_USE_TREE_TRAVERSAL', str(use_tree_traversal)) == "True"
+        self._use_tree_traversal = os.getenv('JINA_USE_TREE_TRAVERSAL', 'False') == 'True'
         if recursion_order in {'post', 'pre'}:
             self.recursion_order = recursion_order
         else:
