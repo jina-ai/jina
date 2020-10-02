@@ -18,10 +18,9 @@ class MockLengthRanker(Chunk2DocRanker):
 
 class SimpleChunk2DocRankDriver(Chunk2DocRankDriver):
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.hash2id = lambda x: str(x)
+        self.hash2id = lambda x: str(int(x))
         self.id2hash = lambda x: int(x)
 
     @property
@@ -95,11 +94,13 @@ def create_chunk_chunk_matches_to_score():
     doc.granularity = 0
     chunk = doc.chunks.add()
     chunk.id = '101'
+    chunk.parent_id = doc.id
     chunk.granularity = doc.granularity + 1
     num_matches = 2
     for parent_id in range(1, 3):
         chunk_chunk = chunk.chunks.add()
         chunk_chunk.id = str(parent_id * 10)
+        chunk_chunk.parent_id = str(parent_id)
         chunk_chunk.granularity = chunk.granularity + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
             match = chunk_chunk.matches.add()
@@ -118,13 +119,13 @@ def test_chunk2doc_ranker_driver_mock_exec():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == '70.0'
+    assert doc.matches[0].id == '70'
     assert doc.matches[0].score.value == 7
-    assert doc.matches[1].id == '60.0'
+    assert doc.matches[1].id == '60'
     assert doc.matches[1].score.value == 6
-    assert doc.matches[2].id == '50.0'
+    assert doc.matches[2].id == '50'
     assert doc.matches[2].score.value == 5
-    assert doc.matches[3].id == '40.0'
+    assert doc.matches[3].id == '40'
     assert doc.matches[3].score.value == 4
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
@@ -138,13 +139,13 @@ def test_chunk2doc_ranker_driver_max_ranker():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == '70.0'
+    assert doc.matches[0].id == '70'
     assert doc.matches[0].score.value == 7
-    assert doc.matches[1].id == '60.0'
+    assert doc.matches[1].id == '60'
     assert doc.matches[1].score.value == 6
-    assert doc.matches[2].id == '50.0'
+    assert doc.matches[2].id == '50'
     assert doc.matches[2].score.value == 5
-    assert doc.matches[3].id == '40.0'
+    assert doc.matches[3].id == '40'
     assert doc.matches[3].score.value == 4
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
@@ -158,13 +159,13 @@ def test_chunk2doc_ranker_driver_min_ranker():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == '40.0'
+    assert doc.matches[0].id == '40'
     assert doc.matches[0].score.value == pytest.approx(1 / (1 + 4), 0.0001)
-    assert doc.matches[1].id == '50.0'
+    assert doc.matches[1].id == '50'
     assert doc.matches[1].score.value == pytest.approx(1 / (1 + 5), 0.0001)
-    assert doc.matches[2].id == '60.0'
+    assert doc.matches[2].id == '60'
     assert doc.matches[2].score.value == pytest.approx(1 / (1 + 6), 0.0001)
-    assert doc.matches[3].id == '70.0'
+    assert doc.matches[3].id == '70'
     assert doc.matches[3].score.value == pytest.approx(1 / (1 + 7), 0.0001)
     for match in doc.matches:
         # match score is computed w.r.t to doc.id

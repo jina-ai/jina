@@ -10,7 +10,7 @@ from jina.proto import jina_pb2
 class SimpleCollectMatchesRankDriver(CollectMatches2DocRankDriver):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.hash2id = lambda x: str(x)
+        self.hash2id = lambda x: str(int(x))
         self.id2hash = lambda x: int(x)
 
     @property
@@ -75,9 +75,9 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 2
-    assert float(doc.matches[0].id) == 20
+    assert doc.matches[0].id == '20'
     assert doc.matches[0].score.value == 3
-    assert float(doc.matches[1].id) == 30
+    assert doc.matches[1].id == '30'
     assert doc.matches[1].score.value == 1
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
@@ -106,9 +106,9 @@ def test_collect_matches2doc_ranker_driver_min_ranker():
     assert min_value_30 < min_value_20
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 2
-    assert float(doc.matches[0].id) == 30
+    assert doc.matches[0].id == '30'
     assert doc.matches[0].score.value == pytest.approx((1. / (1. + min_value_30)), 0.0000001)
-    assert float(doc.matches[1].id) == 20
+    assert doc.matches[1].id == '20'
     assert doc.matches[1].score.value == pytest.approx((1. / (1. + min_value_20)), 0.0000001)
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
@@ -122,9 +122,9 @@ def test_collect_matches2doc_ranker_driver_max_ranker():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 2
-    assert float(doc.matches[0].id) == 20
+    assert doc.matches[0].id == '20'
     assert doc.matches[0].score.value == 40
-    assert float(doc.matches[1].id) == 30
+    assert doc.matches[1].id == '30'
     assert doc.matches[1].score.value == 20
     for match in doc.matches:
         # match score is computed w.r.t to doc.id

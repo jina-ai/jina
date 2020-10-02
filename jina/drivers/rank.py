@@ -22,6 +22,9 @@ class BaseRankDriver(BaseExecutableDriver):
         self._is_apply = False
         self._use_tree_traversal = True
 
+        self.hash2id = uid.hash2id
+        self.id2hash = uid.id2hash
+
 
 class Chunk2DocRankDriver(BaseRankDriver):
     """Extract matches score from chunks and use the executor to compute the rank and assign the resulting matches to the
@@ -50,25 +53,22 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
     def __init__(self, traversal_paths: Iterable[str] = ['c'], *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
-        self.hash2id = uid.hash2id
-        self.id2hash = uid.id2hash
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
                    **kwargs) -> None:
         """
-
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
         :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
         :return:
         """
-        if context_doc is None:
-            return
+
 
         match_idx = []  # type: List[Tuple[int, int, int, float]]
         query_chunk_meta = {}  # type: Dict[int, Dict]
         match_chunk_meta = {}  # type: Dict[int, Dict]
         for c in docs:
             for match in c.matches:
+                print(f'{match.parent_id}, {match.id}, {c.id}')
                 match_idx.append(
                     (self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(c.id), match.score.value))
                 query_chunk_meta[self.id2hash(c.id)] = pb_obj2dict(c, self.exec.required_keys)
@@ -78,9 +78,6 @@ class Chunk2DocRankDriver(BaseRankDriver):
             match_idx = np.array(match_idx, dtype=np.float64)
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
-            # These ranker will change the current matches
-            context_doc.ClearField('matches')
-
             for doc_hash, score in docs_scores:
                 r = context_doc.matches.add()
                 r.id = self.hash2id(doc_hash)
@@ -91,7 +88,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
                 r.score.op_name = exec.__class__.__name__
 
 
-class CollectMatches2DocRankDriver(Chunk2DocRankDriver):
+class CollectMatches2DocRankDriver(BaseRankDriver):
     """This Driver is intended to take a `document` with matches at a `given level depth > 0`, clear those matches and substitute
     these matches by the documents at a lower depth level.
     Input-Output ::
@@ -138,7 +135,8 @@ class CollectMatches2DocRankDriver(Chunk2DocRankDriver):
             # doc_id_to_match_map[match.id] = index
             match_idx.append(
                 (
-                self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(context_doc.id), match.score.value))
+                    self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(context_doc.id),
+                    match.score.value))
             query_chunk_meta[self.id2hash(context_doc.id)] = pb_obj2dict(context_doc, self.exec.required_keys)
             match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
@@ -180,8 +178,8 @@ class Matches2DocRankDriver(BaseRankDriver):
         # if at the top-level already, no need to aggregate further
         query_meta = pb_obj2dict(context_doc, self.exec.required_keys)
 
-        old_match_scores = {match.id: match.score.value for match in docs}
-        match_meta = {match.id: pb_obj2dict(match, self.exec.required_keys) for match in docs}
+        old_match_scores = {self.id2hash(match.id): match.score.value for match in docs}
+        match_meta = {self.id2hash(match.id): pb_obj2dict(match, self.exec.required_keys) for match in docs}
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return
@@ -193,9 +191,9 @@ class Matches2DocRankDriver(BaseRankDriver):
         sorted_scores = self._sort(match_scores)
         old_matches = {match.id: match for match in context_doc.matches}
         context_doc.ClearField('matches')
-        for match_id, score in sorted_scores:
+        for match_hash, score in sorted_scores:
             new_match = context_doc.matches.add()
-            new_match.CopyFrom(old_matches[match_id])
+            new_match.CopyFrom(old_matches[self.hash2id(match_hash)])
             new_match.score.value = score
             new_match.score.op_name = exec.__class__.__name__
 
