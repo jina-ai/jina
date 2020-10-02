@@ -3,19 +3,16 @@ with:
   index_filename: doc.gzip
 metas:
   name: docIndexer
-  workspace: './test_workspace'
+  workspace: $JINA_TEST_LEVEL_DEPTH_WORKSPACE
 requests:
   on:
     IndexRequest:
-      - !LogInfoDriver {}
       - !KVIndexDriver
         with:
           executor: docIndexer
           traversal_paths: ['r']
     SearchRequest:
-      - !LogInfoDriver {}
       - !KVSearchDriver
         with:
           executor: docIndexer
-          recur_on: matches
-      - !LogInfoDriver {}
+          traversal_paths: ['m']

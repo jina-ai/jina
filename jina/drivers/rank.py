@@ -51,7 +51,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
             |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
-    def __init__(self, traversal_paths: Iterable[str] = ['c'], *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
@@ -111,7 +111,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
     """
 
-    def __init__(self, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
@@ -167,7 +167,7 @@ class Matches2DocRankDriver(BaseRankDriver):
             |- matches: {granularity: 0, adjacency: k+1} (Sorted according to scores from Ranker Executor)
     """
 
-    def __init__(self, reverse: bool = False, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
+    def __init__(self, reverse: bool = False, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 

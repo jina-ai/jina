@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Set, List
+from typing import Dict, Set, Tuple
 
 from . import BaseExecutableDriver
 from .helper import array2pb, pb_obj2dict
@@ -47,7 +47,7 @@ class SegmentDriver(CraftDriver):
 
     def __init__(
             self,
-            traversal_paths: List[str] = ['r'],
+            traversal_paths: Tuple[str] = ('r',),
             *args,
             **kwargs
     ):

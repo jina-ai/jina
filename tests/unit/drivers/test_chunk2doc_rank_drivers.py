@@ -188,7 +188,7 @@ def test_chunk2doc_ranker_driver_traverse_apply():
 @pytest.mark.skip('TODO: https://github.com/jina-ai/jina/issues/1014')
 def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
     docs = [create_chunk_chunk_matches_to_score(), ]
-    driver = SimpleChunk2DocRankDriver(traversal_paths=['cc', 'c'])
+    driver = SimpleChunk2DocRankDriver(traversal_paths=('cc', 'c'))
     executor = MinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(docs)
