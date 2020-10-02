@@ -17,8 +17,7 @@ def test_visualization():
         with Image.open(os.path.join(cur_dir, 'flow_test1.jpg')) as flow_created:
             assert flow_original.size == flow_created.size
 
-    for img in glob.glob('flow_test1.jpg'):
-        os.remove(img)
+    os.remove('flow_test1.jpg')
 
 
 def test_visualization_with_yml_file():
@@ -31,5 +30,4 @@ def test_visualization_with_yml_file():
         with Image.open(os.path.join(cur_dir, 'flow_test2.jpg')) as flow_created:
             assert flow_original.size == flow_created.size
 
-    for img in glob.glob('flow_test2.jpg'):
-        os.remove(img)
+    os.remove('flow_test2.jpg')
