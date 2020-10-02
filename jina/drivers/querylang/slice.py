@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Iterable
+import sys
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
@@ -40,7 +41,10 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
         """
         super().__init__(*args, **kwargs)
         self._start = int(start)
-        self._end = int(end)
+        if end is None:
+            self._end = sys.maxsize
+        else:
+            self._end = int(end)
         self.is_apply = False
         self._use_tree_traversal = True
 
