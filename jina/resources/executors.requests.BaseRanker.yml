@@ -8,7 +8,7 @@ on:
           - embedding
     - !SortQL
       with:
-        field: 'score.value'
+        field: 'score__value'
         traversal_paths: ['m']
     - !SliceQL
       with:

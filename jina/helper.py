@@ -19,8 +19,6 @@ from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextI
 import numpy as np
 from ruamel.yaml import YAML, nodes
 
-from . import JINA_GLOBAL
-
 if False:
     from uvloop import Loop
 
@@ -313,61 +311,6 @@ def random_port() -> int:
     else:
         _port = _get_port()
     return _port
-
-
-def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
-    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
-    _all = {}
-    _ports = set()
-    if os.path.exists(config_path):
-        with open(config_path) as fp:
-            _all = yaml.load(fp)
-        if _all and 'stacks' in _all:
-            for s in _all['stacks']:
-                if (stack_id is not None and s['id'] == stack_id) or stack_id is None:
-                    _ports.update(s['ports'])
-    return list(_ports)
-
-
-def deregister_all_ports(stack_id: int = JINA_GLOBAL.stack.id):
-    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
-    _all = {'stacks': []}
-    if os.path.exists(config_path):
-        with open(config_path) as fp:
-            _all = yaml.load(fp)
-    if 'stacks' in _all:
-        for s in _all['stacks']:
-            if s['id'] == stack_id:
-                _all['stacks'].remove(s)
-                break
-    with open(config_path, 'w') as fp:
-        yaml.dump(_all, fp)
-
-
-def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id):
-    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
-    _all = None
-    if os.path.exists(config_path):
-        with open(config_path) as fp:
-            _all = yaml.load(fp)
-    if not _all or 'stacks' not in _all:
-        _all = {'stacks': []}
-    already_in = False
-    from jina import JINA_GLOBAL
-    stack_id = stack_id or JINA_GLOBAL.stack.id
-    for s in _all['stacks']:
-        if s['id'] == stack_id:
-            s['ports'] = list(set(s['ports'] + [port]))
-            already_in = True
-            break
-    if not already_in:
-        r = {
-            'id': stack_id,
-            'ports': [port]
-        }
-        _all['stacks'].append(r)
-    with open(config_path, 'w') as fp:
-        yaml.dump(_all, fp)
 
 
 def get_random_identity() -> str:
@@ -699,7 +642,10 @@ def rsetattr(obj, attr: str, val):
 
 def rgetattr(obj, attr: str, *args):
     def _getattr(obj, attr):
-        return getattr(obj, attr, *args)
+        if isinstance(obj, dict):
+            return obj.get(attr, None)
+        else:
+            return getattr(obj, attr, *args)
 
     return functools.reduce(_getattr, [obj] + attr.split('.'))
 

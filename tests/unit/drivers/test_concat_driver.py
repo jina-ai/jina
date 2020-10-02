@@ -4,6 +4,7 @@ import numpy as np
 
 from jina.drivers.helper import array2pb, pb2array
 from jina.flow import Flow
+from jina.proto import uid
 from jina.proto.jina_pb2 import Document
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,16 +17,14 @@ e4 = np.random.random([9])
 
 def input_fn():
     doc1 = Document()
-    doc1.id = 1
     doc1.embedding.CopyFrom(array2pb(e1))
     c = doc1.chunks.add()
-    c.id = 3
     c.embedding.CopyFrom(array2pb(e2))
+    c.id = uid.new_doc_id(c)
     doc2 = Document()
-    doc2.id = 2
     doc2.embedding.CopyFrom(array2pb(e3))
     d = doc2.chunks.add()
-    d.id = 4
+    d.id = uid.new_doc_id(d)
     d.embedding.CopyFrom(array2pb(e4))
     return [doc1, doc2]
 

@@ -30,17 +30,17 @@ class MockIndexer(BaseKVIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         doc1 = jina_pb2.Document()
-        doc1.id = 1
-        doc1.embedding.CopyFrom(array2pb(np.array([doc1.id])))
+        doc1.id = '1'
+        doc1.embedding.CopyFrom(array2pb(np.array([int(doc1.id)])))
         doc2 = jina_pb2.Document()
-        doc2.id = 2
-        doc2.embedding.CopyFrom(array2pb(np.array([doc2.id])))
+        doc2.id = '2'
+        doc2.embedding.CopyFrom(array2pb(np.array([int(doc2.id)])))
         doc3 = jina_pb2.Document()
-        doc3.id = 3
-        doc3.embedding.CopyFrom(array2pb(np.array([doc3.id])))
+        doc3.id = '3'
+        doc3.embedding.CopyFrom(array2pb(np.array([int(doc3.id)])))
         doc4 = jina_pb2.Document()
-        doc4.id = 4
-        doc4.embedding.CopyFrom(array2pb(np.array([doc4.id])))
+        doc4.id = '4'
+        doc4.embedding.CopyFrom(array2pb(np.array([int(doc4.id)])))
         self.db = {
             1: doc1,
             2: doc2,
@@ -53,6 +53,9 @@ class SimpleKVSearchDriver(KVSearchDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.hash2id = lambda x: str(int(x))
+        self.id2hash = lambda x: int(x)
 
     @property
     def exec_fn(self):
@@ -69,11 +72,11 @@ def create_document_to_search():
     #   - chunk: 5 - will be missing from KV indexer
     doc = jina_pb2.Document()
     doc.granularity = 0
-    doc.id = 0
+    doc.id = '0'
     for c in range(5):
         chunk = doc.chunks.add()
         chunk.granularity = doc.granularity + 1
-        chunk.id = c + 1
+        chunk.id = str(c + 1)
     return doc
 
 
@@ -87,14 +90,14 @@ def create_document_to_search_with_matches_on_chunks():
     #     - match: 5 - will be missing from KV indexer
     #     - match: 6 - will be missing from KV indexer
     doc = jina_pb2.Document()
-    doc.id = 0
+    doc.id = '0'
     doc.granularity = 0
     chunk = doc.chunks.add()
-    chunk.id = 1
+    chunk.id = '1'
     chunk.granularity = doc.granularity + 1
     for m in range(5):
         match = chunk.matches.add()
-        match.id = chunk.id + m + 1
+        match.id = str(m + 2)
     return doc
 
 
@@ -116,7 +119,7 @@ def test_vectorsearch_driver_mock_indexer_apply_all():
     for chunk in doc.chunks:
         assert chunk.embedding.buffer != b''
         embedding_array = pb2array(chunk.embedding)
-        np.testing.assert_equal(embedding_array, np.array([chunk.id]))
+        np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
 def test_vectorsearch_driver_mock_indexer_traverse_apply():
@@ -137,7 +140,7 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply():
     for chunk in doc.chunks:
         assert chunk.embedding.buffer != b''
         embedding_array = pb2array(chunk.embedding)
-        np.testing.assert_equal(embedding_array, np.array([chunk.id]))
+        np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
 def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
@@ -154,5 +157,5 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
     for match in chunk.matches:
         assert match.embedding.buffer != b''
         embedding_array = pb2array(match.embedding)
-        np.testing.assert_equal(embedding_array, np.array([match.id]))
+        np.testing.assert_equal(embedding_array, np.array([int(match.id)]))
 

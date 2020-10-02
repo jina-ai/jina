@@ -1,17 +1,13 @@
 import os
-import pytest
 import random
+
+import pytest
 
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
-from jina.proto import jina_pb2
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def random_docs(num_docs):
-    for j in range(num_docs):
-        yield jina_pb2.Document()
 
 
 class DummySegment(BaseSegmenter):
@@ -40,7 +36,7 @@ def test_this_will_fail():
          .add(uses='_merge_all', needs=['r1', 'r2']))
 
     with f:
-        f.index(input_fn=random_docs(10), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
 
 
 @pytest.mark.timeout(180)
@@ -57,4 +53,4 @@ def test_this_should_work():
          .add(uses='_merge_all', needs=['r1', 'r2']))
 
     with f:
-        f.index(input_fn=random_docs(10), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
