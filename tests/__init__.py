@@ -47,6 +47,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
             c.tags['id'] = c_id
             c.tags['parent_id'] = j
             c_id += 1
+            c.parent_id = d.id
             c.id = uid.new_doc_id(c)
         yield d
 

@@ -239,7 +239,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._granularity_start, self._granularity_end = granularity_range
         self._adjacency_start, self._adjacency_end = adjacency_range
         self._traversal_paths = traversal_paths
-        self._use_tree_traversal = os.getenv('JINA_USE_TREE_TRAVERSAL', 'False') == 'True'
+        self._use_tree_traversal = 'JINA_USE_TREE_TRAVERSAL' in os.environ
         if recursion_order in {'post', 'pre'}:
             self.recursion_order = recursion_order
         else:

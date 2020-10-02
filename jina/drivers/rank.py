@@ -67,7 +67,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
         match_chunk_meta = {}  # type: Dict[int, Dict]
         for c in docs:
             for match in c.matches:
-                print(f'{match.parent_id}, {match.id}, {c.id}')
+                # print(f'{match.parent_id}, {match.id}, {c.id}')
                 match_idx.append(
                     (self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(c.id), match.score.value))
                 query_chunk_meta[self.id2hash(c.id)] = pb_obj2dict(c, self.exec.required_keys)
