@@ -174,7 +174,7 @@ class HubIO:
             self._client.login(username=self.args.username, password=self.args.password,
                                registry=self.args.registry)
         else:
-            raise ValueError('no username/password specified, docker login failed')
+            self.logger.error('no username/password specified, docker login failed')
 
     def build(self) -> Dict:
         """A wrapper of docker build """
