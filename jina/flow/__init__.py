@@ -820,9 +820,7 @@ class Flow(ExitStack):
 
         import base64
         mermaid_str = self.flow_visualization(**kwargs)
-        print("mermaid_str: ", mermaid_str)
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
-
         return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str
 
     def mermaidstr_to_jpg(self, path: str = 'flow.jpg', **kwargs) -> None:
