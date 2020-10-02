@@ -21,7 +21,7 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         - !SortQL
             with:
                 reverse: true
-                field: 'score.value'
+                field: 'score__value'
                 traversal_paths: ['m']
         - !SliceQL
             with:
