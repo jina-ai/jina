@@ -401,8 +401,6 @@ class Flow(ExitStack):
 
         needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
 
-
-
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
@@ -476,7 +474,7 @@ class Flow(ExitStack):
     def _stop_log_server(self):
         import urllib.request
         try:
-            #it may have been shutdown from the outside
+            # it may have been shutdown from the outside
             urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
         except Exception as ex:
             self.logger.info(f'Failed to connect to shutdown log sse server: {repr(ex)}')
@@ -806,7 +804,7 @@ class Flow(ExitStack):
             for need_pod in self._pod_needs[i]:
                 curr_line = "Pod" + need_pod + "[" + need_pod + "]" + " --> " + "Pod" + k[0] + "[" + k[0] + "]"
                 mermaid_graph.append(curr_line)
-            i = i+1
+            i = i + 1
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
 
         return mermaid_str
