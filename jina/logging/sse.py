@@ -56,9 +56,15 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     server = WSGIServer((_config['host'], _config['port']), app, log=None)
 
     def _log_stream(path):
-        with open(path) as fp:
-            fp.seek(0, 2)
+        import glob
+        # fluentd creates files under this path with some tag based on day, so as temp solution,
+        # just get the first file matching this patter once it appears
+        while len(glob.glob(f'{path}*.log')) == 0:
+            time.sleep(0.1)
 
+        file = glob.glob(f'{path}*.log')[0]
+        with open(file) as fp:
+            fp.seek(0, 2)
             while True:
                 line = fp.readline().strip()
                 if line:
