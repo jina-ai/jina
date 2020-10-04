@@ -7,3 +7,5 @@ github:
   wait_time_for_access_token: 240
 hubapi:
   url: https://hubapi.jina.ai
+  list: /list
+  push: /push

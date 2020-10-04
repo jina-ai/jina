@@ -18,6 +18,7 @@ from ..excepts import PeaFailToStart, TimedOutException
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
 from ..logging import get_logger
 from ..logging.profile import TimeContext
+from .hubapi import _list
 
 if False:
     import argparse
@@ -140,6 +141,12 @@ class HubIO:
         except Exception as exp:
             self.logger.error(f'login failed: {exp}')
     
+    def list(self):
+        self.logger.info(f'Listing executors from Jina Hub registry')
+        response = _list(logger=self.logger, name=self.args.name, kind=self.args.kind, 
+                         type_=self.args.type, keywords=self.args.keywords)
+        return response
+        
     def push(self, name: str = None, readme_path: str = None) -> None:
         """ A wrapper of docker push 
         - Checks for the tempfile, returns without push if it cannot find
