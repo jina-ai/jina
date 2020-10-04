@@ -148,7 +148,7 @@ class Zmqlet:
             self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                              self.args.identit,
+                                              self.args.identity,
                                               ssh_server=self.args.ssh_server,
                                               ssh_keyfile=self.args.ssh_keyfile,
                                               ssh_password=self.args.ssh_password
