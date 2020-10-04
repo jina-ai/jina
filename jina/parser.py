@@ -560,6 +560,10 @@ def get_main_parser():
                             description='use "%(prog)-8s [sub-command] --help" '
                                         'to get detailed information about each sub-command', required=True)
 
+    spp.add_parser('login', help='login via Github to push images to Jina hub registry',
+                   description='Login via Github to push images to Jina hub registry',
+                   formatter_class=_chf)
+    
     set_hub_new_parser(
         spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor or app using cookiecutter',
                        description='Create a new Hub executor or app using cookiecutter',
