@@ -334,7 +334,7 @@ def set_pea_parser(parser=None):
                           'can actually be a fully specified "user@server:port" ssh url.')
     gp8.add_argument('--ssh-keyfile', type=str, default=None,
                      help='this specifies a key to be used in ssh login, default None. '
-                          'tegular default ssh keys will be used without specifying this argument.')
+                          'regular default ssh keys will be used without specifying this argument.')
     gp8.add_argument('--ssh-password', type=str, default=None,
                      help='ssh password to the ssh server.')
     _set_grpc_parser(parser)
