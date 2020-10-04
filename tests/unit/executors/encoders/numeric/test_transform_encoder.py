@@ -6,7 +6,6 @@ import numpy as np
 
 from jina.executors.metas import get_default_metas
 from jina.executors.encoders.numeric import TransformEncoder
-from tests import rm_files
 
 input_dim = 28
 target_output_dim = 2
