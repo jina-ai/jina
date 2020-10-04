@@ -327,6 +327,16 @@ def set_pea_parser(parser=None):
                      help='turn on to let each logger outputs in its own name (i.e. parent class name as the context), '
                           'by default it is off so all logs from the same pod will have the same prefix. '
                           'turn on to help debugging, turn off to have more clear logs and better grouping in dashboard')
+
+    gp8 = add_arg_group(parser, 'ssh tunneling arguments')
+    gp8.add_argument('--ssh-server', type=str, default=None,
+                     help='the SSH server through which the tunnel will be created, '
+                          'can actually be a fully specified "user@server:port" ssh url.')
+    gp8.add_argument('--ssh-keyfile', type=str, default=None,
+                     help='this specifies a key to be used in ssh login, default None. '
+                          'regular default ssh keys will be used without specifying this argument.')
+    gp8.add_argument('--ssh-password', type=str, default=None,
+                     help='ssh password to the ssh server.')
     _set_grpc_parser(parser)
     return parser
 
@@ -427,7 +437,7 @@ def _set_grpc_parser(parser=None):
     gp1.add_argument('--proxy', action='store_true', default=False,
                      help='respect the http_proxy and https_proxy environment variables. '
                           'otherwise, it will unset these proxy variables before start. '
-                          'gRPC seems to prefer --no-proxy')
+                          'gRPC seems to prefer no proxy')
     return parser
 
 
