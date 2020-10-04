@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pytest
 
+from jina.executors.metas import get_default_metas
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 # fix the seed here
@@ -18,17 +19,24 @@ query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.mark.parametrize('batch_size, compress_level', [(None, 0)])
-def test_numpy_indexer(batch_size, compress_level, tmpdir):
-    index_dir = tmpdir.join('NumpyIndexer-test.bin')
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level) as indexer:
+@pytest.fixture(scope='function', autouse=True)
+def metas(request, tmpdir):
+    os.environ['TEST_WORKSPACE'] = str(tmpdir)
+    metas = get_default_metas()
+    metas['workspace'] = os.environ['TEST_WORKSPACE']
+    yield metas
+    del os.environ['TEST_WORKSPACE']
+
+@pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
+def test_numpy_indexer(batch_size, compress_level, metas):
+    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
-        indexer.save(index_dir)
+        indexer.save()
         assert os.path.exists(indexer.index_abspath)
+        save_abspath = indexer.save_abspath
 
-
-    with BaseIndexer.load(index_dir) as indexer:
+    with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
         global retr_idx
@@ -41,24 +49,24 @@ def test_numpy_indexer(batch_size, compress_level, tmpdir):
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
-def test_numpy_indexer_known(batch_size, compress_level, tmpdir):
-    index_dir = tmpdir.join('NumpyIndexer-test.bin')
+def test_numpy_indexer_known(batch_size, compress_level, metas):
     vectors = np.array([[1, 1, 1],
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level) as indexer:
+    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
-        indexer.save(index_dir)
+        indexer.save()
         assert os.path.exists(indexer.index_abspath)
+        save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
-    with BaseIndexer.load(index_dir) as indexer:
+    with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(queries, top_k=2)
         np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
@@ -68,15 +76,15 @@ def test_numpy_indexer_known(batch_size, compress_level, tmpdir):
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
-def test_scipy_indexer(batch_size, compress_level, tmpdir):
-    index_dir = tmpdir.join('NumpyIndexer-test.bin')
-    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level) as indexer:
+def test_scipy_indexer(batch_size, compress_level, metas):
+    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level, metas=metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
-        indexer.save(index_dir)
+        indexer.save()
         assert os.path.exists(indexer.index_abspath)
+        save_abspath = indexer.save_abspath
 
-    with BaseIndexer.load(index_dir) as indexer:
+    with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
         global retr_idx
