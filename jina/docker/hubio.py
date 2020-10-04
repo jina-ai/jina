@@ -8,7 +8,6 @@ import urllib.parse
 import urllib.request
 import webbrowser
 from typing import Dict
-from pathlib import Path
 
 from .checker import *
 from .database import MongoDBHandler
@@ -18,7 +17,7 @@ from ..excepts import PeaFailToStart, TimedOutException
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
 from ..logging import get_logger
 from ..logging.profile import TimeContext
-from .hubapi import _list
+from .hubapi import _list, _push
 
 if False:
     import argparse
@@ -168,7 +167,8 @@ class HubIO:
         with open(file_path) as f:
             result = json.load(f)
         if result['is_build_success']:
-            self._write_summary_to_db(summary=result)
+            _push(logger=self.logger, summary=result)
+            # self._write_summary_to_db(summary=result)
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
@@ -364,7 +364,8 @@ class HubIO:
                 if self.args.push:
                     try:
                         self._push_docker_hub(image.tags[0], self.readme_path)
-                        self._write_summary_to_db(summary=result)
+                        _push(logger=self.logger, summary=result)
+                        # self._write_summary_to_db(summary=result)
                         self._write_slack_message(result, _details, _build_history)
                     except Exception as ex:
                         self.logger.error(f'can not complete the push due to {repr(ex)}')

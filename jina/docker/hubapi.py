@@ -1,7 +1,10 @@
 
+import json
 import requests
+from typing import Dict
 from pkg_resources import resource_stream
 
+from .helper import credentials_file
 from ..helper import yaml, colored
 
 
@@ -75,7 +78,48 @@ def _list(logger, name: str = None, kind: str = None, type_: str = None, keyword
         return response
 
 
-def _push():
+def _push(logger, summary: Dict = None):
     """ Hub API Invocation to run `hub push` """
-    # TODO
-    pass
+    if not summary:
+        logger.error(f'summary is empty.nothing to do')
+        return
+    
+    with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
+        hubapi_yml = yaml.load(fp)
+    
+    hubapi_url = hubapi_yml['hubapi']['url']
+    hubapi_push = hubapi_yml['hubapi']['push']
+    
+    if not credentials_file().is_file():
+        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        return
+    
+    with open(credentials_file(), 'r') as cf:
+        cred_yml = yaml.load(cf)
+    access_token = cred_yml['access_token']
+    
+    if not access_token:
+        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        return
+    
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': access_token
+    }
+    try:
+        response = requests.post(url=f'{hubapi_url}{hubapi_push}',
+                                 headers=headers,
+                                 data=json.dumps(summary))
+        if response.status_code == requests.codes.ok:
+            logger.info(response.text)
+        elif response.status_code == requests.codes.unauthorized:
+            logger.error(f'user is unauthorized to perform push operation. '
+                         f'please login using command: {colored("jina hub login", attrs=["bold"])}')
+        elif response.status_code == requests.codes.internal_server_error:
+            if 'auth' in response.text.lower():
+                logger.error(f'authentication issues!'
+                             f'please login using command: {colored("jina hub login", attrs=["bold"])}')
+            logger.error(f'got an error from the API: {response.text}')
+    except Exception as exp:
+        logger.error(f'got an exception while invoking hubapi for push {repr(exp)}')
+        return
