@@ -4,7 +4,7 @@ import pytest
 
 from jina.docker.hubio import HubIO
 from jina.helper import yaml
-from jina.parser import set_hub_build_parser, set_hub_pushpull_parser
+from jina.parser import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -52,7 +52,15 @@ def test_hub_build_push():
     assert manifest['type'] == summary['manifest_info']['type']
     assert manifest['vendor'] == summary['manifest_info']['vendor']
     assert manifest['keywords'] == summary['manifest_info']['keywords']
-
+    
+    args = set_hub_list_parser().parse_args(['--name', summary['manifest_info']['name']])
+    response = HubIO(args).list()
+    manifests = response.json()['manifest']
+    
+    assert response.status_code == 200
+    assert len(manifests) > 1
+    assert manifests[0]['name'] == summary['manifest_info']['name']
+    
 
 def test_hub_build_failures():
     for j in ['bad-dockerfile', 'bad-pythonfile', 'missing-dockerfile', 'missing-manifest']:
