@@ -81,7 +81,7 @@ class ContainerPea(BasePea):
         """Direct the log from the container to local console """
         import docker
 
-        logger = JinaLogger('🐳', **vars(self.args), fmt_str='🐳 %(message)s')
+        logger = JinaLogger('🐳', **vars(self.args))
         with logger:
             try:
                 for line in self._container.logs(stream=True):

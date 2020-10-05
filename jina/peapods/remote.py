@@ -26,7 +26,7 @@ class PeaSpawnHelper(GrpcClient):
         self.timeout_shutdown = 10
         self.callback_on_first = True
         self.args.log_remote = False
-        self._remote_logger = JinaLogger('🌏', **vars(self.args), fmt_str='🌏 %(message)s')
+        self._remote_logger = JinaLogger('🌏', **vars(self.args))
 
     def call(self, set_ready: Callable = None):
         """
