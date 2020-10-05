@@ -9,7 +9,7 @@ def test_visualization_url():
             .add(name='pod_b', needs='gateway')
             .join(needs=['pod_a', 'pod_b']).plot())
 
-    url_split = flow._url.split("view/") #check that has info after standard URL text
+    url_split = flow._url.split('view/') #check that has info after standard URL text
 
     assert url_split is not ' '
 
