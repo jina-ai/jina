@@ -27,8 +27,8 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         those documents at the specific levels that do not comply with this condition
     """
 
-    def __init__(self, lookups: Dict[str, Any], traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
-        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
+    def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
+        super().__init__(*args, **kwargs)
         """
         :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
         an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
