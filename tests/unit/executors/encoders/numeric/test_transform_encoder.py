@@ -11,7 +11,7 @@ input_dim = 28
 target_output_dim = 2
 
 @pytest.fixture(scope='function', autouse=True)
-def metas(request, tmpdir):
+def metas(tmpdir):
     os.environ['TEST_WORKSPACE'] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ['TEST_WORKSPACE']
