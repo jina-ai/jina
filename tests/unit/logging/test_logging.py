@@ -4,6 +4,7 @@ from jina.logging.base import get_logger
 
 
 def test_logging_message():
+    old_log_level = os.getenv('JINA_LOG_VERBOSITY')
     os.environ['JINA_LOG_VERBOSITY'] = 'success'
     logger = get_logger('test_logger')
     logger.debug('this is test debug message')
@@ -12,4 +13,7 @@ def test_logging_message():
     logger.warning('this is test warning message')
     logger.error('this is test error message')
     logger.critical('this is test critical message')
-    del os.environ['JINA_LOG_VERBOSITY']
+    if old_log_level:
+        os.environ['JINA_LOG_VERBOSITY'] = old_log_level
+    else:
+        del os.environ['JINA_LOG_VERBOSITY']

@@ -72,25 +72,6 @@ class ProfileFormatter(Formatter):
             return ''
 
 
-class EventHandler(logging.StreamHandler):
-    """
-    A cross-thread/process logger that allows fetching via iterator
-
-    .. warning::
-
-        Some logs may be missing, no clear reason why.
-    """
-
-    def __init__(self, event):
-        super().__init__()
-        self._event = event
-
-    def emit(self, record):
-        if record.levelno >= self.level:
-            self._event.record = self.format(record)
-            self._event.set()
-
-
 class NTLogger:
     def __init__(self, context: str, log_level: 'LogVerbosity'):
         """A compatible logger for Windows system, colors are all removed to keep compat.
@@ -228,11 +209,6 @@ class JinaLogger(LoggerWrapper):
         self.logger.handlers = []
         self.logger.setLevel(verbose_level.value)
 
-        if event_trigger is not None:
-            h = EventHandler(event_trigger)
-            h.setFormatter(ColorFormatter(fmt_str))
-            self.logger.addHandler(h)
-
         if ('JINA_LOG_SSE' in os.environ) or log_sse:
             self.logger.addHandler(get_fluentd_handler(context, log_fluentd_config_path, False))
 
@@ -269,7 +245,9 @@ class ProfileLogger(LoggerWrapper):
     def __init__(self, context: str, context_len: int = 15,
                  fmt_str: str = None, log_fluentd_config_path: str = resource_filename('jina',
                                                                                        '/'.join(
-                ('resources', 'logging.fluentd.yml'))), **kwargs):
+                                                                                           ('resources',
+                                                                                            'logging.fluentd.yml'))),
+                 **kwargs):
         if not fmt_str:
             title = os.environ.get('JINA_POD_NAME', context)
             if 'JINA_LOG_LONG' in os.environ:
