@@ -19,7 +19,7 @@ from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source
-from ..logging.base import get_logger
+from ..logging.base import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
@@ -125,7 +125,7 @@ class BaseExecutor(metaclass=ExecutorType):
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, *args, **kwargs):
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
@@ -296,7 +296,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     def __setstate__(self, d):
         self.__dict__.update(d)
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         try:
             self._post_init_wrapper(fill_in_metas=False)
         except ImportError as ex:

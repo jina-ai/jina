@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import json
 import logging
-import os
+import platform
 import re
 import sys
 from copy import copy
@@ -118,28 +118,42 @@ class NTLogger:
         if self.log_level <= LogVerbosity.SUCCESS:
             sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
+class MySysLogHandler(SysLogHandler):
+    priority_map = {
+        'DEBUG': 'debug',
+        'INFO': 'info',
+        'WARNING': 'warning',
+        'ERROR': 'error',
+        'CRITICAL': 'critical',
+        'SUCCESS': 'notice'
+    }
 
-class BaseLogger:
+class JinaLogger:
+    supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
-    def __init__(self, context: str):
+    def __init__(self, context: str, config_path: str = None):
+        from .. import __uptime__
         # Remove all handlers associated with the root logger object.
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
 
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
-        self.logger.handlers = []
 
-        verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
-        self.logger.setLevel(verbose_level.value)
+        context_vars = {'name': context, 'uptime': __uptime__}
+        self.add_handlers(config_path, **context_vars)
+
+        # note logger.success isn't default there
+        success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
+        logging.addLevelName(success_level, 'SUCCESS')
+        setattr(self.logger, 'success', lambda message: self.logger.log(success_level, message))
 
         self.info = self.logger.info
         self.critical = self.logger.critical
         self.debug = self.logger.debug
         self.error = self.logger.error
         self.warning = self.logger.warning
-
-        # note logger.success isn't default there
+        self.success = self.logger.success
 
     def __enter__(self):
         return self
@@ -151,89 +165,59 @@ class BaseLogger:
         for handler in self.logger.handlers:
             handler.close()
 
+    def add_handlers(self, config_path: str = None, **kwargs):
+        self.logger.handlers = []
 
-def get_fluentd_handler(context: str, log_fluentd_config_path: str, profile: bool):
-    from fluent import asynchandler as fluentasynchandler
-    from fluent.handler import FluentRecordFormatter
-    with open(log_fluentd_config_path) as fp:
-        config = yaml.load(fp)
+        if not config_path:
+            config_path = resource_filename('jina', '/'.join(('resources', 'logging.fluentd.yml')))
 
-    tag_key = 'tag' if not profile else 'profile-tag'
-    tag = config[tag_key] if tag_key in config else context
-    handler = fluentasynchandler.FluentHandler(f'{tag}', host=config['host'],
-                                               port=config['port'], queue_circular=True)
+        with open(config_path) as fp:
+            config = yaml.load(fp)
 
-    config['format']['name'] = context
-    formatter = FluentRecordFormatter(config['format'])
-    handler.setFormatter(formatter)
-    return handler
+        for h in config['handlers']:
+            cfg = config['configs'].get(h, None)
 
+            if h not in self.supported or not cfg:
+                raise ValueError(f'can not find configs for {h}, maybe it is not supported')
 
-class JinaLogger(BaseLogger):
+            handler = None
+            if h == 'StreamHandler':
+                handler = logging.StreamHandler(sys.stdout)
+                if cfg['colored']:
+                    handler.setFormatter(ColorFormatter(cfg['format'].format_map(kwargs)))
+                else:
+                    handler.setFormatter(PlainFormatter(cfg['format'].format_map(kwargs)))
+            elif h == 'SysLogHandler':
+                if cfg['host'] and cfg['port']:
+                    handler = MySysLogHandler(address=(cfg['host'], cfg['port']))
+                elif cfg['use_socket']:
+                    # a UNIX socket is used
+                    if platform.system() == 'Darwin':
+                        handler = MySysLogHandler(address='/var/run/syslog')
+                    else:
+                        handler = MySysLogHandler(address='/dev/log')
+                if handler:
+                    handler.setFormatter(PlainFormatter(cfg['format'].format_map(kwargs)))
+            elif h == 'FileHandler':
+                handler = logging.FileHandler(cfg['output'].format_map(kwargs), delay=True)
+                handler.setFormatter(PlainFormatter(cfg['format'].format_map(kwargs)))
+            elif h == 'FluentHandler':
+                try:
+                    from fluent import asynchandler as fluentasynchandler
+                    from fluent.handler import FluentRecordFormatter
 
-    def __init__(self, context: str, context_len: int = 15, log_sse: bool = False,
-                 fmt_str: str = None,
-                 log_fluentd_config_path: str =
-                 resource_filename('jina', '/'.join(('resources', 'logging.fluentd.yml'))),
-                 **kwargs):
-        """Get a logger with configurations
+                    handler = fluentasynchandler.FluentHandler(config['tag'],
+                                                               host=config['host'],
+                                                               port=config['port'], queue_circular=True)
 
-            :param context: the name prefix of the log
-            :param context_len: length of the context, i.e. module, function, line number
-            :param log_profile: is this logger for profiling, profile logger takes dict and output to json
-            :param log_sse: is this logger used for server-side event
-            :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_LONG`` environment variable
-            :return: the configured logger
+                    config['format'].update(kwargs)
+                    formatter = FluentRecordFormatter(config['format'])
+                    handler.setFormatter(formatter)
+                except (ModuleNotFoundError, ImportError):
+                    pass
 
-            .. note::
-                One can change the verbosity of jina logger via the environment variable ``JINA_LOG_VERBOSITY``
+            if handler:
+                self.logger.addHandler(handler)
 
-        """
-        super().__init__(context)
-        from .. import __uptime__
-        if not fmt_str:
-            title = os.environ.get('JINA_POD_NAME', context)
-            if 'JINA_LOG_LONG' in os.environ:
-                fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
-                          f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
-            else:
-                fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
-                          f'[%(levelname).1s]:%(message)s'
-
-        timed_fmt_str = f'%(asctime)s:' + fmt_str
-
-        if ('JINA_LOG_SSE' in os.environ) or log_sse:
-            self.logger.addHandler(get_fluentd_handler(context, log_fluentd_config_path, False))
-
-        if os.environ.get('JINA_LOG_FILE') == 'TXT':
-            h = logging.FileHandler(f'jina-{__uptime__}.log', delay=True)
-            h.setFormatter(PlainFormatter(timed_fmt_str))
-            self.logger.addHandler(h)
-        elif os.environ.get('JINA_LOG_FILE') == 'JSON':
-            h = logging.FileHandler(f'jina-{__uptime__}.json', delay=True)
-            h.setFormatter(JsonFormatter(timed_fmt_str))
-            self.logger.addHandler(h)
-
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(ColorFormatter(fmt_str))
-        self.logger.addHandler(console_handler)
-
-        syslog_handler = SysLogHandler(address=('/var/run/syslog'))
-        syslog_handler.setFormatter(PlainFormatter(timed_fmt_str))
-        self.logger.addHandler(syslog_handler)
-
-        success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
-        logging.addLevelName(success_level, 'SUCCESS')
-        setattr(self.logger, 'success', lambda message: self.logger.log(success_level, message))
-        self.success = self.logger.success
-
-
-class ProfileLogger(BaseLogger):
-
-    def __init__(self, context: str,
-                 log_fluentd_config_path: str =
-                 resource_filename('jina', '/'.join(('resources', 'logging.fluentd.yml'))),
-                 **kwargs):
-        super().__init__(context)
-
-        self.logger.addHandler(get_fluentd_handler(context, log_fluentd_config_path, True))
+        verbose_level = LogVerbosity.from_string(config['level'])
+        self.logger.setLevel(verbose_level.value)

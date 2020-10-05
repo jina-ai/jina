@@ -20,7 +20,7 @@ from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
 from ..logging.queue import clear_queues
@@ -135,9 +135,9 @@ class BasePea(metaclass=PeaMeta):
             if not self.args.log_with_own_name and self.args.name:
                 # everything in this Pea (process) will use the same name for display the log
                 os.environ['JINA_POD_NAME'] = self.args.name
-            self.logger = get_logger(self.name, **vars(self.args))
+            self.logger = JinaLogger(self.name, **vars(self.args))
         else:
-            self.logger = get_logger(self.name)
+            self.logger = JinaLogger(self.name)
 
     def __str__(self):
         r = self.name

@@ -25,7 +25,6 @@ if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
     set_start_method('fork')
 
 from datetime import datetime
-import random
 from types import SimpleNamespace
 import os
 
@@ -265,5 +264,6 @@ def set_nofile(nofile_atleast=4096):
 
     default_logger.debug(f'ulimit -n soft,hard: {soft} {hard}')
     return soft, hard
+
 
 set_nofile()

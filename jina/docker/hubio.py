@@ -14,7 +14,7 @@ from .helper import handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
@@ -39,7 +39,7 @@ class HubIO:
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        self.logger = get_logger(self.__class__.__name__, **vars(args))
+        self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.args = args
         try:
             import docker

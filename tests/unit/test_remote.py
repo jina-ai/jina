@@ -2,7 +2,7 @@ import threading
 import time
 import unittest
 
-from jina.logging import get_logger
+from jina.logging import JinaLogger
 from jina.parser import set_gateway_parser, set_pea_parser
 from jina.peapods.pod import GatewayPod
 from jina.peapods.remote import PeaSpawnHelper

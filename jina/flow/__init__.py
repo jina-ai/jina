@@ -18,7 +18,7 @@ from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
 
@@ -165,7 +165,7 @@ class Flow(ExitStack):
         
         """
         super().__init__()
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
