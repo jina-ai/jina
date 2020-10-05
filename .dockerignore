@@ -9,7 +9,7 @@
 !README.md
 !MANIFEST.in
 !tests/**
-!jina_cli/**
+!cli/**
 
 # Ignore unnecessary files inside allowed directories
 # This should go after the allowed directories

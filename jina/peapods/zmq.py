@@ -11,6 +11,7 @@ from typing import List, Callable, Optional, Union, Tuple, Iterable
 import zmq
 import zmq.asyncio
 from zmq.eventloop.zmqstream import ZMQStream
+from zmq.ssh import tunnel_connection
 
 from .. import __default_host__
 from ..enums import SocketType
@@ -139,11 +140,18 @@ class Zmqlet:
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
             in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                            self.args.identity)
+                                            self.args.identity,
+                                            ssh_server=self.args.ssh_server,
+                                            ssh_keyfile=self.args.ssh_keyfile,
+                                            ssh_password=self.args.ssh_password)
             self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                              self.args.identity)
+                                              self.args.identity,
+                                              ssh_server=self.args.ssh_server,
+                                              ssh_keyfile=self.args.ssh_keyfile,
+                                              ssh_password=self.args.ssh_password
+                                              )
             self.logger.debug(f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}')
 
             self.logger.info(
@@ -428,7 +436,7 @@ def _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout):
 
 
 async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
-                            compress_hwm: float = -1, compress_lwm: float = 1.,
+                             compress_hwm: float = -1, compress_lwm: float = 1.,
                              **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
@@ -632,7 +640,9 @@ def _get_random_ipc() -> str:
 
 
 def _init_socket(ctx: 'zmq.Context', host: str, port: int,
-                 socket_type: 'SocketType', identity: 'str' = None, use_ipc: bool = False) -> Tuple['zmq.Socket', str]:
+                 socket_type: 'SocketType', identity: 'str' = None,
+                 use_ipc: bool = False, ssh_server: str = None,
+                 ssh_keyfile: str = None, ssh_password: str = None) -> Tuple['zmq.Socket', str]:
     sock = {
         SocketType.PULL_BIND: lambda: ctx.socket(zmq.PULL),
         SocketType.PULL_CONNECT: lambda: ctx.socket(zmq.PULL),
@@ -668,15 +678,22 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
                 sock.bind_to_random_port(f'tcp://{host}')
             else:
                 try:
-                    sock.bind('tcp://%s:%d' % (host, port))
+                    sock.bind(f'tcp://{host}:{port}')
                 except zmq.error.ZMQError as ex:
-                    default_logger.error('error when binding port %d to %s' % (port, host))
-                    raise ex
+                    default_logger.error(f'error when binding port {port} to {host}')
+                    raise
     else:
         if port is None:
-            sock.connect(host)
+            address = host
         else:
-            sock.connect('tcp://%s:%d' % (host, port))
+            address = f'tcp://{host}:{port}'
+
+        # note that ssh only takes effect on CONNECT, not BIND
+        # that means control socket setup does not need ssh
+        if ssh_server:
+            tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
+        else:
+            sock.connect(address)
 
     if socket_type in {SocketType.SUB_CONNECT, SocketType.SUB_BIND}:
         # sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')

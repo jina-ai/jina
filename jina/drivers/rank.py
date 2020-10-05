@@ -2,12 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 # lift the chunk-level topk to doc-level topk
-from typing import Iterable
+from typing import Iterable, Tuple, List, Dict
 
 import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
+from ..proto import uid
 
 if False:
     from ..proto import jina_pb2
@@ -19,6 +20,10 @@ class BaseRankDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply = False
+        self._use_tree_traversal = True
+
+        self.hash2id = uid.hash2id
+        self.id2hash = uid.id2hash
 
 
 class Chunk2DocRankDriver(BaseRankDriver):
@@ -46,35 +51,35 @@ class Chunk2DocRankDriver(BaseRankDriver):
             |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
-    def __init__(self, traversal_paths: Iterable[str] = ['c'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+    def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+                   **kwargs) -> None:
         """
-
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
         :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
         :return:
         """
 
-        match_idx = []
-        query_chunk_meta = {}
-        match_chunk_meta = {}
+        match_idx = []  # type: List[Tuple[int, int, int, float]]
+        query_chunk_meta = {}  # type: Dict[int, Dict]
+        match_chunk_meta = {}  # type: Dict[int, Dict]
         for c in docs:
             for match in c.matches:
-                match_idx.append((match.parent_id, match.id, c.id, match.score.value))
-                query_chunk_meta[c.id] = pb_obj2dict(c, self.exec.required_keys)
-                match_chunk_meta[match.id] = pb_obj2dict(match, self.exec.required_keys)
+                # print(f'{match.parent_id}, {match.id}, {c.id}')
+                match_idx.append(
+                    (self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(c.id), match.score.value))
+                query_chunk_meta[self.id2hash(c.id)] = pb_obj2dict(c, self.exec.required_keys)
+                match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
-        # np.uint32 uses 32 bits. np.float32 uses 23 bit mantissa, so integer greater than 2^23 will have their
-        # least significant bits truncated.
         if match_idx:
             match_idx = np.array(match_idx, dtype=np.float64)
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
-            for doc_id, score in docs_scores:
+            for doc_hash, score in docs_scores:
                 r = context_doc.matches.add()
-                r.id = int(doc_id)
+                r.id = self.hash2id(doc_hash)
                 r.granularity = context_doc.granularity
                 r.adjacency = context_doc.adjacency + 1
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
@@ -105,10 +110,11 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
     """
 
-    def __init__(self, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+    def __init__(self, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+                   **kwargs) -> None:
         """
 
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -126,9 +132,10 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         # doc_id_to_match_map = {}
         for match in docs:
             # doc_id_to_match_map[match.id] = index
-            match_idx.append((match.parent_id, match.id, context_doc.id, match.score.value))
-            query_chunk_meta[context_doc.id] = pb_obj2dict(context_doc, self.exec.required_keys)
-            match_chunk_meta[match.id] = pb_obj2dict(match, self.exec.required_keys)
+            match_idx.append((self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(context_doc.id),
+                              match.score.value))
+            query_chunk_meta[self.id2hash(context_doc.id)] = pb_obj2dict(context_doc, self.exec.required_keys)
+            match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(match_idx, dtype=np.float64)
@@ -136,9 +143,9 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             # These ranker will change the current matches
             context_doc.ClearField('matches')
-            for doc_id, score in docs_scores:
+            for doc_hash, score in docs_scores:
                 r = context_doc.matches.add()
-                r.id = int(doc_id)
+                r.id = self.hash2id(doc_hash)
                 r.score.ref_id = context_doc.id  # label the score is computed against doc
                 r.score.value = score
                 r.score.op_name = exec.__class__.__name__
@@ -157,32 +164,33 @@ class Matches2DocRankDriver(BaseRankDriver):
             |- matches: {granularity: 0, adjacency: k+1} (Sorted according to scores from Ranker Executor)
     """
 
-    def __init__(self, reverse: bool = False, traversal_paths: Iterable[str] = ['m'], *args, **kwargs):
-        super().__init__(use_tree_traversal=True, traversal_paths=traversal_paths, *args, **kwargs)
+    def __init__(self, reverse: bool = False, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+                   **kwargs) -> None:
         """ Call executer for score and sort afterwards here. """
 
         # if at the top-level already, no need to aggregate further
         query_meta = pb_obj2dict(context_doc, self.exec.required_keys)
 
-        old_match_scores = {match.id: match.score.value for match in docs}
-        match_meta = {match.id: pb_obj2dict(match, self.exec.required_keys) for match in docs}
+        old_match_scores = {self.id2hash(match.id): match.score.value for match in docs}
+        match_meta = {self.id2hash(match.id): pb_obj2dict(match, self.exec.required_keys) for match in docs}
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return
 
-        new_match_scores = self.exec.score(query_meta, old_match_scores, match_meta)
+        new_match_scores = self.exec_fn(query_meta, old_match_scores, match_meta)
         self._sort_matches_in_place(context_doc, new_match_scores)
 
     def _sort_matches_in_place(self, context_doc: 'jina_pb2.Document', match_scores: 'np.ndarray') -> None:
         sorted_scores = self._sort(match_scores)
         old_matches = {match.id: match for match in context_doc.matches}
         context_doc.ClearField('matches')
-        for match_id, score in sorted_scores:
+        for match_hash, score in sorted_scores:
             new_match = context_doc.matches.add()
-            new_match.CopyFrom(old_matches[match_id])
+            new_match.CopyFrom(old_matches[self.hash2id(match_hash)])
             new_match.score.value = score
             new_match.score.op_name = exec.__class__.__name__
 

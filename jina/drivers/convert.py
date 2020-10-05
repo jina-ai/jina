@@ -30,6 +30,7 @@ class BaseConvertDriver(BaseRecursiveDriver):
         self.override = override
         self.target = target
         self._is_apply_all = False
+        self._use_tree_traversal = True
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         if getattr(doc, self.target) and not self.override:
@@ -132,7 +133,7 @@ class NdArray2PngURI(BaseConvertDriver):
             png_pack(b'IHDR', struct.pack('!2I5B', self.width, self.height, 8, 6, 0, 0, 0)),
             png_pack(b'IDAT', zlib.compress(raw_data, 9)),
             png_pack(b'IEND', b'')])
-    
+
         return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
     def convert(self, arr):

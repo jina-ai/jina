@@ -57,7 +57,6 @@ def build_docs():
         document = jina_pb2.Document()
         document.granularity = 0
         document.adjacency = 0
-        document.id = base_id
         docs.append(document)
         iterate_build(document, 0, 0)
     return docs
@@ -221,7 +220,7 @@ def test_traverse_apply():
     doc = docs[0]
     doc.ClearField('chunks')
     docs = [doc, ]
-    driver = AppendOneChunkTwoMatchesCrafter(traversal_paths=['mcm'])
+    driver = AppendOneChunkTwoMatchesCrafter(traversal_paths=('mcm',))
     assert docs[0].matches[0].chunks[0].matches[0].granularity == 1
     assert docs[0].matches[0].chunks[0].matches[0].adjacency == 2
     driver._traverse_apply(docs)

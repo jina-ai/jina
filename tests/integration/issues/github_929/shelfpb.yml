@@ -1,5 +1,0 @@
-!BinaryPbIndexer
-with:
-  index_filename: test-docs
-metas:
-  workspace: 'test-workspace'

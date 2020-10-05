@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.6.2'
+__version__ = '0.6.4'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.59'
+__proto_version__ = '0.0.60'
 
 import platform
 import sys
@@ -76,8 +76,6 @@ JINA_GLOBAL.imported = SimpleNamespace()
 JINA_GLOBAL.imported.executors = False
 JINA_GLOBAL.imported.drivers = False
 JINA_GLOBAL.imported.hub = False
-JINA_GLOBAL.stack = SimpleNamespace()
-JINA_GLOBAL.stack.id = random.randint(0, 10000)
 JINA_GLOBAL.logserver = SimpleNamespace()
 
 

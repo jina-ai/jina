@@ -111,7 +111,6 @@ class BasePea(metaclass=PeaMeta):
         super().__init__()
         self.args = args
         self.name = self.__class__.__name__  #: this is the process name
-        self.daemon = args.daemon
 
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
@@ -127,6 +126,7 @@ class BasePea(metaclass=PeaMeta):
         self._message = None
 
         if isinstance(self.args, argparse.Namespace):
+            self.daemon = args.daemon
             if self.args.name:
                 self.name = self.args.name
             if self.args.role == PeaRoleType.REPLICA:

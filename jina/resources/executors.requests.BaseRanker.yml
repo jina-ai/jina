@@ -8,12 +8,10 @@ on:
           - embedding
     - !SortQL
       with:
-        field: 'score.value'
+        field: 'score__value'
         traversal_paths: ['m']
     - !SliceQL
       with:
-        granularity_range: [0, 0]
-        adjacency_range: [0, 1]
         traversal_paths: ['m']
         start: 0
         end: 50

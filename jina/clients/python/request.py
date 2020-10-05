@@ -8,20 +8,21 @@ from typing import Iterator, Union, Optional
 
 import numpy as np
 
-from ...counter import RandomUintCounter, SimpleCounter
+from ...counter import SimpleCounter
 from ...drivers.helper import array2pb, guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
 from ...logging import default_logger
-from ...proto import jina_pb2
-
-if False:
-    from ...counter import BaseCounter
+from ...proto import jina_pb2, uid
 
 
-def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document', 'np.ndarray', bytes, str], mode: str,
-                  doc_counter: 'BaseCounter', docs_in_same_batch: int, mime_type: str, buffer_sniff: bool,
-                  granularity: int):
+def _add_document(request: 'jina_pb2.Request',
+                  content: Union['jina_pb2.Document', 'np.ndarray', bytes, str],
+                  mode: str,
+                  docs_in_same_batch: int,
+                  mime_type: str,
+                  buffer_sniff: bool,
+                  ):
     d = getattr(request, str(mode).lower()).docs.add()
     if isinstance(content, jina_pb2.Document):
         d.CopyFrom(content)
@@ -32,13 +33,20 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
         if not mime_type and buffer_sniff:
             try:
                 import magic
+
                 mime_type = magic.from_buffer(content, mime=True)
             except Exception as ex:
-                default_logger.warning(f'can not sniff the MIME type due to the exception {ex}')
+                default_logger.warning(
+                    f'can not sniff the MIME type due to the exception {ex}'
+                )
     elif isinstance(content, str):
         scheme = urllib.parse.urlparse(content).scheme
-        if ((scheme in {'http', 'https'} and is_url(content)) or (scheme in {'data'}) or os.path.exists(content)
-                or os.access(os.path.dirname(content), os.W_OK)):
+        if (
+                (scheme in {'http', 'https'} and is_url(content))
+                or (scheme in {'data'})
+                or os.path.exists(content)
+                or os.access(os.path.dirname(content), os.W_OK)
+        ):
             d.uri = content
             mime_type = guess_mime(content)
         else:
@@ -52,29 +60,32 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
 
     # TODO: I don't like this part, this change the original docs inplace!
     #   why can't delegate this to crafter? (Han)
-    if doc_counter is not None:
-        d.id = next(doc_counter)
     d.weight = 1.0
     d.length = docs_in_same_batch
-    d.granularity = granularity
+    d.id = uid.new_doc_id(d)
 
 
-def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray'],
-              batch_size: int = 0, first_doc_id: int = 0, first_request_id: int = 0,
-              random_doc_id: bool = False, override_doc_id: bool=True, mode: ClientMode = ClientMode.INDEX, top_k: Optional[int] = None,
+def _generate(data: Union[
+    Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray',],
+              batch_size: int = 0, first_request_id: int = 0, mode: ClientMode = ClientMode.INDEX,
+              top_k: Optional[int] = None,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
-              granularity: int = 0, *args, **kwargs) -> Iterator['jina_pb2.Message']:
+              *args,
+              **kwargs,
+              ) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
-    doc_counter = RandomUintCounter() if random_doc_id else SimpleCounter(first_doc_id)
     req_counter = SimpleCounter(first_request_id)
 
     try:
         import magic
+
         buffer_sniff = True
     except (ImportError, ModuleNotFoundError):
-        default_logger.warning(f'can not sniff the MIME type '
-                               f'MIME sniffing requires pip install "jina[http]" '
-                               f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
+        default_logger.warning(
+            f'can not sniff the MIME type '
+            f'MIME sniffing requires pip install "jina[http]" '
+            f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)'
+        )
 
     if mime_type and (mime_type not in mimetypes.types_map.values()):
         mime_type = mimetypes.guess_type(f'*.{mime_type}')[0]
@@ -104,11 +115,10 @@ def _generate(data: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Iterat
             _add_document(request=req,
                           content=content,
                           mode=mode,
-                          doc_counter=doc_counter if override_doc_id else None,
                           docs_in_same_batch=batch_size,
                           mime_type=mime_type,
                           buffer_sniff=buffer_sniff,
-                          granularity=granularity)
+                          )
         yield req
 
 

@@ -12,6 +12,3 @@ requests:
         with:
           fields:
             - embedding
-            - buffer
-            - blob
-            - text

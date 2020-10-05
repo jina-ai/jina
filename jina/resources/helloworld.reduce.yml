@@ -11,14 +11,12 @@ requests:
       - !SortQL
         with:
           reverse: true
-          field: 'score.value'
-          use_tree_traversal: True
+          field: 'score__value'
           traversal_paths: ['m']
       - !SliceQL
         with:
           start: 0
           end: 20
-          use_tree_traversal: True
           traversal_paths: ['m']
     ControlRequest:
       - !ControlReqDriver {}

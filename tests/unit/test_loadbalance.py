@@ -4,7 +4,7 @@ import time
 from jina.enums import SchedulerType
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
-from tests import JinaTestCase, random_docs
+from tests import random_docs
 
 os.environ['JINA_LOG_VERBOSITY'] = 'DEBUG'
 
@@ -24,19 +24,19 @@ class SlowWorker(BaseCrafter):
         return {'id': id}
 
 
-class MyTestCase(JinaTestCase):
-    def test_lb(self):
-        f = Flow(runtime='process').add(
-            name='sw',
-            uses='SlowWorker',
-            parallel=10)
-        with f:
-            f.index(input_fn=random_docs(100), batch_size=10)
+def test_lb():
+    f = Flow(runtime='process').add(
+        name='sw',
+        uses='SlowWorker',
+        parallel=10)
+    with f:
+        f.index(input_fn=random_docs(100), batch_size=10)
 
-    def test_roundrobin(self):
-        f = Flow(runtime='process').add(
-            name='sw',
-            uses='SlowWorker',
-            parallel=10, scheduling=SchedulerType.ROUND_ROBIN)
-        with f:
-            f.index(input_fn=random_docs(100), batch_size=10)
+
+def test_roundrobin():
+    f = Flow(runtime='process').add(
+        name='sw',
+        uses='SlowWorker',
+        parallel=10, scheduling=SchedulerType.ROUND_ROBIN)
+    with f:
+        f.index(input_fn=random_docs(100), batch_size=10)

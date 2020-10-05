@@ -8,5 +8,4 @@ metas:
 requests:
   on:
     [SearchRequest, IndexRequest]:
-      - !LogInfoDriver {}
       - !SegmentDriver {}
