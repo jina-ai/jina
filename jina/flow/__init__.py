@@ -165,7 +165,7 @@ class Flow(ExitStack):
         
         """
         super().__init__()
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = get_logger(self.__class__.__name__, **vars(args))
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
