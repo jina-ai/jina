@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 """
 Miscellaneous enums used in jina
 
@@ -34,6 +31,10 @@ To use these enums in YAML config, following the example below:
         # or
         parallel_type: any
 """
+
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 
 from enum import IntEnum, EnumMeta
 
