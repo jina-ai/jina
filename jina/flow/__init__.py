@@ -170,7 +170,7 @@ class Flow(ExitStack):
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
-
+        self._url = ''
         self._update_args(args, **kwargs)
 
     def _update_args(self, args, **kwargs):
@@ -790,24 +790,25 @@ class Flow(ExitStack):
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
-    def plot(self, **kwargs) -> 'Flow':
+    def plot(self, output='', copy_flow: bool = True) -> 'Flow':
         """
             Output the mermaid graph for visualization
-            :return: a mermaid-formatted string
+            :return: the flow
             """
-        mermaid_graph = list()
+        op_flow = copy.deepcopy(self) if copy_flow else self
+        url = ''
+
+        mermaid_graph = ['graph TD']
         for node, v in self._pod_nodes.items():
             for need in sorted(v.needs):
-                curr_line = need + '[' + need + ']' + ' --> ' + node + '[' + node + ']'
-                mermaid_graph.append(curr_line)
-
-        mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
-        if 'output' in kwargs:
-            self._mermaidstr_to_jpg(mermaid_str=mermaid_str, output=kwargs['output'])
+                mermaid_graph.append(f'{need}[{need}] --> {node}[{node}]')
+        mermaid_str = '\n'.join(mermaid_graph)
+        if output:
+            self._mermaidstr_to_jpg(mermaid_str, output)
         else:
-            return self._mermaidstr_to_url(mermaid_str)
+            self._url = self._mermaidstr_to_url(mermaid_str)
 
-        return mermaid_str
+        return op_flow
 
     def _mermaidstr_to_url(self, mermaid_str) -> str:
         """
@@ -821,22 +822,21 @@ class Flow(ExitStack):
         self.logger.info('URL: ', 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str)
         return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str
 
-    def _mermaidstr_to_jpg(self, **kwargs) -> None:
+    def _mermaidstr_to_jpg(self, mermaid_str, output) -> None:
         """
         Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
         :param path: the file path of the image
         :param kwargs: keyword arguments of :py:meth:`to_mermaid`
         :return:
         """
-
         from urllib.request import Request, urlopen
-        encoded_str = self._mermaidstr_to_url(kwargs['mermaid_str']).replace(
+        encoded_str = self._mermaidstr_to_url(mermaid_str).replace(
             'https://mermaidjs.github.io/mermaid-live-editor/#/view/', '')
         self.logger.warning('jpg exporting relies on https://mermaid.ink/, but it is not very stable. '
                             'some syntax are not supported, please use with caution.')
         self.logger.info('downloading as jpg...')
         req = Request('https://mermaid.ink/img/%s' % encoded_str, headers={'User-Agent': 'Mozilla/5.0'})
-        with open(kwargs['output'], 'wb') as fp:
+        with open(output, 'wb') as fp:
             fp.write(urlopen(req).read())
         self.logger.info('done')
 
