@@ -795,11 +795,10 @@ class Flow(ExitStack):
             Output the mermaid graph for visualization
             :return: a mermaid-formatted string
             """
-
         mermaid_graph = list()
-        for k, v in self._pod_nodes.items():
-            for need in v.needs:
-                curr_line = need + '[' + need + ']' + ' --> ' + k + '[' + k + ']'
+        for node, v in self._pod_nodes.items():
+            for need in sorted(v.needs):
+                curr_line = need + '[' + need + ']' + ' --> ' + node + '[' + node + ']'
                 mermaid_graph.append(curr_line)
 
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
