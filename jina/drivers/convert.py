@@ -8,6 +8,7 @@ import urllib.parse
 import urllib.request
 import zlib
 
+from PIL import Image
 import numpy as np
 
 from . import BaseRecursiveDriver
@@ -105,12 +106,13 @@ class NdArray2PngURI(BaseConvertDriver):
     """Simple DocCrafter used in :command:`jina hello-world`,
         it reads ``NdArray`` into base64 png and stored in ``uri``"""
 
-    def __init__(self, target='uri', width: int = 28, height: int = 28, *args, **kwargs):
+    def __init__(self, target='uri', width: int = 28, height: int = 28, resize_method: str = 'BILINEAR', *args, **kwargs):
         super().__init__(target, *args, **kwargs)
         self.width = width
         self.height = height
+        self.resize_method = resize_method
 
-    def png_convertor(self, arr: np.array):
+    def png_convertor_1d(self, arr: np.array):
         pixels = []
         for p in arr[::-1]:
             pixels.extend([255 - int(p), 255 - int(p), 255 - int(p), 255])
@@ -136,8 +138,27 @@ class NdArray2PngURI(BaseConvertDriver):
 
         return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    def convert(self, arr):
-        arr.uri = self.png_convertor(arr)
+    @staticmethod
+    def image_to_byte_array(image:Image, format:str):
+        import io
+        img_byte_arr = io.BytesIO()
+        image.save(img_byte_arr, format=format)
+        img_byte_arr = img_byte_arr.getvalue()
+        return img_byte_arr
+
+    def png_convertor_nd(self, arr: np.array):
+        from PIL import Image
+        arr = arr.astype(np.uint8)
+        im = Image.fromarray(arr).convert('RGB')
+        im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
+        png_bytes = NdArray2PngURI.image_to_byte_array(im, format='PNG')
+        return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+    
+    def convert(self, arr: np.array):
+        if len(arr.shape) > 1:
+            arr.uri = self.png_convertor_nd(arr)
+        else:
+            arr.uri = self.png_convertor_1d(arr)
 
 
 class Blob2PngURI(NdArray2PngURI):
@@ -149,7 +170,10 @@ class Blob2PngURI(NdArray2PngURI):
 
     def convert(self, d):
         arr = pb2array(d.blob)
-        d.uri = self.png_convertor(arr)
+        if len(arr.shape) > 1:
+            d.uri = self.png_convertor_nd(arr)
+        else:
+            d.uri = self.png_convertor_1d(arr)
 
 class URI2Buffer(BaseConvertDriver):
     """ Convert local file path, remote URL doc to a buffer doc.
