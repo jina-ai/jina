@@ -803,13 +803,13 @@ class Flow(ExitStack):
 
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
         if 'output' in kwargs:
-            self.__mermaidstr_to_jpg(mermaid_str=mermaid_str, output=kwargs['output'])
+            self._mermaidstr_to_jpg(mermaid_str=mermaid_str, output=kwargs['output'])
         else:
-            return self.__mermaidstr_to_url(mermaid_str)
+            return self._mermaidstr_to_url(mermaid_str)
 
         return mermaid_str
 
-    def __mermaidstr_to_url(self, mermaid_str) -> str:
+    def _mermaidstr_to_url(self, mermaid_str) -> str:
         """
         Rendering the current flow as a url points to a SVG, it needs internet connection
         :param kwargs: keyword arguments of :py:meth:`to_mermaid`
@@ -821,7 +821,7 @@ class Flow(ExitStack):
         self.logger.info('URL: ', 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str)
         return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str
 
-    def __mermaidstr_to_jpg(self, **kwargs) -> None:
+    def _mermaidstr_to_jpg(self, **kwargs) -> None:
         """
         Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
         :param path: the file path of the image
@@ -830,7 +830,7 @@ class Flow(ExitStack):
         """
 
         from urllib.request import Request, urlopen
-        encoded_str = self.__mermaidstr_to_url(kwargs['mermaid_str']).replace(
+        encoded_str = self._mermaidstr_to_url(kwargs['mermaid_str']).replace(
             'https://mermaidjs.github.io/mermaid-live-editor/#/view/', '')
         self.logger.warning('jpg exporting relies on https://mermaid.ink/, but it is not very stable. '
                             'some syntax are not supported, please use with caution.')
