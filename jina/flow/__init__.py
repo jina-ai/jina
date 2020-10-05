@@ -167,7 +167,6 @@ class Flow(ExitStack):
         super().__init__()
         self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
-        self._pod_needs = list()
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
@@ -405,7 +404,6 @@ class Flow(ExitStack):
         kwargs['name'] = pod_name
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
         op_flow.set_last_pod(pod_name, False)
-        op_flow._pod_needs.append(needs)
 
         return op_flow
 
@@ -797,14 +795,12 @@ class Flow(ExitStack):
             Output the mermaid graph for visualization
             :return: a mermaid-formatted string
             """
-
         mermaid_graph = list()
-        i = 0
-        for k in self._pod_nodes.items():
-            for need_pod in self._pod_needs[i]:
-                curr_line = "Pod" + need_pod + "[" + need_pod + "]" + " --> " + "Pod" + k[0] + "[" + k[0] + "]"
+        for node, v in self._pod_nodes.items():
+            for need in sorted(v.needs):
+                curr_line = need + '[' + need + ']' + ' --> ' + node + '[' + node + ']'
                 mermaid_graph.append(curr_line)
-            i = i + 1
+
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
 
         return mermaid_str
