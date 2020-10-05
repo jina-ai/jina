@@ -119,28 +119,36 @@ class NTLogger:
 
 
 class LoggerWrapper:
-    def info(self, msg: str, **kwargs):
-        self.logger.info(msg, **kwargs)
 
-    def critical(self, msg: str, **kwargs):
-        """log critical-level message"""
-        self.logger.critical(msg, **kwargs)
+    def __init__(self, context: str):
+        # Remove all handlers associated with the root logger object.
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
 
-    def debug(self, msg: str, **kwargs):
-        """log debug-level message"""
-        self.logger.debug(msg, **kwargs)
+        self.logger = logging.getLogger(context)
+        self.logger.propagate = False
+        self.logger.handlers = []
 
-    def error(self, msg: str, **kwargs):
-        """log error-level message"""
-        self.logger.error(msg, **kwargs)
+        verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
+        self.logger.setLevel(verbose_level.value)
 
-    def warning(self, msg: str, **kwargs):
-        """log warn-level message"""
-        self.logger.warning(msg, **kwargs)
+        self.info = self.logger.info
+        self.critical = self.logger.critical
+        self.debug = self.logger.debug
+        self.error = self.logger.error
+        self.warning = self.logger.warning
 
-    def success(self, msg: str, **kwargs):
-        """log success-level message"""
-        self.logger.success(msg, **kwargs)
+        # note logger.success isn't default there
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def close(self):
+        for handler in self.logger.handlers:
+            handler.close()
 
 
 def get_fluentd_handler(context: str, log_fluentd_config_path: str, profile: bool):
@@ -180,7 +188,7 @@ class JinaLogger(LoggerWrapper):
                 One can change the verbosity of jina logger via the environment variable ``JINA_LOG_VERBOSITY``
 
         """
-        super().__init__()
+        super().__init__(context)
         from .. import __uptime__
         if not fmt_str:
             title = os.environ.get('JINA_POD_NAME', context)
@@ -192,17 +200,6 @@ class JinaLogger(LoggerWrapper):
                           f'[%(levelname).1s]:%(message)s'
 
         timed_fmt_str = f'%(asctime)s:' + fmt_str
-
-        verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
-
-        # Remove all handlers associated with the root logger object.
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
-
-        self.logger = logging.getLogger(context)
-        self.logger.propagate = False
-        self.logger.handlers = []
-        self.logger.setLevel(verbose_level.value)
 
         if ('JINA_LOG_SSE' in os.environ) or log_sse:
             self.logger.addHandler(get_fluentd_handler(context, log_fluentd_config_path, False))
@@ -223,16 +220,7 @@ class JinaLogger(LoggerWrapper):
         success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
         logging.addLevelName(success_level, 'SUCCESS')
         setattr(self.logger, 'success', lambda message: self.logger.log(success_level, message))
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def close(self):
-        for handler in self.logger.handlers:
-            handler.close()
+        self.success = self.logger.success
 
 
 class ProfileLogger(LoggerWrapper):
@@ -241,25 +229,6 @@ class ProfileLogger(LoggerWrapper):
                  log_fluentd_config_path: str =
                  resource_filename('jina', '/'.join(('resources', 'logging.fluentd.yml'))),
                  **kwargs):
+        super().__init__(context)
 
-        verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
-
-        # Remove all handlers associated with the root logger object.
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
-
-        self.logger = logging.getLogger(context)
-        self.logger.propagate = False
-        self.logger.handlers = []
-        self.logger.setLevel(verbose_level.value)
         self.logger.addHandler(get_fluentd_handler(context, log_fluentd_config_path, True))
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def close(self):
-        for handler in self.logger.handlers:
-            handler.close()

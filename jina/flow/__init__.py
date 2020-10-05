@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import copy
+import argparse
 import os
 import tempfile
 import threading
@@ -9,7 +10,7 @@ import time
 from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
-from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
+from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any, Optional
 
 import ruamel.yaml
 from ruamel.yaml import StringIO
@@ -144,7 +145,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
 
 
 class Flow(ExitStack):
-    def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
+    def __init__(self, args: Optional['argparse.Namespace'] = None, **kwargs):
         """Initialize a flow object
 
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
@@ -165,7 +166,10 @@ class Flow(ExitStack):
         
         """
         super().__init__()
-        self.logger = get_logger(self.__class__.__name__, **vars(args))
+        if isinstance(args, argparse.Namespace):
+            self.logger = get_logger(self.__class__.__name__, **vars(args))
+        else:
+            self.logger = get_logger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
