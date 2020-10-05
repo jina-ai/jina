@@ -472,7 +472,7 @@ class Flow(ExitStack):
     def _stop_log_server(self):
         import urllib.request
         try:
-            # it may have been shutdown from the outside
+            #it may have been shutdown from the outside
             urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
         except Exception as ex:
             self.logger.info(f'Failed to connect to shutdown log sse server: {repr(ex)}')
@@ -510,9 +510,6 @@ class Flow(ExitStack):
             self.build(copy_flow=False)
 
         if self.args.logserver:
-            if self.args.start_fluentd:
-                self.logger.info('starting fluentd...')
-                self._start_fluentd_daemon()
             self.logger.info('starting logserver...')
             self._start_log_server()
 

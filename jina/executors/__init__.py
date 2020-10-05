@@ -19,7 +19,7 @@ from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source
-from ..logging.base import JinaLogger
+from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
