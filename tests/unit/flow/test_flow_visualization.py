@@ -16,14 +16,13 @@ def test_visualization_URL():
     assert expected_text == url
 
 
-def test_visualization_with_yml_file_img():
+def test_visualization_with_yml_file_img(tmpdir):
     cur_dir = os.path.dirname(os.path.abspath(__file__))
+    tmpfile = os.path.join(tmpdir, 'flow_test.jpg')
 
-    flow = Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output='flow_test.jpg')
+    flow = Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output=tmpfile)
 
     with Image.open(os.path.join(cur_dir, 'flow_original_test.jpg')) as flow_original:
-        with Image.open(os.path.join(cur_dir, 'flow_test.jpg')) as flow_created:
+        with Image.open(tmpfile) as flow_created:
             assert flow_original.size == flow_created.size
             np.testing.assert_array_almost_equal(flow_original, flow_created)
-
-    os.remove('flow_test.jpg')
