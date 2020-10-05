@@ -18,7 +18,6 @@ from ..enums import SocketType
 from ..excepts import MismatchedVersion
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..logging import default_logger, profile_logger
-from ..logging.base import get_logger
 from ..proto import jina_pb2, is_data_request
 
 if False:
@@ -47,7 +46,7 @@ class Zmqlet:
         """
         self.args = args
         self.name = args.name or self.__class__.__name__
-        self.logger = logger or get_logger(self.name, **vars(args))
+        self.logger = logger
         if args.compress_hwm > 0:
             try:
                 import lz4
@@ -565,7 +564,6 @@ def _serialize_to_frames(client_id, msg: 'jina_pb2.Message',
 
     _size_before = sum(sys.getsizeof(m) for m in _body)
     if _size_before > compress_hwm > 0:
-        from ..logging import default_logger
         import lz4.frame
         body = [lz4.frame.compress(m) for m in _body]
         is_compressed = b'1'

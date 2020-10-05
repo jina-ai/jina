@@ -67,6 +67,7 @@ These are the extra dependencies used by Jina:
 |---|---|---|---|
 |`scipy>=0.4.1`| `numeric`, `index` | `Scientific Library for Python. Required for similarity measure computation and required for many other extra packages (tensorflow, paddlehub ...)` | `tensorflow>=2.0.0 requires scipy>=1.4.1, while paddlepaddle<1.8.1 require scipy<=1.3.1.`
 |`flask, flask-cors`| `http`, `sse` | `A simple framework for building complex web applications, used for logging server and exposing REST API.` |
+|`fluent-logger` | `logging` | `fluent-logger-python is a Python library, to record the events from Python application.` |
 |`nmslib` | `index` | `Non-Metric Space Library (NMSLIB) is an efficient cross-platform similarity search library` | 
 |`docker` | `network` | `A Python library for the Docker Engine API` | `See https://docs.docker.com/engine/api/ for compatibility with docker engine versions.`
 |`torch>=1.0.0` | `framework` | `Tensors and Dynamic neural networks in Python with strong GPU acceleration. Enables several image encoders, object detection crafters and transformers models` | `It imposes compatibility restrictions with torchvision (https://pypi.org/project/torchvision/).`

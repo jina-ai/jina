@@ -192,6 +192,9 @@ def set_flow_parser(parser=None):
                     default=resource_filename('jina',
                                               '/'.join(('resources', 'logserver.default.yml'))),
                     help='the yaml config of the log server')
+    gp.add_argument('--start-fluentd', action='store_true', default=False,
+                    help='start fluentd with the default configuration in jina resources. Only active if --logserver '
+                         'activated')
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
                             and hence not allow multiple clients connected to the gateway at the same time.')
@@ -316,9 +319,14 @@ def set_pea_parser(parser=None):
                      help='when a process exits, it attempts to terminate all of its daemonic child processes. '
                           'setting it to true basically tell the context manager do not wait on this Pea')
 
+    from pkg_resources import resource_filename
     gp7 = add_arg_group(parser, 'logging arguments')
     gp7.add_argument('--log-sse', action='store_true', default=False,
                      help='turn on server-side event logging')
+    gp7.add_argument('--log-fluentd-config', type=str,
+                     default=resource_filename('jina',
+                                               '/'.join(('resources', 'logging.fluentd.yml'))),
+                     help='the yaml config of the fluentd server to pass to the Fluent Logging Handler')
     gp7.add_argument('--log-remote', action='store_true', default=False,
                      help='turn on remote logging')
     gp7.add_argument('--log-profile', action='store_true', default=False,
@@ -367,17 +375,6 @@ def set_pod_parser(parser=None):
                           'accepted type follows "--uses"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
-
-    # disable the pod level logserver for now
-    # gp5 = add_arg_group(parser, 'pod log-server arguments')
-    #
-    # from pkg_resources import resource_filename
-    # gp5.add_argument('--logserver', action='store_true', default=False,
-    #                  help='start a log server for the dashboard')
-    # gp5.add_argument('--logserver-config', type=str,
-    #                  default=resource_filename('jina',
-    #                                            '/'.join(('resources', 'logserver.default.yml'))),
-    #                  help='the yaml config of the log server')
     return parser
 
 

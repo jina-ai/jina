@@ -14,30 +14,6 @@ from tests import JinaTestCase
 
 @unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
 class MyTestCase(JinaTestCase):
-    def test_logging_thread(self):
-        _event = threading.Event()
-        logger = get_logger('mytest', event_trigger=_event)
-
-        def _print_messages():
-            while True:
-                _event.wait()
-                print(f'thread: {_event.record}')
-                print(type(_event.record))
-                _event.clear()
-
-        t = threading.Thread(target=_print_messages)
-        t.daemon = True
-        t.start()
-
-        logger.info('blah, blah')
-        logger.info('blah, blah, blah')
-        time.sleep(.1)
-        logger.warning('warn, warn, warn')
-        time.sleep(.1)
-        logger.debug('warn, warn, warn')
-        time.sleep(.1)
-        logger.success('crit')
-        time.sleep(.1)
 
     def test_remote_pod(self):
         f_args = set_gateway_parser().parse_args(['--allow-spawn'])
