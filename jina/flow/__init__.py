@@ -790,7 +790,7 @@ class Flow(ExitStack):
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
-    def flow_visualization(self):
+    def plot(self, **kwargs) -> 'Flow':
         """
             Output the mermaid graph for visualization
             :return: a mermaid-formatted string
@@ -802,10 +802,14 @@ class Flow(ExitStack):
                 mermaid_graph.append(curr_line)
 
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
+        if 'output' in kwargs:
+            self.__mermaidstr_to_jpg(mermaid_str=mermaid_str, output=kwargs['output'])
+        else:
+            return self.__mermaidstr_to_url(mermaid_str)
 
         return mermaid_str
 
-    def mermaidstr_to_url(self, **kwargs) -> str:
+    def __mermaidstr_to_url(self, mermaid_str) -> str:
         """
         Rendering the current flow as a url points to a SVG, it needs internet connection
         :param kwargs: keyword arguments of :py:meth:`to_mermaid`
@@ -813,11 +817,11 @@ class Flow(ExitStack):
         """
 
         import base64
-        mermaid_str = self.flow_visualization(**kwargs)
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
+        self.logger.info('URL: ', 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str)
         return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str
 
-    def mermaidstr_to_jpg(self, path: str = 'flow.jpg', **kwargs) -> None:
+    def __mermaidstr_to_jpg(self, **kwargs) -> None:
         """
         Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
         :param path: the file path of the image
@@ -826,12 +830,13 @@ class Flow(ExitStack):
         """
 
         from urllib.request import Request, urlopen
-        encoded_str = self.mermaidstr_to_url().replace('https://mermaidjs.github.io/mermaid-live-editor/#/view/', '')
+        encoded_str = self.__mermaidstr_to_url(kwargs['mermaid_str']).replace(
+            'https://mermaidjs.github.io/mermaid-live-editor/#/view/', '')
         self.logger.warning('jpg exporting relies on https://mermaid.ink/, but it is not very stable. '
                             'some syntax are not supported, please use with caution.')
         self.logger.info('downloading as jpg...')
         req = Request('https://mermaid.ink/img/%s' % encoded_str, headers={'User-Agent': 'Mozilla/5.0'})
-        with open(path, 'wb') as fp:
+        with open(kwargs['output'], 'wb') as fp:
             fp.write(urlopen(req).read())
         self.logger.info('done')
 
