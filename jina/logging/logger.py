@@ -7,12 +7,13 @@ import os
 import re
 import sys
 from copy import copy
-from pkg_resources import resource_filename
 from logging import Formatter
+
+from pkg_resources import resource_filename
 
 from .profile import used_memory
 from ..enums import LogVerbosity
-from ..helper import colored
+from ..helper import colored, yaml
 
 
 class ColorFormatter(Formatter):
@@ -143,15 +144,8 @@ class LoggerWrapper:
 
 
 def get_fluentd_handler(context: str, log_fluentd_config_path: str, profile: bool):
-    custom_format = {
-        'host': '%(hostname)s',
-        'name': f'{context}',
-        'process': '%(process)s',
-        'type': '%(levelname)s',
-    }
     from fluent import asynchandler as fluentasynchandler
     from fluent.handler import FluentRecordFormatter
-    import yaml
     with open(log_fluentd_config_path) as fp:
         config = yaml.load(fp)
 
@@ -159,7 +153,9 @@ def get_fluentd_handler(context: str, log_fluentd_config_path: str, profile: boo
     tag = config[tag_key] if tag_key in config else context
     handler = fluentasynchandler.FluentHandler(f'{tag}', host=config['host'],
                                                port=config['port'], queue_circular=True)
-    formatter = FluentRecordFormatter(custom_format)
+
+    config['format']['name'] = context
+    formatter = FluentRecordFormatter(config['format'])
     handler.setFormatter(formatter)
     return handler
 
@@ -167,9 +163,9 @@ def get_fluentd_handler(context: str, log_fluentd_config_path: str, profile: boo
 class JinaLogger(LoggerWrapper):
 
     def __init__(self, context: str, context_len: int = 15, log_sse: bool = False,
-                 fmt_str: str = None, event_trigger=None,
-                 log_fluentd_config_path: str = resource_filename('jina',
-                                                                  '/'.join(('resources', 'logging.fluentd.yml'))),
+                 fmt_str: str = None,
+                 log_fluentd_config_path: str =
+                 resource_filename('jina', '/'.join(('resources', 'logging.fluentd.yml'))),
                  **kwargs):
         """Get a logger with configurations
 
@@ -178,7 +174,6 @@ class JinaLogger(LoggerWrapper):
             :param log_profile: is this logger for profiling, profile logger takes dict and output to json
             :param log_sse: is this logger used for server-side event
             :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_LONG`` environment variable
-            :param event_trigger: a ``threading.Event`` or ``multiprocessing.Event`` for event-based logger
             :return: the configured logger
 
             .. note::
@@ -242,20 +237,10 @@ class JinaLogger(LoggerWrapper):
 
 class ProfileLogger(LoggerWrapper):
 
-    def __init__(self, context: str, context_len: int = 15,
-                 fmt_str: str = None, log_fluentd_config_path: str = resource_filename('jina',
-                                                                                       '/'.join(
-                                                                                           ('resources',
-                                                                                            'logging.fluentd.yml'))),
+    def __init__(self, context: str,
+                 log_fluentd_config_path: str =
+                 resource_filename('jina', '/'.join(('resources', 'logging.fluentd.yml'))),
                  **kwargs):
-        if not fmt_str:
-            title = os.environ.get('JINA_POD_NAME', context)
-            if 'JINA_LOG_LONG' in os.environ:
-                fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
-                          f'[%(levelname).1s][%(filename).3s:%(funcName).3s:%(lineno)3d]:%(message)s'
-            else:
-                fmt_str = f'{title[:context_len]:>{context_len}}@%(process)2d' \
-                          f'[%(levelname).1s]:%(message)s'
 
         verbose_level = LogVerbosity.from_string(os.environ.get('JINA_LOG_VERBOSITY', 'INFO'))
 
