@@ -2,7 +2,6 @@ import os
 import numpy as np
 from PIL import Image
 from jina.flow import Flow
-import glob
 
 
 def test_visualization():
