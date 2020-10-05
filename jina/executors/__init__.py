@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+import argparse
 import pickle
 import re
 import subprocess
@@ -125,7 +126,14 @@ class BaseExecutor(metaclass=ExecutorType):
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, *args, **kwargs):
-        self.logger = JinaLogger(self.__class__.__name__)
+        if isinstance(args, tuple) and len(args) > 0:
+            self.args = args[0]
+        else:
+            self.args = args
+        if isinstance(self.args, argparse.Namespace):
+            self.logger = get_logger(self.__class__.__name__, **vars(self.args))
+        else:
+            self.logger = JinaLogger(self.__class__.__name__)
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
@@ -296,7 +304,10 @@ class BaseExecutor(metaclass=ExecutorType):
 
     def __setstate__(self, d):
         self.__dict__.update(d)
-        self.logger = JinaLogger(self.__class__.__name__)
+        if isinstance(self.args, argparse.Namespace):
+            self.logger = get_logger(self.__class__.__name__, **vars(self.args))
+        else:
+            self.logger = JinaLogger(self.__class__.__name__)
         try:
             self._post_init_wrapper(fill_in_metas=False)
         except ImportError as ex:
@@ -445,7 +456,7 @@ class BaseExecutor(metaclass=ExecutorType):
         """
         Release the resources as executor is destroyed, need to be overrided
         """
-        pass
+        self.logger.close()
 
     def __enter__(self):
         return self
