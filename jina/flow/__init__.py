@@ -797,13 +797,10 @@ class Flow(ExitStack):
             """
 
         mermaid_graph = list()
-        i = 0
-
-        for k in self._pod_nodes.items():
-            for need in k[1].needs:
-                curr_line = need + '[' + need + ']' + ' --> ' + k[0] + '[' + k[0] + ']'
+        for k, v in self._pod_nodes.items():
+            for need in v.needs:
+                curr_line = need + '[' + need + ']' + ' --> ' + k + '[' + k + ']'
                 mermaid_graph.append(curr_line)
-
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
 
         return mermaid_str
