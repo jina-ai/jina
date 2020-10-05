@@ -5,3 +5,7 @@ tag: jina
 profile-tag: jina-profile
 host: 0.0.0.0
 port: 24224
+format:
+  host: '%(hostname)s'
+  process: '%(process)s'
+  type: '%(levelname)s'
