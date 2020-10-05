@@ -28,7 +28,8 @@ def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = N
 
     if filepath:
         with open(filepath, read_mode) as f:
-            return it.islice(sample(f), size)
+            for line in it.islice(sample(f), size):
+                yield line
     elif lines:
         return it.islice(sample(lines), size)
     else:
