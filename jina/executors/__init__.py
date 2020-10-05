@@ -131,7 +131,7 @@ class BaseExecutor(metaclass=ExecutorType):
         else:
             self.args = args
         if isinstance(self.args, argparse.Namespace):
-            self.logger = get_logger(self.__class__.__name__, **vars(self.args))
+            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
             self.logger = JinaLogger(self.__class__.__name__)
         self._snapshot_files = []
@@ -305,7 +305,7 @@ class BaseExecutor(metaclass=ExecutorType):
     def __setstate__(self, d):
         self.__dict__.update(d)
         if isinstance(self.args, argparse.Namespace):
-            self.logger = get_logger(self.__class__.__name__, **vars(self.args))
+            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
             self.logger = JinaLogger(self.__class__.__name__)
         try:

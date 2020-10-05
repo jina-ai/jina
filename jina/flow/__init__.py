@@ -167,7 +167,7 @@ class Flow(ExitStack):
         """
         super().__init__()
         if isinstance(args, argparse.Namespace):
-            self.logger = get_logger(self.__class__.__name__, **vars(args))
+            self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         else:
             self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
