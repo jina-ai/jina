@@ -801,6 +801,7 @@ class Flow(ExitStack):
             for need in v.needs:
                 curr_line = need + '[' + need + ']' + ' --> ' + k + '[' + k + ']'
                 mermaid_graph.append(curr_line)
+
         mermaid_str = 'graph TD\n' + '\n'.join(mermaid_graph)
 
         return mermaid_str
