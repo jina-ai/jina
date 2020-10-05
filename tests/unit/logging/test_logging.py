@@ -17,3 +17,5 @@ def test_logging_message():
         os.environ['JINA_LOG_VERBOSITY'] = old_log_level
     else:
         del os.environ['JINA_LOG_VERBOSITY']
+
+test_logging_message()

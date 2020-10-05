@@ -8,6 +8,7 @@ import re
 import sys
 from copy import copy
 from logging import Formatter
+from logging.handlers import SysLogHandler
 
 from pkg_resources import resource_filename
 
@@ -118,7 +119,7 @@ class NTLogger:
             sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
 
-class LoggerWrapper:
+class BaseLogger:
 
     def __init__(self, context: str):
         # Remove all handlers associated with the root logger object.
@@ -168,7 +169,7 @@ def get_fluentd_handler(context: str, log_fluentd_config_path: str, profile: boo
     return handler
 
 
-class JinaLogger(LoggerWrapper):
+class JinaLogger(BaseLogger):
 
     def __init__(self, context: str, context_len: int = 15, log_sse: bool = False,
                  fmt_str: str = None,
@@ -217,13 +218,17 @@ class JinaLogger(LoggerWrapper):
         console_handler.setFormatter(ColorFormatter(fmt_str))
         self.logger.addHandler(console_handler)
 
+        syslog_handler = SysLogHandler(address=('/var/run/syslog'))
+        syslog_handler.setFormatter(PlainFormatter(timed_fmt_str))
+        self.logger.addHandler(syslog_handler)
+
         success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
         logging.addLevelName(success_level, 'SUCCESS')
         setattr(self.logger, 'success', lambda message: self.logger.log(success_level, message))
         self.success = self.logger.success
 
 
-class ProfileLogger(LoggerWrapper):
+class ProfileLogger(BaseLogger):
 
     def __init__(self, context: str,
                  log_fluentd_config_path: str =
