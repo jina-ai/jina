@@ -3,7 +3,6 @@ import os
 import numpy as np
 import pytest
 
-from jina.executors.metas import get_default_metas
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 # fix the seed here
@@ -18,18 +17,9 @@ vec = np.random.random([num_data, num_dim])
 query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-
-@pytest.fixture(scope='function', autouse=True)
-def metas(tmpdir):
-    os.environ['TEST_WORKSPACE'] = str(tmpdir)
-    metas = get_default_metas()
-    metas['workspace'] = os.environ['TEST_WORKSPACE']
-    yield metas
-    del os.environ['TEST_WORKSPACE']
-
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
-def test_numpy_indexer(batch_size, compress_level, metas):
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=metas) as indexer:
+def test_numpy_indexer(batch_size, compress_level, test_metas):
+    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
@@ -49,13 +39,13 @@ def test_numpy_indexer(batch_size, compress_level, metas):
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
-def test_numpy_indexer_known(batch_size, compress_level, metas):
+def test_numpy_indexer_known(batch_size, compress_level, test_metas):
     vectors = np.array([[1, 1, 1],
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=metas) as indexer:
+    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
         indexer.save()
@@ -76,8 +66,8 @@ def test_numpy_indexer_known(batch_size, compress_level, metas):
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
-def test_scipy_indexer(batch_size, compress_level, metas):
-    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level, metas=metas) as indexer:
+def test_scipy_indexer(batch_size, compress_level, test_metas):
+    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
