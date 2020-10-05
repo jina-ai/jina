@@ -1,11 +1,10 @@
 import time
 
-import numpy as np
 import requests
 
 from jina.clients import py_client
 from jina.clients.python import PyClient
-from jina.clients.python.io import input_files, input_numpy
+from jina.clients.python.io import input_files
 from jina.enums import ClientMode
 from jina.flow import Flow
 from jina.parser import set_gateway_parser
@@ -75,12 +74,7 @@ class ClientTestCase(JinaTestCase):
                        'uri'] == 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC'
             assert a.status_code == 200
 
-    def test_io_files(self):
-        PyClient.check_input(input_files('*.*'))
-        PyClient.check_input(input_files('*.*', recursive=True))
-        PyClient.check_input(input_files('*.*', size=2))
-        PyClient.check_input(input_files('*.*', size=2, read_mode='rb'))
-        PyClient.check_input(input_files('*.*', sampling_rate=.5))
+    def test_mime_type(self):
 
         f = Flow().add(uses='- !URI2Buffer {}')
 
@@ -91,6 +85,3 @@ class ClientTestCase(JinaTestCase):
         with f:
             f.index(input_files('*.py'), validate_mime_type)
 
-    def test_io_np(self):
-        PyClient.check_input(input_numpy(np.random.random([100, 4, 2])))
-        PyClient.check_input(['asda', 'dsadas asdasd'])

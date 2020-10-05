@@ -9,9 +9,14 @@ from typing import List, Union, Iterator, Any
 import numpy as np
 
 
-def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = None, sampling_rate: float = None,
-                read_mode='r') -> Iterator[Union[str, bytes]]:
-    """ Input function that iterates over list of strings, it can be used in the Flow API
+def input_lines(
+    lines: Iterator[str] = None,
+    filepath: str = None,
+    size: int = None,
+    sampling_rate: float = None,
+    read_mode='r',
+) -> Iterator[Union[str, bytes]]:
+    """Input function that iterates over list of strings, it can be used in the Flow API
 
     :param filepath: a text file that each line contains a document
     :param lines: a list of strings, each is considered as a document
@@ -35,10 +40,15 @@ def input_lines(lines: Iterator[str] = None, filepath: str = None, size: int = N
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
 
-def input_files(patterns: Union[str, List[str]], recursive: bool = True,
-                size: int = None, sampling_rate: float = None,
-                read_mode: str = None) -> Iterator[Union[str, bytes]]:
-    """ Input function that iterates over files, it can be used in the Flow API
+
+def input_files(
+    patterns: Union[str, List[str]],
+    recursive: bool = True,
+    size: int = None,
+    sampling_rate: float = None,
+    read_mode: str = None,
+) -> Iterator[Union[str, bytes]]:
+    """Input function that iterates over files, it can be used in the Flow API
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
     :param recursive: If recursive is true, the pattern '**' will match any files and
@@ -70,9 +80,10 @@ def input_files(patterns: Union[str, List[str]], recursive: bool = True,
             break
 
 
-def input_numpy(array: 'np.ndarray', axis: int = 0, size: int = None,
-                shuffle: bool = False) -> Iterator[Any]:
-    """ Input function that iterates over a numpy array, it can be used in the Flow API
+def input_numpy(
+    array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
+) -> Iterator[Any]:
+    """Input function that iterates over a numpy array, it can be used in the Flow API
 
     :param array: the numpy ndarray data source
     :param axis: iterate over that axis
