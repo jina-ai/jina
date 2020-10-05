@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 """
 
 Originally from https://github.com/naiquevin/lookupy
@@ -32,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## This module deals with code regarding handling the double
 ## underscore separated keys
+
 
 from typing import Tuple, Dict, Any, Optional
 

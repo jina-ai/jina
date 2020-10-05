@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 """The default meta config that all executors follow, they can be overrided by the YAML config
 
 .. warning::
