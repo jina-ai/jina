@@ -8,7 +8,6 @@ import random
 import re
 import sys
 import time
-import types
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from io import StringIO
@@ -16,7 +15,6 @@ from itertools import islice
 from types import SimpleNamespace, ModuleType
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
 
-import numpy as np
 from ruamel.yaml import YAML, nodes
 
 if False:
@@ -132,8 +130,9 @@ def touch_dir(base_dir: str) -> None:
         os.makedirs(base_dir)
 
 
-def batch_iterator(data: Union[np.ndarray, Iterable[Any]], batch_size: int, axis: int = 0,
+def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
                    yield_slice: bool = False) -> Iterator[Any]:
+    import numpy as np
     if not batch_size or batch_size <= 0:
         yield data
         return
@@ -549,7 +548,7 @@ def is_valid_local_config_source(path: str) -> bool:
 
 def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
                     parser: ArgumentParser, parser_name: str = None
-                   ) -> Tuple[List[str], Namespace, List[Any]]:
+                    ) -> Tuple[List[str], Namespace, List[Any]]:
     args = kwargs2list(kwargs)
     try:
         p_args, unknown_args = parser.parse_known_args(args)

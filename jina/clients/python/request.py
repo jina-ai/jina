@@ -8,7 +8,7 @@ from typing import Iterator, Union, Optional
 
 import numpy as np
 
-from ...counter import RandomUintCounter, SimpleCounter
+from ...counter import SimpleCounter
 from ...drivers.helper import array2pb, guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
@@ -16,13 +16,13 @@ from ...logging import default_logger
 from ...proto import jina_pb2, uid
 
 
-
-def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document', 'np.ndarray', bytes, str], mode: str,
-
-    docs_in_same_batch: int,
-    mime_type: str,
-    buffer_sniff: bool,
-):
+def _add_document(request: 'jina_pb2.Request',
+                  content: Union['jina_pb2.Document', 'np.ndarray', bytes, str],
+                  mode: str,
+                  docs_in_same_batch: int,
+                  mime_type: str,
+                  buffer_sniff: bool,
+                  ):
     d = getattr(request, str(mode).lower()).docs.add()
     if isinstance(content, jina_pb2.Document):
         d.CopyFrom(content)
@@ -42,10 +42,10 @@ def _add_document(request: 'jina_pb2.Request', content: Union['jina_pb2.Document
     elif isinstance(content, str):
         scheme = urllib.parse.urlparse(content).scheme
         if (
-            (scheme in {'http', 'https'} and is_url(content))
-            or (scheme in {'data'})
-            or os.path.exists(content)
-            or os.access(os.path.dirname(content), os.W_OK)
+                (scheme in {'http', 'https'} and is_url(content))
+                or (scheme in {'data'})
+                or os.path.exists(content)
+                or os.access(os.path.dirname(content), os.W_OK)
         ):
             d.uri = content
             mime_type = guess_mime(content)
@@ -71,8 +71,8 @@ def _generate(data: Union[
               top_k: Optional[int] = None,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args,
-    **kwargs,
-) -> Iterator['jina_pb2.Message']:
+              **kwargs,
+              ) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
     req_counter = SimpleCounter(first_request_id)
 
