@@ -4,7 +4,7 @@ from PIL import Image
 from jina.flow import Flow
 
 
-def test_visualization_URL():
+def test_visualization_url():
     flow = (Flow().add(name='pod_a')
             .add(name='pod_b', needs='gateway')
             .join(needs=['pod_a', 'pod_b']))
@@ -20,7 +20,9 @@ def test_visualization_with_yml_file_img(tmpdir):
 
     flow = Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output=tmpfile)
 
-   with Image.open(os.path.join(cur_dir, 'flow_original_test.jpg')) as flow_original:
+    with Image.open(os.path.join(cur_dir, 'flow_original_test.jpg')) as flow_original:
         with Image.open(tmpfile) as flow_created:
             assert flow_original.size == flow_created.size
             np.testing.assert_array_almost_equal(flow_original, flow_created)
+
+
