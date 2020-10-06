@@ -10,28 +10,28 @@ In this guide we're going to go through the steps for each kind of contribution,
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [🏁 Before you Start](#-before-you-start)
+- [🏁 Before you Start](#before-you-start)
 - [Contributing 101](#contributing-101)
-- [🐞 Bugs and Issues](#-bugs-and-issues)
-- [🥇 Making Your First Submission](#-making-your-first-submission)
-- [☑️ Naming Conventions](#-naming-conventions)
-- [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
-- [📖 Contributing Documentation](#-contributing-documentation)
-- [💬 Getting Support](#-getting-support)
-- [🙏 Thank You](#-thank-you)
+- [🐞 Bugs and Issues](#bugs-and-issues)
+- [🥇 Making Your First Submission](#making-your-first-submission)
+- [☑️ Naming Conventions](#naming-conventions)
+- [💥 Testing Jina Locally and on CI](#testing-jina-locally-and-on-ci)
+- [📖 Contributing Documentation](#contributing-documentation)
+- [💬 Getting Support](#getting-support)
+- [🙏 Thank You](#thank-you)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 🏁 Before you Start
 
-Make sure you've read through our [README](./README.md), [Jina 101](./docs/chapters/101), and [example tutorials](https://github.com/jina-ai/examples) so you have a good understanding of what Jina is and how it works.
+Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](./101/README.html), and [example tutorials](https://github.com/jina-ai/examples) so you have a good understanding of what Jina is and how it works.
 
 ### Not a coder but still want to contribute?
 
 We're happy for any contributions, code or not. If you'd like to write a blog post, record a podcast, organize a meetup, or anything else to contribute to Jina, we'd love to hear from you!
 
-* [Contribute docs](#-contributing-documentation)
-* For other contributions, please [get in touch](#-getting-support) to discuss on Slack
+* [Contribute docs](#contributing-documentation)
+* For other contributions, please [get in touch](#getting-support) to discuss on Slack
 
 ## Contributing 101
 
@@ -60,7 +60,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 ## 🥇 Making Your First Submission 
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
-1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jinahub-submodule) for details. 
+1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jina-hub-submodule) for details. 
 2. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 3. Work on this branch to do the fix/improvement.
 4. Commit the changes with the [correct commit style](#commit-message).
