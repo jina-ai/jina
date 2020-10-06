@@ -29,7 +29,6 @@ class BaseSearchDriver(BaseExecutableDriver):
             *args,
             **kwargs
         )
-        self._is_apply = False
 
         self.hash2id = uid.hash2id
         self.id2hash = uid.id2hash

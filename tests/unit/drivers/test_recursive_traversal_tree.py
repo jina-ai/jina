@@ -11,10 +11,6 @@ DOCUMENTS_PER_LEVEL = 1
 
 class AppendOneChunkTwoMatchesCrafter(BaseRecursiveDriver):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.is_apply = False
-
     def _apply_all(self, docs, *args, **kwargs) -> None:
         for doc in docs:
             add_chunk(doc)

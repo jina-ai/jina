@@ -2,9 +2,8 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
-import os
 from functools import wraps
-from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, Union
+from typing import Any, Dict, Callable, Tuple, Iterable, Iterator
 
 import ruamel.yaml.constructor
 
@@ -40,8 +39,10 @@ def store_init_kwargs(func: Callable) -> Callable:
                 tmp[k] = v
 
         if self.store_args_kwargs:
-            if args: tmp['args'] = args
-            if kwargs: tmp['kwargs'] = {k: v for k, v in kwargs.items() if k not in taboo}
+            if args:
+                tmp['args'] = args
+            if kwargs:
+                tmp['kwargs'] = {k: v for k, v in kwargs.items() if k not in taboo}
 
         if hasattr(self, '_init_kwargs_dict'):
             self._init_kwargs_dict.update(tmp)
@@ -227,16 +228,6 @@ class BaseRecursiveDriver(BaseDriver):
         """
         super().__init__(*args, **kwargs)
         self._traversal_paths = traversal_paths
-        self._is_apply = True
-        self._is_apply_all = True
-
-    def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
-        """ Apply function works on each doc, one by one, modify the doc in-place
-
-        :param doc: the :class:`jina_pb2.Document` object to work on. It could come from ``matches``/``chunks``.
-        :param context_doc: the owner of ``doc``
-        :param field: where ``doc`` comes from, either ``matches`` or ``chunks``
-        """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', field: str, *args,
                    **kwargs) -> None:
@@ -268,12 +259,7 @@ class BaseRecursiveDriver(BaseDriver):
                 if next_edge == 'c':
                     self._traverse_rec(doc.chunks, doc, "chunks", path[1:], *args, **kwargs)
         else:
-            if self._is_apply:
-                for doc in docs:
-                    self._apply(doc, parent_doc, parent_edge_type, *args, **kwargs)
-
-            if self._is_apply_all:
-                self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
+            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

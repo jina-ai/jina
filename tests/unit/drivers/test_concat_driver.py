@@ -57,7 +57,7 @@ def test_concat_embed_driver():
     # simulate two encoders
     flow = (Flow().add(name='a')
             .add(name='b', needs='gateway')
-            .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
+            .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {traversal_paths: [c, r]}'))
 
     with flow:
         flow.index(input_fn=input_fn, output_fn=validate, callback_on_body=True)
