@@ -60,14 +60,14 @@ class ProgressBar(TimeContext):
             sys.stdout.write('\n')
         sys.stdout.flush()
         profile_logger.info({'num_bars': num_bars,
-                              'num_reqs': self.num_reqs,
-                              'bar_len': self.bar_len,
-                              'progress': num_bars / self.bar_len,
-                              'task_name': self.task_name,
-                              'qps': self.num_reqs / elapsed,
-                              'speed': (self.num_docs if self.num_docs > 0 else self.num_reqs) / elapsed,
-                              'speed_unit': ('Documents' if self.num_docs > 0 else 'Requests'),
-                              'elapsed': elapsed})
+                             'num_reqs': self.num_reqs,
+                             'bar_len': self.bar_len,
+                             'progress': num_bars / self.bar_len,
+                             'task_name': self.task_name,
+                             'qps': self.num_reqs / elapsed,
+                             'speed': (self.num_docs if self.num_docs > 0 else self.num_reqs) / elapsed,
+                             'speed_unit': ('Documents' if self.num_docs > 0 else 'Requests'),
+                             'elapsed': elapsed})
 
     def __enter__(self):
         super().__enter__()
