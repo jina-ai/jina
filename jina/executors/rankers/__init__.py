@@ -111,7 +111,7 @@ class Match2DocRanker(BaseRanker):
         This function calculated the new scores for matches and returns them.
         :query_meta: a dictionary containing all the query meta information
             requested by the `required_keys` class_variable.
-        :old_match_scores: contains old scores in the img_type {match_id: score}
+        :old_match_scores: contains old scores in the format {match_id: score}
         :match_meta: a dictionary containing all the matches meta information
             requested by the `required_keys` class_variable.
             Format: {match_id: {attribute: attribute_value}}e.g.{5: {"length": 3}}

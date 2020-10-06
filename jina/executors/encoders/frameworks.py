@@ -15,7 +15,7 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
         """
 
         :param output_feature: the name of the layer for feature extraction.
-        :param model_path: the path of the model in the img_type of `.onnx`. Check a list of available pretrained
+        :param model_path: the path of the model in the format of `.onnx`. Check a list of available pretrained
             models at https://github.com/onnx/models#image_classification and download the git LFS to your local path.
             The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
         """
