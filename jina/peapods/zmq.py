@@ -17,7 +17,7 @@ from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
-from ..logging import default_logger
+from ..logging import default_logger, profile_logger
 from ..proto import jina_pb2, is_data_request
 
 if False:
@@ -194,10 +194,10 @@ class Zmqlet:
                          f'#recv: {self.msg_recv} '
                          f'sent_size: {get_readable_size(self.bytes_sent)} '
                          f'recv_size: {get_readable_size(self.bytes_recv)}')
-        profile_logger.debug({'msg_sent': self.msg_sent,
-                              'msg_recv': self.msg_recv,
-                              'bytes_sent': self.bytes_sent,
-                              'bytes_recv': self.bytes_recv})
+        profile_logger.info({'msg_sent': self.msg_sent,
+                             'msg_recv': self.msg_recv,
+                             'bytes_sent': self.bytes_sent,
+                             'bytes_recv': self.bytes_recv})
 
     def send_message(self, msg: 'jina_pb2.Message'):
         """Send a message via the output socket

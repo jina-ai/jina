@@ -323,7 +323,7 @@ def set_pea_parser(parser=None):
     gp7 = add_arg_group(parser, 'logging arguments')
     gp7.add_argument('--log-config', type=str,
                      default=resource_filename('jina',
-                                               '/'.join(('resources', 'logging.yml'))),
+                                               '/'.join(('resources', 'logging.default.yml'))),
                      help='the yaml config of the fluentd server to pass to the Fluent Logging Handler')
     gp7.add_argument('--log-remote', action='store_true', default=False,
                      help='turn on remote logging, this should not be set manually')

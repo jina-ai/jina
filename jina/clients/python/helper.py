@@ -59,7 +59,7 @@ class ProgressBar(TimeContext):
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
         sys.stdout.flush()
-        profile_logger.debug({'num_bars': num_bars,
+        profile_logger.info({'num_bars': num_bars,
                               'num_reqs': self.num_reqs,
                               'bar_len': self.bar_len,
                               'progress': num_bars / self.bar_len,

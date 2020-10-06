@@ -147,7 +147,7 @@ class JinaLogger:
         if not log_config:
             # when not exist check if there is some os environ
             log_config = os.getenv('JINA_LOG_CONFIG',
-                                   resource_filename('jina', '/'.join(('resources', 'logging.yml'))))
+                                   resource_filename('jina', '/'.join(('resources', 'logging.default.yml'))))
 
         log_config = complete_path(log_config)
 
@@ -218,6 +218,7 @@ class JinaLogger:
                     else:
                         handler = MySysLogHandler(address='/dev/log')
                 if handler:
+                    handler.ident = cfg.get('ident', '')
                     handler.setFormatter(PlainFormatter(cfg['format'].format_map(kwargs)))
             elif h == 'FileHandler':
                 handler = logging.FileHandler(cfg['output'].format_map(kwargs), delay=True)
