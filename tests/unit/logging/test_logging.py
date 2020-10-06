@@ -14,7 +14,7 @@ def log(logger):
 
 
 def test_logging_syslog():
-    with JinaLogger('test_logger', config_path='yaml/syslog.yml') as logger:
+    with JinaLogger('test_logger', log_config='yaml/syslog.yml') as logger:
         log(logger)
         assert len(logger.handlers) == 1
 
@@ -31,7 +31,7 @@ def test_logging_default():
 
 
 def test_logging_file():
-    with JinaLogger('test_logger', config_path='yaml/file.yml') as logger:
+    with JinaLogger('test_logger', log_config='yaml/file.yml') as logger:
         log(logger)
     assert os.path.exists(f'jina-{__uptime__}.log')
     with open(f'jina-{__uptime__}.log') as fp:

@@ -22,8 +22,8 @@ from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2
 from ..logging.queue import clear_queues
+from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -132,7 +132,7 @@ class BasePea(metaclass=PeaMeta):
             if self.args.role == PeaRoleType.REPLICA:
                 self.name = '%s-%d' % (self.name, self.args.replica_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
-            if not self.args.log_with_own_name and self.args.name:
+            if self.args.name:
                 # everything in this Pea (process) will use the same name for display the log
                 os.environ['JINA_POD_NAME'] = self.args.name
             self.logger = JinaLogger(self.name, **vars(self.args))
@@ -191,6 +191,9 @@ class BasePea(metaclass=PeaMeta):
         """
         if self.args.uses:
             try:
+                if self.args.log_config:
+                    # pass it to executor, so exec can follow the same log_config as pea
+                    os.environ['JINA_LOG_CONFIG'] = self.args.log_config
                 self.executor = BaseExecutor.load_config(
                     self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
                     self.args.separated_workspace, self.args.replica_id)
@@ -416,6 +419,7 @@ class BasePea(metaclass=PeaMeta):
         self.is_shutdown.wait()
         if not self.daemon:
             clear_queues()
+            self.logger.close()
             self.join()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

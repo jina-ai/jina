@@ -130,10 +130,7 @@ class BaseExecutor(metaclass=ExecutorType):
             self.args = args[0]
         else:
             self.args = args
-        if isinstance(self.args, argparse.Namespace):
-            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
-        else:
-            self.logger = JinaLogger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
@@ -304,10 +301,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     def __setstate__(self, d):
         self.__dict__.update(d)
-        if isinstance(self.args, argparse.Namespace):
-            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
-        else:
-            self.logger = JinaLogger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         try:
             self._post_init_wrapper(fill_in_metas=False)
         except ImportError as ex:

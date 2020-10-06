@@ -141,13 +141,15 @@ class MySysLogHandler(SysLogHandler):
 class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
-    def __init__(self, context: str, config_path: str = None):
+    def __init__(self, context: str, log_config: str = None, **kwargs):
         from .. import __uptime__
 
-        if not config_path:
-            config_path = resource_filename('jina', '/'.join(('resources', 'logging.yml')))
-        else:
-            config_path = complete_path(config_path)
+        if not log_config:
+            # when not exist check if there is some os environ
+            log_config = os.getenv('JINA_LOG_CONFIG',
+                                   resource_filename('jina', '/'.join(('resources', 'logging.yml'))))
+
+        log_config = complete_path(log_config)
 
         # Remove all handlers associated with the root logger object.
         for handler in logging.root.handlers[:]:
@@ -159,7 +161,7 @@ class JinaLogger:
         context_vars = {'name': os.environ.get('JINA_POD_NAME', context),
                         'uptime': __uptime__,
                         'context': context}
-        self.add_handlers(config_path, **context_vars)
+        self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there
         success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO

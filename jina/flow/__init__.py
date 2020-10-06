@@ -1,8 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import copy
 import argparse
+import copy
 import os
 import tempfile
 import threading
@@ -472,11 +472,12 @@ class Flow(ExitStack):
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
+        self.logger.close()
 
     def _stop_log_server(self):
         import urllib.request
         try:
-            #it may have been shutdown from the outside
+            # it may have been shutdown from the outside
             urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
         except Exception as ex:
             self.logger.info(f'Failed to connect to shutdown log sse server: {repr(ex)}')
