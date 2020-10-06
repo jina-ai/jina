@@ -227,7 +227,6 @@ class BaseRecursiveDriver(BaseDriver):
         """
         super().__init__(*args, **kwargs)
         self._traversal_paths = traversal_paths
-        self._use_tree_traversal = 'JINA_USE_TREE_TRAVERSAL' in os.environ
         self._is_apply = True
         self._is_apply_all = True
 

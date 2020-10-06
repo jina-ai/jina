@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 # lift the chunk-level topk to doc-level topk
-from typing import Iterable, Tuple
+from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
 
