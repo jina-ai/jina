@@ -821,7 +821,7 @@ class Flow(ExitStack):
 
         op_flow = copy.deepcopy(self) if copy_flow else self
         mermaid_graph = ["%%{init: {'theme': 'base', "
-                         "'themeVariables': { 'primaryColor': '#fff4dd', "
+                         "'themeVariables': { 'primaryColor': '#32C8CD', "
                          "'edgeLabelBackground':'#FFCC66', 'tertiaryColor': '#ff6666'}}}%%"]
         mermaid_graph.append('graph TD' if vertical_layout else 'graph LR')
         for node, v in self._pod_nodes.items():
@@ -833,7 +833,7 @@ class Flow(ExitStack):
                 else:
                     edge_str = ''
                 mermaid_graph.append(f'{need}[{need}]:::pod --> {edge_str}{node}[{node}]:::pod')
-        mermaid_graph.append('classDef pod fill:#32C8CD,stroke:#009999,border-radius:5px;')
+        mermaid_graph.append('classDef pod fill:#32C8CD,stroke:#009999')
         mermaid_str = '\n'.join(mermaid_graph)
 
         if image_type not in {'svg', 'jpg'}:
