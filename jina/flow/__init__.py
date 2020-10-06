@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import base64
 import copy
 import os
 import tempfile
@@ -10,7 +11,9 @@ import time
 from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
-from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any, Optional
+from typing import Optional
+from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
+from urllib.request import Request, urlopen
 
 import ruamel.yaml
 from ruamel.yaml import StringIO
@@ -174,7 +177,6 @@ class Flow(ExitStack):
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
-
         self._update_args(args, **kwargs)
 
     def _update_args(self, args, **kwargs):
@@ -792,6 +794,123 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
+
+    def plot(self, output: str = None,
+             image_type: str = 'svg',
+             vertical_layout: bool = False,
+             inline_display: bool = True,
+             copy_flow: bool = False) -> 'Flow':
+        """
+        Visualize the flow up to the current point
+        If a file name is provided it will create a jpg image with that name,
+        otherwise it will display the URL for mermaid.
+        If called within IPython notebook, it will be rendered inline,
+        otherwise an image will be created.
+
+        Example,
+
+        .. highlight:: python
+        .. code-block:: python
+
+            flow = Flow().add(name='pod_a').plot('flow.svg')
+
+        :param output: a filename specifying the name of the image to be created
+        :param image_type: svg/jpg the file type of the output image
+        :param vertical_layout: top-down or left-right layout
+        :param inline_display: show image directly inside the Jupyter Notebook
+        :param copy_flow: when set to true, then always copy the current flow and
+                do the modification on top of it then return, otherwise, do in-line modification
+        :return: the flow
+        """
+
+        op_flow = copy.deepcopy(self) if copy_flow else self
+        mermaid_graph = ["%%{init: {'theme': 'base', "
+                         "'themeVariables': { 'primaryColor': '#32C8CD', "
+                         "'edgeLabelBackground':'#ff6666', 'clusterBkg': '#FFCC66'}}}%%"]
+        mermaid_graph.append('graph TD' if vertical_layout else 'graph LR')
+
+        start_repl = {}
+        end_repl = {}
+        for node, v in self._pod_nodes.items():
+            if v._args.parallel > 1:
+                mermaid_graph.append(f'subgraph {node} ["{node} ({v._args.parallel})"]')
+                head_router = node + '_HEAD'
+                tail_router = node + '_TAIL'
+                p_r = '((%s))'
+                p_e = '(%s)'
+                for j in range(v._args.parallel):
+                    r = node + '_%d' % j
+                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
+                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (r, p_e % r, tail_router, p_r % 'tail'))
+                mermaid_graph.append('end')
+                start_repl[node] = (tail_router, '((fa:fa-random))')
+                end_repl[node] = (head_router, '((fa:fa-random))')
+
+        for node, v in self._pod_nodes.items():
+            ed_str = str(v._args.socket_in).split('_')[0]
+            for need in sorted(v.needs):
+                if need in self._pod_nodes:
+                    st_str = str(self._pod_nodes[need]._args.socket_out).split('_')[0]
+                    edge_str = f'|{st_str}-{ed_str}|'
+                else:
+                    edge_str = ''
+
+                _s = start_repl.get(need, (need, f'({need})'))
+                _e = end_repl.get(node, (node, f'({node})'))
+                mermaid_graph.append(f'{_s[0]}{_s[1]}:::pod --> {edge_str}{_e[0]}{_e[1]}:::pod')
+        mermaid_graph.append('classDef pod fill:#32C8CD,stroke:#009999')
+        mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
+        mermaid_str = '\n'.join(mermaid_graph)
+
+        if image_type not in {'svg', 'jpg'}:
+            raise ValueError(f'image_type must be svg/jpg, but given {image_type}')
+
+        url = self._mermaid_to_url(mermaid_str, image_type)
+        showed = False
+        if inline_display:
+            try:
+                from IPython.display import display, Image
+                from IPython.utils import io
+
+                display(Image(url=url))
+                showed = True
+            except:
+                # no need to panic users
+                pass
+
+        if output:
+            self._download_mermaid_url(url, output)
+        elif not showed:
+            self.logger.info(f'flow visualization: {url}')
+
+        return op_flow
+
+    def _mermaid_to_url(self, mermaid_str, img_type) -> str:
+        """
+        Rendering the current flow as a url points to a SVG, it needs internet connection
+        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+        :return: the url points to a SVG
+        """
+        if img_type == 'jpg':
+            img_type = 'img'
+
+        encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
+
+        return f'https://mermaid.ink/{img_type}/{encoded_str}'
+
+    def _download_mermaid_url(self, mermaid_url, output) -> None:
+        """
+        Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
+        :param path: the file path of the image
+        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+        :return:
+        """
+        try:
+            req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
+            with open(output, 'wb') as fp:
+                fp.write(urlopen(req).read())
+        except:
+            self.logger.error('can not download image, please check your graph and the network connections')
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow,
