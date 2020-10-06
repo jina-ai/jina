@@ -4,16 +4,6 @@ from PIL import Image
 from jina.flow import Flow
 
 
-def test_visualization_url():
-    flow = (Flow().add(name='pod_a')
-            .add(name='pod_b', needs='gateway')
-            .join(needs=['pod_a', 'pod_b']).plot())
-
-    url_split = flow._url.split('view/') #check that has info after standard URL text
-
-    assert url_split is not ' '
-
-
 def test_visualization_with_yml_file_img(tmpdir):
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     tmpfile = os.path.join(tmpdir, 'flow_test.jpg')

@@ -170,7 +170,6 @@ class Flow(ExitStack):
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
-        self._url = ''
         self._update_args(args, **kwargs)
 
     def _update_args(self, args, **kwargs):
@@ -790,14 +789,22 @@ class Flow(ExitStack):
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
-    def plot(self, output='', copy_flow: bool = True) -> 'Flow':
+    def plot(self, output: str=None, copy_flow: bool = False) -> 'Flow':
         """
-            Output the mermaid graph for visualization
-            :return: the flow
-            """
+        Creates a mermaid graph for the Flow.
+        If a file name is provided it will create a jpg image with that name,
+        otherwise it will display the URL for mermaid
+        Example,
+        .. highlight:: python
+        .. code-block:: python
+            flow = Flow().add(name='pod_a').plot('flow_test.jpg')
+
+        :param output: a filename specifying the name of the image to be created
+        :return: the flow
+        """
+
         op_flow = copy.deepcopy(self) if copy_flow else self
         url = ''
-
         mermaid_graph = ['graph TD']
         for node, v in self._pod_nodes.items():
             for need in sorted(v.needs):
@@ -806,7 +813,7 @@ class Flow(ExitStack):
         if output:
             self._mermaidstr_to_jpg(mermaid_str, output)
         else:
-            self._url = self._mermaidstr_to_url(mermaid_str)
+            url = self._mermaidstr_to_url(mermaid_str)
 
         return op_flow
 
@@ -838,7 +845,7 @@ class Flow(ExitStack):
         req = Request('https://mermaid.ink/img/%s' % encoded_str, headers={'User-Agent': 'Mozilla/5.0'})
         with open(output, 'wb') as fp:
             fp.write(urlopen(req).read())
-        self.logger.info('done')
+        self.logger.info('dreturn 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_strone')
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow,
