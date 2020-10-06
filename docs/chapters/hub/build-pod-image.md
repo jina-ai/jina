@@ -26,7 +26,7 @@ f = (Flow()
 jina pod --image jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
-More information about [the usage can be found here](#use-your-pod-image).
+More information about [the usage can be found here](./use-your-pod.html#use-your-pod-image).
 
 
 ## Why?
@@ -59,7 +59,7 @@ Typically, the following files are packed into the container image:
 | `*.yml`          | a YAML file describes the executor arguments and configs, if you want users to use your config;     |
 | Other data files | may be required to run the executor, e.g. pre-trained model, fine-tuned model, home-made data.      |
 
-Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. `build.args` is only required when you want to [upload your image to Jina Hub](#publish-your-pod-image-to-jina-hub).
+Except `Dockerfile`, all others are optional to build a valid Pod image depending on your case. `build.args` is only required when you want to [upload your image to Jina Hub](./publish-your-pod-image.html#publish-your-pod-image-to-jina-hub).
     
 ## Step-by-Step Example
 
@@ -79,7 +79,7 @@ metas:
   workspace: ./
 ```
 
-The documentations of the YAML syntax [can be found at here](http://0.0.0.0:8000/chapters/yaml/yaml.html#executor-yaml-syntax). 
+The documentations of the YAML syntax [can be found at here](../yaml/yaml.html#executor-yaml-syntax). 
 
 ### 2. Write a 3-Line `Dockerfile`
 
