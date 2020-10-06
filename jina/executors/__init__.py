@@ -23,6 +23,7 @@ from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
+    from ..drivers import BaseDriver
     from ..peapods.pea import BasePea
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
