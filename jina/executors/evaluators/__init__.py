@@ -11,7 +11,7 @@ class BaseEvaluator(BaseExecutor):
     """A :class:`BaseEvaluator` evaluates the content of matches against the expected GroundTruth.
     """
 
-    def __init__(self, id_tag, *args, **kwargs):
+    def __init__(self, id_tag: str, *args, **kwargs):
         """"
         :param id_tag: the key in the tags of documents to identify uniquely a document
         """

@@ -9,7 +9,7 @@ class PrecisionEvaluator(BaseEvaluator):
        It computes how many of the first given `eval_at` matches are found in the groundtruth
     """
 
-    def __init__(self, eval_at,  *args, **kwargs):
+    def __init__(self, eval_at: int,  *args, **kwargs):
         """"
         :param eval_at: k at which evaluation is performed
         """
