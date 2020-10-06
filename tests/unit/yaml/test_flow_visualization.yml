@@ -6,6 +6,7 @@ pods:
     read_only: true
   image_encoder:
     read_only: true
+    parallel: 4
   image_vector_indexer:
     read_only: true
   image_kv_indexer:
@@ -13,6 +14,7 @@ pods:
   text_encoder:
     timeout_ready: 600000
     read_only: true
+    parallel: 4
     needs: [gateway]
   text_indexer:
     read_only: true

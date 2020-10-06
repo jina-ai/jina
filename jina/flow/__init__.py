@@ -826,8 +826,26 @@ class Flow(ExitStack):
         op_flow = copy.deepcopy(self) if copy_flow else self
         mermaid_graph = ["%%{init: {'theme': 'base', "
                          "'themeVariables': { 'primaryColor': '#32C8CD', "
-                         "'edgeLabelBackground':'#FFCC66', 'tertiaryColor': '#ff6666'}}}%%"]
+                         "'edgeLabelBackground':'#ff6666', 'clusterBkg': '#FFCC66'}}}%%"]
         mermaid_graph.append('graph TD' if vertical_layout else 'graph LR')
+
+        start_repl = {}
+        end_repl = {}
+        for node, v in self._pod_nodes.items():
+            if v._args.parallel > 1:
+                mermaid_graph.append(f'subgraph {node} ["{node} ({v._args.parallel})"]')
+                head_router = node + '_HEAD'
+                tail_router = node + '_TAIL'
+                p_r = '((%s))'
+                p_e = '(%s)'
+                for j in range(v._args.parallel):
+                    r = node + '_%d' % j
+                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
+                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (r, p_e % r, tail_router, p_r % 'tail'))
+                mermaid_graph.append('end')
+                start_repl[node] = (tail_router, '((fa:fa-random))')
+                end_repl[node] = (head_router, '((fa:fa-random))')
+
         for node, v in self._pod_nodes.items():
             ed_str = str(v._args.socket_in).split('_')[0]
             for need in sorted(v.needs):
@@ -836,8 +854,12 @@ class Flow(ExitStack):
                     edge_str = f'|{st_str}-{ed_str}|'
                 else:
                     edge_str = ''
-                mermaid_graph.append(f'{need}({need}):::pod --> {edge_str}{node}({node}):::pod')
+
+                _s = start_repl.get(need, (need, f'({need})'))
+                _e = end_repl.get(node, (node, f'({node})'))
+                mermaid_graph.append(f'{_s[0]}{_s[1]}:::pod --> {edge_str}{_e[0]}{_e[1]}:::pod')
         mermaid_graph.append('classDef pod fill:#32C8CD,stroke:#009999')
+        mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 
         if image_type not in {'svg', 'jpg'}:

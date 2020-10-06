@@ -15,11 +15,13 @@ def test_visualization_with_yml_file_jpg():
                                                                                         image_type='jpg')
     assert os.path.exists('flow.jpg')
 
+
 def test_visualization_with_yml_file_jpg_lr():
     Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output='flow-hor.jpg',
                                                                                         image_type='jpg',
                                                                                         vertical_layout=False)
     assert os.path.exists('flow-hor.jpg')
+
 
 def test_visualization_plot_twice():
     (Flow().add(name='pod_a')
@@ -39,3 +41,4 @@ def test_visualization_plot_in_middle():
 
     assert os.path.exists('flow3.svg')
 
+test_visualization_with_yml_file_img()
