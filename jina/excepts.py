@@ -106,3 +106,7 @@ class MongoDBException(Exception):
 
 class TimedOutException(Exception):
     """ Errors raised for timeout operations """
+
+
+class DockerLoginFailed(Exception):
+    """ Exception to raise for docker hub login failures """

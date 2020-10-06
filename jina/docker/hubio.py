@@ -10,10 +10,9 @@ import webbrowser
 from typing import Dict
 
 from .checker import *
-from .database import MongoDBHandler
 from .helper import Waiter, handle_dot_in_keys, credentials_file
 from ..clients.python import ProgressBar
-from ..excepts import PeaFailToStart, TimedOutException
+from ..excepts import PeaFailToStart, TimedOutException, DockerLoginFailed
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
 from ..logging import get_logger
 from ..logging.profile import TimeContext
@@ -155,29 +154,31 @@ class HubIO:
         name = name or self.args.name
         file_path = get_summary_path(name)
         if not os.path.isfile(file_path):
-            self.logger.error(f'can not find the build summary file')
+            self.logger.error(f'can not find the build summary file. '
+                              f'please build the image before pushing and pass tag with the image name')
             return
 
         try:
             self._push_docker_hub(name, readme_path)
-        except:
-            self.logger.error('can not push to the docker hub registry')
+        except Exception as ex:
+            self.logger.error(f'can not complete the push due to {repr(ex)}')
             return
 
         with open(file_path) as f:
             result = json.load(f)
         if result['is_build_success']:
             _push(logger=self.logger, summary=result)
-            # self._write_summary_to_db(summary=result)
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
         check_registry(self.args.registry, name, _repo_prefix)
         self._check_docker_image(name)
-        self._login()
+        self._docker_login()
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
             for line in self._client.images.push(name, stream=True, decode=True):
                 t.update(1)
+                if 'error' in line and 'authentication required' in line['error']:
+                    raise DockerLoginFailed('user not logged in to docker.')
                 self.logger.debug(line)
         self.logger.success(f'🎉 {name} is now published!')
 
@@ -209,8 +210,8 @@ class HubIO:
     def pull(self) -> None:
         """A wrapper of docker pull """
         check_registry(self.args.registry, self.args.name, _repo_prefix)
-        self._login()
         try:
+            self._docker_login()
             with TimeContext(f'pulling {self.args.name}', self.logger):
                 image = self._client.images.pull(self.args.name)
             if isinstance(image, list):
@@ -218,10 +219,8 @@ class HubIO:
             image_tag = image.tags[0] if image.tags else ''
             self.logger.success(
                 f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
-        except:
-            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry}')
-            raise
-
+        except Exception as ex:
+            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry} due to {repr(ex)}')
 
     def _check_docker_image(self, name: str) -> None:
         # check local image
@@ -240,13 +239,18 @@ class HubIO:
 
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
 
-    def _login(self) -> None:
+    def _docker_login(self) -> None:
         """A wrapper of docker login """
+        from docker.errors import APIError
         if self.args.username and self.args.password:
-            self._client.login(username=self.args.username, password=self.args.password,
-                               registry=self.args.registry)
+            try:
+                self._client.login(username=self.args.username, password=self.args.password,
+                                   registry=self.args.registry)
+                self.logger.debug(f'successfully logged in to docker hub')
+            except APIError:
+                raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
         else:
-            self.logger.error('no username/password specified, docker login failed')
+            raise DockerLoginFailed('no username/password specified, docker login failed')
 
     def build(self) -> Dict:
         """A wrapper of docker build """
@@ -365,7 +369,6 @@ class HubIO:
                     try:
                         self._push_docker_hub(image.tags[0], self.readme_path)
                         _push(logger=self.logger, summary=result)
-                        # self._write_summary_to_db(summary=result)
                         self._write_slack_message(result, _details, _build_history)
                     except Exception as ex:
                         self.logger.error(f'can not complete the push due to {repr(ex)}')
@@ -385,30 +388,6 @@ class HubIO:
             s = {'is_build_success': False,
                  'exception': str(ex)}
         return s
-
-    def _write_summary_to_db(self, summary: Dict) -> None:
-        """ Inserts / Updates summary document in mongodb """
-        if not is_db_envs_set():
-            self.logger.warning('MongoDB environment vars are not set! bookkeeping skipped.')
-            return
-
-        build_summary = handle_dot_in_keys(document=summary)
-        _build_query = {'name': build_summary['name'], 'version': build_summary['version']}
-        _current_build_history = build_summary['build_history']
-        with MongoDBHandler(hostname=os.environ['JINA_DB_HOSTNAME'],
-                            username=os.environ['JINA_DB_USERNAME'],
-                            password=os.environ['JINA_DB_PASSWORD'],
-                            database_name=os.environ['JINA_DB_NAME'],
-                            collection_name=os.environ['JINA_DB_COLLECTION']) as db:
-            existing_doc = db.find(query=_build_query)
-            if existing_doc:
-                build_summary['build_history'] = existing_doc['build_history'] + _current_build_history
-                _modified_count = db.replace(document=build_summary,
-                                             query=_build_query)
-                self.logger.debug(f'Updated the build + push summary in db. {_modified_count} documents modified')
-            else:
-                _inserted_id = db.insert(document=build_summary)
-                self.logger.debug(f'Inserted the build + push summary in db with id {_inserted_id}')
 
     def _write_summary_to_file(self, summary: Dict) -> None:
         file_path = get_summary_path(f'{summary["name"]}:{summary["version"]}')
