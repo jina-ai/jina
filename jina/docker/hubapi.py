@@ -25,8 +25,7 @@ def _list(logger, name: str = None, kind: str = None, type_: str = None, keyword
         params['type'] = type_
     if keywords:
         # The way lambda function handles params, we need to pass them comma separated rather than in an iterable 
-        params['keywords'] = ','.join(keywords)
-    
+        params['keywords'] = ','.join(keywords) if len(keywords) > 1 else keywords
     if params:
         response = requests.get(url=f'{hubapi_url}{hubapi_list}',
                                 params=params)
