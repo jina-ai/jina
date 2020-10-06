@@ -158,6 +158,12 @@ class JinaLogger:
                 if handler:
                     handler.ident = cfg.get('ident', '')
                     handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
+                    
+                try:
+                    handler._connect_unixsocket(handler.address)
+                except OSError:
+                    handler = None
+                    pass
             elif h == 'FileHandler':
                 handler = logging.FileHandler(cfg['output'].format_map(kwargs), delay=True)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
