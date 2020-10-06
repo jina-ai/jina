@@ -818,6 +818,13 @@ class Flow(ExitStack):
         mermaid_str = '\n'.join(mermaid_graph)
         if output:
             self._mermaidstr_to_jpg(mermaid_str, output)
+            try:
+                from IPython.display import Image
+                from IPython.display import display
+                pil_img = Image(filename=output)
+                display(pil_img)
+            except ModuleNotFoundError:
+                self.logger.error('Failed to import IPython')  
         else:
             url = self._mermaidstr_to_url(mermaid_str)
 
@@ -829,7 +836,6 @@ class Flow(ExitStack):
         :param kwargs: keyword arguments of :py:meth:`to_mermaid`
         :return: the url points to a SVG
         """
-
         import base64
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
         self.logger.info('URL: ', 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str)
