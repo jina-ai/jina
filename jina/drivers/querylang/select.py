@@ -33,7 +33,6 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
             self._fields = set(fields)
 
         self.is_apply_all = False
-        self._use_tree_traversal = True
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         for k in self.fields:

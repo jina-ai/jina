@@ -60,7 +60,6 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_SOCKET_HWM',
                 'JINA_TEST_GPU',
                 'JINA_TEST_PRETRAINED',
-                'JINA_USE_TREE_TRAVERSAL',
                 'JINA_VCS_VERSION',
                 'JINA_WARN_UNNAMED')
 
