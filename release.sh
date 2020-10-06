@@ -57,7 +57,7 @@ function slack_notif {
 function make_release_note {
     ${RELEASENOTE} ${LAST_VER}..HEAD .github/release-template.ejs > ./CHANGELOG.tmp
     head -n10 ./CHANGELOG.tmp
-    printf '\n%s\n\n%s\n\n%s\n\n%s\n\n' "$(cat ./CHANGELOG.md)" "## Release Note (\`${RELEASE_VER}\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" > ./CHANGELOG.md
+    printf '\n%s\n\n%s\n%s\n\n%s\n\n%s\n\n' "$(cat ./CHANGELOG.md)" "<a name="release-note-${RELEASE_VER//\./-}"></a>" "## Release Note (\`${RELEASE_VER}\`)" "> Release time: $(date +'%Y-%m-%d %H:%M:%S')" "$(cat ./CHANGELOG.tmp)" > ./CHANGELOG.md
 }
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)

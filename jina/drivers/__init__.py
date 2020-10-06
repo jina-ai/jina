@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import inspect
 import os
 from functools import wraps
-from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, Union, List
+from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, Union
 
 import ruamel.yaml.constructor
 
@@ -17,7 +17,7 @@ if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.pea import BasePea
     from ..executors import AnyExecutor
-    import logging
+    from ..logging.logger import JinaLogger
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -166,7 +166,7 @@ class BaseDriver(metaclass=DriverType):
         return self.msg.envelope
 
     @property
-    def logger(self) -> 'logging.Logger':
+    def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.pea.logger``"""
         return self.pea.logger
 
@@ -234,7 +234,7 @@ class BaseRecursiveDriver(BaseDriver):
         """
         super().__init__(*args, **kwargs)
         if isinstance(recur_on, str):
-            recur_on = (recur_on, )
+            recur_on = (recur_on,)
         self._recur_on = recur_on
         self._granularity_start, self._granularity_end = granularity_range
         self._adjacency_start, self._adjacency_end = adjacency_range
@@ -374,7 +374,8 @@ class BaseRecursiveDriver(BaseDriver):
                 # is done already in the `if 'chunks' in self._recur_on` case.
                 if self._adjacency_end > 0:
                     for working_doc in docs:
-                        _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start, self._adjacency_end)
+                        _traverse(working_doc.matches, 'matches', None, 'adjacency', self._adjacency_start,
+                                  self._adjacency_end)
 
             else:
                 working_docs = docs

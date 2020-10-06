@@ -3,6 +3,7 @@ from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet, add_envelope
 from jina.proto import jina_pb2
+import logging
 
 
 def test_simple_zmqlet():
@@ -26,7 +27,8 @@ def test_simple_zmqlet():
         '--timeout-ctrl', '-1'
     ])
 
-    with BasePea(args2) as z1, Zmqlet(args) as z:
+    logger = logging.getLogger('zmq-test')
+    with BasePea(args2) as z1, Zmqlet(args, logger) as z:
         req = jina_pb2.Request()
         req.request_id = 1
         d = req.index.docs.add()

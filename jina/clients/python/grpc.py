@@ -7,7 +7,7 @@ import grpc
 
 from ... import __stop_msg__
 from ...excepts import BadClient, GRPCServerError
-from ...logging.base import get_logger
+from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc
 
 if False:
@@ -26,7 +26,7 @@ class GrpcClient:
         if not args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
-        self.logger = get_logger(self.__class__.__name__, **vars(args))
+        self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.logger.debug('setting up grpc insecure channel...')
         # A gRPC channel provides a connection to a remote gRPC server.
         self._channel = grpc.insecure_channel(

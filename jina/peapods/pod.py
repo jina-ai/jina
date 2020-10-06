@@ -452,7 +452,7 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
     bind_local = (bind_args.host == '0.0.0.0')
     conn_local = (connect_args.host == '0.0.0.0')
     conn_docker = (
-                getattr(connect_args, 'uses', None) is not None and not is_valid_local_config_source(connect_args.uses))
+            getattr(connect_args, 'uses', None) is not None and not is_valid_local_config_source(connect_args.uses))
     bind_conn_same_remote = not bind_local and not conn_local and (bind_args.host == connect_args.host)
     if platform == "linux" or platform == "linux2":
         local_host = '0.0.0.0'

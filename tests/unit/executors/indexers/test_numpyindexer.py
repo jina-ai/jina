@@ -6,7 +6,6 @@ import pytest
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 # fix the seed here
-from tests import rm_files
 
 np.random.seed(500)
 retr_idx = None
@@ -18,15 +17,13 @@ vec = np.random.random([num_data, num_dim])
 query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
-def test_numpy_indexer(batch_size, compress_level):
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level) as indexer:
+def test_numpy_indexer(batch_size, compress_level, test_metas):
+    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
-        index_abspath = indexer.index_abspath
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -40,22 +37,19 @@ def test_numpy_indexer(batch_size, compress_level):
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
 
-    rm_files([index_abspath, save_abspath])
-
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
-def test_numpy_indexer_known(batch_size, compress_level):
+def test_numpy_indexer_known(batch_size, compress_level, test_metas):
     vectors = np.array([[1, 1, 1],
                         [10, 10, 10],
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level) as indexer:
+    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
-        index_abspath = indexer.index_abspath
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
@@ -70,17 +64,14 @@ def test_numpy_indexer_known(batch_size, compress_level):
         assert idx.shape == (4, 2)
         np.testing.assert_equal(indexer.query_by_id([7, 4]), vectors[[3, 0]])
 
-    rm_files([index_abspath, save_abspath])
-
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
-def test_scipy_indexer(batch_size, compress_level):
-    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level) as indexer:
+def test_scipy_indexer(batch_size, compress_level, test_metas):
+    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
-        index_abspath = indexer.index_abspath
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -93,6 +84,3 @@ def test_scipy_indexer(batch_size, compress_level):
             np.testing.assert_almost_equal(retr_idx, idx)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
-
-    rm_files([index_abspath, save_abspath])
-

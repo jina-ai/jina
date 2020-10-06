@@ -11,19 +11,18 @@ from typing import List, Callable, Optional, Union, Tuple, Iterable
 import zmq
 import zmq.asyncio
 from zmq.eventloop.zmqstream import ZMQStream
+from zmq.ssh import tunnel_connection
 
 from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
-from ..logging import default_logger, profile_logger
-from ..logging.base import get_logger
+from ..logging import default_logger, profile_logger, JinaLogger
 from ..proto import jina_pb2, is_data_request
 
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
-    import logging
     from ..proto.jina_pb2 import Message
 
 use_uvloop()
@@ -38,7 +37,7 @@ class Zmqlet:
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'logging.Logger' = None):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None):
         """
 
         :param args: the parsed arguments from the CLI
@@ -46,7 +45,7 @@ class Zmqlet:
         """
         self.args = args
         self.name = args.name or self.__class__.__name__
-        self.logger = logger or get_logger(self.name, **vars(args))
+        self.logger = logger
         if args.compress_hwm > 0:
             try:
                 import lz4
@@ -140,11 +139,18 @@ class Zmqlet:
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
             in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                            self.args.identity)
+                                            self.args.identity,
+                                            ssh_server=self.args.ssh_server,
+                                            ssh_keyfile=self.args.ssh_keyfile,
+                                            ssh_password=self.args.ssh_password)
             self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                              self.args.identity)
+                                              self.args.identity,
+                                              ssh_server=self.args.ssh_server,
+                                              ssh_keyfile=self.args.ssh_keyfile,
+                                              ssh_password=self.args.ssh_password
+                                              )
             self.logger.debug(f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}')
 
             self.logger.info(
@@ -187,10 +193,10 @@ class Zmqlet:
                          f'#recv: {self.msg_recv} '
                          f'sent_size: {get_readable_size(self.bytes_sent)} '
                          f'recv_size: {get_readable_size(self.bytes_recv)}')
-        profile_logger.debug({'msg_sent': self.msg_sent,
-                              'msg_recv': self.msg_recv,
-                              'bytes_sent': self.bytes_sent,
-                              'bytes_recv': self.bytes_recv})
+        profile_logger.info({'msg_sent': self.msg_sent,
+                             'msg_recv': self.msg_recv,
+                             'bytes_sent': self.bytes_sent,
+                             'bytes_recv': self.bytes_recv})
 
     def send_message(self, msg: 'jina_pb2.Message'):
         """Send a message via the output socket
@@ -429,7 +435,7 @@ def _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout):
 
 
 async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
-                            compress_hwm: float = -1, compress_lwm: float = 1.,
+                             compress_hwm: float = -1, compress_lwm: float = 1.,
                              **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
@@ -557,7 +563,6 @@ def _serialize_to_frames(client_id, msg: 'jina_pb2.Message',
 
     _size_before = sum(sys.getsizeof(m) for m in _body)
     if _size_before > compress_hwm > 0:
-        from ..logging import default_logger
         import lz4.frame
         body = [lz4.frame.compress(m) for m in _body]
         is_compressed = b'1'
@@ -634,7 +639,9 @@ def _get_random_ipc() -> str:
 
 
 def _init_socket(ctx: 'zmq.Context', host: str, port: int,
-                 socket_type: 'SocketType', identity: 'str' = None, use_ipc: bool = False) -> Tuple['zmq.Socket', str]:
+                 socket_type: 'SocketType', identity: 'str' = None,
+                 use_ipc: bool = False, ssh_server: str = None,
+                 ssh_keyfile: str = None, ssh_password: str = None) -> Tuple['zmq.Socket', str]:
     sock = {
         SocketType.PULL_BIND: lambda: ctx.socket(zmq.PULL),
         SocketType.PULL_CONNECT: lambda: ctx.socket(zmq.PULL),
@@ -670,15 +677,22 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
                 sock.bind_to_random_port(f'tcp://{host}')
             else:
                 try:
-                    sock.bind('tcp://%s:%d' % (host, port))
+                    sock.bind(f'tcp://{host}:{port}')
                 except zmq.error.ZMQError as ex:
-                    default_logger.error('error when binding port %d to %s' % (port, host))
-                    raise ex
+                    default_logger.error(f'error when binding port {port} to {host}')
+                    raise
     else:
         if port is None:
-            sock.connect(host)
+            address = host
         else:
-            sock.connect('tcp://%s:%d' % (host, port))
+            address = f'tcp://{host}:{port}'
+
+        # note that ssh only takes effect on CONNECT, not BIND
+        # that means control socket setup does not need ssh
+        if ssh_server:
+            tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
+        else:
+            sock.connect(address)
 
     if socket_type in {SocketType.SUB_CONNECT, SocketType.SUB_BIND}:
         # sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')

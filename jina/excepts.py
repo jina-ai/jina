@@ -1,7 +1,8 @@
+""" This modules defines all kinds of exceptions raised in jina """
+
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-""" This modules defines all kinds of exceptions raised in jina """
 
 
 class NoExplicitMessage(Exception):

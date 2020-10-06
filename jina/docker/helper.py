@@ -6,7 +6,6 @@ import base64
 from pathlib import Path
 
 from .. import __binary_delimiter__
-from ..helper import yaml
 from ..logging import get_logger
 from pkg_resources import resource_stream
 from typing import Dict, Union, List
