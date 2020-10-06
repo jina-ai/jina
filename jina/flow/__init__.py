@@ -866,21 +866,22 @@ class Flow(ExitStack):
             raise ValueError(f'image_type must be svg/jpg, but given {image_type}')
 
         url = self._mermaid_to_url(mermaid_str, image_type)
-        if output:
-            self._download_mermaid_url(url, output)
-        else:
-            self.logger.info(f'flow visualization: {url}')
-
+        showed = False
         if inline_display:
             try:
                 from IPython.display import display, Image
                 from IPython.utils import io
 
-                with io.capture_output():
-                    display(Image(url=url))
+                display(Image(url=url))
+                showed = True
             except:
                 # no need to panic users
                 pass
+
+        if output:
+            self._download_mermaid_url(url, output)
+        elif not showed:
+            self.logger.info(f'flow visualization: {url}')
 
         return op_flow
 
