@@ -60,6 +60,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 * [Help wanted](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 * [Discussion required](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22discussion+required%22)
 
+<a name="making-your-first-submission"></a>
 ## 🥇 Making Your First Submission 
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
