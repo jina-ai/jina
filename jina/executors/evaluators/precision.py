@@ -24,11 +24,15 @@ class PrecisionEvaluator(BaseEvaluator):
         :return the evaluation metric value for the request document
         """
         ret = 0.0
-        matches_ids = map(lambda x: x.tags[self.id_tag], matches)
-        groundtruth_ids = map(lambda x: x.tags[self.id_tag], groundtruth)
-        for doc_id in matches_ids[:, self.eval_at]:
+        matches_ids = list(map(lambda x: x.tags[self.id_tag], matches[:self.eval_at]))
+        groundtruth_ids = list(map(lambda x: x.tags[self.id_tag], groundtruth))
+        for doc_id in matches_ids:
             if doc_id in groundtruth_ids:
                 ret += 1.0
 
-        min = min(self.eval_at, len(groundtruth))
-        return ret/min
+        divisor = min(self.eval_at, len(groundtruth))
+        if divisor == 0.0:
+            """TODO: Agree on a behavior"""
+            return 0.0
+        else:
+            return ret / divisor

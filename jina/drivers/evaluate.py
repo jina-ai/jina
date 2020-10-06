@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
+from typing import Tuple, Iterable
 from jina.proto import jina_pb2
 
 from . import BaseExecutableDriver
@@ -24,7 +24,8 @@ class EvaluateDriver(BaseExecutableDriver):
         else:
             return self.__class__.__name__
 
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        evaluation = doc.evaluations.add()
-        evaluation.value = self.exec_fn(doc.matches, doc.groundtruth)
-        evaluation.id = self.id
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None
+        for doc in docs:
+            evaluation = doc.evaluations.add()
+            evaluation.value = self.exec_fn(doc.matches, doc.groundtruth)
+            evaluation.id = self.id
