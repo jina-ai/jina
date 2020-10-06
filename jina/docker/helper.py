@@ -6,7 +6,7 @@ import base64
 from pathlib import Path
 
 from .. import __binary_delimiter__
-from ..logging import get_logger
+from ..logging import JinaLogger
 from pkg_resources import resource_stream
 from typing import Dict, Union, List
 
@@ -48,7 +48,7 @@ def credentials_file():
 
 class Waiter:
     def __init__(self, seconds, message=''):
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         self._seconds = seconds
         self._message = message
         
