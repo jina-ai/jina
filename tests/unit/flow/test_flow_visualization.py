@@ -38,3 +38,4 @@ def test_visualization_plot_in_middle():
      .join(needs=['pod_a', 'pod_b']))
 
     assert os.path.exists('flow3.svg')
+

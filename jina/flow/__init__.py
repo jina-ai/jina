@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import base64
 import copy
 import os
 import tempfile
@@ -10,7 +11,7 @@ import time
 from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
-from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any, Optional
+from typing import Optional
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 from urllib.request import Request, urlopen
 
@@ -796,7 +797,7 @@ class Flow(ExitStack):
 
     def plot(self, output: str = None,
              image_type: str = 'svg',
-             vertical_layout: bool = True,
+             vertical_layout: bool = False,
              inline_display: bool = True,
              copy_flow: bool = False) -> 'Flow':
         """
@@ -811,7 +812,7 @@ class Flow(ExitStack):
         .. highlight:: python
         .. code-block:: python
 
-            flow = Flow().add(name='pod_a').plot('flow_test.jpg')
+            flow = Flow().add(name='pod_a').plot('flow.svg')
 
         :param output: a filename specifying the name of the image to be created
         :param image_type: svg/jpg the file type of the output image
@@ -835,7 +836,7 @@ class Flow(ExitStack):
                     edge_str = f'|{st_str}-{ed_str}|'
                 else:
                     edge_str = ''
-                mermaid_graph.append(f'{need}[{need}]:::pod --> {edge_str}{node}[{node}]:::pod')
+                mermaid_graph.append(f'{need}({need}):::pod --> {edge_str}{node}({node}):::pod')
         mermaid_graph.append('classDef pod fill:#32C8CD,stroke:#009999')
         mermaid_str = '\n'.join(mermaid_graph)
 
