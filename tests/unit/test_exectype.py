@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from jina.executors import BaseExecutor
@@ -5,21 +6,21 @@ from jina.executors import BaseExecutor
 from jina.helper import yaml
 
 
-def test_exec_type():
+def test_exec_type(tmpdir):
     from jina.executors.indexers import BaseIndexer
     assert 'BaseIndexer' in BaseExecutor._registered_class
 
     # init from YAML should be okay as well
     BaseExecutor.load_config('BaseIndexer')
 
-    BaseIndexer().save_config('tmp.yml')
-    with open('tmp.yml') as fp:
+    BaseIndexer().save_config(os.path.join(tmpdir, 'tmp.yml'))
+    with open(os.path.join(tmpdir, 'tmp.yml')) as fp:
         s = yaml.load(fp)
 
     def assert_bi():
         b = BaseIndexer(1)
-        b.save_config('tmp.yml')
-        with open('tmp.yml') as fp:
+        b.save_config(os.path.join(tmpdir, 'tmp.yml'))
+        with open(os.path.join(tmpdir, 'tmp.yml')) as fp:
             b = yaml.load(fp)
             assert b.a == 1
 
