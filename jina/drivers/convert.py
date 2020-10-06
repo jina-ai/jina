@@ -114,8 +114,9 @@ class NdArray2PngURI(BaseConvertDriver):
 
     def png_convertor_1d(self, arr: np.array):
         pixels = []
+        arr = 255 - arr
         for p in arr[::-1]:
-            pixels.extend([255 - int(p), 255 - int(p), 255 - int(p), 255])
+            pixels.extend([p, p, p, 255])
         buf = bytearray(pixels)
 
         # reverse the vertical line order and add null bytes at the start
@@ -139,7 +140,7 @@ class NdArray2PngURI(BaseConvertDriver):
         return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
     @staticmethod
-    def image_to_byte_array(image:Image, format:str):
+    def image_to_byte_array(image: 'Image', format: str):
         import io
         img_byte_arr = io.BytesIO()
         image.save(img_byte_arr, format=format)
@@ -147,27 +148,28 @@ class NdArray2PngURI(BaseConvertDriver):
         return img_byte_arr
 
     def png_convertor(self, arr: np.array):
+        import numpy as np
         from PIL import Image
+
         arr = arr.astype(np.uint8)
-        if arr.shape == 1:
-            im = Image.fromarray(arr.reshape((self.height, self.width))).convert('L')
-        elif arr.shape == 2:
+
+        if len(arr.shape) == 1:
+            # im = Image.fromarray(arr.reshape((self.height, self.width))).convert('L')
+            return self.png_convertor_1d(arr)
+        elif len(arr.shape) == 2:
             im = Image.fromarray(arr).convert('L')
-        elif arr.shape == 3:
+            im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
+        elif len(arr.shape) == 3:
             im = Image.fromarray(arr).convert('RGB')
+            im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
         else:
             raise ValueError('arr shape length should be either 1, 2 or 3')
-        im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
+
         png_bytes = NdArray2PngURI.image_to_byte_array(im, format='PNG')
         return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
     
     def convert(self, arr: np.array):
-        if len(arr.shape) == 3:
-            arr.uri = self.png_convertor(arr)
-        elif len(arr.shape) == 1:
-            arr.uri = self.png_convertor_1d(arr)
-        else:
-            raise ValueError('arr shape length should be either 1 or 3')
+        arr.uri = self.png_convertor(arr)
 
 
 class Blob2PngURI(NdArray2PngURI):
@@ -179,12 +181,7 @@ class Blob2PngURI(NdArray2PngURI):
 
     def convert(self, d):
         arr = pb2array(d.blob)
-        if len(arr.shape) == 3:
-            d.uri = self.png_convertor(arr)
-        elif len(arr.shape) == 1:
-            d.uri = self.png_convertor_1d(arr)
-        else:
-            raise ValueError('arr shape length should be either 1 or 3')
+        d.uri = self.png_convertor(arr)
 
 class URI2Buffer(BaseConvertDriver):
     """ Convert local file path, remote URL doc to a buffer doc.
