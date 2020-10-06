@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Sequence
 from jina.proto import jina_pb2
 
 from .. import BaseExecutor
@@ -18,8 +18,8 @@ class BaseEvaluator(BaseExecutor):
         super().__init__(*args, **kwargs)
         self.id_tag = id_tag
 
-    def evaluate(self, matches: Iterable[jina_pb2.Document],
-                 groundtruth: Iterable[jina_pb2.Document], *args, **kwargs) -> float:
+    def evaluate(self, matches: Sequence[jina_pb2.Document],
+                 groundtruth: Sequence[jina_pb2.Document], *args, **kwargs) -> float:
         """"
         :param matches: the matched documents from the request as matched by jina indexers and rankers
         :param groundtruth: the expected documents matches sorted as they are expected

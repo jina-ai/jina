@@ -114,7 +114,12 @@ message Document {
     // Groundtruth of expected matches sorted by relevance (highest relevance first)
     repeated Document groundtruth = 23;
 
-    float evaluation = 24;
+    repeated Evaluation evaluations = 24;
+}
+
+message Evaluation {
+    string id = 1;
+    float value = 2;
 }
 
 /**
@@ -264,13 +269,6 @@ message Request {
     Status status = 6; // status info
 
     repeated QueryLang queryset = 7; // the query set
-}
-
-/**
-* Represents a GroundTruth, the document to search for and its expected matches sorted by relevance (highest relevance first)
-*/
-message GroundTruth {
-    repeated Document matches = 1;
 }
 
 message QueryLang {

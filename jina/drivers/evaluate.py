@@ -17,5 +17,14 @@ class EvaluateDriver(BaseExecutableDriver):
         self._is_apply = True
         self._use_tree_traversal = True
 
+    @property
+    def id(self):
+        if self.pea:
+            return self.pea.name
+        else:
+            return self.__class__.__name__
+
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        doc.evaluation = self.exec_fn(doc.matches, doc.groundtruth)
+        evaluation = doc.evaluations.add()
+        evaluation.value = self.exec_fn(doc.matches, doc.groundtruth)
+        evaluation.id = self.id
