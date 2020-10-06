@@ -2,11 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import base64
+from typing import Dict, Union, List
 
 from .. import __binary_delimiter__
-from ..helper import yaml
-from pkg_resources import resource_stream
-from typing import Dict, Union, List
 
 
 def _encode(clear, key=__binary_delimiter__.decode()):
@@ -26,7 +24,6 @@ def _decode(enc, key=__binary_delimiter__.decode()):
         dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
         dec.append(dec_c)
     return ''.join(dec)
-
 
 
 def handle_dot_in_keys(document: Dict[str, Union[Dict, List]]) -> Union[Dict, List]:

@@ -49,7 +49,7 @@ def test_pod_without_sse_no_parallelism_no_deadlock():
 @pytest.mark.timeout(10)
 @pytest.mark.repeat(10)
 def test_pod_with_sse_no_parallelism_no_deadlock():
-    args = set_pod_parser().parse_args(['--parallel', '1', '--log-sse'])
+    args = set_pod_parser().parse_args(['--parallel', '1'])
     p = Pod(args)
     with p:
         pass
@@ -58,7 +58,7 @@ def test_pod_with_sse_no_parallelism_no_deadlock():
 @pytest.mark.timeout(10)
 @pytest.mark.repeat(10)
 def test_pod_with_sse_no_deadlock_parallelism():
-    args = set_pod_parser().parse_args(['--parallel', '2', '--log-sse'])
+    args = set_pod_parser().parse_args(['--parallel', '2'])
     p = Pod(args)
     with p:
         pass
@@ -87,7 +87,7 @@ def test_pod_with_sse_no_deadlock_log_file():
 @pytest.mark.timeout(10)
 @pytest.mark.repeat(10)
 def test_pod_with_sse_no_deadlock_thread():
-    args = set_pod_parser().parse_args(['--parallel', '2', '--runtime', 'thread', '--log-sse'])
+    args = set_pod_parser().parse_args(['--parallel', '2', '--runtime', 'thread'])
     p = Pod(args)
     with p:
         pass

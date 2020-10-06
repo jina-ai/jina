@@ -185,8 +185,6 @@ class Flow(ExitStack):
             _, args, _ = get_parsed_args(kwargs, _flow_parser, 'Flow')
 
         self.args = args
-        if kwargs and self.args.logserver and 'log_sse' not in kwargs:
-            kwargs['log_sse'] = True
         self._common_kwargs = kwargs
         self._kwargs = get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 

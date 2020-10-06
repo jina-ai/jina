@@ -13,9 +13,8 @@ def metas(tmpdir):
 
 def test_executor_logger(metas):
     from fluent import asynchandler as fluentasynchandler
-    args = set_pea_parser().parse_args(['--log-sse'])
+    args = set_pea_parser().parse_args([])
     with BaseExecutor(args, metas=metas) as executor:
-        assert args.log_sse
         assert len(executor.logger.logger.handlers) == 2
         assert isinstance(executor.logger.logger.handlers[0], fluentasynchandler.FluentHandler)
         executor.logger.info('logging from executor')
@@ -24,7 +23,6 @@ def test_executor_logger(metas):
         save_abspath = executor.save_abspath
 
     with BaseExecutor.load(save_abspath) as executor:
-        assert executor.args.log_sse
         assert len(executor.logger.logger.handlers) == 2
         assert isinstance(executor.logger.logger.handlers[0], fluentasynchandler.FluentHandler)
         executor.logger.info('logging from executor')
