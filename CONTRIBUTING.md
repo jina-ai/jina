@@ -10,15 +10,15 @@ In this guide we're going to go through the steps for each kind of contribution,
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [🏁 Before you Start](#before-you-start)
+- [🏁 Before you Start](#-before-you-start)
 - [Contributing 101](#contributing-101)
-- [🐞 Bugs and Issues](#bugs-and-issues)
-- [🥇 Making Your First Submission](#making-your-first-submission)
-- [☑️ Naming Conventions](#naming-conventions)
-- [💥 Testing Jina Locally and on CI](#testing-jina-locally-and-on-ci)
-- [📖 Contributing Documentation](#contributing-documentation)
-- [💬 Getting Support](#getting-support)
-- [🙏 Thank You](#thank-you)
+- [🐞 Bugs and Issues](#-bugs-and-issues)
+- [🥇 Making Your First Submission](#-making-your-first-submission)
+- [☑️ Naming Conventions](#-naming-conventions)
+- [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
+- [📖 Contributing Documentation](#-contributing-documentation)
+- [💬 Getting Support](#-getting-support)
+- [🙏 Thank You](#-thank-you)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
