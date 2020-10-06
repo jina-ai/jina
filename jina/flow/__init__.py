@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import base64
 import copy
 import os
 import tempfile
@@ -10,6 +11,7 @@ from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
+from urllib.request import Request, urlopen
 
 import ruamel.yaml
 from ruamel.yaml import StringIO
@@ -17,7 +19,7 @@ from ruamel.yaml import StringIO
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, random_port, complete_path
+from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
 from ..logging import get_logger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
@@ -789,9 +791,13 @@ class Flow(ExitStack):
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
-    def plot(self, output: str=None, copy_flow: bool = False) -> 'Flow':
+    def plot(self, output: str = None,
+             image_type: str = 'svg',
+             vertical_layout:bool = True,
+             inline_display: bool = True,
+             copy_flow: bool = False) -> 'Flow':
         """
-        Creates a mermaid graph for the Flow.
+        Visualize the flow up to the current point
         If a file name is provided it will create a jpg image with that name,
         otherwise it will display the URL for mermaid.
         If called within IPython notebook, it will be rendered inline,
@@ -805,66 +811,70 @@ class Flow(ExitStack):
             flow = Flow().add(name='pod_a').plot('flow_test.jpg')
 
         :param output: a filename specifying the name of the image to be created
+        :param image_type: svg/jpg the file type of the output image
+        :param vertical_layout: top-down or left-right layout
+        :param inline_display: show image directly inside the Jupyter Notebook
+        :param copy_flow: when set to true, then always copy the current flow and
+                do the modification on top of it then return, otherwise, do in-line modification
         :return: the flow
         """
 
         op_flow = copy.deepcopy(self) if copy_flow else self
-        url = ''
 
-        mermaid_graph = ['graph TD']
+        mermaid_graph = ['graph TD'] if vertical_layout else ['graph LR']
         for node, v in self._pod_nodes.items():
             for need in sorted(v.needs):
                 mermaid_graph.append(f'{need}[{need}] --> {node}[{node}]')
         mermaid_str = '\n'.join(mermaid_graph)
+
+        if image_type not in {'svg', 'jpg'}:
+            raise ValueError(f'image_type must be svg/jpg, but given {image_type}')
+
+        url = self._mermaid_to_url(mermaid_str, image_type)
         if output:
-            self._mermaidstr_to_jpg(mermaid_str, output)
-            try:
-                from IPython.display import Image
-                from IPython.display import display
-                pil_img = Image(filename=output)
-                display(pil_img)
-            except ModuleNotFoundError:
-                self.logger.error('Failed to import IPython')  
+            self._download_mermaid_url(url, output)
         else:
-            url = self._mermaidstr_to_url(mermaid_str)
+            self.logger.info(f'flow visualization: {url}')
+
+        if inline_display:
+            try:
+                from IPython.display import display, Image
+                from IPython.utils import io
+
+                with io.capture_output():
+                    display(Image(url=url))
+            except:
+                # no need to panic users
+                pass
 
         return op_flow
 
-    def _mermaidstr_to_url(self, mermaid_str) -> str:
+    def _mermaid_to_url(self, mermaid_str, img_type) -> str:
         """
         Rendering the current flow as a url points to a SVG, it needs internet connection
         :param kwargs: keyword arguments of :py:meth:`to_mermaid`
         :return: the url points to a SVG
         """
-        import base64
-        encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
-        self.logger.info('URL: ', 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str)
-        return 'https://mermaidjs.github.io/mermaid-live-editor/#/view/' + encoded_str
+        if img_type == 'jpg':
+            img_type = 'img'
 
-    def _mermaidstr_to_jpg(self, mermaid_str, output) -> None:
+        encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
+
+        return f'https://mermaid.ink/{img_type}/{encoded_str}'
+
+    def _download_mermaid_url(self, mermaid_url, output) -> None:
         """
         Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
         :param path: the file path of the image
         :param kwargs: keyword arguments of :py:meth:`to_mermaid`
         :return:
         """
-        from urllib.request import Request, urlopen
-        encoded_str = self._mermaidstr_to_url(mermaid_str).replace(
-            'https://mermaidjs.github.io/mermaid-live-editor/#/view/', '')
-        self.logger.warning('jpg exporting relies on https://mermaid.ink/, but it is not very stable. '
-                            'some syntax are not supported, please use with caution.')
-        self.logger.info('downloading as jpg...')
-        req = Request('https://mermaid.ink/img/%s' % encoded_str, headers={'User-Agent': 'Mozilla/5.0'})
-        with open(output, 'wb') as fp:
-            fp.write(urlopen(req).read())
-        self.logger.info('done')
         try:
-            from PIL import Image               
-            from IPython.display import display 
-            pil_img = Image.open(output)
-            display(pil_img)
-        except ModuleNotFoundError:
-            self.logger.error('Failed to import IPython')  
+            req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
+            with open(output, 'wb') as fp:
+                fp.write(urlopen(req).read())
+        except:
+            self.logger.error('can not download image, please check your network connection')
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow,

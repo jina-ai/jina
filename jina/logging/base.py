@@ -36,7 +36,7 @@ class ColorFormatter(Formatter):
 
 
 class PlainFormatter(Formatter):
-    """Remove all control chars from the log and format it as plain text """
+    """Remove all control chars from the log and img_type it as plain text """
 
     def format(self, record):
         cr = copy(record)
@@ -151,7 +151,7 @@ def get_logger(context: str, context_len: int = 15,
     :param log_profile: is this logger for profiling, profile logger takes dict and output to json
     :param log_sse: is this logger used for server-side event
     :param log_remote: is this logger for remote logging
-    :param fmt_str: use customized logging format, otherwise respect the ``JINA_LOG_LONG`` environment variable
+    :param fmt_str: use customized logging img_type, otherwise respect the ``JINA_LOG_LONG`` environment variable
     :param event_trigger: a ``threading.Event`` or ``multiprocessing.Event`` for event-based logger
     :return: the configured logger
 

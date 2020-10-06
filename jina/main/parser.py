@@ -156,7 +156,7 @@ def set_hw_parser(parser=None):
                     help='the yaml path of the index flow')
     gp.add_argument('--index-data-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
-                    help='the url of index data (should be in idx3-ubyte.gz format)')
+                    help='the url of index data (should be in idx3-ubyte.gz img_type)')
     gp.add_argument('--index-batch-size', type=int,
                     default=1024,
                     help='the batch size in indexing')
@@ -166,7 +166,7 @@ def set_hw_parser(parser=None):
                     help='the yaml path of the query flow')
     gp.add_argument('--query-data-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
-                    help='the url of query data (should be in idx3-ubyte.gz format)')
+                    help='the url of query data (should be in idx3-ubyte.gz img_type)')
     gp.add_argument('--query-batch-size', type=int,
                     default=32,
                     help='the batch size in searching')
@@ -622,7 +622,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             self.items = []
 
         def format_help(self):
-            # format the indented section
+            # img_type the indented section
             if self.parent is not None:
                 self.formatter._indent()
             join = self.formatter._join_parts

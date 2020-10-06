@@ -29,7 +29,7 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
 
 
 def used_memory_readable() -> str:
-    """ Get the memory usage of the current process in a human-readable format
+    """ Get the memory usage of the current process in a human-readable img_type
 
     :return:
     """

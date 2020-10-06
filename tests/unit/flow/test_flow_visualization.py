@@ -1,52 +1,42 @@
 import os
-import numpy as np
-from PIL import Image
+
 from jina.flow import Flow
 
-
-def test_visualization_with_yml_file_img(tmpdir):
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    tmpfile = os.path.join(tmpdir, 'flow_test.jpg')
-
-    flow = Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output=tmpfile)
-
-    with Image.open(os.path.join(cur_dir, 'flow_test.jpg')) as flow_original:
-        with Image.open(tmpfile) as flow_created:
-            assert flow_original.size == flow_created.size
-            np.testing.assert_array_almost_equal(flow_original, flow_created)
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_visualization_plot_in_middle(tmpdir):
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    tmpfile = os.path.join(tmpdir, 'flow_test_middle.jpg')
-
-    flow = (Flow().add(name='pod_a')
-            .plot(output=tmpfile)
-            .add(name='pod_b', needs='gateway')
-            .join(needs=['pod_a', 'pod_b']))
-
-    with Image.open(os.path.join(cur_dir, 'flow_original_middle.jpg')) as flow_original:
-        with Image.open(tmpfile) as flow_created:
-            assert flow_original.size == flow_created.size
-            np.testing.assert_array_almost_equal(flow_original, flow_created)
+def test_visualization_with_yml_file_img():
+    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output='flow.svg')
+    assert os.path.exists('flow.svg')
 
 
-def test_visualization_plot_twice(tmpdir):
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    tmpfile_middle = os.path.join(tmpdir, 'flow_test_middle.jpg')
-    tmpfile_end = os.path.join(tmpdir, 'flow_test_end.jpg')
+def test_visualization_with_yml_file_jpg():
+    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output='flow.jpg',
+                                                                                        image_type='jpg')
+    assert os.path.exists('flow.jpg')
 
-    flow = (Flow().add(name='pod_a')
-            .plot(output=tmpfile_middle)
-            .add(name='pod_b', needs='gateway')
-            .join(needs=['pod_a', 'pod_b']).plot(output=tmpfile_end))
+def test_visualization_with_yml_file_jpg_lr():
+    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(output='flow-hor.jpg',
+                                                                                        image_type='jpg',
+                                                                                        vertical_layout=False)
+    assert os.path.exists('flow-hor.jpg')
 
-    with Image.open(os.path.join(cur_dir, 'flow_original_middle.jpg')) as flow_original_middle:
-        with Image.open(tmpfile_middle) as flow_created_middle:
-            assert flow_original_middle.size == flow_created_middle.size
-            np.testing.assert_array_almost_equal(flow_original_middle, flow_created_middle)
+def test_visualization_plot_twice():
+    (Flow().add(name='pod_a')
+     .plot(output='flow1.svg')
+     .add(name='pod_b', needs='gateway')
+     .join(needs=['pod_a', 'pod_b']).plot(output='flow2.svg'))
 
-    with Image.open(os.path.join(cur_dir, 'flow_original_end.jpg')) as flow_original_end:
-        with Image.open(tmpfile_end) as flow_created_end:
-            assert flow_original_end.size == flow_created_end.size
-            np.testing.assert_array_almost_equal(flow_original_end, flow_created_end)
+    assert os.path.exists('flow1.svg')
+    assert os.path.exists('flow2.svg')
+
+
+def test_visualization_plot_in_middle():
+    (Flow().add(name='pod_a')
+     .plot(output='flow3.svg')
+     .add(name='pod_b', needs='gateway')
+     .join(needs=['pod_a', 'pod_b']))
+
+    assert os.path.exists('flow3.svg')
+
+test_visualization_plot_twice()
