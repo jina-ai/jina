@@ -22,7 +22,7 @@ In this guide we're going to go through the steps for each kind of contribution,
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<a name="before-you-start"></a>
+<a name="-before-you-start"></a>
 ## 🏁 Before you Start
 
 Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](./101/README.html), and [example tutorials](https://github.com/jina-ai/examples) so you have a good understanding of what Jina is and how it works.
@@ -37,7 +37,7 @@ We're happy for any contributions, code or not. If you'd like to write a blog po
 <a name="contributing-101"></a>
 ## Contributing 101
 
-<a name="bugs-and-issues"></a>
+<a name="-bugs-and-issues"></a>
 ## 🐞 Bugs and Issues
 
 ### Submitting Issues
@@ -60,7 +60,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 * [Help wanted](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 * [Discussion required](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22discussion+required%22)
 
-<a name="making-your-first-submission"></a>
+<a name="-making-your-first-submission"></a>
 ## 🥇 Making Your First Submission 
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
@@ -115,7 +115,7 @@ git submodule update --remote
 
 If you are unfamiliar with git submodule, [this blog post from Github nicely explains it](https://github.blog/2016-02-01-working-with-submodules/).  
 
-<a name="naming-conventions"></a>
+<a name="-naming-conventions"></a>
 ## ☑️ Naming Conventions
 
 For branches, commits, and PRs we follow some basic naming conventions:
@@ -223,7 +223,7 @@ echo "<commit message>" | commitlint
 
 We don't enforce naming of PRs and branches, but we recommend you follow the same style. It can simply be one of your commit messages, just copy/paste it, e.g. `fix(readme): improve the readability and move sections`.
 
-<a name="testing-jina-locally-and-on-ci"></a>
+<a name="-testing-jina-locally-and-on-ci"></a>
 ## 💥 Testing Jina Locally and on CI
 
 Locally you can do unittest via:
@@ -248,7 +248,7 @@ It prints a list of components the current version of Jina supports, and then ex
 
 Once you submit the PR, your code will be tested in the environment of Python 3.7 and 3.8 with [full exta dependencies](extra-requirements.txt) (`pip install .[all]`) installed.
 
-<a name="contributing-documentation"></a>
+<a name="-contributing-documentation"></a>
 ## 📖 Contributing Documentation
 
 Good docs make developers happy, and we love happy developers! We've got a few different types of docs:
@@ -287,7 +287,7 @@ bash ./make-doc.sh serve 8080
 
 The documentation is then available in your browser at [`http://0.0.0.0:8080/`](http://0.0.0.0:8080/).
 
-<a name="getting-support"></a>
+<a name="-getting-support"></a>
 ## 💬 Getting Support
 
 We're always happy to lend a hand, answer questions, or listen to feedback. You find us here:
@@ -297,7 +297,7 @@ We're always happy to lend a hand, answer questions, or listen to feedback. You 
 
 We're also looking at starting online developer hangouts, so you can catch up with us over chat and video, and get to meet your fellow Jina contributors.
 
-<a name="thank-you"></a>
+<a name="-thank-you"></a>
 ## 🙏 Thank You
 
 Once again, thanks so much for your interest in contributing to Jina. We're excited to see your contributions!
