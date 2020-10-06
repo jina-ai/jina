@@ -8,7 +8,7 @@ import numpy as np
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector import NumpyIndexer
 from jina.flow import Flow
-from jina.main.parser import set_flow_parser
+from jina.parser import set_flow_parser
 from jina.proto import jina_pb2
 from tests import JinaTestCase, random_docs
 
@@ -166,16 +166,15 @@ class MyTestCase(JinaTestCase):
 
         def validate(req, indexer_name):
             self.assertTrue(req.status.code < jina_pb2.Status.ERROR)
-            print(req.search.docs[0].matches[0].score.op_name)
             assert req.search.docs[0].matches[0].score.op_name == indexer_name
 
         with f:
-            f.index(random_docs(100))
+            f.index(random_docs(100, chunks_per_doc=0))
 
         g = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml'))
 
         with g:
-            g.search(random_docs(10), output_fn=lambda x: validate(x, 'NumpyIndexer'))
+            g.search(random_docs(10, chunks_per_doc=0), output_fn=lambda x: validate(x, 'NumpyIndexer'))
 
         # g = Flow(timeout_ready=-1).add(uses=os.path.join(cur_dir, 'yaml/test-joint-wrap.yml'))
 

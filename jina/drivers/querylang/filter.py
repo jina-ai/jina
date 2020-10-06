@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Any, Iterable
+from typing import Dict, Any, Iterable, Tuple
 
 from .queryset.lookup import Q
 from .. import QuerySetReader, BaseRecursiveDriver
@@ -19,24 +19,24 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         - !FilterQL
             with:
                 lookups: {modality: mode2}
-                granularity_range: [1, 2]
         - !EncodeDriver
             with:
                 method: encode
-                granularity_range: [1, 2]
 
         ensures that the EncodeDriver will only get documents which modality field value is `mode2` by filtering
         those documents at the specific levels that do not comply with this condition
     """
+
     def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
         super().__init__(*args, **kwargs)
         """
-        :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a 
-        an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create 
+        :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
+        an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
         an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
         """
         self._lookups = Q(**lookups) if lookups else None
         self.is_apply = False
+        self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         if self.lookups:

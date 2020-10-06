@@ -6,8 +6,8 @@ import requests
 from jina import JINA_GLOBAL
 from jina.enums import FlowOptimizeLevel, SocketType
 from jina.flow import Flow
-from jina.main.checker import NetworkChecker
-from jina.main.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
+from jina.checker import NetworkChecker
+from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto.jina_pb2 import Document
@@ -513,12 +513,12 @@ def test_flow_with_modalitys_simple():
         doc2 = Document()
         doc2.modality = 'mode2'
         doc3 = Document()
-        doc3.modality = 'mode3'
+        doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 
     flow = Flow().add(name='chunk_seg', parallel=3, uses='_pass'). \
         add(name='encoder12', parallel=2,
-            uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, recur_range: [0, 1]}')
+            uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
     with flow:
         flow.index(input_fn=input_fn, output_fn=validate)
 

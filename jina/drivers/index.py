@@ -7,6 +7,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
+from ..proto import uid
 
 if False:
     from ..proto import jina_pb2
@@ -18,6 +19,7 @@ class BaseIndexDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'add', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply = False
+        self._use_tree_traversal = True
 
 
 class VectorIndexDriver(BaseIndexDriver):
@@ -31,7 +33,7 @@ class VectorIndexDriver(BaseIndexDriver):
             self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
         if docs_pts:
-            self.exec_fn(np.array([doc.id for doc in docs_pts]), np.stack(embed_vecs))
+            self.exec_fn(np.array([uid.id2hash(doc.id) for doc in docs_pts]), np.stack(embed_vecs))
 
 
 class KVIndexDriver(BaseIndexDriver):

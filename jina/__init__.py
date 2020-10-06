@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.5.9'
+__version__ = '0.6.4'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.59'
+__proto_version__ = '0.0.60'
 
 import platform
 import sys
@@ -25,7 +25,6 @@ if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
     set_start_method('fork')
 
 from datetime import datetime
-import random
 from types import SimpleNamespace
 import os
 
@@ -39,32 +38,31 @@ __uptime__ = datetime.now().strftime('%Y%m%d%H%M%S')
 # 2. grep -ohE "\'JINA_.*?\'" **/*.py | sort -u | sed "s/$/,/g"
 # 3. copy all lines EXCEPT the first (which is the grep command in the last line)
 __jina_env__ = ('JINA_ARRAY_QUANT',
+                'JINA_BINARY_DELIMITER',
                 'JINA_CONTRIB_MODULE',
                 'JINA_CONTRIB_MODULE_IS_LOADING',
                 'JINA_CONTROL_PORT',
+                'JINA_DB_COLLECTION',
+                'JINA_DB_HOSTNAME',
+                'JINA_DB_NAME',
+                'JINA_DB_PASSWORD',
+                'JINA_DB_USERNAME',
                 'JINA_DEFAULT_HOST',
+                'JINA_DISABLE_UVLOOP',
                 'JINA_EXECUTOR_WORKDIR',
                 'JINA_FULL_CLI',
                 'JINA_IPC_SOCK_TMP',
-                'JINA_LOG_FILE',
-                'JINA_LOG_LONG',
+                'JINA_LOG_CONFIG',
                 'JINA_LOG_NO_COLOR',
-                'JINA_LOG_PROFILING',
-                'JINA_LOG_SSE',
-                'JINA_LOG_VERBOSITY',
                 'JINA_POD_NAME',
                 'JINA_PROFILING',
+                'JINA_RANDOM_PORTS',
                 'JINA_SOCKET_HWM',
-                'JINA_STACK_CONFIG',
-                'JINA_TEST_CONTAINER',
                 'JINA_TEST_GPU',
                 'JINA_TEST_PRETRAINED',
-                'JINA_TEST_FAISS',
+                'JINA_USE_TREE_TRAVERSAL',
                 'JINA_VCS_VERSION',
-                'JINA_VERSION',
-                'JINA_WARN_UNNAMED',
-                'JINA_BINARY_DELIMITER',
-                'JINA_DISABLE_UVLOOP')
+                'JINA_WARN_UNNAMED')
 
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
@@ -76,8 +74,6 @@ JINA_GLOBAL.imported = SimpleNamespace()
 JINA_GLOBAL.imported.executors = False
 JINA_GLOBAL.imported.drivers = False
 JINA_GLOBAL.imported.hub = False
-JINA_GLOBAL.stack = SimpleNamespace()
-JINA_GLOBAL.stack.id = random.randint(0, 10000)
 JINA_GLOBAL.logserver = SimpleNamespace()
 
 
@@ -228,12 +224,6 @@ import signal
 
 signal.signal(signal.SIGINT, signal.default_int_handler)
 
-# !/usr/bin/env python
-try:
-    import resource as res
-except ImportError:  # Windows
-    res = None
-
 
 def set_nofile(nofile_atleast=4096):
     """
@@ -241,6 +231,12 @@ def set_nofile(nofile_atleast=4096):
     parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256
     temporary setting extinguishing with Python session.
     """
+
+    try:
+        import resource as res
+    except ImportError:  # Windows
+        res = None
+
     from .logging import default_logger
     if res is None:
         return (None,) * 2

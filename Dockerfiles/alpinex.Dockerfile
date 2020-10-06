@@ -19,7 +19,7 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
 WORKDIR /jina/
 
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
-
+ADD cli ./cli/
 ADD jina ./jina/
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.8/dist-packages:/usr/local/lib/python3.8/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages

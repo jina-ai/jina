@@ -8,18 +8,14 @@ import random
 import re
 import sys
 import time
-import types
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from io import StringIO
 from itertools import islice
-from types import SimpleNamespace
-from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO
+from types import SimpleNamespace, ModuleType
+from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
 
-import numpy as np
 from ruamel.yaml import YAML, nodes
-
-from . import JINA_GLOBAL
 
 if False:
     from uvloop import Loop
@@ -134,8 +130,9 @@ def touch_dir(base_dir: str) -> None:
         os.makedirs(base_dir)
 
 
-def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size: int, axis: int = 0,
+def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
                    yield_slice: bool = False) -> Iterator[Any]:
+    import numpy as np
     if not batch_size or batch_size <= 0:
         yield data
         return
@@ -156,13 +153,14 @@ def batch_iterator(data: Union[Iterator[Any], List[Any], np.ndarray], batch_size
                 yield tuple(sl)
             else:
                 yield data[tuple(sl)]
-    elif hasattr(data, '__len__'):
+    elif isinstance(data, Sequence):
         if batch_size >= len(data):
             yield data
             return
         for _ in range(0, len(data), batch_size):
             yield data[_:_ + batch_size]
-    elif isinstance(data, Iterator):
+    elif isinstance(data, Iterable):
+        data = iter(data)
         # as iterator, there is no way to know the length of it
         while True:
             chunk = tuple(islice(data, batch_size))
@@ -179,7 +177,7 @@ def _get_yaml():
     return y
 
 
-def parse_arg(v: str) -> Union[bool, int, str]:
+def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
         tmp = v.replace('[', '').replace(']', '').strip().split(',')
@@ -216,7 +214,7 @@ def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
     sys.stdout.flush()
 
 
-def load_contrib_module() -> List[Any]:
+def load_contrib_module() -> Optional[List[Any]]:
     if 'JINA_CONTRIB_MODULE_IS_LOADING' not in os.environ:
 
         contrib = os.getenv('JINA_CONTRIB_MODULE')
@@ -232,7 +230,10 @@ def load_contrib_module() -> List[Any]:
                 m = PathImporter.add_modules(p)
                 modules.append(m)
                 default_logger.info(f'successfully registered {m} class, you can now use it via yaml.')
-        return modules
+    else:
+        modules = None
+
+    return modules
 
 
 class PathImporter:
@@ -246,7 +247,7 @@ class PathImporter:
         return module_name
 
     @staticmethod
-    def add_modules(*paths) -> 'types.ModuleType':
+    def add_modules(*paths) -> Optional[ModuleType]:
         for p in paths:
             if not os.path.exists(p):
                 raise FileNotFoundError('cannot import module from %s, file not exist', p)
@@ -254,7 +255,7 @@ class PathImporter:
         return module
 
     @staticmethod
-    def _path_import(absolute_path: str) -> 'types.ModuleType':
+    def _path_import(absolute_path: str) -> Optional[ModuleType]:
         import importlib.util
         try:
             # module_name = (PathImporter._get_module_name(absolute_path) or
@@ -265,9 +266,9 @@ class PathImporter:
             module = importlib.util.module_from_spec(spec)
             sys.modules[spec.name] = module  # add this line
             spec.loader.exec_module(module)
-            return module
         except ModuleNotFoundError:
-            pass
+            module = None
+        return module
 
 
 _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young', 'early', 'major', 'clear', 'black',
@@ -286,22 +287,17 @@ def random_name() -> str:
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
-def random_port() -> int:
+def random_port() -> Optional[int]:
     import threading
     from contextlib import closing
     import socket
 
     def _get_port(port=0):
-        _p = None
         with threading.Lock():
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                try:
-                    s.bind(('', port))
-                    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                    _p = s.getsockname()[1]
-                except socket.error:
-                    pass
-        return _p
+                s.bind(('', port))
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                return s.getsockname()[1]
 
     _port = None
     if 'JINA_RANDOM_PORTS' in os.environ:
@@ -315,61 +311,6 @@ def random_port() -> int:
     return _port
 
 
-def get_registered_ports(stack_id: int = JINA_GLOBAL.stack.id):
-    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
-    _all = {}
-    _ports = set()
-    if os.path.exists(config_path):
-        with open(config_path) as fp:
-            _all = yaml.load(fp)
-        if _all and 'stacks' in _all:
-            for s in _all['stacks']:
-                if (stack_id is not None and s['id'] == stack_id) or stack_id is None:
-                    _ports.update(s['ports'])
-    return list(_ports)
-
-
-def deregister_all_ports(stack_id: int = JINA_GLOBAL.stack.id):
-    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
-    _all = {'stacks': []}
-    if os.path.exists(config_path):
-        with open(config_path) as fp:
-            _all = yaml.load(fp)
-    if 'stacks' in _all:
-        for s in _all['stacks']:
-            if s['id'] == stack_id:
-                _all['stacks'].remove(s)
-                break
-    with open(config_path, 'w') as fp:
-        yaml.dump(_all, fp)
-
-
-def register_port(port: int, stack_id: int = JINA_GLOBAL.stack.id):
-    config_path = os.environ.get('JINA_STACK_CONFIG', '.jina-stack.yml')
-    _all = None
-    if os.path.exists(config_path):
-        with open(config_path) as fp:
-            _all = yaml.load(fp)
-    if not _all or 'stacks' not in _all:
-        _all = {'stacks': []}
-    already_in = False
-    from jina import JINA_GLOBAL
-    stack_id = stack_id or JINA_GLOBAL.stack.id
-    for s in _all['stacks']:
-        if s['id'] == stack_id:
-            s['ports'] = list(set(s['ports'] + [port]))
-            already_in = True
-            break
-    if not already_in:
-        r = {
-            'id': stack_id,
-            'ports': [port]
-        }
-        _all['stacks'].append(r)
-    with open(config_path, 'w') as fp:
-        yaml.dump(_all, fp)
-
-
 def get_random_identity() -> str:
     return f'{random.getrandbits(40):010x}'
 
@@ -377,7 +318,7 @@ def get_random_identity() -> str:
 yaml = _get_yaml()
 
 
-def expand_env_var(v: str) -> str:
+def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
     if isinstance(v, str):
         return parse_arg(os.path.expandvars(v))
     else:
@@ -605,8 +546,9 @@ def is_valid_local_config_source(path: str) -> bool:
         return False
 
 
-def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser, parser_name: str = None) -> Union[
-    Tuple[List[str], Namespace, List[Any]], Tuple[List[str], Namespace, List[str]]]:
+def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
+                    parser: ArgumentParser, parser_name: str = None
+                    ) -> Tuple[List[str], Namespace, List[Any]]:
     args = kwargs2list(kwargs)
     try:
         p_args, unknown_args = parser.parse_known_args(args)
@@ -623,7 +565,9 @@ def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentPa
     return args, p_args, unknown_args
 
 
-def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = (None,)) -> Dict:
+def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = None) -> Dict:
+    if taboo is None:
+        taboo = set()
     non_defaults = {}
     _defaults = vars(parser.parse_args([]))
     for k, v in vars(args).items():
@@ -632,7 +576,7 @@ def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Op
     return non_defaults
 
 
-def get_full_version() -> Tuple[Dict, Dict]:
+def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
     import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
@@ -660,9 +604,12 @@ def get_full_version() -> Tuple[Dict, Dict]:
                 'jina-resources': resource_filename('jina', 'resources')
                 }
         env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
-        return info, env_info
+        full_version = info, env_info
     except Exception as e:
-        default_logger.error(e)
+        default_logger.error(str(e))
+        full_version = None
+
+    return full_version
 
 
 def format_full_version_info(info: Dict, env_info: Dict) -> str:
@@ -699,7 +646,10 @@ def rsetattr(obj, attr: str, val):
 
 def rgetattr(obj, attr: str, *args):
     def _getattr(obj, attr):
-        return getattr(obj, attr, *args)
+        if isinstance(obj, dict):
+            return obj.get(attr, None)
+        else:
+            return getattr(obj, attr, *args)
 
     return functools.reduce(_getattr, [obj] + attr.split('.'))
 

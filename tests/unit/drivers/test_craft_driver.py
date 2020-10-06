@@ -1,10 +1,12 @@
 from typing import Dict
+
 import numpy as np
+import pytest
+
 from jina.drivers.craft import CraftDriver
-from jina.executors.crafters import BaseCrafter
 from jina.drivers.helper import array2pb
+from jina.executors.crafters import BaseCrafter
 from jina.proto import jina_pb2
-from tests import JinaTestCase
 
 
 class MockCrafter(BaseCrafter):
@@ -31,24 +33,22 @@ class SimpleCraftDriver(CraftDriver):
 
 def create_documents_to_craft():
     doc1 = jina_pb2.Document()
-    doc1.id = 1
+    # doc1.id = 1
     doc1.text = 'valid'
     doc2 = jina_pb2.Document()
-    doc2.id = 2
+    # doc2.id = 2
     doc2.text = 'invalid'
     return [doc1, doc2]
 
 
-class CraftDriverTestCase(JinaTestCase):
-
-    def test_craft_driver(self):
-        docs = create_documents_to_craft()
-        driver = SimpleCraftDriver()
-        executor = MockCrafter()
-        driver.attach(executor=executor, pea=None)
-        driver._apply(docs[0])
-        assert docs[0].blob == array2pb(np.array([0.0, 0.0, 0.0]))
-        assert docs[0].weight == 10
-        with self.assertRaises(AttributeError) as error:
-            driver._apply(docs[1])
-        assert error.exception.__str__() == '\'Document\' object has no attribute \'non_existing_key\''
+def test_craft_driver():
+    docs = create_documents_to_craft()
+    driver = SimpleCraftDriver()
+    executor = MockCrafter()
+    driver.attach(executor=executor, pea=None)
+    driver._apply(docs[0])
+    assert docs[0].blob == array2pb(np.array([0.0, 0.0, 0.0]))
+    assert docs[0].weight == 10
+    with pytest.raises(AttributeError) as error:
+        driver._apply(docs[1])
+    assert error.value.__str__() == '\'Document\' object has no attribute \'non_existing_key\''

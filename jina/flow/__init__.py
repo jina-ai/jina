@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import base64
+import argparse
 import copy
 import os
 import tempfile
@@ -10,6 +10,7 @@ import time
 from collections import OrderedDict, defaultdict, deque
 from contextlib import ExitStack
 from functools import wraps
+from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any, Optional
 from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 from urllib.request import Request, urlopen
 
@@ -20,7 +21,7 @@ from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
 
@@ -146,7 +147,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
 
 
 class Flow(ExitStack):
-    def __init__(self, args: 'argparse.Namespace' = None, **kwargs):
+    def __init__(self, args: Optional['argparse.Namespace'] = None, **kwargs):
         """Initialize a flow object
 
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
@@ -167,7 +168,10 @@ class Flow(ExitStack):
         
         """
         super().__init__()
-        self.logger = get_logger(self.__class__.__name__)
+        if isinstance(args, argparse.Namespace):
+            self.logger = JinaLogger(self.__class__.__name__, **vars(args))
+        else:
+            self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
@@ -175,15 +179,13 @@ class Flow(ExitStack):
         self._update_args(args, **kwargs)
 
     def _update_args(self, args, **kwargs):
-        from ..main.parser import set_flow_parser
+        from ..parser import set_flow_parser
         _flow_parser = set_flow_parser()
         if args is None:
             from ..helper import get_parsed_args
             _, args, _ = get_parsed_args(kwargs, _flow_parser, 'Flow')
 
         self.args = args
-        if kwargs and self.args.logserver and 'log_sse' not in kwargs:
-            kwargs['log_sse'] = True
         self._common_kwargs = kwargs
         self._kwargs = get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 
@@ -469,6 +471,7 @@ class Flow(ExitStack):
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
+        self.logger.close()
 
     def _stop_log_server(self):
         import urllib.request

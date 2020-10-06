@@ -2,6 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import os
+
+_SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
 def add_arg_group(parser, title):
@@ -9,8 +12,8 @@ def add_arg_group(parser, title):
 
 
 def set_base_parser():
-    from .. import __version__
-    from ..helper import colored, get_full_version, format_full_version_info
+    from . import __version__
+    from .helper import colored, get_full_version, format_full_version_info
     # create the top-level parser
     urls = {
         'Jina 101': ('🐣', 'https://101.jina.ai'),
@@ -53,7 +56,6 @@ def set_logger_parser(parser=None):
 
 
 def set_hub_base_parser(parser=None):
-    import os
     if not parser:
         parser = set_base_parser()
     parser.add_argument('--username', type=str, help='the registry username',
@@ -128,7 +130,7 @@ def set_hub_pushpull_parser(parser=None):
 def set_hw_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..helper import get_random_identity
+    from .helper import get_random_identity
     from pkg_resources import resource_filename
 
     gp = add_arg_group(parser, 'general arguments')
@@ -181,7 +183,7 @@ def set_hw_parser(parser=None):
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..enums import FlowOutputType, FlowOptimizeLevel
+    from .enums import FlowOutputType, FlowOptimizeLevel
 
     gp = add_arg_group(parser, 'flow arguments')
     gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
@@ -192,6 +194,9 @@ def set_flow_parser(parser=None):
                     default=resource_filename('jina',
                                               '/'.join(('resources', 'logserver.default.yml'))),
                     help='the yaml config of the log server')
+    gp.add_argument('--start-fluentd', action='store_true', default=False,
+                    help='start fluentd with the default configuration in jina resources. Only active if --logserver '
+                         'activated')
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
                             and hence not allow multiple clients connected to the gateway at the same time.')
@@ -204,11 +209,10 @@ def set_flow_parser(parser=None):
 
 
 def set_pea_parser(parser=None):
-    from ..enums import SocketType, PeaRoleType, OnErrorSkip
-    from ..helper import random_port, get_random_identity
-    from .. import __default_host__
-    import os
-    show_all = 'JINA_FULL_CLI' in os.environ
+    from .enums import SocketType, PeaRoleType, OnErrorSkip
+    from .helper import random_port, get_random_identity
+    from . import __default_host__
+
     if not parser:
         parser = set_base_parser()
     gp0 = add_arg_group(parser, 'pea basic arguments')
@@ -286,9 +290,6 @@ def set_pea_parser(parser=None):
     gp5.add_argument('--check-version', action='store_true', default=False,
                      help='comparing the jina and proto version of incoming message with local setup, '
                           'mismatch raise an exception')
-    gp5.add_argument('--array-in-pb', action='store_true', default=False,
-                     help='sending buffer and numpy ndarray together within or separately from the protobuf message, '
-                          'the latter often yields a better network efficiency')
     gp5.add_argument('--compress-hwm', type=int, default=-1,
                      help='the high watermark that triggers the message compression. '
                           'message bigger than this HWM (in bytes) will be compressed by lz4 algorithm.'
@@ -299,7 +300,8 @@ def set_pea_parser(parser=None):
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=0,
                      **(dict(
-                         help='the number of replicated message sent to the next Pod, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
+                         help='the number of replicated message sent to the next Pod, 0 and 1 means single part'
+                         if _SHOW_ALL_ARGS else argparse.SUPPRESS)))
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod')
     gp5.add_argument('--skip-on-error', type=OnErrorSkip.from_string, choices=list(OnErrorSkip),
@@ -319,23 +321,31 @@ def set_pea_parser(parser=None):
                      help='when a process exits, it attempts to terminate all of its daemonic child processes. '
                           'setting it to true basically tell the context manager do not wait on this Pea')
 
+    from pkg_resources import resource_filename
     gp7 = add_arg_group(parser, 'logging arguments')
-    gp7.add_argument('--log-sse', action='store_true', default=False,
-                     help='turn on server-side event logging')
+    gp7.add_argument('--log-config', type=str,
+                     default=resource_filename('jina',
+                                               '/'.join(('resources', 'logging.default.yml'))),
+                     help='the yaml config of the logger. note the executor inside will inherit this log config')
     gp7.add_argument('--log-remote', action='store_true', default=False,
-                     help='turn on remote logging')
-    gp7.add_argument('--log-profile', action='store_true', default=False,
-                     help='turn on the profiling logger')
-    gp7.add_argument('--log-with-own-name', action='store_true', default=False,
-                     help='turn on to let each logger outputs in its own name (i.e. parent class name as the context), '
-                          'by default it is off so all logs from the same pod will have the same prefix. '
-                          'turn on to help debugging, turn off to have more clear logs and better grouping in dashboard')
+                     help='turn on remote logging, this should not be set manually'
+                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+
+    gp8 = add_arg_group(parser, 'ssh tunneling arguments')
+    gp8.add_argument('--ssh-server', type=str, default=None,
+                     help='the SSH server through which the tunnel will be created, '
+                          'can actually be a fully specified "user@server:port" ssh url.')
+    gp8.add_argument('--ssh-keyfile', type=str, default=None,
+                     help='this specifies a key to be used in ssh login, default None. '
+                          'regular default ssh keys will be used without specifying this argument.')
+    gp8.add_argument('--ssh-password', type=str, default=None,
+                     help='ssh password to the ssh server.')
     _set_grpc_parser(parser)
     return parser
 
 
 def set_pod_parser(parser=None):
-    from ..enums import PollingType, SchedulerType
+    from .enums import PollingType, SchedulerType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
@@ -360,17 +370,6 @@ def set_pod_parser(parser=None):
                           'accepted type follows "--uses"')
     gp4.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
-
-    # disable the pod level logserver for now
-    # gp5 = add_arg_group(parser, 'pod log-server arguments')
-    #
-    # from pkg_resources import resource_filename
-    # gp5.add_argument('--logserver', action='store_true', default=False,
-    #                  help='start a log server for the dashboard')
-    # gp5.add_argument('--logserver-config', type=str,
-    #                  default=resource_filename('jina',
-    #                                            '/'.join(('resources', 'logserver.default.yml'))),
-    #                  help='the yaml config of the log server')
     return parser
 
 
@@ -416,8 +415,8 @@ def set_export_api_parser(parser=None):
 def _set_grpc_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..helper import random_port
-    from .. import __default_host__
+    from .helper import random_port
+    from . import __default_host__
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
                      help=f'host address of the pea/gateway, by default it is {__default_host__}.')
@@ -430,7 +429,7 @@ def _set_grpc_parser(parser=None):
     gp1.add_argument('--proxy', action='store_true', default=False,
                      help='respect the http_proxy and https_proxy environment variables. '
                           'otherwise, it will unset these proxy variables before start. '
-                          'gRPC seems to prefer --no-proxy')
+                          'gRPC seems to prefer no proxy')
     return parser
 
 
@@ -460,7 +459,7 @@ def _set_grpc_parser(parser=None):
 
 
 def set_gateway_parser(parser=None):
-    from ..enums import SocketType
+    from .enums import SocketType
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
@@ -489,12 +488,11 @@ def set_client_cli_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from ..enums import ClientMode
+    from .enums import ClientMode
 
     _set_grpc_parser(parser)
 
     gp1 = add_arg_group(parser, 'client-specific arguments')
-    _gp = gp1.add_mutually_exclusive_group()
 
     gp1.add_argument('--batch-size', type=int, default=100,
                      help='the number of documents in each request')
@@ -511,11 +509,6 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--first-request-id', type=int,
                      default=0,
                      help='the starting number of request id, the consequent request_id will increment by one')
-    _gp.add_argument('--first-doc-id', type=int,
-                     default=0,
-                     help='the starting number of the first doc, the consequent id will increment by one')
-    _gp.add_argument('--random-doc-id', action='store_true', default=False,
-                     help='randomize document id, if this is set then `first_request_id` is ignored')
     gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
     gp1.add_argument('--filter-by', type=str, nargs='*',
@@ -528,8 +521,6 @@ def set_client_cli_parser(parser=None):
 def get_main_parser():
     # create the top-level parser
     parser = set_base_parser()
-    import os
-    show_all = 'JINA_FULL_CLI' in os.environ
 
     sp = parser.add_subparsers(dest='cli',
                                description='use "%(prog)-8s [sub-command] --help" '
@@ -593,22 +584,22 @@ def get_main_parser():
                                  description='Start a Jina pea. '
                                              'You should rarely use this directly unless you '
                                              'are doing low-level orchestration',
-                                 formatter_class=_chf, **(dict(help='start a pea')) if show_all else {}))
+                                 formatter_class=_chf, **(dict(help='start a pea')) if _SHOW_ALL_ARGS else {}))
 
     set_logger_parser(sp.add_parser('log',
                                     description='Receive piped log output and beautify the log. '
                                                 'Depreciated, use Jina Dashboard instead',
                                     formatter_class=_chf,
-                                    **(dict(help='beautify the log')) if show_all else {}))
+                                    **(dict(help='beautify the log')) if _SHOW_ALL_ARGS else {}))
     set_client_cli_parser(
         sp.add_parser('client',
                       description='Start a Python client that connects to a remote Jina gateway',
-                      formatter_class=_chf, **(dict(help='start a client')) if show_all else {}))
+                      formatter_class=_chf, **(dict(help='start a client')) if _SHOW_ALL_ARGS else {}))
 
     set_export_api_parser(sp.add_parser('export-api',
                                         description='Export Jina API to JSON/YAML file for 3rd party applications',
                                         formatter_class=_chf,
-                                        **(dict(help='export Jina API to file')) if show_all else {}))
+                                        **(dict(help='export Jina API to file')) if _SHOW_ALL_ARGS else {}))
     return parser
 
 
@@ -636,7 +627,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
             # add the heading if the section was non-empty
             if self.heading is not argparse.SUPPRESS and self.heading is not None:
-                from ..helper import colored
+                from .helper import colored
                 current_indent = self.formatter._current_indent
                 captial_heading = ' '.join(v[0].upper() + v[1:] for v in self.heading.split(' '))
                 heading = '⚙️  %*s%s\n' % (
@@ -657,7 +648,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         help = action.help
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
-                from ..helper import colored
+                from .helper import colored
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
 

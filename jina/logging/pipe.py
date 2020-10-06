@@ -24,7 +24,6 @@ class PipeLogger:
     def start(self):
         """ Start to receive logs from pipe"""
 
-        print('start a jina service and pipe its logs to here\nwaiting for logs...')
         try:
             for l in sys.stdin:
                 m = re.match(self.args.groupby_regex, l)

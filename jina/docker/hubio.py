@@ -14,7 +14,7 @@ from .helper import handle_dot_in_keys
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
@@ -39,7 +39,7 @@ class HubIO:
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        self.logger = get_logger(self.__class__.__name__, **vars(args))
+        self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.args = args
         try:
             import docker
@@ -150,7 +150,6 @@ class HubIO:
             self.logger.error(f'can not pull image {self.args.name} from {self.args.registry}')
             raise
 
-
     def _check_docker_image(self, name: str) -> None:
         # check local image
         image = self._client.images.get(name)
@@ -174,7 +173,7 @@ class HubIO:
             self._client.login(username=self.args.username, password=self.args.password,
                                registry=self.args.registry)
         else:
-            raise ValueError('no username/password specified, docker login failed')
+            self.logger.error('no username/password specified, docker login failed')
 
     def build(self) -> Dict:
         """A wrapper of docker build """

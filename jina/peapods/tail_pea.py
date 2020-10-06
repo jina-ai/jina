@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import argparse
 from typing import Dict, Union
 from .pea import BasePea
-from ..logging import get_logger
+from ..logging import JinaLogger
 
 
 class TailPea(BasePea):
@@ -16,9 +16,9 @@ class TailPea(BasePea):
             if self.args.name:
                 self.name = self.args.name
                 self.name = f'{self.name}-tail'
-            self.logger = get_logger(self.name, **vars(self.args))
+            self.logger = JinaLogger(self.name, **vars(self.args))
         else:
-            self.logger = get_logger(self.name)
+            self.logger = JinaLogger(self.name)
 
     def __str__(self):
         return self.name

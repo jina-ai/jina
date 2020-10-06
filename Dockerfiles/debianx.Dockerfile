@@ -33,7 +33,7 @@ ENV JINA_BUILD_DATE=$BUILD_DATE
 WORKDIR /jina/
 
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
-
+ADD cli ./cli/
 ADD jina ./jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \

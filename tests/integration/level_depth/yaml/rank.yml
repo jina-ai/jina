@@ -2,8 +2,6 @@
 requests:
   on:
     SearchRequest:
-      - !LogInfoDriver {}
       - !CollectMatches2DocRankDriver
         with:
-          recur_range: [1, 2]
-      - !LogInfoDriver {}
+          traversal_paths: ['m']

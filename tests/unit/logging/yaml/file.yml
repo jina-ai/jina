@@ -1,0 +1,8 @@
+handlers:
+  - FileHandler
+level: INFO
+configs:
+  FileHandler:
+    format: '%(asctime)s:{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
+    output: 'jina-{uptime}.log'
+    type: json  # possible choices ['text', 'json']

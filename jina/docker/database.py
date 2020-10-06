@@ -5,7 +5,7 @@ __license__ = "Apache-2.0"
 import pymongo
 
 from ..excepts import MongoDBException
-from ..logging import get_logger
+from ..logging import JinaLogger
 from typing import Optional, Dict, List, Union
 
 
@@ -15,7 +15,7 @@ class MongoDBHandler:
     """
     def __init__(self, hostname: str, username: str, password: str,
                  database_name: str, collection_name: str):
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         self.hostname = hostname
         self.username = username
         self.password = password

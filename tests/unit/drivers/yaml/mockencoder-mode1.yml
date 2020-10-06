@@ -5,8 +5,8 @@ requests:
       - !FilterQL
         with:
           lookups: {modality: mode1}
-          granularity_range: [1, 2]
+          traversal_paths: ['c']
       - !EncodeDriver
         with:
           method: encode
-          granularity_range: [1, 2]
+          traversal_paths: ['c']

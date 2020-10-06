@@ -9,6 +9,7 @@
 !README.md
 !MANIFEST.in
 !tests/**
+!cli/**
 
 # Ignore unnecessary files inside allowed directories
 # This should go after the allowed directories

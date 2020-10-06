@@ -10,7 +10,7 @@ from ..helper import colored, get_readable_size, get_readable_time
 
 if False:
     # fix type-hint complain for sphinx and flake
-    import logging
+    from jina.logging import JinaLogger
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -115,7 +115,7 @@ class TimeContext:
 
     time_attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
 
-    def __init__(self, task_name: str, logger: 'logging.Logger' = None):
+    def __init__(self, task_name: str, logger: 'JinaLogger' = None):
         """
 
         :param task_name: the context/message

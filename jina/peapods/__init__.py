@@ -21,7 +21,7 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
 
     """
     if args is None:
-        from ..main.parser import set_pea_parser
+        from ..parser import set_pea_parser
         from ..helper import get_parsed_args
         _, args, _ = get_parsed_args(kwargs, set_pea_parser(), 'Pea')
     if not allow_remote:
@@ -55,7 +55,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
     :param kwargs: all supported arguments from CLI
     """
     if args is None:
-        from ..main.parser import set_pod_parser
+        from ..parser import set_pod_parser
         from ..helper import get_parsed_args
         _, args, _ = get_parsed_args(kwargs, set_pod_parser(), 'Pod')
     if isinstance(args, dict):

@@ -3,7 +3,7 @@ name: issue-hf2020
 on:
   issues:
     types: [opened]
-  pull_request:
+  pull_request_target:
     types: [opened]
 
 
@@ -15,3 +15,4 @@ jobs:
         uses: andymckay/labeler@master
         with:
           add-labels: "hacktoberfest, hacktoberfest2020"
+          repo-token: "${{ secrets.JINA_DEV_BOT }}"

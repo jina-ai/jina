@@ -9,7 +9,7 @@ from .pea import BasePea
 from .zmq import Zmqlet, send_ctrl_message
 from ..clients.python import GrpcClient
 from ..helper import kwargs2list
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..proto import jina_pb2
 
 if False:
@@ -26,7 +26,7 @@ class PeaSpawnHelper(GrpcClient):
         self.timeout_shutdown = 10
         self.callback_on_first = True
         self.args.log_remote = False
-        self._remote_logger = get_logger('🌏', **vars(self.args), fmt_str='🌏 %(message)s')
+        self._remote_logger = JinaLogger('🌏', **vars(self.args))
 
     def call(self, set_ready: Callable = None):
         """
@@ -113,7 +113,7 @@ def peas_args2mutable_pod_req(peas_args: Dict):
 
 
 def mutable_pod_req2peas_args(req):
-    from ..main.parser import set_pea_parser
+    from ..parser import set_pea_parser
     return {
         'head': set_pea_parser().parse_known_args(req.head.args)[0] if req.head.args else None,
         'tail': set_pea_parser().parse_known_args(req.tail.args)[0] if req.tail.args else None,
