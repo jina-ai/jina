@@ -3,8 +3,8 @@ import re
 from copy import copy
 from logging import Formatter
 
-from ..helper import colored
 from .profile import used_memory
+from ..helper import colored
 
 
 class ColorFormatter(Formatter):
