@@ -39,4 +39,3 @@ def test_visualization_plot_in_middle():
 
     assert os.path.exists('flow3.svg')
 
-test_visualization_plot_twice()
