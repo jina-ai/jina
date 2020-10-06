@@ -46,7 +46,6 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
         else:
             self._end = int(end)
         self.is_apply = False
-        self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):

@@ -14,7 +14,6 @@ class CraftDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply_all = False
-        self._use_tree_traversal = True
 
     def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
         ret = self.exec_fn(**pb_obj2dict(doc, self.exec.required_keys))

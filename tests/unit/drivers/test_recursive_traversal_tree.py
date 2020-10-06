@@ -14,7 +14,6 @@ class AppendOneChunkTwoMatchesCrafter(BaseRecursiveDriver):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_apply = False
-        self._use_tree_traversal = True
 
     def _apply_all(self, docs, *args, **kwargs) -> None:
         for doc in docs:

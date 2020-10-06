@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 # lift the chunk-level topk to doc-level topk
-from typing import Iterable, Tuple, List, Dict
+from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
 
@@ -21,7 +21,6 @@ class BaseRankDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
         self._is_apply = False
-        self._use_tree_traversal = True
 
         self.hash2id = uid.hash2id
         self.id2hash = uid.id2hash

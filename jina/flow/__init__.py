@@ -163,7 +163,7 @@ class Flow(ExitStack):
         The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
         as the head and tail routers are removed.
-        
+
         """
         super().__init__()
         if isinstance(args, argparse.Namespace):
