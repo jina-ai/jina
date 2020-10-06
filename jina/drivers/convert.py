@@ -8,7 +8,6 @@ import urllib.parse
 import urllib.request
 import zlib
 
-from PIL import Image
 import numpy as np
 
 from . import BaseRecursiveDriver
@@ -16,6 +15,7 @@ from .helper import guess_mime, array2pb, pb2array
 
 if False:
     from ..proto import jina_pb2
+    from PIL import Image
 
 class BaseConvertDriver(BaseRecursiveDriver):
 
@@ -146,19 +146,28 @@ class NdArray2PngURI(BaseConvertDriver):
         img_byte_arr = img_byte_arr.getvalue()
         return img_byte_arr
 
-    def png_convertor_nd(self, arr: np.array):
+    def png_convertor(self, arr: np.array):
         from PIL import Image
         arr = arr.astype(np.uint8)
-        im = Image.fromarray(arr).convert('RGB')
+        if arr.shape == 1:
+            im = Image.fromarray(arr.reshape((self.height, self.width))).convert('L')
+        elif arr.shape == 2:
+            im = Image.fromarray(arr).convert('L')
+        elif arr.shape == 3:
+            im = Image.fromarray(arr).convert('RGB')
+        else:
+            raise ValueError('arr shape length should be either 1, 2 or 3')
         im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
         png_bytes = NdArray2PngURI.image_to_byte_array(im, format='PNG')
         return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
     
     def convert(self, arr: np.array):
-        if len(arr.shape) > 1:
-            arr.uri = self.png_convertor_nd(arr)
-        else:
+        if len(arr.shape) == 3:
+            arr.uri = self.png_convertor(arr)
+        elif len(arr.shape) == 1:
             arr.uri = self.png_convertor_1d(arr)
+        else:
+            raise ValueError('arr shape length should be either 1 or 3')
 
 
 class Blob2PngURI(NdArray2PngURI):
@@ -170,10 +179,12 @@ class Blob2PngURI(NdArray2PngURI):
 
     def convert(self, d):
         arr = pb2array(d.blob)
-        if len(arr.shape) > 1:
-            d.uri = self.png_convertor_nd(arr)
-        else:
+        if len(arr.shape) == 3:
+            d.uri = self.png_convertor(arr)
+        elif len(arr.shape) == 1:
             d.uri = self.png_convertor_1d(arr)
+        else:
+            raise ValueError('arr shape length should be either 1 or 3')
 
 class URI2Buffer(BaseConvertDriver):
     """ Convert local file path, remote URL doc to a buffer doc.
