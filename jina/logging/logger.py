@@ -166,12 +166,12 @@ class JinaLogger:
                     from fluent import asynchandler as fluentasynchandler
                     from fluent.handler import FluentRecordFormatter
 
-                    handler = fluentasynchandler.FluentHandler(config['tag'],
-                                                               host=config['host'],
-                                                               port=config['port'], queue_circular=True)
+                    handler = fluentasynchandler.FluentHandler(cfg['tag'],
+                                                               host=cfg['host'],
+                                                               port=cfg['port'], queue_circular=True)
 
-                    config['format'].update(kwargs)
-                    fmt = FluentRecordFormatter(config['format'])
+                    cfg['format'].update(kwargs)
+                    fmt = FluentRecordFormatter(cfg['format'])
                     handler.setFormatter(fmt)
                 except (ModuleNotFoundError, ImportError):
                     pass
