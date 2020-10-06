@@ -793,7 +793,7 @@ class Flow(ExitStack):
 
     def plot(self, output: str = None,
              image_type: str = 'svg',
-             vertical_layout:bool = True,
+             vertical_layout: bool = True,
              inline_display: bool = True,
              copy_flow: bool = False) -> 'Flow':
         """
@@ -820,11 +820,20 @@ class Flow(ExitStack):
         """
 
         op_flow = copy.deepcopy(self) if copy_flow else self
-
-        mermaid_graph = ['graph TD'] if vertical_layout else ['graph LR']
+        mermaid_graph = ["%%{init: {'theme': 'base', "
+                         "'themeVariables': { 'primaryColor': '#fff4dd', "
+                         "'edgeLabelBackground':'#FFCC66', 'tertiaryColor': '#ff6666'}}}%%"]
+        mermaid_graph.append('graph TD' if vertical_layout else 'graph LR')
         for node, v in self._pod_nodes.items():
+            ed_str = str(v._args.socket_in).split('_')[0]
             for need in sorted(v.needs):
-                mermaid_graph.append(f'{need}[{need}] --> {node}[{node}]')
+                if need in self._pod_nodes:
+                    st_str = str(self._pod_nodes[need]._args.socket_out).split('_')[0]
+                    edge_str = f'|{st_str}-{ed_str}|'
+                else:
+                    edge_str = ''
+                mermaid_graph.append(f'{need}[{need}]:::pod --> {edge_str}{node}[{node}]:::pod')
+        mermaid_graph.append('classDef pod fill:#32C8CD,stroke:#009999,border-radius:5px;')
         mermaid_str = '\n'.join(mermaid_graph)
 
         if image_type not in {'svg', 'jpg'}:
@@ -874,7 +883,7 @@ class Flow(ExitStack):
             with open(output, 'wb') as fp:
                 fp.write(urlopen(req).read())
         except:
-            self.logger.error('can not download image, please check your network connection')
+            self.logger.error('can not download image, please check your graph and the network connections')
 
     def dry_run(self, **kwargs):
         """Send a DRYRUN request to this flow, passing through all pods in this flow,
