@@ -253,9 +253,6 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        self._traverse_apply_explicit(docs, *args, **kwargs)
-
-    def _traverse_apply_explicit(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
                 self._traverse_rec(docs, None, None, [], *args, **kwargs)
