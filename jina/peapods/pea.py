@@ -191,9 +191,6 @@ class BasePea(metaclass=PeaMeta):
         """
         if self.args.uses:
             try:
-                if self.args.log_config:
-                    # pass it to executor, so exec can follow the same log_config as pea
-                    os.environ['JINA_LOG_CONFIG'] = self.args.log_config
                 self.executor = BaseExecutor.load_config(
                     self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
                     self.args.separated_workspace, self.args.replica_id)

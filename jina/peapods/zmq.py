@@ -17,13 +17,12 @@ from .. import __default_host__
 from ..enums import SocketType
 from ..excepts import MismatchedVersion
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
-from ..logging import default_logger, profile_logger
+from ..logging import default_logger, profile_logger, JinaLogger
 from ..proto import jina_pb2, is_data_request
 
 if False:
     # fix type-hint complain for sphinx and flake
     import argparse
-    import logging
     from ..proto.jina_pb2 import Message
 
 use_uvloop()
@@ -38,7 +37,7 @@ class Zmqlet:
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'logging.Logger' = None):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None):
         """
 
         :param args: the parsed arguments from the CLI

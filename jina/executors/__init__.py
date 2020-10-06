@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-import argparse
 import pickle
 import re
 import subprocess
@@ -24,7 +23,7 @@ from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
-    from ..drivers import BaseDriver
+    from ..peapods.pea import BasePea
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -548,14 +547,18 @@ class BaseExecutor(metaclass=ExecutorType):
             r['metas'] = p
         return r
 
-    def attach(self, *args, **kwargs):
+    def attach(self, pea: 'BasePea', *args, **kwargs):
         """Attach this executor to a :class:`jina.peapods.pea.BasePea`.
 
         This is called inside the initializing of a :class:`jina.peapods.pea.BasePea`.
         """
         for v in self._drivers.values():
             for d in v:
-                d.attach(executor=self, *args, **kwargs)
+                d.attach(executor=self, pea=pea, *args, **kwargs)
+
+        # replacing the logger to pea's logger
+        if pea and isinstance(getattr(pea, 'logger', None), JinaLogger):
+            self.logger = pea.logger
 
     def __call__(self, req_type, *args, **kwargs):
         if req_type in self._drivers:
