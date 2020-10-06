@@ -1,6 +1,7 @@
-from jina.logging import JinaLogger
 import os
+
 from jina import __uptime__
+from jina.logging import JinaLogger
 
 
 def log(logger):
@@ -13,18 +14,27 @@ def log(logger):
 
 
 def test_logging_syslog():
-    logger = JinaLogger('test_logger', config_path='yaml/syslog.yml')
-    log(logger)
+    with JinaLogger('test_logger', config_path='yaml/syslog.yml') as logger:
+        log(logger)
+        assert len(logger.handlers) == 1
 
 
 def test_logging_default():
-    logger = JinaLogger('test_logger')
-    log(logger)
+    with JinaLogger('test_logger') as logger:
+        log(logger)
+        try:
+            import fluent
+            assert len(logger.handlers) == 3
+        except (ModuleNotFoundError, ImportError):
+            # if fluent not installed
+            assert len(logger.handlers) == 2
 
 
 def test_logging_file():
-    logger = JinaLogger('test_logger', config_path='yaml/file.yml')
-    log(logger)
+    with JinaLogger('test_logger', config_path='yaml/file.yml') as logger:
+        log(logger)
     assert os.path.exists(f'jina-{__uptime__}.log')
     with open(f'jina-{__uptime__}.log') as fp:
         assert len(fp.readlines()) == 5
+
+

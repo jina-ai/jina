@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import json
 import logging
+import os
 import platform
 import re
 import sys
@@ -14,7 +15,7 @@ from pkg_resources import resource_filename
 
 from .profile import used_memory
 from ..enums import LogVerbosity
-from ..helper import colored, yaml
+from ..helper import colored, yaml, complete_path
 
 
 class ColorFormatter(Formatter):
@@ -118,7 +119,15 @@ class NTLogger:
         if self.log_level <= LogVerbosity.SUCCESS:
             sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
+
 class MySysLogHandler(SysLogHandler):
+    """ Override the priority_map :class:`SysLogHandler`
+
+    .. warning::
+        This messages at DEBUG and INFO are therefore not stored by ASL, (ASL = Apple System Log)
+        which in turn means they can't be printed by syslog after the fact. You can confirm it via :command:`syslog` or
+        :command:`tail -f /var/log/system.log`
+    """
     priority_map = {
         'DEBUG': 'debug',
         'INFO': 'info',
@@ -128,11 +137,18 @@ class MySysLogHandler(SysLogHandler):
         'SUCCESS': 'notice'
     }
 
+
 class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
     def __init__(self, context: str, config_path: str = None):
         from .. import __uptime__
+
+        if not config_path:
+            config_path = resource_filename('jina', '/'.join(('resources', 'logging.yml')))
+        else:
+            config_path = complete_path(config_path)
+
         # Remove all handlers associated with the root logger object.
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
@@ -140,7 +156,9 @@ class JinaLogger:
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
 
-        context_vars = {'name': context, 'uptime': __uptime__}
+        context_vars = {'name': os.environ.get('JINA_POD_NAME', context),
+                        'uptime': __uptime__,
+                        'context': context}
         self.add_handlers(config_path, **context_vars)
 
         # note logger.success isn't default there
@@ -155,6 +173,10 @@ class JinaLogger:
         self.warning = self.logger.warning
         self.success = self.logger.success
 
+    @property
+    def handlers(self):
+        return self.logger.handlers
+
     def __enter__(self):
         return self
 
@@ -167,9 +189,6 @@ class JinaLogger:
 
     def add_handlers(self, config_path: str = None, **kwargs):
         self.logger.handlers = []
-
-        if not config_path:
-            config_path = resource_filename('jina', '/'.join(('resources', 'logging.fluentd.yml')))
 
         with open(config_path) as fp:
             config = yaml.load(fp)
@@ -190,7 +209,7 @@ class JinaLogger:
             elif h == 'SysLogHandler':
                 if cfg['host'] and cfg['port']:
                     handler = MySysLogHandler(address=(cfg['host'], cfg['port']))
-                elif cfg['use_socket']:
+                else:
                     # a UNIX socket is used
                     if platform.system() == 'Darwin':
                         handler = MySysLogHandler(address='/var/run/syslog')

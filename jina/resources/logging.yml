@@ -1,21 +1,20 @@
-handlers:
+handlers:  # enabled handlers, order does not matter
   - StreamHandler
   - SysLogHandler
   - FluentHandler
-level: DEBUG
+level: INFO  # set verbose level
 configs:
   FileHandler:
     format: '%(asctime)s:{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
-    output: 'jina-%(uptime)s.log'
-    type: json  # also 'json'
+    output: 'jina-{uptime}.log'
+    type: json  # possible choices ['text', 'json']
   StreamHandler:
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
-    colored: true
+    colored: true  # show colored logs or not
   SysLogHandler:
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
-    host: # when not given then record it locally
-    port: # when not given then record it locally
-    use_socket: false
+    host: # when not given then record it locally, /dev/log on linux /var/run/syslog on mac
+    port: # when not given then record it locally,  /dev/log on linux /var/run/syslog on mac
   FluentHandler:
     # this configuration describes where is the fluentD daemon running and waiting for logs to be emitted.
     # FluentD then will have its own configuration to forward the messages according to its own syntax

@@ -321,20 +321,12 @@ def set_pea_parser(parser=None):
 
     from pkg_resources import resource_filename
     gp7 = add_arg_group(parser, 'logging arguments')
-    gp7.add_argument('--log-sse', action='store_true', default=False,
-                     help='turn on server-side event logging')
-    gp7.add_argument('--log-fluentd-config', type=str,
+    gp7.add_argument('--log-config', type=str,
                      default=resource_filename('jina',
-                                               '/'.join(('resources', 'logging.fluentd.yml'))),
+                                               '/'.join(('resources', 'logging.yml'))),
                      help='the yaml config of the fluentd server to pass to the Fluent Logging Handler')
     gp7.add_argument('--log-remote', action='store_true', default=False,
-                     help='turn on remote logging')
-    gp7.add_argument('--log-profile', action='store_true', default=False,
-                     help='turn on the profiling logger')
-    gp7.add_argument('--log-with-own-name', action='store_true', default=False,
-                     help='turn on to let each logger outputs in its own name (i.e. parent class name as the context), '
-                          'by default it is off so all logs from the same pod will have the same prefix. '
-                          'turn on to help debugging, turn off to have more clear logs and better grouping in dashboard')
+                     help='turn on remote logging, this should not be set manually')
 
     gp8 = add_arg_group(parser, 'ssh tunneling arguments')
     gp8.add_argument('--ssh-server', type=str, default=None,

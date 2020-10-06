@@ -150,7 +150,6 @@ class HubIO:
             self.logger.error(f'can not pull image {self.args.name} from {self.args.registry}')
             raise
 
-
     def _check_docker_image(self, name: str) -> None:
         # check local image
         image = self._client.images.get(name)
