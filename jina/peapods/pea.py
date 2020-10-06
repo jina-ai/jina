@@ -20,10 +20,10 @@ from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2
 from ..logging.queue import clear_queues
+from ..proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -132,12 +132,12 @@ class BasePea(metaclass=PeaMeta):
             if self.args.role == PeaRoleType.REPLICA:
                 self.name = '%s-%d' % (self.name, self.args.replica_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
-            if not self.args.log_with_own_name and self.args.name:
+            if self.args.name:
                 # everything in this Pea (process) will use the same name for display the log
                 os.environ['JINA_POD_NAME'] = self.args.name
-            self.logger = get_logger(self.name, **vars(self.args))
+            self.logger = JinaLogger(self.name, **vars(self.args))
         else:
-            self.logger = get_logger(self.name)
+            self.logger = JinaLogger(self.name)
 
     def __str__(self):
         r = self.name
@@ -415,7 +415,6 @@ class BasePea(metaclass=PeaMeta):
         self.send_terminate_signal()
         self.is_shutdown.wait()
         if not self.daemon:
-            # TODO: remove clear_queues when queues are totally removed
             clear_queues()
             self.logger.close()
             self.join()

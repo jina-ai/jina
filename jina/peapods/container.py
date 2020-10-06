@@ -7,7 +7,7 @@ from pathlib import Path
 from .pea import BasePea
 from .. import __ready_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.queue import clear_queues
 
 
@@ -81,7 +81,7 @@ class ContainerPea(BasePea):
         """Direct the log from the container to local console """
         import docker
 
-        logger = get_logger('🐳', **vars(self.args), fmt_str='🐳 %(message)s')
+        logger = JinaLogger('🐳', **vars(self.args))
         with logger:
             try:
                 for line in self._container.logs(stream=True):

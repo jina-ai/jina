@@ -1,8 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import copy
 import argparse
+import copy
 import os
 import tempfile
 import threading
@@ -19,7 +19,7 @@ from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, FlowOptimizeLevel
 from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
 
@@ -167,9 +167,9 @@ class Flow(ExitStack):
         """
         super().__init__()
         if isinstance(args, argparse.Namespace):
-            self.logger = get_logger(self.__class__.__name__, **vars(args))
+            self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         else:
-            self.logger = get_logger(self.__class__.__name__)
+            self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
         self._pod_name_counter = 0
@@ -185,8 +185,6 @@ class Flow(ExitStack):
             _, args, _ = get_parsed_args(kwargs, _flow_parser, 'Flow')
 
         self.args = args
-        if kwargs and self.args.logserver and 'log_sse' not in kwargs:
-            kwargs['log_sse'] = True
         self._common_kwargs = kwargs
         self._kwargs = get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 
@@ -472,6 +470,7 @@ class Flow(ExitStack):
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
+        self.logger.close()
 
     def _stop_log_server(self):
         import urllib.request
@@ -514,9 +513,6 @@ class Flow(ExitStack):
             self.build(copy_flow=False)
 
         if self.args.logserver:
-            if self.args.start_fluentd:
-                self.logger.info('starting fluentd...')
-                self._start_fluentd_daemon()
             self.logger.info('starting logserver...')
             self._start_log_server()
 

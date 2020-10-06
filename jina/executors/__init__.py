@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-import argparse
 import pickle
 import re
 import subprocess
@@ -20,11 +19,12 @@ from .decorators import as_train_method, as_update_method, store_init_kwargs
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source
-from ..logging.base import get_logger
+from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
     from ..drivers import BaseDriver
+    from ..peapods.pea import BasePea
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -130,10 +130,7 @@ class BaseExecutor(metaclass=ExecutorType):
             self.args = args[0]
         else:
             self.args = args
-        if isinstance(self.args, argparse.Namespace):
-            self.logger = get_logger(self.__class__.__name__, **vars(self.args))
-        else:
-            self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
@@ -304,10 +301,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     def __setstate__(self, d):
         self.__dict__.update(d)
-        if isinstance(self.args, argparse.Namespace):
-            self.logger = get_logger(self.__class__.__name__, **vars(self.args))
-        else:
-            self.logger = get_logger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__)
         try:
             self._post_init_wrapper(fill_in_metas=False)
         except ImportError as ex:
@@ -554,14 +548,18 @@ class BaseExecutor(metaclass=ExecutorType):
             r['metas'] = p
         return r
 
-    def attach(self, *args, **kwargs):
+    def attach(self, pea: 'BasePea', *args, **kwargs):
         """Attach this executor to a :class:`jina.peapods.pea.BasePea`.
 
         This is called inside the initializing of a :class:`jina.peapods.pea.BasePea`.
         """
         for v in self._drivers.values():
             for d in v:
-                d.attach(executor=self, *args, **kwargs)
+                d.attach(executor=self, pea=pea, *args, **kwargs)
+
+        # replacing the logger to pea's logger
+        if pea and isinstance(getattr(pea, 'logger', None), JinaLogger):
+            self.logger = pea.logger
 
     def __call__(self, req_type, *args, **kwargs):
         if req_type in self._drivers:
