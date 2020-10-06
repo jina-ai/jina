@@ -126,6 +126,19 @@ def set_hub_pushpull_parser(parser=None):
     parser.add_argument('name', type=str, help='the name of the image.')
     return parser
 
+def set_hub_list_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument('--name', type=str, default='',
+                        help='name of executor')
+    parser.add_argument('--keywords', type=str, nargs='+', default=['numeric'],
+                        help='keywords to search for')
+    parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app'],
+                        help='type of executor')
+    parser.add_argument('--kind', type=str, default='',
+                        help='kind of executor')
+    return parser
 
 def set_hw_parser(parser=None):
     if not parser:
@@ -560,6 +573,10 @@ def get_main_parser():
                             description='use "%(prog)-8s [sub-command] --help" '
                                         'to get detailed information about each sub-command', required=True)
 
+    spp.add_parser('login', help='login via Github to push images to Jina hub registry',
+                   description='Login via Github to push images to Jina hub registry',
+                   formatter_class=_chf)
+    
     set_hub_new_parser(
         spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor or app using cookiecutter',
                        description='Create a new Hub executor or app using cookiecutter',
@@ -578,6 +595,11 @@ def get_main_parser():
     set_hub_pushpull_parser(
         spp.add_parser('pull', help='pull an image from the Jina hub registry to local',
                        description='Pull an image to the Jina hub registry to local',
+                       formatter_class=_chf))
+    
+    set_hub_list_parser(
+        spp.add_parser('list', help='list hub executors from jina hub registry',
+                       description='List hub executors from jina hub registry',
                        formatter_class=_chf))
 
     set_pea_parser(sp.add_parser('pea',

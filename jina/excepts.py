@@ -103,3 +103,11 @@ class UndefinedModel(Exception):
 
 class MongoDBException(Exception):
     """ Any errors raised by MongoDb """
+
+
+class TimedOutException(Exception):
+    """ Errors raised for timeout operations """
+
+
+class DockerLoginFailed(Exception):
+    """ Exception to raise for docker hub login failures """
