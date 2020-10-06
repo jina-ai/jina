@@ -9,6 +9,7 @@ import numpy as np
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
 from ..proto import uid
+from ..executors.rankers import Chunk2DocRanker, Match2DocRanker
 
 if False:
     from ..proto import jina_pb2
@@ -67,14 +68,25 @@ class Chunk2DocRankDriver(BaseRankDriver):
         match_chunk_meta = {}  # type: Dict[int, Dict]
         for c in docs:
             for match in c.matches:
-                # print(f'{match.parent_id}, {match.id}, {c.id}')
                 match_idx.append(
-                    (self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(c.id), match.score.value))
+                    (self.id2hash(match.parent_id),
+                     self.id2hash(match.id),
+                     self.id2hash(c.id),
+                     match.score.value)
+                )
                 query_chunk_meta[self.id2hash(c.id)] = pb_obj2dict(c, self.exec.required_keys)
                 match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
         if match_idx:
-            match_idx = np.array(match_idx, dtype=np.float64)
+            match_idx = np.array(
+                match_idx,
+                dtype=[
+                    (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
+                    (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
+                    (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
+                    (Chunk2DocRanker.COL_SCORE, np.float64)
+                ]
+            )
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             for doc_hash, score in docs_scores:
@@ -132,13 +144,24 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         # doc_id_to_match_map = {}
         for match in docs:
             # doc_id_to_match_map[match.id] = index
-            match_idx.append((self.id2hash(match.parent_id), self.id2hash(match.id), self.id2hash(context_doc.id),
-                              match.score.value))
+            match_idx.append((
+                self.id2hash(match.parent_id),
+                self.id2hash(match.id),
+                self.id2hash(context_doc.id),
+                match.score.value
+            ))
             query_chunk_meta[self.id2hash(context_doc.id)] = pb_obj2dict(context_doc, self.exec.required_keys)
             match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
         if match_idx:
-            match_idx = np.array(match_idx, dtype=np.float64)
+            match_idx = np.array(match_idx,
+                dtype=[
+                    (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
+                    (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
+                    (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
+                    (Chunk2DocRanker.COL_SCORE, np.float64)
+                ]
+            )
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             # These ranker will change the current matches
@@ -195,4 +218,5 @@ class Matches2DocRankDriver(BaseRankDriver):
             new_match.score.op_name = exec.__class__.__name__
 
     def _sort(self, docs_scores: 'np.ndarray') -> 'np.ndarray':
-        return docs_scores[docs_scores[:, -1].argsort()[::-1]]
+        return np.sort(docs_scores, order=Match2DocRanker.COL_SCORE)[::-1]
+
