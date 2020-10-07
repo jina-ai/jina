@@ -148,7 +148,6 @@ class NdArray2PngURI(BaseConvertDriver):
         return img_byte_arr
 
     def png_convertor(self, arr: np.array):
-        import numpy as np
         from PIL import Image
 
         arr = arr.astype(np.uint8)
