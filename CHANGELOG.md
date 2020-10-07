@@ -80,6 +80,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4708,4 +4709,148 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```df7a7f49```](https://github.com/jina-ai/jina/commit/df7a7f494be7683a8377fdcf3bb8036ed7238e0a)] __-__ update contributors (*Jina Dev Bot*)
+
+<a name=release-note-0-6-4></a>
+## Release Note (`0.6.4`)
+
+> Release time: 2020-10-07 10:16:46
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  Joan Fontanals Martinez,  Maximilian Werk,  Deepankar Mahapatro,  jancijen,  theUnkownName,  RenrakuRunrat,  Ján Jendrušák,  bwanglzu,  Susana Guzman,  CatStark,  Alex McKenzie,  Rutuja Surve,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a9c28235```](https://github.com/jina-ai/jina/commit/a9c282358e94ada2b697ee9d1b95f5af66a621d1)] __-__ try to see if syslog available (*Joan Fontanals Martinez*)
+ - [[```c3bf1e4d```](https://github.com/jina-ai/jina/commit/c3bf1e4d8f675cdb72e4a122d2c8a23e5bfdbb2b)] __-__ render inline within iphython notebook (*theUnkownName*)
+ - [[```c81cf86f```](https://github.com/jina-ai/jina/commit/c81cf86fba3b47173e43c8155d33939252789c9b)] __-__ pass logger params up to executor (*Joan Fontanals Martinez*)
+ - [[```6c56495f```](https://github.com/jina-ai/jina/commit/6c56495f3b7a832eec439a5a637fbcf3612e3d69)] __-__ jina hub push via hubapi (*Deepankar Mahapatro*)
+ - [[```2217a73b```](https://github.com/jina-ai/jina/commit/2217a73b26f0335523ce5be7d71aef2a50b538dc)] __-__ jina hub login via github oauth (*Deepankar Mahapatro*)
+ - [[```8571d60e```](https://github.com/jina-ai/jina/commit/8571d60ee00d80c970d5e7cad2d22b366456e8d4)] __-__ __sse__: read from first file appearing from pattern (*Joan Fontanals Martinez*)
+ - [[```33df426d```](https://github.com/jina-ai/jina/commit/33df426dfe2948cb26ba3dc453faa24aa27b0102)] __-__ add start fluentd as subprocess (*Joan Fontanals Martinez*)
+ - [[```b093d6aa```](https://github.com/jina-ai/jina/commit/b093d6aa06af30b8239669646e9521929a566be7)] __-__ change format to send to fluent and add config (*Joan Fontanals Martinez*)
+ - [[```441ceca8```](https://github.com/jina-ai/jina/commit/441ceca8a7140340a54a85ba3f8eda71a3933c5f)] __-__ sse logger now monitor the tail of file (*Han Xiao*)
+ - [[```c05c16b0```](https://github.com/jina-ai/jina/commit/c05c16b033a8cf9cabf9560ebe96c9fa9664248d)] __-__ slice is there and some test cleanups (*Maximilian Werk*)
+ - [[```54ba2a94```](https://github.com/jina-ai/jina/commit/54ba2a94aba846f56f310daed36a4903b183e481)] __-__ tree traversal for encoder drivers (#1011) (*Rutuja Surve*)
+ - [[```296cbb0e```](https://github.com/jina-ai/jina/commit/296cbb0e3fb6c65703522c512edf20002e9b40e9)] __-__ add hash proto class for gen unique id (*Han Xiao*)
+ - [[```9c3fee5b```](https://github.com/jina-ai/jina/commit/9c3fee5bbda3cf1e3c5cc457f6766f0a3fe37dfd)] __-__ add fluentd config file (*Joan Fontanals Martinez*)
+ - [[```f6ca1afd```](https://github.com/jina-ai/jina/commit/f6ca1afd04e465cd5a1864917791ce02a5b3b176)] __-__ tree traversal for reverseQL, filterQL, selectQL (#995) (*Rutuja Surve*)
+ - [[```0c3872aa```](https://github.com/jina-ai/jina/commit/0c3872aad13a8bd1bedbaad8dede632fdbad773a)] __-__ added tree traversal for search driver (#1003) (*Maximilian Werk*)
+ - [[```bfc59272```](https://github.com/jina-ai/jina/commit/bfc592723c13debade59ec4abcf4523dff7c5c23)] __-__ switched to tree traversal for index driver (#1001) (*Maximilian Werk*)
+ - [[```480cf3cf```](https://github.com/jina-ai/jina/commit/480cf3cfdc7c7fc4d51a6bc5657d117f63bbeedb)] __-__ enable fluentd logging (*Joan Fontanals Martinez*)
+ - [[```143b60aa```](https://github.com/jina-ai/jina/commit/143b60aa76d4fa3014b767fc504da32f7d20439d)] __-__ add visualization via url (*Susana Guzman*)
+ - [[```73a5b2f2```](https://github.com/jina-ai/jina/commit/73a5b2f2eab90251d11df96e5c3bf93071b26a5f)] __-__ create mermaid str (*Susana Guzman*)
+ - [[```00683e06```](https://github.com/jina-ai/jina/commit/00683e06fc0113937bb9b930499bb5579c299f80)] __-__ add edges (*Susana Guzman*)
+
+### 🐞 Bug fixes
+
+ - [[```f511fc6b```](https://github.com/jina-ai/jina/commit/f511fc6b9f22ea922e2199098904de62b7a80c4f)] __-__ logging changes (*Deepankar Mahapatro*)
+ - [[```3418301b```](https://github.com/jina-ai/jina/commit/3418301bb9dff22448a51fa61edeac8d8d78d244)] __-__ fixed the int float conversion collision between hash and idy (#1034) (*Maximilian Werk*)
+ - [[```8c80d0b9```](https://github.com/jina-ai/jina/commit/8c80d0b93451fc251755fa05f1e693ac4cad3688)] __-__ display inline (*theUnkownName*)
+ - [[```5c31b98a```](https://github.com/jina-ai/jina/commit/5c31b98a550eb2eff8d7481fe697e2b6a53139b1)] __-__ login error handling and code cleanup (*Deepankar Mahapatro*)
+ - [[```9b4a5c02```](https://github.com/jina-ai/jina/commit/9b4a5c02dcd022cbfe3ec89b405900da20f1a885)] __-__ update docstring and remove return url (*theUnkownName*)
+ - [[```b1fbfda1```](https://github.com/jina-ai/jina/commit/b1fbfda1067f57f98aff66955faad7efacce1540)] __-__ yaml config in fluentd logger (#1026) (*Han Xiao*)
+ - [[```acbfceb8```](https://github.com/jina-ai/jina/commit/acbfceb8b174945518b8e318b00b7a830a4ccdb6)] __-__ comply with fluent pattern (*Susana Guzman*)
+ - [[```43b7eb10```](https://github.com/jina-ai/jina/commit/43b7eb10ec87700c187557849944ba2174ccc66e)] __-__ no special default for filter ql (*Maximilian Werk*)
+ - [[```13f3aa12```](https://github.com/jina-ai/jina/commit/13f3aa124282bab1008ffef3a93014327990865a)] __-__ remove kwargs (*Susana Guzman*)
+ - [[```01f163b6```](https://github.com/jina-ai/jina/commit/01f163b6e5e2b0ec791b1ad5b140ddaeb7d7e863)] __-__ remove double underscore (*Susana Guzman*)
+ - [[```6bb495b1```](https://github.com/jina-ai/jina/commit/6bb495b1f23aef43f409aea532d8b95c34afe644)] __-__ fix problem with file location (*Susana Guzman*)
+ - [[```b73ab6bf```](https://github.com/jina-ai/jina/commit/b73ab6bfd1f13cbdb83de78c505ccf865cf5b0c0)] __-__ no early file closing (#1024) (*Maximilian Werk*)
+ - [[```83c021fa```](https://github.com/jina-ai/jina/commit/83c021fa49bb6fa096022355c40a93107be51f60)] __-__ remove unnecesary import (*Susana Guzman*)
+ - [[```2d1941a9```](https://github.com/jina-ai/jina/commit/2d1941a97f05a8ac647bdd307f4814b938bb4c76)] __-__ add almost equal test (*Susana Guzman*)
+ - [[```9de7222b```](https://github.com/jina-ai/jina/commit/9de7222ba09a7c9e61647b70e17f92551c0969ab)] __-__ improve for loop (*Susana Guzman*)
+ - [[```94524ba9```](https://github.com/jina-ai/jina/commit/94524ba985b717fa721e84934ac1abf4314c2088)] __-__ remove extra _pod_needs (*Susana Guzman*)
+ - [[```f0e7c5d7```](https://github.com/jina-ai/jina/commit/f0e7c5d793360eb4ee34d8b43e92f7cba90f0137)] __-__ remove fluentd start (*Joan Fontanals Martinez*)
+ - [[```5ff2a993```](https://github.com/jina-ai/jina/commit/5ff2a993c1488b50b24e03445a94499f2bdb5936)] __-__ remove granularity from request (*Maximilian Werk*)
+ - [[```6918f83c```](https://github.com/jina-ai/jina/commit/6918f83c181fb4c127d666e362990f170f695100)] __-__ remove images (*Susana Guzman*)
+ - [[```e4c70dfc```](https://github.com/jina-ai/jina/commit/e4c70dfce9dda383b7b75d9f0d0d7f0530a4cccb)] __-__ unnecesary file (*CatStark*)
+ - [[```1f7bc019```](https://github.com/jina-ai/jina/commit/1f7bc019cc83efdb79d44cf36ba7a3a66254727f)] __-__ remove printline (*Susana Guzman*)
+ - [[```82289b60```](https://github.com/jina-ai/jina/commit/82289b603fec0e6c39b02909b6725dc155b9d667)] __-__ add img tests (*Susana Guzman*)
+ - [[```b5bab142```](https://github.com/jina-ai/jina/commit/b5bab142476c30c1cb139195361350d1620b4286)] __-__ remove only created img, not the test one (*Susana Guzman*)
+ - [[```f0f98866```](https://github.com/jina-ai/jina/commit/f0f98866e6fac00ba23ee413c31d856162fa9486)] __-__ set name for individual imgs created and delete them afterwards (*Susana Guzman*)
+ - [[```e8a11225```](https://github.com/jina-ai/jina/commit/e8a112259efa9fba434d429509fee1352a724795)] __-__ change default fluent conf (*Joan Fontanals Martinez*)
+ - [[```89fd650a```](https://github.com/jina-ai/jina/commit/89fd650a40a34fdf3dd39435676ea86b5543e8ae)] __-__ use with as context manager (*Susana Guzman*)
+ - [[```d0702d2d```](https://github.com/jina-ai/jina/commit/d0702d2d701cf1d1771622335f45d26a20ac3cbb)] __-__ fix mypy errors in helper.py (*Alex McKenzie*)
+ - [[```1948bb8a```](https://github.com/jina-ai/jina/commit/1948bb8a58e69eb0932ad2e3c125e416c503a2fb)] __-__ tuple as default args (*Maximilian Werk*)
+ - [[```a5c7e5cf```](https://github.com/jina-ai/jina/commit/a5c7e5cfee90af77b6f952fb7163ea0742878204)] __-__ close files (*Susana Guzman*)
+ - [[```361900e3```](https://github.com/jina-ai/jina/commit/361900e3e11219f3d69c6fabf068483585e09ed5)] __-__ __drivers__: fix dunderkey bug and add tests (*Alex McKenzie*)
+ - [[```60ad4e12```](https://github.com/jina-ai/jina/commit/60ad4e12dcf778d5e705ff529517202408188183)] __-__ __drivers__: fix mypy errors (*Alex McKenzie*)
+ - [[```2e075636```](https://github.com/jina-ai/jina/commit/2e075636c34398237e86039e242783178747a812)] __-__ add profile logger back (*Joan Fontanals Martinez*)
+ - [[```797750c4```](https://github.com/jina-ai/jina/commit/797750c4a130f86b44a6655c227e65b2791ba952)] __-__ change file location (*Susana Guzman*)
+ - [[```25b1a5d1```](https://github.com/jina-ai/jina/commit/25b1a5d1c45d5e86f92fe2beb3e4fd53ccf45601)] __-__ #973 (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```8a59472a```](https://github.com/jina-ai/jina/commit/8a59472a11bebb248b5a0e8233ad25d75efb67f2)] __-__ remove apply function (#1039) (*Maximilian Werk*)
+ - [[```70f426de```](https://github.com/jina-ai/jina/commit/70f426deaf41cad5fc429722c234ab73e05eb833)] __-__ __tests__: refactoring on tests, remove and add tmpdir (#1038) (*Joan Fontanals*)
+ - [[```ffb6125c```](https://github.com/jina-ai/jina/commit/ffb6125c40636cae88ab9c89abb1fada42833ab9)] __-__ __flow__: improve visualization (*Han Xiao*)
+ - [[```44f0ddf0```](https://github.com/jina-ai/jina/commit/44f0ddf02009bf2314c7ffd254f01b43a5bcfcb8)] __-__ removed old traversal (#1036) (*Maximilian Werk*)
+ - [[```978a4089```](https://github.com/jina-ai/jina/commit/978a408984d36e5d524d55e5adf5247c45fb2a0c)] __-__ __logger__: abstract away the logger config (*Han Xiao*)
+ - [[```257ce00b```](https://github.com/jina-ai/jina/commit/257ce00b8b222aea3ba3152c6a75d7ae97d486c4)] __-__ __logger__: abstract away log config (*Han Xiao*)
+ - [[```78b19769```](https://github.com/jina-ai/jina/commit/78b19769644877ed012678e163bff643800bb063)] __-__ __logging__: logger wrapper (*Han Xiao*)
+ - [[```4b8f3ea7```](https://github.com/jina-ai/jina/commit/4b8f3ea7efcc791949bc08f288535f7291496fc5)] __-__ logger wrapper (#1029) (*Han Xiao*)
+ - [[```455892a2```](https://github.com/jina-ai/jina/commit/455892a2628265d52766ce8444878ea326379001)] __-__ rename functions (*Susana Guzman*)
+ - [[```72d3eba7```](https://github.com/jina-ai/jina/commit/72d3eba76ee808b7d00265622b4b1b0138759af4)] __-__ __cli__: rename jina_cli to cli (*Han Xiao*)
+ - [[```89ce4985```](https://github.com/jina-ai/jina/commit/89ce498526634c98bcea547e8dc2928b8e60c3c9)] __-__ fix tests (*Han Xiao*)
+ - [[```b2579428```](https://github.com/jina-ai/jina/commit/b2579428f21394d66606e2ed2e82d616f499d582)] __-__ merge with master (*Han Xiao*)
+ - [[```9b2d31f0```](https://github.com/jina-ai/jina/commit/9b2d31f07a9016174007f9a82627feb54bac3368)] __-__ change id from type uint32 to str (*Han Xiao*)
+ - [[```8bdd7774```](https://github.com/jina-ai/jina/commit/8bdd7774dd43cd42175381e44ba0de327f8c413f)] __-__ remove serialization (*Han Xiao*)
+ - [[```168b7c9d```](https://github.com/jina-ai/jina/commit/168b7c9d68df3aa4df027631f111056cff73cc0f)] __-__ change extra requirements (*Joan Fontanals*)
+ - [[```89d518b3```](https://github.com/jina-ai/jina/commit/89d518b352fdbcae7f8db478f13f306eae7a8a3c)] __-__ remove array_in_pb trick for now (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```59cc794c```](https://github.com/jina-ai/jina/commit/59cc794cd5ce6ee74b7cc589d28be0edfcbf0e47)] __-__ fix markdown html link names (#1037) (*jancijen*)
+ - [[```2d4c04ba```](https://github.com/jina-ai/jina/commit/2d4c04ba8b5e8c41b59b01c0471abe2019b257eb)] __-__ __hub__: fix additional redirects i found (*RenrakuRunrat*)
+ - [[```41941491```](https://github.com/jina-ai/jina/commit/419414914565138739de5b6e19650d834b606566)] __-__ __jina__: fix wrong redirects (*RenrakuRunrat*)
+ - [[```f29d5518```](https://github.com/jina-ai/jina/commit/f29d5518d8f32992d3732864c1389940b13f85fa)] __-__ fix markdown links in CHANGELOG.md and CONTRIBUTING.md (*Ján Jendrušák*)
+ - [[```4ad85a1c```](https://github.com/jina-ai/jina/commit/4ad85a1c8bd467e575112b5fca0e75e512407c18)] __-__ add documentation about logging (*Joan Fontanals Martinez*)
+ - [[```e6412209```](https://github.com/jina-ai/jina/commit/e6412209c23ff49f3266490722e3403059e5b0f3)] __-__ migrate flow intro from example to docs (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```febdce1f```](https://github.com/jina-ai/jina/commit/febdce1f8722cab16dce22395c2dd402e31329d0)] __-__ remove JinaTestCase from test (#1045) (*Joan Fontanals*)
+ - [[```fca44753```](https://github.com/jina-ai/jina/commit/fca44753170f522dc44d2c7011f2528f20704437)] __-__ add tests for driver helper (*Joan Fontanals Martinez*)
+ - [[```d5615d25```](https://github.com/jina-ai/jina/commit/d5615d255365df646616af83f721fb2481734159)] __-__ added back level depth test (#1044) (*Maximilian Werk*)
+ - [[```022a39fe```](https://github.com/jina-ai/jina/commit/022a39fe6f28c340b6c5cb08f9e88eabf5517971)] __-__ hubapi unitests (*Deepankar Mahapatro*)
+ - [[```cd668e10```](https://github.com/jina-ai/jina/commit/cd668e10d65a5e95f459836442c0d67e136912f7)] __-__ change release.sh script to create correct markdown links (*Ján Jendrušák*)
+ - [[```ab2409c4```](https://github.com/jina-ai/jina/commit/ab2409c4ea85245507a4d3668adc209f8b7fb9b1)] __-__ take out autouse from conftest (*bwanglzu*)
+ - [[```ac20be27```](https://github.com/jina-ai/jina/commit/ac20be277be24b52fa28b07bdb42c46f66d617f6)] __-__ place fixture into conftest (*bwanglzu*)
+ - [[```0c7b6eba```](https://github.com/jina-ai/jina/commit/0c7b6eba3191eeccb43cf49b8033f29b439dca28)] __-__ add tests for plot in end, plot in middle, plot twice (*Susana Guzman*)
+ - [[```aa615cf2```](https://github.com/jina-ai/jina/commit/aa615cf2990153c1319d3269f986fc97666ef2e7)] __-__ change url test, just check that string is not empty (*Susana Guzman*)
+ - [[```d400eee6```](https://github.com/jina-ai/jina/commit/d400eee65fbbd14578ea7bd77fd53fcb591bfb5c)] __-__ fix copyright action (*Han Xiao*)
+ - [[```c24fa5ef```](https://github.com/jina-ai/jina/commit/c24fa5ef490b4c617e4bde3103e952c42edb59d0)] __-__ take out request from metas fixture (*bwanglzu*)
+ - [[```d3b98247```](https://github.com/jina-ai/jina/commit/d3b9824703ff7ed963ca9c6f169df75df4281484)] __-__ jina hub list via hubapi (*Deepankar Mahapatro*)
+ - [[```50e47728```](https://github.com/jina-ai/jina/commit/50e4772816d9ca309d52c8b0687c48f1a1d6b908)] __-__ create meta fixture for tmpdir (*bwanglzu*)
+ - [[```d1ff0f79```](https://github.com/jina-ai/jina/commit/d1ff0f79fa4cdbc68364189e9e11befa4e43c5ba)] __-__ take out rm files (*bwanglzu*)
+ - [[```0d986545```](https://github.com/jina-ai/jina/commit/0d98654533f8578c021dd9e4f5b47502989762e0)] __-__ fixed level_depth test (*Maximilian Werk*)
+ - [[```9d2c1001```](https://github.com/jina-ai/jina/commit/9d2c100163159ac15ac0fb0b9ad983b8c30d016f)] __-__ add test with yml file (*Susana Guzman*)
+ - [[```ee710ec4```](https://github.com/jina-ai/jina/commit/ee710ec424c783c1c5d538a14816988ab0d8f212)] __-__ add almmost_equal assert (*Susana Guzman*)
+ - [[```04e1de60```](https://github.com/jina-ai/jina/commit/04e1de60d4d432433b32a6e4eabb6f3e96f185db)] __-__ test img sizes (*Susana Guzman*)
+ - [[```7574dbee```](https://github.com/jina-ai/jina/commit/7574dbee76e98036a539755fa60ca449dcdd4698)] __-__ change test for visualization (*Susana Guzman*)
+ - [[```358bca8c```](https://github.com/jina-ai/jina/commit/358bca8c19151fb4f5419d00760d4204ca4a75cb)] __-__ add test for visualization (*Susana Guzman*)
+ - [[```e701cc97```](https://github.com/jina-ai/jina/commit/e701cc97a7feb7fb2fc6d017836701f6bc04649d)] __-__ add hacktoberfest.yml (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```bbe38754```](https://github.com/jina-ai/jina/commit/bbe38754fbbf3b945ea60af06bf04c2b82f6d9b9)] __-__ hotfix patch traversing (*Han Xiao*)
+ - [[```732da535```](https://github.com/jina-ai/jina/commit/732da53578da856fb1ce9f61dc1470764a875a96)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```a739097c```](https://github.com/jina-ai/jina/commit/a739097c59458541efefb702146b6223e63c072f)] __-__ adding new clinet id for oauth (*Deepankar Mahapatro*)
+ - [[```aed76e19```](https://github.com/jina-ai/jina/commit/aed76e19a66327a536dbb58a21ab0716e9c954b1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f36aba8b```](https://github.com/jina-ai/jina/commit/f36aba8bca9d26f418b78b9fcaed3039233c0401)] __-__ change style (*Susana Guzman*)
+ - [[```d95e4e72```](https://github.com/jina-ai/jina/commit/d95e4e72e7c8acb0278ea049aa56905ba97271d3)] __-__ __version__: the next version will be 0.6.4 (*Jina Dev Bot*)
+ - [[```092f0699```](https://github.com/jina-ai/jina/commit/092f069927f3fc9c028788ed7524d037850b8a2c)] __-__ fix ci pr target (*Han Xiao*)
+ - [[```72339c2c```](https://github.com/jina-ai/jina/commit/72339c2c4089243739aff8388af6972e2467028d)] __-__ update copyright header (*Jina Dev Bot*)
+ - [[```2b129b6f```](https://github.com/jina-ai/jina/commit/2b129b6f01b7cb4611cca4323dcbbdca80c1cfad)] __-__ `refactor: fix tests` (*Han Xiao*)
+ - [[```f7b44558```](https://github.com/jina-ai/jina/commit/f7b44558bfd2fa63f35e0ab515006f5f86478266)] __-__ double to single quotes (*Susana Guzman*)
+ - [[```fcb255ad```](https://github.com/jina-ai/jina/commit/fcb255adf1e0a671279ca59340a92b9b452b25fb)] __-__ remove blank spaces (*Susana Guzman*)
+ - [[```aaf5139d```](https://github.com/jina-ai/jina/commit/aaf5139d4da689a7cbff2e61017d8dea5690c4fb)] __-__ fix ci hacktoberfest (*Han Xiao*)
+ - [[```7f057434```](https://github.com/jina-ai/jina/commit/7f057434a206d1d88038c9e74afff04389a73120)] __-__ __version__: the next version will be 0.6.3 (*Jina Dev Bot*)
+ - [[```f249d9b3```](https://github.com/jina-ai/jina/commit/f249d9b35207aff3392754d8da3099c447369d02)] __-__ hotfix hello-world (*Han Xiao*)
+ - [[```2c89da26```](https://github.com/jina-ai/jina/commit/2c89da26e16c07167abdc7cde15f92ec6a5778fb)] __-__ __version__: the next version will be 0.6.2 (*Jina Dev Bot*)
+ - [[```01ff747a```](https://github.com/jina-ai/jina/commit/01ff747a1ae0f9e39ea4e47db0eb80530bdec7a8)] __-__ hotfix release 0.6.1 (*Han Xiao*)
+ - [[```5fab4642```](https://github.com/jina-ai/jina/commit/5fab464215075136e1ffbf3b7ad44c7c5d044952)] __-__ __version__: the next version will be 0.5.9 (*Jina Dev Bot*)
+ - [[```643166dd```](https://github.com/jina-ai/jina/commit/643166dd7d62c7fcf151f4187cee5049dd40e6da)] __-__ hotfix weekly release (*Han Xiao*)
 
