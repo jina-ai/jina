@@ -149,6 +149,20 @@ def test_both_from_0():
     assert len(docs[0].matches[0].matches[0].chunks) == 2
 
 
+def test_both_from_0_upper_case():
+    docs = apply_traversal_path(['R', 'C', 'M', 'CC', 'MM'])
+    assert len(docs) == 1
+    assert len(docs[0].chunks) == 2
+    assert len(docs[0].chunks[0].chunks) == 2
+    assert len(docs[0].chunks[0].chunks[0].matches) == 3
+    assert len(docs[0].chunks[0].chunks[0].chunks) == 1  # 0 before traversal
+    assert len(docs[0].chunks[0].matches) == 3
+    assert len(docs[0].matches) == 3
+    assert len(docs[0].matches[0].chunks) == 2
+    assert len(docs[0].matches[0].matches) == 3
+    assert len(docs[0].matches[0].matches[0].chunks) == 2
+
+
 def test_adjacency0_granularity1():
     docs = apply_traversal_path(['c', 'cc', 'cm', 'cmm'])
     assert len(docs) == 1
