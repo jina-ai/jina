@@ -1,21 +1,31 @@
+import pytest
+import numpy as np
 from jina.flow import Flow
-from tests import random_docs
+from jina.drivers.helper import array2pb
+from jina.proto import jina_pb2, uid
 
 
-# def test_binary_pb():
-#     num_docs = 100
-#     docs = list(random_docs(num_docs, jitter=50))
-#     with BinaryPbIndexer('test-shelf') as spi:
-#         spi.add(docs)
-#         spi.save()
-#
-#     with BinaryPbIndexer.load(spi.save_abspath) as spi:
-#         assert spi.size == num_docs
-#         for j in range(num_docs):
-#             assert spi.query(j) == docs[j]
+@pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_WORKSPACE_BINARY_PB'])
+def test_binarypb_in_flow(test_metas):
+    def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
+        c_id = 3 * num_docs  # avoid collision with docs
+        for j in range(num_docs):
+            d = jina_pb2.Document()
+            d.tags['id'] = j
+            d.text = b'hello world'
+            d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+            d.id = uid.new_doc_id(d)
+            for k in range(chunks_per_doc):
+                c = d.chunks.add()
+                c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+                c.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+                c.tags['id'] = c_id
+                c.tags['parent_id'] = j
+                c_id += 1
+                c.parent_id = d.id
+                c.id = uid.new_doc_id(c)
+            yield d
 
-
-def test_binarypb_in_flow():
     docs = list(random_docs(10))
     f = Flow(callback_on_body=True).add(uses='binarypb.yml')
 

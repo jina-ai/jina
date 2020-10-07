@@ -42,7 +42,7 @@ def test_segment_driver():
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
     driver.attach(executor=executor, pea=None)
-    driver._apply(valid_doc)
+    driver._apply_all([valid_doc])
 
     assert valid_doc.length == 2
 
@@ -81,4 +81,4 @@ def test_broken_document():
     assert invalid_doc.length == 2
 
     with pytest.raises(AttributeError):
-        driver._apply(invalid_doc)
+        driver._apply_all([invalid_doc])

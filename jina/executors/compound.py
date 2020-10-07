@@ -337,6 +337,7 @@ class CompoundExecutor(BaseExecutor):
         if self.components:
             for c in self.components:
                 c.close()
+        super().close()
 
     @classmethod
     def to_yaml(cls, representer, data):

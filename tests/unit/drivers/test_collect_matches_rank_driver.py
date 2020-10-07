@@ -24,7 +24,7 @@ class MockLengthRanker(Chunk2DocRanker):
         self.required_keys = {'length'}
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return match_idx[0][self.col_doc_id], match_chunk_meta[match_idx[0][self.col_chunk_id]]['length']
+        return match_idx[0][self.COL_MATCH_PARENT_HASH], match_chunk_meta[match_idx[0][self.COL_MATCH_HASH]]['length']
 
 
 def create_document_to_score_same_depth_level():

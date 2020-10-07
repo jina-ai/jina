@@ -18,8 +18,6 @@ class BaseIndexDriver(BaseExecutableDriver):
 
     def __init__(self, executor: str = None, method: str = 'add', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
-        self._is_apply = False
-        self._use_tree_traversal = True
 
 
 class VectorIndexDriver(BaseIndexDriver):

@@ -19,6 +19,7 @@
 scipy>=1.4.1:               index, numeric
 flask:                      devel, http, sse
 flask_cors:                 devel, http, sse
+fluent-logger:              logging, http, sse, dashboard, devel
 nmslib>=1.6.3:              index
 docker:                     devel, network, hub
 torch>=1.1.0:               framework

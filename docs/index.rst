@@ -29,6 +29,7 @@ Welcome to Jina Documentation!
    chapters/io/index
    chapters/hub/index
    chapters/remote/index
+   chapters/logging/index
    chapters/dashboard/index
    chapters/cli/exit
 

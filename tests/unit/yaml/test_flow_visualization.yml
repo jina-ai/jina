@@ -1,0 +1,24 @@
+!Flow
+pods:
+  loader:
+    read_only: true
+  normalizer:
+    read_only: true
+  image_encoder:
+    read_only: true
+    parallel: 4
+  image_vector_indexer:
+    read_only: true
+  image_kv_indexer:
+    needs: [gateway]
+  text_encoder:
+    timeout_ready: 600000
+    read_only: true
+    parallel: 4
+    needs: [gateway]
+  text_indexer:
+    read_only: true
+  join_all:
+    uses: _merge
+    needs: [image_vector_indexer, image_kv_indexer, text_indexer]
+    read_only: true

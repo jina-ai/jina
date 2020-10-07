@@ -1,0 +1,11 @@
+github:
+  client_id: 41f24d2e8c8957c767e5
+  scope: user:email
+  grant_type: urn:ietf:params:oauth:grant-type:device_code
+  device_code_url: https://github.com/login/device/code
+  access_token_url: https://github.com/login/oauth/access_token
+  wait_time_for_access_token: 240
+hubapi:
+  url: https://hubapi.jina.ai
+  list: /list
+  push: /push

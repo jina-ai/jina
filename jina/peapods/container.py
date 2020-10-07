@@ -7,7 +7,7 @@ from pathlib import Path
 from .pea import BasePea
 from .. import __ready_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
-from ..logging import get_logger
+from ..logging import JinaLogger
 from ..logging.queue import clear_queues
 
 
@@ -42,7 +42,8 @@ class ContainerPea(BasePea):
                 non_defaults['uses'] = '/' + os.path.basename(self.args.uses_internal)
                 _volumes[os.path.abspath(self.args.uses_internal)] = {'bind': non_defaults['uses'], 'mode': 'ro'}
             elif not is_valid_local_config_source(self.args.uses_internal):
-                raise FileNotFoundError(f'"uses_internal" {self.args.uses_internal} is not like a path, please check it')
+                raise FileNotFoundError(
+                    f'"uses_internal" {self.args.uses_internal} is not like a path, please check it')
         if self.args.volumes:
             for p in self.args.volumes:
                 Path(os.path.abspath(p)).mkdir(parents=True, exist_ok=True)
@@ -80,18 +81,19 @@ class ContainerPea(BasePea):
         """Direct the log from the container to local console """
         import docker
 
-        logger = get_logger('🐳', **vars(self.args), fmt_str='🐳 %(message)s')
-        try:
-            for line in self._container.logs(stream=True):
-                msg = line.strip().decode()
-                # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
-                # print all error message when fails
-                if __ready_msg__ in msg:
-                    self.is_ready.set()
-                    self.logger.success(__ready_msg__)
-                logger.info(line.strip().decode())
-        except docker.errors.NotFound:
-            self.logger.error('the container can not be started, check your arguments, entrypoint')
+        logger = JinaLogger('🐳', **vars(self.args))
+        with logger:
+            try:
+                for line in self._container.logs(stream=True):
+                    msg = line.strip().decode()
+                    # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
+                    # print all error message when fails
+                    if __ready_msg__ in msg:
+                        self.is_ready.set()
+                        self.logger.success(__ready_msg__)
+                    logger.info(line.strip().decode())
+            except docker.errors.NotFound:
+                self.logger.error('the container can not be started, check your arguments, entrypoint')
 
     def loop_teardown(self):
         """Stop the container """
@@ -108,5 +110,6 @@ class ContainerPea(BasePea):
     def close(self) -> None:
         self.send_terminate_signal()
         if not self.daemon:
-             clear_queues()
-             self.join()
+            clear_queues()
+            self.logger.close()
+            self.join()

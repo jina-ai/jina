@@ -1,7 +1,8 @@
+""" This modules defines all kinds of exceptions raised in jina """
+
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-""" This modules defines all kinds of exceptions raised in jina """
 
 
 class NoExplicitMessage(Exception):
@@ -102,3 +103,11 @@ class UndefinedModel(Exception):
 
 class MongoDBException(Exception):
     """ Any errors raised by MongoDb """
+
+
+class TimedOutException(Exception):
+    """ Errors raised for timeout operations """
+
+
+class DockerLoginFailed(Exception):
+    """ Exception to raise for docker hub login failures """

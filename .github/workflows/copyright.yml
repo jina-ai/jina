@@ -17,11 +17,12 @@ jobs:
           git fetch --prune --unshallow
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
-      - uses: VinnyBabuManjaly/copyright-action@v1.0.0
+      - uses: hanxiao/copyright-action@master
         with:
           CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
           FileType: '.py'
           Path: 'jina/'
+          IgnorePath: 'jina/drivers/querylang/queryset/'
       - run: |
           git add -u
           git commit -m "chore: update copyright header"

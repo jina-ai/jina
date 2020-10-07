@@ -51,9 +51,9 @@ Your image will be published as `jinaai/hub.executors.encoders.awesomeness`.
 | `documentation` | URL to get documentation on the image (string) | `https://docs.jina.ai` |
 | `version` | version of the image, it should be [Semantic versioning-compatible](http://semver.org/) | `0.0.0` |
 | `vendor` | the name of the distributing entity, organization or individual (string) | `Jina AI Limited` |
-| `license` | license under which contained software is distributed, it should be [in this list](builder/osi-approved.yml) | `apache-2.0` |
+| `license` | license under which contained software is distributed, it should be [in this list](https://github.com/jina-ai/jina/blob/master/jina/resources/hub-builder/osi-approved.yml) | `apache-2.0` |
 | `avatar` | a picture that personalizes and distinguishes your image | None |
-| `platform` | a list of CPU architectures that your image is built on, each item should be [in this list](builder/platforms.yml) | `[linux/amd64]` | 
+| `platform` | a list of CPU architectures that your image is built on, each item should be [in this list](https://github.com/jina-ai/jina/blob/master/jina/resources/hub-builder/platforms.yml) | `[linux/amd64]` | 
 
 Please refer to [hub/examples/mwu_encoder/manifest.yml](hub/examples/mwu_encoder/manifest.yml) for the example.
 
@@ -70,7 +70,7 @@ The CICD pipeline will work on building, uploading and tagging the image on the 
 
 The image will be available at `jinaai/hub.executors.indexers.awesomeness:0.0.0` assuming your version number is defined as `0.0.0` in `manifest.yml`.
 
-You can use the image as [the ways we described here](#use-your-pod-image).  
+You can use the image as [the ways we described here](./use-your-pod.html#use-your-pod-image).  
 
 
 ## Why My Upload Fails on the CICD?
@@ -81,7 +81,7 @@ Here is the checklist to help you locate the problem.
 - [ ] The required field in `manifest.yml` is missing.
 - [ ] Some field value is not in the correct format, not passing the sanity check.
 - [ ] The pod bundle is badly placed.
-- [ ] The build is success but it fails on [three basic usage tests](#use-your-pod-image).
+- [ ] The build is success but it fails on [three basic usage tests](./use-your-pod.html#use-your-pod-image).
 
 Click "Details" and checkout the log of the CICD pipeline:
 

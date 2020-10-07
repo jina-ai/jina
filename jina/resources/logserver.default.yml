@@ -7,5 +7,6 @@ endpoints:
   shutdown: /action/shutdown  # shutdown the log server
   ready: /status/ready  # tell if the log server is ready, return 200 if yes
   podapi: /data/api/pod  # get the api spec of the pod
-
-
+files:
+  log: /tmp/jina-log  # the file path of the log
+  profile: /tmp/jina-profile  # the file path of the profile log
