@@ -17,7 +17,7 @@ class RecallEvaluator(BaseEvaluator):
         self.eval_at = eval_at
 
     @property
-    def name(self):
+    def complete_name(self):
         return f'Recall@{self.eval_at}'
 
     def evaluate(self, matches: Sequence[jina_pb2.Document],

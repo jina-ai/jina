@@ -26,4 +26,4 @@ class EvaluateDriver(BaseExecutableDriver):
         for doc in docs:
             evaluation = doc.evaluations.add()
             evaluation.value = self.exec_fn(doc.matches, doc.groundtruth)
-            evaluation.id = f'{self.id}-{self.exec.name}'
+            evaluation.id = f'{self.id}-{self.exec.complete_name}'

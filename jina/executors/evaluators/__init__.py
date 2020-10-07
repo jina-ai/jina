@@ -19,8 +19,8 @@ class BaseEvaluator(BaseExecutor):
         self.id_tag = id_tag
 
     @property
-    def name(self):
-        return ''
+    def complete_name(self):
+        return self.name
 
     def evaluate(self, matches: Sequence[jina_pb2.Document],
                  groundtruth: Sequence[jina_pb2.Document], *args, **kwargs) -> float:
