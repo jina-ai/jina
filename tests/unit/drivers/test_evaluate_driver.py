@@ -8,6 +8,10 @@ class MockPrecisionEvaluator(BaseEvaluator):
         super().__init__(id_tag='id', *args, **kwargs)
         self.eval_at = 2
 
+    @property
+    def name(self):
+        return f'MockPrecision@{self.eval_at}'
+
     def evaluate(self, matches, groundtruth, *args, **kwargs) -> float:
         ret = 0.0
         matches_ids = list(map(lambda x: x.tags[self.id_tag], matches[:self.eval_at]))
@@ -62,5 +66,5 @@ def test_evaluate_driver():
     driver._apply_all(docs)
     for doc in docs:
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].id == 'SimpleEvaluateDriver'
+        assert doc.evaluations[0].id == 'SimpleEvaluateDriver-MockPrecision@2'
         assert doc.evaluations[0].value == 1.0

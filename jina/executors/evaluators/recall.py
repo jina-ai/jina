@@ -16,6 +16,10 @@ class RecallEvaluator(BaseEvaluator):
         super().__init__(*args, **kwargs)
         self.eval_at = eval_at
 
+    @property
+    def name(self):
+        return f'Recall@{self.eval_at}'
+
     def evaluate(self, matches: Sequence[jina_pb2.Document],
                  groundtruth: Sequence[jina_pb2.Document], *args, **kwargs) -> float:
         """"

@@ -18,6 +18,10 @@ class BaseEvaluator(BaseExecutor):
         super().__init__(*args, **kwargs)
         self.id_tag = id_tag
 
+    @property
+    def name(self):
+        return ''
+
     def evaluate(self, matches: Sequence[jina_pb2.Document],
                  groundtruth: Sequence[jina_pb2.Document], *args, **kwargs) -> float:
         """"
