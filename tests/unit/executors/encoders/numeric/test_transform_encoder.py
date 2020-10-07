@@ -7,6 +7,7 @@ from jina.executors.encoders.numeric import TransformEncoder
 input_dim = 28
 target_output_dim = 2
 
+
 def test_transform_encoder_train_and_encode(test_metas):
     train_data = np.random.rand(2000, input_dim)
     encoder = TransformEncoder(output_dim=target_output_dim, metas=test_metas)
@@ -17,6 +18,7 @@ def test_transform_encoder_train_and_encode(test_metas):
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (test_data.shape[0], target_output_dim)
     assert type(encoded_data) == np.ndarray
+
 
 def test_transform_encoder_load_from_pickle(test_metas):
     train_data = np.random.rand(2000, input_dim)
