@@ -1,9 +1,9 @@
-from jina.drivers.evaluate import EvaluateDriver
-from jina.executors.evaluators import BaseEvaluator
+from jina.drivers.evaluate import RankingEvaluationDriver
+from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
 
 
-class MockPrecisionEvaluator(BaseEvaluator):
+class MockPrecisionEvaluator(BaseRankingEvaluator):
     def __init__(self, *args, **kwargs):
         super().__init__(id_tag='id', *args, **kwargs)
         self.eval_at = 2
@@ -12,15 +12,13 @@ class MockPrecisionEvaluator(BaseEvaluator):
     def name(self):
         return f'MockPrecision@{self.eval_at}'
 
-    def evaluate(self, matches, groundtruth, *args, **kwargs) -> float:
+    def evaluate(self, matches_ids, groundtruth_ids, *args, **kwargs) -> float:
         ret = 0.0
-        matches_ids = list(map(lambda x: x.tags[self.id_tag], matches[:self.eval_at]))
-        groundtruth_ids = list(map(lambda x: x.tags[self.id_tag], groundtruth))
-        for doc_id in matches_ids:
+        for doc_id in matches_ids[:self.eval_at]:
             if doc_id in groundtruth_ids:
                 ret += 1.0
 
-        divisor = min(self.eval_at, len(groundtruth))
+        divisor = min(self.eval_at, len(groundtruth_ids))
         if divisor == 0.0:
             """TODO: Agree on a behavior"""
             return 0.0
@@ -28,7 +26,7 @@ class MockPrecisionEvaluator(BaseEvaluator):
             return ret / divisor
 
 
-class SimpleEvaluateDriver(EvaluateDriver):
+class SimpleEvaluateDriver(RankingEvaluationDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
