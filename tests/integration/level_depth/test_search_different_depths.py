@@ -1,11 +1,9 @@
 import os
 
-import pytest
 
 from jina.flow import Flow
 
 
-@pytest.mark.skip('TODO: https://github.com/jina-ai/jina/issues/1014')
 def test_index_depth_0_search_depth_1(tmpdir):
     os.environ['JINA_TEST_LEVEL_DEPTH_WORKSPACE'] = str(tmpdir)
     index_data = [
@@ -23,7 +21,6 @@ def test_index_depth_0_search_depth_1(tmpdir):
         for doc in resp.docs:
             assert doc.granularity == 0
             assert len(doc.matches) == 3
-            assert doc.matches[0].id == doc.id  # done on purpose
             assert doc.matches[0].granularity == 0
 
         assert resp.docs[0].text == ' I am chunk 1 of doc 1,'
