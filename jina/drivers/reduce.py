@@ -84,7 +84,6 @@ class ReduceAllDriver(ReduceDriver):
 
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
-        self._is_apply = False
 
     def reduce(self, *args, **kwargs):
         doc_pointers = {}
@@ -108,24 +107,31 @@ class ReduceAllDriver(ReduceDriver):
 
 
 class ConcatEmbedDriver(ReduceDriver):
-    def _apply(self, doc: 'jina_pb2.Document', context_doc: 'jina_pb2.Document', field: str, *args, **kwargs):
-        if doc.id not in self.doc_pointers:
-            self.doc_pointers[doc.id] = [pb2array(doc.embedding)]
-        else:
-            self.doc_pointers[doc.id].append(pb2array(doc.embedding))
-
-    def _apply_post(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        doc.embedding.CopyFrom(array2pb(np.concatenate(self.doc_pointers[doc.id], axis=0)))
+    def _apply_all(
+        self,
+        docs: Iterable['jina_pb2.Document'],
+        context_doc: 'jina_pb2.Document',
+        field: str,
+        doc_pointers: Dict,
+        concatenate=False,
+        *args,
+        **kwargs
+    ):
+        for doc in docs:
+            if concatenate:
+                doc.embedding.CopyFrom(array2pb(np.concatenate(doc_pointers[doc.id], axis=0)))
+            else:
+                if doc.id not in doc_pointers:
+                    doc_pointers[doc.id] = [pb2array(doc.embedding)]
+                else:
+                    doc_pointers[doc.id].append(pb2array(doc.embedding))
 
     def reduce(self, *args, **kwargs):
-        # use docs in the last request to set the pointers
-        self.doc_pointers = {}
-        self._traverse_apply(self.req.docs, *args, **kwargs)
-
-        # traverse apply on ALL previous requests collected
-        for r in self.prev_reqs_exclude_last:
-            self._traverse_apply(r.docs, *args, **kwargs)
+        doc_pointers = {}
+        # traverse apply on ALL requests collected to collect embeddings
+        # reversed since the last response should collect the chunks/matches
+        for r in reversed(self.prev_reqs):
+            self._traverse_apply(r.docs, doc_pointers=doc_pointers, *args, **kwargs)
 
         # update embedding
-        self._apply = self._apply_post
-        self._traverse_apply(self.req.docs, *args, **kwargs)
+        self._traverse_apply(self.req.docs, doc_pointers=doc_pointers, concatenate=True, *args, **kwargs)

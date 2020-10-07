@@ -11,10 +11,6 @@ DOCUMENTS_PER_LEVEL = 1
 
 class AppendOneChunkTwoMatchesCrafter(BaseRecursiveDriver):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.is_apply = False
-
     def _apply_all(self, docs, *args, **kwargs) -> None:
         for doc in docs:
             add_chunk(doc)
@@ -141,6 +137,20 @@ def test_multi_paths():
 
 def test_both_from_0():
     docs = apply_traversal_path(['r', 'c', 'm', 'cc', 'mm'])
+    assert len(docs) == 1
+    assert len(docs[0].chunks) == 2
+    assert len(docs[0].chunks[0].chunks) == 2
+    assert len(docs[0].chunks[0].chunks[0].matches) == 3
+    assert len(docs[0].chunks[0].chunks[0].chunks) == 1  # 0 before traversal
+    assert len(docs[0].chunks[0].matches) == 3
+    assert len(docs[0].matches) == 3
+    assert len(docs[0].matches[0].chunks) == 2
+    assert len(docs[0].matches[0].matches) == 3
+    assert len(docs[0].matches[0].matches[0].chunks) == 2
+
+
+def test_both_from_0_upper_case():
+    docs = apply_traversal_path(['R', 'C', 'M', 'CC', 'MM'])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 2
     assert len(docs[0].chunks[0].chunks) == 2

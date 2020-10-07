@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
+from typing import Iterable, Tuple
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
@@ -32,11 +32,10 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
         else:
             self._fields = set(fields)
 
-        self.is_apply_all = False
-
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        for k in self.fields:
-            doc.ClearField(k)
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        for doc in docs:
+            for k in self.fields:
+                doc.ClearField(k)
 
 
 class SelectQL(ExcludeQL):
@@ -52,10 +51,11 @@ class SelectQL(ExcludeQL):
         SelectQL will ensure that the `outgoing` documents only contain the field `matches`
     """
 
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        for k in doc.DESCRIPTOR.fields_by_name.keys():
-            if k not in self.fields:
-                doc.ClearField(k)
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        for doc in docs:
+            for k in doc.DESCRIPTOR.fields_by_name.keys():
+                if k not in self.fields:
+                    doc.ClearField(k)
 
 
 class ExcludeReqQL(ExcludeQL):
