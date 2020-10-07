@@ -31,13 +31,10 @@ class Chunk2DocRanker(BaseRanker):
     """
 
     required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.col_doc_id = 0
-        self.col_chunk_id = 1
-        self.col_query_chunk_id = 2
-        self.col_score = 3
+    COL_MATCH_PARENT_HASH = 'match_parent_hash'
+    COL_MATCH_HASH = 'match_hash'
+    COL_DOC_CHUNK_HASH = 'doc_chunk_hash'
+    COL_SCORE = 'score'
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
         """Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
@@ -69,13 +66,13 @@ class Chunk2DocRanker(BaseRanker):
         Group the ``match_idx`` by ``doc_id``
         :return: an iterator over the groups
         """
-        return self._group_by(match_idx, self.col_doc_id)
+        return self._group_by(match_idx, self.COL_MATCH_PARENT_HASH)
 
     @staticmethod
-    def _group_by(match_idx, col):
-        # sort by ``col``
-        _sorted_m = match_idx[match_idx[:, col].argsort()]
-        _, _doc_counts = np.unique(_sorted_m[:, col], return_counts=True)
+    def _group_by(match_idx, col_name):
+        # sort by ``col
+        _sorted_m = np.sort(match_idx, order=col_name)
+        _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
         # group by ``col``
         return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
 
@@ -88,12 +85,14 @@ class Chunk2DocRanker(BaseRanker):
         Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
         :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
         """
-        r = np.array(r, dtype=np.float64)
-        r = r[r[:, -1].argsort()[::-1]]
-        return r
+        r = np.array(r, dtype=[
+            (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
+            (Chunk2DocRanker.COL_SCORE, np.float64)]
+        )
+        return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
 
     def get_doc_id(self, match_with_same_doc_id):
-        return match_with_same_doc_id[0, self.col_doc_id]
+        return match_with_same_doc_id[0][self.COL_MATCH_PARENT_HASH]
 
 
 class Match2DocRanker(BaseRanker):
@@ -105,6 +104,9 @@ class Match2DocRanker(BaseRanker):
         - ReverseRanker (reverse scores of all matches)
         - BucketShuffleRanker (first buckets matches and then sort each bucket)
     """
+
+    COL_MATCH_HASH = 'match_hash'
+    COL_SCORE = 'score'
 
     def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':
         """

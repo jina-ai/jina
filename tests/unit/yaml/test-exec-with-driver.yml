@@ -2,6 +2,7 @@
 with: {}
 metas:
   name: blah
+  workspace: $JINA_TEST_EXEC_WITH_DRIVER
 requests:
   on:
     [SearchRequest]:

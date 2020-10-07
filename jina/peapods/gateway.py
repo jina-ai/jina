@@ -16,7 +16,7 @@ from .. import __stop_msg__
 from ..enums import ClientMode
 from ..excepts import NoDriverForRequest, BadRequestType, GatewayPartialMessage
 from ..helper import use_uvloop
-from ..logging.base import get_logger
+from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 from ..parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
@@ -41,7 +41,7 @@ class GatewayPea:
             os.unsetenv('https_proxy')
 
         os.environ['JINA_POD_NAME'] = 'gateway'
-        self.logger = get_logger(self.__class__.__name__, **vars(args))
+        self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         if args.allow_spawn:
             self.logger.critical('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')
         self._p_servicer = self._Pea(args)
@@ -92,7 +92,7 @@ class GatewayPea:
             super().__init__()
             self.args = args
             self.name = args.name or self.__class__.__name__
-            self.logger = get_logger(self.name, **vars(args))
+            self.logger = JinaLogger(self.name, **vars(args))
             # self.executor = BaseExecutor()
             # if args.to_datauri:
             #     from ..drivers.convert import All2URI

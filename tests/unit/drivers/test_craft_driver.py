@@ -46,9 +46,9 @@ def test_craft_driver():
     driver = SimpleCraftDriver()
     executor = MockCrafter()
     driver.attach(executor=executor, pea=None)
-    driver._apply(docs[0])
+    driver._apply_all(docs[:1])
     assert docs[0].blob == array2pb(np.array([0.0, 0.0, 0.0]))
     assert docs[0].weight == 10
     with pytest.raises(AttributeError) as error:
-        driver._apply(docs[1])
+        driver._apply_all(docs[1:2])
     assert error.value.__str__() == '\'Document\' object has no attribute \'non_existing_key\''

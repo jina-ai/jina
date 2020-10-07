@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Any, Iterable, Tuple
+from typing import Dict, Any, Iterable
 
 from .queryset.lookup import Q
 from .. import QuerySetReader, BaseRecursiveDriver
@@ -35,8 +35,6 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
         """
         self._lookups = Q(**lookups) if lookups else None
-        self.is_apply = False
-        self._use_tree_traversal = True
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         if self.lookups:

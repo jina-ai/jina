@@ -2,6 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import os
+
+_SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
 def add_arg_group(parser, title):
@@ -53,7 +56,6 @@ def set_logger_parser(parser=None):
 
 
 def set_hub_base_parser(parser=None):
-    import os
     if not parser:
         parser = set_base_parser()
     parser.add_argument('--username', type=str, help='the registry username',
@@ -124,6 +126,19 @@ def set_hub_pushpull_parser(parser=None):
     parser.add_argument('name', type=str, help='the name of the image.')
     return parser
 
+def set_hub_list_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument('--name', type=str, default='',
+                        help='name of executor')
+    parser.add_argument('--keywords', type=str, nargs='+', default=['numeric'],
+                        help='keywords to search for')
+    parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app'],
+                        help='type of executor')
+    parser.add_argument('--kind', type=str, default='',
+                        help='kind of executor')
+    return parser
 
 def set_hw_parser(parser=None):
     if not parser:
@@ -210,8 +225,7 @@ def set_pea_parser(parser=None):
     from .enums import SocketType, PeaRoleType, OnErrorSkip
     from .helper import random_port, get_random_identity
     from . import __default_host__
-    import os
-    show_all = 'JINA_FULL_CLI' in os.environ
+
     if not parser:
         parser = set_base_parser()
     gp0 = add_arg_group(parser, 'pea basic arguments')
@@ -299,7 +313,8 @@ def set_pea_parser(parser=None):
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=0,
                      **(dict(
-                         help='the number of replicated message sent to the next Pod, 0 and 1 means single part' if show_all else argparse.SUPPRESS)))
+                         help='the number of replicated message sent to the next Pod, 0 and 1 means single part'
+                         if _SHOW_ALL_ARGS else argparse.SUPPRESS)))
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod')
     gp5.add_argument('--skip-on-error', type=OnErrorSkip.from_string, choices=list(OnErrorSkip),
@@ -321,20 +336,13 @@ def set_pea_parser(parser=None):
 
     from pkg_resources import resource_filename
     gp7 = add_arg_group(parser, 'logging arguments')
-    gp7.add_argument('--log-sse', action='store_true', default=False,
-                     help='turn on server-side event logging')
-    gp7.add_argument('--log-fluentd-config', type=str,
+    gp7.add_argument('--log-config', type=str,
                      default=resource_filename('jina',
-                                               '/'.join(('resources', 'logging.fluentd.yml'))),
-                     help='the yaml config of the fluentd server to pass to the Fluent Logging Handler')
+                                               '/'.join(('resources', 'logging.default.yml'))),
+                     help='the yaml config of the logger. note the executor inside will inherit this log config')
     gp7.add_argument('--log-remote', action='store_true', default=False,
-                     help='turn on remote logging')
-    gp7.add_argument('--log-profile', action='store_true', default=False,
-                     help='turn on the profiling logger')
-    gp7.add_argument('--log-with-own-name', action='store_true', default=False,
-                     help='turn on to let each logger outputs in its own name (i.e. parent class name as the context), '
-                          'by default it is off so all logs from the same pod will have the same prefix. '
-                          'turn on to help debugging, turn off to have more clear logs and better grouping in dashboard')
+                     help='turn on remote logging, this should not be set manually'
+                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp8 = add_arg_group(parser, 'ssh tunneling arguments')
     gp8.add_argument('--ssh-server', type=str, default=None,
@@ -526,8 +534,6 @@ def set_client_cli_parser(parser=None):
 def get_main_parser():
     # create the top-level parser
     parser = set_base_parser()
-    import os
-    show_all = 'JINA_FULL_CLI' in os.environ
 
     sp = parser.add_subparsers(dest='cli',
                                description='use "%(prog)-8s [sub-command] --help" '
@@ -567,6 +573,10 @@ def get_main_parser():
                             description='use "%(prog)-8s [sub-command] --help" '
                                         'to get detailed information about each sub-command', required=True)
 
+    spp.add_parser('login', help='login via Github to push images to Jina hub registry',
+                   description='Login via Github to push images to Jina hub registry',
+                   formatter_class=_chf)
+    
     set_hub_new_parser(
         spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor or app using cookiecutter',
                        description='Create a new Hub executor or app using cookiecutter',
@@ -586,27 +596,32 @@ def get_main_parser():
         spp.add_parser('pull', help='pull an image from the Jina hub registry to local',
                        description='Pull an image to the Jina hub registry to local',
                        formatter_class=_chf))
+    
+    set_hub_list_parser(
+        spp.add_parser('list', help='list hub executors from jina hub registry',
+                       description='List hub executors from jina hub registry',
+                       formatter_class=_chf))
 
     set_pea_parser(sp.add_parser('pea',
                                  description='Start a Jina pea. '
                                              'You should rarely use this directly unless you '
                                              'are doing low-level orchestration',
-                                 formatter_class=_chf, **(dict(help='start a pea')) if show_all else {}))
+                                 formatter_class=_chf, **(dict(help='start a pea')) if _SHOW_ALL_ARGS else {}))
 
     set_logger_parser(sp.add_parser('log',
                                     description='Receive piped log output and beautify the log. '
                                                 'Depreciated, use Jina Dashboard instead',
                                     formatter_class=_chf,
-                                    **(dict(help='beautify the log')) if show_all else {}))
+                                    **(dict(help='beautify the log')) if _SHOW_ALL_ARGS else {}))
     set_client_cli_parser(
         sp.add_parser('client',
                       description='Start a Python client that connects to a remote Jina gateway',
-                      formatter_class=_chf, **(dict(help='start a client')) if show_all else {}))
+                      formatter_class=_chf, **(dict(help='start a client')) if _SHOW_ALL_ARGS else {}))
 
     set_export_api_parser(sp.add_parser('export-api',
                                         description='Export Jina API to JSON/YAML file for 3rd party applications',
                                         formatter_class=_chf,
-                                        **(dict(help='export Jina API to file')) if show_all else {}))
+                                        **(dict(help='export Jina API to file')) if _SHOW_ALL_ARGS else {}))
     return parser
 
 

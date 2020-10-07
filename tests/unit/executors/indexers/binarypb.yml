@@ -2,4 +2,4 @@
 with:
   index_filename: test-docs
 metas:
-  workspace: 'test-workspace'
+  workspace: $JINA_TEST_WORKSPACE_BINARY_PB

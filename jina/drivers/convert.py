@@ -10,6 +10,8 @@ import zlib
 
 import numpy as np
 
+from typing import Iterable
+
 from . import BaseRecursiveDriver
 from .helper import guess_mime, array2pb, pb2array
 
@@ -29,14 +31,13 @@ class BaseConvertDriver(BaseRecursiveDriver):
         super().__init__(*args, **kwargs)
         self.override = override
         self.target = target
-        self._is_apply_all = False
-        self._use_tree_traversal = True
 
-    def _apply(self, doc: 'jina_pb2.Document', *args, **kwargs):
-        if getattr(doc, self.target) and not self.override:
-            pass
-        else:
-            self.convert(doc)
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+        for doc in docs:
+            if getattr(doc, self.target) and not self.override:
+                pass
+            else:
+                self.convert(doc)
 
     def convert(self, d):
         raise NotImplementedError
@@ -150,6 +151,7 @@ class Blob2PngURI(NdArray2PngURI):
     def convert(self, d):
         arr = pb2array(d.blob)
         d.uri = self.png_convertor(arr)
+
 
 class URI2Buffer(BaseConvertDriver):
     """ Convert local file path, remote URL doc to a buffer doc.
