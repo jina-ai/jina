@@ -153,7 +153,6 @@ class NdArray2PngURI(BaseConvertDriver):
         arr = arr.astype(np.uint8)
 
         if len(arr.shape) == 1:
-            # im = Image.fromarray(arr.reshape((self.height, self.width))).convert('L')
             return self.png_convertor_1d(arr)
         elif len(arr.shape) == 2:
             im = Image.fromarray(arr).convert('L')
