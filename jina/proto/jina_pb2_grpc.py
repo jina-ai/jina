@@ -16,20 +16,20 @@ class JinaRPCStub(object):
             channel: A grpc.Channel.
         """
         self.Call = channel.stream_stream(
-                '/jina.JinaRPC/Call',
-                request_serializer=jina__pb2.Request.SerializeToString,
-                response_deserializer=jina__pb2.Request.FromString,
-                )
+            '/jina.JinaRPC/Call',
+            request_serializer=jina__pb2.Request.SerializeToString,
+            response_deserializer=jina__pb2.Request.FromString,
+        )
         self.CallUnary = channel.unary_unary(
-                '/jina.JinaRPC/CallUnary',
-                request_serializer=jina__pb2.Request.SerializeToString,
-                response_deserializer=jina__pb2.Request.FromString,
-                )
+            '/jina.JinaRPC/CallUnary',
+            request_serializer=jina__pb2.Request.SerializeToString,
+            response_deserializer=jina__pb2.Request.FromString,
+        )
         self.Spawn = channel.unary_stream(
-                '/jina.JinaRPC/Spawn',
-                request_serializer=jina__pb2.SpawnRequest.SerializeToString,
-                response_deserializer=jina__pb2.SpawnRequest.FromString,
-                )
+            '/jina.JinaRPC/Spawn',
+            request_serializer=jina__pb2.SpawnRequest.SerializeToString,
+            response_deserializer=jina__pb2.SpawnRequest.FromString,
+        )
 
 
 class JinaRPCServicer(object):
@@ -60,28 +60,28 @@ class JinaRPCServicer(object):
 
 def add_JinaRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Call': grpc.stream_stream_rpc_method_handler(
-                    servicer.Call,
-                    request_deserializer=jina__pb2.Request.FromString,
-                    response_serializer=jina__pb2.Request.SerializeToString,
-            ),
-            'CallUnary': grpc.unary_unary_rpc_method_handler(
-                    servicer.CallUnary,
-                    request_deserializer=jina__pb2.Request.FromString,
-                    response_serializer=jina__pb2.Request.SerializeToString,
-            ),
-            'Spawn': grpc.unary_stream_rpc_method_handler(
-                    servicer.Spawn,
-                    request_deserializer=jina__pb2.SpawnRequest.FromString,
-                    response_serializer=jina__pb2.SpawnRequest.SerializeToString,
-            ),
+        'Call': grpc.stream_stream_rpc_method_handler(
+            servicer.Call,
+            request_deserializer=jina__pb2.Request.FromString,
+            response_serializer=jina__pb2.Request.SerializeToString,
+        ),
+        'CallUnary': grpc.unary_unary_rpc_method_handler(
+            servicer.CallUnary,
+            request_deserializer=jina__pb2.Request.FromString,
+            response_serializer=jina__pb2.Request.SerializeToString,
+        ),
+        'Spawn': grpc.unary_stream_rpc_method_handler(
+            servicer.Spawn,
+            request_deserializer=jina__pb2.SpawnRequest.FromString,
+            response_serializer=jina__pb2.SpawnRequest.SerializeToString,
+        ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'jina.JinaRPC', rpc_method_handlers)
+        'jina.JinaRPC', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
- # This class is part of an EXPERIMENTAL API.
+# This class is part of an EXPERIMENTAL API.
 class JinaRPC(object):
     """*
     jina gRPC service.
@@ -89,51 +89,53 @@ class JinaRPC(object):
 
     @staticmethod
     def Call(request_iterator,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
+             target,
+             options=(),
+             channel_credentials=None,
+             call_credentials=None,
+             insecure=False,
+             compression=None,
+             wait_for_ready=None,
+             timeout=None,
+             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/jina.JinaRPC/Call',
-            jina__pb2.Request.SerializeToString,
-            jina__pb2.Request.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+                                               jina__pb2.Request.SerializeToString,
+                                               jina__pb2.Request.FromString,
+                                               options, channel_credentials,
+                                               insecure, call_credentials, compression, wait_for_ready, timeout,
+                                               metadata)
 
     @staticmethod
     def CallUnary(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
+                  target,
+                  options=(),
+                  channel_credentials=None,
+                  call_credentials=None,
+                  insecure=False,
+                  compression=None,
+                  wait_for_ready=None,
+                  timeout=None,
+                  metadata=None):
         return grpc.experimental.unary_unary(request, target, '/jina.JinaRPC/CallUnary',
-            jina__pb2.Request.SerializeToString,
-            jina__pb2.Request.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+                                             jina__pb2.Request.SerializeToString,
+                                             jina__pb2.Request.FromString,
+                                             options, channel_credentials,
+                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def Spawn(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
+              target,
+              options=(),
+              channel_credentials=None,
+              call_credentials=None,
+              insecure=False,
+              compression=None,
+              wait_for_ready=None,
+              timeout=None,
+              metadata=None):
         return grpc.experimental.unary_stream(request, target, '/jina.JinaRPC/Spawn',
-            jina__pb2.SpawnRequest.SerializeToString,
-            jina__pb2.SpawnRequest.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+                                              jina__pb2.SpawnRequest.SerializeToString,
+                                              jina__pb2.SpawnRequest.FromString,
+                                              options, channel_credentials,
+                                              insecure, call_credentials, compression, wait_for_ready, timeout,
+                                              metadata)

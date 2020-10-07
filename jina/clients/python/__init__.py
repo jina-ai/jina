@@ -169,6 +169,8 @@ class PyClient(GrpcClient):
                 req.index.CopyFrom(jina_pb2.Request.IndexRequest())
             elif as_request == 'search':
                 req.search.CopyFrom(jina_pb2.Request.SearchRequest())
+            elif as_request == 'eval':
+                req.search.CopyFrom(jina_pb2.Request.EvalRequest())
             elif as_request == 'control':
                 req.control.CopyFrom(jina_pb2.Request.ControlRequest())
             else:
@@ -209,4 +211,12 @@ class PyClient(GrpcClient):
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(as_request='index')
+        self.start(output_fn, **kwargs)
+
+    def eval(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+             output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
+        self.mode = ClientMode.EVAL
+        self.input_fn = input_fn
+        if not self.args.skip_dry_run:
+            self.dry_run(as_request='eval')
         self.start(output_fn, **kwargs)

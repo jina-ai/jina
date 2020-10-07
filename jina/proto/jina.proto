@@ -253,6 +253,13 @@ message Request {
     }
 
     /**
+     * Represents an evaluation request
+     */
+    message EvalRequest {
+        repeated Document docs = 1; // a list of Documents to query
+    }
+
+    /**
      * Represents a control request used to control the BasePod
      */
     message ControlRequest {

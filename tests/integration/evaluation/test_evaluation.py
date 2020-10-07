@@ -9,7 +9,7 @@ from jina.drivers.helper import array2pb
 def test_evaluation(tmpdir):
     os.environ['JINA_TEST_EVALUATION'] = str(tmpdir)
 
-    num_index_documents = 100
+    num_index_documents = 10
     num_evaluate_documents = 5
 
     def index_documents():
@@ -46,11 +46,10 @@ def test_evaluation(tmpdir):
         return docs
 
     with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
-        evaluate_flow.search(
+        evaluate_flow.eval(
             input_fn=evaluate_documents(),
             output_fn=validate_evaluation_response,
-            callback_on_body=True,
-            top_k=5
+            callback_on_body=True
         )
 
     del os.environ['JINA_TEST_EVALUATION']
