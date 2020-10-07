@@ -24,5 +24,5 @@ def test_blob2pnguri_driver(data):
     width, height = 28, 32
 
     driver = Blob2PngURI(target='uri', width=width, height=height)
-    driver._apply(doc)
+    driver._apply_all([doc])
     Image.frombytes(mode, (width, height), doc.uri.encode()) # just to check if the data is enough for the image recreation
