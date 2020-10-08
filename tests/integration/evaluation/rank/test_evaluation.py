@@ -9,41 +9,117 @@ from jina.drivers.helper import array2pb
 def test_evaluation(tmpdir):
     os.environ['JINA_TEST_RANKING_EVALUATION'] = str(tmpdir)
 
-    num_index_documents = 10
-    num_evaluate_documents = 5
-
     def index_documents():
-        docs = []
-        for index in range(num_index_documents):
-            doc = jina_pb2.Document()
-            doc.tags['id'] = index
-            doc.tags['dummy_score'] = -index
-            doc.embedding.CopyFrom(array2pb(np.array([index])))
-            doc.id = uid.new_doc_id(doc)
-            docs.append(doc)
-        return docs
+        """Index Documents:
+            doc: tag__id = 0
+                 tag__dummy_score = 0
+                 embedding = 0
+            doc: tag__id = 1
+                 tag__dummy_score = -1
+                 embedding = 1
+            doc: tag__id = 2
+                 tag__dummy_score = -2
+                 embedding = 2
+        """
+        doc0 = jina_pb2.Document()
+        doc0.tags['id'] = '0'
+        doc0.tags['dummy_score'] = 0
+        doc0.embedding.CopyFrom(array2pb(np.array([0])))
+        doc1 = jina_pb2.Document()
+        doc1.tags['id'] = '1'
+        doc1.tags['dummy_score'] = -1
+        doc1.embedding.CopyFrom(array2pb(np.array([1])))
+        doc2 = jina_pb2.Document()
+        doc2.tags['id'] = '2'
+        doc2.tags['dummy_score'] = -2
+        doc2.embedding.CopyFrom(array2pb(np.array([2])))
+        return [doc0, doc1, doc2]
 
     with Flow().load_config('flow-index.yml') as index_flow:
         index_flow.index(input_fn=index_documents)
 
     def validate_evaluation_response(resp):
-        assert len(resp.docs) == num_evaluate_documents
+        assert len(resp.docs) == 2
         for doc in resp.docs:
             assert len(doc.evaluations) == 8  # 2 evaluation Pods with 4 evaluations each
 
+        doc = resp.docs[0]
+        assert doc.evaluations[0].id == 'evaluate_match-Precision@1'
+        assert doc.evaluations[0].value == 1.0
+        assert doc.evaluations[1].id == 'evaluate_match-Precision@2'
+        assert doc.evaluations[1].value == 0.5
+        assert doc.evaluations[2].id == 'evaluate_match-Recall@1'
+        assert doc.evaluations[2].value == 1.0
+        assert doc.evaluations[3].id == 'evaluate_match-Recall@2'
+        assert doc.evaluations[3].value == 0.5
+
+        assert doc.evaluations[4].id == 'evaluate_rank-Precision@1'
+        assert doc.evaluations[4].value == 1.0
+        assert doc.evaluations[5].id == 'evaluate_rank-Precision@2'
+        assert doc.evaluations[5].value == 0.5
+        assert doc.evaluations[6].id == 'evaluate_rank-Recall@1'
+        assert doc.evaluations[6].value == 1.0
+        assert doc.evaluations[7].id == 'evaluate_rank-Recall@2'
+        assert doc.evaluations[7].value == 0.5
+
+        doc = resp.docs[1]
+        assert doc.evaluations[0].id == 'evaluate_match-Precision@1'
+        assert doc.evaluations[0].value == 1.0
+        assert doc.evaluations[1].id == 'evaluate_match-Precision@2'
+        assert doc.evaluations[1].value == 1.0
+        assert doc.evaluations[2].id == 'evaluate_match-Recall@1'
+        assert doc.evaluations[2].value == 1.0
+        assert doc.evaluations[3].id == 'evaluate_match-Recall@2'
+        assert doc.evaluations[3].value == 1.0
+
+        assert doc.evaluations[4].id == 'evaluate_rank-Precision@1'
+        assert doc.evaluations[4].value == 1.0
+        assert doc.evaluations[5].id == 'evaluate_rank-Precision@2'
+        assert doc.evaluations[5].value == 1.0
+        assert doc.evaluations[6].id == 'evaluate_rank-Recall@1'
+        assert doc.evaluations[6].value == 1.0
+        assert doc.evaluations[7].id == 'evaluate_rank-Recall@2'
+        assert doc.evaluations[7].value == 1.0
+
     def evaluate_documents():
-        docs = []
-        for index in range(num_evaluate_documents):
-            doc = jina_pb2.Document()
-            doc.embedding.CopyFrom(array2pb(np.array([index])))
-            groundtruth1 = doc.groundtruth.add()
-            groundtruth1.tags['id'] = index
-            groundtruth2 = doc.groundtruth.add()
-            groundtruth2.tags['id'] = index + 1
-            groundtruth3 = doc.groundtruth.add()
-            groundtruth3.tags['id'] = 15965
-            docs.append(doc)
-        return docs
+        doc0 = jina_pb2.Document()
+        doc0.embedding.CopyFrom(array2pb(np.array([0])))  # it will match 0 and 1
+        groundtruth0 = doc0.groundtruth.add()
+        groundtruth0.tags['id'] = '0'
+        groundtruth1 = doc0.groundtruth.add()
+        groundtruth1.tags['id'] = '2'
+        # top_k is set to 2 for VectorSearchDriver
+        # expects as matches [0, 2] but given [0, 1]
+        # Precision@1 = 100%
+        # Precision@2 = 50%
+        # Recall@1 = 100%
+        # Recall@2 = 50%
+
+        # expects as ranked [0, 2] but given [0, 1]
+        # Precision@1 = 100%
+        # Precision@2 = 50%
+        # Recall@1 = 100%
+        # Recall@2 = 50%
+
+        doc1 = jina_pb2.Document()
+        doc1.embedding.CopyFrom(array2pb(np.array([2])))  # it will match 2 and 1
+        groundtruth0 = doc1.groundtruth.add()
+        groundtruth0.tags['id'] = '1'
+        groundtruth1 = doc1.groundtruth.add()
+        groundtruth1.tags['id'] = '2'
+        # expects as matches [1, 2] but given [2, 1]
+        # Precision@1 = 100%
+        # Precision@2 = 100%
+        # Recall@1 = 100%
+        # Recall@2 = 100%
+
+        # expects as ranked [1, 2] but given [2, 1]
+        # Precision@1 = 100%
+        # Precision@2 = 100%
+        # Recall@1 = 100%
+        # Recall@2 = 100%
+
+        return [doc0, doc1]
 
     with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.eval(

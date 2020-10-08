@@ -31,7 +31,7 @@ requests:
       - !VectorSearchDriver
         with:
           executor: vecidx
-          top_k: 5
+          top_k: 2
           traversal_paths: ['r']
       - !KVSearchDriver
         with:
