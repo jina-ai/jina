@@ -36,7 +36,8 @@ def input_lines(
             for line in it.islice(sample(f), size):
                 yield line
     elif lines:
-        return it.islice(sample(lines), size)
+        for line in it.islice(sample(lines), size):
+            yield line
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
 
