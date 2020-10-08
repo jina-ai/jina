@@ -1,6 +1,7 @@
 from typing import Sequence, Any
 
 from jina.executors.evaluators.rank import BaseRankingEvaluator
+from jina.executors.evaluators.decorators import as_aggregator
 
 
 class RecallEvaluator(BaseRankingEvaluator):
@@ -19,6 +20,7 @@ class RecallEvaluator(BaseRankingEvaluator):
     def complete_name(self):
         return f'Recall@{self.eval_at}'
 
+    @as_aggregator
     def evaluate(self, matches_ids: Sequence[Any], groundtruth_ids: Sequence[Any], *args, **kwargs) -> float:
         """"
         :param matches_ids: the matched document identifiers from the request as matched by jina indexers and rankers

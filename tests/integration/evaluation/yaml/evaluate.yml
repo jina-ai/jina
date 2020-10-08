@@ -29,19 +29,19 @@ metas:
 requests:
   on:
     SearchRequest:
-      - !EvaluateDriver
+      - !RankingEvaluationDriver
         with:
           executor: precision-1
           traversal_paths: ['r']
-      - !EvaluateDriver
+      - !RankingEvaluationDriver
         with:
           executor: precision-2
           traversal_paths: ['r']
-      - !EvaluateDriver
+      - !RankingEvaluationDriver
         with:
           executor: recall-1
           traversal_paths: ['r']
-      - !EvaluateDriver
+      - !RankingEvaluationDriver
         with:
           executor: recall-2
           traversal_paths: ['r']
