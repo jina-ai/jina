@@ -17,6 +17,7 @@ from .helper import guess_mime, array2pb, pb2array
 
 if False:
     from ..proto import jina_pb2
+    from PIL import Image
 
 class BaseConvertDriver(BaseRecursiveDriver):
 
@@ -106,15 +107,17 @@ class NdArray2PngURI(BaseConvertDriver):
     """Simple DocCrafter used in :command:`jina hello-world`,
         it reads ``NdArray`` into base64 png and stored in ``uri``"""
 
-    def __init__(self, target='uri', width: int = 28, height: int = 28, *args, **kwargs):
+    def __init__(self, target='uri', width: int = 28, height: int = 28, resize_method: str = 'BILINEAR', *args, **kwargs):
         super().__init__(target, *args, **kwargs)
         self.width = width
         self.height = height
+        self.resize_method = resize_method
 
-    def png_convertor(self, arr: np.array):
+    def png_convertor_1d(self, arr: np.array):
         pixels = []
+        arr = 255 - arr
         for p in arr[::-1]:
-            pixels.extend([255 - int(p), 255 - int(p), 255 - int(p), 255])
+            pixels.extend([p, p, p, 255])
         buf = bytearray(pixels)
 
         # reverse the vertical line order and add null bytes at the start
@@ -137,7 +140,34 @@ class NdArray2PngURI(BaseConvertDriver):
 
         return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    def convert(self, arr):
+    @staticmethod
+    def image_to_byte_array(image: 'Image', format: str):
+        import io
+        img_byte_arr = io.BytesIO()
+        image.save(img_byte_arr, format=format)
+        img_byte_arr = img_byte_arr.getvalue()
+        return img_byte_arr
+
+    def png_convertor(self, arr: np.array):
+        from PIL import Image
+
+        arr = arr.astype(np.uint8)
+
+        if len(arr.shape) == 1:
+            return self.png_convertor_1d(arr)
+        elif len(arr.shape) == 2:
+            im = Image.fromarray(arr).convert('L')
+            im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
+        elif len(arr.shape) == 3:
+            im = Image.fromarray(arr).convert('RGB')
+            im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
+        else:
+            raise ValueError('arr shape length should be either 1, 2 or 3')
+
+        png_bytes = NdArray2PngURI.image_to_byte_array(im, format='PNG')
+        return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+    
+    def convert(self, arr: np.array):
         arr.uri = self.png_convertor(arr)
 
 
