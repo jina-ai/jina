@@ -64,7 +64,7 @@ class MyTestCase(JinaTestCase):
             assert a[0] == a['test_meta']
             self.assertFalse(a[0].is_updated)
             self.assertFalse(a.is_updated)
-            a[0].add([jina_pb2.Document()])
+            a[0].add([j, j * 2, j * 3], [bytes(j), bytes(j * 2), bytes(j * 3)])
             self.assertTrue(a[0].is_updated)
             self.assertTrue(a.is_updated)
             self.assertFalse(a[1].is_updated)
