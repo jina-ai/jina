@@ -27,7 +27,7 @@ def test_input_lines_with_lines():
     assert result[1] == "2"
     
 def test_input_lines_with_empty_filepath_and_lines():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         lines = input_lines(lines=None, filepath=None)
         for _ in lines:
             pass
