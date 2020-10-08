@@ -16,6 +16,13 @@ def test_read_file(tmpdir):
     assert result[0] == "1\n"
     assert result[1] == "2\n"
 
+def test_lines():
+    lines = ["1", "2", "3"]
+    result = list(input_lines(lines=lines, size=2))
+    assert len(result) == 2
+    assert result[0] == "1"
+    assert result[1] == "2"
+    
 def test_input_lines_with_empty_filepath_and_lines():
     with pytest.raises(Exception):
         lines = input_lines(lines=None, filepath=None)
