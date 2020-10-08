@@ -4,7 +4,7 @@ import time
 import pytest
 
 from jina.flow import Flow
-from jina.proto import jina_pb2
+from jina.proto import jina_pb2, uid
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,9 +13,11 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def random_queries(num_docs, chunks_per_doc=5):
     for j in range(num_docs):
         d = jina_pb2.Document()
+        d.id = uid.new_doc_id()
         for k in range(chunks_per_doc):
             dd = d.chunks.add()
-            dd.id = k + 1  # 1-indexed
+            dd.id = uid.new_doc_id(dd)
+            # dd.id = k + 1  # 1-indexed
         yield d
 
 
@@ -40,7 +42,7 @@ def test_shards_insufficient_data():
     f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=parallel,
                    separated_workspace=True)
     with f:
-        f.index(input_fn=random_docs(index_docs), random_doc_id=False)
+        f.index(input_fn=random_docs(index_docs), override_doc_id=False)
 
     time.sleep(2)
     with f:
@@ -49,7 +51,7 @@ def test_shards_insufficient_data():
     f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=parallel,
                    separated_workspace=True, polling='all', uses_after='_merge_all')
     with f:
-        f.search(input_fn=random_queries(1, index_docs), random_doc_id=False, output_fn=validate,
+        f.search(input_fn=random_queries(1, index_docs), override_doc_id=False,
                  callback_on_body=True)
     time.sleep(2)
     rm_files(['test-docshard-tmp'])

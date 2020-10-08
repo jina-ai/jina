@@ -33,6 +33,7 @@ def test_binarypb_in_flow(test_metas):
         f.index(docs, override_doc_id=False)
 
     def validate(req):
+        assert len(docs) == len(req.docs)
         for d, d0 in zip(req.docs, docs):
             assert d.embedding.buffer == d0.embedding.buffer
 
