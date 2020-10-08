@@ -5,11 +5,10 @@ import mimetypes
 import os
 import urllib.parse
 import uuid
-from typing import Iterator, Union, Optional
+from typing import Iterator, Union, Optional, Tuple
 
 import numpy as np
 
-from ...counter import SimpleCounter
 from ...drivers.helper import array2pb, guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
@@ -17,20 +16,19 @@ from ...logging import default_logger
 from ...proto import jina_pb2, uid
 
 
-def _add_document(request: 'jina_pb2.Request',
-                  content: Union['jina_pb2.Document', 'np.ndarray', bytes, str],
-                  mode: str,
-                  docs_in_same_batch: int,
-                  mime_type: str,
-                  buffer_sniff: bool,
-                  ):
-    d = getattr(request, str(mode).lower()).docs.add()
+def _fill_document(document: 'jina_pb2.Document',
+                   content: Union['jina_pb2.Document', 'np.ndarray', bytes, str, Tuple[
+                       Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]],
+                   docs_in_same_batch: int,
+                   mime_type: str,
+                   buffer_sniff: bool,
+                   ):
     if isinstance(content, jina_pb2.Document):
-        d.CopyFrom(content)
+        document.CopyFrom(content)
     elif isinstance(content, np.ndarray):
-        d.blob.CopyFrom(array2pb(content))
+        document.blob.CopyFrom(array2pb(content))
     elif isinstance(content, bytes):
-        d.buffer = content
+        document.buffer = content
         if not mime_type and buffer_sniff:
             try:
                 import magic
@@ -48,26 +46,27 @@ def _add_document(request: 'jina_pb2.Request',
                 or os.path.exists(content)
                 or os.access(os.path.dirname(content), os.W_OK)
         ):
-            d.uri = content
+            document.uri = content
             mime_type = guess_mime(content)
         else:
-            d.text = content
+            document.text = content
             mime_type = 'text/plain'
     else:
         raise TypeError(f'{type(content)} type of input is not supported')
 
     if mime_type:
-        d.mime_type = mime_type
+        document.mime_type = mime_type
 
     # TODO: I don't like this part, this change the original docs inplace!
     #   why can't delegate this to crafter? (Han)
-    d.weight = 1.0
-    d.length = docs_in_same_batch
-    d.id = uid.new_doc_id(d)
+    document.weight = 1.0
+    document.length = docs_in_same_batch
+    document.id = uid.new_doc_id(document)
 
 
-def _generate(data: Union[
-    Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray',],
+def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
+    Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Iterator['np.ndarray'], Iterator[
+                              str], 'np.ndarray',],
               batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
               top_k: Optional[int] = None,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
@@ -112,13 +111,33 @@ def _generate(data: Union[
                 req.queryset.extend([top_k_queryset])
 
         for content in batch:
-            _add_document(request=req,
-                          content=content,
-                          mode=mode,
-                          docs_in_same_batch=batch_size,
-                          mime_type=mime_type,
-                          buffer_sniff=buffer_sniff,
-                          )
+            # TODO:
+            if mode != ClientMode.EVAL:
+                d = getattr(req, str(mode).lower()).docs.add()
+                _fill_document(document=d,
+                               content=content,
+                               mode=mode,
+                               docs_in_same_batch=batch_size,
+                               mime_type=mime_type,
+                               buffer_sniff=buffer_sniff,
+                               )
+            else:
+                d = getattr(req, str(mode).lower()).docs.add()
+                _fill_document(document=d,
+                               content=content[0],
+                               mode=mode,
+                               docs_in_same_batch=batch_size,
+                               mime_type=mime_type,
+                               buffer_sniff=buffer_sniff,
+                               )
+                groundtruth = getattr(req, str(mode).lower()).groundtruth.add()
+                _fill_document(document=groundtruth,
+                               content=content[0],
+                               mode=mode,
+                               docs_in_same_batch=batch_size,
+                               mime_type=mime_type,
+                               buffer_sniff=buffer_sniff,
+                               )
         yield req
 
 

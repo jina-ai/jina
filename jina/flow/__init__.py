@@ -715,7 +715,7 @@ class Flow(ExitStack):
                                           **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+    def index(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
         """Do indexing on the current flow
@@ -755,7 +755,7 @@ class Flow(ExitStack):
         self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+    def search(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None,
                **kwargs):
         """Do searching on the current flow
@@ -796,9 +796,9 @@ class Flow(ExitStack):
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def eval(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-               output_fn: Callable[['jina_pb2.Message'], None] = None,
-               **kwargs):
+    def eval(self, input_fn: Union[Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
+             output_fn: Callable[['jina_pb2.Message'], None] = None,
+             **kwargs):
         """Do evaluation on the current flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`eval`.
