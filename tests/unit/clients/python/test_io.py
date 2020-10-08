@@ -15,6 +15,14 @@ def test_read_file(tmpdir):
     assert result[1] == "2\n"
 
 
+def test_lines():
+    lines = ["1", "2", "3"]
+    result = list(input_lines(lines=lines, size=2))
+    assert len(result) == 2
+    assert result[0] == "1"
+    assert result[1] == "2"
+
+
 def test_io_files():
     PyClient.check_input(input_files('*.*'))
     PyClient.check_input(input_files('*.*', recursive=True))
