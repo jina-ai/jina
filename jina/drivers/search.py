@@ -5,10 +5,7 @@ from typing import Iterable, Tuple
 
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs, array2pb
-from ..proto import uid
-
-if False:
-    from ..proto import jina_pb2
+from ..proto import uid, jina_pb2
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -63,8 +60,11 @@ class KVSearchDriver(BaseSearchDriver):
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            r = self.exec_fn(self.id2hash(retrieved_doc.id))
-            if r:
+            serialized_doc = self.exec_fn(self.id2hash(retrieved_doc.id))
+            if serialized_doc:
+                r = jina_pb2.Document()
+                r.ParseFromString(serialized_doc)
+                
                 # TODO: this isn't perfect though, merge applies recursively on all children
                 #  it will duplicate embedding.shape if embedding is already there
                 if self._is_merge:

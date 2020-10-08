@@ -39,4 +39,6 @@ class KVIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        self.exec_fn(docs)
+        keys = [uid.id2hash(doc.id) for doc in docs]
+        values = [doc.SerializeToString() for doc in docs]
+        self.exec_fn(keys, values)

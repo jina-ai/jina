@@ -52,15 +52,19 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._start = 0
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
-    def add(self, docs: Iterator['jina_pb2.Document'], *args, **kwargs):
-        for d in docs:
-            s = d.SerializeToString()
-            l = len(s)  #: the length
+    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        for key, value in zip(keys, values):
+            l = len(value)  #: the length
             p = int(self._start / self._page_size) * self._page_size  #: offset of the page
-            r = self._start % self._page_size  #: the reminder, i.e. the start position given the offset
-            self.write_handler.header.write(np.array((uid.id2hash(d.id), p, r, r + l), dtype=np.int64).tobytes())
+            r = self._start % self._page_size  #: the remainder, i.e. the start position given the offset
+            self.write_handler.header.write(
+                np.array(
+                    (key, p, r, r + l),
+                    dtype=np.int64
+                ).tobytes()
+            )
             self._start += l
-            self.write_handler.body.write(s)
+            self.write_handler.body.write(value)
             self._size += 1
             # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
 
@@ -70,11 +74,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         if pos_info is not None:
             p, r, l = pos_info
             with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
-                # print(f'{p}\t{r}\t{l}')
-                b = jina_pb2.Document()
-                b.ParseFromString(m[r:])
-                # print(b)
-                return b
+                return m[r:]
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
