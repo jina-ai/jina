@@ -126,6 +126,7 @@ def set_hub_pushpull_parser(parser=None):
     parser.add_argument('name', type=str, help='the name of the image.')
     return parser
 
+
 def set_hub_list_parser(parser=None):
     if not parser:
         parser = set_base_parser()
@@ -139,6 +140,7 @@ def set_hub_list_parser(parser=None):
     parser.add_argument('--kind', type=str, default='',
                         help='kind of executor')
     return parser
+
 
 def set_hw_parser(parser=None):
     if not parser:
@@ -166,7 +168,7 @@ def set_hw_parser(parser=None):
                     default=2,
                     help='number of parallel when index and query')
     gp = add_arg_group(parser, 'index arguments')
-    gp.add_argument('--index-uses', type=str,
+    gp.add_argument('--uses-index', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
                     help='the yaml path of the index flow')
     gp.add_argument('--index-data-url', type=str,
@@ -176,7 +178,7 @@ def set_hw_parser(parser=None):
                     default=1024,
                     help='the batch size in indexing')
     gp = add_arg_group(parser, 'query arguments')
-    gp.add_argument('--query-uses', type=str,
+    gp.add_argument('--uses-query', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml'))),
                     help='the yaml path of the query flow')
     gp.add_argument('--query-data-url', type=str,
@@ -207,9 +209,6 @@ def set_flow_parser(parser=None):
                     default=resource_filename('jina',
                                               '/'.join(('resources', 'logserver.default.yml'))),
                     help='the yaml config of the log server')
-    gp.add_argument('--start-fluentd', action='store_true', default=False,
-                    help='start fluentd with the default configuration in jina resources. Only active if --logserver '
-                         'activated')
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
                             and hence not allow multiple clients connected to the gateway at the same time.')
@@ -297,7 +296,8 @@ def set_pea_parser(parser=None):
                      help='the data and config files are separated for each pea in this pod, '
                           'only effective when BasePod\'s `parallel` > 1')
     gp3.add_argument('--replica-id', type=int, default=-1,
-                     help='the id of the storage of this replica, only effective when `separated_workspace=True`')
+                     help='the id of the storage of this replica, only effective when `separated_workspace=True`'
+                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
     gp5.add_argument('--check-version', action='store_true', default=False,
@@ -312,14 +312,13 @@ def set_pea_parser(parser=None):
                           'compression rate (after_size/before_size) lower than this LWM will be considered as successeful '
                           'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=0,
-                     **(dict(
-                         help='the number of replicated message sent to the next Pod, 0 and 1 means single part'
-                         if _SHOW_ALL_ARGS else argparse.SUPPRESS)))
+                     help='the number of replicated message sent to the next Pod, 0 and 1 means single part'
+                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
-                     help='the role of this pea in a pod')
+                     help='the role of this pea in a pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp5.add_argument('--skip-on-error', type=OnErrorSkip.from_string, choices=list(OnErrorSkip),
                      default=OnErrorSkip.NONE,
-                     help='skip strategy on error message. ')
+                     help='skip strategy on error message.')
 
     gp6 = add_arg_group(parser, 'pea EXPERIMENTAL arguments')
     gp6.add_argument('--memory-hwm', type=int, default=-1,
@@ -519,13 +518,8 @@ def set_client_cli_parser(parser=None):
                      help='MIME type of the input, useful when input-type is set to BUFFER')
     gp1.add_argument('--callback-on-body', action='store_true', default=False,
                      help='callback function works directly on the request body')
-    gp1.add_argument('--first-request-id', type=int,
-                     default=0,
-                     help='the starting number of request id, the consequent request_id will increment by one')
     gp1.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
-    gp1.add_argument('--filter-by', type=str, nargs='*',
-                     help='field names to search on')
     gp1.add_argument('--skip-dry-run', action='store_true', default=False,
                      help='skip dry run (connectivity test) before sending every request')
     return parser
@@ -576,7 +570,7 @@ def get_main_parser():
     spp.add_parser('login', help='login via Github to push images to Jina hub registry',
                    description='Login via Github to push images to Jina hub registry',
                    formatter_class=_chf)
-    
+
     set_hub_new_parser(
         spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor or app using cookiecutter',
                        description='Create a new Hub executor or app using cookiecutter',
@@ -596,7 +590,7 @@ def get_main_parser():
         spp.add_parser('pull', help='pull an image from the Jina hub registry to local',
                        description='Pull an image to the Jina hub registry to local',
                        formatter_class=_chf))
-    
+
     set_hub_list_parser(
         spp.add_parser('list', help='list hub executors from jina hub registry',
                        description='List hub executors from jina hub registry',
