@@ -1,5 +1,7 @@
-import numpy as np
 import os
+
+import pytest
+import numpy as np
 
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files, input_lines, input_numpy
@@ -14,15 +16,37 @@ def test_read_file(tmpdir):
     assert result[0] == "1\n"
     assert result[1] == "2\n"
 
+def test_input_lines_with_empty_filepath_and_lines():
+    with pytest.raises(Exception):
+        lines = input_lines(lines=None, filepath=None)
+        for _ in lines:
+            pass
 
-def test_io_files():
-    PyClient.check_input(input_files('*.*'))
-    PyClient.check_input(input_files('*.*', recursive=True))
-    PyClient.check_input(input_files('*.*', size=2))
-    PyClient.check_input(input_files('*.*', size=2, read_mode='rb'))
-    PyClient.check_input(input_files('*.*', sampling_rate=0.5))
+@pytest.mark.parametrize(
+    'patterns, recursive, size, sampling_rate, read_mode',
+    [
+        ('*.*', True, None, None, None),
+        ('*.*', False, None, None, None),
+        ('*.*', True, 2, None, None),
+        ('*.*', True, 2, None, 'rb'),
+        ('*.*', True, None, 0.5, None),
+    ]
+)
+def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
+    PyClient.check_input(
+        input_files(
+            patterns=patterns,
+            recursive=recursive,
+            size=size,
+            sampling_rate=sampling_rate,
+            read_mode=read_mode
+        )
+    )
 
+def test_input_files_with_invalid_read_mode():
+    with pytest.raises(RuntimeError):
+        PyClient.check_input(input_files(patterns='*.*', read_mode='invalid'))
 
-def test_io_np():
-    PyClient.check_input(input_numpy(np.random.random([100, 4, 2])))
-    PyClient.check_input(['asda', 'dsadas asdasd'])
+@pytest.mark.parametrize('array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']])
+def test_input_numpy(array):
+    PyClient.check_input(input_numpy(array))
