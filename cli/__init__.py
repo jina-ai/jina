@@ -44,9 +44,12 @@ def _quick_ac_lookup():
             exit()
         elif sys.argv[1] == 'completions':
             if sys.argv[2] in ac_table['completions']:
-                for k in ac_table['completions'][sys.argv[2]]:
-                    if k not in sys.argv:
-                        print(k)
+                compl = ac_table['completions'].get(' '.join(sys.argv[2:]).strip(), None) or \
+                        ac_table['completions'].get(sys.argv[2], None)
+                if compl:
+                    for k in compl:
+                        if k not in sys.argv:
+                            print(k)
             exit()
 
 
