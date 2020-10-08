@@ -7,7 +7,7 @@ from jina.drivers.helper import array2pb
 
 
 def test_evaluation(tmpdir):
-    os.environ['JINA_TEST_EVALUATION'] = str(tmpdir)
+    os.environ['JINA_TEST_RANKING_EVALUATION'] = str(tmpdir)
 
     num_index_documents = 10
     num_evaluate_documents = 5
@@ -52,4 +52,4 @@ def test_evaluation(tmpdir):
             callback_on_body=True
         )
 
-    del os.environ['JINA_TEST_EVALUATION']
+    del os.environ['JINA_TEST_RANKING_EVALUATION']

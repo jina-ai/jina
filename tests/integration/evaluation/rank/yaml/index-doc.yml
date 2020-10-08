@@ -6,16 +6,16 @@ components:
       metric: cosine
     metas:
       name: vecidx
-      workspace: $JINA_TEST_EVALUATION
+      workspace: $JINA_TEST_RANKING_EVALUATION
   - !BinaryPbIndexer
     with:
       index_filename: doc.gz
     metas:
       name: docidx
-      workspace: $JINA_TEST_EVALUATION
+      workspace: $JINA_TEST_RANKING_EVALUATION
 metas:
   name: chunk_indexer
-  workspace: $JINA_TEST_EVALUATION
+  workspace: $JINA_TEST_RANKING_EVALUATION
 requests:
   on:
     IndexRequest:
