@@ -6,17 +6,20 @@ import numpy as np
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files, input_lines, input_numpy
 
-
-def test_read_file(tmpdir):
+@pytest.fixture(scope='function')
+def filepath(tmpdir):
     input_filepath = os.path.join(tmpdir, 'input_file.csv')
     with open(input_filepath, 'w') as input_file:
         input_file.writelines(["1\n", "2\n", "3\n"])
-    result = list(input_lines(filepath=input_filepath, size=2))
+    return input_filepath
+
+def test_input_lines_with_filepath(filepath):
+    result = list(input_lines(filepath=filepath, size=2))
     assert len(result) == 2
     assert result[0] == "1\n"
     assert result[1] == "2\n"
 
-def test_lines():
+def test_input_lines_with_lines():
     lines = ["1", "2", "3"]
     result = list(input_lines(lines=lines, size=2))
     assert len(result) == 2
