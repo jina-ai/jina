@@ -232,6 +232,7 @@ message Request {
         TrainRequest train = 2; // a train request
         IndexRequest index = 3; // an index request
         SearchRequest search = 4; // a search request
+        EvalRequest eval = 8; // a control request
         ControlRequest control = 5; // a control request
     }
 

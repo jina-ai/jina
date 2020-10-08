@@ -170,7 +170,7 @@ class PyClient(GrpcClient):
             elif as_request == 'search':
                 req.search.CopyFrom(jina_pb2.Request.SearchRequest())
             elif as_request == 'eval':
-                req.search.CopyFrom(jina_pb2.Request.EvalRequest())
+                req.eval.CopyFrom(jina_pb2.Request.EvalRequest())
             elif as_request == 'control':
                 req.control.CopyFrom(jina_pb2.Request.ControlRequest())
             else:

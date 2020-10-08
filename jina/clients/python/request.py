@@ -139,3 +139,8 @@ def train(*args, **kwargs):
 def search(*args, **kwargs):
     """Generate a searching request """
     yield from _generate(*args, **kwargs)
+
+
+def eval(*args, **kwargs):
+    """Generate an evaluation request """
+    yield from _generate(*args, **kwargs)
