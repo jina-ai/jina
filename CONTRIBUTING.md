@@ -15,7 +15,6 @@ In this guide we're going to go through the steps for each kind of contribution,
 
 
 - [🏁 Before you Start](#-before-you-start)
-- [Contributing 101](#contributing-101)
 - [🐞 Bugs and Issues](#-bugs-and-issues)
 - [🥇 Making Your First Submission](#-making-your-first-submission)
 - [☑️ Naming Conventions](#-naming-conventions)
@@ -37,9 +36,6 @@ We're happy for any contributions, code or not. If you'd like to write a blog po
 
 * [Contribute docs](#contributing-documentation)
 * For other contributions, please [get in touch](#getting-support) to discuss on Slack
-
-<a name="contributing-101"></a>
-## Contributing 101
 
 <a name="-bugs-and-issues"></a>
 ## 🐞 Bugs and Issues
