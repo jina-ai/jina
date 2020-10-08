@@ -10,3 +10,5 @@ coverage:
     require_changes: false  # if true: only post the comment if coverage changes
     branches:               # branch names that can post comment
       - "master"
+  ignore:
+    - "jina/hub/**/*"
