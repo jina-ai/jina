@@ -2,7 +2,11 @@
 
 Thanks for your interest in contributing to Jina. We're grateful for your initiative! ❤️
 
-I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below. If you have any feedback or questions, get in touch on [Slack](https://jina-ai.slack.com/).
+I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below. 
+
+# Join Us on Slack!
+
+The best way to know more about contributing and how to get started is to **[join us on Slack](https://jina-ai.slack.com/messages/general/)** and ask questions in our public channels.
 
 In this guide we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
 
