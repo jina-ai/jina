@@ -123,7 +123,7 @@ message Envelope {
     string receiver_id = 2;
 
     // unique id of the request
-    uint32 request_id = 3;
+    string request_id = 3;
 
     // timeout in second until this message is dropped
     uint32 timeout = 4;
@@ -211,7 +211,7 @@ message Message {
  */
 message Request {
 
-    uint32 request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
+    string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
 
     oneof body {
         TrainRequest train = 2; // a train request

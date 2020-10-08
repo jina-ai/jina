@@ -32,7 +32,7 @@ ac_table = {
     'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check',
                  'hub', 'pea', 'log', 'client', 'export-api'], 'completions': {
         'hello-world': ['--help', '--workdir', '--logserver', '--logserver-config', '--download-proxy', '--shards',
-                        '--parallel', '--index-uses', '--index-data-url', '--index-batch-size', '--query-uses',
+                        '--parallel', '--uses-index', '--index-data-url', '--index-batch-size', '--uses-query',
                         '--query-data-url', '--query-batch-size', '--num-query', '--top-k'],
         'pod': ['--help', '--name', '--identity', '--uses', '--py-modules', '--uses-internal', '--entrypoint',
                 '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in',
@@ -43,8 +43,7 @@ ac_table = {
                 '--ssh-server', '--ssh-keyfile', '--ssh-password', '--host', '--port-expose', '--port-grpc',
                 '--max-message-size', '--proxy', '--parallel', '--shards', '--polling', '--scheduling', '--uses-before',
                 '--uses-after', '--shutdown-idle'],
-        'flow': ['--help', '--uses', '--logserver', '--logserver-config', '--start-fluentd', '--optimize-level',
-                 '--output-type', '--output-path'],
+        'flow': ['--help', '--logserver', '--logserver-config', '--optimize-level', '--output-type', '--output-path'],
         'gateway': ['--help', '--name', '--identity', '--uses', '--py-modules', '--uses-internal', '--entrypoint',
                     '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in',
                     '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout', '--timeout-ctrl', '--timeout-ready',
@@ -55,7 +54,7 @@ ac_table = {
                     '--max-message-size', '--proxy', '--prefetch', '--prefetch-on-recv', '--allow-spawn', '--rest-api'],
         'ping': ['--help', '--timeout', '--retries', '--print-response'],
         'check': ['--help', '--summary-exec', '--summary-driver'],
-        'hub': ['--help', 'new', 'init', 'create', 'build', 'push', 'pull'],
+        'hub': ['--help', 'login', 'new', 'init', 'create', 'build', 'push', 'pull', 'list'],
         'pea': ['--help', '--name', '--identity', '--uses', '--py-modules', '--uses-internal', '--entrypoint',
                 '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in',
                 '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout', '--timeout-ctrl', '--timeout-ready',
@@ -65,5 +64,5 @@ ac_table = {
                 '--ssh-server', '--ssh-keyfile', '--ssh-password', '--host', '--port-expose', '--port-grpc',
                 '--max-message-size', '--proxy'], 'log': ['--help', '--groupby-regex', '--refresh-time'],
         'client': ['--help', '--host', '--port-expose', '--port-grpc', '--max-message-size', '--proxy', '--batch-size',
-                   '--mode', '--top-k', '--mime-type', '--callback-on-body', '--first-request-id', '--timeout-ready',
-                   '--filter-by', '--skip-dry-run'], 'export-api': ['--help', '--yaml-path', '--json-path']}}
+                   '--mode', '--top-k', '--mime-type', '--callback-on-body', '--timeout-ready', '--skip-dry-run'],
+        'export-api': ['--help', '--yaml-path', '--json-path']}}
