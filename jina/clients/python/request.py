@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import mimetypes
 import os
 import urllib.parse
+import uuid
 from typing import Iterator, Union, Optional
 
 import numpy as np
@@ -67,14 +68,13 @@ def _add_document(request: 'jina_pb2.Request',
 
 def _generate(data: Union[
     Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray',],
-              batch_size: int = 0, first_request_id: int = 0, mode: ClientMode = ClientMode.INDEX,
+              batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
               top_k: Optional[int] = None,
               mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args,
               **kwargs,
               ) -> Iterator['jina_pb2.Message']:
     buffer_sniff = False
-    req_counter = SimpleCounter(first_request_id)
 
     try:
         import magic
@@ -95,7 +95,7 @@ def _generate(data: Union[
 
     for batch in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
-        req.request_id = next(req_counter)
+        req.request_id = uuid.uuid1().hex
         if queryset:
             if isinstance(queryset, jina_pb2.QueryLang):
                 queryset = [queryset]
@@ -131,7 +131,7 @@ def train(*args, **kwargs):
     """Generate a training request """
     yield from _generate(*args, **kwargs)
     req = jina_pb2.Request()
-    req.request_id = 1
+    req.request_id = uuid.uuid1().hex
     req.train.flush = True
     yield req
 
