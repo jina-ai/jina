@@ -199,7 +199,7 @@ class BaseKVIndexer(BaseIndexer):
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
 
-    def add(self, docs: Iterator['jina_pb2.Document'], *args, **kwargs):
+    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
     def query(self, key: int) -> Optional['jina_pb2.Document']:
