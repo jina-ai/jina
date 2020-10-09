@@ -22,6 +22,7 @@ def _fill_document(document: 'jina_pb2.Document',
                    docs_in_same_batch: int,
                    mime_type: str,
                    buffer_sniff: bool,
+                   override_doc_id: bool = True
                    ):
     if isinstance(content, jina_pb2.Document):
         document.CopyFrom(content)
@@ -61,7 +62,9 @@ def _fill_document(document: 'jina_pb2.Document',
     #   why can't delegate this to crafter? (Han)
     document.weight = 1.0
     document.length = docs_in_same_batch
-    document.id = uid.new_doc_id(document)
+
+    if override_doc_id:
+        document.id = uid.new_doc_id(document)
 
 
 def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
@@ -69,7 +72,9 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                               str], 'np.ndarray',],
               batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
               top_k: Optional[int] = None,
-              mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
+              mime_type: str = None,
+              override_doc_id: bool = True,
+              queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args,
               **kwargs,
               ) -> Iterator['jina_pb2.Message']:
@@ -120,6 +125,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                                docs_in_same_batch=batch_size,
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,
+                               override_doc_id=override_doc_id
                                )
             else:
                 assert len(content) == 2, 'You are passing an Evaluation Request without providing two parts (a ' \
@@ -130,6 +136,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                                docs_in_same_batch=batch_size,
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,
+                               override_doc_id=override_doc_id
                                )
                 groundtruth = getattr(req, str(mode).lower()).groundtruths.add()
                 _fill_document(document=groundtruth,
@@ -137,6 +144,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                                docs_in_same_batch=batch_size,
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,
+                               override_doc_id=override_doc_id
                                )
         yield req
 

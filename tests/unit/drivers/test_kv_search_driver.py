@@ -42,10 +42,10 @@ class MockIndexer(BaseKVIndexer):
         doc4.id = '4'
         doc4.embedding.CopyFrom(array2pb(np.array([int(doc4.id)])))
         self.db = {
-            1: doc1,
-            2: doc2,
-            3: doc3,
-            4: doc4
+            1: doc1.SerializeToString(),
+            2: doc2.SerializeToString(),
+            3: doc3.SerializeToString(),
+            4: doc4.SerializeToString()
         }
 
 
