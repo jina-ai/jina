@@ -152,3 +152,30 @@ def guess_mime(uri):
         tmp = urllib.request.urlopen(page)
         m_type = tmp.info().get_content_type()
     return m_type
+
+
+class DocGroundTruthPair:
+    """
+    Helper class to expose common interface to the traversal logic of the BaseExecutable Driver.
+    It is important to note that it checks the matching structure of `docs` and `groundtruths`. It is important while
+    traversing to ensure that then the driver can be applied at a comparable level of granularity and adjacency.
+    This does not imply that you can't compare at the end a document with 10 matches with a groundtruth with 20 matches
+    """
+
+    def __init__(self, doc: 'jina_pb2.Document', groundtruth: 'jina_pb2.Document'):
+        self.doc = doc
+        self.groundtruth = groundtruth
+
+    @property
+    def matches(self):
+        # TODO: Should we expect this assert to be done
+        #  (RankingEvaluation may work with a different lenght of groundtruth matches as the one returned)
+        assert len(self.doc.matches) == len(self.groundtruth.matches)
+        return [DocGroundTruthPair(doc, groundtruth) for doc, groundtruth in
+                zip(self.doc.matches, self.groundtruth.matches)]
+
+    @property
+    def chunks(self):
+        assert len(self.doc.chunks) == len(self.groundtruth.chunks)
+        return [DocGroundTruthPair(doc, groundtruth) for doc, groundtruth in
+                zip(self.doc.chunks, self.groundtruth.chunks)]

@@ -116,7 +116,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 d = getattr(req, str(mode).lower()).docs.add()
                 _fill_document(document=d,
                                content=content,
-                               mode=mode,
                                docs_in_same_batch=batch_size,
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,
@@ -125,7 +124,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 d = getattr(req, str(mode).lower()).docs.add()
                 _fill_document(document=d,
                                content=content[0],
-                               mode=mode,
                                docs_in_same_batch=batch_size,
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,
@@ -133,7 +131,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 groundtruth = getattr(req, str(mode).lower()).groundtruth.add()
                 _fill_document(document=groundtruth,
                                content=content[0],
-                               mode=mode,
                                docs_in_same_batch=batch_size,
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,

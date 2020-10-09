@@ -297,6 +297,7 @@ class BaseExecutor(metaclass=ExecutorType):
         cached = [k for k in d.keys() if k.startswith('CACHED_')]
         for k in cached:
             del d[k]
+        print(f' store {d}')
         return d
 
     def __setstate__(self, d):
@@ -377,6 +378,7 @@ class BaseExecutor(metaclass=ExecutorType):
         if not f:
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
         with open(f, 'w', encoding='utf8') as fp:
+            print(f' DUMPING ')
             yaml.dump(self, fp)
         self.logger.info('executor\'s yaml config is save to %s' % f)
 
