@@ -218,5 +218,4 @@ class PyClient(GrpcClient):
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(as_request='eval')
-        print(f' EVAL hey')
         self.start(output_fn, **kwargs)
