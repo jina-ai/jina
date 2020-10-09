@@ -12,9 +12,6 @@ class BaseEvaluator(BaseExecutor):
     """
 
     def __init__(self, *args, **kwargs):
-        """"
-        :param id_tag: the key in the tags of documents to identify uniquely a document
-        """
         super().__init__(*args, **kwargs)
 
     def evaluate(self, *args, **kwargs):

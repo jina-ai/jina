@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import random
 
-from jina.drivers.helper import array2pb, pb2array, pb_obj2dict, add_route, extract_docs, DocGroundTruthPair
+from jina.drivers.helper import array2pb, pb2array, pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
 
 
@@ -82,7 +82,7 @@ def test_docgroundtruth_pair():
     add_chunks(doc, 3)
     add_chunks(gt, 3)
 
-    pair = DocGroundTruthPair(doc, gt)
+    pair = DocGroundtruthPair(doc, gt)
     assert len(pair.chunks) == 3
     assert len(pair.matches) == 3
 

@@ -1,5 +1,5 @@
 import pytest
-from jina.drivers.evaluate import RankingEvaluationDriver, DocGroundTruthPair
+from jina.drivers.evaluate import RankingEvaluationDriver, DocGroundtruthPair
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
 
@@ -50,7 +50,7 @@ def test_evaluate_driver():
             gt = jina_pb2.Document()
             add_matches(doc, num_docs)
             add_matches(gt, num_docs)
-            pairs.append(DocGroundTruthPair(doc=doc, groundtruth=gt))
+            pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
         return pairs
 
     pairs = create_document_ground_truth_pairs(10)

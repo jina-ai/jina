@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Iterable
-from .helper import DocGroundTruthPair
+from .helper import DocGroundtruthPair
 from . import BaseExecutableDriver
 
 
@@ -15,12 +15,12 @@ class BaseEvaluationDriver(BaseExecutableDriver):
 
     def __call__(self, *args, **kwargs):
         assert len(self.req.docs) == len(self.req.groundtruths)
-        docs_groundtruths = [DocGroundTruthPair(doc, groundtruth) for doc, groundtruth in
+        docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
                              zip(self.req.docs, self.req.groundtruths)]
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
 
-    def _apply_all(self, docs_groundtruths: Iterable[DocGroundTruthPair],
-                   context_doc_groundtruth: DocGroundTruthPair,
+    def _apply_all(self, docs_groundtruths: Iterable[DocGroundtruthPair],
+                   context_doc_groundtruth: DocGroundtruthPair,
                    *args,
                    **kwargs) -> None:
         pass
@@ -45,7 +45,7 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
             return self.__class__.__name__
 
     def _apply_all(self,
-                   docs_groundtruths: Iterable[DocGroundTruthPair],
+                   docs_groundtruths: Iterable[DocGroundtruthPair],
                    *args,
                    **kwargs) -> None:
         for doc_groundtruth in docs_groundtruths:

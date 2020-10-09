@@ -154,7 +154,7 @@ def guess_mime(uri):
     return m_type
 
 
-class DocGroundTruthPair:
+class DocGroundtruthPair:
     """
     Helper class to expose common interface to the traversal logic of the BaseExecutable Driver.
     It is important to note that it checks the matching structure of `docs` and `groundtruths`. It is important while
@@ -171,11 +171,11 @@ class DocGroundTruthPair:
         # TODO: Should we expect this assert to be done
         #  (RankingEvaluation may work with a different lenght of groundtruth matches as the one returned)
         assert len(self.doc.matches) == len(self.groundtruth.matches)
-        return [DocGroundTruthPair(doc, groundtruth) for doc, groundtruth in
+        return [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
                 zip(self.doc.matches, self.groundtruth.matches)]
 
     @property
     def chunks(self):
         assert len(self.doc.chunks) == len(self.groundtruth.chunks)
-        return [DocGroundTruthPair(doc, groundtruth) for doc, groundtruth in
+        return [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
                 zip(self.doc.chunks, self.groundtruth.chunks)]
