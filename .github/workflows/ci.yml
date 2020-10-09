@@ -124,7 +124,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true
+          submodules: false
       - name: Download coverage result from unit-test
         uses: actions/download-artifact@v1
         with:
