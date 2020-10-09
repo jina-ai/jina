@@ -220,6 +220,7 @@ class ClientMode(BetterEnum):
     INDEX = 0
     SEARCH = 1
     TRAIN = 2
+    EVALUATE = 3
 
 
 class OnErrorSkip(BetterEnum):

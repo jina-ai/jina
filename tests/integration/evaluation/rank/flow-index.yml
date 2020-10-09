@@ -1,0 +1,5 @@
+!Flow
+pods:
+  doc_indexer:
+    uses: yaml/index-doc.yml
+    needs: gateway

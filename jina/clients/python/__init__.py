@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-from typing import Iterator, Callable, Union
+from typing import Iterator, Callable, Union, Tuple
 
 from . import request
 from .grpc import GrpcClient
@@ -117,7 +117,6 @@ class PyClient(GrpcClient):
             tname = str(kwargs['mode']).lower()
 
         req_iter = getattr(request, tname)(**_kwargs)
-        # next(req_iter)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             for resp in self._stub.Call(req_iter):
@@ -169,6 +168,8 @@ class PyClient(GrpcClient):
                 req.index.CopyFrom(jina_pb2.Request.IndexRequest())
             elif as_request == 'search':
                 req.search.CopyFrom(jina_pb2.Request.SearchRequest())
+            elif as_request == 'evaluate':
+                req.evaluate.CopyFrom(jina_pb2.Request.EvaluateRequest())
             elif as_request == 'control':
                 req.control.CopyFrom(jina_pb2.Request.ControlRequest())
             else:
@@ -187,7 +188,7 @@ class PyClient(GrpcClient):
 
         return False
 
-    def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+    def train(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.TRAIN
         self.input_fn = input_fn
@@ -195,7 +196,7 @@ class PyClient(GrpcClient):
             self.dry_run(as_request='train')
         self.start(output_fn, **kwargs)
 
-    def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+    def search(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.SEARCH
         self.input_fn = input_fn
@@ -203,10 +204,18 @@ class PyClient(GrpcClient):
             self.dry_run(as_request='search')
         self.start(output_fn, **kwargs)
 
-    def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+    def index(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable]= None,
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(as_request='index')
+        self.start(output_fn, **kwargs)
+
+    def evaluate(self, input_fn: Union[Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
+                 output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
+        self.mode = ClientMode.EVALUATE
+        self.input_fn = input_fn
+        if not self.args.skip_dry_run:
+            self.dry_run(as_request='evaluate')
         self.start(output_fn, **kwargs)

@@ -715,7 +715,7 @@ class Flow(ExitStack):
                                           **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+    def index(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None,
               **kwargs):
         """Do indexing on the current flow
@@ -755,7 +755,7 @@ class Flow(ExitStack):
         self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
+    def search(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None,
                **kwargs):
         """Do searching on the current flow
@@ -794,6 +794,47 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
+
+    @deprecated_alias(buffer='input_fn', callback='output_fn')
+    def evaluate(self, input_fn: Union[Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
+                 output_fn: Callable[['jina_pb2.Message'], None] = None,
+                 **kwargs):
+        """Do evaluation on the current flow
+
+        It will start a :py:class:`CLIClient` and call :py:func:`evaluate`.
+
+
+        Example,
+
+        .. highlight:: python
+        .. code-block:: python
+
+            with f:
+                f.evaluate(input_fn)
+                ...
+
+
+        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
+
+        One may also build a reader/generator on your own.
+
+        Example,
+
+        .. highlight:: python
+        .. code-block:: python
+
+            def my_reader():
+                for _ in range(10):
+                    yield b'abcdfeg'   # each yield generates a query for searching
+
+            with f.build(runtime='thread') as flow:
+                flow.evaluate(bytes_gen=my_reader())
+
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param output_fn: the callback function to invoke after evaluation
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        self._get_client(**kwargs).evaluate(input_fn, output_fn, **kwargs)
 
     def plot(self, output: str = None,
              image_type: str = 'svg',

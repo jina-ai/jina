@@ -61,7 +61,7 @@ class ExecutorType(type):
 
     @staticmethod
     def register_class(cls):
-        prof_funcs = ['train', 'encode', 'add', 'query', 'craft', 'score']
+        prof_funcs = ['train', 'encode', 'add', 'query', 'craft', 'score', 'evaluate']
         update_funcs = ['train', 'add']
         train_funcs = ['train']
 

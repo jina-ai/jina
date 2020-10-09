@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import random
 
-from jina.drivers.helper import array2pb, pb2array, pb_obj2dict, add_route, extract_docs
+from jina.drivers.helper import array2pb, pb2array, pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
 
 
@@ -63,3 +63,33 @@ def test_extract_docs():
     assert len(bad_doc_ids) == 0
     np.testing.assert_equal(contents[0], vec)
 
+
+def test_docgroundtruth_pair():
+    def add_matches(doc: jina_pb2.Document, num_matches):
+        for idx in range(num_matches):
+            match = doc.matches.add()
+            match.adjacency = doc.adjacency + 1
+
+    def add_chunks(doc: jina_pb2.Document, num_chunks):
+        for idx in range(num_chunks):
+            chunk = doc.chunks.add()
+            chunk.granularity = doc.granularity + 1
+
+    doc = jina_pb2.Document()
+    gt = jina_pb2.Document()
+    add_matches(doc, 3)
+    add_matches(gt, 3)
+    add_chunks(doc, 3)
+    add_chunks(gt, 3)
+
+    pair = DocGroundtruthPair(doc, gt)
+    assert len(pair.chunks) == 3
+    assert len(pair.matches) == 3
+
+    for chunk_pair in pair.chunks:
+        assert chunk_pair.doc.granularity == 1
+        assert chunk_pair.groundtruth.granularity == 1
+
+    for match_pair in pair.matches:
+        assert match_pair.doc.adjacency == 1
+        assert match_pair.groundtruth.adjacency == 1

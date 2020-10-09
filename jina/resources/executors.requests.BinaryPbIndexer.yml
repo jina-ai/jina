@@ -1,7 +1,7 @@
 on:
   ControlRequest:
     - !ControlReqDriver {}
-  SearchRequest:
+  [SearchRequest, EvaluateRequest]:
     - !KVSearchDriver {}
   IndexRequest:
     - !ExcludeQL
