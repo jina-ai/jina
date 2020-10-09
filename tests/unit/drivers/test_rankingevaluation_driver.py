@@ -91,7 +91,7 @@ def test_evaluate_driver_matches_in_chunks():
                 match = doc.matches.add()
                 match.tags['id'] = idx
 
-        req = jina_pb2.Request.EvalRequest()
+        req = jina_pb2.Request.EvaluateRequest()
         for idx in range(num_docs):
             doc = req.docs.add()
             gt = req.groundtruths.add()
@@ -128,7 +128,7 @@ def test_evaluate_assert_doc_groundtruth_structure():
                 match = doc.matches.add()
                 match.tags['id'] = idx
 
-        req = jina_pb2.Request.EvalRequest()
+        req = jina_pb2.Request.EvaluateRequest()
         for idx in range(num_docs):
             doc = req.docs.add()
             gt = req.groundtruths.add()

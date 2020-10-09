@@ -796,12 +796,12 @@ class Flow(ExitStack):
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def eval(self, input_fn: Union[Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
-             output_fn: Callable[['jina_pb2.Message'], None] = None,
-             **kwargs):
+    def evaluate(self, input_fn: Union[Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
+                 output_fn: Callable[['jina_pb2.Message'], None] = None,
+                 **kwargs):
         """Do evaluation on the current flow
 
-        It will start a :py:class:`CLIClient` and call :py:func:`eval`.
+        It will start a :py:class:`CLIClient` and call :py:func:`evaluate`.
 
 
         Example,
@@ -810,7 +810,7 @@ class Flow(ExitStack):
         .. code-block:: python
 
             with f:
-                f.eval(input_fn)
+                f.evaluate(input_fn)
                 ...
 
 
@@ -828,13 +828,13 @@ class Flow(ExitStack):
                     yield b'abcdfeg'   # each yield generates a query for searching
 
             with f.build(runtime='thread') as flow:
-                flow.eval(bytes_gen=my_reader())
+                flow.evaluate(bytes_gen=my_reader())
 
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param output_fn: the callback function to invoke after evaluation
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).eval(input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).evaluate(input_fn, output_fn, **kwargs)
 
     def plot(self, output: str = None,
              image_type: str = 'svg',

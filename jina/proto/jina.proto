@@ -230,7 +230,7 @@ message Request {
         TrainRequest train = 2; // a train request
         IndexRequest index = 3; // an index request
         SearchRequest search = 4; // a search request
-        EvalRequest eval = 8; // a control request
+        EvaluateRequest evaluate = 8; // an evaluate request
         ControlRequest control = 5; // a control request
     }
 
@@ -259,7 +259,7 @@ message Request {
     /**
      * Represents an evaluation request
      */
-    message EvalRequest {
+    message EvaluateRequest {
         repeated Document docs = 1; // a list of Documents to query
         //TODO: Convert it to bytes
         repeated Document groundtruths = 2; // a list of groundtruths

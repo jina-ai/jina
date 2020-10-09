@@ -118,7 +118,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
 
         for content in batch:
             # TODO:
-            if mode != ClientMode.EVAL:
+            if mode != ClientMode.EVALUATE:
                 d = getattr(req, str(mode).lower()).docs.add()
                 _fill_document(document=d,
                                content=content,
@@ -168,6 +168,6 @@ def search(*args, **kwargs):
     yield from _generate(*args, **kwargs)
 
 
-def eval(*args, **kwargs):
+def evaluate(*args, **kwargs):
     """Generate an evaluation request """
     yield from _generate(*args, **kwargs)

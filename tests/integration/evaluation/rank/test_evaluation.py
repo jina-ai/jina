@@ -124,7 +124,7 @@ def test_evaluation(tmpdir):
         return [(doc0, groundtruth0), (doc1, groundtruth1)]
 
     with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
-        evaluate_flow.eval(
+        evaluate_flow.evaluate(
             input_fn=doc_groundtruth_evaluation_pairs(),
             output_fn=validate_evaluation_response,
             callback_on_body=True

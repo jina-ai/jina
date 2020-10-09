@@ -3,7 +3,7 @@ metas:
   py_modules: dummy_ranker.py
 requests:
   on:
-    [SearchRequest, EvalRequest]:
+    [SearchRequest, EvaluateRequest]:
       - !Matches2DocRankDriver
         with:
           traversal_paths: ['m']

@@ -28,7 +28,7 @@ metas:
   name: evaluation
 requests:
   on:
-    [SearchRequest, EvalRequest]:
+    [SearchRequest, EvaluateRequest]:
       - !RankingEvaluationDriver
         with:
           executor: precision-1
