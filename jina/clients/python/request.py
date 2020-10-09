@@ -73,6 +73,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
               *args,
               **kwargs,
               ) -> Iterator['jina_pb2.Message']:
+
     buffer_sniff = False
 
     try:
@@ -121,6 +122,8 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                                buffer_sniff=buffer_sniff,
                                )
             else:
+                assert len(content) == 2, 'You are passing an Evaluation Request without providing two parts (a ' \
+                                          'document and its groundtruth) '
                 d = getattr(req, str(mode).lower()).docs.add()
                 _fill_document(document=d,
                                content=content[0],
@@ -128,9 +131,9 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,
                                )
-                groundtruth = getattr(req, str(mode).lower()).groundtruth.add()
+                groundtruth = getattr(req, str(mode).lower()).groundtruths.add()
                 _fill_document(document=groundtruth,
-                               content=content[0],
+                               content=content[1],
                                docs_in_same_batch=batch_size,
                                mime_type=mime_type,
                                buffer_sniff=buffer_sniff,

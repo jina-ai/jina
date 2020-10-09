@@ -117,7 +117,6 @@ class PyClient(GrpcClient):
             tname = str(kwargs['mode']).lower()
 
         req_iter = getattr(request, tname)(**_kwargs)
-        # next(req_iter)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             for resp in self._stub.Call(req_iter):
@@ -219,4 +218,5 @@ class PyClient(GrpcClient):
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(as_request='eval')
+        print(f' EVAL hey')
         self.start(output_fn, **kwargs)

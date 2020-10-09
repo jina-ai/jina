@@ -81,13 +81,14 @@ def test_evaluation(tmpdir):
         assert doc.evaluations[7].id == 'evaluate_rank-Recall@2'
         assert doc.evaluations[7].value == 1.0
 
-    def evaluate_documents():
+    def doc_groundtruth_evaluation_pairs():
         doc0 = jina_pb2.Document()
         doc0.embedding.CopyFrom(array2pb(np.array([0])))  # it will match 0 and 1
-        groundtruth0 = doc0.groundtruth.add()
-        groundtruth0.tags['id'] = '0'
-        groundtruth1 = doc0.groundtruth.add()
-        groundtruth1.tags['id'] = '2'
+        groundtruth0 = jina_pb2.Document()
+        match0 = groundtruth0.matches.add()
+        match0.tags['id'] = '0'
+        match1 = groundtruth0.matches.add()
+        match1.tags['id'] = '2'
         # top_k is set to 2 for VectorSearchDriver
         # expects as matches [0, 2] but given [0, 1]
         # Precision@1 = 100%
@@ -103,10 +104,11 @@ def test_evaluation(tmpdir):
 
         doc1 = jina_pb2.Document()
         doc1.embedding.CopyFrom(array2pb(np.array([2])))  # it will match 2 and 1
-        groundtruth0 = doc1.groundtruth.add()
-        groundtruth0.tags['id'] = '1'
-        groundtruth1 = doc1.groundtruth.add()
-        groundtruth1.tags['id'] = '2'
+        groundtruth1 = jina_pb2.Document()
+        match0 = groundtruth1.matches.add()
+        match0.tags['id'] = '1'
+        match1 = groundtruth1.matches.add()
+        match1.tags['id'] = '2'
         # expects as matches [1, 2] but given [2, 1]
         # Precision@1 = 100%
         # Precision@2 = 100%
@@ -119,11 +121,11 @@ def test_evaluation(tmpdir):
         # Recall@1 = 100%
         # Recall@2 = 100%
 
-        return [doc0, doc1]
+        return [(doc0, groundtruth0), (doc1, groundtruth1)]
 
     with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.eval(
-            input_fn=evaluate_documents(),
+            input_fn=doc_groundtruth_evaluation_pairs(),
             output_fn=validate_evaluation_response,
             callback_on_body=True
         )
