@@ -1,4 +1,5 @@
 codecov:
+  # https://docs.codecov.io/docs/comparing-commits
   allow_coverage_offsets: true
 coverage:
   status:
