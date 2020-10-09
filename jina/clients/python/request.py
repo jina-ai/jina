@@ -23,6 +23,7 @@ def _add_document(request: 'jina_pb2.Request',
                   docs_in_same_batch: int,
                   mime_type: str,
                   buffer_sniff: bool,
+                  override_doc_id: bool = True,
                   ):
     d = getattr(request, str(mode).lower()).docs.add()
     if isinstance(content, jina_pb2.Document):
@@ -63,14 +64,18 @@ def _add_document(request: 'jina_pb2.Request',
     #   why can't delegate this to crafter? (Han)
     d.weight = 1.0
     d.length = docs_in_same_batch
-    d.id = uid.new_doc_id(d)
+
+    if override_doc_id:
+        d.id = uid.new_doc_id(d)
 
 
 def _generate(data: Union[
     Iterator['jina_pb2.Document'], Iterator[bytes], Iterator['np.ndarray'], Iterator[str], 'np.ndarray',],
               batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
               top_k: Optional[int] = None,
-              mime_type: str = None, queryset: Iterator['jina_pb2.QueryLang'] = None,
+              mime_type: str = None,
+              override_doc_id: bool = True,
+              queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args,
               **kwargs,
               ) -> Iterator['jina_pb2.Message']:
@@ -118,6 +123,7 @@ def _generate(data: Union[
                           docs_in_same_batch=batch_size,
                           mime_type=mime_type,
                           buffer_sniff=buffer_sniff,
+                          override_doc_id=override_doc_id
                           )
         yield req
 

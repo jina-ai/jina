@@ -7,7 +7,8 @@ from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
-from jina.proto.jina_pb2 import Document
+from jina.proto import jina_pb2, uid
+# import Document
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,12 +39,18 @@ def test_flow_with_modalities(tmpdir):
     os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE'] = str(tmpdir)
 
     def input_fn():
-        doc1 = Document()
+        doc1 = jina_pb2.Document()
         doc1.text = 'title: this is mode1 from doc1, body: this is mode2 from doc1'
-        doc2 = Document()
+        doc1.id = uid.new_doc_id(doc1)
+
+        doc2 = jina_pb2.Document()
         doc2.text = 'title: this is mode1 from doc2, body: this is mode2 from doc2'
-        doc3 = Document()
+        doc2.id = uid.new_doc_id(doc2)
+
+        doc3 = jina_pb2.Document()
         doc3.text = 'title: this is mode1 from doc3, body: this is mode2 from doc3'
+        doc3.id = uid.new_doc_id(doc3)
+
         return [doc1, doc2, doc3]
 
     flow = Flow().add(name='crafter', uses='!MockSegmenter'). \
@@ -54,7 +61,7 @@ def test_flow_with_modalities(tmpdir):
         join(['indexer1', 'indexer2'])
 
     with flow:
-        flow.index(input_fn=input_fn)
+        flow.index(input_fn=input_fn, override_doc_id=False)
 
     with open(tmpdir.join('vec1.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
@@ -71,13 +78,19 @@ def test_flow_with_modalities(tmpdir):
     chunkIndexer1 = BinaryPbIndexer.load(tmpdir.join('kvidx1.bin'))
     assert chunkIndexer1.size == 3
     d_id = list(chunkIndexer1.query_handler.header.keys())[0]
-    assert chunkIndexer1.query(d_id).text == 'title: this is mode1 from doc1'
-    assert chunkIndexer1.query(d_id).modality == 'mode1'
+
+    query_doc = jina_pb2.Document()
+    query_doc.ParseFromString(chunkIndexer1.query(d_id))
+    assert query_doc.text == 'title: this is mode1 from doc1'
+    assert query_doc.modality == 'mode1'
 
     chunkIndexer2 = BinaryPbIndexer.load(tmpdir.join('kvidx2.bin'))
     assert chunkIndexer2.size == 3
     d_id = list(chunkIndexer2.query_handler.header.keys())[0]
-    assert chunkIndexer2.query(d_id).text == ' body: this is mode2 from doc1'
-    assert chunkIndexer2.query(d_id).modality == 'mode2'
+
+    query_doc = jina_pb2.Document()
+    query_doc.ParseFromString(chunkIndexer2.query(d_id))
+    assert query_doc.text == ' body: this is mode2 from doc1'
+    assert query_doc.modality == 'mode2'
 
     del os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE']
