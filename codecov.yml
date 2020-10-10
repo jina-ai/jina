@@ -1,6 +1,8 @@
 codecov:
   # https://docs.codecov.io/docs/comparing-commits
   allow_coverage_offsets: true
+ignore:
+  - "jina/hub"
 coverage:
   status:
     project:
