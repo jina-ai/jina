@@ -42,3 +42,22 @@ class KVIndexDriver(BaseIndexDriver):
         keys = [uid.id2hash(doc.id) for doc in docs]
         values = [doc.SerializeToString() for doc in docs]
         self.exec_fn(keys, values)
+
+
+class IncrementIndexDriver(BaseIndexDriver):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._index_ids = set()
+
+    def _apply_all(
+        self,
+        docs: Iterable['jina_pb2.Document'],
+        *args,
+        **kwargs
+    ) -> None:
+        ids = [doc.id for doc in docs]
+        filtered_ids = self.exec_fn(ids)
+        self.logger.info(f'ids: {ids} -> {filtered_ids}')
+        _docs = [doc for doc in docs if doc.id in filtered_ids]
+        docs = _docs
+
