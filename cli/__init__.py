@@ -43,13 +43,15 @@ def _quick_ac_lookup():
                 print(k)
             exit()
         elif sys.argv[1] == 'completions':
-            if sys.argv[2] in ac_table['completions']:
-                compl = ac_table['completions'].get(' '.join(sys.argv[2:]).strip(), None) or \
-                        ac_table['completions'].get(sys.argv[2], None)
-                if compl:
+            # search with the longest shared prefix
+            for j in range(len(sys.argv), 2, -1):
+                _input = ' '.join(sys.argv[2:j]).strip()
+                if _input in ac_table['completions']:
+                    compl = ac_table['completions'][_input]
                     for k in compl:
                         if k not in sys.argv:
                             print(k)
+                    break
             exit()
 
 

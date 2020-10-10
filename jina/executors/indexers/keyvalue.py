@@ -7,7 +7,6 @@ from typing import Iterator, Optional
 import numpy as np
 
 from . import BaseKVIndexer
-from ...proto import jina_pb2, uid
 
 
 class BinaryPbIndexer(BaseKVIndexer):
@@ -68,7 +67,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size += 1
             # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
 
-    def query(self, key: int) -> Optional['jina_pb2.Document']:
+    def query(self, key: int) -> Optional[bytes]:
         # print(f'key={key}')
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
