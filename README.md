@@ -40,17 +40,17 @@
 
 </p>
 
-Jina is an open-source deep-learning powered search framework, empowering developers to create **cross-modal or multi-modal search systems for text, images, video, and audio**. Jina is a cloud-native project, and provides long-term support from a [full-time, venture-backed team](http://www.jina.ai).
+Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) on the cloud. Jina is long-term supported by a [full-time, venture-backed team](https://jina.ai).
 
-⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes with [cookiecutter](#with-cookiecutter).
+⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
 
-🧠 **First-Class AI models** - Jina is a new design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html) like Faiss, Annoy, Onnx, and more.
+🧠 **First-Class AI models** - Jina is a new design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
 
 🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, and more.
 
-🚀 **Production Ready** - Cloud-native features out-of-the-box, like containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
+🚀 **Production Ready** - Cloud-native features work out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
 
-🧩 **Plug & Play** - With [Jina Hub](https://github.com/jina-ai/jina-hub), you can extend Jina with simple Python scripts or Docker images optimized for your search domain.
+🧩 **Plug & Play** - With [Jina Hub](https://github.com/jina-ai/jina-hub), easily extend Jina with simple Python scripts or Docker images optimized for your search domain.
 
 ## Contents
 
@@ -83,14 +83,6 @@ pip install jina
 ```
 
 To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai).
-
-### With Cookiecutter
-
-```bash
-pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
-```
-
-With [Cookiecutter](https://github.com/cookiecutter/cookiecutter) you can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
 ### In a Docker Container
 
@@ -233,6 +225,16 @@ Intrigued? Play with different options:
 jina hello-world --help
 ```
 </details>
+
+### Create Your First Jina Project
+
+```bash
+pip install jina[devel]
+jina hub new --type app
+```
+
+You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
+
 
 ## Tutorials
 
