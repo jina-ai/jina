@@ -92,14 +92,13 @@ class ReduceAllDriver(ReduceDriver):
             self._traverse_apply(r.docs, doc_pointers=doc_pointers, *args, **kwargs)
 
     def _apply_all(
-        self,
-        docs: Iterable['jina_pb2.Document'],
-        context_doc: 'jina_pb2.Document',
-        field: str,
-        doc_pointers: Dict,
-        *args,
-        **kwargs
-    ) -> None:
+            self,
+            docs: Iterable['jina_pb2.Document'],
+            context_doc: 'jina_pb2.Document',
+            field: str,
+            doc_pointers: Dict,
+            *args,
+            **kwargs) -> None:
         if context_doc.id not in doc_pointers:
             doc_pointers[context_doc.id] = context_doc
         else:
@@ -108,15 +107,14 @@ class ReduceAllDriver(ReduceDriver):
 
 class ConcatEmbedDriver(ReduceDriver):
     def _apply_all(
-        self,
-        docs: Iterable['jina_pb2.Document'],
-        context_doc: 'jina_pb2.Document',
-        field: str,
-        doc_pointers: Dict,
-        concatenate=False,
-        *args,
-        **kwargs
-    ):
+            self,
+            docs: Iterable['jina_pb2.Document'],
+            context_doc: 'jina_pb2.Document',
+            field: str,
+            doc_pointers: Dict,
+            concatenate=False,
+            *args,
+            **kwargs):
         for doc in docs:
             if concatenate:
                 doc.embedding.CopyFrom(array2pb(np.concatenate(doc_pointers[doc.id], axis=0)))
