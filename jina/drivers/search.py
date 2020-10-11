@@ -17,8 +17,7 @@ class BaseSearchDriver(BaseExecutableDriver):
             method: str = 'query',
             traversal_paths: Tuple[str] = ('r', 'c'),
             *args,
-            **kwargs
-    ):
+            **kwargs):
         super().__init__(
             executor,
             method,
@@ -64,7 +63,7 @@ class KVSearchDriver(BaseSearchDriver):
             if serialized_doc:
                 r = jina_pb2.Document()
                 r.ParseFromString(serialized_doc)
-                
+
                 # TODO: this isn't perfect though, merge applies recursively on all children
                 #  it will duplicate embedding.shape if embedding is already there
                 if self._is_merge:

@@ -225,12 +225,12 @@ class BaseRecursiveDriver(BaseDriver):
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
     def _apply_all(
-        self,
-        docs: Iterable['jina_pb2.Document'],
-        context_doc: 'jina_pb2.Document',
-        field: str,
-        *args,
-        **kwargs
+            self,
+            docs: Iterable['jina_pb2.Document'],
+            context_doc: 'jina_pb2.Document',
+            field: str,
+            *args,
+            **kwargs
     ) -> None:
         """ Apply function works on a list of docs, modify the docs in-place
 
@@ -254,9 +254,9 @@ class BaseRecursiveDriver(BaseDriver):
             next_edge = path[0]
             for doc in docs:
                 if next_edge == 'm':
-                    self._traverse_rec(doc.matches, doc, "matches", path[1:], *args, **kwargs)
+                    self._traverse_rec(doc.matches, doc, 'matches', path[1:], *args, **kwargs)
                 if next_edge == 'c':
-                    self._traverse_rec(doc.chunks, doc, "chunks", path[1:], *args, **kwargs)
+                    self._traverse_rec(doc.chunks, doc, 'chunks', path[1:], *args, **kwargs)
         else:
             self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 

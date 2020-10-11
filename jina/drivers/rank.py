@@ -8,8 +8,8 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
-from ..proto import uid
 from ..executors.rankers import Chunk2DocRanker, Match2DocRanker
+from ..proto import uid
 
 if False:
     from ..proto import jina_pb2
@@ -153,13 +153,13 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
 
         if match_idx:
             match_idx = np.array(match_idx,
-                dtype=[
-                    (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
-                    (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
-                    (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
-                    (Chunk2DocRanker.COL_SCORE, np.float64)
-                ]
-            )
+                                 dtype=[
+                                     (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
+                                     (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
+                                     (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
+                                     (Chunk2DocRanker.COL_SCORE, np.float64)
+                                 ]
+                                 )
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             # These ranker will change the current matches
@@ -217,4 +217,3 @@ class Matches2DocRankDriver(BaseRankDriver):
 
     def _sort(self, docs_scores: 'np.ndarray') -> 'np.ndarray':
         return np.sort(docs_scores, order=Match2DocRanker.COL_SCORE)[::-1]
-

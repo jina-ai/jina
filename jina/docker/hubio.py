@@ -68,7 +68,6 @@ class HubIO:
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina.git'
         elif self.args.type == 'pod':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
-        cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite, output_dir=self.args.output_dir)
 
         try:
             cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite,
