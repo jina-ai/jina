@@ -1,8 +1,9 @@
+import os
+
 import pytest
 
 from jina.drivers.cache import BloomFilterDriver, EnvBloomFilterDriver
-from tests import random_docs, rm_files
-import os
+from tests import random_docs
 
 
 @pytest.mark.parametrize('num_hash', [4, 8])
