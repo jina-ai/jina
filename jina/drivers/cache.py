@@ -13,7 +13,7 @@ if False:
 
 
 class BloomFilterDriver(BaseRecursiveDriver):
-    """ Bloom filter to test whether an doc is observed or not based on its ``doc.id``.
+    """ Bloom filter to test whether a doc is observed or not based on its ``doc.id``.
     It is used to speed up answers in a key-value storage system.
     Values are stored on a disk which has slow access times. Bloom filter decisions are much faster.
     """
