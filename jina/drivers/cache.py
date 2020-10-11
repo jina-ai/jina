@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import math
 import os
 import struct
 from typing import Iterable
@@ -18,12 +19,11 @@ class BloomFilterDriver(BaseRecursiveDriver):
     Values are stored on a disk which has slow access times. Bloom filter decisions are much faster.
     """
 
-    def __init__(self, bit_array: int = 0, num_hash: int = 8, *args, **kwargs):
+    def __init__(self, bit_array: int = 0, num_hash: int = 4, *args, **kwargs):
         """
 
         :param bit_array: a bit array of m bits, all set to 0.
         :param num_hash: number of hash functions, can only be 4, 8.
-            larger value, slower, but more memory efficient
         :param args:
         :param kwargs:
         """
@@ -31,13 +31,18 @@ class BloomFilterDriver(BaseRecursiveDriver):
         self._bit_array = bit_array
         # unpack int64 (8 bytes) to eight uint8 (1 bytes)
         # to simulate a group of hash functions in bloom filter
-        if num_hash == 4:
+        if num_hash == 2:
+            fmt = 'I'
+        elif num_hash == 4:
             # 8 bytes/4 = 2 bytes = H (unsigned short)
-            fmt = 'H' * 4
+            fmt = 'H'
         elif num_hash == 8:
-            fmt = 'B' * 8
+            fmt = 'B'
         else:
             raise ValueError(f'"num_hash" must be 4 or 8 but given {num_hash}')
+        fmt = fmt * num_hash
+        self._num_bit = 2 ** (64 / num_hash)
+        self._num_hash = num_hash
         self._hash_funcs = lambda x: struct.unpack(fmt, uid.id2bytes(x))
 
     def __contains__(self, doc_id: str):
@@ -61,6 +66,14 @@ class BloomFilterDriver(BaseRecursiveDriver):
     def _flush(self):
         """Write the bloom filter by writing ``_bit_array`` back"""
         pass
+
+    @property
+    def false_positive_rate(self) -> float:
+        """Returns the false positive rate with 10000 docs.
+
+        The more items added, the larger the probability of false positives.
+        """
+        return math.pow(1 - math.exp(-(self._num_hash * 10000 / self._num_bit)), self._num_hash)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         for doc in docs:

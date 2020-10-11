@@ -1,9 +1,8 @@
-import os
-
 import pytest
 
 from jina.drivers.cache import BloomFilterDriver, EnvBloomFilterDriver
 from tests import random_docs
+import os
 
 
 @pytest.mark.parametrize('num_hash', [4, 8])
@@ -39,4 +38,4 @@ def test_cache_driver_env(num_hash):
         driver._apply_all(docs)
 
     assert os.environ.get(driver._env_name, None) is not None
-    print(os.environ.pop(driver._env_name))
+    os.environ.pop(driver._env_name)
