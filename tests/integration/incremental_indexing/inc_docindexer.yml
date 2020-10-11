@@ -1,8 +1,6 @@
 !CompoundExecutor
 components:
   - !DuplicateChecker
-    with:
-      index_filename: dup_checker.gz
     metas:
       workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
       name: duplicate_checker
