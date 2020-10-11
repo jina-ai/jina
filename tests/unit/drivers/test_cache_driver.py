@@ -25,6 +25,6 @@ def test_cache_driver_twice():
         ids = np.frombuffer(fp.read(), dtype=np.int64)
         assert len(ids) == 20
 
-    rm_files('test-cache.bin')
+    rm_files(['test-cache.bin'])
 
 
