@@ -19,21 +19,21 @@ class DuplicateChecker(BaseIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.ids = set()
+        self.indexed = set()
+        self._size = self._indexed_size
 
-    def _filter_ids(self, ids):
-        _filtered = []
-        for id in ids:
-            if id in self.ids:
-                continue
-            self.ids.add(id)
-            _filtered.append(id)
-        return _filtered
+    def _filter_ids(self, id_list):
+        is_indexed = []
+        for id in id_list:
+            _indexed = (id in self.indexed)
+            is_indexed.append(_indexed)
+            if not _indexed:
+                self.indexed.add(id)
+        return is_indexed
 
     def add(self, ids: Iterator[int], *args, **kwargs):
-        filtered_ids = self._filter_ids(ids)
-        self._size += len(filtered_ids)
-        return filtered_ids
+        is_indexed = self._filter_ids(ids)
+        return is_indexed
 
     def query(self, ids: Iterator[int], *args, **kwargs):
         return self._filter_ids(ids)
@@ -46,3 +46,7 @@ class DuplicateChecker(BaseIndexer):
 
     def get_query_handler(self):
         return self.EmptyHandler()
+
+    @property
+    def _indexed_size(self):
+        return len(self.indexed)

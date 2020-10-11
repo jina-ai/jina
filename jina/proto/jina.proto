@@ -113,6 +113,8 @@ message Document {
 
     // List of evaluations performed on the document
     repeated Evaluation evaluations = 23;
+
+    bool indexed = 24;
 }
 
 /**

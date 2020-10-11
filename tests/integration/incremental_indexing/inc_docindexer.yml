@@ -6,14 +6,14 @@ components:
     metas:
       workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
       name: duplicate_checker
-  - !NumpyIndexer
+  - !BinaryPbIndexer
     with:
-      index_filename: vec.gz
+      index_filename: doc.gz
     metas:
       workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
-      name: vec_idx
+      name: doc_idx
 metas:
-  name: inc_vecindexer
+  name: inc_docindexer
   workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
 requests:
   on:
@@ -21,12 +21,17 @@ requests:
       - !IncrementIndexDriver
         with:
           executor: duplicate_checker
-      - !VectorIndexDriver
+      - !ExcludeQL
         with:
-          executor: vec_idx
+          fields:
+            - chunks
+            - buffer
+      - !KVIndexDriver
+        with:
+          executor: doc_idx
     SearchRequest:
-      - !VectorSearchDriver
+      - !KVSearchDriver
         with:
-          executor: vec_idx
+          executor: doc_idx
     ControlRequest:
       - !ControlReqDriver {}

@@ -25,7 +25,8 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        embed_vecs, docs_pts, bad_doc_ids = extract_docs(docs, embedding=True)
+        _docs_to_index = [doc for doc in docs if not doc.indexed]
+        embed_vecs, docs_pts, bad_doc_ids = extract_docs(_docs_to_index, embedding=True)
 
         if bad_doc_ids:
             self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
@@ -39,8 +40,13 @@ class KVIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        keys = [uid.id2hash(doc.id) for doc in docs]
-        values = [doc.SerializeToString() for doc in docs]
+        keys = []
+        values = []
+        for doc in docs:
+            if doc.indexed:
+                continue
+            keys.append(uid.id2hash(doc.id))
+            values.append(doc.SerializeToString())
         self.exec_fn(keys, values)
 
 
@@ -56,8 +62,6 @@ class IncrementIndexDriver(BaseIndexDriver):
         **kwargs
     ) -> None:
         ids = [doc.id for doc in docs]
-        filtered_ids = self.exec_fn(ids)
-        self.logger.info(f'ids: {ids} -> {filtered_ids}')
-        _docs = [doc for doc in docs if doc.id in filtered_ids]
-        docs = _docs
-
+        _is_indexed = self.exec_fn(ids)
+        for doc, is_indexed in zip(docs, _is_indexed):
+            doc.indexed = is_indexed
