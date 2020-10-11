@@ -13,7 +13,7 @@ if False:
 
 
 class BloomFilterDriver(BaseRecursiveDriver):
-    """ Bloom filter to test whether an element is a member of a set.
+    """ Bloom filter to test whether an doc is observed or not based on its ``doc.id``.
     It is used to speed up answers in a key-value storage system.
     Values are stored on a disk which has slow access times. Bloom filter decisions are much faster.
     """
@@ -63,7 +63,7 @@ class BloomFilterDriver(BaseRecursiveDriver):
         pass
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        for idx, doc in enumerate(docs):
+        for doc in docs:
             if doc.id in self:
                 self.on_hit(doc)
             else:
