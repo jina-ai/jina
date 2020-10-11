@@ -56,6 +56,15 @@ def test_use_from_local_dir_flow_container_level():
         pass
 
 
+def test_use_executor_pretrained_model_except():
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'dummyhub_pretrained'), '--test-uses', '--raise-error'])
+    HubIO(args).build()
+
+    with Flow().add(uses='jinahub/pod.crafter.dummypretrainedexecutor:0.0.0'):
+        pass
+
+
 def test_use_from_cli_level():
     subprocess.check_call(['jina', 'pod', '--uses',
                            os.path.join(cur_dir, 'dummyhub/config.yml'),

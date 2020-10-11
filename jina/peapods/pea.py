@@ -17,7 +17,7 @@ from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart
+from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, PretrainedModelFileDoesNotExist
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
@@ -114,8 +114,10 @@ class BasePea(metaclass=PeaMeta):
 
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
+        self.is_pretrained_model_exception = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
         self.is_shutdown.clear()
+        self.is_pretrained_model_exception.clear()
 
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
@@ -197,6 +199,9 @@ class BasePea(metaclass=PeaMeta):
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad
+            except PretrainedModelFileDoesNotExist as exception:
+                self.is_pretrained_model_exception.set()
+                raise exception
         else:
             self.logger.warning('this BasePea has no executor attached, you may want to double-check '
                                 'if it is a mistake or on purpose (using this BasePea as router/map-reduce)')
@@ -349,6 +354,9 @@ class BasePea(metaclass=PeaMeta):
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
         except zmq.error.ZMQError:
             self.logger.critical('zmqlet can not be initiated')
+        except PretrainedModelFileDoesNotExist:
+            self.logger.critical('Executor depending on pretrained model file could not find the pretrained model')
+            self.is_pretrained_model_exception.set()
         except Exception as ex:
             # this captures the general exception from the following places:
             # - self.zmqlet.recv_message
@@ -402,7 +410,10 @@ class BasePea(metaclass=PeaMeta):
                 # return too early and the shutdown is set, means something fails!!
                 self.logger.critical(f'fail to start {self.__class__} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
-                raise PeaFailToStart
+                if self.is_pretrained_model_exception.is_set():
+                    raise PretrainedModelFileDoesNotExist
+                else:
+                    raise PeaFailToStart
             return self
         else:
             raise TimeoutError(
