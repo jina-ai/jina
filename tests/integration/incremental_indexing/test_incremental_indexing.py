@@ -92,19 +92,31 @@ def test_incremental_indexing_sequential_indexers_with_shards(tmpdir):
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     f = (Flow()
-         .add(uses=os.path.join(cur_dir, 'inc_vectorindexer.yml'), shards=1)
-         .add(uses=os.path.join(cur_dir, 'inc_docindexer.yml'), shards=1))
+         .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
+              uses_before='_prune_indexed_before',
+              shards=4,
+              separated_workspace=True)
+         .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
+              uses_before='_prune_indexed_before',
+              shards=4,
+              separated_workspace=True))
     with f:
-        f.index(duplicate_docs[0: 500])
-        # f.index(duplicate_docs)
+        f.index(duplicate_docs[:500])
+        f.index(duplicate_docs)
 
-    # with BaseExecutor.load(os.path.join(tmpdir, 'vec_idx.bin')) as vector_indexer:
-    #     assert isinstance(vector_indexer, NumpyIndexer)
-    #     assert vector_indexer._size == num_uniq_docs
-    #
-    # with BaseExecutor.load(os.path.join(tmpdir, 'doc_idx.bin')) as doc_indexer:
-    #     assert isinstance(doc_indexer, BinaryPbIndexer)
-    #     assert doc_indexer._size == num_uniq_docs
+    indexed_size = 0
+    for shard_idx in range(4):
+        with BaseExecutor.load(os.path.join(tmpdir, f'vec_idx-{shard_idx+1}', 'vec_idx.bin')) as vector_indexer:
+            assert isinstance(vector_indexer, NumpyIndexer)
+            indexed_size += vector_indexer._size
+    assert indexed_size == num_uniq_docs
+
+    indexed_size = 0
+    for shard_idx in range(4):
+        with BaseExecutor.load(os.path.join(tmpdir, f'doc_idx-{shard_idx+1}', 'doc_idx.bin')) as doc_indexer:
+            assert isinstance(doc_indexer, BinaryPbIndexer)
+            indexed_size += doc_indexer._size
+    assert indexed_size == num_uniq_docs
 
     del os.environ['JINA_TEST_INCREMENTAL_INDEX_WORKSPACE']
 

@@ -10,7 +10,7 @@ import ruamel.yaml.constructor
 from ..enums import OnErrorSkip
 from ..executors.compound import CompoundExecutor
 from ..helper import yaml
-from ..proto import jina_pb2
+from ..proto import jina_pb2, is_data_request
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -240,7 +240,8 @@ class BaseRecursiveDriver(BaseDriver):
         """
 
     def __call__(self, *args, **kwargs):
-        self._traverse_apply(self.req.docs, *args, **kwargs)
+        if is_data_request(self.req):
+            self._traverse_apply(self.req.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         for path in self._traversal_paths:

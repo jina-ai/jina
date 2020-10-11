@@ -1,0 +1,9 @@
+!DuplicateChecker
+with: {}
+requests:
+  on:
+    SearchRequest:
+      - !RouteDriver {}
+    [IndexRequest, ControlRequest]:
+      - !IncrementIndexDriver {}
+      - !RouteDriver {}

@@ -18,7 +18,7 @@ class DuplicateChecker(BaseIndexer):
             pass
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(index_filename='', *args, **kwargs)
         self.indexed = set()
         self._size = self._indexed_size
 
