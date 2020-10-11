@@ -81,6 +81,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4854,4 +4855,61 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```01ff747a```](https://github.com/jina-ai/jina/commit/01ff747a1ae0f9e39ea4e47db0eb80530bdec7a8)] __-__ hotfix release 0.6.1 (*Han Xiao*)
  - [[```5fab4642```](https://github.com/jina-ai/jina/commit/5fab464215075136e1ffbf3b7ad44c7c5d044952)] __-__ __version__: the next version will be 0.5.9 (*Jina Dev Bot*)
  - [[```643166dd```](https://github.com/jina-ai/jina/commit/643166dd7d62c7fcf151f4187cee5049dd40e6da)] __-__ hotfix weekly release (*Han Xiao*)
+
+<a name=release-note-0-6-5></a>
+## Release Note (`0.6.5`)
+
+> Release time: 2020-10-11 23:11:10
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Han Xiao,  bwanglzu,  Wang Bo,  Joan Fontanals,  Deepankar Mahapatro,  Alex C-G,  Maximilian Werk,  Pratik Bhavsar,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a1fe702f```](https://github.com/jina-ai/jina/commit/a1fe702fe3e8874e7727c339268a12c8bc0bb2ce)] __-__ add evaluation flow and first ranking evaluators (#1035) (*Joan Fontanals*)
+ - [[```e94dec5e```](https://github.com/jina-ai/jina/commit/e94dec5e6de8587d77e6753c071ce295830aba5b)] __-__ __ac__: autocomplet recognize hub subcommands (*Han Xiao*)
+ - [[```c7993b58```](https://github.com/jina-ai/jina/commit/c7993b58db8a7cd98b3caec9db3cae14f44e289e)] __-__ emphasise slack, link direct to general channel (*Alex C-G*)
+
+### 🐞 Bug fixes
+
+ - [[```b5cf84f7```](https://github.com/jina-ai/jina/commit/b5cf84f7ed1b0d27c45e468f5aeeb19445d8fe7a)] __-__ __hub__: remove duplicate line in cookiecutter (*Han Xiao*)
+ - [[```4ad163e9```](https://github.com/jina-ai/jina/commit/4ad163e9241c00715f210d373d9c97e0c967b934)] __-__ __indexer__: fix arg type for indexers (*Han Xiao*)
+ - [[```85917f3b```](https://github.com/jina-ai/jina/commit/85917f3b8846db7c007804934517d3be66cae7be)] __-__ adding override_doc_id condition back (*Deepankar Mahapatro*)
+ - [[```11816f29```](https://github.com/jina-ai/jina/commit/11816f29ea0d07e710c6a6d10869aea149a2e001)] __-__ function signature for add and query for binary pb indexer (*Deepankar Mahapatro*)
+ - [[```24e7ad66```](https://github.com/jina-ai/jina/commit/24e7ad662ac2b26e955b9b6380bf7b4c4ff71896)] __-__ inputlines should always yield (*Maximilian Werk*)
+ - [[```0a625070```](https://github.com/jina-ai/jina/commit/0a625070e6ae397bf20f8b933d75c7b9fdb0339d)] __-__ general png_convertor (*Pratik Bhavsar*)
+ - [[```451dbf4b```](https://github.com/jina-ai/jina/commit/451dbf4b4e428ca781aec0505d10182a84dd7217)] __-__ general png_convertor draft (*Pratik Bhavsar*)
+ - [[```30a3fc17```](https://github.com/jina-ai/jina/commit/30a3fc177a61a8e602aa3e95aaf364b6c696bfe2)] __-__ changed aws to github url for fashion mnist (*Pratik Bhavsar*)
+ - [[```0fcb7b35```](https://github.com/jina-ai/jina/commit/0fcb7b357cb8c820e1a76779fc421f00e159fd7e)] __-__ blob2pnguri for color images (*Pratik Bhavsar*)
+
+### 🚧 Code Refactoring
+
+ - [[```19ee0286```](https://github.com/jina-ai/jina/commit/19ee0286f0e82778b52c8c9d8a073cbaff3b8364)] __-__ __pb__: request_id is now a uuid1 str (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```f3631ced```](https://github.com/jina-ai/jina/commit/f3631ced736c89f02bdb7050b5da62de4d71465b)] __-__ force ignore hub directory in config (*bwanglzu*)
+ - [[```6d0443a3```](https://github.com/jina-ai/jina/commit/6d0443a3709ec48ba4150018bed708672001ba58)] __-__ tune codecov and ci flow (#1054) (*Wang Bo*)
+ - [[```f7fee590```](https://github.com/jina-ai/jina/commit/f7fee590859bad457d6009c8187a1620fc02d4fa)] __-__ refactor io test (#1052) (*Wang Bo*)
+ - [[```193bc48d```](https://github.com/jina-ai/jina/commit/193bc48d49e20243343927b4b953b0872590a8d1)] __-__ fixing add for binary pb indexer (*Deepankar Mahapatro*)
+ - [[```660191f4```](https://github.com/jina-ai/jina/commit/660191f4078341814236af16a2a4a492778259fc)] __-__ binary pb indexer changes (*Deepankar Mahapatro*)
+ - [[```31ffa8c6```](https://github.com/jina-ai/jina/commit/31ffa8c62c0dbe28166ff6ae877f92d9e76c4f9e)] __-__ removed caching (*Pratik Bhavsar*)
+ - [[```995b1a40```](https://github.com/jina-ai/jina/commit/995b1a401b4a3c6cbba07ecf8526c3e8cf658f8f)] __-__ caching environment for faster runs (*Pratik Bhavsar*)
+ - [[```f2ef60fd```](https://github.com/jina-ai/jina/commit/f2ef60fdc1153daa77c021d805eef1dc235e2cd4)] __-__ changed test to original (*Pratik Bhavsar*)
+ - [[```1d76bb17```](https://github.com/jina-ai/jina/commit/1d76bb17ff1f5ca0f7e8012a614f6c0becd5c7be)] __-__ changed to apply_all in test and action caching (*Pratik Bhavsar*)
+ - [[```3cda097c```](https://github.com/jina-ai/jina/commit/3cda097c236e1896b52c460caa85e587abd51208)] __-__ checking only convert driver test (*Pratik Bhavsar*)
+ - [[```7bfc38f8```](https://github.com/jina-ai/jina/commit/7bfc38f8ce6a7fe9b3e1bfc7386f7127e804b2ab)] __-__ added convert driver test for blob2pnguri (*Pratik Bhavsar*)
+
+### 🍹 Other Improvements
+
+ - [[```7b73c279```](https://github.com/jina-ai/jina/commit/7b73c279a0f4c51709de9a7aa8769f32a5cebe8d)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```ae6a0f0d```](https://github.com/jina-ai/jina/commit/ae6a0f0d35c5a7d4be60b3cb7f4d45f25a75accc)] __-__ fix code styling (*Han Xiao*)
+ - [[```fff00692```](https://github.com/jina-ai/jina/commit/fff006922c9dc32ed4a04f7207eeecfa20cd2599)] __-__ fix readme wordings (*Han Xiao*)
+ - [[```f522b72b```](https://github.com/jina-ai/jina/commit/f522b72be38454b84580f9fb3e8a5b687c065dfa)] __-__ remove empty section header (*Han Xiao*)
+ - [[```aed25abd```](https://github.com/jina-ai/jina/commit/aed25abd9e43afca22fac19cbd83750ba4b2e329)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5cd4fc9e```](https://github.com/jina-ai/jina/commit/5cd4fc9e6e65f8bf2e8e439c534fb404a4a612ed)] __-__ __version__: the next version will be 0.6.5 (*Jina Dev Bot*)
+ - [[```d95e4e72```](https://github.com/jina-ai/jina/commit/d95e4e72e7c8acb0278ea049aa56905ba97271d3)] __-__ __version__: the next version will be 0.6.4 (*Jina Dev Bot*)
 
