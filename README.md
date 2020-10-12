@@ -421,3 +421,17 @@ Jina is an open-source project. [We are hiring](https://jobs.jina.ai) full-stack
 Copyright (c) 2020 Jina AI Limited. All rights reserved.
 
 Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
+
+
+# Future scope of Jina opensource framework
+How have you seen AI change over the timespan you’ve been involved in the field?
+
+I see AI development from two aspects:
+
+
+The first aspect is from 0 to 1. Zero-to-one is all about hardcore and fundamental research, e.g., new learning and training paradigms, new computing infrastructure, and new hardware architecture.
+
+The second aspect is from 1 to N. One-to-N focuses more on usability and engineering, addressing problems such as adapting an algorithm from one domain to multiple domains; serving a model to billions of users; improving existing user experience with AI algorithms; and piping a set of algorithms to automate the workflow, all of which belong to the one-to-N innovation.
+
+Before 2012, which I call it the pre-deep learning era, zero-to-one innovation was quite popular. People debated on the best "intelligent" algorithm to utilize data, with different supporters backing different data-driven methods, including decision forests, margin-based approaches, kernel methods, graphical models, parametric and non-parametric Bayesian models, and neural networks. They keep iterating and improving their favorite methodology until it outperformed its peers in some benchmark. Deep neural networks also joined this party, though were neither the earliest nor the buzziest attendee.
+Things have changed since 2013. As more and more researchers and engineers have recognized deep neural networks, people have realized that deep learning is not just hype, but rather that it can solve many complicated problems with a much higher accuracy than the traditional "shallow learning." Having agreed on the methodology, many move away from the zero-to-one and join the party of one-to-N innovation (including myself). Now in 2020, deep neural networks are the de facto solution for image classification, machine translation, and speech recognition. It serves as the backbone of many everyday products such as facial payment, voice assistants, automatic customer service, and K-12 education.
