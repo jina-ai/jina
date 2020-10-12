@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from jina.drivers.cache import BaseCacheDriver
-from jina.executors.indexers.cache import InMemoryIDCache
+from jina.executors.indexers.cache import DocIDCache
 from jina.proto import jina_pb2, uid
 from tests import random_docs, rm_files
 
@@ -25,7 +25,7 @@ class MockCacheDriver(BaseCacheDriver):
 def test_cache_driver_twice():
     docs = list(random_docs(10))
     driver = MockCacheDriver()
-    with InMemoryIDCache(filename) as executor:
+    with DocIDCache(filename) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, pea=None)
 
@@ -50,7 +50,7 @@ def test_cache_driver_from_file():
         fp.write(np.array([uid.id2hash(d.id) for d in docs], dtype=np.int64).tobytes())
 
     driver = MockCacheDriver()
-    with InMemoryIDCache(filename) as executor:
+    with DocIDCache(filename) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, pea=None)
 

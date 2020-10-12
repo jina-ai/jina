@@ -130,7 +130,10 @@ def dunder_get(_dict: Any, key: str) -> Any:
     if isinstance(part1, int):
         result = guard_iter(_dict)[part1]
     elif isinstance(_dict, dict) or isinstance(_dict, Struct):
-        result = _dict[part1]
+        if part1 in _dict:
+            result = _dict[part1]
+        else:
+            result = None
     else:
         result = getattr(_dict, part1)
 

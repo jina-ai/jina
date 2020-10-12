@@ -25,8 +25,8 @@ def test_dunder_get():
     assert dunder_get(d, 'tags__a') == 'hello'
 
     # Error on invalid key
-    with pytest.raises(Exception):
-        dunder_get({'a': {'b': 5}}, 'a__c')
+
+    assert dunder_get({'a': {'b': 5}}, 'a__c') is None
     # Error if key is too nested
     with pytest.raises(Exception):
         dunder_get({'a': {'b': 5}, 'c': 8}, 'a__b__c')

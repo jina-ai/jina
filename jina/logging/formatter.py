@@ -27,12 +27,15 @@ class ColorFormatter(Formatter):
 
 
 class PlainFormatter(Formatter):
-    """Remove all control chars from the log and format it as plain text """
+    """Remove all control chars from the log and format it as plain text
+
+    Also restrict the max-length of msg to 512
+    """
 
     def format(self, record):
         cr = copy(record)
         if isinstance(cr.msg, str):
-            cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))
+            cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))[:512]
         return super().format(cr)
 
 
