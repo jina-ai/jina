@@ -1,11 +1,12 @@
 from jina.flow import Flow
 
 from tests import random_docs
-
+import pytest
 from jina.executors import BaseExecutor
 import os
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def test_load_driver():
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/route.yml'))
@@ -15,6 +16,8 @@ def test_load_driver():
     assert len(b._drivers['ControlRequest']) == len(c._drivers['ControlRequest'])
     print(c._drivers)
 
+
+@pytest.mark.skip('https://github.com/jina-ai/jina/pull/1070')
 def test_route():
     docs = random_docs(num_docs=2, chunks_per_doc=2)
     f = (Flow()
@@ -24,5 +27,3 @@ def test_route():
 
     with f:
         f.index(docs)
-
-test_load_driver()

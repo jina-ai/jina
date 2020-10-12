@@ -3,7 +3,7 @@ with:
   index_path: cache.tmp
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+    [SearchRequest, TrainRequest, IndexRequest, ControlRequest, EvaluateRequest]:
       - !RouteDriver {}
     IndexRequest:
       - !TaggingCacheDriver
