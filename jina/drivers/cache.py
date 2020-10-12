@@ -2,6 +2,9 @@ from typing import Iterable, Any
 
 from .index import BaseIndexDriver
 
+if False:
+    from ..proto import jina_pb2
+
 
 class BaseCacheDriver(BaseIndexDriver):
 
