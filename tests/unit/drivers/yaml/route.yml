@@ -1,0 +1,12 @@
+!BaseExecutor
+with: {}
+metas:
+  name: route
+requests:
+  on:
+    ControlRequest:
+      - !RouteDriver {}
+    SearchRequest:
+      - !RouteDriver {}
+    IndexRequest:
+      - !RouteDriver {}
