@@ -1,0 +1,15 @@
+!DocIDCache
+with:
+  index_path: cache.tmp
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+      - !RouteDriver {}
+    IndexRequest:
+      - !TaggingCacheDriver
+        with:
+          tags:
+            is_indexed: true
+      - !FilterQL
+        with:
+          lookups: {tags__is_indexed__neq: true}

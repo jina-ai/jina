@@ -1,4 +1,4 @@
-from typing import Iterable, Any
+from typing import Iterable, Any, Dict
 
 from .index import BaseIndexDriver
 
@@ -31,3 +31,17 @@ class BaseCacheDriver(BaseIndexDriver):
         :return:
         """
         pass
+
+
+class TaggingCacheDriver(BaseCacheDriver):
+    """Label the hit-cache docs with certain tags """
+
+    def __init__(self, tags: Dict, *args, **kwargs):
+        """
+        :param tags: the tags to be updated on hit docs
+        """
+        super().__init__(*args, **kwargs)
+        self._tags = tags
+
+    def on_hit(self, req_doc: 'jina_pb2.Document', hit_result: Any) -> None:
+        req_doc.tags.update(self._tags)

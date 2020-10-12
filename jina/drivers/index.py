@@ -42,5 +42,3 @@ class KVIndexDriver(BaseIndexDriver):
         keys = [uid.id2hash(doc.id) for doc in docs]
         values = [doc.SerializeToString() for doc in docs]
         self.exec_fn(keys, values)
-
-

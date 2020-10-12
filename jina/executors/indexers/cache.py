@@ -6,7 +6,7 @@ from . import BaseKVIndexer
 from ...proto import uid
 
 
-class InMemoryIDCache(BaseKVIndexer):
+class DocIDCache(BaseKVIndexer):
     """Store doc ids in a int64 set and persistent it to a numpy array """
 
     def __init__(self, *args, **kwargs):
