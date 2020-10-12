@@ -13,6 +13,7 @@ from typing import Dict, Optional, Union
 
 import zmq
 
+from jina import __unable_to_load_pretrained_model_msg__
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
@@ -355,7 +356,7 @@ class BasePea(metaclass=PeaMeta):
         except zmq.error.ZMQError:
             self.logger.critical('zmqlet can not be initiated')
         except PretrainedModelFileDoesNotExist:
-            self.logger.critical('Executor depending on pretrained model file could not find the pretrained model')
+            self.logger.critical(__unable_to_load_pretrained_model_msg__)
             self.is_pretrained_model_exception.set()
         except Exception as ex:
             # this captures the general exception from the following places:
