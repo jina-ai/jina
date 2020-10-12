@@ -1,41 +1,68 @@
+import os
+from typing import Any
+
+import numpy as np
 import pytest
 
-from jina.drivers.cache import BloomFilterDriver, EnvBloomFilterDriver
-from tests import random_docs
-import os
+from jina.drivers.cache import BaseCacheDriver
+from jina.executors.indexers.cache import InMemoryIDCache
+from jina.proto import jina_pb2, uid
+from tests import random_docs, rm_files
+
+filename = 'test-tmp.bin'
 
 
-@pytest.mark.parametrize('num_hash', [4, 8])
-def test_cache_driver_twice(num_hash):
+class MockCacheDriver(BaseCacheDriver):
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+    def on_hit(self, req_doc: 'jina_pb2.Document', hit_result: Any) -> None:
+        raise NotImplementedError
+
+
+def test_cache_driver_twice():
     docs = list(random_docs(10))
-    driver = BloomFilterDriver(num_hash=num_hash)
-    driver._apply_all(docs)
+    driver = MockCacheDriver()
+    with InMemoryIDCache(filename) as executor:
+        assert not executor.handler_mutex
+        driver.attach(executor=executor, pea=None)
 
-    with pytest.raises(NotImplementedError):
-        # duplicate docs
-        driver._apply_all(docs)
+        driver._traverse_apply(docs)
 
-    # new docs
+        with pytest.raises(NotImplementedError):
+            # duplicate docs
+            driver._traverse_apply(docs)
+
+        # new docs
+        docs = list(random_docs(10))
+        driver._traverse_apply(docs)
+
+        # check persistence
+        assert os.path.exists(filename)
+        rm_files([filename])
+
+
+def test_cache_driver_from_file():
     docs = list(random_docs(10))
-    driver._apply_all(docs)
+    with open(filename, 'wb') as fp:
+        fp.write(np.array([uid.id2hash(d.id) for d in docs], dtype=np.int64).tobytes())
 
+    driver = MockCacheDriver()
+    with InMemoryIDCache(filename) as executor:
+        assert not executor.handler_mutex
+        driver.attach(executor=executor, pea=None)
 
-@pytest.mark.parametrize('num_hash', [4, 8])
-def test_cache_driver_env(num_hash):
-    docs = list(random_docs(10))
-    driver = EnvBloomFilterDriver(num_hash=num_hash)
-    assert os.environ.get(driver._env_name, None) is None
-    driver._apply_all(docs)
+        with pytest.raises(NotImplementedError):
+            # duplicate docs
+            driver._traverse_apply(docs)
 
-    with pytest.raises(NotImplementedError):
-        # duplicate docs
-        driver._apply_all(docs)
+        # new docs
+        docs = list(random_docs(10))
+        driver._traverse_apply(docs)
 
-    # now start a new one
-    # should fail again, as bloom filter is persisted in os.env
-    with pytest.raises(NotImplementedError):
-        driver = EnvBloomFilterDriver(num_hash=num_hash)
-        driver._apply_all(docs)
+        # check persistence
+        assert os.path.exists(filename)
+        rm_files([filename])
 
-    assert os.environ.get(driver._env_name, None) is not None
-    os.environ.pop(driver._env_name)

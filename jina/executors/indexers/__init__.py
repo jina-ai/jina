@@ -2,16 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, Union, List, Iterator, Optional
+from typing import Tuple, Union, List, Iterator, Optional, Any
 
 import numpy as np
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
 from ...helper import call_obj_fn, cached_property, get_readable_size
-
-if False:
-    from ...proto import jina_pb2
 
 
 class BaseIndexer(BaseExecutor):
@@ -202,13 +199,16 @@ class BaseKVIndexer(BaseIndexer):
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
-    def query(self, key: int) -> Optional['jina_pb2.Document']:
+    def query(self, key: Any) -> Optional[Any]:
         """ Find the protobuf chunk/doc using id
 
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
         raise NotImplementedError
+
+    def __getitem__(self, key: Any) -> Optional[Any]:
+        return self.query(key)
 
 
 class CompoundIndexer(CompoundExecutor):
