@@ -7,8 +7,8 @@ requests:
 #    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
 #      - !RouteDriver {}
     ControlRequest:
-      - !ControlReqDriver {}
       - !RouteDriver {}
+      - !ControlReqDriver {}
     SearchRequest:
       - !RouteDriver {}
     IndexRequest:
