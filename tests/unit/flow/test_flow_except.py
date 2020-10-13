@@ -1,4 +1,7 @@
+import pytest
 from jina.executors.crafters import BaseCrafter
+from jina.executors.encoders import BaseEncoder
+from jina.excepts import PretrainedModelFileDoesNotExist
 from jina.flow import Flow
 from jina.proto import jina_pb2
 
@@ -6,6 +9,11 @@ from jina.proto import jina_pb2
 class DummyCrafter(BaseCrafter):
     def craft(self, *args, **kwargs):
         return 1 / 0
+
+
+class PretrainedModelEncoder(BaseEncoder):
+    def post_init(self):
+        raise PretrainedModelFileDoesNotExist
 
 
 def test_bad_flow():
@@ -61,3 +69,9 @@ def test_except_with_parallel():
     with f:
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+
+
+def test_except_pretrained_model_file():
+    with pytest.raises(PretrainedModelFileDoesNotExist):
+        with Flow().add(name='r2', uses='!PretrainedModelEncoder', parallel=1):
+            pass

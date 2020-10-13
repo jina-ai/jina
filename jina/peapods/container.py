@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from .pea import BasePea
-from .. import __ready_msg__
+from .. import __ready_msg__, __unable_to_load_pretrained_model_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger
 from ..logging.queue import clear_queues
@@ -91,6 +91,8 @@ class ContainerPea(BasePea):
                     if __ready_msg__ in msg:
                         self.is_ready.set()
                         self.logger.success(__ready_msg__)
+                    if __unable_to_load_pretrained_model_msg__ in msg:
+                        self.is_pretrained_model_exception.set()
                     logger.info(line.strip().decode())
             except docker.errors.NotFound:
                 self.logger.error('the container can not be started, check your arguments, entrypoint')
