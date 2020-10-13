@@ -1,0 +1,19 @@
+on:
+  IndexRequest:
+    - !TaggingCacheDriver
+      with:
+        executor: DocIDCache
+        tags:
+          is_indexed: true
+    - !FilterQL
+      with:
+        lookups: {tags__is_indexed__neq: true}
+    - !VectorIndexDriver
+      with:
+        executor: BaseVectorIndexer
+  SearchRequest:
+    - !VectorSearchDriver
+      with:
+        executor: BaseVectorIndexer
+  ControlRequest:
+    - !ControlReqDriver {}

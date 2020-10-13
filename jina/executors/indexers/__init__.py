@@ -78,6 +78,7 @@ class BaseIndexer(BaseExecutor):
         .. note::
             :attr:`query_handler` and :attr:`write_handler` are by default mutex
         """
+        r = None
         if (not self.handler_mutex or not self.is_handler_loaded) and self.is_exist:
             r = self.get_query_handler()
             if r is None:
@@ -87,7 +88,14 @@ class BaseIndexer(BaseExecutor):
             else:
                 self.logger.info(f'indexer size: {self.size}')
                 self.is_handler_loaded = True
-            return r
+        if r is None:
+            r = self.null_query_handler
+        return r
+
+    @cached_property
+    def null_query_handler(self) -> Optional[Any]:
+        """The empty query handler when :meth:`get_query_handler` fails"""
+        return
 
     @property
     def is_exist(self) -> bool:
@@ -209,6 +217,10 @@ class BaseKVIndexer(BaseIndexer):
 
     def __getitem__(self, key: Any) -> Optional[Any]:
         return self.query(key)
+
+
+class UniqueVectorIndexer(CompoundExecutor):
+    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocIDCache` """
 
 
 class CompoundIndexer(CompoundExecutor):
