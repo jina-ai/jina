@@ -7,10 +7,9 @@ import struct
 import urllib.parse
 import urllib.request
 import zlib
+from typing import Iterable
 
 import numpy as np
-
-from typing import Iterable
 
 from . import BaseRecursiveDriver
 from .helper import guess_mime, array2pb, pb2array
@@ -18,6 +17,7 @@ from .helper import guess_mime, array2pb, pb2array
 if False:
     from ..proto import jina_pb2
     from PIL import Image
+
 
 class BaseConvertDriver(BaseRecursiveDriver):
 
@@ -107,7 +107,8 @@ class NdArray2PngURI(BaseConvertDriver):
     """Simple DocCrafter used in :command:`jina hello-world`,
         it reads ``NdArray`` into base64 png and stored in ``uri``"""
 
-    def __init__(self, target='uri', width: int = 28, height: int = 28, resize_method: str = 'BILINEAR', *args, **kwargs):
+    def __init__(self, target='uri', width: int = 28, height: int = 28, resize_method: str = 'BILINEAR', *args,
+                 **kwargs):
         super().__init__(target, *args, **kwargs)
         self.width = width
         self.height = height
@@ -149,16 +150,16 @@ class NdArray2PngURI(BaseConvertDriver):
         return img_byte_arr
 
     def png_convertor(self, arr: np.array):
-        from PIL import Image
-
         arr = arr.astype(np.uint8)
 
         if len(arr.shape) == 1:
             return self.png_convertor_1d(arr)
         elif len(arr.shape) == 2:
+            from PIL import Image
             im = Image.fromarray(arr).convert('L')
             im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
         elif len(arr.shape) == 3:
+            from PIL import Image
             im = Image.fromarray(arr).convert('RGB')
             im = im.resize((self.width, self.height), getattr(Image, self.resize_method))
         else:
@@ -166,7 +167,7 @@ class NdArray2PngURI(BaseConvertDriver):
 
         png_bytes = NdArray2PngURI.image_to_byte_array(im, format='PNG')
         return 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
-    
+
     def convert(self, arr: np.array):
         arr.uri = self.png_convertor(arr)
 
