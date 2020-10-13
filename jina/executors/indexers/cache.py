@@ -1,3 +1,4 @@
+import tempfile
 from typing import Optional
 
 import numpy as np
@@ -20,6 +21,12 @@ class BaseCache(BaseKVIndexer):
 
 class DocIDCache(BaseCache):
     """Store doc ids in a int64 set and persistent it to a numpy array """
+
+    def __init__(self, index_filename: str = None, *args, **kwargs):
+        if not index_filename:
+            # create a new temp file if not exist
+            index_filename = tempfile.NamedTemporaryFile(delete=False).name
+        super().__init__(index_filename, *args, **kwargs)
 
     def add(self, doc_id: str, *args, **kwargs):
         d_id = uid.id2hash(doc_id)

@@ -44,6 +44,27 @@ def test_cache_driver_twice():
         rm_files([filename])
 
 
+def test_cache_driver_tmpfile():
+    docs = list(random_docs(10))
+    driver = MockCacheDriver()
+    with DocIDCache() as executor:
+        assert not executor.handler_mutex
+        driver.attach(executor=executor, pea=None)
+
+        driver._traverse_apply(docs)
+
+        with pytest.raises(NotImplementedError):
+            # duplicate docs
+            driver._traverse_apply(docs)
+
+        # new docs
+        docs = list(random_docs(10))
+        driver._traverse_apply(docs)
+
+    # check persistence
+    assert os.path.exists(executor.index_abspath)
+
+
 def test_cache_driver_from_file():
     docs = list(random_docs(10))
     with open(filename, 'wb') as fp:
@@ -65,4 +86,3 @@ def test_cache_driver_from_file():
         # check persistence
         assert os.path.exists(filename)
         rm_files([filename])
-
