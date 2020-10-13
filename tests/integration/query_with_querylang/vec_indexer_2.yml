@@ -1,0 +1,48 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec_2.gz
+    metas:
+      name: vec_2
+      workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+  - !BinaryPbIndexer
+    with:
+      index_filename: doc_2.gz
+    metas:
+      name: doc_2
+      workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+metas:
+  name: idx_2
+  workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: vec_2
+          traversal_path: ['r']
+      - !KVSearchDriver
+        with:
+          executor: doc_2
+          traversal_paths: ['m']
+    IndexRequest:
+      - !FilterQL
+        with:
+          lookups: {tags__label: label2}
+          traversal_paths: ['r']
+      - !VectorIndexDriver
+        with:
+          executor: vec_2
+          traversal_paths: ['r']
+      - !ExcludeQL
+        with:
+          fields:
+            - embedding
+          traversal_paths: ['r']
+      - !KVIndexDriver
+        with:
+          executor: doc_2
+          traversal_paths: ['r']

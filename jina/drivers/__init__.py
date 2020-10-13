@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import inspect
 from functools import wraps
 from typing import Any, Dict, Callable, Tuple, Iterable, Iterator
+from google.protobuf.struct_pb2 import Struct
 
 import ruamel.yaml.constructor
 
@@ -83,7 +84,8 @@ class QuerySetReader:
             for q in self.queryset:
                 if (not q.disabled and self.__class__.__name__ == q.name and
                         q.priority > self._priority and key in q.parameters):
-                    return q.parameters[key]
+                    ret = q.parameters[key]
+                    return dict(ret) if isinstance(ret, Struct) else ret
         return getattr(self, f'_{key}', default)
 
     def __getattr__(self, name: str):

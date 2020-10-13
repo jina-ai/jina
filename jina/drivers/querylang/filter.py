@@ -37,10 +37,12 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         self._lookups = Q(**lookups) if lookups else None
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+
         if self.lookups:
+            _lookups = Q(**self.lookups) if isinstance(self.lookups, Dict) else self.lookups
             miss_idx = []
             for idx, doc in enumerate(docs):
-                if not self.lookups.evaluate(doc):
+                if not _lookups.evaluate(doc):
                     miss_idx.append(idx)
 
             # delete non-exit matches in reverse
