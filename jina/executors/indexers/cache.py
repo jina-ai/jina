@@ -3,15 +3,23 @@ from typing import Optional
 import numpy as np
 
 from . import BaseKVIndexer
+from ...helper import cached_property
 from ...proto import uid
 
 
-class DocIDCache(BaseKVIndexer):
-    """Store doc ids in a int64 set and persistent it to a numpy array """
+class BaseCache(BaseKVIndexer):
+    """Base class of the cache inherited :class:`BaseKVIndexer`
+
+    The difference between a cache and a :class:`BaseKVIndexer` is the ``handler_mutex`` is released in cache, this allows one to query-while-indexing.
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.handler_mutex = False  #: for Cache we need to release the handler mutex to allow RW at the same time
+
+
+class DocIDCache(BaseCache):
+    """Store doc ids in a int64 set and persistent it to a numpy array """
 
     def add(self, doc_id: str, *args, **kwargs):
         d_id = uid.id2hash(doc_id)
@@ -20,24 +28,17 @@ class DocIDCache(BaseKVIndexer):
         self.write_handler.write(np.int64(d_id).tobytes())
 
     def query(self, doc_id: str, *args, **kwargs) -> Optional[bool]:
-        if self.query_handler:
-            d_id = uid.id2hash(doc_id)
-            return (d_id in self.query_handler) or None
-
-    @property
-    def is_exist(self) -> bool:
-        """ Always return true, delegate to :meth:`get_query_handler`
-
-        :return: True
-        """
-        return True
+        d_id = uid.id2hash(doc_id)
+        return (d_id in self.query_handler) or None
 
     def get_query_handler(self):
-        if super().is_exist:
-            with open(self.index_abspath, 'rb') as fp:
-                return set(np.frombuffer(fp.read(), dtype=np.int64))
-        else:
-            return set()
+        with open(self.index_abspath, 'rb') as fp:
+            return set(np.frombuffer(fp.read(), dtype=np.int64))
+
+    @cached_property
+    def null_query_handler(self):
+        """The empty query handler when :meth:`get_query_handler` fails"""
+        return set()
 
     def get_add_handler(self):
         return open(self.index_abspath, 'ab')

@@ -7,6 +7,20 @@ if False:
 
 
 class BaseCacheDriver(BaseIndexDriver):
+    """
+    The driver related to :class:`BaseCache`
+
+    """
+
+    def __init__(self, with_serialization: bool = False, *args, **kwargs):
+        """
+
+        :param with_serialization: feed serialized doc to the CacheIndexer
+        :param args:
+        :param kwargs:
+        """
+        self.with_serialization = with_serialization
+        super().__init__(*args, **kwargs)
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         for d in docs:
@@ -21,7 +35,10 @@ class BaseCacheDriver(BaseIndexDriver):
 
         :param doc: the document in the request but missed in the cache
         """
-        self.exec_fn(doc.id, doc.SerializeToString())
+        if self.with_serialization:
+            self.exec_fn(doc.id, doc.SerializeToString())
+        else:
+            self.exec_fn(doc.id)
 
     def on_hit(self, req_doc: 'jina_pb2.Document', hit_result: Any) -> None:
         """ Function to call when doc is hit
