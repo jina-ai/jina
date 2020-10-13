@@ -83,6 +83,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -4984,4 +4985,38 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```5cd4fc9e```](https://github.com/jina-ai/jina/commit/5cd4fc9e6e65f8bf2e8e439c534fb404a4a612ed)] __-__ __version__: the next version will be 0.6.5 (*Jina Dev Bot*)
  - [[```bbe38754```](https://github.com/jina-ai/jina/commit/bbe38754fbbf3b945ea60af06bf04c2b82f6d9b9)] __-__ hotfix patch traversing (*Han Xiao*)
  - [[```d95e4e72```](https://github.com/jina-ai/jina/commit/d95e4e72e7c8acb0278ea049aa56905ba97271d3)] __-__ __version__: the next version will be 0.6.4 (*Jina Dev Bot*)
+
+<a name=release-note-0-6-7></a>
+## Release Note (`0.6.7`)
+
+> Release time: 2020-10-13 17:36:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals Martinez,  Alex Cureton-Griffiths,  🙇
+
+
+### 🆕 New Features
+
+ - [[```e0bd2d72```](https://github.com/jina-ai/jina/commit/e0bd2d723467d0761a93e7e9703c10611601f951)] __-__ __indexer__: add two shortcuts for uniq Pb and vector indexers (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```214e888b```](https://github.com/jina-ai/jina/commit/214e888b14136039d4c3c4122413267acf2565f9)] __-__ __driver__: move PIL import to inside (*Han Xiao*)
+ - [[```edeb398e```](https://github.com/jina-ai/jina/commit/edeb398ec18a7458eb2d78ab941da1b58d575c7c)] __-__ add devel tag to Pillow dependency (*Joan Fontanals Martinez*)
+ - [[```1f4a2a8f```](https://github.com/jina-ai/jina/commit/1f4a2a8f2d1d9fd02c5f640b6dfe13e3fca71c72)] __-__ check existence of model path (*Joan Fontanals Martinez*)
+ - [[```9df1a3a3```](https://github.com/jina-ai/jina/commit/9df1a3a3ff678a7c99d554407f2b5a1786eab779)] __-__ slack links (#1075) (*Alex Cureton-Griffiths*)
+
+### 🚧 Code Refactoring
+
+ - [[```6f69b4de```](https://github.com/jina-ai/jina/commit/6f69b4de269d84f17fb0708d61a38f289816e1c5)] __-__ __cache__: add BaseCache (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```2b7fe4be```](https://github.com/jina-ai/jina/commit/2b7fe4be3afada5df9b4616c1e93112805df9ba0)] __-__ hotfix hello world (*Han Xiao*)
+ - [[```b92a51f8```](https://github.com/jina-ai/jina/commit/b92a51f80f2295aab29f415621dbf4787aca15b9)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```d8dfb141```](https://github.com/jina-ai/jina/commit/d8dfb1417b3ea3368b379af66836b6c2f24d6c8a)] __-__ Revert &#34;fix: add devel tag to Pillow dependency&#34; (*Han Xiao*)
+ - [[```71693018```](https://github.com/jina-ai/jina/commit/716930181e6fd8d17ae10c62420795a7b2fc92f2)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```430948b8```](https://github.com/jina-ai/jina/commit/430948b8263dcfe63f37bea4c63fe979cd57bd7f)] __-__ __version__: the next version will be 0.6.7 (*Jina Dev Bot*)
 
