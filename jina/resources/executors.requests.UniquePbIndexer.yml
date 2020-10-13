@@ -1,0 +1,24 @@
+on:
+  IndexRequest:
+    - !TaggingCacheDriver
+      with:
+        executor: DocIDCache
+        tags:
+          is_indexed: true
+    - !FilterQL
+      with:
+        lookups: {tags__is_indexed__neq: true}
+    - !ExcludeQL
+      with:
+        fields:
+          - chunks
+          - buffer
+    - !KVIndexDriver
+      with:
+        executor: BinaryPbIndexer
+  SearchRequest:
+    - !KVSearchDriver
+      with:
+        executor: BinaryPbIndexer
+  ControlRequest:
+    - !ControlReqDriver {}

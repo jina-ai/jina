@@ -7,6 +7,7 @@ from typing import Iterator, Optional
 import numpy as np
 
 from . import BaseKVIndexer
+from ..compound import CompoundExecutor
 
 
 class BinaryPbIndexer(BaseKVIndexer):
@@ -79,3 +80,7 @@ class BinaryPbIndexer(BaseKVIndexer):
 class DataURIPbIndexer(BinaryPbIndexer):
     """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,
     differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
+
+
+class UniquePbIndexer(CompoundExecutor):
+    """A frequently used pattern for combining a :class:`BaseKVIndexer` and a :class:`DocIDCache` """

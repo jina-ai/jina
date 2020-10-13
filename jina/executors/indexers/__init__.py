@@ -219,6 +219,10 @@ class BaseKVIndexer(BaseIndexer):
         return self.query(key)
 
 
+class UniqueVectorIndexer(CompoundExecutor):
+    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocIDCache` """
+
+
 class CompoundIndexer(CompoundExecutor):
     """A Frequently used pattern for combining A :class:`BaseVectorIndexer` and :class:`BaseKVIndexer`.
     It will be equipped with predefined ``requests.on`` behaviors:
