@@ -44,41 +44,41 @@ def test_evaluation(tmpdir):
             assert len(doc.evaluations) == 8  # 2 evaluation Pods with 4 evaluations each
 
         doc = resp.docs[0]
-        assert doc.evaluations[0].id == 'evaluate_match-Precision@1'
+        assert doc.evaluations[0].op_name == 'evaluate_match-Precision@1'
         assert doc.evaluations[0].value == 1.0
-        assert doc.evaluations[1].id == 'evaluate_match-Precision@2'
+        assert doc.evaluations[1].op_name == 'evaluate_match-Precision@2'
         assert doc.evaluations[1].value == 0.5
-        assert doc.evaluations[2].id == 'evaluate_match-Recall@1'
+        assert doc.evaluations[2].op_name == 'evaluate_match-Recall@1'
         assert doc.evaluations[2].value == 1.0
-        assert doc.evaluations[3].id == 'evaluate_match-Recall@2'
+        assert doc.evaluations[3].op_name == 'evaluate_match-Recall@2'
         assert doc.evaluations[3].value == 0.5
 
-        assert doc.evaluations[4].id == 'evaluate_rank-Precision@1'
+        assert doc.evaluations[4].op_name == 'evaluate_rank-Precision@1'
         assert doc.evaluations[4].value == 1.0
-        assert doc.evaluations[5].id == 'evaluate_rank-Precision@2'
+        assert doc.evaluations[5].op_name == 'evaluate_rank-Precision@2'
         assert doc.evaluations[5].value == 0.5
-        assert doc.evaluations[6].id == 'evaluate_rank-Recall@1'
+        assert doc.evaluations[6].op_name == 'evaluate_rank-Recall@1'
         assert doc.evaluations[6].value == 1.0
-        assert doc.evaluations[7].id == 'evaluate_rank-Recall@2'
+        assert doc.evaluations[7].op_name == 'evaluate_rank-Recall@2'
         assert doc.evaluations[7].value == 0.5
 
         doc = resp.docs[1]
-        assert doc.evaluations[0].id == 'evaluate_match-Precision@1'
+        assert doc.evaluations[0].op_name == 'evaluate_match-Precision@1'
         assert doc.evaluations[0].value == 1.0
-        assert doc.evaluations[1].id == 'evaluate_match-Precision@2'
+        assert doc.evaluations[1].op_name == 'evaluate_match-Precision@2'
         assert doc.evaluations[1].value == 1.0
-        assert doc.evaluations[2].id == 'evaluate_match-Recall@1'
+        assert doc.evaluations[2].op_name == 'evaluate_match-Recall@1'
         assert doc.evaluations[2].value == 1.0
-        assert doc.evaluations[3].id == 'evaluate_match-Recall@2'
+        assert doc.evaluations[3].op_name == 'evaluate_match-Recall@2'
         assert doc.evaluations[3].value == 1.0
 
-        assert doc.evaluations[4].id == 'evaluate_rank-Precision@1'
+        assert doc.evaluations[4].op_name == 'evaluate_rank-Precision@1'
         assert doc.evaluations[4].value == 1.0
-        assert doc.evaluations[5].id == 'evaluate_rank-Precision@2'
+        assert doc.evaluations[5].op_name == 'evaluate_rank-Precision@2'
         assert doc.evaluations[5].value == 1.0
-        assert doc.evaluations[6].id == 'evaluate_rank-Recall@1'
+        assert doc.evaluations[6].op_name == 'evaluate_rank-Recall@1'
         assert doc.evaluations[6].value == 1.0
-        assert doc.evaluations[7].id == 'evaluate_rank-Recall@2'
+        assert doc.evaluations[7].op_name == 'evaluate_rank-Recall@2'
         assert doc.evaluations[7].value == 1.0
 
     def doc_groundtruth_evaluation_pairs():
