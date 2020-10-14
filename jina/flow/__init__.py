@@ -175,7 +175,6 @@ class Flow(ExitStack):
             self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._build_level = FlowBuildLevel.EMPTY
-        self._pod_name_counter = 0
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
 
@@ -309,7 +308,7 @@ class Flow(ExitStack):
             endpoint = [endpoint]
         elif not endpoint:
             if op_flow._last_changed_pod and connect_to_last_pod:
-                endpoint = [op_flow._last_changed_pod[-1]]
+                endpoint = [op_flow.last_pod]
             else:
                 endpoint = []
 
@@ -321,7 +320,12 @@ class Flow(ExitStack):
             raise ValueError(f'endpoint={endpoint} is not parsable')
         return set(endpoint)
 
-    def set_last_pod(self, name: str, copy_flow: bool = True) -> 'Flow':
+    @property
+    def last_pod(self):
+        return self._last_changed_pod[-1]
+
+    @last_pod.setter
+    def last_pod(self, name: str):
         """
         Set a pod as the last pod in the flow, useful when modifying the flow.
 
@@ -329,21 +333,17 @@ class Flow(ExitStack):
         :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :return: a (new) flow object with modification
         """
-        op_flow = copy.deepcopy(self) if copy_flow else self
-
-        if name not in op_flow._pod_nodes:
+        if name not in self._pod_nodes:
             raise FlowMissingPodError(f'{name} can not be found in this Flow')
 
-        if op_flow._last_changed_pod and name == op_flow._last_changed_pod[-1]:
+        if self._last_changed_pod and name == self.last_pod:
             pass
         else:
-            op_flow._last_changed_pod.append(name)
+            self._last_changed_pod.append(name)
 
         # graph is now changed so we need to
         # reset the build level to the lowest
-        op_flow._build_level = FlowBuildLevel.EMPTY
-
-        return op_flow
+        self._build_level = FlowBuildLevel.EMPTY
 
     def _add_gateway(self, needs, **kwargs):
         pod_name = 'gateway'
@@ -392,11 +392,12 @@ class Flow(ExitStack):
         pod_name = kwargs.get('name', None)
 
         if pod_name in op_flow._pod_nodes:
-            raise FlowTopologyError(f'name: {pod_name} is used in this Flow already!')
+            new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
+            self.logger.warning(f'name: {pod_name} is used in this Flow already! renamed it to {new_name}')
+            pod_name = new_name
 
         if not pod_name:
-            pod_name = '%s%d' % ('pod', op_flow._pod_name_counter)
-            op_flow._pod_name_counter += 1
+            pod_name = f'pod{len(op_flow._pod_nodes)}'
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name
@@ -407,9 +408,20 @@ class Flow(ExitStack):
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
         op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
-        op_flow.set_last_pod(pod_name, False)
+        op_flow.last_pod = pod_name
 
         return op_flow
+
+    def eval(self, name: str = 'eval', *args,
+             copy_flow: bool = True, **kwargs) -> 'Flow':
+        """Add a hanging evaluation Pod, may introduce side-effect on the before/after socket"""
+        op_flow = copy.deepcopy(self) if copy_flow else self
+
+        _last_pod = op_flow.last_pod
+        op_flow.add(name=name, *args, **kwargs)
+        op_flow.last_pod = _last_pod
+
+        return op_flow.add(name=name, *args, **kwargs)
 
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
@@ -443,7 +455,7 @@ class Flow(ExitStack):
         _pod_edges = set()
 
         if 'gateway' not in op_flow._pod_nodes:
-            op_flow._add_gateway(needs={op_flow._last_changed_pod[-1]})
+            op_flow._add_gateway(needs={op_flow.last_pod})
 
         # construct a map with a key a start node and values an array of its end nodes
         _outgoing_map = defaultdict(list)
@@ -796,7 +808,8 @@ class Flow(ExitStack):
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def evaluate(self, input_fn: Union[Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
+    def evaluate(self, input_fn: Union[
+        Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
                  output_fn: Callable[['jina_pb2.Message'], None] = None,
                  **kwargs):
         """Do evaluation on the current flow
