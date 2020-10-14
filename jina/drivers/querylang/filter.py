@@ -34,12 +34,11 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
         an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
         """
-        self._lookups = Q(**lookups) if lookups else None
+        self._lookups = lookups
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-
         if self.lookups:
-            _lookups = Q(**self.lookups) if isinstance(self.lookups, Dict) else self.lookups
+            _lookups = Q(**self.lookups)
             miss_idx = []
             for idx, doc in enumerate(docs):
                 if not _lookups.evaluate(doc):

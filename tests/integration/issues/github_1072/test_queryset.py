@@ -9,7 +9,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_queryset_with_struct(tmpdir):
-    os.environ['JINA_TEST_INCREMENTAL_INDEX_WORKSPACE'] = str(tmpdir)
+    os.environ['JINA_TEST_QUERYSET_WORKSPACE'] = str(tmpdir)
 
     total_docs = 4
     docs = []
@@ -38,4 +38,6 @@ def test_queryset_with_struct(tmpdir):
         qs.parameters['lookups'] = {'tags__label': 'label2'}
         qs.parameters['traversal_paths'] = ['r']
         f.index(docs, queryset=qs, output_fn=validate_label2_docs, callback_on_body=True)
+
+    del os.environ['JINA_TEST_QUERYSET_WORKSPACE']
 
