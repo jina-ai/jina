@@ -1,0 +1,22 @@
+!DataURIPbIndexer
+with:
+  index_filename: doc.gzip
+metas:
+  name: doc_indexer  # a customized name
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    SearchRequest:
+      - !KVSearchDriver {}
+    IndexRequest:
+      - !URI2DataURI
+        with:
+          override: true
+      - !URI2Text {}
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks
+      - !KVIndexDriver {}

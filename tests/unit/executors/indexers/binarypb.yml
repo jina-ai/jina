@@ -1,0 +1,5 @@
+!BinaryPbIndexer
+with:
+  index_filename: test-docs
+metas:
+  workspace: $JINA_TEST_WORKSPACE_BINARY_PB

@@ -1,0 +1,33 @@
+!CompoundIndexer
+metas:
+  workspace: $JINA_TEST_FLOW_MULTIMODE_WORKSPACE
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec2.gz
+    metas:
+      name: vecidx2  # a customized name
+      workspace: $JINA_TEST_FLOW_MULTIMODE_WORKSPACE
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk2.gz
+    metas:
+      name: kvidx2  # a customized name
+      workspace: $JINA_TEST_FLOW_MULTIMODE_WORKSPACE
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          traversal_paths: ['c']
+          executor: vecidx2
+      - !ExcludeQL
+        with:
+          fields:
+            - embedding
+      - !KVIndexDriver
+        with:
+          traversal_paths: ['c']
+          executor: kvidx2
+    ControlRequest:
+      - !ControlReqDriver {}

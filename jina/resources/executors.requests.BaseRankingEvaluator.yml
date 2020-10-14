@@ -1,0 +1,16 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  [SearchRequest, EvaluateRequest]:
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+          - buffer
+          - blob
+          - text
+      traversal_paths: ['r']
+    - !RankingEvaluationDriver
+      with:
+        id_tag: 'id'
+        traversal_paths: ['r']

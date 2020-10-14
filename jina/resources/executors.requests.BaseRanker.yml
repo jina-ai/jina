@@ -1,0 +1,17 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  [SearchRequest, EvaluateRequest]:
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+    - !SortQL
+      with:
+        field: 'score__value'
+        traversal_paths: ['m']
+    - !SliceQL
+      with:
+        traversal_paths: ['m']
+        start: 0
+        end: 50

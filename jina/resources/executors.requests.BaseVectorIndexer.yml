@@ -1,0 +1,12 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  [SearchRequest, EvaluateRequest]:
+    - !VectorSearchDriver {}
+  IndexRequest:
+    - !ExcludeQL
+      with:
+        fields:
+          - buffer
+          - chunks
+    - !VectorIndexDriver {}

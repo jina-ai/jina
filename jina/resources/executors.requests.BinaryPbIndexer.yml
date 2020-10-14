@@ -1,0 +1,12 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  [SearchRequest, EvaluateRequest]:
+    - !KVSearchDriver {}
+  IndexRequest:
+    - !ExcludeQL
+      with:
+        fields:
+          - chunks  # we don't want to save nested structure
+          - buffer
+    - !KVIndexDriver {}

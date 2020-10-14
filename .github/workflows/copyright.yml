@@ -1,0 +1,31 @@
+name: Copyright
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-copyright:
+    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          git fetch --prune --unshallow
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - uses: hanxiao/copyright-action@master
+        with:
+          CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
+          FileType: '.py'
+          Path: 'jina/'
+          IgnorePath: 'jina/drivers/querylang/queryset/'
+      - run: |
+          git add -u
+          git commit -m "chore: update copyright header"
+          git status
+          git push
+        continue-on-error: true

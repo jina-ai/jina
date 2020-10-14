@@ -1,0 +1,12 @@
+is_trained: false
+is_updated: false
+batch_size:
+workspace: './'
+name:
+on_gpu: false
+warn_unnamed: false
+max_snapshot: 0
+py_modules:
+replica_id: '{root.metas.replica_id}'  # this may result in self-referred
+separated_workspace: '{root.metas.separated_workspace}'  # this may result in self-referred
+replica_workspace: '{root.metas.workspace}/{root.metas.name}-{root.metas.replica_id}'

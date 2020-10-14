@@ -1,0 +1,8 @@
+!MWUEncoder
+with:
+  greetings: im from internal yaml!
+metas:
+  name: my-mwu-encoder
+#  py_modules: mwu_encoder.py
+  # missing py_modules will pass the build by raise when `--test-uses`
+  workspace: ./

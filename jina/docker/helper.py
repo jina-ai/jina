@@ -1,0 +1,69 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
+import time
+import base64
+from pathlib import Path
+
+from .. import __binary_delimiter__
+from ..logging import JinaLogger
+from pkg_resources import resource_stream
+from typing import Dict, Union, List
+
+
+def _encode(clear, key=__binary_delimiter__.decode()):
+    enc = []
+    for i in range(len(clear)):
+        key_c = key[i % len(key)]
+        enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
+        enc.append(enc_c)
+    return base64.urlsafe_b64encode(''.join(enc).encode()).decode()
+
+
+def _decode(enc, key=__binary_delimiter__.decode()):
+    dec = []
+    enc = base64.urlsafe_b64decode(enc).decode()
+    for i in range(len(enc)):
+        key_c = key[i % len(key)]
+        dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+        dec.append(dec_c)
+    return ''.join(dec)
+
+
+def handle_dot_in_keys(document: Dict[str, Union[Dict, List]]) -> Union[Dict, List]:
+    updated_document = {}
+    for key, value in document.items():
+        if isinstance(value, dict):
+            value = handle_dot_in_keys(value)
+        if isinstance(value, list) and len(value) > 0 and isinstance(value[0], dict):
+            value[0] = handle_dot_in_keys(value[0])
+        updated_document[key.replace('.', '_')] = value
+    return updated_document
+
+
+def credentials_file():
+    Path.home().joinpath('.jina').mkdir(parents=True, exist_ok=True)
+    return Path.home().joinpath('.jina').joinpath('access.yml')
+
+
+class Waiter:
+    def __init__(self, seconds, message=''):
+        self.logger = JinaLogger(self.__class__.__name__)
+        self._seconds = seconds
+        self._message = message
+        
+    def __enter__(self):
+        self.logger.info(f'waiting for {self._seconds} seconds {self._message}')
+        self._wait_until = time.time() + self._seconds
+        return self
+    
+    @property
+    def is_time_up(self):
+        return time.time() > self._wait_until
+    
+    def sleep(self, seconds=5):
+        self.logger.debug(f'sleeping for {seconds} seconds')
+        time.sleep(seconds)
+    
+    def __exit__(self, type, value, traceback):
+        self.logger.debug(f'took {self._seconds} seconds!')

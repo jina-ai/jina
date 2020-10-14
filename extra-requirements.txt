@@ -1,0 +1,63 @@
+# https://hanxiao.io/2019/11/07/A-Better-Practice-for-Managing-extras-require-Dependencies-in-Python/
+# FORMAT
+# Put your extra requirements here in the following format
+#
+# package[version]: tag1, tag2, ...
+#
+# AVAILABLE TAGS
+#
+# nlp, cv, audio, numeric, index, http, sse, framework, perf, network
+#
+# REMARKS ON TAGS
+# 1. Try to reuse the existing tags if possible.
+#    If you intend to create a new tag, keep it alphabetical, short and general
+# 2. Package name itself is a tag already, so you don't need to tag it again.
+#    For example, 'flair>=0.4.1: flair' is redundant
+# 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
+# 4. Tag `all` is reserved for representing all packages
+
+scipy>=1.4.1:               index, numeric
+flask:                      devel, http, sse
+flask_cors:                 devel, http, sse
+fluent-logger:              logging, http, sse, dashboard, devel
+nmslib>=1.6.3:              index
+docker:                     devel, network, hub
+torch>=1.1.0:               framework
+transformers>=2.6.0:        nlp
+flair:                      nlp
+paddlepaddle:               framework, py37
+paddlehub:                  framework, py37
+tensorflow>=2.0:            framework
+tensorflow-hub:             framework, py37
+torchvision>=0.3.0:         framework, cv
+onnx:                       framework, py37
+onnxruntime:                framework, py37
+Pillow:                     cv
+annoy>=1.9.5:               index
+sklearn:                    numeric
+plyvel:                     index
+jieba:                      nlp
+lz4:                        devel, perf, network
+gevent:                     http, devel
+python-magic:               http, devel
+pymilvus:                   index
+deepsegment:                nlp
+ngt:                        index, py37
+librosa>=0.7.2:             audio
+uvloop:                     devel, perf
+numpy:                      core
+pyzmq>=17.1.0:              core
+protobuf:                   core
+grpcio:                     core
+ruamel.yaml>=0.15.89:       core
+tornado>=5.1.0:             core
+cookiecutter:               hub, devel
+pytest:                     test
+pytest-xdist==1.34.0:       test
+pytest-timeout:             test
+pytest-cov:                 test
+pytest-repeat:              test
+flaky:                      test
+mock:                       test
+pymongo[srv]:               hub, devel
+pytest-ordering:            test

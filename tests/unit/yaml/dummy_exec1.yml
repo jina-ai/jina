@@ -1,0 +1,3 @@
+!NumpyIndexer
+with:
+  index_filename: 'test.gzip'

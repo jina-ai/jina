@@ -1,0 +1,14 @@
+# default value of all manifest.yml
+name: example
+description: this is an example jina hub image
+type: pod # select from app, pod, flow
+author: Jina AI Dev-Team (dev-team@jina.ai)
+url: https://jina.ai
+documentation: https://github.com/jina-ai/jina-hub
+version: 0.0.0
+vendor: Jina AI Limited
+license: apache-2.0
+avatar:
+platform:
+  - linux/amd64
+keywords: 

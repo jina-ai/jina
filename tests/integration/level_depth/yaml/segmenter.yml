@@ -1,0 +1,11 @@
+!Sentencizer
+with:
+  min_sent_len: 3
+  max_sent_len: 128
+  punct_chars: '.,;!?:'
+metas:
+  name: sentencizer
+requests:
+  on:
+    [SearchRequest, IndexRequest]:
+      - !SegmentDriver {}

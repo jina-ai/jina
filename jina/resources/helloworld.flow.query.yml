@@ -1,0 +1,16 @@
+!Flow
+with:
+  read_only: true  # better add this in the query time
+  logserver: $WITH_LOGSERVER
+  compress_hwm: 1024
+pods:
+  encode:
+    uses: $RESOURCE_DIR/helloworld.encoder.yml
+    parallel: $PARALLEL
+  index:
+    uses: $RESOURCE_DIR/helloworld.indexer.yml
+    shards: $SHARDS
+    separated_workspace: true
+    polling: all
+    uses_after: $RESOURCE_DIR/helloworld.reduce.yml
+    timeout_ready: 100000 # larger timeout as in query time will read all the data

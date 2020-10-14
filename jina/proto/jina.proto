@@ -1,0 +1,338 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+package jina;
+
+/**
+ * Represents the a (quantized) numpy ndarray
+ */
+message NdArray {
+    // the actual array data, in bytes
+    bytes buffer = 1;
+
+    // the shape (dimensions) of the array
+    repeated uint32 shape = 2;
+
+    // the data type of the array
+    string dtype = 3;
+
+    enum QuantizationMode {
+        NONE = 0; // no quantization is performed, stored in the original ``dtype``
+        FP16 = 1; // 2x smaller if dtype is set to FP32
+        UINT8 = 2; // 4x smaller but lossy when dtype is FP32
+    }
+
+    // quantization mode
+    QuantizationMode quantization = 4;
+
+    float max_val = 5; // the max value of the ndarray
+    float min_val = 6; // the min value of the ndarray
+    float scale = 7; // the scale of the ndarray
+    string original_dtype = 8; // the original dtype of the array
+}
+
+/**
+ * Represents the relevance model to `ref_id`
+ */
+message Relevance {
+    float value = 1; // value
+    string op_name = 2; // the name of the operator/score function
+    string description = 3; // text description of the score
+    repeated Relevance operands = 4; // the score can be nested
+    string ref_id = 5; // the score is computed between doc `id` and `ref_id`
+}
+
+/**
+ * Represents a Document
+ */
+message Document {
+    // A hexdigest that represents a unique document ID
+    string id = 1;
+
+    // the depth of the recursive chunk structure
+    uint32 granularity = 14;
+
+    // the width of the recursive match structure
+    uint32 adjacency = 22;
+
+    // the name of the level
+    string level_name = 15;
+
+    // the parent id from the previous level
+    string parent_id = 16;
+
+    oneof content {
+        // the raw binary content of this document, which often represents the original document when comes into jina
+        bytes buffer = 3;
+
+        // the ndarray of the image/audio/video document
+        NdArray blob = 12;
+
+        // a text document
+        string text = 13;
+    }
+
+    // list of the chunks of this document (recursive structure)
+    repeated Document chunks = 4;
+
+    // the weight of this document
+    float weight = 5;
+
+    // total number of siblings of this document (docs that are in the same granularity and parent_id)
+    uint32 length = 6;
+
+    // some binary meta information of this Doc in bytes
+    bytes meta_info = 7;
+
+    // the top-k matched Docs on the same level (recursive structure)
+    repeated Document matches = 8;
+
+    // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
+    string mime_type = 10;
+
+    // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
+    string uri = 9;
+
+    // a structured data value, consisting of field which map to dynamically typed values.
+    google.protobuf.Struct tags = 11;
+
+    // the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip
+    repeated uint32 location = 17;
+
+    // the offset of this doc in the previous level document
+    uint32 offset = 18;
+
+    // the embedding array of this doc
+    NdArray embedding = 19;
+
+    Relevance score = 20;
+
+    // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
+    string modality = 21;
+
+    // List of evaluations performed on the document
+    repeated Evaluation evaluations = 23;
+}
+
+/**
+ * Represents the result of an Evaluation.
+ */
+message Evaluation {
+    // identifier to identify how the evaluation was performed (several evaluations may come together)
+    string id = 1;
+    // Floating value result of the evaluation computation
+    float value = 2;
+}
+
+/**
+ * Represents a Envelope, a part of the ``Message``.
+ */
+message Envelope {
+    // unique id of the sender of the message
+    string sender_id = 1;
+
+    // unique id of the receiver of the message, only used in router-dealer pattern
+    string receiver_id = 2;
+
+    // unique id of the request
+    string request_id = 3;
+
+    // timeout in second until this message is dropped
+    uint32 timeout = 4;
+
+    /**
+     * Represents a the route paths of this message
+     */
+    message Route {
+        string pod = 1; // the name of the BasePod
+        string pod_id = 2; // the id of the BasePod
+        google.protobuf.Timestamp start_time = 3; // receiving time
+        google.protobuf.Timestamp end_time = 4; // sending (out) time
+    }
+    repeated Route routes = 5; // a list of routes this message goes through
+
+    /**
+     * Represents a the version information
+     */
+    message Version {
+        string jina = 1; // jina's version
+        string proto = 2; // protobuf's version
+        string vcs = 3; // vcs's version
+    }
+
+    Version version = 6; // version info
+
+    Status status = 7; // status info
+
+    repeated uint32 num_part = 8; // the number of partial messages
+
+}
+
+message Status {
+
+    enum StatusCode {
+        SUCCESS = 0; // success
+        PENDING = 1; // there are pending messages, more messages are followed
+        READY = 2; // ready to use
+        ERROR = 3; // error
+        ERROR_DUPLICATE = 4; // already a existing pea/pod running
+        ERROR_NOTALLOWED = 5; // not allowed to open pea/pod remotely
+    }
+
+    // status code
+    StatusCode code = 1;
+
+    // error description of the very first exception
+    string description = 2;
+
+    message Details {
+        // the name of that problematic peapod
+        string pod = 1;
+
+        // the id of that problematic peapod
+        string pod_id = 2;
+
+        // the name of the executor binded to that peapod (if applicable)
+        string executor = 3;
+
+        // the class name of the exception
+        string exception = 4;
+
+        // the reason of the exception
+        string traceback = 5;
+
+        // the timestamp when error occurs
+        google.protobuf.Timestamp time = 6;
+
+    }
+
+    // the details of the error
+    repeated Details details = 3;
+}
+
+/**
+ * Represents a Message
+ */
+message Message {
+    Envelope envelope = 1; // the envelope of the message, used internally in jina, dropped when returning to client
+    Request request = 2; // the request body
+}
+
+/**
+ * Represents a Request
+ */
+message Request {
+
+    string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
+
+    oneof body {
+        TrainRequest train = 2; // a train request
+        IndexRequest index = 3; // an index request
+        SearchRequest search = 4; // a search request
+        EvaluateRequest evaluate = 8; // an evaluate request
+        ControlRequest control = 5; // a control request
+    }
+
+    /**
+     * Represents a train request
+     */
+    message TrainRequest {
+        repeated Document docs = 1; // a list of Documents to train
+        bool flush = 2; // if True then do actual training, otherwise only collect all documents but not do training.
+    }
+
+    /**
+     * Represents an index request
+     */
+    message IndexRequest {
+        repeated Document docs = 1; // a list of Documents to index
+    }
+
+    /**
+     * Represents a search request
+     */
+    message SearchRequest {
+        repeated Document docs = 1; // a list of Documents to query
+    }
+
+    /**
+     * Represents an evaluation request
+     */
+    message EvaluateRequest {
+        repeated Document docs = 1; // a list of Documents to query
+        //TODO: Convert it to bytes
+        repeated Document groundtruths = 2; // a list of groundtruths
+    }
+
+    /**
+     * Represents a control request used to control the BasePod
+     */
+    message ControlRequest {
+        enum Command {
+            TERMINATE = 0; // shutdown the BasePod
+            STATUS = 1; // check the status of the BasePod
+            IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
+        }
+        Command command = 1; // the control command
+
+        map<string, string> args = 2; // the pea arguments, useful in STATUS
+    }
+
+    Status status = 6; // status info
+
+    repeated QueryLang queryset = 7; // the query set
+}
+
+message QueryLang {
+    string name = 1;  // the name of the query lang, map to the corresponding driver
+    google.protobuf.Struct parameters = 2;  // the parameter of the query lang
+    bool disabled = 3;  // when set, then is query lang is disabled
+    int32 priority = 4;  // when query lang is set on both driver and request levels, higher priority query lang is applied, lower priority is dropped
+}
+
+message SpawnRequest {
+
+    // Spawn a pea remotely, requires args of a pea
+    message PeaSpawnRequest {
+        repeated string args = 1; // a list of args string for BasePea
+    }
+
+    // Spawn a pod remotely, requires args of a pea
+    message PodSpawnRequest {
+        repeated string args = 1; // a list of args string for BasePod
+    }
+
+    // Spawn a parsed pod remotely, requires parsed pod structure
+    message MutablepodSpawnRequest {
+        PeaSpawnRequest head = 1; // a list of args string for the head BasePea
+        PeaSpawnRequest tail = 2; // a list of args string for the tail BasePea
+        repeated PeaSpawnRequest peas = 3; // a list of args string for the Peas
+    }
+
+    oneof body {
+        PeaSpawnRequest pea = 1;
+        PodSpawnRequest pod = 2; // send a PodSpawnRequest and it will switch to PodDictSpawnRequest as returns
+        MutablepodSpawnRequest mutable_pod = 3;
+    }
+
+    string log_record = 4; // one line of the log record
+    Status status = 5; // status info
+}
+
+/**
+ * jina gRPC service.
+ */
+service JinaRPC {
+    // Pass in a Request and a filled Request with matches will be returned.
+    rpc Call (stream Request) returns (stream Request) {
+    }
+
+    rpc CallUnary (Request) returns (Request) {
+    }
+
+    // Pass in a Request and a filled Request will be returned.
+    rpc Spawn (SpawnRequest) returns (stream SpawnRequest) {
+    }
+}
+

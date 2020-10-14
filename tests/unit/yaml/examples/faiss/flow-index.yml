@@ -1,0 +1,16 @@
+!Flow
+metas:
+  prefetch: 10
+pods:
+  crafter:
+    parallel: 4
+  encoder:
+    parallel: 4
+  faiss_indexer:
+    parallel: 1
+  doc_indexer:
+    needs: crafter
+  join_all:
+    uses: _merge
+    needs: [doc_indexer, faiss_indexer]
+    read_only: true

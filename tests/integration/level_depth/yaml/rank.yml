@@ -1,0 +1,7 @@
+!MinRanker
+requests:
+  on:
+    SearchRequest:
+      - !CollectMatches2DocRankDriver
+        with:
+          traversal_paths: ['m']

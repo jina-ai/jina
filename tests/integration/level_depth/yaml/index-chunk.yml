@@ -1,0 +1,38 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: cosine
+    metas:
+      name: vecidx
+      workspace: $JINA_TEST_LEVEL_DEPTH_WORKSPACE
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: chunkidx
+      workspace: $JINA_TEST_LEVEL_DEPTH_WORKSPACE
+metas:
+  name: chunk_indexer
+  workspace: $JINA_TEST_LEVEL_DEPTH_WORKSPACE
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['c']
+      - !KVIndexDriver
+        with:
+          executor: chunkidx
+          traversal_paths: ['c']
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['r']
+      - !KVSearchDriver
+        with:
+          executor: chunkidx
+          traversal_paths: ['m']

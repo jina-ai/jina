@@ -1,0 +1,29 @@
+!NumpyIndexer
+with:
+  index_filename: tmp2
+metas:
+  name: test2
+  workspace: test-index-file
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          top_k: 5
+          priority: 4
+          fill_embedding: true
+      - !VectorSearchDriver
+        with:
+          top_k: 5
+          priority: 4
+          fill_embedding: true
+          traversal_paths: ['m']
+    IndexRequest:
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks
+      - !VectorIndexDriver {}

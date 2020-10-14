@@ -1,0 +1,48 @@
+!CompoundIndexer
+metas:
+  workspace: $TMP_WORKSPACE_2
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+    metas:
+      name: vecidx  # a customized name
+      workspace: $TMP_WORKSPACE_2
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: kvidx  # a customized name
+      workspace: $TMP_WORKSPACE_2
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: NumpyIndexer
+          filter_by: $FILTER_BY_2
+      - !PruneDriver
+        with:
+          pruned:
+            - embedding
+            - blob
+            - text
+      - !KVIndexDriver
+        with:
+          executor: BinaryPbIndexer
+          filter_by: $FILTER_BY_2
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: NumpyIndexer
+          filter_by: $FILTER_BY_2
+      - !PruneDriver
+        with:
+          pruned:
+            - embedding
+            - blob
+            - text
+      - !KVSearchDriver
+        with:
+          executor: BinaryPbIndexer
+          filter_by: $FILTER_BY_2

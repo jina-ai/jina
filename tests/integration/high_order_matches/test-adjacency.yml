@@ -1,0 +1,38 @@
+!NumpyIndexer
+with:
+  index_filename: tmp2
+metas:
+  name: test2
+  workspace: test-index-file
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    SearchRequest:
+      - !VectorSearchDriver {}  # first match on the doc
+      - !SliceQL
+        with:
+          start: 0
+          end: 5
+          traversal_paths: ['m']
+      - !VectorFillDriver
+        with:
+          traversal_paths: ['r', 'm']
+      - !VectorSearchDriver  # then go for the first-degree matches
+        with:
+          traversal_paths: ['m']
+      - !SliceQL
+        with:
+          start: 0
+          end: 5
+          traversal_paths: ['m', 'mm']
+      - !VectorFillDriver
+        with:
+          traversal_paths: ['r', 'm', 'mm', 'mmm']
+    IndexRequest:
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks
+      - !VectorIndexDriver {}

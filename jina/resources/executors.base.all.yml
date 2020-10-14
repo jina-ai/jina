@@ -1,0 +1,8 @@
+!BaseExecutor
+with: {}
+metas:
+  name: clear
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+      *  # replace by drivers

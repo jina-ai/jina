@@ -1,0 +1,27 @@
+!Flow
+with:
+  read_only: true  # better add this in the query time
+  rest_api: true
+  port_expose: 5555
+pods:
+  loader:
+    read_only: true
+    parallel: 4
+  flipper:
+    parallel: 4
+    read_only: true
+  normalizer:
+    read_only: true
+    parallel: 4
+  encoder:
+    timeout_ready: 600000
+    parallel: 4
+    read_only: true
+  chunk_indexer:
+    polling: all
+    parallel: 1
+    uses_after: _merge_topk_chunks
+  ranker:
+    uses: MinRanker
+  doc_indexer:
+    parallel: 1

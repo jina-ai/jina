@@ -1,0 +1,29 @@
+!CompoundExecutor
+components:
+  - !NumpyIndexer
+    with:
+      num_dim: -1
+      index_key: HNSW32
+      index_filename: vec.idx
+    metas:
+      name: my_vec_indexer  # a customized name
+      workspace: 'test-workspace'
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gzip
+    metas:
+      name: chunk_meta_indexer
+      workspace: 'test-workspace'
+with:
+  routes:
+    meta_add:
+      chunk_meta_indexer: add
+    meta_query:
+      chunk_meta_indexer: query
+    query:
+      my_vec_indexer: query
+    add:
+      my_vec_indexer: add
+metas:
+  name: chunk_compound_indexer
+  workspace: 'test-workspace'

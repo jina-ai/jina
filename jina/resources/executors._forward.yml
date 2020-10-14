@@ -1,0 +1,10 @@
+!BaseExecutor
+with: {}
+metas:
+  name: forward
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest]:
+      - !ForwardDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}

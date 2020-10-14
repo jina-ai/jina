@@ -1,0 +1,18 @@
+!BinaryPbIndexer
+with:
+  index_filename: doc.gzip
+metas:
+  name: docIndexer
+  workspace: $JINA_TEST_LEVEL_DEPTH_WORKSPACE
+requests:
+  on:
+    IndexRequest:
+      - !KVIndexDriver
+        with:
+          executor: docIndexer
+          traversal_paths: ['r']
+    SearchRequest:
+      - !KVSearchDriver
+        with:
+          executor: docIndexer
+          traversal_paths: ['m']

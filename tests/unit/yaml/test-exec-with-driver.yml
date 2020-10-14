@@ -1,0 +1,15 @@
+!BaseEncoder
+with: {}
+metas:
+  name: blah
+  workspace: $JINA_TEST_EXEC_WITH_DRIVER
+requests:
+  on:
+    [SearchRequest]:
+      - !EncodeDriver
+        with:
+          method: encode
+      - !ExcludeQL
+        with:
+          fields:
+            - embedding

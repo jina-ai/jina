@@ -1,0 +1,17 @@
+!NumpyIndexer
+with:
+  index_filename: tmp2
+metas:
+  name: test2
+requests:
+  on:
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          method: query
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          method: add
+    ControlRequest:
+      - !ControlReqDriver {}

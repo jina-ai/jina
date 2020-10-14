@@ -1,0 +1,21 @@
+# ignore everything
+**
+.*
+
+# Allow files and directories
+!jina/**
+!setup.py
+!*requirements.txt
+!README.md
+!MANIFEST.in
+!tests/**
+!cli/**
+
+# Ignore unnecessary files inside allowed directories
+# This should go after the allowed directories
+
+**/*.log
+**/Thumbs.db
+**/.pyre/
+**/.eggs/
+__pycache__

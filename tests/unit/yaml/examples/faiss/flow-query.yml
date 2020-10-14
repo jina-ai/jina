@@ -1,0 +1,16 @@
+!Flow
+with:
+  read_only: true
+pods:
+  crafter:
+    parallel: 4
+  encoder:
+    parallel: 4
+  faiss_indexer:
+    parallel: 1
+    timeout_ready: 10000
+    volumes: './workspace'
+  ranker:
+    uses: MinRanker
+  doc_indexer:
+    parallel: 1

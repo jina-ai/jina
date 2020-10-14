@@ -1,0 +1,12 @@
+!MockEncoder
+requests:
+  on:
+    IndexRequest:
+      - !FilterQL
+        with:
+          lookups: {modality__in: [mode1]}
+          traversal_paths: ['c']
+      - !EncodeDriver
+        with:
+          method: encode
+          traversal_paths: ['c']

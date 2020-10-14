@@ -1,0 +1,14 @@
+!Flow
+pods:
+  encoder:
+    uses: yaml/encoder.yml
+    read_only: true
+  chunk_indexer:
+    uses: yaml/index-chunk.yml
+    read_only: true
+  ranker:
+    uses: yaml/rank.yml
+    read_only: true
+  doc_indexer:
+    uses: yaml/index-doc.yml
+    read_only: true

@@ -1,0 +1,19 @@
+!BinaryPbIndexer
+with:
+  index_filename: doc.gz
+metas:
+  workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+  name: doc_idx
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    SearchRequest:
+      - !KVSearchDriver {}
+    IndexRequest:
+      - !ExcludeQL
+        with:
+          fields:
+            - chunks  # we don't want to save nested structure
+            - buffer
+      - !KVIndexDriver {}

@@ -1,0 +1,15 @@
+!Flow
+with:
+  sse_logger: false
+pods:
+  chunk_seg:
+    parallel: 3
+  wqncode1:
+    parallel: 2
+    needs: chunk_seg
+  encode2:
+    parallel: 2
+    needs: chunk_seg
+  joiner:
+    uses: _merge
+    needs: [wqncode1, encode2]

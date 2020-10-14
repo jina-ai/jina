@@ -1,0 +1,14 @@
+!CompoundExecutor
+components:
+  - !BinaryPbIndexer
+    with:
+      index_filename: metaproto
+    metas:
+      name: test_meta
+  - !NumpyIndexer
+    with:
+      index_filename: npidx
+    metas:
+      name: test_numpy
+metas:
+  name: real-compound

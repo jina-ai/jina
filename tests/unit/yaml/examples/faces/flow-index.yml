@@ -1,0 +1,26 @@
+!Flow
+metas:
+  prefetch: 10
+pods:
+  loader:
+    parallel: 4
+    read_only: true
+  flipper:
+    parallel: 4
+    read_only: true
+  normalizer:
+    parallel: 4
+    read_only: true
+  encoder:
+    parallel: 4
+    timeout_ready: 600000
+    read_only: true
+  chunk_indexer:
+    parallel: 1
+    separated_workspace: true
+  doc_indexer:
+    needs: loader
+  join_all:
+    uses: _merge
+    needs: [doc_indexer, chunk_indexer]
+    read_only: true

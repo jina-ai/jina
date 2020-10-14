@@ -1,0 +1,26 @@
+on:
+  [SearchRequest, EvaluateRequest]:
+    - !VectorSearchDriver
+      with:
+        executor: BaseVectorIndexer
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+    - !KVSearchDriver
+      with:
+        executor: BaseKVIndexer
+        traversal_paths: ['m']
+  IndexRequest:
+    - !VectorIndexDriver
+      with:
+        executor: BaseVectorIndexer
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+    - !KVIndexDriver
+      with:
+        executor: BaseKVIndexer
+  ControlRequest:
+    - !ControlReqDriver {}
