@@ -8,143 +8,27 @@ import os
 import tempfile
 import threading
 import time
-from collections import OrderedDict, defaultdict, deque
+from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from functools import wraps
-from typing import Optional
-from typing import Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
+from typing import Optional, Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
 from urllib.request import Request, urlopen
 
 import ruamel.yaml
 from ruamel.yaml import StringIO
 
+from .builder import build_required, _build_flow, _optimize_flow
 from .. import JINA_GLOBAL
-from ..enums import FlowBuildLevel, FlowOptimizeLevel
-from ..excepts import FlowTopologyError, FlowMissingPodError, FlowBuildLevelError
+from ..enums import FlowBuildLevel, PodRoleType
+from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..peapods.pod import SocketType, FlowPod, GatewayFlowPod
+from ..peapods.pod import FlowPod, GatewayFlowPod
 
 if False:
     from ..proto import jina_pb2
     import argparse
     import numpy as np
-
-
-def build_required(required_level: 'FlowBuildLevel'):
-    """Annotate a function so that it requires certain build level to run.
-
-    :param required_level: required build level to run this function.
-
-    Example:
-
-    .. highlight:: python
-    .. code-block:: python
-
-        @build_required(FlowBuildLevel.RUNTIME)
-        def foo():
-            print(1)
-
-    """
-
-    def __build_level(func):
-        @wraps(func)
-        def arg_wrapper(self, *args, **kwargs):
-            if hasattr(self, '_build_level'):
-                if self._build_level.value >= required_level.value:
-                    return func(self, *args, **kwargs)
-                else:
-                    raise FlowBuildLevelError(
-                        'build_level check failed for %r, required level: %s, actual level: %s' % (
-                            func, required_level, self._build_level))
-            else:
-                raise AttributeError(f'{self!r} has no attribute "_build_level"')
-
-        return arg_wrapper
-
-    return __build_level
-
-
-def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
-                    func: Callable[['Flow', str, str], None]) -> 'Flow':
-    _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
-    stack = deque()
-    stack.append('gateway')
-    op_flow.logger.debug('Traversing dependency graph:')
-    while stack:
-        start_node_name = stack.pop()
-        end_node_idx = _outgoing_idx[start_node_name]
-        if end_node_idx < len(outgoing_map[start_node_name]):
-            # else, you are back to the gateway
-            end_node_name = outgoing_map[start_node_name][end_node_idx]
-            func(op_flow, start_node_name, end_node_name)
-            stack.append(end_node_name)
-            if end_node_idx + 1 < len(outgoing_map[start_node_name]):
-                stack.append(start_node_name)
-            _outgoing_idx[start_node_name] = end_node_idx + 1
-    return op_flow
-
-
-def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
-    def _build_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
-        # Rule
-        # if a node has multiple income/outgoing peas,
-        # then its socket_in/out must be PULL_BIND or PUB_BIND
-        # otherwise it should be different than its income
-        # i.e. income=BIND => this=CONNECT, income=CONNECT => this = BIND
-        #
-        # when a socket is BIND, then host must NOT be set, aka default host 0.0.0.0
-        # host_in and host_out is only set when corresponding socket is CONNECT
-        start_node = flow._pod_nodes[start_node_name]
-        end_node = flow._pod_nodes[end_node_name]
-        first_socket_type = SocketType.PUSH_CONNECT
-        if len(outgoing_map[start_node_name]) > 1:
-            first_socket_type = SocketType.PUB_BIND
-        elif end_node_name == 'gateway':
-            first_socket_type = SocketType.PUSH_BIND
-        flow.logger.debug(f'Connect {start_node_name} with {end_node_name}')
-        FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
-
-    return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
-
-
-def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str, str}) -> 'Flow':
-    def _optimize_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
-        start_node = flow._pod_nodes[start_node_name]
-        end_node = flow._pod_nodes[end_node_name]
-        edges_with_same_start = [ed for ed in pod_edges if ed[0].startswith(start_node_name)]
-        edges_with_same_end = [ed for ed in pod_edges if ed[1].endswith(end_node_name)]
-        if len(edges_with_same_start) > 1 or len(edges_with_same_end) > 1:
-            flow.logger.info(f'Connection between {start_node_name} and {end_node_name} cannot be optimized')
-        else:
-            if start_node_name == 'gateway':
-                if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and end_node.is_head_router:
-                    flow.logger.info(
-                        f'Node {end_node_name} connects to tail of {start_node_name}')
-                    end_node.connect_to_tail_of(start_node)
-            elif end_node_name == 'gateway':
-                if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and \
-                        start_node.is_tail_router and start_node.tail_args.num_part <= 1:
-                    # connect gateway directly to peas only if this is unblock router
-                    # as gateway can not block & reduce message
-                    flow.logger.info(
-                        f'Node {start_node_name} connects to head of {end_node_name}')
-                    start_node.connect_to_head_of(end_node)
-            else:
-                if end_node.is_head_router and not start_node.is_tail_router:
-                    flow.logger.info(
-                        f'Node {end_node_name} connects to tail of {start_node_name}')
-                    end_node.connect_to_tail_of(start_node)
-                elif start_node.is_tail_router and start_node.tail_args.num_part <= 1:
-                    flow.logger.info(
-                        f'Node {start_node_name} connects to head of {end_node_name}')
-                    start_node.connect_to_head_of(end_node)
-
-    if op_flow.args.optimize_level > FlowOptimizeLevel.NONE:
-        return _traverse_graph(op_flow, outgoing_map, _optimize_two_connections)
-    else:
-        return op_flow
 
 
 class Flow(ExitStack):
@@ -366,11 +250,12 @@ class Flow(ExitStack):
 
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return op_flow.add(name=name, uses=uses, needs=needs, *args, **kwargs)
+        return op_flow.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.NEED, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
             copy_flow: bool = True,
+            pod_role: 'PodRoleType' = PodRoleType.POD,
             **kwargs) -> 'Flow':
         """
         Add a pod to the current flow object and return the new modified flow object.
@@ -407,7 +292,7 @@ class Flow(ExitStack):
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
-        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs)
+        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
         op_flow.last_pod = pod_name
 
         return op_flow
@@ -418,10 +303,10 @@ class Flow(ExitStack):
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         _last_pod = op_flow.last_pod
-        op_flow.add(name=name, *args, **kwargs)
+        op_flow.add(name=name, copy_flow=False, pod_role=PodRoleType.EVAL, *args, **kwargs)
         op_flow.last_pod = _last_pod
 
-        return op_flow.add(name=name, *args, **kwargs)
+        return op_flow
 
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
@@ -853,7 +738,8 @@ class Flow(ExitStack):
              image_type: str = 'svg',
              vertical_layout: bool = False,
              inline_display: bool = True,
-             copy_flow: bool = False) -> 'Flow':
+             build: bool = True,
+             copy_flow: bool = True) -> 'Flow':
         """
         Visualize the flow up to the current point
         If a file name is provided it will create a jpg image with that name,
@@ -872,21 +758,24 @@ class Flow(ExitStack):
         :param image_type: svg/jpg the file type of the output image
         :param vertical_layout: top-down or left-right layout
         :param inline_display: show image directly inside the Jupyter Notebook
+        :param build: build the flow first before plotting, gateway connection can be better showed
         :param copy_flow: when set to true, then always copy the current flow and
                 do the modification on top of it then return, otherwise, do in-line modification
         :return: the flow
         """
 
         op_flow = copy.deepcopy(self) if copy_flow else self
+        if build:
+            op_flow.build(False)
         mermaid_graph = ["%%{init: {'theme': 'base', "
                          "'themeVariables': { 'primaryColor': '#32C8CD', "
-                         "'edgeLabelBackground':'#ff6666', 'clusterBkg': '#FFCC66'}}}%%"]
+                         "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%"]
         mermaid_graph.append('graph TD' if vertical_layout else 'graph LR')
 
         start_repl = {}
         end_repl = {}
-        for node, v in self._pod_nodes.items():
-            if v._args.parallel > 1:
+        for node, v in op_flow._pod_nodes.items():
+            if getattr(v._args, 'parallel', 1) > 1:
                 mermaid_graph.append(f'subgraph {node} ["{node} ({v._args.parallel})"]')
                 head_router = node + '_HEAD'
                 tail_router = node + '_TAIL'
@@ -900,26 +789,39 @@ class Flow(ExitStack):
                 start_repl[node] = (tail_router, '((fa:fa-random))')
                 end_repl[node] = (head_router, '((fa:fa-random))')
 
-        for node, v in self._pod_nodes.items():
+        for node, v in op_flow._pod_nodes.items():
             ed_str = str(v._args.socket_in).split('_')[0]
             for need in sorted(v.needs):
-                if need in self._pod_nodes:
-                    st_str = str(self._pod_nodes[need]._args.socket_out).split('_')[0]
+                if need in op_flow._pod_nodes:
+                    st_str = str(op_flow._pod_nodes[need]._args.socket_out).split('_')[0]
                     edge_str = f'|{st_str}-{ed_str}|'
                 else:
                     edge_str = ''
 
                 _s = start_repl.get(need, (need, f'({need})'))
                 _e = end_repl.get(node, (node, f'({node})'))
-                mermaid_graph.append(f'{_s[0]}{_s[1]}:::pod --> {edge_str}{_e[0]}{_e[1]}:::pod')
-        mermaid_graph.append('classDef pod fill:#32C8CD,stroke:#009999')
+
+                _s_role = op_flow._pod_nodes[need].role
+                _e_role = op_flow._pod_nodes[node].role
+
+                if _e_role == PodRoleType.GATEWAY:
+                    _e = ('gateway_END', f'({node})')
+                elif _e_role == PodRoleType.EVAL:
+                    _e = end_repl.get(node, (node, f'{{{node}}}'))
+                else:
+                    _e = end_repl.get(node, (node, f'({node})'))
+
+                mermaid_graph.append(f'{_s[0]}{_s[1]}:::{str(_s_role)} --> {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
+        mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
+        mermaid_graph.append(f'classDef {str(PodRoleType.EVAL)} fill:#ff6666,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff,stroke-dasharray: 5 5')
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 
         if image_type not in {'svg', 'jpg'}:
             raise ValueError(f'image_type must be svg/jpg, but given {image_type}')
 
-        url = self._mermaid_to_url(mermaid_str, image_type)
+        url = op_flow._mermaid_to_url(mermaid_str, image_type)
         showed = False
         if inline_display:
             try:
@@ -933,11 +835,11 @@ class Flow(ExitStack):
                 pass
 
         if output:
-            self._download_mermaid_url(url, output)
+            op_flow._download_mermaid_url(url, output)
         elif not showed:
-            self.logger.info(f'flow visualization: {url}')
+            op_flow.logger.info(f'flow visualization: {url}')
 
-        return op_flow
+        return self
 
     def _mermaid_to_url(self, mermaid_str, img_type) -> str:
         """

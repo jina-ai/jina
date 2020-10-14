@@ -35,7 +35,6 @@ To use these enums in YAML config, following the example below:
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-
 from enum import IntEnum, EnumMeta
 
 
@@ -211,6 +210,16 @@ class PeaRoleType(BetterEnum):
     TAIL = 2
     SHARD = 3
     SINGLETON = 4
+
+
+class PodRoleType(BetterEnum):
+    """ The enum of a Pod role for visualization
+
+    """
+    POD = 0
+    NEED = 1
+    EVAL = 2
+    GATEWAY = 3
 
 
 class ClientMode(BetterEnum):

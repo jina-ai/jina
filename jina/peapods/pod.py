@@ -282,7 +282,7 @@ class FlowPod(BasePod):
     """
 
     def __init__(self, kwargs: Dict,
-                 needs: Set[str] = None, parser: Callable = set_pod_parser):
+                 needs: Set[str] = None, parser: Callable = set_pod_parser, pod_role: 'PodRoleType' = PodRoleType.POD):
         """
 
         :param kwargs: unparsed argument in dict, if given the
@@ -293,6 +293,7 @@ class FlowPod(BasePod):
         super().__init__(self._args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
         self._kwargs = get_non_defaults_args(self._args, _parser)
+        self.role = pod_role
 
     def to_cli_command(self):
         if isinstance(self, GatewayPod):
@@ -490,3 +491,4 @@ class GatewayFlowPod(GatewayPod, FlowPod):
 
     def __init__(self, kwargs: Dict = None, needs: Set[str] = None):
         FlowPod.__init__(self, kwargs, needs, parser=set_gateway_parser)
+        self.role = PodRoleType.GATEWAY
