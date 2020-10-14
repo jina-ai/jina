@@ -792,11 +792,10 @@ class Flow(ExitStack):
         for node, v in op_flow._pod_nodes.items():
             ed_str = str(v.head_args.socket_in).split('_')[0]
             for need in sorted(v.needs):
+                edge_str = ''
                 if need in op_flow._pod_nodes:
                     st_str = str(op_flow._pod_nodes[need].tail_args.socket_out).split('_')[0]
                     edge_str = f'|{st_str}-{ed_str}|'
-                else:
-                    edge_str = ''
 
                 _s = start_repl.get(need, (need, f'({need})'))
                 _e = end_repl.get(node, (node, f'({node})'))
