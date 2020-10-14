@@ -1,7 +1,7 @@
 from typing import Sequence, Any
 
-from jina.executors.evaluators.rank import BaseRankingEvaluator
-from jina.executors.evaluators.decorators import as_aggregator
+from ..decorators import as_aggregator
+from ..rank import BaseRankingEvaluator
 
 
 class PrecisionEvaluator(BaseRankingEvaluator):
@@ -9,7 +9,7 @@ class PrecisionEvaluator(BaseRankingEvaluator):
        It computes how many of the first given `eval_at` matches are found in the groundtruth
     """
 
-    def __init__(self, eval_at: int,  *args, **kwargs):
+    def __init__(self, eval_at: int, *args, **kwargs):
         """"
         :param eval_at: k at which evaluation is performed
         """
@@ -17,7 +17,7 @@ class PrecisionEvaluator(BaseRankingEvaluator):
         self.eval_at = eval_at
 
     @property
-    def complete_name(self):
+    def metric_name(self):
         return f'Precision@{self.eval_at}'
 
     @as_aggregator

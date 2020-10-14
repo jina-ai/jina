@@ -35,11 +35,11 @@ message NdArray {
 /**
  * Represents the relevance model to `ref_id`
  */
-message Relevance {
+message NamedScore {
     float value = 1; // value
     string op_name = 2; // the name of the operator/score function
     string description = 3; // text description of the score
-    repeated Relevance operands = 4; // the score can be nested
+    repeated NamedScore operands = 4; // the score can be nested
     string ref_id = 5; // the score is computed between doc `id` and `ref_id`
 }
 
@@ -106,23 +106,14 @@ message Document {
     // the embedding array of this doc
     NdArray embedding = 19;
 
-    Relevance score = 20;
+    // TODO: List of matching scores performed on the document, each element corresponds to a metric
+    NamedScore score = 20;
 
     // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
     string modality = 21;
 
-    // List of evaluations performed on the document
-    repeated Evaluation evaluations = 23;
-}
-
-/**
- * Represents the result of an Evaluation.
- */
-message Evaluation {
-    // identifier to identify how the evaluation was performed (several evaluations may come together)
-    string id = 1;
-    // Floating value result of the evaluation computation
-    float value = 2;
+    // List of evaluations performed on the document, each element corresponds to a metric
+    repeated NamedScore evaluations = 23;
 }
 
 /**
@@ -285,10 +276,10 @@ message Request {
 }
 
 message QueryLang {
-    string name = 1;  // the name of the query lang, map to the corresponding driver
-    google.protobuf.Struct parameters = 2;  // the parameter of the query lang
-    bool disabled = 3;  // when set, then is query lang is disabled
-    int32 priority = 4;  // when query lang is set on both driver and request levels, higher priority query lang is applied, lower priority is dropped
+    string name = 1; // the name of the query lang, map to the corresponding driver
+    google.protobuf.Struct parameters = 2; // the parameter of the query lang
+    bool disabled = 3; // when set, then is query lang is disabled
+    int32 priority = 4; // when query lang is set on both driver and request levels, higher priority query lang is applied, lower priority is dropped
 }
 
 message SpawnRequest {
