@@ -1,9 +1,6 @@
 name: CD
 
 on:
-  pull_request:
-    branches:
-      ci-add-examples-test-211
   push:
     branches:
       - master
@@ -15,183 +12,143 @@ on:
 
 
 jobs:
-#   update-doc:
-#     if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: peter-evans/dockerhub-description@v2.3.0
-#         env:
-#           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-#           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
-#           DOCKERHUB_REPOSITORY: jinaai/jina
-#       - uses: actions/checkout@v2
-#         with:
-#           submodules: true
-#       - uses: actions/checkout@v2
-#         with:
-#           repository: jina-ai/api
-#           path: schema
-#           token: ${{ secrets.JINA_DEV_BOT }}
-#       - uses: actions/setup-python@v1
-#         with:
-#           python-version: 3.7
-#       - run: |
-#           pip install .  --no-cache-dir
-#           jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
-#           echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
-#           pip install css-html-js-minify
-#           css-html-js-minify ./jina/resources/hub-builder-success
-#       - run: |
-#           cp ./jina/resources/hub-builder-success/index.html ./schema/hub
-#           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
-#           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
-#           cd schema
-#           jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" devel.yml --json-path "${{env.JINA_VERSION}}.json" devel.json devel
-#           git config --local user.email "dev-bot@jina.ai"
-#           git config --local user.name "Jina Dev Bot"
-#           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
-#           cd ..
-#           ./make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
-#       - uses: ad-m/github-push-action@master
-#         with:
-#           github_token: ${{ secrets.JINA_DEV_BOT }}
-#           repository: jina-ai/jina-docs
-#           directory: docs/_build/html
-#           force: true
+  update-doc:
+    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/dockerhub-description@v2.3.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+          DOCKERHUB_REPOSITORY: jinaai/jina
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/api
+          path: schema
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          pip install .  --no-cache-dir
+          jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
+          echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
+          pip install css-html-js-minify
+          css-html-js-minify ./jina/resources/hub-builder-success
+      - run: |
+          cp ./jina/resources/hub-builder-success/index.html ./schema/hub
+          cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
+          cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
+          cd schema
+          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" devel.yml --json-path "${{env.JINA_VERSION}}.json" devel.json devel
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
+          cd ..
+          ./make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/jina-docs
+          directory: docs/_build/html
+          force: true
 
-#   update-docker:
-#     needs: update-doc
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Set up Docker Buildx
-#         id: buildx
-#         uses: crazy-max/ghaction-docker-buildx@v1
-#         with:
-#           buildx-version: latest
-#       - name: Set envs and versions
-#         run: |
-#           echo ${{ steps.buildx.outputs.platforms }}
-#           echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
-#           echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-#           echo ::set-env name=INSTALL_DEV::"true"
-#           echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
-#       - name: Upload to Docker Registry
-#         uses: elgohr/Publish-Docker-Github-Action@master
-#         with:
-#           name: jinaai/jina
-#           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-#           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-#           dockerfile: Dockerfiles/debianx.Dockerfile
-#           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
-#           tags: "devel, ${{env.JINA_VERSION}}"
-#       - name: Upload to Github Docker Registry
-#         uses: elgohr/Publish-Docker-Github-Action@master
-#         with:
-#           name: jina-ai/jina/jina
-#           username: ${{ secrets.DOCKER_USERNAME }}
-#           password: ${{ secrets.DOCKER_PASSWORD }}
-#           registry: docker.pkg.github.com
-#           dockerfile: Dockerfiles/debianx.Dockerfile
-#           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
-#           tags: "devel, ${{env.JINA_VERSION}}"
+  update-docker:
+    needs: update-doc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          buildx-version: latest
+      - name: Set envs and versions
+        run: |
+          echo ${{ steps.buildx.outputs.platforms }}
+          echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
+          echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo ::set-env name=INSTALL_DEV::"true"
+          echo ::set-env name=JINA_VERSION::"$(sed '6q;d' ./jina/__init__.py | cut -d \' -f2)-devel"
+      - name: Upload to Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jinaai/jina
+          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          dockerfile: Dockerfiles/debianx.Dockerfile
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
+          tags: "devel, ${{env.JINA_VERSION}}"
+      - name: Upload to Github Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jina-ai/jina/jina
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.pkg.github.com
+          dockerfile: Dockerfiles/debianx.Dockerfile
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
+          tags: "devel, ${{env.JINA_VERSION}}"
 
-  # unit-test:
-  #   needs: update-docker
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-  #       python-version: [3.7]
+  unit-test:
+    needs: update-docker
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
+        python-version: [3.7]
 
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         submodules: true
-  #     - name: Set up Python ${{ matrix.python-version }}
-  #       uses: actions/setup-python@v1
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #     - name: Install dependencies
-  #       run: |
-  #         if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-  #           sudo apt-get install libsndfile1
-  #         fi
-  #         python -m pip install --upgrade pip
-  #         pip install .[match-py-ver] --no-cache-dir
-  #     - name: Lint with flake8
-  #       run: |
-  #         pip install flake8
-  #         # stop the build if there are Python syntax errors or undefined names
-  #         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
-  #         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-  #         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
-  #     - name: Test docker install
-  #       run: |
-  #         docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-  #         docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-  #     - name: Test with pytest
-  #       run: |
-  #         # make sure docker exist
-  #         docker ps
-  #         jina check
-  #         export JINA_LOG_VERBOSITY="ERROR"
-  #         pip install .[test]
-  #         pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
-  #         mv coverage.xml unit-test-coverage.xml
-  #       timeout-minutes: 30
-  #       env:
-  #         JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-  #         JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-  #     - name: Upload coverage result from unit-test
-  #       if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
-  #       uses: actions/upload-artifact@v1
-  #       with:
-  #         name: unit-test-codecoverage
-  #         path: ./unit-test-coverage.xml
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            sudo apt-get install libsndfile1
+          fi
+          python -m pip install --upgrade pip
+          pip install .[match-py-ver] --no-cache-dir
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
+      - name: Test docker install
+        run: |
+          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+      - name: Test with pytest
+        run: |
+          # make sure docker exist
+          docker ps
+          jina check
+          export JINA_LOG_VERBOSITY="ERROR"
+          pip install .[test]
+          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
+          mv coverage.xml unit-test-coverage.xml
+        timeout-minutes: 30
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+      - name: Upload coverage result from unit-test
+        if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
+        uses: actions/upload-artifact@v1
+        with:
+          name: unit-test-codecoverage
+          path: ./unit-test-coverage.xml
 
-  # integration-test:
-  #   needs: update-docker
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-  #       python-version: [3.7,]
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         submodules: true
-  #     - name: Set up Python ${{ matrix.python-version }}
-  #       uses: actions/setup-python@v1
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install .[match-py-ver] --no-cache-dir
-  #     - name: Test with pytest
-  #       run: |
-  #         # make sure docker exist
-  #         docker ps
-  #         jina check
-  #         docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-  #         export JINA_LOG_VERBOSITY="ERROR"
-  #         pip install .[test]
-  #         pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 --ignore-glob='tests/integration/hub_usage/dummyhub*' -v tests/integration
-  #         mv coverage.xml integration-test-coverage.xml
-  #       timeout-minutes: 30
-  #       env:
-  #         JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-  #         JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-  #     - name: Upload coverage result from integration-test
-  #       if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
-  #       uses: actions/upload-artifact@v1
-  #       with:
-  #         name: integration-test-codecoverage
-  #         path: ./integration-test-coverage.xml
-
-  examples-test:
+  integration-test:
+    needs: update-docker
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -218,43 +175,49 @@ jobs:
           docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
-          git clone https://github.com/jina-ai/examples.git --branch test-examples-cicd
-          pytest --force-flaky --min-passes 1 -n 1 --timeout=120 -v examples/southpark-search
-        timeout-minutes: 60
+          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=120 --ignore-glob='tests/integration/hub_usage/dummyhub*' -v tests/integration
+          mv coverage.xml integration-test-coverage.xml
+        timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+      - name: Upload coverage result from integration-test
+        if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
+        uses: actions/upload-artifact@v1
+        with:
+          name: integration-test-codecoverage
+          path: ./integration-test-coverage.xml
 
-  # codecov:
-  #   needs: [unit-test, integration-test]
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #       python-version: [3.7]
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         submodules: true
-  #     - name: Download coverage result from unit-test
-  #       uses: actions/download-artifact@v1
-  #       with:
-  #         name: unit-test-codecoverage
-  #     - name: Download coverage result from integration-test
-  #       uses: actions/download-artifact@v1
-  #       with:
-  #         name: integration-test-codecoverage
-  #     - name: Upload coverage from unit-test to Codecov
-  #       uses: codecov/codecov-action@v1
-  #       with:
-  #         file: unit-test-codecoverage/unit-test-coverage.xml
-  #         env_vars: OS,PYTHON
-  #         name: codecov
-  #         fail_ci_if_error: true
-  #     - name: Upload coverage from integration-test to Codecov
-  #       uses: codecov/codecov-action@v1
-  #       with:
-  #         file: integration-test-codecoverage/integration-test-coverage.xml
-  #         env_vars: OS,PYTHON
-  #         name: codecov
-  #         fail_ci_if_error: true
+  codecov:
+    needs: [unit-test, integration-test]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Download coverage result from unit-test
+        uses: actions/download-artifact@v1
+        with:
+          name: unit-test-codecoverage
+      - name: Download coverage result from integration-test
+        uses: actions/download-artifact@v1
+        with:
+          name: integration-test-codecoverage
+      - name: Upload coverage from unit-test to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: unit-test-codecoverage/unit-test-coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: true
+      - name: Upload coverage from integration-test to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: integration-test-codecoverage/integration-test-coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: true
