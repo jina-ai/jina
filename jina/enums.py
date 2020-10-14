@@ -217,8 +217,8 @@ class PodRoleType(BetterEnum):
 
     """
     POD = 0
-    NEED = 1
-    EVAL = 2
+    JOIN = 1
+    INSPECT = 2
     GATEWAY = 3
 
 

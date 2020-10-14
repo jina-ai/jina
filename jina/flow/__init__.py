@@ -250,7 +250,7 @@ class Flow(ExitStack):
 
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return op_flow.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.NEED, *args, **kwargs)
+        return op_flow.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
@@ -297,13 +297,13 @@ class Flow(ExitStack):
 
         return op_flow
 
-    def eval(self, name: str = 'eval', *args,
-             copy_flow: bool = True, **kwargs) -> 'Flow':
+    def inspect(self, name: str = 'inspect', *args,
+                copy_flow: bool = True, **kwargs) -> 'Flow':
         """Add a hanging evaluation Pod, may introduce side-effect on the before/after socket"""
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         _last_pod = op_flow.last_pod
-        op_flow.add(name=name, copy_flow=False, pod_role=PodRoleType.EVAL, *args, **kwargs)
+        op_flow.add(name=name, copy_flow=False, pod_role=PodRoleType.INSPECT, *args, **kwargs)
         op_flow.last_pod = _last_pod
 
         return op_flow
@@ -805,14 +805,14 @@ class Flow(ExitStack):
 
                 if _e_role == PodRoleType.GATEWAY:
                     _e = ('gateway_END', f'({node})')
-                elif _e_role == PodRoleType.EVAL:
+                elif _e_role == PodRoleType.INSPECT:
                     _e = end_repl.get(node, (node, f'{{{node}}}'))
                 else:
                     _e = end_repl.get(node, (node, f'({node})'))
 
                 mermaid_graph.append(f'{_s[0]}{_s[1]}:::{str(_s_role)} --> {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
         mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
-        mermaid_graph.append(f'classDef {str(PodRoleType.EVAL)} fill:#ff6666,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
         mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff,stroke-dasharray: 5 5')
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)

@@ -33,7 +33,7 @@ def test_flow1(tmpdir):
 
 
 def test_flow2(tmpdir):
-    f = Flow().add().eval(uses='DummyEvaluator1')
+    f = Flow().add().inspect(uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
@@ -45,8 +45,8 @@ def test_flow2(tmpdir):
 
 @pytest.mark.skip('this topology can not work at the moment, better EvalPod is needed')
 def test_flow3(tmpdir):
-    f = Flow().add(name='p1').eval(uses='DummyEvaluator1') \
-        .add(name='p2', needs='gateway').needs(['p1', 'p2']).eval(uses='DummyEvaluator2')
+    f = Flow().add(name='p1').inspect(uses='DummyEvaluator1') \
+        .add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator2')
 
     with f:
         f.index(docs)
@@ -57,7 +57,7 @@ def test_flow3(tmpdir):
 
 
 def test_flow4(tmpdir):
-    f = Flow().add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).eval(uses='DummyEvaluator1')
+    f = Flow().add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
@@ -68,7 +68,7 @@ def test_flow4(tmpdir):
 
 
 def test_flow5(tmpdir):
-    f = Flow().add().eval(uses='DummyEvaluator1').add().eval(uses='DummyEvaluator2').add().eval(
+    f = Flow().add().inspect(uses='DummyEvaluator1').add().inspect(uses='DummyEvaluator2').add().inspect(
         uses='DummyEvaluator3').plot(build=True)
 
     with f:
