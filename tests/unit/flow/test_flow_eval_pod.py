@@ -49,7 +49,8 @@ def test_flow2():
         with open(f'tmp{j}.txt') as fp:
             assert fp.read() != ''
 
-# @pytest.mark.skip('can not support this topology for now')
+
+@pytest.mark.skip('can not support this topology for now')
 def test_flow3():
     f = Flow().add(name='p1').inspect(uses='DummyEvaluator1') \
         .add(name='p2', needs='gateway').needs(['p1', 'p2'])
@@ -83,5 +84,3 @@ def test_flow5(tmpdir):
     for j in [1, 2, 3]:
         with open(f'tmp{j}.txt') as fp:
             assert fp.read() != ''
-
-test_flow3()
