@@ -14,7 +14,7 @@ def input_lines(
     filepath: str = None,
     size: int = None,
     sampling_rate: float = None,
-    read_mode='r',
+    read_mode="r",
 ) -> Iterator[Union[str, bytes]]:
     """Input function that iterates over list of strings, it can be used in the Flow API
 
@@ -60,7 +60,7 @@ def input_files(
             is opened. 'r' for reading in text mode, 'rb' for reading in binary mode.
             If `read_mode` is None, will iterate over filenames
     """
-    if read_mode not in {'r', 'rb', None}:
+    if read_mode not in {"r", "rb", None}:
         raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
 
     def iter_file_exts(ps):
@@ -73,7 +73,7 @@ def input_files(
         if sampling_rate is None or random.random() < sampling_rate:
             if read_mode is None:
                 yield g
-            elif read_mode in {'r', 'rb'}:
+            elif read_mode in {"r", "rb"}:
                 with open(g, read_mode) as fp:
                     yield fp.read()
             d += 1
@@ -82,7 +82,7 @@ def input_files(
 
 
 def input_numpy(
-    array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
+    array: "np.ndarray", axis: int = 0, size: int = None, shuffle: bool = False
 ) -> Iterator[Any]:
     """Input function that iterates over a numpy array, it can be used in the Flow API
 

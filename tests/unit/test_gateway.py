@@ -15,17 +15,18 @@ concurrency = 10
 def test_rest_gateway_concurrency():
     def _request(status_codes, durations, index):
         resp = requests.post(
-            f'http://0.0.0.0:{f.port_expose}/api/index',
+            f"http://0.0.0.0:{f.port_expose}/api/index",
             json={
-                'data': [
-                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC',
-                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC']})
+                "data": [
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC",
+                ]
+            },
+        )
         durations[index] = resp.elapsed.total_seconds()
         status_codes[index] = resp.status_code
 
-    f = Flow(rest_api=True).add(
-        uses='_pass',
-        parallel=2)
+    f = Flow(rest_api=True).add(uses="_pass", parallel=2)
     with f:
         concurrency = 50
         threads = []
@@ -43,9 +44,9 @@ def test_rest_gateway_concurrency():
     success = status_codes.count(200)
     failed = len(status_codes) - success
     print(
-        f'\nmin roundtrip time: {np.min(durations)}\n',
-        f'max roundtrip time: {np.max(durations)}\n'
-        f'mean roundtrip time: {np.mean(durations)}\n'
+        f"\nmin roundtrip time: {np.min(durations)}\n",
+        f"max roundtrip time: {np.max(durations)}\n"
+        f"mean roundtrip time: {np.mean(durations)}\n",
     )
     assert success >= 1
     # In some slow environments, a certain degree of failed
@@ -55,16 +56,19 @@ def test_rest_gateway_concurrency():
     assert rate < 0.1
 
 
-@pytest.mark.skip('raw grpc gateway is not stable enough under high concurrency')
+@pytest.mark.skip("raw grpc gateway is not stable enough under high concurrency")
 def test_grpc_gateway_concurrency():
     def _input_fn():
-        return iter([
-            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC',
-            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'])
+        return iter(
+            [
+                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC",
+                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC",
+            ]
+        )
 
     def _validate(req, start, status_codes, durations, index):
         end = time.time()
-        durations[index] = (end - start)
+        durations[index] = end - start
         status_codes[index] = req.status.code
 
     def _request(f, status_codes, durations, index):
@@ -76,33 +80,30 @@ def test_grpc_gateway_concurrency():
                 start=start,
                 status_codes=status_codes,
                 durations=durations,
-                index=index
-            ))
+                index=index,
+            ),
+        )
 
-    f = Flow().add(
-        uses='_pass',
-        parallel=2)
+    f = Flow().add(uses="_pass", parallel=2)
     with f:
         threads = []
         status_codes = [None] * concurrency
         durations = [None] * concurrency
         for i in range(concurrency):
-            t = Thread(
-                target=_request, args=(
-                    f, status_codes, durations, i))
+            t = Thread(target=_request, args=(f, status_codes, durations, i))
             threads.append(t)
             t.start()
 
         for t in threads:
             t.join()
-            print(f'terminate {t}')
+            print(f"terminate {t}")
 
     success = status_codes.count(0)
     failed = len(status_codes) - success
     print(
-        f'\nmin roundtrip time: {np.min(durations)}\n',
-        f'max roundtrip time: {np.max(durations)}\n'
-        f'mean roundtrip time: {np.mean(durations)}\n'
+        f"\nmin roundtrip time: {np.min(durations)}\n",
+        f"max roundtrip time: {np.max(durations)}\n"
+        f"mean roundtrip time: {np.mean(durations)}\n",
     )
     assert success >= 1
     # In some slow environments, a certain degree of failed
@@ -110,4 +111,3 @@ def test_grpc_gateway_concurrency():
     # requests.
     rate = failed / success
     assert rate < 0.1
-

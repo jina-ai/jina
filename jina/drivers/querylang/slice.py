@@ -13,22 +13,22 @@ if False:
 class SliceQL(QuerySetReader, BaseRecursiveDriver):
     """Restrict the size of the ``docs`` to ``k`` (given by the request)
 
-        Example::
-        - !ReduceAllDriver
-            with:
-                traversal_paths: ['m']
-        - !SortQL
-            with:
-                reverse: true
-                field: 'score__value'
-                traversal_paths: ['m']
-        - !SliceQL
-            with:
-                start: 0
-                end: 50
-                traversal_paths: ['m']
+    Example::
+    - !ReduceAllDriver
+        with:
+            traversal_paths: ['m']
+    - !SortQL
+        with:
+            reverse: true
+            field: 'score__value'
+            traversal_paths: ['m']
+    - !SliceQL
+        with:
+            start: 0
+            end: 50
+            traversal_paths: ['m']
 
-        `SliceQL` will ensure that only the first 50 documents are returned from this `Pod`
+    `SliceQL` will ensure that only the first 50 documents are returned from this `Pod`
     """
 
     def __init__(self, start: int, end: int = None, *args, **kwargs):
@@ -46,9 +46,9 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
         else:
             self._end = int(end)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable["jina_pb2.Document"], *args, **kwargs) -> None:
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
             pass
         else:
-            del docs[int(self.end):]
-            del docs[:int(self.start)]
+            del docs[int(self.end) :]
+            del docs[: int(self.start)]

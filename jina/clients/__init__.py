@@ -5,7 +5,7 @@ if False:
     from .python import PyClient
 
 
-def py_client(**kwargs) -> 'PyClient':
+def py_client(**kwargs) -> "PyClient":
     """A simple Python client for connecting to the gateway.
 
     For acceptable ``kwargs``, please refer to :command:`jina client --help`
@@ -29,5 +29,6 @@ def py_client(**kwargs) -> 'PyClient':
     from ..parser import set_client_cli_parser
     from ..helper import get_parsed_args
     from .python import PyClient
-    _, args, _ = get_parsed_args(kwargs, set_client_cli_parser(), 'Client')
+
+    _, args, _ = get_parsed_args(kwargs, set_client_cli_parser(), "Client")
     return PyClient(args)

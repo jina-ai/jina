@@ -13,18 +13,18 @@ if False:
 class FilterQL(QuerySetReader, BaseRecursiveDriver):
     """Filters incoming `docs` by evaluating a series of `lookup rules`.
 
-        This is often useful when the proceeding Pods require only a signal, not the full message.
+    This is often useful when the proceeding Pods require only a signal, not the full message.
 
-        Example ::
-        - !FilterQL
-            with:
-                lookups: {modality: mode2}
-        - !EncodeDriver
-            with:
-                method: encode
+    Example ::
+    - !FilterQL
+        with:
+            lookups: {modality: mode2}
+    - !EncodeDriver
+        with:
+            method: encode
 
-        ensures that the EncodeDriver will only get documents which modality field value is `mode2` by filtering
-        those documents at the specific levels that do not comply with this condition
+    ensures that the EncodeDriver will only get documents which modality field value is `mode2` by filtering
+    those documents at the specific levels that do not comply with this condition
     """
 
     def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
@@ -36,7 +36,7 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         """
         self._lookups = Q(**lookups) if lookups else None
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable["jina_pb2.Document"], *args, **kwargs) -> None:
         if self.lookups:
             miss_idx = []
             for idx, doc in enumerate(docs):

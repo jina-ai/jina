@@ -12,6 +12,7 @@ def test_transform_encoder_train_and_encode(test_metas):
     train_data = np.random.rand(2000, input_dim)
     encoder = TransformEncoder(output_dim=target_output_dim, metas=test_metas)
     from sklearn.random_projection import GaussianRandomProjection
+
     encoder.model = GaussianRandomProjection(n_components=target_output_dim)
     encoder.train(train_data)
     test_data = np.random.rand(10, input_dim)
@@ -22,10 +23,11 @@ def test_transform_encoder_train_and_encode(test_metas):
 
 def test_transform_encoder_load_from_pickle(test_metas):
     train_data = np.random.rand(2000, input_dim)
-    filename = 'transformer_model.model'
+    filename = "transformer_model.model"
     from sklearn.random_projection import GaussianRandomProjection
+
     model = GaussianRandomProjection(n_components=target_output_dim)
-    pickle.dump(model.fit(train_data), open(filename, 'wb'))
+    pickle.dump(model.fit(train_data), open(filename, "wb"))
     encoder = TransformEncoder(model_path=filename, metas=test_metas)
     test_data = np.random.rand(10, input_dim)
     encoded_data = encoder.encode(test_data)

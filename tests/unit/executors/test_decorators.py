@@ -3,8 +3,14 @@ import os
 import numpy as np
 import pytest
 
-from jina.executors.decorators import as_update_method, as_train_method, as_ndarray, batching, \
-    require_train, store_init_kwargs
+from jina.executors.decorators import (
+    as_update_method,
+    as_train_method,
+    as_ndarray,
+    batching,
+    require_train,
+    store_init_kwargs,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -83,12 +89,12 @@ def test_store_init_kwargs():
         def f(self, a, b, *args, **kwargs):
             pass
 
-    instance = A('a', 'b', c=5, d='d')
+    instance = A("a", "b", c=5, d="d")
     assert instance._init_kwargs_dict
-    assert instance._init_kwargs_dict == {'a': 'a', 'b': 'b', 'c': 5}
+    assert instance._init_kwargs_dict == {"a": "a", "b": "b", "c": 5}
 
     with pytest.raises(TypeError):
-        instance.f('a', 'b', c='c')
+        instance.f("a", "b", c="c")
 
 
 def test_batching():

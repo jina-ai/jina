@@ -12,7 +12,7 @@ from ...helper import call_obj_fn, cached_property, get_readable_size
 
 
 class BaseIndexer(BaseExecutor):
-    """ base class for storing and searching any kind of data structure
+    """base class for storing and searching any kind of data structure
 
     The key functions here are :func:`add` and :func:`query`.
     One can decorate them with :func:`jina.decorator.require_train`,
@@ -39,9 +39,7 @@ class BaseIndexer(BaseExecutor):
         So that it can safely save the data. Or you have to manually call `b.close()` to close the indexer safely.
     """
 
-    def __init__(self,
-                 index_filename: str = None,
-                 *args, **kwargs):
+    def __init__(self, index_filename: str = None, *args, **kwargs):
         """
 
         :param index_filename: the name of the file for storing the index, when not given metas.name is used.
@@ -49,7 +47,9 @@ class BaseIndexer(BaseExecutor):
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
-        self.index_filename = index_filename  #: the file name of the stored index, no path is required
+        self.index_filename = (
+            index_filename  #: the file name of the stored index, no path is required
+        )
         self.handler_mutex = True  #: only one handler at a time by default
         self._size = 0
 
@@ -66,9 +66,7 @@ class BaseIndexer(BaseExecutor):
 
     @property
     def index_abspath(self) -> str:
-        """Get the file path of the index storage
-
-        """
+        """Get the file path of the index storage"""
         return self.get_file_from_workspace(self.index_filename)
 
     @cached_property
@@ -82,11 +80,13 @@ class BaseIndexer(BaseExecutor):
         if (not self.handler_mutex or not self.is_handler_loaded) and self.is_exist:
             r = self.get_query_handler()
             if r is None:
-                self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
-                                    'If you are indexing data from scratch then it is fine. '
-                                    'If you are querying data then the index file must be empty or broken.')
+                self.logger.warning(
+                    f'you can not query from {self} as its "query_handler" is not set. '
+                    "If you are indexing data from scratch then it is fine. "
+                    "If you are querying data then the index file must be empty or broken."
+                )
             else:
-                self.logger.info(f'indexer size: {self.size}')
+                self.logger.info(f"indexer size: {self.size}")
                 self.is_handler_loaded = True
         if r is None:
             r = self.null_query_handler
@@ -117,15 +117,16 @@ class BaseIndexer(BaseExecutor):
             r = self.get_add_handler() if self.is_exist else self.get_create_handler()
 
             if r is None:
-                self.logger.warning('"write_handler" is None, you may not add data to this index, '
-                                    'unless "write_handler" is later assigned with a meaningful value')
+                self.logger.warning(
+                    '"write_handler" is None, you may not add data to this index, '
+                    'unless "write_handler" is later assigned with a meaningful value'
+                )
             else:
                 self.is_handler_loaded = True
             return r
 
     def get_query_handler(self):
-        """Get a *readable* index handler when the ``index_abspath`` already exist, need to be overrided
-        """
+        """Get a *readable* index handler when the ``index_abspath`` already exist, need to be overrided"""
         raise NotImplementedError
 
     def get_add_handler(self):
@@ -148,15 +149,17 @@ class BaseIndexer(BaseExecutor):
 
     def close(self):
         """Close all file-handlers and release all resources. """
-        self.logger.info(f'indexer size: {self.size} physical size: {get_readable_size(self.physical_size)}')
+        self.logger.info(
+            f"indexer size: {self.size} physical size: {get_readable_size(self.physical_size)}"
+        )
         self.flush()
-        call_obj_fn(self.write_handler, 'close')
-        call_obj_fn(self.query_handler, 'close')
+        call_obj_fn(self.write_handler, "close")
+        call_obj_fn(self.query_handler, "close")
         super().close()
 
     def flush(self):
         """Flush all buffered data to ``index_abspath`` """
-        call_obj_fn(self.write_handler, 'flush')
+        call_obj_fn(self.write_handler, "flush")
 
 
 class BaseVectorIndexer(BaseIndexer):
@@ -167,8 +170,10 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        """ Get the vectors by id, return a subset of indexed vectors
+    def query_by_id(
+        self, ids: Union[List[int], "np.ndarray"], *args, **kwargs
+    ) -> "np.ndarray":
+        """Get the vectors by id, return a subset of indexed vectors
 
         :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args:
@@ -177,7 +182,7 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: "np.ndarray", vectors: "np.ndarray", *args, **kwargs):
         """Add new chunks and their vector representations
 
         :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
@@ -185,7 +190,9 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, keys: "np.ndarray", top_k: int, *args, **kwargs
+    ) -> Tuple["np.ndarray", "np.ndarray"]:
         """Find k-NN using query vectors, return chunk ids and chunk scores
 
         :param keys: query vectors in ndarray, shape B x D
@@ -208,7 +215,7 @@ class BaseKVIndexer(BaseIndexer):
         raise NotImplementedError
 
     def query(self, key: Any) -> Optional[Any]:
-        """ Find the protobuf chunk/doc using id
+        """Find the protobuf chunk/doc using id
 
         :param key: ``id``
         :return: protobuf chunk or protobuf document

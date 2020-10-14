@@ -10,7 +10,6 @@ DOCUMENTS_PER_LEVEL = 1
 
 
 class AppendOneChunkTwoMatchesCrafter(BaseRecursiveDriver):
-
     def _apply_all(self, docs, *args, **kwargs) -> None:
         for doc in docs:
             add_chunk(doc)
@@ -65,7 +64,7 @@ def apply_traversal_path(traversal_paths):
 
 
 def test_only_root():
-    docs = apply_traversal_path(['r'])
+    docs = apply_traversal_path(["r"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 2
     assert len(docs[0].chunks[0].chunks) == 1
@@ -76,7 +75,7 @@ def test_only_root():
 
 
 def test_only_matches():
-    docs = apply_traversal_path(['m'])
+    docs = apply_traversal_path(["m"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].matches) == 1
@@ -87,7 +86,7 @@ def test_only_matches():
 
 
 def test_only_chunks():
-    docs = apply_traversal_path(['c'])
+    docs = apply_traversal_path(["c"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].chunks) == 2
@@ -99,7 +98,7 @@ def test_only_chunks():
 
 
 def test_match_chunk():
-    docs = apply_traversal_path(['mc'])
+    docs = apply_traversal_path(["mc"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].matches) == 1
@@ -111,7 +110,7 @@ def test_match_chunk():
 
 
 def test_chunk_match():
-    docs = apply_traversal_path(['cm'])
+    docs = apply_traversal_path(["cm"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].matches) == 1
@@ -123,7 +122,7 @@ def test_chunk_match():
 
 
 def test_multi_paths():
-    docs = apply_traversal_path(['cc', 'mm'])
+    docs = apply_traversal_path(["cc", "mm"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].matches) == 1
@@ -136,7 +135,7 @@ def test_multi_paths():
 
 
 def test_both_from_0():
-    docs = apply_traversal_path(['r', 'c', 'm', 'cc', 'mm'])
+    docs = apply_traversal_path(["r", "c", "m", "cc", "mm"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 2
     assert len(docs[0].chunks[0].chunks) == 2
@@ -150,7 +149,7 @@ def test_both_from_0():
 
 
 def test_both_from_0_upper_case():
-    docs = apply_traversal_path(['R', 'C', 'M', 'CC', 'MM'])
+    docs = apply_traversal_path(["R", "C", "M", "CC", "MM"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 2
     assert len(docs[0].chunks[0].chunks) == 2
@@ -164,7 +163,7 @@ def test_both_from_0_upper_case():
 
 
 def test_adjacency0_granularity1():
-    docs = apply_traversal_path(['c', 'cc', 'cm', 'cmm'])
+    docs = apply_traversal_path(["c", "cc", "cm", "cmm"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].chunks) == 2
@@ -180,7 +179,7 @@ def test_adjacency0_granularity1():
 
 
 def test_adjacency1_granularity1():
-    docs = apply_traversal_path(['cm', 'cmm', 'mcc'])
+    docs = apply_traversal_path(["cm", "cmm", "mcc"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 1
     assert len(docs[0].chunks[0].chunks) == 1
@@ -199,7 +198,7 @@ def test_adjacency1_granularity1():
 
 
 def test_selection():
-    docs = apply_traversal_path(['cmm', 'mcm'])
+    docs = apply_traversal_path(["cmm", "mcm"])
     assert docs[0].chunks[0].matches[0].matches[0].granularity == 1
     assert docs[0].chunks[0].matches[0].matches[0].adjacency == 2
     assert len(docs[0].chunks[0].matches[0].matches) == 1
@@ -209,7 +208,7 @@ def test_selection():
 
 
 def test_root_chunk():
-    docs = apply_traversal_path(['r', 'c'])
+    docs = apply_traversal_path(["r", "c"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 2
     assert len(docs[0].chunks[0].chunks) == 2
@@ -217,7 +216,7 @@ def test_root_chunk():
 
 
 def test_chunk_root():
-    docs = apply_traversal_path(['c', 'r'])
+    docs = apply_traversal_path(["c", "r"])
     assert len(docs) == 1
     assert len(docs[0].chunks) == 2
     assert len(docs[0].chunks[0].chunks) == 2
@@ -227,9 +226,11 @@ def test_chunk_root():
 def test_traverse_apply():
     docs = build_docs()
     doc = docs[0]
-    doc.ClearField('chunks')
-    docs = [doc, ]
-    driver = AppendOneChunkTwoMatchesCrafter(traversal_paths=('mcm',))
+    doc.ClearField("chunks")
+    docs = [
+        doc,
+    ]
+    driver = AppendOneChunkTwoMatchesCrafter(traversal_paths=("mcm",))
     assert docs[0].matches[0].chunks[0].matches[0].granularity == 1
     assert docs[0].matches[0].chunks[0].matches[0].adjacency == 2
     driver._traverse_apply(docs)

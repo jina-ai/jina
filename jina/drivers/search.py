@@ -12,18 +12,15 @@ class BaseSearchDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(
-            self,
-            executor: str = None,
-            method: str = 'query',
-            traversal_paths: Tuple[str] = ('r', 'c'),
-            *args,
-            **kwargs):
+        self,
+        executor: str = None,
+        method: str = "query",
+        traversal_paths: Tuple[str] = ("r", "c"),
+        *args,
+        **kwargs,
+    ):
         super().__init__(
-            executor,
-            method,
-            traversal_paths=traversal_paths,
-            *args,
-            **kwargs
+            executor, method, traversal_paths=traversal_paths, *args, **kwargs
         )
 
         self.hash2id = uid.hash2id
@@ -56,8 +53,10 @@ class KVSearchDriver(BaseSearchDriver):
         super().__init__(*args, **kwargs)
         self._is_merge = is_merge
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
+    def _apply_all(self, docs: Iterable["jina_pb2.Document"], *args, **kwargs) -> None:
+        miss_idx = (
+            []
+        )  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
             serialized_doc = self.exec_fn(self.id2hash(retrieved_doc.id))
             if serialized_doc:
@@ -78,22 +77,21 @@ class KVSearchDriver(BaseSearchDriver):
 
 
 class VectorFillDriver(QuerySetReader, BaseSearchDriver):
-    """ Fill in the embedding by their doc id
-    """
+    """Fill in the embedding by their doc id"""
 
-    def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
+    def __init__(
+        self, executor: str = None, method: str = "query_by_id", *args, **kwargs
+    ):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable["jina_pb2.Document"], *args, **kwargs) -> None:
         embeds = self.exec_fn([self.id2hash(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding.CopyFrom(array2pb(embedding))
 
 
 class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
-    """Extract chunk-level embeddings from the request and use the executor to query it
-
-    """
+    """Extract chunk-level embeddings from the request and use the executor to query it"""
 
     def __init__(self, top_k: int = 50, fill_embedding: bool = False, *args, **kwargs):
         """
@@ -108,23 +106,29 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterable["jina_pb2.Document"], *args, **kwargs) -> None:
         embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
         if not doc_pts:
             return
 
-        fill_fn = getattr(self.exec, 'query_by_id', None)
+        fill_fn = getattr(self.exec, "query_by_id", None)
         if self._fill_embedding and not fill_fn:
-            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method')
+            self.logger.warning(
+                f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method'
+            )
 
         if bad_doc_ids:
-            self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
+            self.logger.warning(f"these bad docs can not be added: {bad_doc_ids}")
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
         op_name = self.exec.__class__.__name__
         for doc, topks, scores in zip(doc_pts, idx, dist):
 
-            topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
+            topk_embed = (
+                fill_fn(topks)
+                if (self._fill_embedding and fill_fn)
+                else [None] * len(topks)
+            )
 
             for match_hash, score, vec in zip(topks, scores, topk_embed):
                 r = doc.matches.add()

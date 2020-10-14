@@ -19,8 +19,32 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-  unit-test:
+  autoblack:
     needs: commit-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install Black
+        run: pip install black
+      - name: Run black --check .
+        run: black --check .
+      - name: If needed, commit black changes to the pull request
+        if: failure()
+        run: |
+          git checkout $GITHUB_HEAD_REF
+          black .
+          git config --global user.name 'autoblack'
+          git config --global user.email 'maximilianwerk@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git commit -a --amend --no-edit
+          git push -f
+
+  unit-test:
+    needs: [commit-lint, autoblack]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -74,7 +98,7 @@ jobs:
           path: ./unit-test-coverage.xml
 
   integration-test:
-    needs: commit-lint
+    needs: [commit-lint, autoblack]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

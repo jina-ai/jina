@@ -14,7 +14,7 @@ class BinaryPbIndexer(BaseKVIndexer):
     class WriteHandler:
         def __init__(self, path, mode):
             self.body = open(path, mode)
-            self.header = open(path + '.head', mode)
+            self.header = open(path + ".head", mode)
 
         def close(self):
             self.body.close()
@@ -26,10 +26,10 @@ class BinaryPbIndexer(BaseKVIndexer):
 
     class ReadHandler:
         def __init__(self, path):
-            with open(path + '.head', 'rb') as fp:
+            with open(path + ".head", "rb") as fp:
                 tmp = np.frombuffer(fp.read(), dtype=np.int64).reshape([-1, 4])
                 self.header = {r[0]: r[1:] for r in tmp}
-            self._body = open(path, 'r+b')
+            self._body = open(path, "r+b")
             self.body = self._body.fileno()
 
         def close(self):
@@ -37,11 +37,11 @@ class BinaryPbIndexer(BaseKVIndexer):
 
     def get_add_handler(self):
         # keep _start position as in pickle serialization
-        return self.WriteHandler(self.index_abspath, 'ab')
+        return self.WriteHandler(self.index_abspath, "ab")
 
     def get_create_handler(self):
         self._start = 0  # override _start position
-        return self.WriteHandler(self.index_abspath, 'wb')
+        return self.WriteHandler(self.index_abspath, "wb")
 
     def get_query_handler(self):
         return self.ReadHandler(self.index_abspath)
@@ -55,13 +55,14 @@ class BinaryPbIndexer(BaseKVIndexer):
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         for key, value in zip(keys, values):
             l = len(value)  #: the length
-            p = int(self._start / self._page_size) * self._page_size  #: offset of the page
-            r = self._start % self._page_size  #: the remainder, i.e. the start position given the offset
+            p = (
+                int(self._start / self._page_size) * self._page_size
+            )  #: offset of the page
+            r = (
+                self._start % self._page_size
+            )  #: the remainder, i.e. the start position given the offset
             self.write_handler.header.write(
-                np.array(
-                    (key, p, r, r + l),
-                    dtype=np.int64
-                ).tobytes()
+                np.array((key, p, r, r + l), dtype=np.int64).tobytes()
             )
             self._start += l
             self.write_handler.body.write(value)
@@ -79,7 +80,7 @@ class BinaryPbIndexer(BaseKVIndexer):
 
 class DataURIPbIndexer(BinaryPbIndexer):
     """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,
-    differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
+    differ with :class:`ChunkPbIndexer` only in ``requests.on``"""
 
 
 class UniquePbIndexer(CompoundExecutor):

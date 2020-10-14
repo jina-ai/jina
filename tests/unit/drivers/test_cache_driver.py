@@ -9,16 +9,15 @@ from jina.executors.indexers.cache import DocIDCache
 from jina.proto import jina_pb2, uid
 from tests import random_docs, rm_files
 
-filename = 'test-tmp.bin'
+filename = "test-tmp.bin"
 
 
 class MockCacheDriver(BaseCacheDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
 
-    def on_hit(self, req_doc: 'jina_pb2.Document', hit_result: Any) -> None:
+    def on_hit(self, req_doc: "jina_pb2.Document", hit_result: Any) -> None:
         raise NotImplementedError
 
 
@@ -67,7 +66,7 @@ def test_cache_driver_tmpfile():
 
 def test_cache_driver_from_file():
     docs = list(random_docs(10))
-    with open(filename, 'wb') as fp:
+    with open(filename, "wb") as fp:
         fp.write(np.array([uid.id2hash(d.id) for d in docs], dtype=np.int64).tobytes())
 
     driver = MockCacheDriver()

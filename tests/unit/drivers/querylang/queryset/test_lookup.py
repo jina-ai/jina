@@ -27,19 +27,19 @@ def test_lookup_leaf_exact():
 
 def test_lookup_leaf_exact_document_tags():
     doc = jina_pb2.Document()
-    doc.tags.update({'label': 'jina'})
-    leaf = LookupLeaf(tags__label='jina')
+    doc.tags.update({"label": "jina"})
+    leaf = LookupLeaf(tags__label="jina")
     assert leaf.evaluate(doc)
-    leaf = LookupLeaf(tags__label='not_jina')
+    leaf = LookupLeaf(tags__label="not_jina")
     assert not leaf.evaluate(doc)
 
 
 def test_lookup_leaf_exact_document_tags_complex():
     doc = jina_pb2.Document()
-    doc.tags.update({'key1': {'key2': 'jina'}})
-    leaf = LookupLeaf(tags__key1__key2='jina')
+    doc.tags.update({"key1": {"key2": "jina"}})
+    leaf = LookupLeaf(tags__key1__key2="jina")
     assert leaf.evaluate(doc)
-    leaf = LookupLeaf(tags__key1__key2='not_jina')
+    leaf = LookupLeaf(tags__key1__key2="not_jina")
     assert not leaf.evaluate(doc)
 
 
@@ -92,70 +92,70 @@ def test_lookup_leaf_lte():
 
 
 def test_lookup_leaf_contains():
-    leaf = LookupLeaf(str__contains='jina')
-    mock0 = MockStr('hey jina how are you')
+    leaf = LookupLeaf(str__contains="jina")
+    mock0 = MockStr("hey jina how are you")
     assert leaf.evaluate(mock0)
-    mock1 = MockStr('not here')
+    mock1 = MockStr("not here")
     assert not leaf.evaluate(mock1)
-    mock2 = MockStr('hey jInA how are you')
+    mock2 = MockStr("hey jInA how are you")
     assert not leaf.evaluate(mock2)
 
 
 def test_lookup_leaf_icontains():
-    leaf = LookupLeaf(str__icontains='jina')
-    mock0 = MockStr('hey jInA how are you')
+    leaf = LookupLeaf(str__icontains="jina")
+    mock0 = MockStr("hey jInA how are you")
     assert leaf.evaluate(mock0)
-    mock1 = MockStr('not here')
+    mock1 = MockStr("not here")
     assert not leaf.evaluate(mock1)
 
 
 def test_lookup_leaf_startswith():
-    leaf = LookupLeaf(str__startswith='jina')
-    mock0 = MockStr('jina is the neural search solution')
+    leaf = LookupLeaf(str__startswith="jina")
+    mock0 = MockStr("jina is the neural search solution")
     assert leaf.evaluate(mock0)
-    mock1 = MockStr('hey, jina is the neural search solution')
+    mock1 = MockStr("hey, jina is the neural search solution")
     assert not leaf.evaluate(mock1)
-    mock2 = MockStr('JiNa is the neural search solution')
+    mock2 = MockStr("JiNa is the neural search solution")
     assert not leaf.evaluate(mock2)
 
 
 def test_lookup_leaf_istartswith():
-    leaf = LookupLeaf(str__istartswith='jina')
-    mock0 = MockStr('jina is the neural search solution')
+    leaf = LookupLeaf(str__istartswith="jina")
+    mock0 = MockStr("jina is the neural search solution")
     assert leaf.evaluate(mock0)
-    mock1 = MockStr('hey, jina is the neural search solution')
+    mock1 = MockStr("hey, jina is the neural search solution")
     assert not leaf.evaluate(mock1)
-    mock2 = MockStr('JiNa is the neural search solution')
+    mock2 = MockStr("JiNa is the neural search solution")
     assert leaf.evaluate(mock2)
 
 
 def test_lookup_leaf_endswith():
-    leaf = LookupLeaf(str__endswith='jina')
-    mock0 = MockStr('how is jina')
+    leaf = LookupLeaf(str__endswith="jina")
+    mock0 = MockStr("how is jina")
     assert leaf.evaluate(mock0)
-    mock1 = MockStr('hey, jina is the neural search solution')
+    mock1 = MockStr("hey, jina is the neural search solution")
     assert not leaf.evaluate(mock1)
-    mock2 = MockStr('how is JiNa')
+    mock2 = MockStr("how is JiNa")
     assert not leaf.evaluate(mock2)
 
 
 def test_lookup_leaf_iendswith():
-    leaf = LookupLeaf(str__iendswith='jina')
-    mock0 = MockStr('how is jina')
+    leaf = LookupLeaf(str__iendswith="jina")
+    mock0 = MockStr("how is jina")
     assert leaf.evaluate(mock0)
-    mock1 = MockStr('hey, jina is the neural search solution')
+    mock1 = MockStr("hey, jina is the neural search solution")
     assert not leaf.evaluate(mock1)
-    mock2 = MockStr('how is JiNa')
+    mock2 = MockStr("how is JiNa")
     assert leaf.evaluate(mock2)
 
 
 def test_lookup_leaf_regex():
-    leaf = LookupLeaf(str__regex='j*na')
-    mock0 = MockStr('hey, juna is good')
+    leaf = LookupLeaf(str__regex="j*na")
+    mock0 = MockStr("hey, juna is good")
     assert leaf.evaluate(mock0)
-    mock1 = MockStr('hey, Oinja is the neural search solution')
+    mock1 = MockStr("hey, Oinja is the neural search solution")
     assert not leaf.evaluate(mock1)
-    mock2 = MockStr('how is JiNa')
+    mock2 = MockStr("how is JiNa")
     assert not leaf.evaluate(mock2)
 
 

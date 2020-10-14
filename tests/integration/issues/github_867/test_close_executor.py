@@ -9,7 +9,7 @@ from jina.flow import Flow
 
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-save_abs_path = os.path.join(cur_dir, 'slow-save-executor.bin')
+save_abs_path = os.path.join(cur_dir, "slow-save-executor.bin")
 
 
 class SlowSaveExecutor(BaseExecutor):
@@ -27,7 +27,7 @@ class SlowSaveExecutor(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = 'slow-save-executor'
+        self.name = "slow-save-executor"
 
     @property
     def save_abspath(self) -> str:
@@ -36,18 +36,18 @@ class SlowSaveExecutor(BaseExecutor):
     def __getstate__(self):
         d = super().__getstate__()
         time.sleep(2)
-        d['test'] = 10
+        d["test"] = 10
         return d
 
 
 def test_close_and_load_executor():
-    with Flow().add(uses=os.path.join(cur_dir, 'yaml/slowexecutor.yml')).build() as f:
+    with Flow().add(uses=os.path.join(cur_dir, "yaml/slowexecutor.yml")).build() as f:
         pass
 
     exec = BaseExecutor.load(save_abs_path)
 
     assert isinstance(exec, SlowSaveExecutor)
-    assert hasattr(exec, 'test')
+    assert hasattr(exec, "test")
     assert exec.test == 10
     assert exec.save_abspath == save_abs_path
     os.remove(save_abs_path)
@@ -57,17 +57,18 @@ class OldErrorPea(BasePea):
     """
     This Pea tries to simulate the behavior of Pea before issue was fixed
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.daemon = True
 
     def loop_teardown(self):
         """Stop the request loop """
-        if hasattr(self, 'executor'):
+        if hasattr(self, "executor"):
             if not self.args.exit_no_dump:
                 self.save_executor(dump_interval=0)
             self.executor.close()
-        if hasattr(self, 'zmqlet'):
+        if hasattr(self, "zmqlet"):
             self.zmqlet.close()
 
     def _handle_terminate_signal(self, msg):
@@ -76,9 +77,11 @@ class OldErrorPea(BasePea):
         self.is_shutdown.set()
 
 
-@patch(target='jina.peapods.pea.BasePea', new=OldErrorPea)
+@patch(target="jina.peapods.pea.BasePea", new=OldErrorPea)
 def test_close_and_load_executor_daemon_failed():
-    with Flow().add(uses=os.path.join(cur_dir, 'yaml/slowexecutor.yml'), daemon=True).build() as f:
+    with Flow().add(
+        uses=os.path.join(cur_dir, "yaml/slowexecutor.yml"), daemon=True
+    ).build() as f:
         pass
 
     with pytest.raises(BadPersistantFile):

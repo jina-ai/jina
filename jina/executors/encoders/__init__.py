@@ -27,7 +27,7 @@ class BaseEncoder(BaseExecutor):
 class BaseNumericEncoder(BaseEncoder):
     """BaseNumericEncoder encodes data from a ndarray, potentially B x ([T] x D) into a ndarray of B x D"""
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, data: "np.ndarray", *args, **kwargs) -> "np.ndarray":
         """
         :param data: a `B x ([T] x D)` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
@@ -37,16 +37,19 @@ class BaseNumericEncoder(BaseEncoder):
 
 class BaseImageEncoder(BaseNumericEncoder):
     """BaseImageEncoder encodes data from a ndarray, potentially B x (Height x Width) into a ndarray of B x D"""
+
     pass
 
 
 class BaseVideoEncoder(BaseNumericEncoder):
     """BaseVideoEncoder encodes data from a ndarray, potentially B x (Time x Height x Width) into a ndarray of B x D"""
+
     pass
 
 
 class BaseAudioEncoder(BaseNumericEncoder):
     """BaseAudioEncoder encodes data from a ndarray, potentially B x (Time x D) into a ndarray of B x D"""
+
     pass
 
 
@@ -56,7 +59,7 @@ class BaseTextEncoder(BaseEncoder):
 
     """
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, data: "np.ndarray", *args, **kwargs) -> "np.ndarray":
         """
 
         :param data: an 1d array of string type (data.dtype.kind == 'U') in size B

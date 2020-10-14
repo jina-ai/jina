@@ -8,14 +8,13 @@ from ..logging import JinaLogger
 
 
 class HeadPea(BasePea):
-
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union["argparse.Namespace", Dict]):
         super().__init__(args)
         self.name = self.__class__.__name__
         if isinstance(self.args, argparse.Namespace):
             if self.args.name:
                 self.name = self.args.name
-                self.name = f'{self.name}-head'
+                self.name = f"{self.name}-head"
             self.logger = JinaLogger(self.name, **vars(self.args))
         else:
             self.logger = JinaLogger(self.name)

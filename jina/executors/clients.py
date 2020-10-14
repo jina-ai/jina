@@ -60,8 +60,14 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
 
     """
 
-    def __init__(self, model_name: str, signature_name: str = 'serving_default', method_name: str = 'Predict',
-                 *args, **kwargs):
+    def __init__(
+        self,
+        model_name: str,
+        signature_name: str = "serving_default",
+        method_name: str = "Predict",
+        *args,
+        **kwargs,
+    ):
         """
         :param model_name: the name of the tf serving model. It must match the `MODEL_NAME` parameter when starting the
             tf server.
@@ -78,12 +84,12 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         self.model_name = model_name
         self.signature_name = signature_name
         self._method_name_dict = {
-            'Predict': ('predict_pb2', 'PredictRequest'),
-            'Classify': ('classification_pb2', 'ClassificationRequest'),
-            'Regression': ('regression_pb2', 'RegressionRequest')
+            "Predict": ("predict_pb2", "PredictRequest"),
+            "Classify": ("classification_pb2", "ClassificationRequest"),
+            "Regression": ("regression_pb2", "RegressionRequest"),
         }
         if method_name not in self._method_name_dict:
-            raise ValueError(f'unknown method name: {self.method_name}')
+            raise ValueError(f"unknown method name: {self.method_name}")
         self.method_name = method_name
         self.module_name, self.request_name = self._method_name_dict[self.method_name]
 
@@ -92,8 +98,9 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         Initialize the channel and stub for the gRPC client
 
         """
-        self._channel = grpc.insecure_channel(f'{self.host}:{self.port}')
+        self._channel = grpc.insecure_channel(f"{self.host}:{self.port}")
         from tensorflow_serving.apis import prediction_service_pb2_grpc
+
         self._stub = prediction_service_pb2_grpc.PredictionServiceStub(self._channel)
 
     def get_request(self, data):
@@ -115,13 +122,13 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         """
         raise NotImplementedError
 
-    def get_response(self, request: 'predict_pb2.PredictRequest'):
+    def get_response(self, request: "predict_pb2.PredictRequest"):
         """
         Get the response from the tf server and postprocess the response
         """
         _response = getattr(self._stub, self.method_name).future(request, self.timeout)
         if _response.exception():
-            self.logger.error(f'exception raised in encoding: {_response.exception}')
+            self.logger.error(f"exception raised in encoding: {_response.exception}")
             raise ValueError
         return self.get_output(_response)
 
@@ -131,7 +138,7 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         """
         raise NotImplementedError
 
-    def get_default_request(self) -> 'predict_pb2.PredictRequest':
+    def get_default_request(self) -> "predict_pb2.PredictRequest":
         """
         Construct the default gRPC request to the tf server.
         """
@@ -142,26 +149,35 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
 
     def _get_default_request(self):
         import tensorflow_serving.apis
-        return getattr(getattr(tensorflow_serving.apis, self.module_name), self.request_name)()
 
-    def Predict(self, request: 'predict_pb2.PredictRequest', data_dict: Dict) -> 'predict_pb2.PredictRequest':
-        """ Fill in the ``PredictRequest`` with the data dict
-        """
+        return getattr(
+            getattr(tensorflow_serving.apis, self.module_name), self.request_name
+        )()
+
+    def Predict(
+        self, request: "predict_pb2.PredictRequest", data_dict: Dict
+    ) -> "predict_pb2.PredictRequest":
+        """Fill in the ``PredictRequest`` with the data dict"""
         import tensorflow as tf
+
         for k, v in data_dict.items():
             request.inputs[k].CopyFrom(tf.make_tensor_proto(v))
         return request
 
-    def Classify(self, request: 'classification_pb2.ClassificationRequest', data_dict: Dict) \
-            -> 'classification_pb2.ClassificationRequest':
-        """ Fill in the ``ClassificationRequest`` with the data dict
-        """
-        self.logger.error('building Classify request failed, _fill_classify_request() is not implemented')
+    def Classify(
+        self, request: "classification_pb2.ClassificationRequest", data_dict: Dict
+    ) -> "classification_pb2.ClassificationRequest":
+        """Fill in the ``ClassificationRequest`` with the data dict"""
+        self.logger.error(
+            "building Classify request failed, _fill_classify_request() is not implemented"
+        )
         pass
 
-    def Regression(self, request: 'regression_pb2.RegressionRequest', data_dict: Dict) \
-            -> 'regression_pb2.RegressionRequest':
-        """ Fill in the ``RegressionRequest`` with the data dict
-        """
-        self.logger.error('building Regression request failed, _fill_regression_request() is not implemented')
+    def Regression(
+        self, request: "regression_pb2.RegressionRequest", data_dict: Dict
+    ) -> "regression_pb2.RegressionRequest":
+        """Fill in the ``RegressionRequest`` with the data dict"""
+        self.logger.error(
+            "building Regression request failed, _fill_regression_request() is not implemented"
+        )
         pass

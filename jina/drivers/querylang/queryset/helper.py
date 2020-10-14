@@ -4,12 +4,15 @@ from typing import Callable, List, Type, Union, Iterable
 
 ## Exceptions
 
+
 class LookupyError(Exception):
     """Base exception class for all exceptions raised by lookupy"""
+
     pass
 
 
 ## utility functions
+
 
 def iff(precond: Callable, val: Union[int, str], f: Callable) -> bool:
     """If and only if the precond is True
@@ -28,9 +31,11 @@ def iff(precond: Callable, val: Union[int, str], f: Callable) -> bool:
 iff_not_none = partial(iff, lambda x: x is not None)
 
 
-def guard_type(classinfo: Union[Type[str], Type[Iterable]], val: Union[str, List[int]]) -> Union[str, List[int]]:
+def guard_type(
+    classinfo: Union[Type[str], Type[Iterable]], val: Union[str, List[int]]
+) -> Union[str, List[int]]:
     if not isinstance(val, classinfo):
-        raise LookupyError(f'Value not a {classinfo}')
+        raise LookupyError(f"Value not a {classinfo}")
     return val
 
 

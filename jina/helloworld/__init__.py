@@ -24,47 +24,58 @@ def hello_world(args):
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
     targets = {
-        'index': {
-            'url': args.index_data_url,
-            'filename': os.path.join(args.workdir, 'index-original')
+        "index": {
+            "url": args.index_data_url,
+            "filename": os.path.join(args.workdir, "index-original"),
         },
-        'query': {
-            'url': args.query_data_url,
-            'filename': os.path.join(args.workdir, 'query-original')
-        }
+        "query": {
+            "url": args.query_data_url,
+            "filename": os.path.join(args.workdir, "query-original"),
+        },
     }
 
     # download the data
     download_data(targets, args.download_proxy)
 
     # this envs are referred in index and query flow YAMLs
-    os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
-    os.environ['SHARDS'] = str(args.shards)
-    os.environ['PARALLEL'] = str(args.parallel)
-    os.environ['HW_WORKDIR'] = args.workdir
-    os.environ['WITH_LOGSERVER'] = str(args.logserver)
+    os.environ["RESOURCE_DIR"] = resource_filename("jina", "resources")
+    os.environ["SHARDS"] = str(args.shards)
+    os.environ["PARALLEL"] = str(args.parallel)
+    os.environ["HW_WORKDIR"] = args.workdir
+    os.environ["WITH_LOGSERVER"] = str(args.logserver)
 
     # reduce the network load by using `fp16`, or even `uint8`
-    os.environ['JINA_ARRAY_QUANT'] = 'fp16'
+    os.environ["JINA_ARRAY_QUANT"] = "fp16"
 
     # now comes the real work
     # load index flow from a YAML file
     f = Flow.load_config(args.uses_index)
     # run it!
     with f:
-        f.index_ndarray(targets['index']['data'], batch_size=args.index_batch_size)
+        f.index_ndarray(targets["index"]["data"], batch_size=args.index_batch_size)
 
     # wait for couple of seconds
-    countdown(8, reason=colored('behold! im going to switch to query mode', 'cyan',
-                                attrs=['underline', 'bold', 'reverse']))
+    countdown(
+        8,
+        reason=colored(
+            "behold! im going to switch to query mode",
+            "cyan",
+            attrs=["underline", "bold", "reverse"],
+        ),
+    )
 
     # now load query flow from another YAML file
     f = Flow.load_config(args.uses_query)
     # run it!
     with f:
-        f.search_ndarray(targets['query']['data'], shuffle=True, size=args.num_query,
-                         output_fn=print_result, batch_size=args.query_batch_size,
-                         top_k=args.top_k)
+        f.search_ndarray(
+            targets["query"]["data"],
+            shuffle=True,
+            size=args.num_query,
+            output_fn=print_result,
+            batch_size=args.query_batch_size,
+            top_k=args.top_k,
+        )
 
     # write result to html
-    write_html(os.path.join(args.workdir, 'hello-world.html'))
+    write_html(os.path.join(args.workdir, "hello-world.html"))

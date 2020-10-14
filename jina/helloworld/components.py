@@ -8,8 +8,8 @@ from ..executors.encoders import BaseImageEncoder
 
 class MyEncoder(BaseImageEncoder):
     """Simple Encoder used in :command:`jina hello-world`,
-        it transforms the original 784-dim vector into a 64-dim vector using
-        a random orthogonal matrix, which is stored and shared in index and query time"""
+    it transforms the original 784-dim vector into a 64-dim vector using
+    a random orthogonal matrix, which is stored and shared in index and query time"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,6 +20,6 @@ class MyEncoder(BaseImageEncoder):
         self.oth_mat = u @ vh
         self.touch()
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs):
+    def encode(self, data: "np.ndarray", *args, **kwargs):
         # reduce dimension to 50 by random orthogonal projection
         return (data.reshape([-1, 784]) / 255) @ self.oth_mat

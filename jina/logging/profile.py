@@ -20,16 +20,20 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     """
     try:
         import resource
+
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
     except ModuleNotFoundError:
         from . import default_logger
-        default_logger.error('module "resource" can not be found and you are likely running it on Windows, '
-                             'i will return 0')
+
+        default_logger.error(
+            'module "resource" can not be found and you are likely running it on Windows, '
+            "i will return 0"
+        )
         return 0
 
 
 def used_memory_readable() -> str:
-    """ Get the memory usage of the current process in a human-readable format
+    """Get the memory usage of the current process in a human-readable format
 
     :return:
     """
@@ -59,9 +63,11 @@ def profiling(func):
         elapsed = time.perf_counter() - start_t
         end_mem = used_memory(unit=1)
         # level_prefix = ''.join('-' for v in inspect.stack() if v and v.index is not None and v.index >= 0)
-        level_prefix = ''
-        mem_status = f'memory Δ {get_readable_size(end_mem - start_mem)} {get_readable_size(start_mem)} -> {get_readable_size(end_mem)}'
-        default_logger.info(f'{level_prefix} {func.__qualname__} time: {elapsed}s {mem_status}')
+        level_prefix = ""
+        mem_status = f"memory Δ {get_readable_size(end_mem - start_mem)} {get_readable_size(start_mem)} -> {get_readable_size(end_mem)}"
+        default_logger.info(
+            f"{level_prefix} {func.__qualname__} time: {elapsed}s {mem_status}"
+        )
         return r
 
     return arg_wrapper
@@ -107,15 +113,15 @@ class TimeDict:
             self._pending_reset = False
 
     def __str__(self):
-        return ' '.join('%s: %3.1fs' % (k, v) for k, v in self.accum_time.items())
+        return " ".join("%s: %3.1fs" % (k, v) for k, v in self.accum_time.items())
 
 
 class TimeContext:
     """Timing a code snippet with a context manager """
 
-    time_attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
+    time_attrs = ["years", "months", "days", "hours", "minutes", "seconds"]
 
-    def __init__(self, task_name: str, logger: 'JinaLogger' = None):
+    def __init__(self, task_name: str, logger: "JinaLogger" = None):
         """
 
         :param task_name: the context/message
@@ -141,9 +147,9 @@ class TimeContext:
 
     def _enter_msg(self):
         if self._logger:
-            self._logger.info(self.task_name + '...')
+            self._logger.info(self.task_name + "...")
         else:
-            print(self.task_name, end=' ...\t', flush=True)
+            print(self.task_name, end=" ...\t", flush=True)
 
     def __exit__(self, typ, value, traceback):
         self.duration = time.perf_counter() - self.start
@@ -154,6 +160,13 @@ class TimeContext:
 
     def _exit_msg(self):
         if self._logger:
-            self._logger.info(f'{self.task_name} takes {self.readable_duration} ({self.duration:.2f}s)')
+            self._logger.info(
+                f"{self.task_name} takes {self.readable_duration} ({self.duration:.2f}s)"
+            )
         else:
-            print(colored(f'    {self.readable_duration} ({self.duration:.2f}s)', 'green'), flush=True)
+            print(
+                colored(
+                    f"    {self.readable_duration} ({self.duration:.2f}s)", "green"
+                ),
+                flush=True,
+            )

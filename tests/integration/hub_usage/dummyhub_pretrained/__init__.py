@@ -5,7 +5,6 @@ from jina.excepts import PretrainedModelFileDoesNotExist
 
 
 class DummyPretrainedExecutor(BaseCrafter):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -14,4 +13,3 @@ class DummyPretrainedExecutor(BaseCrafter):
 
     def craft(self, *args, **kwargs) -> Dict:
         pass
-

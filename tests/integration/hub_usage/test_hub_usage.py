@@ -16,53 +16,65 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def test_simple_use_abs_import_shall_fail():
     with pytest.raises(ModuleNotFoundError):
         from .dummyhub_abs import DummyHubExecutorAbs
+
         DummyHubExecutorAbs()
 
     with pytest.raises(PeaFailToStart):
-        with Flow().add(uses='DummyHubExecutorAbs'):
+        with Flow().add(uses="DummyHubExecutorAbs"):
             pass
 
 
 def test_simple_use_relative_import():
     from .dummyhub import DummyHubExecutor
+
     DummyHubExecutor()
 
-    with Flow().add(uses='DummyHubExecutor'):
+    with Flow().add(uses="DummyHubExecutor"):
         pass
 
 
 def test_use_from_local_dir_exe_level():
-    with BaseExecutor.load_config('dummyhub/config.yml'):
+    with BaseExecutor.load_config("dummyhub/config.yml"):
         pass
 
 
 def test_use_from_local_dir_pod_level():
-    a = set_pod_parser().parse_args(['--uses', 'dummyhub/config.yml'])
+    a = set_pod_parser().parse_args(["--uses", "dummyhub/config.yml"])
     with Pod(a):
         pass
 
 
 def test_use_from_local_dir_flow_level():
-    with Flow().add(uses='dummyhub/config.yml'):
+    with Flow().add(uses="dummyhub/config.yml"):
         pass
 
 
 def test_use_from_local_dir_flow_container_level():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error'])
+        [os.path.join(cur_dir, "dummyhub"), "--test-uses", "--raise-error"]
+    )
     HubIO(args).build()
 
-    with Flow().add(uses='jinahub/pod.crafter.dummyhubexecutor:0.0.0'):
+    with Flow().add(uses="jinahub/pod.crafter.dummyhubexecutor:0.0.0"):
         pass
 
 
 def test_use_executor_pretrained_model_except():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'dummyhub_pretrained'), '--test-uses', '--raise-error'])
-    assert HubIO(args).build()['is_build_success']
+        [os.path.join(cur_dir, "dummyhub_pretrained"), "--test-uses", "--raise-error"]
+    )
+    assert HubIO(args).build()["is_build_success"]
 
 
 def test_use_from_cli_level():
-    subprocess.check_call(['jina', 'pod', '--uses',
-                           os.path.join(cur_dir, 'dummyhub/config.yml'),
-                           '--shutdown-idle', '--max-idle-time', '5'])
+    subprocess.check_call(
+        [
+            "jina",
+            "pod",
+            "--uses",
+            os.path.join(cur_dir, "dummyhub/config.yml"),
+            "--shutdown-idle",
+            "--max-idle-time",
+            "5",
+        ]
+    )

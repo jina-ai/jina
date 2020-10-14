@@ -10,7 +10,7 @@ from jina.proto import jina_pb2
 
 
 class MockIndexer(BaseVectorIndexer):
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: "np.ndarray", vectors: "np.ndarray", *args, **kwargs):
         pass
 
     def get_query_handler(self):
@@ -22,7 +22,9 @@ class MockIndexer(BaseVectorIndexer):
     def get_create_handler(self):
         pass
 
-    def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, vectors: "np.ndarray", top_k: int, *args, **kwargs
+    ) -> Tuple["np.ndarray", "np.ndarray"]:
         # vectors that will come are 1-D arrays with chunk ID value,
         # mock the indexer so that every chunk matches a chunk
         # with an id that is 100 * chunk.id, and an embedding of [chunk.id * 0.01]
@@ -35,18 +37,17 @@ class MockIndexer(BaseVectorIndexer):
         dist = np.hstack((dist_top_1, dist_top_2))
         return idx, dist
 
-    def query_by_id(self, ids: 'np.ndarray', *args, **kwargs):
+    def query_by_id(self, ids: "np.ndarray", *args, **kwargs):
         return np.random.random([len(ids), 7])
 
 
 class SimpleVectorSearchDriver(VectorSearchDriver):
-
     @property
     def queryset(self):
         q = jina_pb2.QueryLang()
-        q.name = 'SimpleVectorSearchDriver'
+        q.name = "SimpleVectorSearchDriver"
         q.priority = 1
-        q.parameters['top_k'] = 4
+        q.parameters["top_k"] = 4
         return [q]
 
     @property
@@ -62,7 +63,7 @@ def create_document_to_search():
     #        - chunk: 5 - embedding(5.0)
     # ....
     doc = jina_pb2.Document()
-    doc.id = '1'
+    doc.id = "1"
     for c in range(10):
         chunk = doc.chunks.add()
         chunk.id = str(c + 2)
@@ -93,9 +94,13 @@ def test_vectorsearch_driver_mock_indexer():
         assert chunk.matches[1].granularity == chunk.granularity
         assert chunk.matches[0].score.ref_id == str(chunk.id)
         assert chunk.matches[1].score.ref_id == str(chunk.id)
-        assert chunk.matches[0].score.value == pytest.approx(int(chunk.id) * 0.01, 0.0001)
-        assert chunk.matches[1].score.value == pytest.approx(int(chunk.id) * 0.1, 0.0001)
-        assert chunk.matches[-1].embedding.buffer == b''
+        assert chunk.matches[0].score.value == pytest.approx(
+            int(chunk.id) * 0.01, 0.0001
+        )
+        assert chunk.matches[1].score.value == pytest.approx(
+            int(chunk.id) * 0.1, 0.0001
+        )
+        assert chunk.matches[-1].embedding.buffer == b""
 
 
 def test_vectorsearch_driver_mock_indexer_with_fill():
@@ -108,4 +113,4 @@ def test_vectorsearch_driver_mock_indexer_with_fill():
     for chunk in doc.chunks:
         assert chunk.matches[0].embedding.shape == [7]
         assert chunk.matches[-1].embedding.shape == [7]
-        assert chunk.matches[-1].embedding.buffer != b''
+        assert chunk.matches[-1].embedding.buffer != b""

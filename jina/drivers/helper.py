@@ -12,7 +12,7 @@ import numpy as np
 from ..proto import jina_pb2
 
 
-def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
+def pb2array(blob: "jina_pb2.NdArray") -> "np.ndarray":
     """Convert a blob protobuf to a numpy ndarray.
 
     Note if the argument ``quantize`` is specified in :func:`array2pb` then the returned result may be lossy.
@@ -30,7 +30,7 @@ def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
     return x.reshape(blob.shape)
 
 
-def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
+def array2pb(x: "np.ndarray", quantize: str = None) -> "jina_pb2.NdArray":
     """Convert a numpy ndarray to blob protobuf.
 
     :param x: the target ndarray
@@ -49,13 +49,15 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     """
     blob = jina_pb2.NdArray()
 
-    quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
+    quantize = os.environ.get("JINA_ARRAY_QUANT", quantize)
 
-    if quantize == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):
+    if quantize == "fp16" and (x.dtype == np.float32 or x.dtype == np.float64):
         blob.quantization = jina_pb2.NdArray.FP16
         blob.original_dtype = x.dtype.name
         x = x.astype(np.float16)
-    elif quantize == 'uint8' and (x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16):
+    elif quantize == "uint8" and (
+        x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16
+    ):
         blob.quantization = jina_pb2.NdArray.UINT8
         blob.max_val, blob.min_val = x.max(), x.min()
         blob.original_dtype = x.dtype.name
@@ -70,7 +72,7 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
     return blob
 
 
-def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
+def extract_docs(docs: Iterable["jina_pb2.Document"], embedding: bool) -> Tuple:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents
@@ -88,9 +90,13 @@ def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
     bad_doc_ids = []
 
     if embedding:
-        _extract_fn = lambda doc: (doc.embedding.buffer or None) and pb2array(doc.embedding)
+        _extract_fn = lambda doc: (doc.embedding.buffer or None) and pb2array(
+            doc.embedding
+        )
     else:
-        _extract_fn = lambda doc: doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
+        _extract_fn = (
+            lambda doc: doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
+        )
 
     for doc in docs:
         content = _extract_fn(doc)
@@ -105,7 +111,7 @@ def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
     return contents, docs_pts, bad_doc_ids
 
 
-def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
+def routes2str(msg: "jina_pb2.Message", flag_current: bool = False) -> str:
     """Get the string representation of the routes in a message.
 
     :param msg: a protobuf message
@@ -113,12 +119,13 @@ def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
     """
     route_str = [r.pod for r in msg.envelope.routes]
     if flag_current:
-        route_str.append('⚐')
+        route_str.append("⚐")
     from ..helper import colored
-    return colored('▸', 'green').join(route_str)
+
+    return colored("▸", "green").join(route_str)
 
 
-def add_route(evlp: 'jina_pb2.Envelope', name: str, identity: str) -> None:
+def add_route(evlp: "jina_pb2.Envelope", name: str, identity: str) -> None:
     """Add a route to the envelope
 
     :param evlp: the envelope to modify
@@ -138,8 +145,8 @@ def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     :param keys: an iterable of keys for extraction
     """
     ret = {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
-    if 'blob' in ret:
-        ret['blob'] = pb2array(obj.blob)
+    if "blob" in ret:
+        ret["blob"] = pb2array(obj.blob)
     return ret
 
 
@@ -147,8 +154,8 @@ def guess_mime(uri):
     # guess when uri points to a local file
     m_type = mimetypes.guess_type(uri)[0]
     # guess when uri points to a remote file
-    if not m_type and urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
-        page = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
+    if not m_type and urllib.parse.urlparse(uri).scheme in {"http", "https", "data"}:
+        page = urllib.request.Request(uri, headers={"User-Agent": "Mozilla/5.0"})
         tmp = urllib.request.urlopen(page)
         m_type = tmp.info().get_content_type()
     return m_type
@@ -162,7 +169,7 @@ class DocGroundtruthPair:
     This does not imply that you can't compare at the end a document with 10 matches with a groundtruth with 20 matches
     """
 
-    def __init__(self, doc: 'jina_pb2.Document', groundtruth: 'jina_pb2.Document'):
+    def __init__(self, doc: "jina_pb2.Document", groundtruth: "jina_pb2.Document"):
         self.doc = doc
         self.groundtruth = groundtruth
 
@@ -171,11 +178,15 @@ class DocGroundtruthPair:
         # TODO: Should we expect this assert to be done
         #  (RankingEvaluation may work with a different lenght of groundtruth matches as the one returned)
         assert len(self.doc.matches) == len(self.groundtruth.matches)
-        return [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
-                zip(self.doc.matches, self.groundtruth.matches)]
+        return [
+            DocGroundtruthPair(doc, groundtruth)
+            for doc, groundtruth in zip(self.doc.matches, self.groundtruth.matches)
+        ]
 
     @property
     def chunks(self):
         assert len(self.doc.chunks) == len(self.groundtruth.chunks)
-        return [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
-                zip(self.doc.chunks, self.groundtruth.chunks)]
+        return [
+            DocGroundtruthPair(doc, groundtruth)
+            for doc, groundtruth in zip(self.doc.chunks, self.groundtruth.chunks)
+        ]

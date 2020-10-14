@@ -47,11 +47,11 @@ def test_cached_property():
 
 
 def test_time_context():
-    with TimeContext('dummy') as tc:
+    with TimeContext("dummy") as tc:
         time.sleep(2)
 
     assert int(tc.duration) == 2
-    assert tc.readable_duration == '2 seconds'
+    assert tc.readable_duration == "2 seconds"
 
 
 def test_np_int():
@@ -65,7 +65,7 @@ def test_hash():
     for d in ds:
         h = new_doc_hash(d)
         id = new_doc_id(d)
-        print(f'{id}: {h}')
+        print(f"{id}: {h}")
         assert id2hash(id) == h
         assert hash2id(h) == id
         tmp.append(h)
@@ -81,5 +81,5 @@ def test_random_docs():
 
 def test_dunder_get():
     a = SimpleNamespace()
-    a.b = {'c': 1}
-    assert dunder_get(a, 'b__c') == 1
+    a.b = {"c": 1}
+    assert dunder_get(a, "b__c") == 1

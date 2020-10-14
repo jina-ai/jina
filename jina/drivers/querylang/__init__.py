@@ -25,7 +25,7 @@ class BaseQueryLangDriver(BaseDriver):
             self.driver_query = self.parse(raw_query)
 
     def __call__(self, *args, **kwargs):
-        f = getattr(self.req, 'raw_query', None)
+        f = getattr(self.req, "raw_query", None)
         req_query = self.parse(f) if f else None
         filtered = self.execute(self.req.docs, self.driver_query, req_query)
         if filtered is None:
@@ -40,13 +40,14 @@ class BaseQueryLangDriver(BaseDriver):
             # remove old ones
             del self.req.docs[:len_before]
         else:
-            raise ValueError(f'do not support {type(filtered)} return type')
+            raise ValueError(f"do not support {type(filtered)} return type")
 
     def parse(self, raw_filter):
         raise NotImplementedError
 
-    def execute(self, docs: Iterator['jina_pb2.Document'], driver_query, req_query) -> Optional[
-        Iterator['jina_pb2.Document']]:
+    def execute(
+        self, docs: Iterator["jina_pb2.Document"], driver_query, req_query
+    ) -> Optional[Iterator["jina_pb2.Document"]]:
         """
 
         :param docs: the document to be filtered

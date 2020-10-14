@@ -8,8 +8,7 @@ from .. import BaseExecutor
 
 
 class BaseEvaluator(BaseExecutor):
-    """A :class:`BaseEvaluator` is used to evaluate different messages coming from any kind of executor
-    """
+    """A :class:`BaseEvaluator` is used to evaluate different messages coming from any kind of executor"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

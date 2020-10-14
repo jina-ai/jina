@@ -1,22 +1,19 @@
 import numpy as np
-from jina.executors.encoders.helper import reduce_max, reduce_mean, reduce_cls, reduce_min
+from jina.executors.encoders.helper import (
+    reduce_max,
+    reduce_mean,
+    reduce_cls,
+    reduce_min,
+)
 
-test_data = np.array([[
-    [10, 30, 10],
-    [20, 20, 20],
-    [30, 10, 30],
-    [100, 100, 100]
-], [
-    [10, 30, 10],
-    [20, 20, 20],
-    [30, 10, 30],
-    [100, 100, 100]
-]]).astype('float32')
+test_data = np.array(
+    [
+        [[10, 30, 10], [20, 20, 20], [30, 10, 30], [100, 100, 100]],
+        [[10, 30, 10], [20, 20, 20], [30, 10, 30], [100, 100, 100]],
+    ]
+).astype("float32")
 
-test_mask = np.array([
-    [1, 1, 1, 0],
-    [1, 1, 1, 1]
-]).astype('float32')
+test_mask = np.array([[1, 1, 1, 0], [1, 1, 1, 1]]).astype("float32")
 
 
 def test_reduce_max():
@@ -41,13 +38,13 @@ def test_reduce_mean():
 
 
 def test_reduce_cls_head():
-    results = reduce_cls(test_data, test_mask, cls_pos='head')
+    results = reduce_cls(test_data, test_mask, cls_pos="head")
     for data, mask, result in zip(test_data, test_mask, results):
         np.testing.assert_array_equal(data[0, :], result)
 
 
 def test_reduce_cls_tail():
-    results = reduce_cls(test_data, test_mask, cls_pos='tail')
+    results = reduce_cls(test_data, test_mask, cls_pos="tail")
     for data, mask, result in zip(test_data, test_mask, results):
         num_valid_tokens = int(sum(mask))
         np.testing.assert_array_equal(data[num_valid_tokens - 1, :], result)

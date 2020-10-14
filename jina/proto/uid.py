@@ -21,12 +21,12 @@ _doc_field_mask = None
 _digest_size = 8
 
 
-def new_doc_hash(doc: 'Document') -> int:
+def new_doc_hash(doc: "Document") -> int:
     return id2hash(new_doc_id(doc))
 
 
-def new_doc_id(doc: 'Document') -> str:
-    """ Generate a new hexdigest based on the content of the document.
+def new_doc_id(doc: "Document") -> str:
+    """Generate a new hexdigest based on the content of the document.
 
     .. note::
         Always use it AFTER you fill in the content of the document
@@ -41,7 +41,7 @@ def new_doc_id(doc: 'Document') -> str:
     return blake2b(d.SerializeToString(), digest_size=_digest_size).hexdigest()
 
 
-def new_doc_bytes(doc: 'Document') -> bytes:
+def new_doc_bytes(doc: "Document") -> bytes:
     return id2bytes(new_doc_id(doc))
 
 

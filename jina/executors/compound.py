@@ -119,8 +119,10 @@ class CompoundExecutor(BaseExecutor):
         def __call__(self, *args, **kwargs):
             return any(super().__call__(*args, **kwargs))
 
-    def __init__(self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs):
-        """ Create a new :class:`CompoundExecutor` object
+    def __init__(
+        self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs
+    ):
+        """Create a new :class:`CompoundExecutor` object
 
         :param routes: a map of function routes. The key is the function name, the value is a tuple of two pieces,
             where the first element is the name of the referred component (``metas.name``) and the second element
@@ -207,7 +209,9 @@ class CompoundExecutor(BaseExecutor):
     @property
     def is_updated(self) -> bool:
         """Return ``True``  if any components is updated"""
-        return (self.components and any(c.is_updated for c in self.components)) or self._is_updated
+        return (
+            self.components and any(c.is_updated for c in self.components)
+        ) or self._is_updated
 
     @is_updated.setter
     def is_updated(self, val: bool) -> None:
@@ -238,7 +242,7 @@ class CompoundExecutor(BaseExecutor):
     @property
     def components(self) -> List[AnyExecutor]:
         """Return all component executors as a list. The list follows the order as defined in the YAML config or the
-        pre-given order when calling the setter. """
+        pre-given order when calling the setter."""
         return self._components
 
     @components.setter
@@ -248,17 +252,23 @@ class CompoundExecutor(BaseExecutor):
         :param comps: a function returns a list of executors
         """
         if not callable(comps):
-            raise TypeError('components must be a callable function that returns '
-                            'a List[BaseExecutor]')
-        if not getattr(self, 'init_from_yaml', False):
+            raise TypeError(
+                "components must be a callable function that returns "
+                "a List[BaseExecutor]"
+            )
+        if not getattr(self, "init_from_yaml", False):
             self._components = comps()
             if not isinstance(self._components, list):
-                raise TypeError(f'components expect a list of executors, receiving {type(self._components)!r}')
+                raise TypeError(
+                    f"components expect a list of executors, receiving {type(self._components)!r}"
+                )
             # self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
         else:
-            self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
+            self.logger.debug(
+                "components is omitted from construction, as it is initialized from yaml config"
+            )
 
     def _set_comp_workspace(self) -> None:
         # overrider the workspace setting for all components
@@ -273,7 +283,9 @@ class CompoundExecutor(BaseExecutor):
                 for kk, vv in v.items():
                     self.add_route(f, kk, vv)
 
-    def add_route(self, fn_name: str, comp_name: str, comp_fn_name: str, is_stored: bool = False) -> None:
+    def add_route(
+        self, fn_name: str, comp_name: str, comp_fn_name: str, is_stored: bool = False
+    ) -> None:
         """Create a new function for this executor which refers to the component's function
 
         This will create a new function :func:`fn_name` which actually refers to ``components[comp_name].comp_fn_name``.
@@ -287,7 +299,11 @@ class CompoundExecutor(BaseExecutor):
 
         """
         for c in self.components:
-            if c.name == comp_name and hasattr(c, comp_fn_name) and callable(getattr(c, comp_fn_name)):
+            if (
+                c.name == comp_name
+                and hasattr(c, comp_fn_name)
+                and callable(getattr(c, comp_fn_name))
+            ):
                 setattr(self, fn_name, getattr(c, comp_fn_name))
                 if is_stored:
                     if not self._routes:
@@ -296,17 +312,18 @@ class CompoundExecutor(BaseExecutor):
                     self.is_updated = True
                 return
         else:
-            raise AttributeError(f'bad names: {comp_name} and {comp_fn_name}')
+            raise AttributeError(f"bad names: {comp_name} and {comp_fn_name}")
 
     def _set_routes(self) -> None:
         import inspect
+
         # add all existing routes
         r = defaultdict(list)
         common = {}  # set(dir(BaseExecutor()))
 
         for c in self.components:
             for m, _ in inspect.getmembers(c, predicate=inspect.ismethod):
-                if not m.startswith('_') and m not in common:
+                if not m.startswith("_") and m not in common:
                     r[m].append((c.name, getattr(c, m)))
 
         new_routes = []
@@ -316,21 +333,24 @@ class CompoundExecutor(BaseExecutor):
                 setattr(self, k, v[0][1])
             elif len(v) > 1:
                 if self.resolve_all:
-                    new_r = f'{k}_all'
+                    new_r = f"{k}_all"
                     fns = self._FnWrapper([vv[1] for vv in v])
                     setattr(self, new_r, fns)
                     self.logger.debug(f'function "{k}" appears multiple times in {v}')
-                    self.logger.debug(f'a new function "{new_r}" is added to {self!r} by iterating over all')
+                    self.logger.debug(
+                        f'a new function "{new_r}" is added to {self!r} by iterating over all'
+                    )
                     new_routes.append(new_r)
                 else:
                     self.logger.warning(
-                        'function "%s" appears multiple times in %s, it needs to be resolved manually before using.' % (
-                            k, v))
+                        'function "%s" appears multiple times in %s, it needs to be resolved manually before using.'
+                        % (k, v)
+                    )
                     bad_routes.append(k)
         if new_routes:
-            self.logger.debug(f'new functions added: {new_routes!r}')
+            self.logger.debug(f"new functions added: {new_routes!r}")
         if bad_routes:
-            self.logger.warning(f'unresolvable functions: {bad_routes!r}')
+            self.logger.warning(f"unresolvable functions: {bad_routes!r}")
 
     def close(self) -> None:
         """Close all components and release the resources"""
@@ -342,14 +362,14 @@ class CompoundExecutor(BaseExecutor):
     @classmethod
     def to_yaml(cls, representer, data):
         tmp = super()._dump_instance_to_yaml(data)
-        tmp['components'] = data.components
-        return representer.represent_mapping('!' + cls.__name__, tmp)
+        tmp["components"] = data.components
+        return representer.represent_mapping("!" + cls.__name__, tmp)
 
     @classmethod
     def from_yaml(cls, constructor, node):
         obj, data, from_dump = super()._get_instance_from_yaml(constructor, node)
-        if not from_dump and 'components' in data:
-            obj.components = lambda: data['components']
+        if not from_dump and "components" in data:
+            obj.components = lambda: data["components"]
         return obj
 
     def __contains__(self, item: str):
@@ -369,7 +389,7 @@ class CompoundExecutor(BaseExecutor):
                 if c.name == item:
                     return c
         else:
-            raise TypeError('CompoundExecutor only supports int or string index')
+            raise TypeError("CompoundExecutor only supports int or string index")
 
     def __iter__(self):
         return self.components.__iter__()

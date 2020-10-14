@@ -14,7 +14,6 @@ class MockIndexer(BaseIndexer):
 
 
 class SimpleFillDriver(VectorFillDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -35,7 +34,7 @@ def test_index_driver():
     driver.attach(executor=executor, pea=None)
     assert len(docs) == 10
     for doc in docs:
-        assert doc.embedding.buffer == b''
+        assert doc.embedding.buffer == b""
     driver._apply_all(docs)
     assert len(docs) == 10
     for doc in docs:

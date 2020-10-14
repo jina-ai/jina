@@ -19,43 +19,41 @@ def get_duplicate_docs(num_docs=10):
         doc = jina_pb2.Document()
         content = int(idx / 2)
         doc.embedding.CopyFrom(array2pb(np.array([content])))
-        doc.text = f'I am doc{content}'
+        doc.text = f"I am doc{content}"
         result.append(doc)
         unique_set.add(content)
     return result, len(unique_set)
 
 
 def test_incremental_indexing_vecindexers(tmpdir):
-    os.environ['JINA_TEST_INCREMENTAL_INDEX_WORKSPACE'] = str(tmpdir)
+    os.environ["JINA_TEST_INCREMENTAL_INDEX_WORKSPACE"] = str(tmpdir)
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
-    f = (Flow()
-         .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer.yml'), name='vec_idx'))
+    f = Flow().add(uses=os.path.join(cur_dir, "uniq_vectorindexer.yml"), name="vec_idx")
 
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load(os.path.join(tmpdir, 'vec_idx.bin')) as vector_indexer:
+    with BaseExecutor.load(os.path.join(tmpdir, "vec_idx.bin")) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer.size == num_uniq_docs
 
-    del os.environ['JINA_TEST_INCREMENTAL_INDEX_WORKSPACE']
+    del os.environ["JINA_TEST_INCREMENTAL_INDEX_WORKSPACE"]
 
 
 def test_incremental_indexing_docindexers(tmpdir):
-    os.environ['JINA_TEST_INCREMENTAL_INDEX_WORKSPACE'] = str(tmpdir)
+    os.environ["JINA_TEST_INCREMENTAL_INDEX_WORKSPACE"] = str(tmpdir)
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
-    f = (Flow()
-         .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'), shards=1))
+    f = Flow().add(uses=os.path.join(cur_dir, "uniq_docindexer.yml"), shards=1)
 
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load(os.path.join(tmpdir, 'doc_idx.bin')) as doc_indexer:
+    with BaseExecutor.load(os.path.join(tmpdir, "doc_idx.bin")) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer.size == num_uniq_docs
 
-    del os.environ['JINA_TEST_INCREMENTAL_INDEX_WORKSPACE']
+    del os.environ["JINA_TEST_INCREMENTAL_INDEX_WORKSPACE"]

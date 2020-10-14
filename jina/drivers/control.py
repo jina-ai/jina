@@ -20,18 +20,18 @@ class ControlReqDriver(BaseDriver):
             for k, v in vars(self.pea.args).items():
                 self.req.args[k] = str(v)
         else:
-            raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
+            raise UnknownControlCommand("don't know how to handle %s" % self.req)
 
 
 class LogInfoDriver(BaseDriver):
     """Log output the request info"""
 
-    def __init__(self, field: str = 'msg', *args, **kwargs):
+    def __init__(self, field: str = "msg", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.field = field
 
     def __call__(self, *args, **kwargs):
-        self.logger.info(getattr(self, self.field, 'msg'))
+        self.logger.info(getattr(self, self.field, "msg"))
 
 
 class WaitDriver(BaseDriver):
@@ -77,13 +77,15 @@ class RouteDriver(ControlReqDriver):
                     self.pea.zmqlet.pause_pollin()
                     self.is_pollin_paused = True
             else:
-                raise RuntimeError('if this router connects more than one dealer, '
-                                   'then this error should never be raised. often when it '
-                                   'is raised, some Pods must fail to start, so please go '
-                                   'up and check the first error message in the log')
+                raise RuntimeError(
+                    "if this router connects more than one dealer, "
+                    "then this error should never be raised. often when it "
+                    "is raised, some Pods must fail to start, so please go "
+                    "up and check the first error message in the log"
+                )
         elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
             self.idle_dealer_ids.add(self.envelope.receiver_id)
-            self.logger.debug(f'{self.envelope.receiver_id} is idle')
+            self.logger.debug(f"{self.envelope.receiver_id} is idle")
             if self.is_pollin_paused:
                 self.pea.zmqlet.resume_pollin()
                 self.is_pollin_paused = False

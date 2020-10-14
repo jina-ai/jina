@@ -9,7 +9,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 class DummySegment(BaseSegmenter):
     def craft(self):
-        return [dict(buffer=b'aa'), dict(buffer=b'bb')]
+        return [dict(buffer=b"aa"), dict(buffer=b"bb")]
 
 
 def validate(req):
@@ -19,18 +19,18 @@ def validate(req):
 
 
 def test_dummy_seg():
-    f = Flow().add(uses='DummySegment')
+    f = Flow().add(uses="DummySegment")
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
 
 
 def test_dummy_seg_random():
-    f = Flow().add(uses=os.path.join(cur_dir, '../../yaml/dummy-seg-random.yml'))
+    f = Flow().add(uses=os.path.join(cur_dir, "../../yaml/dummy-seg-random.yml"))
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
 
 
 def test_dummy_seg_not_random():
-    f = Flow().add(uses=os.path.join(cur_dir, '../../yaml/dummy-seg-not-random.yml'))
+    f = Flow().add(uses=os.path.join(cur_dir, "../../yaml/dummy-seg-not-random.yml"))
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)

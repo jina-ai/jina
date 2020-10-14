@@ -12,7 +12,7 @@ def test_docs_filter():
     ssr = list(ss)
     assert len(ssr) == 1
     for d in ssr:
-        assert (3 < d.tags['id'] < 5)
+        assert 3 < d.tags["id"] < 5
 
 
 def test_docs_filter_equal():
@@ -21,7 +21,7 @@ def test_docs_filter_equal():
     ssr = list(ss)
     assert len(ssr) == 1
     for d in ssr:
-        assert int(d.tags['id']) == 4
+        assert int(d.tags["id"]) == 4
         assert len(d.chunks) == 5
 
 

@@ -12,17 +12,16 @@ from jina.proto import jina_pb2
 class MockCrafter(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = {'text'}
+        self.required_keys = {"text"}
 
     def craft(self, text: str, *args, **kwargs) -> Dict:
-        if text == 'valid':
-            return {'blob': np.array([0.0, 0.0, 0.0]), 'weight': 10}
+        if text == "valid":
+            return {"blob": np.array([0.0, 0.0, 0.0]), "weight": 10}
         else:
-            return {'non_existing_key': 1}
+            return {"non_existing_key": 1}
 
 
 class SimpleCraftDriver(CraftDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -34,10 +33,10 @@ class SimpleCraftDriver(CraftDriver):
 def create_documents_to_craft():
     doc1 = jina_pb2.Document()
     # doc1.id = 1
-    doc1.text = 'valid'
+    doc1.text = "valid"
     doc2 = jina_pb2.Document()
     # doc2.id = 2
-    doc2.text = 'invalid'
+    doc2.text = "invalid"
     return [doc1, doc2]
 
 
@@ -51,4 +50,6 @@ def test_craft_driver():
     assert docs[0].weight == 10
     with pytest.raises(AttributeError) as error:
         driver._apply_all(docs[1:2])
-    assert error.value.__str__() == '\'Document\' object has no attribute \'non_existing_key\''
+    assert (
+        error.value.__str__() == "'Document' object has no attribute 'non_existing_key'"
+    )

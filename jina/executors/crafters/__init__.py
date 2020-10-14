@@ -17,9 +17,13 @@ class BaseCrafter(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = {k for k in inspect.getfullargspec(self.craft).args if k != 'self'}
+        self.required_keys = {
+            k for k in inspect.getfullargspec(self.craft).args if k != "self"
+        }
         if not self.required_keys:
-            self.logger.warning(f'{self.__class__} works on keys, but no keys are specified')
+            self.logger.warning(
+                f"{self.__class__} works on keys, but no keys are specified"
+            )
 
     def craft(self, *args, **kwargs) -> Dict:
         """The apply function of this executor.
@@ -32,7 +36,7 @@ class BaseCrafter(BaseExecutor):
 
 class BaseSegmenter(BaseCrafter):
     """:class:`BaseSegmenter` works on doc-level,
-        it receives value on the doc-level and returns new value on the chunk-level """
+    it receives value on the doc-level and returns new value on the chunk-level"""
 
     def craft(self, *args, **kwargs) -> List[Dict]:
         """The apply function of this executor.

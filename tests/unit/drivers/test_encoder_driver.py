@@ -18,7 +18,6 @@ class MockEncoder(BaseEncoder):
 
 
 class SimpleEncoderDriver(EncodeDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -43,7 +42,7 @@ def test_encode_driver():
     driver.attach(executor=executor, pea=None)
     assert len(docs) == 10
     for doc in docs:
-        assert doc.embedding.buffer == b''
+        assert doc.embedding.buffer == b""
     driver._apply_all(docs)
     assert len(docs) == 10
     for doc in docs:

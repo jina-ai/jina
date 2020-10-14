@@ -15,12 +15,14 @@ class MyTestCase(JinaTestCase):
     def test_remote_not_allowed(self):
         f_args = set_gateway_parser().parse_args([])
 
-        p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-expose', str(f_args.port_expose)])
+        p_args = set_pea_parser().parse_args(
+            ["--host", "localhost", "--port-expose", str(f_args.port_expose)]
+        )
         with GatewayPod(f_args):
             PeaSpawnHelper(p_args).start()
 
     def test_cont_gateway(self):
-        f1_args = set_gateway_parser().parse_args(['--allow-spawn'])
+        f1_args = set_gateway_parser().parse_args(["--allow-spawn"])
         f2_args = set_gateway_parser().parse_args([])
         with GatewayPod(f1_args):
             pass
@@ -29,5 +31,5 @@ class MyTestCase(JinaTestCase):
             pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

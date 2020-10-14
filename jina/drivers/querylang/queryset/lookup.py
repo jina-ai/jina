@@ -49,7 +49,7 @@ class QuerySet:
     def __init__(self, data):
         self.data = data
 
-    def filter(self, *args, **kwargs) -> 'QuerySet':
+    def filter(self, *args, **kwargs) -> "QuerySet":
         """Filters data using the _lookup parameters
 
         Lookup parameters can be passed as,
@@ -97,7 +97,7 @@ class QuerySet:
         """
         return self.__class__(filter_items(self.data, *args, **kwargs))
 
-    def select(self, *args, **kwargs) -> 'QuerySet':
+    def select(self, *args, **kwargs) -> "QuerySet":
         """Selects specific fields of the data
 
         e.g. to select just the keys 'framework' and 'type' from many
@@ -110,7 +110,7 @@ class QuerySet:
         :param kwargs : optional keyword args
 
         """
-        flatten = kwargs.pop('flatten', False)
+        flatten = kwargs.pop("flatten", False)
         f = dunder_truncate if flatten else undunder_keys
         result = (f(d) for d in include_keys(self.data, args))
         return self.__class__(result)
@@ -125,6 +125,7 @@ Collection = QuerySet
 
 
 ## filter and _lookup functions
+
 
 def filter_items(items: Iterable, *args, **kwargs) -> Iterable:
     """Filters an iterable using _lookup parameters
@@ -160,42 +161,48 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
 
     """
     init, last = dunder_partition(key)
-    if last == 'exact':
+    if last == "exact":
         return dunder_get(item, init) == val
-    elif last == 'neq':
+    elif last == "neq":
         return dunder_get(item, init) != val
-    elif last == 'contains':
+    elif last == "contains":
         val = guard_str(val)
         return iff_not_none(dunder_get(item, init), lambda y: val in y)
-    elif last == 'icontains':
+    elif last == "icontains":
         val = guard_str(val)
         return iff_not_none(dunder_get(item, init), lambda y: val.lower() in y.lower())
-    elif last == 'in':
+    elif last == "in":
         val = guard_iter(val)
         return dunder_get(item, init) in val
-    elif last == 'startswith':
+    elif last == "startswith":
         val = guard_str(val)
         return iff_not_none(dunder_get(item, init), lambda y: y.startswith(val))
-    elif last == 'istartswith':
+    elif last == "istartswith":
         val = guard_str(val)
-        return iff_not_none(dunder_get(item, init), lambda y: y.lower().startswith(val.lower()))
-    elif last == 'endswith':
+        return iff_not_none(
+            dunder_get(item, init), lambda y: y.lower().startswith(val.lower())
+        )
+    elif last == "endswith":
         val = guard_str(val)
         return iff_not_none(dunder_get(item, init), lambda y: y.endswith(val))
-    elif last == 'iendswith':
+    elif last == "iendswith":
         val = guard_str(val)
-        return iff_not_none(dunder_get(item, init), lambda y: y.lower().endswith(val.lower()))
-    elif last == 'gt':
+        return iff_not_none(
+            dunder_get(item, init), lambda y: y.lower().endswith(val.lower())
+        )
+    elif last == "gt":
         return iff_not_none(dunder_get(item, init), lambda y: y > val)
-    elif last == 'gte':
+    elif last == "gte":
         return iff_not_none(dunder_get(item, init), lambda y: y >= val)
-    elif last == 'lt':
+    elif last == "lt":
         return iff_not_none(dunder_get(item, init), lambda y: y < val)
-    elif last == 'lte':
+    elif last == "lte":
         return iff_not_none(dunder_get(item, init), lambda y: y <= val)
-    elif last == 'regex':
-        return iff_not_none(dunder_get(item, init), lambda y: re.search(val, y) is not None)
-    elif last == 'filter':
+    elif last == "regex":
+        return iff_not_none(
+            dunder_get(item, init), lambda y: re.search(val, y) is not None
+        )
+    elif last == "filter":
         val = guard_Q(val)
         result = guard_iter(dunder_get(item, init))
         return len(list(filter_items(result, val))) > 0
@@ -204,6 +211,7 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
 
 
 ## Classes to compose compound lookups (Q object)
+
 
 class LookupTreeElem:
     """Base class for a child in the _lookup expression tree"""
@@ -216,7 +224,7 @@ class LookupTreeElem:
 
     def __or__(self, other):
         node = LookupNode()
-        node.op = 'or'
+        node.op = "or"
         node.add_child(self)
         node.add_child(other)
         return node
@@ -241,7 +249,7 @@ class LookupNode(LookupTreeElem):
     def __init__(self):
         super().__init__()
         self.children = []
-        self.op = 'and'
+        self.op = "and"
 
     def add_child(self, child):
         self.children.append(child)
@@ -254,7 +262,7 @@ class LookupNode(LookupTreeElem):
 
         """
         results = map(lambda x: x.evaluate(item), self.children)
-        result = any(results) if self.op == 'or' else all(results)
+        result = any(results) if self.op == "or" else all(results)
         return not result if self.negate else result
 
     def __invert__(self):
@@ -294,7 +302,10 @@ Q = LookupLeaf
 
 ## functions that work on the keys in a dict
 
-def include_keys(items: Iterable[Dict[str, Any]], fields: Iterable[str]) -> Iterable[Dict]:
+
+def include_keys(
+    items: Iterable[Dict[str, Any]], fields: Iterable[str]
+) -> Iterable[Dict]:
     """Function to keep only specified fields in data
 
     Returns a list of dict with only the keys mentioned in the

@@ -6,16 +6,16 @@ from jina.proto import jina_pb2
 
 class MockPrecisionEvaluator(BaseRankingEvaluator):
     def __init__(self, *args, **kwargs):
-        super().__init__(id_tag='id', *args, **kwargs)
+        super().__init__(id_tag="id", *args, **kwargs)
         self.eval_at = 2
 
     @property
     def name(self):
-        return f'MockPrecision@{self.eval_at}'
+        return f"MockPrecision@{self.eval_at}"
 
     def evaluate(self, matches_ids, groundtruth_ids, *args, **kwargs) -> float:
         ret = 0.0
-        for doc_id in matches_ids[:self.eval_at]:
+        for doc_id in matches_ids[: self.eval_at]:
             if doc_id in groundtruth_ids:
                 ret += 1.0
 
@@ -28,7 +28,6 @@ class MockPrecisionEvaluator(BaseRankingEvaluator):
 
 
 class SimpleEvaluateDriver(RankingEvaluationDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -42,7 +41,7 @@ def test_evaluate_driver():
         def add_matches(doc: jina_pb2.Document, num_matches):
             for idx in range(num_matches):
                 match = doc.matches.add()
-                match.tags['id'] = idx
+                match.tags["id"] = idx
 
         pairs = []
         for idx in range(num_docs):
@@ -61,23 +60,22 @@ def test_evaluate_driver():
     for wrapper in pairs:
         doc = wrapper.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].id == 'SimpleEvaluateDriver-MockPrecision@2'
+        assert doc.evaluations[0].id == "SimpleEvaluateDriver-MockPrecision@2"
         assert doc.evaluations[0].value == 1.0
 
 
 class SimpleChunkEvaluateDriver(RankingEvaluationDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.eval_request = None
-        self._traversal_paths = ('c',)
+        self._traversal_paths = ("c",)
 
     @property
     def exec_fn(self):
         return self._exec_fn
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> "jina_pb2.Request":
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
@@ -89,7 +87,7 @@ def test_evaluate_driver_matches_in_chunks():
         def add_matches(doc: jina_pb2.Document):
             for idx in range(num_matches):
                 match = doc.matches.add()
-                match.tags['id'] = idx
+                match.tags["id"] = idx
 
         req = jina_pb2.Request.EvaluateRequest()
         for idx in range(num_docs):
@@ -117,7 +115,7 @@ def test_evaluate_driver_matches_in_chunks():
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].id == 'SimpleChunkEvaluateDriver-MockPrecision@2'
+        assert chunk.evaluations[0].id == "SimpleChunkEvaluateDriver-MockPrecision@2"
         assert chunk.evaluations[0].value == 1.0
 
 
@@ -126,7 +124,7 @@ def test_evaluate_assert_doc_groundtruth_structure():
         def add_matches(doc: jina_pb2.Document):
             for idx in range(num_matches):
                 match = doc.matches.add()
-                match.tags['id'] = idx
+                match.tags["id"] = idx
 
         req = jina_pb2.Request.EvaluateRequest()
         for idx in range(num_docs):

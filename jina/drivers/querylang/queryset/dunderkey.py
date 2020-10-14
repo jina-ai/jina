@@ -48,7 +48,7 @@ def dunderkey(*args: str) -> str:
     :param *args : *String
     :rtype       : String
     """
-    return '__'.join(args)
+    return "__".join(args)
 
 
 def dunder_partition(key: str) -> Tuple[str, Optional[str]]:
@@ -67,7 +67,7 @@ def dunder_partition(key: str) -> Tuple[str, Optional[str]]:
     part1: str
     part2: Optional[str]
     try:
-        part1, part2 = key.rsplit('__', 1)
+        part1, part2 = key.rsplit("__", 1)
     except ValueError:
         part1, part2 = key, None
     return part1, part2
@@ -116,11 +116,10 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     """
 
-
     try:
-        part1, part2 = key.split('__', 1)
+        part1, part2 = key.split("__", 1)
     except ValueError:
-        part1, part2 = key, ''
+        part1, part2 = key, ""
 
     try:
         part1 = int(part1)  # parse int parameter
@@ -138,6 +137,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
         result = getattr(_dict, part1)
 
     return dunder_get(result, part2) if part2 else result
+
 
 def undunder_keys(_dict: Dict) -> Dict:
     """Returns dict with the dunder keys converted back to nested dicts
@@ -164,8 +164,8 @@ def undunder_keys(_dict: Dict) -> Dict:
             dict1[key] = val
 
     result = {}
-    for k,v in _dict.items():
-        merge(result, f(k.split('__'), v))
+    for k, v in _dict.items():
+        merge(result, f(k.split("__"), v))
 
     return result
 

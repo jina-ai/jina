@@ -39,7 +39,7 @@ class DocIDCache(BaseCache):
         return (d_id in self.query_handler) or None
 
     def get_query_handler(self):
-        with open(self.index_abspath, 'rb') as fp:
+        with open(self.index_abspath, "rb") as fp:
             return set(np.frombuffer(fp.read(), dtype=np.int64))
 
     @cached_property
@@ -48,7 +48,7 @@ class DocIDCache(BaseCache):
         return set()
 
     def get_add_handler(self):
-        return open(self.index_abspath, 'ab')
+        return open(self.index_abspath, "ab")
 
     def get_create_handler(self):
-        return open(self.index_abspath, 'wb')
+        return open(self.index_abspath, "wb")

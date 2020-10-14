@@ -24,9 +24,11 @@ def store_init_kwargs(func: Callable) -> Callable:
 
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
-        if func.__name__ != '__init__':
-            raise TypeError('this decorator should only be used on __init__ method of a driver')
-        taboo = {'self', 'args', 'kwargs'}
+        if func.__name__ != "__init__":
+            raise TypeError(
+                "this decorator should only be used on __init__ method of a driver"
+            )
+        taboo = {"self", "args", "kwargs"}
         all_pars = inspect.signature(func).parameters
         tmp = {k: v.default for k, v in all_pars.items() if k not in taboo}
         tmp_list = [k for k in all_pars.keys() if k not in taboo]
@@ -40,11 +42,11 @@ def store_init_kwargs(func: Callable) -> Callable:
 
         if self.store_args_kwargs:
             if args:
-                tmp['args'] = args
+                tmp["args"] = args
             if kwargs:
-                tmp['kwargs'] = {k: v for k, v in kwargs.items() if k not in taboo}
+                tmp["kwargs"] = {k: v for k, v in kwargs.items() if k not in taboo}
 
-        if hasattr(self, '_init_kwargs_dict'):
+        if hasattr(self, "_init_kwargs_dict"):
             self._init_kwargs_dict.update(tmp)
         else:
             self._init_kwargs_dict = tmp
@@ -79,16 +81,20 @@ class QuerySetReader:
     """
 
     def _get_parameter(self, key: str, default: Any):
-        if getattr(self, 'queryset', None):
+        if getattr(self, "queryset", None):
             for q in self.queryset:
-                if (not q.disabled and self.__class__.__name__ == q.name and
-                        q.priority > self._priority and key in q.parameters):
+                if (
+                    not q.disabled
+                    and self.__class__.__name__ == q.name
+                    and q.priority > self._priority
+                    and key in q.parameters
+                ):
                     return q.parameters[key]
-        return getattr(self, f'_{key}', default)
+        return getattr(self, f"_{key}", default)
 
     def __getattr__(self, name: str):
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
-        if name == '_init_kwargs_dict':
+        if name == "_init_kwargs_dict":
             # raise attribute error to avoid recursive call
             raise AttributeError
         if name in self._init_kwargs_dict:
@@ -97,19 +103,18 @@ class QuerySetReader:
 
 
 class DriverType(type):
-
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
     @staticmethod
     def register_class(cls):
-        reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
+        reg_cls_set = getattr(cls, "_registered_class", set())
+        if cls.__name__ not in reg_cls_set or getattr(cls, "force_register", False):
             cls.__init__ = store_init_kwargs(cls.__init__)
 
             reg_cls_set.add(cls.__name__)
-            setattr(cls, '_registered_class', reg_cls_set)
+            setattr(cls, "_registered_class", reg_cls_set)
         yaml.register_class(cls)
         return cls
 
@@ -136,7 +141,7 @@ class BaseDriver(metaclass=DriverType):
         self.pea = None  # type: 'BasePea'
         self._priority = priority
 
-    def attach(self, pea: 'BasePea', *args, **kwargs) -> None:
+    def attach(self, pea: "BasePea", *args, **kwargs) -> None:
         """Attach this driver to a :class:`jina.peapods.pea.BasePea`
 
         :param pea: the pea to be attached.
@@ -145,29 +150,29 @@ class BaseDriver(metaclass=DriverType):
         self.attached = True
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> "jina_pb2.Request":
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.pea.request
 
     @property
-    def msg(self) -> 'jina_pb2.Message':
+    def msg(self) -> "jina_pb2.Message":
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message
 
     @property
-    def queryset(self) -> Iterator['jina_pb2.QueryLang']:
+    def queryset(self) -> Iterator["jina_pb2.QueryLang"]:
         if self.msg:
             return self.msg.request.queryset
         else:
             return []
 
     @property
-    def envelope(self) -> 'jina_pb2.Envelope':
+    def envelope(self) -> "jina_pb2.Envelope":
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.msg.envelope
 
     @property
-    def logger(self) -> 'JinaLogger':
+    def logger(self) -> "JinaLogger":
         """Shortcut to ``self.pea.logger``"""
         return self.pea.logger
 
@@ -180,14 +185,14 @@ class BaseDriver(metaclass=DriverType):
         a = {k: v for k, v in data._init_kwargs_dict.items()}
         r = {}
         if a:
-            r['with'] = a
+            r["with"] = a
         return r
 
     @classmethod
     def to_yaml(cls, representer, data):
         """Required by :mod:`ruamel.yaml.constructor` """
         tmp = data._dump_instance_to_yaml(data)
-        return representer.represent_mapping('!' + cls.__name__, tmp)
+        return representer.represent_mapping("!" + cls.__name__, tmp)
 
     @classmethod
     def from_yaml(cls, constructor, node):
@@ -197,9 +202,10 @@ class BaseDriver(metaclass=DriverType):
     @classmethod
     def _get_instance_from_yaml(cls, constructor, node):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
-            constructor, node, deep=True)
+            constructor, node, deep=True
+        )
 
-        obj = cls(**data.get('with', {}))
+        obj = cls(**data.get("with", {}))
         return obj
 
     def __eq__(self, other):
@@ -207,17 +213,16 @@ class BaseDriver(metaclass=DriverType):
 
     def __getstate__(self) -> Dict[str, Any]:
         """Do not save the BasePea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
-        file is always unattached. """
+        file is always unattached."""
         d = dict(self.__dict__)
-        if 'pea' in d:
-            del d['pea']
-        d['attached'] = False
+        if "pea" in d:
+            del d["pea"]
+        d["attached"] = False
         return d
 
 
 class BaseRecursiveDriver(BaseDriver):
-
-    def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ("c", "r"), *args, **kwargs):
         """
         :param traversal_paths: The describes the leaves of the document tree on which _apply_all are called
         """
@@ -225,14 +230,14 @@ class BaseRecursiveDriver(BaseDriver):
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
     def _apply_all(
-            self,
-            docs: Iterable['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
-            field: str,
-            *args,
-            **kwargs
+        self,
+        docs: Iterable["jina_pb2.Document"],
+        context_doc: "jina_pb2.Document",
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
-        """ Apply function works on a list of docs, modify the docs in-place
+        """Apply function works on a list of docs, modify the docs in-place
 
         :param docs: a list of :class:`jina_pb2.Document` objects to work on; they could come from ``matches``/``chunks``.
         :param context_doc: the owner of ``docs``
@@ -242,36 +247,51 @@ class BaseRecursiveDriver(BaseDriver):
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.req.docs, *args, **kwargs)
 
-    def _traverse_apply(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _traverse_apply(
+        self, docs: Iterable["jina_pb2.Document"], *args, **kwargs
+    ) -> None:
         for path in self._traversal_paths:
-            if path[0] == 'r':
+            if path[0] == "r":
                 self._traverse_rec(docs, None, None, [], *args, **kwargs)
             for doc in docs:
-                self._traverse_rec([doc, ], None, None, path, *args, **kwargs)
+                self._traverse_rec(
+                    [
+                        doc,
+                    ],
+                    None,
+                    None,
+                    path,
+                    *args,
+                    **kwargs,
+                )
 
     def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, *args, **kwargs):
         if path:
             next_edge = path[0]
             for doc in docs:
-                if next_edge == 'm':
-                    self._traverse_rec(doc.matches, doc, 'matches', path[1:], *args, **kwargs)
-                if next_edge == 'c':
-                    self._traverse_rec(doc.chunks, doc, 'chunks', path[1:], *args, **kwargs)
+                if next_edge == "m":
+                    self._traverse_rec(
+                        doc.matches, doc, "matches", path[1:], *args, **kwargs
+                    )
+                if next_edge == "c":
+                    self._traverse_rec(
+                        doc.chunks, doc, "chunks", path[1:], *args, **kwargs
+                    )
         else:
             self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
     """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.pea.BasePea` and :class:`jina.executors.BaseExecutor`
-        It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
-        finally it returns the message back to :class:`jina.peapods.pea.BasePea`.
+    It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
+    finally it returns the message back to :class:`jina.peapods.pea.BasePea`.
 
-        A :class:`BaseExecutableDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.BasePea` and :class:`jina.executors.BaseExecutor` before using.
-        This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
+    A :class:`BaseExecutableDriver` needs to be :attr:`attached` to a :class:`jina.peapods.pea.BasePea` and :class:`jina.executors.BaseExecutor` before using.
+    This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
     def __init__(self, executor: str = None, method: str = None, *args, **kwargs):
-        """ Initialize a :class:`BaseExecutableDriver`
+        """Initialize a :class:`BaseExecutableDriver`
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
@@ -283,19 +303,22 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         self._exec_fn = None
 
     @property
-    def exec(self) -> 'AnyExecutor':
+    def exec(self) -> "AnyExecutor":
         """the executor that attached """
         return self._exec
 
     @property
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
-        if self.envelope.status.code != jina_pb2.Status.ERROR or self.pea.args.skip_on_error < OnErrorSkip.EXECUTOR:
+        if (
+            self.envelope.status.code != jina_pb2.Status.ERROR
+            or self.pea.args.skip_on_error < OnErrorSkip.EXECUTOR
+        ):
             return self._exec_fn
         else:
             return lambda *args, **kwargs: None
 
-    def attach(self, executor: 'AnyExecutor', *args, **kwargs) -> None:
+    def attach(self, executor: "AnyExecutor", *args, **kwargs) -> None:
         """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
@@ -303,12 +326,16 @@ class BaseExecutableDriver(BaseRecursiveDriver):
                 self._exec = executor[self._executor_name]
             else:
                 for c in executor.components:
-                    if any(t.__name__ == self._executor_name for t in type.mro(c.__class__)):
+                    if any(
+                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                    ):
                         self._exec = c
                         break
             if self._exec is None:
-                self.logger.critical(f'fail to attach the driver to {executor}, '
-                                     f'no executor is named or typed as {self._executor_name}')
+                self.logger.critical(
+                    f"fail to attach the driver to {executor}, "
+                    f"no executor is named or typed as {self._executor_name}"
+                )
         else:
             self._exec = executor
 
@@ -317,10 +344,10 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
     def __getstate__(self) -> Dict[str, Any]:
         """Do not save the executor and executor function, as it would be cross-referencing and unserializable.
-        In other words, a deserialized :class:`BaseExecutableDriver` from file is always unattached. """
+        In other words, a deserialized :class:`BaseExecutableDriver` from file is always unattached."""
         d = super().__getstate__()
-        if '_exec' in d:
-            del d['_exec']
-        if '_exec_fn' in d:
-            del d['_exec_fn']
+        if "_exec" in d:
+            del d["_exec"]
+        if "_exec_fn" in d:
+            del d["_exec_fn"]
         return d
