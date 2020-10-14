@@ -2,7 +2,7 @@ from collections import deque
 from functools import wraps
 from typing import Dict, List, Callable
 
-from ..enums import SocketType, FlowOptimizeLevel, FlowBuildLevel
+from ..enums import SocketType, FlowOptimizeLevel, FlowBuildLevel, PodRoleType
 from ..excepts import FlowBuildLevelError
 from ..peapods.pod import FlowPod
 
@@ -52,15 +52,16 @@ def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
     op_flow.logger.debug('Traversing dependency graph:')
     while stack:
         start_node_name = stack.pop()
-        end_node_idx = _outgoing_idx.get('start_node_name', None)
-        if end_node_idx is not None and end_node_idx < len(outgoing_map[start_node_name]):
-            # else, you are back to the gateway
-            end_node_name = outgoing_map[start_node_name][end_node_idx]
-            func(op_flow, start_node_name, end_node_name)
-            stack.append(end_node_name)
-            if end_node_idx + 1 < len(outgoing_map[start_node_name]):
-                stack.append(start_node_name)
-            _outgoing_idx[start_node_name] = end_node_idx + 1
+        if start_node_name in _outgoing_idx:
+            end_node_idx = _outgoing_idx[start_node_name]
+            if end_node_idx < len(outgoing_map[start_node_name]):
+                # else, you are back to the gateway
+                end_node_name = outgoing_map[start_node_name][end_node_idx]
+                func(op_flow, start_node_name, end_node_name)
+                stack.append(end_node_name)
+                if end_node_idx + 1 < len(outgoing_map[start_node_name]):
+                    stack.append(start_node_name)
+                _outgoing_idx[start_node_name] = end_node_idx + 1
     return op_flow
 
 
@@ -96,12 +97,12 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
         if len(edges_with_same_start) > 1 or len(edges_with_same_end) > 1:
             flow.logger.info(f'Connection between {start_node_name} and {end_node_name} cannot be optimized')
         else:
-            if start_node_name == 'gateway':
+            if start_node.role == PodRoleType.GATEWAY:
                 if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and end_node.is_head_router:
                     flow.logger.info(
                         f'Node {end_node_name} connects to tail of {start_node_name}')
                     end_node.connect_to_tail_of(start_node)
-            elif end_node_name == 'gateway':
+            elif end_node.role == PodRoleType.GATEWAY:
                 if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and \
                         start_node.is_tail_router and start_node.tail_args.num_part <= 1:
                     # connect gateway directly to peas only if this is unblock router

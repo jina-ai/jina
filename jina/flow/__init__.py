@@ -790,10 +790,10 @@ class Flow(ExitStack):
                 end_repl[node] = (head_router, '((fa:fa-random))')
 
         for node, v in op_flow._pod_nodes.items():
-            ed_str = str(v._args.socket_in).split('_')[0]
+            ed_str = str(v.head_args.socket_in).split('_')[0]
             for need in sorted(v.needs):
                 if need in op_flow._pod_nodes:
-                    st_str = str(op_flow._pod_nodes[need]._args.socket_out).split('_')[0]
+                    st_str = str(op_flow._pod_nodes[need].tail_args.socket_out).split('_')[0]
                     edge_str = f'|{st_str}-{ed_str}|'
                 else:
                     edge_str = ''
