@@ -9,13 +9,6 @@ class PrecisionEvaluator(BaseRankingEvaluator):
        It computes how many of the first given `eval_at` matches are found in the groundtruth
     """
 
-    def __init__(self, eval_at: int, *args, **kwargs):
-        """"
-        :param eval_at: k at which evaluation is performed
-        """
-        super().__init__(*args, **kwargs)
-        self.eval_at = eval_at
-
     @property
     def metric_name(self):
         return f'Precision@{self.eval_at}'
