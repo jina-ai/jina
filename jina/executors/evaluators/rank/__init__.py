@@ -8,7 +8,7 @@ from .. import BaseEvaluator
 
 class BaseRankingEvaluator(BaseEvaluator):
     """A :class:`BaseRankingEvaluator` evaluates the content of matches against the expected GroundTruth.
-    It is used to evaluate messages coming out from Indexers and Rankers and compares matches with groundtruth_pairs
+    It is used to evaluate messages coming out from Indexers and Rankers and compares matches with groundtruths
     """
 
     def __init__(self, eval_at: int, *args, **kwargs):
