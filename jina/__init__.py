@@ -3,11 +3,11 @@ __license__ = "Apache-2.0"
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
-__version__ = '0.6.6'
+__version__ = '0.6.8'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.62'
+__proto_version__ = '0.0.63'
 
 import platform
 import sys
@@ -66,6 +66,7 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
 __default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
+__unable_to_load_pretrained_model_msg__ = 'Executor depending on pretrained model file could not find the pretrained model'
 __binary_delimiter__ = os.environ.get('JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57').encode()
 
 JINA_GLOBAL = SimpleNamespace()

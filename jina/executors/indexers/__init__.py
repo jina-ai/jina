@@ -2,16 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, Union, List, Iterator, Optional
+from typing import Tuple, Union, List, Iterator, Optional, Any
 
 import numpy as np
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
 from ...helper import call_obj_fn, cached_property, get_readable_size
-
-if False:
-    from ...proto import jina_pb2
 
 
 class BaseIndexer(BaseExecutor):
@@ -81,6 +78,7 @@ class BaseIndexer(BaseExecutor):
         .. note::
             :attr:`query_handler` and :attr:`write_handler` are by default mutex
         """
+        r = None
         if (not self.handler_mutex or not self.is_handler_loaded) and self.is_exist:
             r = self.get_query_handler()
             if r is None:
@@ -90,7 +88,14 @@ class BaseIndexer(BaseExecutor):
             else:
                 self.logger.info(f'indexer size: {self.size}')
                 self.is_handler_loaded = True
-            return r
+        if r is None:
+            r = self.null_query_handler
+        return r
+
+    @cached_property
+    def null_query_handler(self) -> Optional[Any]:
+        """The empty query handler when :meth:`get_query_handler` fails"""
+        return
 
     @property
     def is_exist(self) -> bool:
@@ -202,13 +207,20 @@ class BaseKVIndexer(BaseIndexer):
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
-    def query(self, key: int) -> Optional['jina_pb2.Document']:
+    def query(self, key: Any) -> Optional[Any]:
         """ Find the protobuf chunk/doc using id
 
         :param key: ``id``
         :return: protobuf chunk or protobuf document
         """
         raise NotImplementedError
+
+    def __getitem__(self, key: Any) -> Optional[Any]:
+        return self.query(key)
+
+
+class UniqueVectorIndexer(CompoundExecutor):
+    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocIDCache` """
 
 
 class CompoundIndexer(CompoundExecutor):

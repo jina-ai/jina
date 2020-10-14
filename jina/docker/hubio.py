@@ -315,15 +315,20 @@ class HubIO:
 
             if is_build_success:
                 if self.args.test_uses:
+                    from jina.excepts import PretrainedModelFileDoesNotExist
                     try:
                         is_build_success = False
                         from jina.flow import Flow
                         p_name = random_name()
                         with Flow().add(name=p_name, uses=image.tags[0], daemon=self.args.daemon):
                             pass
+
                         if self.args.daemon:
                             self._raw_client.stop(p_name)
                         self._raw_client.prune_containers()
+                        is_build_success = True
+                    except PretrainedModelFileDoesNotExist:
+                        self.logger.warning(f' Pretrained Model File Does not Exist is considered as a test passing')
                         is_build_success = True
                     except PeaFailToStart:
                         self.logger.error(f'can not use it in the Flow, please check your file bundle')

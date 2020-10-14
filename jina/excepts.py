@@ -4,7 +4,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 
-
 class NoExplicitMessage(Exception):
     """Waiting until all partial messages are received"""
 
@@ -111,3 +110,7 @@ class TimedOutException(Exception):
 
 class DockerLoginFailed(Exception):
     """ Exception to raise for docker hub login failures """
+
+
+class PretrainedModelFileDoesNotExist(Exception):
+    """ Exception to raise for executors depending on pretrained model files when they do not exist """

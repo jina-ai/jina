@@ -11,8 +11,12 @@ class BaseRankingEvaluator(BaseEvaluator):
     It is used to evaluate messages coming out from Indexers and Rankers and compares matches with groundtruths
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, eval_at: int, *args, **kwargs):
+        """"
+        :param eval_at: k at which evaluation is performed
+        """
         super().__init__(*args, **kwargs)
+        self.eval_at = eval_at
 
     def post_init(self):
         super().post_init()
@@ -24,10 +28,6 @@ class BaseRankingEvaluator(BaseEvaluator):
         if self.num_documents == 0:
             return 0.0
         return self.sum / self.num_documents
-
-    @property
-    def complete_name(self):
-        return self.name
 
     def evaluate(self, matches_ids: Sequence[Any], groundtruth_ids: Sequence[Any], *args, **kwargs) -> float:
         """"

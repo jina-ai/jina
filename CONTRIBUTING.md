@@ -6,7 +6,7 @@ I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new con
 
 # Join Us on Slack!
 
-The best way to know more about contributing and how to get started is to **[join us on Slack](https://jina-ai.slack.com/messages/general/)** and ask questions in our public channels.
+The best way to know more about contributing and how to get started is to **[join us on Slack](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w)** and ask questions in our public channels.
 
 In this guide we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
 
@@ -293,7 +293,7 @@ The documentation is then available in your browser at [`http://0.0.0.0:8080/`](
 We're always happy to lend a hand, answer questions, or listen to feedback. You find us here:
 
 * [Documentation](http://docs.jina.ai)
-* [Slack](https://jina-ai.slack.com/)
+* [Slack](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w)
 
 We're also looking at starting online developer hangouts, so you can catch up with us over chat and video, and get to meet your fellow Jina contributors.
 

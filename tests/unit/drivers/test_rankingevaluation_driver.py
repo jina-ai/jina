@@ -1,4 +1,5 @@
 import pytest
+
 from jina.drivers.evaluate import RankingEvaluationDriver, DocGroundtruthPair
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
@@ -6,8 +7,7 @@ from jina.proto import jina_pb2
 
 class MockPrecisionEvaluator(BaseRankingEvaluator):
     def __init__(self, *args, **kwargs):
-        super().__init__(id_tag='id', *args, **kwargs)
-        self.eval_at = 2
+        super().__init__(eval_at=2, *args, **kwargs)
 
     @property
     def name(self):
@@ -61,7 +61,7 @@ def test_evaluate_driver():
     for wrapper in pairs:
         doc = wrapper.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].id == 'SimpleEvaluateDriver-MockPrecision@2'
+        assert doc.evaluations[0].op_name == 'SimpleEvaluateDriver-MockPrecision@2'
         assert doc.evaluations[0].value == 1.0
 
 
@@ -117,7 +117,7 @@ def test_evaluate_driver_matches_in_chunks():
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].id == 'SimpleChunkEvaluateDriver-MockPrecision@2'
+        assert chunk.evaluations[0].op_name == 'SimpleChunkEvaluateDriver-MockPrecision@2'
         assert chunk.evaluations[0].value == 1.0
 
 

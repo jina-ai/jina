@@ -1,0 +1,12 @@
+!UniquePbIndexer
+components:
+  - !DocIDCache {}
+  - !BinaryPbIndexer
+    with:
+      index_filename: doc.gz
+    metas:
+      workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+      name: doc_idx
+metas:
+  name: inc_docindexer
+  workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE

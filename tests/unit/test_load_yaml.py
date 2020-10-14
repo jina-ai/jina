@@ -1,48 +1,32 @@
-import os
-import unittest
+import pytest
 
 import ruamel.yaml
 
-from jina.executors import BaseExecutor
 from jina.helper import expand_env_var
-from tests import JinaTestCase
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-class MyTestCase(JinaTestCase):
-
-    def test_load_yaml0(self):
-        BaseExecutor.load_config('yaml/dummy_exec2.yml')
-
-    def test_load_yaml1(self):
-        from jina.executors.indexers.vector import NumpyIndexer
-        NumpyIndexer.load_config('yaml/dummy_exec1.yml')
-        self.add_tmpfile('test.gzip')
-
-    def test_load_yaml2(self):
-        from jina.executors import BaseExecutor
-        a = BaseExecutor.load_config('yaml/dummy_exec1.yml')
-        a.close()
-        self.add_tmpfile('test.gzip')
-        b = BaseExecutor.load_config('yaml/dummy_exec1.yml')
-        b.save()
-        self.add_tmpfile(b.save_abspath)
-        b.save_config()
-        self.add_tmpfile(b.config_abspath)
-        b.close()
-
-    def test_load_external(self):
-        from jina.executors import BaseExecutor
-        self.assertRaises(ruamel.yaml.constructor.ConstructorError, BaseExecutor.load_config,
-                          'yaml/dummy_ext_exec.yml')
-
-        b = BaseExecutor.load_config('yaml/dummy_ext_exec_sucess.yml')
-        assert b.__class__.__name__ == 'DummyExternalIndexer'
-
-    def test_expand_env(self):
-        assert expand_env_var('$PATH-${AA}') != '$PATH-${AA}'
+from jina.executors import BaseExecutor
+from jina.executors.indexers.vector import NumpyIndexer
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.parametrize(
+    'yaml_dir, executor',
+    [
+        ('yaml/dummy_exec1.yml', BaseExecutor),
+        ('yaml/dummy_exec2.yml', NumpyIndexer)
+    ]
+)
+def test_load_yaml(yaml_dir, executor, tmpdir):
+    with executor.load_config(yaml_dir) as e:
+        e.save(tmpdir.join(e.save_abspath))
+        e.save_config(tmpdir.join(e.config_abspath))
+
+def test_load_external_fail():
+    with pytest.raises(ruamel.yaml.constructor.ConstructorError):
+        BaseExecutor.load_config('yaml/dummy_ext_exec.yml')
+
+def test_load_external_success():
+    with BaseExecutor.load_config('yaml/dummy_ext_exec_success.yml') as e:
+        assert e.__class__.__name__ == 'DummyExternalIndexer'
+
+def test_expand_env():
+    assert expand_env_var('$PATH-${AA}') != '$PATH-${AA}'
+
