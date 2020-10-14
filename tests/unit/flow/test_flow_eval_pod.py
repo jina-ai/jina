@@ -2,7 +2,14 @@ import pytest
 
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
+from jina.peapods.pod import InspectPod
 from tests import random_docs
+
+
+def test_inspect_pod():
+    args = {'uses': 'DummyEvaluator1'}
+    with InspectPod(args):
+        pass
 
 
 class DummyEvaluator1(BaseCrafter):
@@ -25,14 +32,14 @@ class DummyEvaluator3(DummyEvaluator1):
 docs = list(random_docs(1))
 
 
-def test_flow1(tmpdir):
+def test_flow1():
     f = Flow().add()
 
     with f:
         f.index(docs)
 
 
-def test_flow2(tmpdir):
+def test_flow2():
     f = Flow().add().inspect(uses='DummyEvaluator1')
 
     with f:
@@ -43,15 +50,14 @@ def test_flow2(tmpdir):
             assert fp.read() != ''
 
 
-@pytest.mark.skip('this topology can not work at the moment, better EvalPod is needed')
-def test_flow3(tmpdir):
+def test_flow3():
     f = Flow().add(name='p1').inspect(uses='DummyEvaluator1') \
-        .add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator2')
+        .add(name='p2', needs='gateway').needs(['p1', 'p2'])
 
     with f:
         f.index(docs)
 
-    for j in [1, 2]:
+    for j in [1]:
         with open(f'tmp{j}.txt') as fp:
             assert fp.read() != ''
 
@@ -77,3 +83,5 @@ def test_flow5(tmpdir):
     for j in [1, 2, 3]:
         with open(f'tmp{j}.txt') as fp:
             assert fp.read() != ''
+
+test_flow3()

@@ -23,7 +23,7 @@ from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..peapods.pod import FlowPod, GatewayFlowPod
+from ..peapods.pod import FlowPod, GatewayFlowPod, InspectPod
 
 if False:
     from ..proto import jina_pb2
@@ -267,6 +267,7 @@ class Flow(ExitStack):
 
         :param needs: the name of the pod(s) that this pod receives data from.
                            One can also use 'pod.Gateway' to indicate the connection with the gateway.
+        :param pod_role: the role of the Pod, used for visualization and route planning
         :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the pod CLI supports
         :return: a (new) flow object with modification
@@ -292,7 +293,13 @@ class Flow(ExitStack):
 
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
-        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
+
+        if pod_role == PodRoleType.INSPECT:
+            _pod_fn = InspectPod
+        else:
+            _pod_fn = FlowPod
+
+        op_flow._pod_nodes[pod_name] = _pod_fn(kwargs=kwargs, needs=needs, pod_role=pod_role)
         op_flow.last_pod = pod_name
 
         return op_flow
@@ -302,11 +309,7 @@ class Flow(ExitStack):
         """Add a hanging evaluation Pod, may introduce side-effect on the before/after socket"""
         op_flow = copy.deepcopy(self) if copy_flow else self
 
-        _last_pod = op_flow.last_pod
-        op_flow.add(name=name, copy_flow=False, pod_role=PodRoleType.INSPECT, *args, **kwargs)
-        op_flow.last_pod = _last_pod
-
-        return op_flow
+        return op_flow.add(name=name, copy_flow=False, pod_role=PodRoleType.INSPECT, *args, **kwargs)
 
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
