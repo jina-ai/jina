@@ -6,6 +6,7 @@ from jina.clients.python import PyClient
 from jina.clients.python.io import input_files
 from jina.enums import ClientMode
 from jina.flow import Flow
+from jina.helper import random_port
 from jina.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import Document
@@ -34,15 +35,18 @@ def test_check_input():
         PyClient.check_input(bad_input_fn_2)
 
 
-def test_gateway_ready():
-    p = set_gateway_parser().parse_args([])
+@pytest.mark.parametrize(
+    'port_expose, route, status_code',
+    [
+        (random_port(), '/ready', 200),
+        (random_port(), '/api/ass', 405)
+    ]
+)
+def test_gateway_ready(port_expose, route, status_code):
+    p = set_gateway_parser().parse_args(['--port-expose', str(port_expose)])
     with RESTGatewayPea(p):
-        a = requests.get(f'http://0.0.0.0:{p.port_expose}/ready')
-        assert a.status_code == 200
-
-    with RESTGatewayPea(p):
-        a = requests.post(f'http://0.0.0.0:{p.port_expose}/api/ass')
-        assert a.status_code == 405
+        a = requests.get(f'http://0.0.0.0:{p.port_expose}' + route)
+        assert a.status_code == status_code
 
 
 def test_gateway_index():
