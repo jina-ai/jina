@@ -1,4 +1,5 @@
 import pytest
+
 from jina.drivers.evaluate import RankingEvaluationDriver, DocGroundtruthPair
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
@@ -6,8 +7,7 @@ from jina.proto import jina_pb2
 
 class MockPrecisionEvaluator(BaseRankingEvaluator):
     def __init__(self, *args, **kwargs):
-        super().__init__(id_tag='id', *args, **kwargs)
-        self.eval_at = 2
+        super().__init__(eval_at=2, *args, **kwargs)
 
     @property
     def name(self):
