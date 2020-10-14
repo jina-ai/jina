@@ -58,6 +58,7 @@ class Flow(ExitStack):
         else:
             self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
+        self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
@@ -202,7 +203,11 @@ class Flow(ExitStack):
                     raise FlowTopologyError('the income/output of a pod can not be itself')
         else:
             raise ValueError(f'endpoint={endpoint} is not parsable')
-        return set(endpoint)
+
+        # if an endpoint is being inspected, then replace it with inspected Pod
+        endpoint = set(op_flow._inspect_pods.get(ep, ep) for ep in endpoint)
+
+        return endpoint
 
     @property
     def last_pod(self):
@@ -246,11 +251,9 @@ class Flow(ExitStack):
         :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
-        op_flow = copy.deepcopy(self) if copy_flow else self
-
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return op_flow.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
+        return self.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
@@ -295,7 +298,10 @@ class Flow(ExitStack):
         kwargs['name'] = pod_name
 
         if pod_role == PodRoleType.INSPECT:
-            _pod_fn = InspectPod
+            _pod_fn = FlowPod
+            # TODO: this is problematic
+            # _pod_fn = InspectPod
+            # op_flow._inspect_pods[self.last_pod] = pod_name
         else:
             _pod_fn = FlowPod
 
@@ -304,12 +310,14 @@ class Flow(ExitStack):
 
         return op_flow
 
-    def inspect(self, name: str = 'inspect', *args,
-                copy_flow: bool = True, **kwargs) -> 'Flow':
-        """Add a hanging evaluation Pod, may introduce side-effect on the before/after socket"""
-        op_flow = copy.deepcopy(self) if copy_flow else self
+    def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
+        """Add an inspection on the last changed Pod in the Flow """
 
-        return op_flow.add(name=name, copy_flow=False, pod_role=PodRoleType.INSPECT, *args, **kwargs)
+        _last_pod = self.last_pod
+        op_flow = self.add(name=name, pod_role=PodRoleType.INSPECT, *args, **kwargs)
+        op_flow.last_pod = _last_pod
+
+        return op_flow
 
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
