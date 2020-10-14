@@ -2,9 +2,12 @@ from collections import deque
 from functools import wraps
 from typing import Dict, List, Callable
 
-from ..enums import SocketType, FlowOptimizeLevel
+from ..enums import SocketType, FlowOptimizeLevel, FlowBuildLevel
 from ..excepts import FlowBuildLevelError
 from ..peapods.pod import FlowPod
+
+if False:
+    from . import Flow
 
 
 def build_required(required_level: 'FlowBuildLevel'):
