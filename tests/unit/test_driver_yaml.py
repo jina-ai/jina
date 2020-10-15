@@ -109,10 +109,10 @@ def test_multiple_executor():
         pass
 
     d4 = D4()
-    assert len(d4._drivers) == 5
+    assert len(d4._drivers) == 4
 
     class D5(BaseCrafter):
         pass
 
     d5 = D5()
-    assert len(d5._drivers) == 5
+    assert len(d5._drivers) == 4
