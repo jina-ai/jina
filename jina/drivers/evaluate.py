@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
+from .helper import DocGroundtruthPair
 
 if False:
     from ..proto import jina_pb2
@@ -15,6 +16,18 @@ class BaseEvaluationDriver(BaseExecutableDriver):
                  *args,
                  **kwargs):
         super().__init__(executor, method, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        assert len(self.req.docs) == len(self.req.groundtruths)
+        docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
+                             zip(self.req.docs, self.req.groundtruths)]
+        self._traverse_apply(docs_groundtruths, *args, **kwargs)
+
+    def _apply_all(self, groundtruth_pairs: Iterable['DocGroundtruthPair'],
+                   context_groundtruth_pair: 'DocGroundtruthPair',
+                   *args,
+                   **kwargs) -> None:
+        pass
 
 
 class RankingEvaluationDriver(BaseEvaluationDriver):

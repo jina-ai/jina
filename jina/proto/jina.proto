@@ -115,8 +115,6 @@ message Document {
     // List of evaluations performed on the document, each element corresponds to a metric
     repeated NamedScore evaluations = 23;
 
-    // the groundtruth document you want to evaluate it with
-    Document groundtruth = 24;
 }
 
 /**
@@ -232,7 +230,10 @@ message Request {
      */
     message TrainRequest {
         repeated Document docs = 1; // a list of Documents to train
-        bool flush = 2; // if True then do actual training, otherwise only collect all documents but not do training.
+
+        repeated Document groundtruths = 2; // the groundtruth document you want to evaluate it with
+
+        bool flush = 3; // if True then do actual training, otherwise only collect all documents but not do training.
     }
 
     /**
@@ -240,6 +241,8 @@ message Request {
      */
     message IndexRequest {
         repeated Document docs = 1; // a list of Documents to index
+
+        repeated Document groundtruths = 2; // the groundtruth document you want to evaluate it with
     }
 
     /**
@@ -247,8 +250,9 @@ message Request {
      */
     message SearchRequest {
         repeated Document docs = 1; // a list of Documents to query
-    }
 
+        repeated Document groundtruths = 2; // the groundtruth document you want to evaluate it with
+    }
 
     /**
      * Represents a control request used to control the BasePod
