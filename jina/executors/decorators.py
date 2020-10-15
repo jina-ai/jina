@@ -120,8 +120,12 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 def batching(func: Callable[[Any], np.ndarray] = None, *,
-             batch_size: Union[int, Callable] = None, num_batch: Optional[int] = None,
-             split_over_axis: int = 0, merge_over_axis: int = 0, slice_on: int = 1) -> Any:
+             batch_size: Union[int, Callable] = None,
+             num_batch: Optional[int] = None,
+             split_over_axis: int = 0,
+             merge_over_axis: int = 0,
+             slice_on: int = 1,
+             ordinal_idx_arg: Optional[int] = None) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
 
@@ -132,6 +136,8 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
+    :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
+            where function decorated needs to know the ordinal indexes of the data in the batch
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
@@ -147,15 +153,13 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                 @batching(batch_size = 64)
                 def train(self, batch: 'numpy.ndarray', *args, **kwargs):
                     gpu_train(batch)
-
-
     """
 
     def _batching(func):
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
-            # by default data is in args[0]
+            # by default data is in args[1] (self needs to be taken into account)
             data = args[slice_on]
             args = list(args)
 
@@ -185,8 +189,13 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                     slice_idx = b
                     new_memmap = np.memmap(data.filename, dtype=data.dtype, mode='r', shape=data.shape)
                     b = new_memmap[slice_idx]
+                    slice_idx = slice_idx[split_over_axis]
+                    if slice_idx.start is None or slice_idx.stop is None:
+                        slice_idx = None
 
                 args[slice_on] = b
+                if ordinal_idx_arg and slice_idx is not None:
+                    args[ordinal_idx_arg] = slice_idx
                 r = func(*args, **kwargs)
 
                 if yield_slice:
