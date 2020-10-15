@@ -8,6 +8,7 @@ import random
 import re
 import sys
 import time
+import uuid
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from io import StringIO
@@ -312,7 +313,7 @@ def random_port() -> Optional[int]:
 
 
 def get_random_identity() -> str:
-    return f'{random.getrandbits(40):010x}'
+    return uuid.uuid1().hex
 
 
 yaml = _get_yaml()

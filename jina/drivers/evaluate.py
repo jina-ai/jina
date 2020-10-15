@@ -6,9 +6,6 @@ from typing import Iterable
 from . import BaseExecutableDriver
 from .helper import DocGroundtruthPair
 
-if False:
-    from ..proto import jina_pb2
-
 
 class BaseEvaluationDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None,
