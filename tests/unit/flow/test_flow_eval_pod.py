@@ -1,13 +1,8 @@
+import pytest
+
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
-from jina.peapods.pod import InspectPod
 from tests import random_docs
-
-
-def test_inspect_pod():
-    args = {'uses': 'DummyEvaluator1'}
-    with InspectPod(args):
-        pass
 
 
 class DummyEvaluator1(BaseCrafter):
@@ -30,27 +25,17 @@ class DummyEvaluator3(DummyEvaluator1):
 docs = list(random_docs(1))
 
 
-def test_flow1():
-    f = Flow().add()
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow1(no_inspect):
+    f = Flow(no_inspect=no_inspect).add()
 
     with f:
         f.index(docs)
 
 
-def test_flow2():
-    f = Flow().add().inspect(uses='DummyEvaluator1')
-
-    with f:
-        f.index(docs)
-
-    for j in [1]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
-
-
-def test_flow3():
-    f = Flow().add(name='p1').inspect(uses='DummyEvaluator1') \
-        .add(name='p2', needs='gateway').needs(['p1', 'p2'])
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow2(no_inspect):
+    f = Flow(no_inspect=no_inspect).add().inspect(uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
@@ -60,8 +45,23 @@ def test_flow3():
             assert fp.read() != ''
 
 
-def test_flow4(tmpdir):
-    f = Flow().add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator1')
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow3(no_inspect):
+    f = Flow(no_inspect=no_inspect).add(name='p1').inspect(uses='DummyEvaluator1') \
+        .add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator2')
+
+    with f:
+        f.index(docs)
+
+    for j in [1, 2]:
+        with open(f'tmp{j}.txt') as fp:
+            assert fp.read() != ''
+
+
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow4(no_inspect):
+    f = Flow(no_inspect=no_inspect).add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(
+        uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
@@ -71,8 +71,10 @@ def test_flow4(tmpdir):
             assert fp.read() != ''
 
 
-def test_flow5(tmpdir):
-    f = Flow().add().inspect(uses='DummyEvaluator1').add().inspect(uses='DummyEvaluator2').add().inspect(
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow5(no_inspect):
+    f = Flow(no_inspect=no_inspect).add().inspect(uses='DummyEvaluator1').add().inspect(
+        uses='DummyEvaluator2').add().inspect(
         uses='DummyEvaluator3').plot(build=True)
 
     with f:

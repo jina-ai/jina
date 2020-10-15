@@ -296,15 +296,7 @@ class Flow(ExitStack):
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
 
-        if pod_role == PodRoleType.INSPECT:
-            _pod_fn = FlowPod
-            # TODO: this is problematic
-            # _pod_fn = InspectPod
-            # op_flow._inspect_pods[self.last_pod] = pod_name
-        else:
-            _pod_fn = FlowPod
-
-        op_flow._pod_nodes[pod_name] = _pod_fn(kwargs=kwargs, needs=needs, pod_role=pod_role)
+        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
         op_flow.last_pod = pod_name
 
         return op_flow
@@ -362,10 +354,21 @@ class Flow(ExitStack):
 
         # construct a map with a key a start node and values an array of its end nodes
         _outgoing_map = defaultdict(list)
+
+        # if set no_inspect then all inspect related nodes are removed
+        if op_flow.args.no_inspect:
+            op_flow._pod_nodes = {k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect}
+            reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
+
+        print(op_flow._inspect_pods)
         for end, pod in op_flow._pod_nodes.items():
             # if an endpoint is being inspected, then replace it with inspected Pod
             # but not those inspect related node
-            pod.needs = set(ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep) for ep in pod.needs)
+            if op_flow.args.no_inspect:
+                pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
+            else:
+                pod.needs = set(ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep) for ep in pod.needs)
+
             for start in pod.needs:
                 if start not in op_flow._pod_nodes:
                     raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
