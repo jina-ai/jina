@@ -13,7 +13,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def random_queries(num_docs, chunks_per_doc=5):
     for j in range(num_docs):
         d = jina_pb2.Document()
-        d.id = uid.new_doc_id()
+        d.id = uid.new_doc_id(d)
         for k in range(chunks_per_doc):
             dd = d.chunks.add()
             dd.id = uid.new_doc_id(dd)

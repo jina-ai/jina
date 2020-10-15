@@ -278,11 +278,16 @@ class MutablePod(BasePod):
 
 class FlowPod(BasePod):
     """A :class:`FlowPod` is like a :class:`BasePod`, but it exposes more interfaces for tweaking its connections with
-    other Pods, which comes in handy when used in the Flow API
+    other Pods, which comes in handy when used in the Flow API.
+
+    .. note::
+
+        Unlike :class:`BasePod`, this class takes a :class:`dict` as the first argument.
+
     """
 
     def __init__(self, kwargs: Dict,
-                 needs: Set[str] = None, parser: Callable = set_pod_parser):
+                 needs: Set[str] = None, parser: Callable = set_pod_parser, pod_role: 'PodRoleType' = PodRoleType.POD):
         """
 
         :param kwargs: unparsed argument in dict, if given the
@@ -293,6 +298,7 @@ class FlowPod(BasePod):
         super().__init__(self._args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
         self._kwargs = get_non_defaults_args(self._args, _parser)
+        self.role = pod_role
 
     def to_cli_command(self):
         if isinstance(self, GatewayPod):
@@ -490,3 +496,64 @@ class GatewayFlowPod(GatewayPod, FlowPod):
 
     def __init__(self, kwargs: Dict = None, needs: Set[str] = None):
         FlowPod.__init__(self, kwargs, needs, parser=set_gateway_parser)
+        self.role = PodRoleType.GATEWAY
+
+
+class InspectPod(FlowPod):
+    """:class:`InspectPod` is a Pod with three Peas connected in the following way:
+
+    .. highlight:: bash
+    .. code-block:: bash
+
+        Flow-  HeadPea -- PUB-SUB -- TailPea -- Flow
+                        |
+                        -- PUB-SUB -- InspectPea (Hanging)
+
+    In this way, :class:`InspectPod` looks like a simple ``_pass`` from outside and
+    does not introduce side-effect (e.g. changing the socket type) to the original flow.
+    The original incoming and outgoing socket types are preserved.
+
+    This class is very handy for introducing evaluator into the flow
+    """
+
+    def _parse_args(self, args: Namespace) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
+        peas_args = {}
+        peas_args['head'] = _copy_to_head_args(args, is_push=False)
+        peas_args['tail'] = self._copy_to_tail_args(args, peas_args['head'])
+        peas_args['peas'] = self._set_pea_args(args, peas_args['head'])
+
+        # note that peas_args['peas'][0] exist either way and carries the original property
+        return peas_args
+
+    @staticmethod
+    def _set_pea_args(args, head_args: Namespace) -> List[Namespace]:
+        _args = copy.deepcopy(args)
+        _args.port_in = head_args.port_out
+        _args.port_ctrl = random_port()
+        _args.identity = get_random_identity()
+        _args.socket_in = SocketType.SUB_CONNECT
+
+        # now gives a useless port, data is send to no where
+        # TODO: redirect the info to other places
+        _args.port_out = random_port()
+        # this has to be CONNCECT not BIND, as in the future a collector will pull from all InspectPea
+        _args.socket_out = SocketType.PUSH_CONNECT
+
+        _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
+        # _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
+        return [_args]
+
+    @staticmethod
+    def _copy_to_tail_args(args: Namespace, head_args: Namespace) -> Namespace:
+        """Set the incoming args of the tail router
+        """
+        _tail_args = copy.deepcopy(args)
+        _tail_args.port_in = head_args.port_out
+        _tail_args.port_ctrl = random_port()
+        _tail_args.socket_in = SocketType.SUB_CONNECT
+        _tail_args.uses = None
+        _tail_args.uses = args.uses_after or '_pass'
+        _tail_args.name = args.name or ''
+        _tail_args.role = PeaRoleType.TAIL
+
+        return _tail_args
