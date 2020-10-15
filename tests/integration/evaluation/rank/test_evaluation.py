@@ -1,6 +1,7 @@
 import os
 import numpy as np
 
+from jina.clients.python import PyClient
 from jina.flow import Flow
 from jina.proto import jina_pb2, uid
 from jina.drivers.helper import array2pb
@@ -84,7 +85,7 @@ def test_evaluation(tmpdir):
     def doc_groundtruth_evaluation_pairs():
         doc0 = jina_pb2.Document()
         doc0.embedding.CopyFrom(array2pb(np.array([0])))  # it will match 0 and 1
-        groundtruth0 = doc0.groundtruth
+        groundtruth0 = jina_pb2.Document()
         match0 = groundtruth0.matches.add()
         match0.tags['id'] = '0'
         match1 = groundtruth0.matches.add()
@@ -104,7 +105,7 @@ def test_evaluation(tmpdir):
 
         doc1 = jina_pb2.Document()
         doc1.embedding.CopyFrom(array2pb(np.array([2])))  # it will match 2 and 1
-        groundtruth1 = doc1.groundtruth
+        groundtruth1 = jina_pb2.Document()
         match0 = groundtruth1.matches.add()
         match0.tags['id'] = '1'
         match1 = groundtruth1.matches.add()
@@ -123,6 +124,8 @@ def test_evaluation(tmpdir):
 
         return [(doc0, groundtruth0), (doc1, groundtruth1)]
 
+    PyClient.check_input(doc_groundtruth_evaluation_pairs)
+
     with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs(),
@@ -131,3 +134,5 @@ def test_evaluation(tmpdir):
         )
 
     del os.environ['JINA_TEST_RANKING_EVALUATION']
+
+test_evaluation('test-tmp')

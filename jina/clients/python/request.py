@@ -117,6 +117,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
 
         for content in batch:
             d = getattr(req, str(mode).lower()).docs.add()
+            gt = getattr(req, str(mode).lower()).groundtruths.add()
             _fill = lambda x, y: _fill_document(document=x,
                                                 content=y,
                                                 docs_in_same_batch=batch_size,
@@ -129,7 +130,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 default_logger.info('content comes in pair, '
                                     'will take the first as the input and the scond as the groundtruth')
                 _fill(d, content[0])
-                _fill(d.groundtruth, content[0])
+                _fill(gt, content[0])
             else:
                 _fill(d, content)
         yield req
