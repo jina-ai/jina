@@ -130,7 +130,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 default_logger.info('content comes in pair, '
                                     'will take the first as the input and the scond as the groundtruth')
                 _fill(d, content[0])
-                _fill(gt, content[0])
+                _fill(gt, content[1])
             else:
                 _fill(d, content)
         yield req
