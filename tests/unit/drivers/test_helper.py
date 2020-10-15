@@ -1,6 +1,7 @@
-import pytest
-import numpy as np
 import random
+
+import numpy as np
+import pytest
 
 from jina.drivers.helper import array2pb, pb2array, pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
@@ -83,13 +84,18 @@ def test_docgroundtruth_pair():
     add_chunks(gt, 3)
 
     pair = DocGroundtruthPair(doc, gt)
-    assert len(pair.chunks) == 3
-    assert len(pair.matches) == 3
 
+    j = 0
     for chunk_pair in pair.chunks:
         assert chunk_pair.doc.granularity == 1
         assert chunk_pair.groundtruth.granularity == 1
+        j += 1
 
+    k = 0
     for match_pair in pair.matches:
         assert match_pair.doc.adjacency == 1
         assert match_pair.groundtruth.adjacency == 1
+        k += 1
+
+    assert j == 3
+    assert k == 3
