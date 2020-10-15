@@ -7,7 +7,7 @@ from ..logging import default_logger
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List
+from typing import Callable, Any, Union, Iterator, List, Optional
 
 import numpy as np
 
@@ -120,7 +120,7 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 def batching(func: Callable[[Any], np.ndarray] = None, *,
-             batch_size: Union[int, Callable] = None, num_batch: int = None,
+             batch_size: Union[int, Callable] = None, num_batch: Optional[int] = None,
              split_over_axis: int = 0, merge_over_axis: int = 0, slice_on: int = 1) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
@@ -159,8 +159,6 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
             data = args[slice_on]
             args = list(args)
 
-            label = kwargs.get('label', None)
-
             b_size = (batch_size(data) if callable(batch_size) else batch_size) or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
             if b_size is None:
@@ -170,33 +168,26 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                 f'batching enabled for {func.__qualname__} batch_size={b_size} '
                 f'num_batch={num_batch} axis={split_over_axis}')
 
-            total_size1 = _get_size(data, split_over_axis)
-            total_size2 = b_size * num_batch if num_batch else None
+            full_data_size = _get_size(data, split_over_axis)
+            batched_data_size = b_size * num_batch if num_batch else None
 
-            if total_size1 is not None and total_size2 is not None:
-                total_size = min(total_size1, total_size2)
+            if full_data_size is not None and batched_data_size is not None:
+                total_size = min(full_data_size, batched_data_size)
             else:
-                total_size = total_size1 or total_size2
+                total_size = full_data_size or batched_data_size
 
             final_result = []
-
-            if label is not None:
-                data = (data, label)
 
             yield_slice = isinstance(data, np.memmap)
 
             for b in batch_iterator(data[:total_size], b_size, split_over_axis, yield_slice=yield_slice):
                 if yield_slice:
+                    slice_idx = b
                     new_memmap = np.memmap(data.filename, dtype=data.dtype, mode='r', shape=data.shape)
-                    b = new_memmap[b]
+                    b = new_memmap[slice_idx]
 
-                if label is None:
-                    args[slice_on] = b
-                    r = func(*args, **kwargs)
-                else:
-                    args[slice_on] = b
-                    kwargs['label'] = b[1]
-                    r = func(*args, **kwargs)
+                args[slice_on] = b
+                r = func(*args, **kwargs)
 
                 if yield_slice:
                     del new_memmap
@@ -211,17 +202,11 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
             if len(final_result) and merge_over_axis is not None:
                 if isinstance(final_result[0], np.ndarray):
                     final_result = np.concatenate(final_result, merge_over_axis)
-                    # if chunk_dim != -1:
-                    #     final_result = final_result.reshape((-1, chunk_dim, final_result.shape[1]))
                 elif isinstance(final_result[0], tuple):
                     reduced_result = []
                     num_cols = len(final_result[0])
                     for col in range(num_cols):
                         reduced_result.append(np.concatenate([row[col] for row in final_result], merge_over_axis))
-                    # if chunk_dim != -1:
-                    #     for col in range(num_cols):
-                    #         reduced_result[col] = reduced_result[col].reshape(
-                    #             (-1, chunk_dim, reduced_result[col].shape[1]))
                     final_result = tuple(reduced_result)
 
             if len(final_result):
