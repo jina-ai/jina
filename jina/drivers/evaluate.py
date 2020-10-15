@@ -55,11 +55,13 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
             return self.__class__.__name__
 
     def _apply_all(self,
-                   docs: Iterable['jina_pb2.Document'],
+                   groundtruth_pairs: Iterable[DocGroundtruthPair],
                    *args,
                    **kwargs) -> None:
-        for doc in docs:
-            groundtruth = doc.groundtruth
+        for doc_groundtruth in groundtruth_pairs:
+            doc = doc_groundtruth.doc
+            groundtruth = doc_groundtruth.groundtruth
+
             evaluation = doc.evaluations.add()
             matches_ids = [x.tags[self.id_tag] for x in doc.matches]
             groundtruth_ids = [x.tags[self.id_tag] for x in groundtruth.matches]
