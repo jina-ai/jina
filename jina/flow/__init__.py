@@ -281,7 +281,7 @@ class Flow(ExitStack):
 
         if pod_name in op_flow._pod_nodes:
             new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
-            self.logger.warning(f'name: {pod_name} is used in this Flow already! renamed it to {new_name}')
+            self.logger.warning(f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"')
             pod_name = new_name
 
         if not pod_name:
@@ -319,8 +319,9 @@ class Flow(ExitStack):
         if 'uses' in kwargs:
             kwargs.pop('uses')
         op_flow = op_flow.add(name=f'_aux_{name}', uses='_pass', needs=_last_pod,
-                              pod_role=PodRoleType.AUX_PASS, *args, **kwargs)
+                              pod_role=PodRoleType.INSPECT_AUX_PASS, *args, **kwargs)
 
+        # register any future connection to _last_pod by the auxiliary pod
         op_flow._inspect_pods[_last_pod] = op_flow.last_pod
 
         return op_flow
@@ -362,6 +363,9 @@ class Flow(ExitStack):
         # construct a map with a key a start node and values an array of its end nodes
         _outgoing_map = defaultdict(list)
         for end, pod in op_flow._pod_nodes.items():
+            # if an endpoint is being inspected, then replace it with inspected Pod
+            # but not those inspect related node
+            pod.needs = set(ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep) for ep in pod.needs)
             for start in pod.needs:
                 if start not in op_flow._pod_nodes:
                     raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
@@ -789,7 +793,7 @@ class Flow(ExitStack):
         mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
         mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
         mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
+        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 

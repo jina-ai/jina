@@ -1,5 +1,3 @@
-import pytest
-
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.peapods.pod import InspectPod

@@ -220,7 +220,16 @@ class PodRoleType(BetterEnum):
     JOIN = 1
     INSPECT = 2
     GATEWAY = 3
-    AUX_PASS = 4
+    INSPECT_AUX_PASS = 4
+
+    @property
+    def is_inspect(self) -> bool:
+        """
+        if the role is inspect pod related
+
+        :return:
+        """
+        return self.value in {2, 4}
 
 
 class ClientMode(BetterEnum):
