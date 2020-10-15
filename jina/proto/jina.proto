@@ -114,6 +114,7 @@ message Document {
 
     // List of evaluations performed on the document, each element corresponds to a metric
     repeated NamedScore evaluations = 23;
+
 }
 
 /**
@@ -221,7 +222,6 @@ message Request {
         TrainRequest train = 2; // a train request
         IndexRequest index = 3; // an index request
         SearchRequest search = 4; // a search request
-        EvaluateRequest evaluate = 8; // an evaluate request
         ControlRequest control = 5; // a control request
     }
 
@@ -230,7 +230,10 @@ message Request {
      */
     message TrainRequest {
         repeated Document docs = 1; // a list of Documents to train
-        bool flush = 2; // if True then do actual training, otherwise only collect all documents but not do training.
+
+        repeated Document groundtruths = 2; // the groundtruth document you want to evaluate it with
+
+        bool flush = 3; // if True then do actual training, otherwise only collect all documents but not do training.
     }
 
     /**
@@ -238,6 +241,8 @@ message Request {
      */
     message IndexRequest {
         repeated Document docs = 1; // a list of Documents to index
+
+        repeated Document groundtruths = 2; // the groundtruth document you want to evaluate it with
     }
 
     /**
@@ -245,15 +250,8 @@ message Request {
      */
     message SearchRequest {
         repeated Document docs = 1; // a list of Documents to query
-    }
 
-    /**
-     * Represents an evaluation request
-     */
-    message EvaluateRequest {
-        repeated Document docs = 1; // a list of Documents to query
-        //TODO: Convert it to bytes
-        repeated Document groundtruths = 2; // a list of groundtruths
+        repeated Document groundtruths = 2; // the groundtruth document you want to evaluate it with
     }
 
     /**

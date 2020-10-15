@@ -78,7 +78,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
               *args,
               **kwargs,
               ) -> Iterator['jina_pb2.Message']:
-
     buffer_sniff = False
 
     try:
@@ -98,6 +97,14 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
 
+    _fill = lambda x, y: _fill_document(document=x,
+                                        content=y,
+                                        docs_in_same_batch=batch_size,
+                                        mime_type=mime_type,
+                                        buffer_sniff=buffer_sniff,
+                                        override_doc_id=override_doc_id
+                                        )
+
     for batch in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
         req.request_id = uuid.uuid1().hex
@@ -116,36 +123,17 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 top_k_queryset.parameters['top_k'] = top_k
                 req.queryset.extend([top_k_queryset])
 
+        _req = getattr(req, str(mode).lower())
         for content in batch:
-            # TODO:
-            if mode != ClientMode.EVALUATE:
-                d = getattr(req, str(mode).lower()).docs.add()
-                _fill_document(document=d,
-                               content=content,
-                               docs_in_same_batch=batch_size,
-                               mime_type=mime_type,
-                               buffer_sniff=buffer_sniff,
-                               override_doc_id=override_doc_id
-                               )
+            d = _req.docs.add()
+            if isinstance(content, tuple) and len(content) == 2:
+                default_logger.debug('content comes in pair, '
+                                     'will take the first as the input and the scond as the groundtruth')
+                gt = _req.groundtruths.add()
+                _fill(d, content[0])
+                _fill(gt, content[1])
             else:
-                assert len(content) == 2, 'You are passing an Evaluation Request without providing two parts (a ' \
-                                          'document and its groundtruth) '
-                d = getattr(req, str(mode).lower()).docs.add()
-                _fill_document(document=d,
-                               content=content[0],
-                               docs_in_same_batch=batch_size,
-                               mime_type=mime_type,
-                               buffer_sniff=buffer_sniff,
-                               override_doc_id=override_doc_id
-                               )
-                groundtruth = getattr(req, str(mode).lower()).groundtruths.add()
-                _fill_document(document=groundtruth,
-                               content=content[1],
-                               docs_in_same_batch=batch_size,
-                               mime_type=mime_type,
-                               buffer_sniff=buffer_sniff,
-                               override_doc_id=override_doc_id
-                               )
+                _fill(d, content)
         yield req
 
 

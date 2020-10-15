@@ -60,8 +60,8 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
             groundtruth = doc_groundtruth.groundtruth
 
             evaluation = doc.evaluations.add()
-            matches_ids = list(map(lambda x: x.tags[self.id_tag], doc.matches))
-            groundtruth_ids = list(map(lambda x: x.tags[self.id_tag], groundtruth.matches))
+            matches_ids = [x.tags[self.id_tag] for x in doc.matches]
+            groundtruth_ids = [x.tags[self.id_tag] for x in groundtruth.matches]
             evaluation.value = self.exec_fn(matches_ids, groundtruth_ids)
             evaluation.op_name = f'{self.id}-{self.exec.metric_name}'
             evaluation.ref_id = groundtruth.id

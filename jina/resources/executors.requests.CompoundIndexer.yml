@@ -1,5 +1,5 @@
 on:
-  [SearchRequest, EvaluateRequest]:
+  [SearchRequest]:
     - !VectorSearchDriver
       with:
         executor: BaseVectorIndexer
