@@ -1,8 +1,10 @@
+import os
+
 import pytest
 
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
-from tests import random_docs
+from tests import random_docs, rm_files
 
 
 class DummyEvaluator1(BaseCrafter):
@@ -25,6 +27,16 @@ class DummyEvaluator3(DummyEvaluator1):
 docs = list(random_docs(1))
 
 
+def validate(ids, expect):
+    for j in ids:
+        fname = f'tmp{j}.txt'
+        assert os.path.exists(fname) == expect
+        if expect:
+            with open(fname) as fp:
+                assert fp.read() != ''
+        rm_files([fname])
+
+
 @pytest.mark.parametrize('no_inspect', [True, False])
 def test_flow1(no_inspect):
     f = Flow(no_inspect=no_inspect).add()
@@ -40,9 +52,7 @@ def test_flow2(no_inspect):
     with f:
         f.index(docs)
 
-    for j in [1]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1], expect=not no_inspect)
 
 
 @pytest.mark.parametrize('no_inspect', [True, False])
@@ -53,9 +63,7 @@ def test_flow3(no_inspect):
     with f:
         f.index(docs)
 
-    for j in [1, 2]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1, 2], expect=not no_inspect)
 
 
 @pytest.mark.parametrize('no_inspect', [True, False])
@@ -66,9 +74,7 @@ def test_flow4(no_inspect):
     with f:
         f.index(docs)
 
-    for j in [1]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1], expect=not no_inspect)
 
 
 @pytest.mark.parametrize('no_inspect', [True, False])
@@ -80,6 +86,4 @@ def test_flow5(no_inspect):
     with f:
         f.index(docs)
 
-    for j in [1, 2, 3]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1, 2, 3], expect=not no_inspect)
