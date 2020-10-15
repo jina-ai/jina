@@ -91,7 +91,7 @@ def test_multiple_executor():
         pass
 
     d1 = D1()
-    assert len(d1._drivers) == 5
+    assert len(d1._drivers) == 4
 
     class D2(BaseIndexer):
         pass
@@ -103,7 +103,7 @@ def test_multiple_executor():
         pass
 
     d3 = D3()
-    assert len(d3._drivers) == 3
+    assert len(d3._drivers) == 2
 
     class D4(BaseCrafter):
         pass
