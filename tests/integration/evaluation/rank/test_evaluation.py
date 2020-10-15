@@ -45,6 +45,7 @@ def test_evaluation(tmpdir):
             assert len(doc.evaluations) == 8  # 2 evaluation Pods with 4 evaluations each
 
         doc = resp.docs[0]
+        assert len(doc.matches) == 2
         assert doc.evaluations[0].op_name == 'evaluate_match-Precision@1'
         assert doc.evaluations[0].value == 1.0
         assert doc.evaluations[1].op_name == 'evaluate_match-Precision@2'
@@ -128,7 +129,8 @@ def test_evaluation(tmpdir):
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs(),
             output_fn=validate_evaluation_response,
-            callback_on_body=True
+            callback_on_body=True,
+            top_k=2
         )
 
     del os.environ['JINA_TEST_RANKING_EVALUATION']
