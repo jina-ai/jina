@@ -156,7 +156,6 @@ def test_batching_slice_on():
 
 
 def test_batching_ordinal_idx_arg(tmpdir):
-
     path = os.path.join(str(tmpdir), 'vec.gz')
     vec = np.random.random([10, 10])
     with open(path, 'wb') as f:
@@ -169,12 +168,11 @@ def test_batching_ordinal_idx_arg(tmpdir):
 
         @batching(ordinal_idx_arg=2)
         def f(self, data, ord_idx):
-            print(f' o {ord_idx}')
             self.ord_idx.append(ord_idx)
-            return data
+            return list(range(ord_idx.start, ord_idx.stop))
 
     instance = A(2)
-    instance.f(np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0])
+    result = instance.f(np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0])
     assert len(instance.ord_idx) == 5
     assert instance.ord_idx[0].start == 0
     assert instance.ord_idx[0].stop == 2
@@ -186,3 +184,22 @@ def test_batching_ordinal_idx_arg(tmpdir):
     assert instance.ord_idx[3].stop == 8
     assert instance.ord_idx[4].start == 8
     assert instance.ord_idx[4].stop == 10
+
+    assert result == [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
+
+
+@pytest.mark.skip(reason='Currently wrong implementation of batching with labels, not well considered in batching helper')
+def test_batching_with_label():
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+
+        @batching(label_on=2)
+        def f(self, data, labels):
+            return data, labels
+
+    instance = A(2)
+    data = [1, 1, 2, 2]
+    labels = ['label1', 'label1', 'label2', 'label2']
+    result = instance.f(data, labels)
+    assert result == [[(1, 'label1'), (1, 'label1')], [(2, 'label2'), (2, 'label2')]]

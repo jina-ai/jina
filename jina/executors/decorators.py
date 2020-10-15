@@ -125,6 +125,7 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
              split_over_axis: int = 0,
              merge_over_axis: int = 0,
              slice_on: int = 1,
+             label_on: Optional[int] = None,
              ordinal_idx_arg: Optional[int] = None) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
@@ -136,8 +137,10 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
+    :param label_on: the location of the labels. Useful for data with any kind of accompanying labels
     :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
             where function decorated needs to know the ordinal indexes of the data in the batch
+            (Not used when label_on is used)
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
@@ -182,7 +185,10 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
 
             final_result = []
 
+            data = (data, args[label_on]) if label_on else data
+
             yield_slice = isinstance(data, np.memmap)
+            slice_idx = None
 
             for b in batch_iterator(data[:total_size], b_size, split_over_axis, yield_slice=yield_slice):
                 if yield_slice:
@@ -193,9 +199,15 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                     if slice_idx.start is None or slice_idx.stop is None:
                         slice_idx = None
 
-                args[slice_on] = b
-                if ordinal_idx_arg and slice_idx is not None:
-                    args[ordinal_idx_arg] = slice_idx
+                if not isinstance(b, tuple):
+                    # for now, keeping ordered_idx is only supported if no labels
+                    args[slice_on] = b
+                    if ordinal_idx_arg and slice_idx is not None:
+                        args[ordinal_idx_arg] = slice_idx
+                else:
+                    args[slice_on] = b[0]
+                    args[label_on] = b[1]
+
                 r = func(*args, **kwargs)
 
                 if yield_slice:
