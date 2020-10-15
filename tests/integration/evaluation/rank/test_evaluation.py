@@ -135,4 +135,3 @@ def test_evaluation(tmpdir):
 
     del os.environ['JINA_TEST_RANKING_EVALUATION']
 
-test_evaluation('test-tmp')
