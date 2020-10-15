@@ -171,11 +171,11 @@ class DocGroundtruthPair:
         # TODO: Should we expect this assert to be done
         #  (RankingEvaluation may work with a different lenght of groundtruth matches as the one returned)
         assert len(self.doc.matches) == len(self.groundtruth.matches)
-        return [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
-                zip(self.doc.matches, self.groundtruth.matches)]
+        for doc, groundtruth in zip(self.doc.matches, self.groundtruth.matches):
+            yield DocGroundtruthPair(doc, groundtruth)
 
     @property
     def chunks(self):
         assert len(self.doc.chunks) == len(self.groundtruth.chunks)
-        return [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
-                zip(self.doc.chunks, self.groundtruth.chunks)]
+        for doc, groundtruth in zip(self.doc.chunks, self.groundtruth.chunks):
+            yield DocGroundtruthPair(doc, groundtruth)
