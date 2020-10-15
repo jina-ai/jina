@@ -1,10 +1,10 @@
 import os
+
 import numpy as np
 
-from jina.clients.python import PyClient
-from jina.flow import Flow
-from jina.proto import jina_pb2, uid
 from jina.drivers.helper import array2pb
+from jina.flow import Flow
+from jina.proto import jina_pb2
 
 
 def test_evaluation(tmpdir):
@@ -132,4 +132,3 @@ def test_evaluation(tmpdir):
         )
 
     del os.environ['JINA_TEST_RANKING_EVALUATION']
-
