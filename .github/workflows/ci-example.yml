@@ -1,9 +1,6 @@
 name: CI_Example
 
-on:
-  pull_request:
-    branches:
-      ci-add-examples-test-211
+on: [push, pull_request]
 
 jobs:
   examples-test:
@@ -25,12 +22,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .[match-py-ver] --no-cache-dir
-      - name: Test with pytest
+      - name: Test example with pytest
         run: |
-          # make sure docker exist
-          docker ps
           jina check
-          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
           git clone https://github.com/jina-ai/examples.git --branch test-examples-cicd
