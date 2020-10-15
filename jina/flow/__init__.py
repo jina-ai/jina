@@ -302,7 +302,24 @@ class Flow(ExitStack):
         return op_flow
 
     def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
-        """Add an inspection on the last changed Pod in the Flow """
+        """Add an inspection on the last changed Pod in the Flow
+
+        Internally, it adds two pods to the flow. But no worry, the overhead is minimized and you
+        can remove them by simply give `Flow(no_inspect=True)` before using the flow.
+
+        .. highlight:: bash
+        .. code-block:: bash
+
+            Flow -- PUB-SUB -- BasePod(_pass) -- Flow
+                    |
+                    -- PUB-SUB -- InspectPod (Hanging)
+
+        In this way, :class:`InspectPod` looks like a simple ``_pass`` from outside and
+        does not introduce side-effect (e.g. changing the socket type) to the original flow.
+        The original incoming and outgoing socket types are preserved.
+
+        This class is very handy for introducing evaluator into the flow.
+        """
 
         _last_pod = self.last_pod
         op_flow = self.add(name=name, needs=_last_pod, pod_role=PodRoleType.INSPECT, *args, **kwargs)
@@ -360,7 +377,6 @@ class Flow(ExitStack):
             op_flow._pod_nodes = {k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect}
             reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
 
-        print(op_flow._inspect_pods)
         for end, pod in op_flow._pod_nodes.items():
             # if an endpoint is being inspected, then replace it with inspected Pod
             # but not those inspect related node
