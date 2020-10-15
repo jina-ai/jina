@@ -23,7 +23,7 @@ from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..peapods.pod import FlowPod, GatewayFlowPod, InspectPod
+from ..peapods.pod import FlowPod, GatewayFlowPod
 
 if False:
     from ..proto import jina_pb2
@@ -206,7 +206,6 @@ class Flow(ExitStack):
 
         # if an endpoint is being inspected, then replace it with inspected Pod
         endpoint = set(op_flow._inspect_pods.get(ep, ep) for ep in endpoint)
-
         return endpoint
 
     @property
@@ -314,8 +313,15 @@ class Flow(ExitStack):
         """Add an inspection on the last changed Pod in the Flow """
 
         _last_pod = self.last_pod
-        op_flow = self.add(name=name, pod_role=PodRoleType.INSPECT, *args, **kwargs)
-        op_flow.last_pod = _last_pod
+        op_flow = self.add(name=name, needs=_last_pod, pod_role=PodRoleType.INSPECT, *args, **kwargs)
+
+        # now remove uses and add an auxiliary Pod
+        if 'uses' in kwargs:
+            kwargs.pop('uses')
+        op_flow = op_flow.add(name=f'_aux_{name}', uses='_pass', needs=_last_pod,
+                              pod_role=PodRoleType.AUX_PASS, *args, **kwargs)
+
+        op_flow._inspect_pods[_last_pod] = op_flow.last_pod
 
         return op_flow
 
@@ -749,7 +755,7 @@ class Flow(ExitStack):
                 head_router = node + '_HEAD'
                 tail_router = node + '_TAIL'
                 p_r = '((%s))'
-                p_e = '(%s)'
+                p_e = '[[%s]]'
                 for j in range(v._args.parallel):
                     r = node + '_%d' % j
                     mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
@@ -782,7 +788,8 @@ class Flow(ExitStack):
                 mermaid_graph.append(f'{_s[0]}{_s[1]}:::{str(_s_role)} --> {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
         mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
         mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff,stroke-dasharray: 5 5')
+        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 

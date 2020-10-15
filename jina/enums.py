@@ -220,6 +220,7 @@ class PodRoleType(BetterEnum):
     JOIN = 1
     INSPECT = 2
     GATEWAY = 3
+    AUX_PASS = 4
 
 
 class ClientMode(BetterEnum):

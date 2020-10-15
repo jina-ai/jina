@@ -50,7 +50,6 @@ def test_flow2():
             assert fp.read() != ''
 
 
-@pytest.mark.skip('can not support this topology for now')
 def test_flow3():
     f = Flow().add(name='p1').inspect(uses='DummyEvaluator1') \
         .add(name='p2', needs='gateway').needs(['p1', 'p2'])
