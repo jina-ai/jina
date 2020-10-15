@@ -123,13 +123,13 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 top_k_queryset.parameters['top_k'] = top_k
                 req.queryset.extend([top_k_queryset])
 
+        _req = getattr(req, str(mode).lower())
         for content in batch:
-            d = getattr(req, str(mode).lower()).docs.add()
-            gt = getattr(req, str(mode).lower()).groundtruths.add()
-
+            d = _req.docs.add()
             if isinstance(content, tuple) and len(content) == 2:
-                default_logger.info('content comes in pair, '
-                                    'will take the first as the input and the scond as the groundtruth')
+                default_logger.debug('content comes in pair, '
+                                     'will take the first as the input and the scond as the groundtruth')
+                gt = _req.groundtruths.add()
                 _fill(d, content[0])
                 _fill(gt, content[1])
             else:
