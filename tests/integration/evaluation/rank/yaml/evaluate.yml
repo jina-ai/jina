@@ -28,20 +28,20 @@ metas:
   name: evaluation
 requests:
   on:
-    [SearchRequest, EvaluateRequest]:
+    [ SearchRequest ]:
       - !RankingEvaluationDriver
         with:
           executor: precision-1
-          traversal_paths: ['r']
+          traversal_paths: [ 'r' ]
       - !RankingEvaluationDriver
         with:
           executor: precision-2
-          traversal_paths: ['r']
+          traversal_paths: [ 'r' ]
       - !RankingEvaluationDriver
         with:
           executor: recall-1
-          traversal_paths: ['r']
+          traversal_paths: [ 'r' ]
       - !RankingEvaluationDriver
         with:
           executor: recall-2
-          traversal_paths: ['r']
+          traversal_paths: [ 'r' ]

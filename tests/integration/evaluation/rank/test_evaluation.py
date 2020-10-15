@@ -36,7 +36,7 @@ def test_evaluation(tmpdir):
         return [doc0, doc1, doc2]
 
     with Flow().load_config('flow-index.yml') as index_flow:
-        index_flow.index(input_fn=index_documents)
+        index_flow.search(input_fn=index_documents)
 
     def validate_evaluation_response(resp):
         assert len(resp.docs) == 2
@@ -84,7 +84,7 @@ def test_evaluation(tmpdir):
     def doc_groundtruth_evaluation_pairs():
         doc0 = jina_pb2.Document()
         doc0.embedding.CopyFrom(array2pb(np.array([0])))  # it will match 0 and 1
-        groundtruth0 = jina_pb2.Document()
+        groundtruth0 = doc0.groundtruth
         match0 = groundtruth0.matches.add()
         match0.tags['id'] = '0'
         match1 = groundtruth0.matches.add()
@@ -104,7 +104,7 @@ def test_evaluation(tmpdir):
 
         doc1 = jina_pb2.Document()
         doc1.embedding.CopyFrom(array2pb(np.array([2])))  # it will match 2 and 1
-        groundtruth1 = jina_pb2.Document()
+        groundtruth1 = doc1.groundtruth
         match0 = groundtruth1.matches.add()
         match0.tags['id'] = '1'
         match1 = groundtruth1.matches.add()
@@ -124,7 +124,7 @@ def test_evaluation(tmpdir):
         return [(doc0, groundtruth0), (doc1, groundtruth1)]
 
     with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
-        evaluate_flow.evaluate(
+        evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs(),
             output_fn=validate_evaluation_response,
             callback_on_body=True

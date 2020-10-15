@@ -1,7 +1,7 @@
 on:
   ControlRequest:
     - !ControlReqDriver {}
-  [SearchRequest, EvaluateRequest]:
+  [SearchRequest]:
     - !ExcludeQL
       with:
         fields:

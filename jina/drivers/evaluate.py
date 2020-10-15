@@ -4,7 +4,9 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
-from .helper import DocGroundtruthPair
+
+if False:
+    from ..proto import jina_pb2
 
 
 class BaseEvaluationDriver(BaseExecutableDriver):
@@ -13,18 +15,6 @@ class BaseEvaluationDriver(BaseExecutableDriver):
                  *args,
                  **kwargs):
         super().__init__(executor, method, *args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        assert len(self.req.docs) == len(self.req.groundtruths)
-        docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
-                             zip(self.req.docs, self.req.groundtruths)]
-        self._traverse_apply(docs_groundtruths, *args, **kwargs)
-
-    def _apply_all(self, groundtruth_pairs: Iterable['DocGroundtruthPair'],
-                   context_groundtruth_pair: 'DocGroundtruthPair',
-                   *args,
-                   **kwargs) -> None:
-        pass
 
 
 class RankingEvaluationDriver(BaseEvaluationDriver):
@@ -52,16 +42,14 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
             return self.__class__.__name__
 
     def _apply_all(self,
-                   groundtruth_pairs: Iterable[DocGroundtruthPair],
+                   docs: Iterable['jina_pb2.Document'],
                    *args,
                    **kwargs) -> None:
-        for doc_groundtruth in groundtruth_pairs:
-            doc = doc_groundtruth.doc
-            groundtruth = doc_groundtruth.groundtruth
-
+        for doc in docs:
+            groundtruth = doc.groundtruth
             evaluation = doc.evaluations.add()
-            matches_ids = list(map(lambda x: x.tags[self.id_tag], doc.matches))
-            groundtruth_ids = list(map(lambda x: x.tags[self.id_tag], groundtruth.matches))
+            matches_ids = [x.tags[self.id_tag] for x in doc.matches]
+            groundtruth_ids = [x.tags[self.id_tag] for x in groundtruth.matches]
             evaluation.value = self.exec_fn(matches_ids, groundtruth_ids)
             evaluation.op_name = f'{self.id}-{self.exec.metric_name}'
             evaluation.ref_id = groundtruth.id

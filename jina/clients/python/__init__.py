@@ -168,8 +168,6 @@ class PyClient(GrpcClient):
                 req.index.CopyFrom(jina_pb2.Request.IndexRequest())
             elif as_request == 'search':
                 req.search.CopyFrom(jina_pb2.Request.SearchRequest())
-            elif as_request == 'evaluate':
-                req.evaluate.CopyFrom(jina_pb2.Request.EvaluateRequest())
             elif as_request == 'control':
                 req.control.CopyFrom(jina_pb2.Request.ControlRequest())
             else:

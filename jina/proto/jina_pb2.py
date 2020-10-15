@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='jina',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe9\x01\n\x07NdArray\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\x12\r\n\x05shape\x18\x02 \x03(\r\x12\r\n\x05\x64type\x18\x03 \x01(\t\x12\x34\n\x0cquantization\x18\x04 \x01(\x0e\x32\x1e.jina.NdArray.QuantizationMode\x12\x0f\n\x07max_val\x18\x05 \x01(\x02\x12\x0f\n\x07min_val\x18\x06 \x01(\x02\x12\r\n\x05scale\x18\x07 \x01(\x02\x12\x16\n\x0eoriginal_dtype\x18\x08 \x01(\t\"1\n\x10QuantizationMode\x12\x08\n\x04NONE\x10\x00\x12\x08\n\x04\x46P16\x10\x01\x12\t\n\x05UINT8\x10\x02\"u\n\nNamedScore\x12\r\n\x05value\x18\x01 \x01(\x02\x12\x0f\n\x07op_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\"\n\x08operands\x18\x04 \x03(\x0b\x32\x10.jina.NamedScore\x12\x0e\n\x06ref_id\x18\x05 \x01(\t\"\x8a\x04\n\x08\x44ocument\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0bgranularity\x18\x0e \x01(\r\x12\x11\n\tadjacency\x18\x16 \x01(\r\x12\x12\n\nlevel_name\x18\x0f \x01(\t\x12\x11\n\tparent_id\x18\x10 \x01(\t\x12\x10\n\x06\x62uffer\x18\x03 \x01(\x0cH\x00\x12\x1d\n\x04\x62lob\x18\x0c \x01(\x0b\x32\r.jina.NdArrayH\x00\x12\x0e\n\x04text\x18\r \x01(\tH\x00\x12\x1e\n\x06\x63hunks\x18\x04 \x03(\x0b\x32\x0e.jina.Document\x12\x0e\n\x06weight\x18\x05 \x01(\x02\x12\x0e\n\x06length\x18\x06 \x01(\r\x12\x11\n\tmeta_info\x18\x07 \x01(\x0c\x12\x1f\n\x07matches\x18\x08 \x03(\x0b\x32\x0e.jina.Document\x12\x11\n\tmime_type\x18\n \x01(\t\x12\x0b\n\x03uri\x18\t \x01(\t\x12%\n\x04tags\x18\x0b \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08location\x18\x11 \x03(\r\x12\x0e\n\x06offset\x18\x12 \x01(\r\x12 \n\tembedding\x18\x13 \x01(\x0b\x32\r.jina.NdArray\x12\x1f\n\x05score\x18\x14 \x01(\x0b\x32\x10.jina.NamedScore\x12\x10\n\x08modality\x18\x15 \x01(\t\x12%\n\x0b\x65valuations\x18\x17 \x03(\x0b\x32\x10.jina.NamedScoreB\t\n\x07\x63ontent\"\x90\x03\n\x08\x45nvelope\x12\x11\n\tsender_id\x18\x01 \x01(\t\x12\x13\n\x0breceiver_id\x18\x02 \x01(\t\x12\x12\n\nrequest_id\x18\x03 \x01(\t\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x12$\n\x06routes\x18\x05 \x03(\x0b\x32\x14.jina.Envelope.Route\x12\'\n\x07version\x18\x06 \x01(\x0b\x32\x16.jina.Envelope.Version\x12\x1c\n\x06status\x18\x07 \x01(\x0b\x32\x0c.jina.Status\x12\x10\n\x08num_part\x18\x08 \x03(\r\x1a\x82\x01\n\x05Route\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x1a\x33\n\x07Version\x12\x0c\n\x04jina\x18\x01 \x01(\t\x12\r\n\x05proto\x18\x02 \x01(\t\x12\x0b\n\x03vcs\x18\x03 \x01(\t\"\xdf\x02\n\x06Status\x12%\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x17.jina.Status.StatusCode\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12%\n\x07\x64\x65tails\x18\x03 \x03(\x0b\x32\x14.jina.Status.Details\x1a\x88\x01\n\x07\x44\x65tails\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12\x10\n\x08\x65xecutor\x18\x03 \x01(\t\x12\x11\n\texception\x18\x04 \x01(\t\x12\x11\n\ttraceback\x18\x05 \x01(\t\x12(\n\x04time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"g\n\nStatusCode\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07PENDING\x10\x01\x12\t\n\x05READY\x10\x02\x12\t\n\x05\x45RROR\x10\x03\x12\x13\n\x0f\x45RROR_DUPLICATE\x10\x04\x12\x14\n\x10\x45RROR_NOTALLOWED\x10\x05\"K\n\x07Message\x12 \n\x08\x65nvelope\x18\x01 \x01(\x0b\x32\x0e.jina.Envelope\x12\x1e\n\x07request\x18\x02 \x01(\x0b\x32\r.jina.Request\"\xa1\x06\n\x07Request\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12+\n\x05train\x18\x02 \x01(\x0b\x32\x1a.jina.Request.TrainRequestH\x00\x12+\n\x05index\x18\x03 \x01(\x0b\x32\x1a.jina.Request.IndexRequestH\x00\x12-\n\x06search\x18\x04 \x01(\x0b\x32\x1b.jina.Request.SearchRequestH\x00\x12\x31\n\x08\x65valuate\x18\x08 \x01(\x0b\x32\x1d.jina.Request.EvaluateRequestH\x00\x12/\n\x07\x63ontrol\x18\x05 \x01(\x0b\x32\x1c.jina.Request.ControlRequestH\x00\x12\x1c\n\x06status\x18\x06 \x01(\x0b\x32\x0c.jina.Status\x12!\n\x08queryset\x18\x07 \x03(\x0b\x32\x0f.jina.QueryLang\x1a;\n\x0cTrainRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x12\r\n\x05\x66lush\x18\x02 \x01(\x08\x1a,\n\x0cIndexRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x1a-\n\rSearchRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x1aU\n\x0f\x45valuateRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x12$\n\x0cgroundtruths\x18\x02 \x03(\x0b\x32\x0e.jina.Document\x1a\xda\x01\n\x0e\x43ontrolRequest\x12\x35\n\x07\x63ommand\x18\x01 \x01(\x0e\x32$.jina.Request.ControlRequest.Command\x12\x34\n\x04\x61rgs\x18\x02 \x03(\x0b\x32&.jina.Request.ControlRequest.ArgsEntry\x1a+\n\tArgsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\".\n\x07\x43ommand\x12\r\n\tTERMINATE\x10\x00\x12\n\n\x06STATUS\x10\x01\x12\x08\n\x04IDLE\x10\x03\x42\x06\n\x04\x62ody\"j\n\tQueryLang\x12\x0c\n\x04name\x18\x01 \x01(\t\x12+\n\nparameters\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64isabled\x18\x03 \x01(\x08\x12\x10\n\x08priority\x18\x04 \x01(\x05\"\xe3\x03\n\x0cSpawnRequest\x12\x31\n\x03pea\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequestH\x00\x12\x31\n\x03pod\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PodSpawnRequestH\x00\x12@\n\x0bmutable_pod\x18\x03 \x01(\x0b\x32).jina.SpawnRequest.MutablepodSpawnRequestH\x00\x12\x12\n\nlog_record\x18\x04 \x01(\t\x12\x1c\n\x06status\x18\x05 \x01(\x0b\x32\x0c.jina.Status\x1a\x1f\n\x0fPeaSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\x1f\n\x0fPodSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\xae\x01\n\x16MutablepodSpawnRequest\x12\x30\n\x04head\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04tail\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04peas\x18\x03 \x03(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequestB\x06\n\x04\x62ody2\x97\x01\n\x07JinaRPC\x12*\n\x04\x43\x61ll\x12\r.jina.Request\x1a\r.jina.Request\"\x00(\x01\x30\x01\x12+\n\tCallUnary\x12\r.jina.Request\x1a\r.jina.Request\"\x00\x12\x33\n\x05Spawn\x12\x12.jina.SpawnRequest\x1a\x12.jina.SpawnRequest\"\x00\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe9\x01\n\x07NdArray\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\x12\r\n\x05shape\x18\x02 \x03(\r\x12\r\n\x05\x64type\x18\x03 \x01(\t\x12\x34\n\x0cquantization\x18\x04 \x01(\x0e\x32\x1e.jina.NdArray.QuantizationMode\x12\x0f\n\x07max_val\x18\x05 \x01(\x02\x12\x0f\n\x07min_val\x18\x06 \x01(\x02\x12\r\n\x05scale\x18\x07 \x01(\x02\x12\x16\n\x0eoriginal_dtype\x18\x08 \x01(\t\"1\n\x10QuantizationMode\x12\x08\n\x04NONE\x10\x00\x12\x08\n\x04\x46P16\x10\x01\x12\t\n\x05UINT8\x10\x02\"u\n\nNamedScore\x12\r\n\x05value\x18\x01 \x01(\x02\x12\x0f\n\x07op_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\"\n\x08operands\x18\x04 \x03(\x0b\x32\x10.jina.NamedScore\x12\x0e\n\x06ref_id\x18\x05 \x01(\t\"\xaf\x04\n\x08\x44ocument\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0bgranularity\x18\x0e \x01(\r\x12\x11\n\tadjacency\x18\x16 \x01(\r\x12\x12\n\nlevel_name\x18\x0f \x01(\t\x12\x11\n\tparent_id\x18\x10 \x01(\t\x12\x10\n\x06\x62uffer\x18\x03 \x01(\x0cH\x00\x12\x1d\n\x04\x62lob\x18\x0c \x01(\x0b\x32\r.jina.NdArrayH\x00\x12\x0e\n\x04text\x18\r \x01(\tH\x00\x12\x1e\n\x06\x63hunks\x18\x04 \x03(\x0b\x32\x0e.jina.Document\x12\x0e\n\x06weight\x18\x05 \x01(\x02\x12\x0e\n\x06length\x18\x06 \x01(\r\x12\x11\n\tmeta_info\x18\x07 \x01(\x0c\x12\x1f\n\x07matches\x18\x08 \x03(\x0b\x32\x0e.jina.Document\x12\x11\n\tmime_type\x18\n \x01(\t\x12\x0b\n\x03uri\x18\t \x01(\t\x12%\n\x04tags\x18\x0b \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08location\x18\x11 \x03(\r\x12\x0e\n\x06offset\x18\x12 \x01(\r\x12 \n\tembedding\x18\x13 \x01(\x0b\x32\r.jina.NdArray\x12\x1f\n\x05score\x18\x14 \x01(\x0b\x32\x10.jina.NamedScore\x12\x10\n\x08modality\x18\x15 \x01(\t\x12%\n\x0b\x65valuations\x18\x17 \x03(\x0b\x32\x10.jina.NamedScore\x12#\n\x0bgroundtruth\x18\x18 \x01(\x0b\x32\x0e.jina.DocumentB\t\n\x07\x63ontent\"\x90\x03\n\x08\x45nvelope\x12\x11\n\tsender_id\x18\x01 \x01(\t\x12\x13\n\x0breceiver_id\x18\x02 \x01(\t\x12\x12\n\nrequest_id\x18\x03 \x01(\t\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x12$\n\x06routes\x18\x05 \x03(\x0b\x32\x14.jina.Envelope.Route\x12\'\n\x07version\x18\x06 \x01(\x0b\x32\x16.jina.Envelope.Version\x12\x1c\n\x06status\x18\x07 \x01(\x0b\x32\x0c.jina.Status\x12\x10\n\x08num_part\x18\x08 \x03(\r\x1a\x82\x01\n\x05Route\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x1a\x33\n\x07Version\x12\x0c\n\x04jina\x18\x01 \x01(\t\x12\r\n\x05proto\x18\x02 \x01(\t\x12\x0b\n\x03vcs\x18\x03 \x01(\t\"\xdf\x02\n\x06Status\x12%\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x17.jina.Status.StatusCode\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12%\n\x07\x64\x65tails\x18\x03 \x03(\x0b\x32\x14.jina.Status.Details\x1a\x88\x01\n\x07\x44\x65tails\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12\x10\n\x08\x65xecutor\x18\x03 \x01(\t\x12\x11\n\texception\x18\x04 \x01(\t\x12\x11\n\ttraceback\x18\x05 \x01(\t\x12(\n\x04time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"g\n\nStatusCode\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07PENDING\x10\x01\x12\t\n\x05READY\x10\x02\x12\t\n\x05\x45RROR\x10\x03\x12\x13\n\x0f\x45RROR_DUPLICATE\x10\x04\x12\x14\n\x10\x45RROR_NOTALLOWED\x10\x05\"K\n\x07Message\x12 \n\x08\x65nvelope\x18\x01 \x01(\x0b\x32\x0e.jina.Envelope\x12\x1e\n\x07request\x18\x02 \x01(\x0b\x32\r.jina.Request\"\x97\x05\n\x07Request\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12+\n\x05train\x18\x02 \x01(\x0b\x32\x1a.jina.Request.TrainRequestH\x00\x12+\n\x05index\x18\x03 \x01(\x0b\x32\x1a.jina.Request.IndexRequestH\x00\x12-\n\x06search\x18\x04 \x01(\x0b\x32\x1b.jina.Request.SearchRequestH\x00\x12/\n\x07\x63ontrol\x18\x05 \x01(\x0b\x32\x1c.jina.Request.ControlRequestH\x00\x12\x1c\n\x06status\x18\x06 \x01(\x0b\x32\x0c.jina.Status\x12!\n\x08queryset\x18\x07 \x03(\x0b\x32\x0f.jina.QueryLang\x1a;\n\x0cTrainRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x12\r\n\x05\x66lush\x18\x02 \x01(\x08\x1a,\n\x0cIndexRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x1a-\n\rSearchRequest\x12\x1c\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x0e.jina.Document\x1a\xda\x01\n\x0e\x43ontrolRequest\x12\x35\n\x07\x63ommand\x18\x01 \x01(\x0e\x32$.jina.Request.ControlRequest.Command\x12\x34\n\x04\x61rgs\x18\x02 \x03(\x0b\x32&.jina.Request.ControlRequest.ArgsEntry\x1a+\n\tArgsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\".\n\x07\x43ommand\x12\r\n\tTERMINATE\x10\x00\x12\n\n\x06STATUS\x10\x01\x12\x08\n\x04IDLE\x10\x03\x42\x06\n\x04\x62ody\"j\n\tQueryLang\x12\x0c\n\x04name\x18\x01 \x01(\t\x12+\n\nparameters\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64isabled\x18\x03 \x01(\x08\x12\x10\n\x08priority\x18\x04 \x01(\x05\"\xe3\x03\n\x0cSpawnRequest\x12\x31\n\x03pea\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequestH\x00\x12\x31\n\x03pod\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PodSpawnRequestH\x00\x12@\n\x0bmutable_pod\x18\x03 \x01(\x0b\x32).jina.SpawnRequest.MutablepodSpawnRequestH\x00\x12\x12\n\nlog_record\x18\x04 \x01(\t\x12\x1c\n\x06status\x18\x05 \x01(\x0b\x32\x0c.jina.Status\x1a\x1f\n\x0fPeaSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\x1f\n\x0fPodSpawnRequest\x12\x0c\n\x04\x61rgs\x18\x01 \x03(\t\x1a\xae\x01\n\x16MutablepodSpawnRequest\x12\x30\n\x04head\x18\x01 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04tail\x18\x02 \x01(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequest\x12\x30\n\x04peas\x18\x03 \x03(\x0b\x32\".jina.SpawnRequest.PeaSpawnRequestB\x06\n\x04\x62ody2\x97\x01\n\x07JinaRPC\x12*\n\x04\x43\x61ll\x12\r.jina.Request\x1a\r.jina.Request\"\x00(\x01\x30\x01\x12+\n\tCallUnary\x12\r.jina.Request\x1a\r.jina.Request\"\x00\x12\x33\n\x05Spawn\x12\x12.jina.SpawnRequest\x1a\x12.jina.SpawnRequest\"\x00\x30\x01\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,])
 
@@ -85,8 +85,8 @@ _STATUS_STATUSCODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1615,
-  serialized_end=1718,
+  serialized_start=1652,
+  serialized_end=1755,
 )
 _sym_db.RegisterEnumDescriptor(_STATUS_STATUSCODE)
 
@@ -111,8 +111,8 @@ _REQUEST_CONTROLREQUEST_COMMAND = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2545,
-  serialized_end=2591,
+  serialized_start=2444,
+  serialized_end=2490,
 )
 _sym_db.RegisterEnumDescriptor(_REQUEST_CONTROLREQUEST_COMMAND)
 
@@ -418,6 +418,13 @@ _DOCUMENT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='groundtruth', full_name='jina.Document.groundtruth', index=22,
+      number=24, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -434,7 +441,7 @@ _DOCUMENT = _descriptor.Descriptor(
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=439,
-  serialized_end=961,
+  serialized_end=998,
 )
 
 
@@ -485,8 +492,8 @@ _ENVELOPE_ROUTE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1181,
-  serialized_end=1311,
+  serialized_start=1218,
+  serialized_end=1348,
 )
 
 _ENVELOPE_VERSION = _descriptor.Descriptor(
@@ -529,8 +536,8 @@ _ENVELOPE_VERSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1313,
-  serialized_end=1364,
+  serialized_start=1350,
+  serialized_end=1401,
 )
 
 _ENVELOPE = _descriptor.Descriptor(
@@ -608,8 +615,8 @@ _ENVELOPE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=964,
-  serialized_end=1364,
+  serialized_start=1001,
+  serialized_end=1401,
 )
 
 
@@ -674,8 +681,8 @@ _STATUS_DETAILS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1477,
-  serialized_end=1613,
+  serialized_start=1514,
+  serialized_end=1650,
 )
 
 _STATUS = _descriptor.Descriptor(
@@ -719,8 +726,8 @@ _STATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1367,
-  serialized_end=1718,
+  serialized_start=1404,
+  serialized_end=1755,
 )
 
 
@@ -757,8 +764,8 @@ _MESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1720,
-  serialized_end=1795,
+  serialized_start=1757,
+  serialized_end=1832,
 )
 
 
@@ -795,8 +802,8 @@ _REQUEST_TRAINREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2131,
-  serialized_end=2190,
+  serialized_start=2117,
+  serialized_end=2176,
 )
 
 _REQUEST_INDEXREQUEST = _descriptor.Descriptor(
@@ -825,8 +832,8 @@ _REQUEST_INDEXREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2192,
-  serialized_end=2236,
+  serialized_start=2178,
+  serialized_end=2222,
 )
 
 _REQUEST_SEARCHREQUEST = _descriptor.Descriptor(
@@ -855,45 +862,8 @@ _REQUEST_SEARCHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2238,
-  serialized_end=2283,
-)
-
-_REQUEST_EVALUATEREQUEST = _descriptor.Descriptor(
-  name='EvaluateRequest',
-  full_name='jina.Request.EvaluateRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='docs', full_name='jina.Request.EvaluateRequest.docs', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='groundtruths', full_name='jina.Request.EvaluateRequest.groundtruths', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=2285,
-  serialized_end=2370,
+  serialized_start=2224,
+  serialized_end=2269,
 )
 
 _REQUEST_CONTROLREQUEST_ARGSENTRY = _descriptor.Descriptor(
@@ -929,8 +899,8 @@ _REQUEST_CONTROLREQUEST_ARGSENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2500,
-  serialized_end=2543,
+  serialized_start=2399,
+  serialized_end=2442,
 )
 
 _REQUEST_CONTROLREQUEST = _descriptor.Descriptor(
@@ -967,8 +937,8 @@ _REQUEST_CONTROLREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2373,
-  serialized_end=2591,
+  serialized_start=2272,
+  serialized_end=2490,
 )
 
 _REQUEST = _descriptor.Descriptor(
@@ -1007,28 +977,21 @@ _REQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='evaluate', full_name='jina.Request.evaluate', index=4,
-      number=8, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='control', full_name='jina.Request.control', index=5,
+      name='control', full_name='jina.Request.control', index=4,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='status', full_name='jina.Request.status', index=6,
+      name='status', full_name='jina.Request.status', index=5,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='queryset', full_name='jina.Request.queryset', index=7,
+      name='queryset', full_name='jina.Request.queryset', index=6,
       number=7, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1037,7 +1000,7 @@ _REQUEST = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_REQUEST_TRAINREQUEST, _REQUEST_INDEXREQUEST, _REQUEST_SEARCHREQUEST, _REQUEST_EVALUATEREQUEST, _REQUEST_CONTROLREQUEST, ],
+  nested_types=[_REQUEST_TRAINREQUEST, _REQUEST_INDEXREQUEST, _REQUEST_SEARCHREQUEST, _REQUEST_CONTROLREQUEST, ],
   enum_types=[
   ],
   serialized_options=None,
@@ -1049,8 +1012,8 @@ _REQUEST = _descriptor.Descriptor(
       name='body', full_name='jina.Request.body',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1798,
-  serialized_end=2599,
+  serialized_start=1835,
+  serialized_end=2498,
 )
 
 
@@ -1101,8 +1064,8 @@ _QUERYLANG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2601,
-  serialized_end=2707,
+  serialized_start=2500,
+  serialized_end=2606,
 )
 
 
@@ -1132,8 +1095,8 @@ _SPAWNREQUEST_PEASPAWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2944,
-  serialized_end=2975,
+  serialized_start=2843,
+  serialized_end=2874,
 )
 
 _SPAWNREQUEST_PODSPAWNREQUEST = _descriptor.Descriptor(
@@ -1162,8 +1125,8 @@ _SPAWNREQUEST_PODSPAWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2977,
-  serialized_end=3008,
+  serialized_start=2876,
+  serialized_end=2907,
 )
 
 _SPAWNREQUEST_MUTABLEPODSPAWNREQUEST = _descriptor.Descriptor(
@@ -1206,8 +1169,8 @@ _SPAWNREQUEST_MUTABLEPODSPAWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3011,
-  serialized_end=3185,
+  serialized_start=2910,
+  serialized_end=3084,
 )
 
 _SPAWNREQUEST = _descriptor.Descriptor(
@@ -1267,8 +1230,8 @@ _SPAWNREQUEST = _descriptor.Descriptor(
       name='body', full_name='jina.SpawnRequest.body',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=2710,
-  serialized_end=3193,
+  serialized_start=2609,
+  serialized_end=3092,
 )
 
 _NDARRAY.fields_by_name['quantization'].enum_type = _NDARRAY_QUANTIZATIONMODE
@@ -1281,6 +1244,7 @@ _DOCUMENT.fields_by_name['tags'].message_type = google_dot_protobuf_dot_struct__
 _DOCUMENT.fields_by_name['embedding'].message_type = _NDARRAY
 _DOCUMENT.fields_by_name['score'].message_type = _NAMEDSCORE
 _DOCUMENT.fields_by_name['evaluations'].message_type = _NAMEDSCORE
+_DOCUMENT.fields_by_name['groundtruth'].message_type = _DOCUMENT
 _DOCUMENT.oneofs_by_name['content'].fields.append(
   _DOCUMENT.fields_by_name['buffer'])
 _DOCUMENT.fields_by_name['buffer'].containing_oneof = _DOCUMENT.oneofs_by_name['content']
@@ -1310,9 +1274,6 @@ _REQUEST_INDEXREQUEST.fields_by_name['docs'].message_type = _DOCUMENT
 _REQUEST_INDEXREQUEST.containing_type = _REQUEST
 _REQUEST_SEARCHREQUEST.fields_by_name['docs'].message_type = _DOCUMENT
 _REQUEST_SEARCHREQUEST.containing_type = _REQUEST
-_REQUEST_EVALUATEREQUEST.fields_by_name['docs'].message_type = _DOCUMENT
-_REQUEST_EVALUATEREQUEST.fields_by_name['groundtruths'].message_type = _DOCUMENT
-_REQUEST_EVALUATEREQUEST.containing_type = _REQUEST
 _REQUEST_CONTROLREQUEST_ARGSENTRY.containing_type = _REQUEST_CONTROLREQUEST
 _REQUEST_CONTROLREQUEST.fields_by_name['command'].enum_type = _REQUEST_CONTROLREQUEST_COMMAND
 _REQUEST_CONTROLREQUEST.fields_by_name['args'].message_type = _REQUEST_CONTROLREQUEST_ARGSENTRY
@@ -1321,7 +1282,6 @@ _REQUEST_CONTROLREQUEST_COMMAND.containing_type = _REQUEST_CONTROLREQUEST
 _REQUEST.fields_by_name['train'].message_type = _REQUEST_TRAINREQUEST
 _REQUEST.fields_by_name['index'].message_type = _REQUEST_INDEXREQUEST
 _REQUEST.fields_by_name['search'].message_type = _REQUEST_SEARCHREQUEST
-_REQUEST.fields_by_name['evaluate'].message_type = _REQUEST_EVALUATEREQUEST
 _REQUEST.fields_by_name['control'].message_type = _REQUEST_CONTROLREQUEST
 _REQUEST.fields_by_name['status'].message_type = _STATUS
 _REQUEST.fields_by_name['queryset'].message_type = _QUERYLANG
@@ -1334,9 +1294,6 @@ _REQUEST.fields_by_name['index'].containing_oneof = _REQUEST.oneofs_by_name['bod
 _REQUEST.oneofs_by_name['body'].fields.append(
   _REQUEST.fields_by_name['search'])
 _REQUEST.fields_by_name['search'].containing_oneof = _REQUEST.oneofs_by_name['body']
-_REQUEST.oneofs_by_name['body'].fields.append(
-  _REQUEST.fields_by_name['evaluate'])
-_REQUEST.fields_by_name['evaluate'].containing_oneof = _REQUEST.oneofs_by_name['body']
 _REQUEST.oneofs_by_name['body'].fields.append(
   _REQUEST.fields_by_name['control'])
 _REQUEST.fields_by_name['control'].containing_oneof = _REQUEST.oneofs_by_name['body']
@@ -1460,13 +1417,6 @@ Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,
     })
   ,
 
-  'EvaluateRequest' : _reflection.GeneratedProtocolMessageType('EvaluateRequest', (_message.Message,), {
-    'DESCRIPTOR' : _REQUEST_EVALUATEREQUEST,
-    '__module__' : 'jina_pb2'
-    # @@protoc_insertion_point(class_scope:jina.Request.EvaluateRequest)
-    })
-  ,
-
   'ControlRequest' : _reflection.GeneratedProtocolMessageType('ControlRequest', (_message.Message,), {
 
     'ArgsEntry' : _reflection.GeneratedProtocolMessageType('ArgsEntry', (_message.Message,), {
@@ -1488,7 +1438,6 @@ _sym_db.RegisterMessage(Request)
 _sym_db.RegisterMessage(Request.TrainRequest)
 _sym_db.RegisterMessage(Request.IndexRequest)
 _sym_db.RegisterMessage(Request.SearchRequest)
-_sym_db.RegisterMessage(Request.EvaluateRequest)
 _sym_db.RegisterMessage(Request.ControlRequest)
 _sym_db.RegisterMessage(Request.ControlRequest.ArgsEntry)
 
@@ -1539,8 +1488,8 @@ _JINARPC = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=3196,
-  serialized_end=3347,
+  serialized_start=3095,
+  serialized_end=3246,
   methods=[
   _descriptor.MethodDescriptor(
     name='Call',
