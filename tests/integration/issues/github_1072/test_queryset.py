@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pytest
 
 from jina.proto import jina_pb2
 from jina.drivers.helper import array2pb
@@ -8,9 +9,14 @@ from jina.flow import Flow
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_queryset_with_struct(tmpdir):
+@pytest.fixture(scope='function')
+def random_workspace(tmpdir):
     os.environ['JINA_TEST_QUERYSET_WORKSPACE'] = str(tmpdir)
+    yield tmpdir
+    del os.environ['JINA_TEST_QUERYSET_WORKSPACE']
 
+
+def test_queryset_with_struct(random_workspace):
     total_docs = 4
     docs = []
     for doc_id in range(total_docs):
@@ -39,5 +45,4 @@ def test_queryset_with_struct(tmpdir):
         qs.parameters['traversal_paths'] = ['r']
         f.index(docs, queryset=qs, output_fn=validate_label2_docs, callback_on_body=True)
 
-    del os.environ['JINA_TEST_QUERYSET_WORKSPACE']
 
