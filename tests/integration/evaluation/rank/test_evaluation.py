@@ -37,7 +37,7 @@ def test_evaluation(tmpdir):
         return [doc0, doc1, doc2]
 
     with Flow().load_config('flow-index.yml') as index_flow:
-        index_flow.search(input_fn=index_documents)
+        index_flow.index(input_fn=index_documents)
 
     def validate_evaluation_response(resp):
         assert len(resp.docs) == 2
