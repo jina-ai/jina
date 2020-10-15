@@ -210,10 +210,3 @@ class PyClient(GrpcClient):
             self.dry_run(as_request='index')
         self.start(output_fn, **kwargs)
 
-    def evaluate(self, input_fn: Union[Iterator[Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Callable] = None,
-                 output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
-        self.mode = ClientMode.EVALUATE
-        self.input_fn = input_fn
-        if not self.args.skip_dry_run:
-            self.dry_run(as_request='evaluate')
-        self.start(output_fn, **kwargs)
