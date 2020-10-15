@@ -221,3 +221,34 @@ jobs:
           env_vars: OS,PYTHON
           name: codecov
           fail_ci_if_error: true
+
+  examples-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
+        python-version: [3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[match-py-ver] --no-cache-dir
+      - name: Test example with pytest
+        run: |
+          jina check
+          export JINA_LOG_VERBOSITY="ERROR"
+          pip install .[test]
+          git clone https://github.com/jina-ai/examples.git
+          pytest --force-flaky --min-passes 1 -n 1 --timeout=0 -v examples
+        timeout-minutes: 60
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
