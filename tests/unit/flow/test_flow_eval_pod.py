@@ -1,15 +1,10 @@
+import os
+
 import pytest
 
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
-from jina.peapods.pod import InspectPod
-from tests import random_docs
-
-
-def test_inspect_pod():
-    args = {'uses': 'DummyEvaluator1'}
-    with InspectPod(args):
-        pass
+from tests import random_docs, rm_files
 
 
 class DummyEvaluator1(BaseCrafter):
@@ -32,55 +27,63 @@ class DummyEvaluator3(DummyEvaluator1):
 docs = list(random_docs(1))
 
 
-def test_flow1():
-    f = Flow().add()
+def validate(ids, expect):
+    for j in ids:
+        fname = f'tmp{j}.txt'
+        assert os.path.exists(fname) == expect
+        if expect:
+            with open(fname) as fp:
+                assert fp.read() != ''
+        rm_files([fname])
+
+
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow1(no_inspect):
+    f = Flow(no_inspect=no_inspect).add()
 
     with f:
         f.index(docs)
 
 
-def test_flow2():
-    f = Flow().add().inspect(uses='DummyEvaluator1')
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow2(no_inspect):
+    f = Flow(no_inspect=no_inspect).add().inspect(uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
 
-    for j in [1]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1], expect=not no_inspect)
 
 
-@pytest.mark.skip('can not support this topology for now')
-def test_flow3():
-    f = Flow().add(name='p1').inspect(uses='DummyEvaluator1') \
-        .add(name='p2', needs='gateway').needs(['p1', 'p2'])
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow3(no_inspect):
+    f = Flow(no_inspect=no_inspect).add(name='p1').inspect(uses='DummyEvaluator1') \
+        .add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator2')
 
     with f:
         f.index(docs)
 
-    for j in [1]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1, 2], expect=not no_inspect)
 
 
-def test_flow4(tmpdir):
-    f = Flow().add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator1')
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow4(no_inspect):
+    f = Flow(no_inspect=no_inspect).add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(
+        uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
 
-    for j in [1]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1], expect=not no_inspect)
 
 
-def test_flow5(tmpdir):
-    f = Flow().add().inspect(uses='DummyEvaluator1').add().inspect(uses='DummyEvaluator2').add().inspect(
+@pytest.mark.parametrize('no_inspect', [True, False])
+def test_flow5(no_inspect):
+    f = Flow(no_inspect=no_inspect).add().inspect(uses='DummyEvaluator1').add().inspect(
+        uses='DummyEvaluator2').add().inspect(
         uses='DummyEvaluator3').plot(build=True)
 
     with f:
         f.index(docs)
 
-    for j in [1, 2, 3]:
-        with open(f'tmp{j}.txt') as fp:
-            assert fp.read() != ''
+    validate([1, 2, 3], expect=not no_inspect)

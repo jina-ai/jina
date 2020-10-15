@@ -23,7 +23,7 @@ from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..peapods.pod import FlowPod, GatewayFlowPod, InspectPod
+from ..peapods.pod import FlowPod, GatewayFlowPod
 
 if False:
     from ..proto import jina_pb2
@@ -206,7 +206,6 @@ class Flow(ExitStack):
 
         # if an endpoint is being inspected, then replace it with inspected Pod
         endpoint = set(op_flow._inspect_pods.get(ep, ep) for ep in endpoint)
-
         return endpoint
 
     @property
@@ -282,7 +281,7 @@ class Flow(ExitStack):
 
         if pod_name in op_flow._pod_nodes:
             new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
-            self.logger.warning(f'name: {pod_name} is used in this Flow already! renamed it to {new_name}')
+            self.logger.warning(f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"')
             pod_name = new_name
 
         if not pod_name:
@@ -297,25 +296,42 @@ class Flow(ExitStack):
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
 
-        if pod_role == PodRoleType.INSPECT:
-            _pod_fn = FlowPod
-            # TODO: this is problematic
-            # _pod_fn = InspectPod
-            # op_flow._inspect_pods[self.last_pod] = pod_name
-        else:
-            _pod_fn = FlowPod
-
-        op_flow._pod_nodes[pod_name] = _pod_fn(kwargs=kwargs, needs=needs, pod_role=pod_role)
+        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
         op_flow.last_pod = pod_name
 
         return op_flow
 
     def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
-        """Add an inspection on the last changed Pod in the Flow """
+        """Add an inspection on the last changed Pod in the Flow
+
+        Internally, it adds two pods to the flow. But no worry, the overhead is minimized and you
+        can remove them by simply give `Flow(no_inspect=True)` before using the flow.
+
+        .. highlight:: bash
+        .. code-block:: bash
+
+            Flow -- PUB-SUB -- BasePod(_pass) -- Flow
+                    |
+                    -- PUB-SUB -- InspectPod (Hanging)
+
+        In this way, :class:`InspectPod` looks like a simple ``_pass`` from outside and
+        does not introduce side-effect (e.g. changing the socket type) to the original flow.
+        The original incoming and outgoing socket types are preserved.
+
+        This class is very handy for introducing evaluator into the flow.
+        """
 
         _last_pod = self.last_pod
-        op_flow = self.add(name=name, pod_role=PodRoleType.INSPECT, *args, **kwargs)
-        op_flow.last_pod = _last_pod
+        op_flow = self.add(name=name, needs=_last_pod, pod_role=PodRoleType.INSPECT, *args, **kwargs)
+
+        # now remove uses and add an auxiliary Pod
+        if 'uses' in kwargs:
+            kwargs.pop('uses')
+        op_flow = op_flow.add(name=f'_aux_{name}', uses='_pass', needs=_last_pod,
+                              pod_role=PodRoleType.INSPECT_AUX_PASS, *args, **kwargs)
+
+        # register any future connection to _last_pod by the auxiliary pod
+        op_flow._inspect_pods[_last_pod] = op_flow.last_pod
 
         return op_flow
 
@@ -355,7 +371,20 @@ class Flow(ExitStack):
 
         # construct a map with a key a start node and values an array of its end nodes
         _outgoing_map = defaultdict(list)
+
+        # if set no_inspect then all inspect related nodes are removed
+        if op_flow.args.no_inspect:
+            op_flow._pod_nodes = {k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect}
+            reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
+
         for end, pod in op_flow._pod_nodes.items():
+            # if an endpoint is being inspected, then replace it with inspected Pod
+            # but not those inspect related node
+            if op_flow.args.no_inspect:
+                pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
+            else:
+                pod.needs = set(ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep) for ep in pod.needs)
+
             for start in pod.needs:
                 if start not in op_flow._pod_nodes:
                     raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
@@ -749,7 +778,7 @@ class Flow(ExitStack):
                 head_router = node + '_HEAD'
                 tail_router = node + '_TAIL'
                 p_r = '((%s))'
-                p_e = '(%s)'
+                p_e = '[[%s]]'
                 for j in range(v._args.parallel):
                     r = node + '_%d' % j
                     mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
@@ -782,7 +811,8 @@ class Flow(ExitStack):
                 mermaid_graph.append(f'{_s[0]}{_s[1]}:::{str(_s_role)} --> {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
         mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
         mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff,stroke-dasharray: 5 5')
+        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 
