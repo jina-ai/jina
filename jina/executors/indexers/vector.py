@@ -263,7 +263,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
-        idx = np.argpartition(dist, kth=top_k, axis=1)[:, :top_k]
+        idx = dist.argpartition(kth=top_k, axis=1)[:, :top_k]
         dist = np.take_along_axis(dist, idx, axis=1)
         return self.int2ext_id[idx], dist
 
