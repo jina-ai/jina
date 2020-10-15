@@ -7,7 +7,7 @@ from ..logging import default_logger
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List
+from typing import Callable, Any, Union, Iterator, List, Optional
 
 import numpy as np
 
@@ -120,8 +120,13 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 def batching(func: Callable[[Any], np.ndarray] = None, *,
-             batch_size: Union[int, Callable] = None, num_batch: int = None,
-             split_over_axis: int = 0, merge_over_axis: int = 0, slice_on: int = 1) -> Any:
+             batch_size: Union[int, Callable] = None,
+             num_batch: Optional[int] = None,
+             split_over_axis: int = 0,
+             merge_over_axis: int = 0,
+             slice_on: int = 1,
+             label_on: Optional[int] = None,
+             ordinal_idx_arg: Optional[int] = None) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
 
@@ -132,6 +137,10 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
+    :param label_on: the location of the labels. Useful for data with any kind of accompanying labels
+    :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
+            where function decorated needs to know the ordinal indexes of the data in the batch
+            (Not used when label_on is used)
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
@@ -147,19 +156,15 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                 @batching(batch_size = 64)
                 def train(self, batch: 'numpy.ndarray', *args, **kwargs):
                     gpu_train(batch)
-
-
     """
 
     def _batching(func):
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
-            # by default data is in args[0]
+            # by default data is in args[1] (self needs to be taken into account)
             data = args[slice_on]
             args = list(args)
-
-            label = kwargs.get('label', None)
 
             b_size = (batch_size(data) if callable(batch_size) else batch_size) or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
@@ -170,33 +175,40 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                 f'batching enabled for {func.__qualname__} batch_size={b_size} '
                 f'num_batch={num_batch} axis={split_over_axis}')
 
-            total_size1 = _get_size(data, split_over_axis)
-            total_size2 = b_size * num_batch if num_batch else None
+            full_data_size = _get_size(data, split_over_axis)
+            batched_data_size = b_size * num_batch if num_batch else None
 
-            if total_size1 is not None and total_size2 is not None:
-                total_size = min(total_size1, total_size2)
+            if full_data_size is not None and batched_data_size is not None:
+                total_size = min(full_data_size, batched_data_size)
             else:
-                total_size = total_size1 or total_size2
+                total_size = full_data_size or batched_data_size
 
             final_result = []
 
-            if label is not None:
-                data = (data, label)
+            data = (data, args[label_on]) if label_on else data
 
             yield_slice = isinstance(data, np.memmap)
+            slice_idx = None
 
             for b in batch_iterator(data[:total_size], b_size, split_over_axis, yield_slice=yield_slice):
                 if yield_slice:
+                    slice_idx = b
                     new_memmap = np.memmap(data.filename, dtype=data.dtype, mode='r', shape=data.shape)
-                    b = new_memmap[b]
+                    b = new_memmap[slice_idx]
+                    slice_idx = slice_idx[split_over_axis]
+                    if slice_idx.start is None or slice_idx.stop is None:
+                        slice_idx = None
 
-                if label is None:
+                if not isinstance(b, tuple):
+                    # for now, keeping ordered_idx is only supported if no labels
                     args[slice_on] = b
-                    r = func(*args, **kwargs)
+                    if ordinal_idx_arg and slice_idx is not None:
+                        args[ordinal_idx_arg] = slice_idx
                 else:
-                    args[slice_on] = b
-                    kwargs['label'] = b[1]
-                    r = func(*args, **kwargs)
+                    args[slice_on] = b[0]
+                    args[label_on] = b[1]
+
+                r = func(*args, **kwargs)
 
                 if yield_slice:
                     del new_memmap
@@ -211,17 +223,11 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
             if len(final_result) and merge_over_axis is not None:
                 if isinstance(final_result[0], np.ndarray):
                     final_result = np.concatenate(final_result, merge_over_axis)
-                    # if chunk_dim != -1:
-                    #     final_result = final_result.reshape((-1, chunk_dim, final_result.shape[1]))
                 elif isinstance(final_result[0], tuple):
                     reduced_result = []
                     num_cols = len(final_result[0])
                     for col in range(num_cols):
                         reduced_result.append(np.concatenate([row[col] for row in final_result], merge_over_axis))
-                    # if chunk_dim != -1:
-                    #     for col in range(num_cols):
-                    #         reduced_result[col] = reduced_result[col].reshape(
-                    #             (-1, chunk_dim, reduced_result[col].shape[1]))
                     final_result = tuple(reduced_result)
 
             if len(final_result):
