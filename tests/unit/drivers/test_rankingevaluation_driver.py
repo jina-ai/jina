@@ -1,6 +1,6 @@
 import pytest
 
-from jina.drivers.evaluate import RankingEvaluationDriver
+from jina.drivers.evaluate import RankingEvaluationDriver, DocGroundtruthPair
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
 
@@ -29,6 +29,7 @@ class MockPrecisionEvaluator(BaseRankingEvaluator):
 
 class SimpleEvaluateDriver(RankingEvaluationDriver):
 
+
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -44,9 +45,10 @@ def test_evaluate_driver():
         pairs = []
         for idx in range(num_docs):
             doc = jina_pb2.Document()
+            gt = jina_pb2.Document()
             add_matches(doc, num_docs)
-            add_matches(doc.groundtruth, num_docs)
-            pairs.append(doc)
+            add_matches(gt, num_docs)
+            pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
         return pairs
 
     pairs = create_document_ground_truth_pairs(10)
@@ -54,7 +56,8 @@ def test_evaluate_driver():
     executor = MockPrecisionEvaluator()
     driver.attach(executor=executor, pea=None)
     driver._apply_all(pairs)
-    for doc in pairs:
+    for wrapper in pairs:
+        doc = wrapper.doc
         assert len(doc.evaluations) == 1
         assert doc.evaluations[0].op_name == 'SimpleEvaluateDriver-MockPrecision@2'
         assert doc.evaluations[0].value == 1.0
@@ -81,31 +84,31 @@ def test_evaluate_driver_matches_in_chunks():
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
     def create_eval_request(num_docs, num_matches):
-        def add_matches(_doc: jina_pb2.Document):
-            _doc.granularity = 1
+        def add_matches(doc: jina_pb2.Document):
             for idx in range(num_matches):
-                match = _doc.matches.add()
+                match = doc.matches.add()
                 match.tags['id'] = idx
 
-        _req = jina_pb2.Request.IndexRequest()
+        req = jina_pb2.Request.IndexRequest()
         for idx in range(num_docs):
-            doc = _req.docs.add()
-            gt = doc.groundtruth
+            doc = req.docs.add()
+            gt = req.groundtruths.add()
             chunk_doc = doc.chunks.add()
             chunk_gt = gt.chunks.add()
+            chunk_doc.granularity = 1
+            chunk_gt.granularity = 1
             add_matches(chunk_doc)
             add_matches(chunk_gt)
-
-        return _req
+        return req
 
     req = create_eval_request(10, 1)
-
     driver = SimpleChunkEvaluateDriver()
     executor = MockPrecisionEvaluator()
     driver.attach(executor=executor, pea=None)
     driver.eval_request = req
     driver()
 
+    assert len(req.docs) == len(req.groundtruths)
     assert len(req.docs) == 10
     for doc in req.docs:
         assert len(doc.evaluations) == 0  # evaluation done at chunk level
@@ -123,10 +126,10 @@ def test_evaluate_assert_doc_groundtruth_structure():
                 match = doc.matches.add()
                 match.tags['id'] = idx
 
-        req = jina_pb2.Request.IndexRequest()
+        req = jina_pb2.Request.SearchRequest()
         for idx in range(num_docs):
             doc = req.docs.add()
-            gt = doc.groundtruth
+            gt = req.groundtruths.add()
             chunk_doc = doc.chunks.add()
             chunk_gt = gt.chunks.add()
             chunk_doc.granularity = 1
