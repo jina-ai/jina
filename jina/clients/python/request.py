@@ -97,6 +97,14 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
 
+    _fill = lambda x, y: _fill_document(document=x,
+                                        content=y,
+                                        docs_in_same_batch=batch_size,
+                                        mime_type=mime_type,
+                                        buffer_sniff=buffer_sniff,
+                                        override_doc_id=override_doc_id
+                                        )
+
     for batch in batch_iterator(data, batch_size):
         req = jina_pb2.Request()
         req.request_id = uuid.uuid1().hex
@@ -118,13 +126,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
         for content in batch:
             d = getattr(req, str(mode).lower()).docs.add()
             gt = getattr(req, str(mode).lower()).groundtruths.add()
-            _fill = lambda x, y: _fill_document(document=x,
-                                                content=y,
-                                                docs_in_same_batch=batch_size,
-                                                mime_type=mime_type,
-                                                buffer_sniff=buffer_sniff,
-                                                override_doc_id=override_doc_id
-                                                )
 
             if isinstance(content, tuple) and len(content) == 2:
                 default_logger.info('content comes in pair, '
