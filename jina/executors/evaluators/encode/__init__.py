@@ -7,25 +7,11 @@ from .. import BaseEvaluator
 
 
 class BaseEncodingEvaluator(BaseEvaluator):
-    """A :class:`BaseEncodingEvaluator` evaluates the distance between doc and groundtruth embeddings
+    """A :class:`BaseEncodingEvaluator` evaluates the difference between doc and groundtruth embeddings
     """
 
     def __init__(self, *args, **kwargs):
-        """"
-        :param eval_at: k at which evaluation is performed
-        """
         super().__init__(*args, **kwargs)
-
-    def post_init(self):
-        super().post_init()
-        self.num_documents = 0
-        self.sum = 0
-
-    @property
-    def avg(self):
-        if self.num_documents == 0:
-            return 0.0
-        return self.sum / self.num_documents
 
     def evaluate(self, doc_embedding: 'np.array', groundtruth_embedding: 'np.array', *args, **kwargs) -> float:
         """"
