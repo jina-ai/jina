@@ -7,6 +7,11 @@ from ..encode import BaseEncodingEvaluator
 class CosineEvaluator(BaseEncodingEvaluator):
     """A :class:`CosineEvaluator` evaluates the distance between doc and groundtruth embeddings computing
     the cosine distance between them. (The smaller value the closest distance, it is not cosine similarity measure)
+
+    .. math::
+
+        1 - \\frac{u \\cdot v}
+                  {||u||_2 ||v||_2}.
     """
 
     @property

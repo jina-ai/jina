@@ -20,6 +20,13 @@ class BaseEvaluationDriver(BaseExecutableDriver):
                              zip(self.req.docs, self.req.groundtruths)]
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
 
+    @property
+    def id(self):
+        if self.pea:
+            return self.pea.name
+        else:
+            return self.__class__.__name__
+
     def _apply_all(self, groundtruth_pairs: Iterable['DocGroundtruthPair'],
                    context_groundtruth_pair: 'DocGroundtruthPair',
                    *args,
@@ -28,7 +35,7 @@ class BaseEvaluationDriver(BaseExecutableDriver):
 
 
 class RankingEvaluationDriver(BaseEvaluationDriver):
-    """Drivers inherited from this Driver will bind :meth:`evaluate` by default
+    """Drivers used to pass `matches` from documents and groundtruths to an executor and add the evaluation value
     """
 
     def __init__(self,
@@ -43,13 +50,6 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
         """
         super().__init__(*args, **kwargs)
         self.id_tag = id_tag
-
-    @property
-    def id(self):
-        if self.pea:
-            return self.pea.name
-        else:
-            return self.__class__.__name__
 
     def _apply_all(self,
                    groundtruth_pairs: Iterable[DocGroundtruthPair],
@@ -68,26 +68,13 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
 
 
 class EncodeEvaluationDriver(BaseEvaluationDriver):
-    """Drivers inherited from this Driver will bind :meth:`evaluate` by default
+    """Drivers used to pass `embedding` from documents and groundtruths to an executor and add the evaluation value
     """
 
     def __init__(self,
                  *args,
                  **kwargs):
-        """
-
-        :param id_tag: the name of the tag to be extracted
-        :param args:
-        :param kwargs:
-        """
         super().__init__(*args, **kwargs)
-
-    @property
-    def id(self):
-        if self.pea:
-            return self.pea.name
-        else:
-            return self.__class__.__name__
 
     def _apply_all(self,
                    groundtruth_pairs: Iterable[DocGroundtruthPair],
