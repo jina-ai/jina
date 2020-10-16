@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
-from .helper import DocGroundtruthPair
+from .helper import DocGroundtruthPair, pb2array
 
 
 class BaseEvaluationDriver(BaseExecutableDriver):
@@ -63,5 +63,40 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
             matches_ids = [x.tags[self.id_tag] for x in doc.matches]
             groundtruth_ids = [x.tags[self.id_tag] for x in groundtruth.matches]
             evaluation.value = self.exec_fn(matches_ids, groundtruth_ids)
+            evaluation.op_name = f'{self.id}-{self.exec.metric_name}'
+            evaluation.ref_id = groundtruth.id
+
+
+class EncodeEvaluationDriver(BaseEvaluationDriver):
+    """Drivers inherited from this Driver will bind :meth:`evaluate` by default
+    """
+
+    def __init__(self,
+                 *args,
+                 **kwargs):
+        """
+
+        :param id_tag: the name of the tag to be extracted
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+
+    @property
+    def id(self):
+        if self.pea:
+            return self.pea.name
+        else:
+            return self.__class__.__name__
+
+    def _apply_all(self,
+                   groundtruth_pairs: Iterable[DocGroundtruthPair],
+                   *args,
+                   **kwargs) -> None:
+        for doc_groundtruth in groundtruth_pairs:
+            doc = doc_groundtruth.doc
+            groundtruth = doc_groundtruth.groundtruth
+            evaluation = doc.evaluations.add()
+            evaluation.value = self.exec_fn(pb2array(doc.embedding), pb2array(groundtruth.embedding))
             evaluation.op_name = f'{self.id}-{self.exec.metric_name}'
             evaluation.ref_id = groundtruth.id
