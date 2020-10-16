@@ -240,8 +240,8 @@ class Flow(ExitStack):
         kwargs['name'] = 'gateway'
         self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
-    def needs(self, needs: Union[Tuple[str], List[str]], uses: str = '_merge', name: str = 'joiner', *args,
-              copy_flow: bool = True, **kwargs) -> 'Flow':
+    def needs(self, needs: Union[Tuple[str], List[str]],
+              uses: str = '_merge', name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
@@ -340,7 +340,7 @@ class Flow(ExitStack):
 
         return op_flow
 
-    def gather_inspect(self, name: str = 'gather_inspect', uses='_merge', include_last_pod: bool = True, *args,
+    def gather_inspect(self, name: str = 'gather_inspect', uses='_merge_eval', include_last_pod: bool = True, *args,
                        **kwargs) -> 'Flow':
         """ Gather all inspect pods output into one pod. When the flow has no inspect pod then the flow itself
         is returned.
