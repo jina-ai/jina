@@ -60,15 +60,15 @@ Jina é um framework de pesquisa baseada em IA, que permite que desenvolvedores 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Instalação](#instalação)
-- [Jina "Olá, mundo" 👋🌍](#jina-olá-mundo-)
+- [Instalação](#instala%C3%A7%C3%A3o)
+- [Jina "Olá, mundo!" 👋🌍](#jina-ol%C3%A1-mundo-)
 - [Tutoriais](#tutoriais)
-- [Documentação](#documentação)
+- [Documentação](#documenta%C3%A7%C3%A3o)
 - [Contribuindo](#contribuindo)
 - [Comunidade](#comunidade)
-- [Governança Aberta](#governança-aberta)
-- [Junte-se a nós](#junte-se-a-nós)
-- [Licença](#licença)
+- [Governança Aberta](#governan%C3%A7a-aberta)
+- [Junte-se a nós](#junte-se-a-n%C3%B3s)
+- [Licença](#licen%C3%A7a)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
