@@ -1,3 +1,13 @@
-*.md *.rst LICENSE docs/        @jina-ai/pr
-*.py *.sh *.yml Dockerfiles/    @jina-ai/dev
-.github                 @jina-ai/meta
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @global-owner1 and @global-owner2 will be requested for
+# review when someone opens a pull request.
+*    @jina-ai/engineering
+
+# Han Xiao owns CICD and README.md
+.github   @hanxiao
+README.md @hanxiao @jina-ai/dev-rel
+setup.py  @hanxiao
+
+# Dev rel team should be requested for reviews on doc
+*.md *.rst LICENSE docs/*        @jina-ai/dev-rel @jina-ai/engineering
