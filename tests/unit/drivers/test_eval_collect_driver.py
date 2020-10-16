@@ -1,16 +1,5 @@
-import os
-
-import numpy as np
-
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-e1 = np.random.random([7])
-e2 = np.random.random([5])
-e3 = np.random.random([3])
-e4 = np.random.random([9])
 
 
 def input_fn():
@@ -35,8 +24,7 @@ def test_collect_evals_driver():
     # simulate two encoders
     flow = (Flow().add(name='a')
             .add(name='b', needs='gateway')
-            .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver | {}'))
+            .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
 
     with flow:
         flow.index(input_fn=input_fn, output_fn=validate, callback_on_body=True)
-
