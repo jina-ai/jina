@@ -198,7 +198,7 @@ def set_hw_parser(parser=None):
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from .enums import FlowOutputType, FlowOptimizeLevel
+    from .enums import FlowOutputType, FlowOptimizeLevel, FlowInspectType
 
     gp = add_arg_group(parser, 'flow arguments')
     gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
@@ -217,8 +217,10 @@ def set_flow_parser(parser=None):
                     help='type of the output')
     gp.add_argument('--output-path', type=argparse.FileType('w', encoding='utf8'),
                     help='output path of the flow')
-    gp.add_argument('--no-inspect', action='store_true', default=False,
-                    help='remove all inspect pod from from the flow when building')
+    gp.add_argument('--inspect',  type=FlowInspectType.from_string,
+                    choices=list(FlowInspectType), default=FlowInspectType.COLLECT,
+                    help='strategy on those inspect pods in the flow. '
+                         'if REMOVE is given then all inspect pods are removed when building the flow')
     return parser
 
 

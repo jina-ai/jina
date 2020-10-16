@@ -18,7 +18,7 @@ from ruamel.yaml import StringIO
 
 from .builder import build_required, _build_flow, _optimize_flow
 from .. import JINA_GLOBAL
-from ..enums import FlowBuildLevel, PodRoleType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
 from ..logging import JinaLogger
@@ -281,7 +281,7 @@ class Flow(ExitStack):
 
         if pod_name in op_flow._pod_nodes:
             new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
-            self.logger.warning(f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"')
+            self.logger.debug(f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"')
             pod_name = new_name
 
         if not pod_name:
@@ -305,7 +305,7 @@ class Flow(ExitStack):
         """Add an inspection on the last changed Pod in the Flow
 
         Internally, it adds two pods to the flow. But no worry, the overhead is minimized and you
-        can remove them by simply give `Flow(no_inspect=True)` before using the flow.
+        can remove them by simply give `Flow(inspect=FlowInspectType.REMOVE)` before using the flow.
 
         .. highlight:: bash
         .. code-block:: bash
@@ -318,7 +318,12 @@ class Flow(ExitStack):
         does not introduce side-effect (e.g. changing the socket type) to the original flow.
         The original incoming and outgoing socket types are preserved.
 
-        This class is very handy for introducing evaluator into the flow.
+        This function is very handy for introducing evaluator into the flow.
+
+        .. seealso::
+
+            :meth:`gather_inspect`
+
         """
 
         _last_pod = self.last_pod
@@ -334,6 +339,39 @@ class Flow(ExitStack):
         op_flow._inspect_pods[_last_pod] = op_flow.last_pod
 
         return op_flow
+
+    def gather_inspect(self, name: str = 'gather_inspect', uses='_merge', include_last_pod: bool = True, *args,
+                       **kwargs) -> 'Flow':
+        """ Gather all inspect pods output into one pod. When the flow has no inspect pod then the flow itself
+        is returned.
+
+        .. note::
+
+            If ``--no-inspect`` is **not** given, then :meth:`gather_inspect` is auto called before :meth:`build`. So
+            in general you don't need to manually call :meth:`gather_inspect`.
+
+        :param name: the name of the gather pod
+        :param uses: the config of the executor, by default is ``_merge``
+        :param include_last_pod: if to include the last modified pod in the flow
+        :param args:
+        :param kwargs:
+        :return: the modified flow or the copy of it
+
+
+        .. seealso::
+
+            :meth:`inspect`
+
+        """
+
+        needs = [k for k, v in self._pod_nodes.items() if v.role == PodRoleType.INSPECT]
+        if needs:
+            if include_last_pod:
+                needs.append(self.last_pod)
+            return self.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN_INSPECT, *args, **kwargs)
+        else:
+            # no inspect node is in the graph, return the current graph
+            return self
 
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
@@ -366,6 +404,9 @@ class Flow(ExitStack):
 
         _pod_edges = set()
 
+        if op_flow.args.inspect == FlowInspectType.COLLECT:
+            op_flow.gather_inspect(copy_flow=False)
+
         if 'gateway' not in op_flow._pod_nodes:
             op_flow._add_gateway(needs={op_flow.last_pod})
 
@@ -373,17 +414,17 @@ class Flow(ExitStack):
         _outgoing_map = defaultdict(list)
 
         # if set no_inspect then all inspect related nodes are removed
-        if op_flow.args.no_inspect:
+        if op_flow.args.inspect == FlowInspectType.REMOVE:
             op_flow._pod_nodes = {k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect}
             reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
 
         for end, pod in op_flow._pod_nodes.items():
             # if an endpoint is being inspected, then replace it with inspected Pod
             # but not those inspect related node
-            if op_flow.args.no_inspect:
-                pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
-            else:
+            if op_flow.args.inspect.is_keep:
                 pod.needs = set(ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep) for ep in pod.needs)
+            else:
+                pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
             for start in pod.needs:
                 if start not in op_flow._pod_nodes:
@@ -797,20 +838,26 @@ class Flow(ExitStack):
 
                 _s = start_repl.get(need, (need, f'({need})'))
                 _e = end_repl.get(node, (node, f'({node})'))
-
                 _s_role = op_flow._pod_nodes[need].role
                 _e_role = op_flow._pod_nodes[node].role
+                line_st = '-->'
+
+                if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
+                    _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
 
                 if _e_role == PodRoleType.GATEWAY:
                     _e = ('gateway_END', f'({node})')
-                elif _e_role == PodRoleType.INSPECT:
-                    _e = end_repl.get(node, (node, f'{{{node}}}'))
-                else:
-                    _e = end_repl.get(node, (node, f'({node})'))
+                elif _e_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
+                    _e = end_repl.get(node, (node, f'{{{{{node}}}}}'))
 
-                mermaid_graph.append(f'{_s[0]}{_s[1]}:::{str(_s_role)} --> {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
+                if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:
+                    line_st = '-.->'
+
+                mermaid_graph.append(
+                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
         mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
         mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff')
         mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
         mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')

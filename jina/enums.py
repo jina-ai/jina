@@ -221,6 +221,7 @@ class PodRoleType(BetterEnum):
     INSPECT = 2
     GATEWAY = 3
     INSPECT_AUX_PASS = 4
+    JOIN_INSPECT = 5
 
     @property
     def is_inspect(self) -> bool:
@@ -252,3 +253,20 @@ class OnErrorSkip(BetterEnum):
     DRIVER = 2
     HANDLE = 3
     CALLBACK = 4
+
+
+class FlowInspectType(BetterEnum):
+    """ Inspect strategy in the flow
+    """
+
+    HANG = 0  # keep them hanging there
+    REMOVE = 1  # remove them in the build
+    COLLECT = 2  # spawn a new pod and collect them before build
+
+    @property
+    def is_keep(self) -> bool:
+        """
+
+        :return: if this socket is using `bind` protocol
+        """
+        return self.value in {0, 2}

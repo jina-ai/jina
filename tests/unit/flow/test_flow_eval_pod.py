@@ -25,6 +25,7 @@ class DummyEvaluator3(DummyEvaluator1):
 
 
 docs = list(random_docs(1))
+params = ['HANG', 'REMOVE', 'COLLECT']
 
 
 def validate(ids, expect):
@@ -37,53 +38,53 @@ def validate(ids, expect):
         rm_files([fname])
 
 
-@pytest.mark.parametrize('no_inspect', [True, False])
-def test_flow1(no_inspect):
-    f = Flow(no_inspect=no_inspect).add()
+@pytest.mark.parametrize('inspect', params)
+def test_flow1(inspect):
+    f = Flow(inspect=inspect).add()
 
     with f:
         f.index(docs)
 
 
-@pytest.mark.parametrize('no_inspect', [True, False])
-def test_flow2(no_inspect):
-    f = Flow(no_inspect=no_inspect).add().inspect(uses='DummyEvaluator1')
+@pytest.mark.parametrize('inspect', params)
+def test_flow2(inspect):
+    f = Flow(inspect=inspect).add().inspect(uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
 
-    validate([1], expect=not no_inspect)
+    validate([1], expect=f.args.inspect.is_keep)
 
 
-@pytest.mark.parametrize('no_inspect', [True, False])
-def test_flow3(no_inspect):
-    f = Flow(no_inspect=no_inspect).add(name='p1').inspect(uses='DummyEvaluator1') \
+@pytest.mark.parametrize('inspect', params)
+def test_flow3(inspect):
+    f = Flow(inspect=inspect).add(name='p1').inspect(uses='DummyEvaluator1') \
         .add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator2')
 
     with f:
         f.index(docs)
 
-    validate([1, 2], expect=not no_inspect)
+    validate([1, 2], expect=f.args.inspect.is_keep)
 
 
-@pytest.mark.parametrize('no_inspect', [True, False])
-def test_flow4(no_inspect):
-    f = Flow(no_inspect=no_inspect).add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(
+@pytest.mark.parametrize('inspect', params)
+def test_flow4(inspect):
+    f = Flow(inspect=inspect).add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(
         uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
 
-    validate([1], expect=not no_inspect)
+    validate([1], expect=f.args.inspect.is_keep)
 
 
-@pytest.mark.parametrize('no_inspect', [True, False])
-def test_flow5(no_inspect):
-    f = Flow(no_inspect=no_inspect).add().inspect(uses='DummyEvaluator1').add().inspect(
+@pytest.mark.parametrize('inspect', params)
+def test_flow5(inspect):
+    f = Flow(inspect=inspect).add().inspect(uses='DummyEvaluator1').add().inspect(
         uses='DummyEvaluator2').add().inspect(
         uses='DummyEvaluator3').plot(build=True)
 
     with f:
         f.index(docs)
 
-    validate([1, 2, 3], expect=not no_inspect)
+    validate([1, 2, 3], expect=f.args.inspect.is_keep)
