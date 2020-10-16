@@ -47,7 +47,7 @@ ac_table = {
                 '--max-message-size', '--proxy', '--parallel', '--shards', '--polling', '--scheduling', '--uses-before',
                 '--uses-after', '--shutdown-idle'],
         'flow': ['--help', '--uses', '--logserver', '--logserver-config', '--optimize-level', '--output-type',
-                 '--output-path'],
+                 '--output-path', '--inspect'],
         'gateway': ['--help', '--name', '--identity', '--uses', '--py-modules', '--uses-internal', '--entrypoint',
                     '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in',
                     '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout', '--timeout-ctrl', '--timeout-ready',

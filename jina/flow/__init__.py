@@ -18,7 +18,7 @@ from ruamel.yaml import StringIO
 
 from .builder import build_required, _build_flow, _optimize_flow
 from .. import JINA_GLOBAL
-from ..enums import FlowBuildLevel, PodRoleType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
 from ..logging import JinaLogger
@@ -305,7 +305,7 @@ class Flow(ExitStack):
         """Add an inspection on the last changed Pod in the Flow
 
         Internally, it adds two pods to the flow. But no worry, the overhead is minimized and you
-        can remove them by simply give `Flow(no_inspect=True)` before using the flow.
+        can remove them by simply give `Flow(inspect=FlowInspectType.REMOVE)` before using the flow.
 
         .. highlight:: bash
         .. code-block:: bash
@@ -404,7 +404,7 @@ class Flow(ExitStack):
 
         _pod_edges = set()
 
-        if not op_flow.args.no_inspect:
+        if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
 
         if 'gateway' not in op_flow._pod_nodes:
@@ -414,17 +414,17 @@ class Flow(ExitStack):
         _outgoing_map = defaultdict(list)
 
         # if set no_inspect then all inspect related nodes are removed
-        if op_flow.args.no_inspect:
+        if op_flow.args.inspect == FlowInspectType.REMOVE:
             op_flow._pod_nodes = {k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect}
             reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
 
         for end, pod in op_flow._pod_nodes.items():
             # if an endpoint is being inspected, then replace it with inspected Pod
             # but not those inspect related node
-            if op_flow.args.no_inspect:
-                pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
-            else:
+            if op_flow.args.inspect.is_keep:
                 pod.needs = set(ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep) for ep in pod.needs)
+            else:
+                pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
             for start in pod.needs:
                 if start not in op_flow._pod_nodes:
