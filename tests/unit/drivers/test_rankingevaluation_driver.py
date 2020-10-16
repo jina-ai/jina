@@ -1,6 +1,7 @@
 import pytest
 
-from jina.drivers.evaluate import RankingEvaluationDriver, DocGroundtruthPair
+from jina.drivers.evaluate import RankingEvaluationDriver
+from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
 
@@ -28,14 +29,12 @@ class MockPrecisionEvaluator(BaseRankingEvaluator):
 
 
 class SimpleEvaluateDriver(RankingEvaluationDriver):
-
-
     @property
     def exec_fn(self):
         return self._exec_fn
 
 
-def test_evaluate_driver():
+def test_ranking_evaluate_driver():
     def create_document_ground_truth_pairs(num_docs):
         def add_matches(doc: jina_pb2.Document, num_matches):
             for idx in range(num_matches):
@@ -56,8 +55,8 @@ def test_evaluate_driver():
     executor = MockPrecisionEvaluator()
     driver.attach(executor=executor, pea=None)
     driver._apply_all(pairs)
-    for wrapper in pairs:
-        doc = wrapper.doc
+    for pair in pairs:
+        doc = pair.doc
         assert len(doc.evaluations) == 1
         assert doc.evaluations[0].op_name == 'SimpleEvaluateDriver-MockPrecision@2'
         assert doc.evaluations[0].value == 1.0
@@ -80,7 +79,7 @@ class SimpleChunkEvaluateDriver(RankingEvaluationDriver):
         return self.eval_request
 
 
-def test_evaluate_driver_matches_in_chunks():
+def test_ranking_evaluate_driver_matches_in_chunks():
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
     def create_eval_request(num_docs, num_matches):
