@@ -318,7 +318,12 @@ class Flow(ExitStack):
         does not introduce side-effect (e.g. changing the socket type) to the original flow.
         The original incoming and outgoing socket types are preserved.
 
-        This class is very handy for introducing evaluator into the flow.
+        This function is very handy for introducing evaluator into the flow.
+
+        .. seealso::
+
+            :meth:`gather_inspect`
+
         """
 
         _last_pod = self.last_pod
@@ -351,6 +356,12 @@ class Flow(ExitStack):
         :param args:
         :param kwargs:
         :return: the modified flow or the copy of it
+
+
+        .. seealso::
+
+            :meth:`inspect`
+
         """
 
         needs = [k for k, v in self._pod_nodes.items() if v.role == PodRoleType.INSPECT]
