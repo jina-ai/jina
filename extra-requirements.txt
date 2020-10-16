@@ -16,12 +16,12 @@
 # 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
 # 4. Tag `all` is reserved for representing all packages
 
-scipy>=1.4.1:               index, numeric
-flask:                      devel, http, sse
-flask_cors:                 devel, http, sse
+scipy>=1.4.1:               index, numeric, cicd
+flask:                      devel, cicd,  http, sse
+flask_cors:                 devel, cicd,  http, sse
 fluent-logger:              logging, http, sse, dashboard, devel
 nmslib>=1.6.3:              index
-docker:                     devel, network, hub
+docker:                     devel, cicd,  network, hub
 torch>=1.1.0:               framework
 transformers>=2.6.0:        nlp
 flair:                      nlp
@@ -32,19 +32,19 @@ tensorflow-hub:             framework, py37
 torchvision>=0.3.0:         framework, cv
 onnx:                       framework, py37
 onnxruntime:                framework, py37
-Pillow:                     cv
+Pillow:                     cv, cicd
 annoy>=1.9.5:               index
 sklearn:                    numeric
 plyvel:                     index
 jieba:                      nlp
-lz4:                        devel, perf, network
+lz4:                        devel, cicd,  perf, network
 gevent:                     http, devel
 python-magic:               http, devel
 pymilvus:                   index
 deepsegment:                nlp
 ngt:                        index, py37
 librosa>=0.7.2:             audio
-uvloop:                     devel, perf
+uvloop:                     devel, cicd,  perf
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf:                   core
