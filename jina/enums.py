@@ -221,6 +221,7 @@ class PodRoleType(BetterEnum):
     INSPECT = 2
     GATEWAY = 3
     INSPECT_AUX_PASS = 4
+    JOIN_INSPECT = 5
 
     @property
     def is_inspect(self) -> bool:

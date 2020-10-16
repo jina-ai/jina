@@ -555,7 +555,7 @@ def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
         p_args, unknown_args = parser.parse_known_args(args)
         if unknown_args:
             from .logging import default_logger
-            default_logger.warning(
+            default_logger.debug(
                 f'parser {parser_name} can not '
                 f'recognize the following args: {unknown_args}, '
                 f'they are ignored. if you are using them from a global args (e.g. Flow), '

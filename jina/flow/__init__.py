@@ -281,7 +281,7 @@ class Flow(ExitStack):
 
         if pod_name in op_flow._pod_nodes:
             new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
-            self.logger.warning(f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"')
+            self.logger.debug(f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"')
             pod_name = new_name
 
         if not pod_name:
@@ -335,6 +335,28 @@ class Flow(ExitStack):
 
         return op_flow
 
+    def gather_inspect(self, name: str = 'gather_inspect', uses='_merge', include_last_pod: bool = True, *args,
+                       **kwargs) -> 'Flow':
+        """ Gather all inspect pods output into one pod. When the flow has no inspect pod then the flow itself
+        is returned.
+
+        :param name: the name of the gather pod
+        :param uses: the config of the executor, by default is ``_merge``
+        :param include_last_pod: if to include the last modified pod in the flow
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        needs = [k for k, v in self._pod_nodes.items() if v.role == PodRoleType.INSPECT]
+        if needs:
+            if include_last_pod:
+                needs.append(self.last_pod)
+            return self.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN_INSPECT, *args, **kwargs)
+        else:
+            # no inspect node is in the graph, return the current graph
+            return self
+
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
         Build the current flow and make it ready to use
@@ -365,6 +387,9 @@ class Flow(ExitStack):
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         _pod_edges = set()
+
+        if not op_flow.args.no_inspect:
+            op_flow.gather_inspect(copy_flow=False)
 
         if 'gateway' not in op_flow._pod_nodes:
             op_flow._add_gateway(needs={op_flow.last_pod})
@@ -797,20 +822,26 @@ class Flow(ExitStack):
 
                 _s = start_repl.get(need, (need, f'({need})'))
                 _e = end_repl.get(node, (node, f'({node})'))
-
                 _s_role = op_flow._pod_nodes[need].role
                 _e_role = op_flow._pod_nodes[node].role
+                line_st = '-->'
+
+                if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
+                    _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
 
                 if _e_role == PodRoleType.GATEWAY:
                     _e = ('gateway_END', f'({node})')
-                elif _e_role == PodRoleType.INSPECT:
-                    _e = end_repl.get(node, (node, f'{{{node}}}'))
-                else:
-                    _e = end_repl.get(node, (node, f'({node})'))
+                elif _e_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
+                    _e = end_repl.get(node, (node, f'{{{{{node}}}}}'))
 
-                mermaid_graph.append(f'{_s[0]}{_s[1]}:::{str(_s_role)} --> {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
+                if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:
+                    line_st = '-.->'
+
+                mermaid_graph.append(
+                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
         mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
         mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff')
         mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
         mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
