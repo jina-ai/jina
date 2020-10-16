@@ -105,14 +105,33 @@ class ReduceAllDriver(ReduceDriver):
             getattr(doc_pointers[context_doc.id], field).extend(docs)
 
 
-class ConcatEmbedDriver(ReduceDriver):
+class CollectEvaluationDriver(ReduceAllDriver):
+    """Merge all evaluations into one, grouped by ``doc.id`` """
+
     def _apply_all(
             self,
             docs: Iterable['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document',
             field: str,
             doc_pointers: Dict,
-            concatenate=False,
+            *args,
+            **kwargs) -> None:
+        if context_doc.id not in doc_pointers:
+            doc_pointers[context_doc.id] = context_doc.evaluations
+        else:
+            doc_pointers[context_doc.id].extend(context_doc.evaluations)
+
+
+class ConcatEmbedDriver(ReduceDriver):
+    """Concat all embeddings into one, grouped by ```doc.id``` """
+
+    def _apply_all(
+            self,
+            docs: Iterable['jina_pb2.Document'],
+            context_doc: 'jina_pb2.Document',
+            field: str,
+            doc_pointers: Dict,
+            concatenate: bool = False,
             *args,
             **kwargs):
         for doc in docs:

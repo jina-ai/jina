@@ -3,9 +3,12 @@ from typing import List, Dict
 
 import numpy as np
 
+from jina.drivers.reduce import CollectEvaluationDriver
+from jina.executors import BaseExecutor
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
+from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import Document
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -58,3 +61,50 @@ def test_merge_chunks_with_different_modality():
 
     with flow:
         flow.index(input_fn=input_fn, output_fn=validate)
+
+def get_prev_reqs():
+    # three requests, each with the SAME doc, but diff evaluations
+    result = []
+    for j in range(3):
+        r = jina_pb2.Request()
+        d = r.index.docs.add()
+        d.id = 'SAME DOC THEY ARE'  # same doc id
+        ev1 = d.evaluations.add()
+        ev1.value = j  # diff eval
+        ev1.op_name = f'op{j}'  # diff eval
+        result.append(r.index)
+    return result
+
+prev_reqs = get_prev_reqs()
+
+class MockCollectEvalDriver(CollectEvaluationDriver):
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @property
+    def prev_reqs(self):
+        # generate it before hand, and make it mutable
+        return prev_reqs
+
+
+def test_collect_evals():
+    driver = MockCollectEvalDriver()
+    executor = BaseExecutor()
+    driver.attach(executor=executor, pea=None)
+    # before
+    for q in driver.prev_reqs:
+        assert len(q.docs[0].evaluations) == 1
+
+    # reduce to last request, aka current request
+    driver.reduce()
+
+    # after
+    assert len(driver.prev_reqs[0].docs[0].evaluations) == 1
+    assert len(driver.prev_reqs[1].docs[0].evaluations) == 1
+    assert len(driver.prev_reqs[2].docs[0].evaluations) == 3
+
