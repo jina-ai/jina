@@ -18,17 +18,6 @@ class BaseRankingEvaluator(BaseEvaluator):
         super().__init__(*args, **kwargs)
         self.eval_at = eval_at
 
-    def post_init(self):
-        super().post_init()
-        self.num_documents = 0
-        self.sum = 0
-
-    @property
-    def avg(self):
-        if self.num_documents == 0:
-            return 0.0
-        return self.sum / self.num_documents
-
     def evaluate(self, matches_ids: Sequence[Any], groundtruth_ids: Sequence[Any], *args, **kwargs) -> float:
         """"
         :param matches_ids: the matched document identifiers from the request as matched by jina indexers and rankers
