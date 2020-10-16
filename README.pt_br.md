@@ -24,7 +24,8 @@
   <a href="https://github.com/jina-ai/jina/blob/master/README.fr.md">Français</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/README.de.md">Deutsch</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/README.ru.md">Русский язык</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.zh.md">中文</a>
+  <a href="https://github.com/jina-ai/jina/blob/master/README.zh.md">中文</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/README.pt_br.md">Português (BR)</a>
 </p>
 
 
@@ -37,22 +38,21 @@
   <a href="https://github.com/jina-ai/jinabox.js/">Jinabox (beta)</a> •
   <a href="http://www.twitter.com/JinaAI_">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
-
 </p>
 
-Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) on the cloud. Jina is long-term supported by a [full-time, venture-backed team](https://jina.ai).
+Jina é um framework de pesquisa baseada em IA, que permite que desenvolvedores criem sistemas de busca **cross/multi-modals** (como texto, imagens, video, áudio) na nuvem. Jina é mantida a logo prazo por [um grupo movido pela aventura em tempo integral](https://jina.ai).
 
-⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
+⏱️ **Economia de tempo** - Inicie um sistema impulsionado por IA em poucos minutos.
 
-🧠 **First-Class AI models** - Jina is a new design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
+🧠 **Modelos de IA de primeira classe** - Jina é um novo padrão de design para sistemas neurais de pesquisa com apoio especial para [modelos de IA de state-of-the-art](https://docs.jina.ai/chapters/all_exec.html).
 
-🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, and more.
+🌌 **Busca universal** - Indexação de larga escala e consulta de qualquer tipo em várias plataformas. Vídeo, imagem, texto curto/longo, código-fonte, e mais.
 
-🚀 **Production Ready** - Cloud-native features work out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
+🚀 **Production Ready** - Features nativas de nuvem que funcionam "out-of-the-box" (fora da caixa), por ex. conteinerização, microsserviço, distribuição, escalabilidade (scaling), sharding, async IO, REST, gRPC.
 
-🧩 **Plug & Play** - With [Jina Hub](https://github.com/jina-ai/jina-hub), easily extend Jina with simple Python scripts or Docker images optimized for your search domain.
+🧩 **Conecte e use** - Com [Jina Hub](https://github.com/jina-ai/jina-hub), é fácil expandir Jina com simples scripts em Python ou com Imagens Docker otimizadas para seu campo de pesquisa.
 
-## Contents
+## Sumário
 
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
 
@@ -60,54 +60,54 @@ Jina is an AI-powered search framework, empowering developers to create **cross-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Get Started](#get-started)
-- [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Tutorials](#tutorials)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Community](#community)
-- [Open Governance](#open-governance)
-- [Join Us](#join-us)
-- [License](#license)
+- [Instalação](#instala%C3%A7%C3%A3o)
+- [Jina "Olá, mundo!" 👋🌍](#jina-ol%C3%A1-mundo-)
+- [Tutoriais](#tutoriais)
+- [Documentação](#documenta%C3%A7%C3%A3o)
+- [Contribuindo](#contribuindo)
+- [Comunidade](#comunidade)
+- [Governança Aberta](#governan%C3%A7a-aberta)
+- [Junte-se a nós](#junte-se-a-n%C3%B3s)
+- [Licença](#licen%C3%A7a)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Get Started
+## Instalação
 
-### From PyPi
+### Com PyPi
 
-On Linux/MacOS with Python >= 3.7:
+No sistemas operacionais Linux/MacOS com Python >= 3.7:
 
 ```bash
 pip install jina
 ```
 
-To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai).
+Para instalar Jina em dependências adicionais ou no Raspberry Pi, [favor checar a documentação](https://docs.jina.ai).
 
-### In a Docker Container
+### Em um Container Docker
 
-We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). Simply run:
+Nós oferecemos uma Imagem Docker universal com suporte para diversos tipos de arquitetura (incluindo x64, x86, arm-64/v7/v6). É só rodar:
 
 ```bash
 docker run jinaai/jina --help
 ```
 
-## Jina "Hello, World!" 👋🌍
+## Jina "Olá, mundo!" 👋🌍
 
-As a starter, you can try out our "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
+Paara começar, você pode tentar nosso "Hello, World" (que significa "Olá, mundo") - uma simples demonstração de busca neural de imagem para [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). Nenhuma outra dependência é necessária. É só rodar:
 
 ```bash
 jina hello-world
 ```
 
-...or even easier for Docker users, **no install required**:
+...ou, mais facilmente, para usuários de Docker, **sem instalação necessária**:
 
 ```bash
-docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
+docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # substituir "open" por "xdg-open" no Linux
 ```
 
 <details>
-<summary>Click here to see console output</summary>
+<summary>Clique aqui para ver a saída do console</summary>
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-demo.png?raw=true" alt="hello world console output">
@@ -115,19 +115,19 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 
 </details>
 
-The Docker image downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and eventually opens a webpage and shows results like this:
+A Imagem Docker baixa o treinamento e o dataset de teste do Fashion-MNIST e diz para Jina indexar 60.000 imagens dos dados de treinamento. Em seguida, a Imagem Docker seleciona amostras aleatórias de imagens do teste, as define como queries e pede para Jina extrair os resultados relevantes. Todo esse processo leva em torno de 1 minuto, e eventualmente abre uma página web com resultados, que se parecem com esse:
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
-The implementation behind it is simple:
+A implementação por trás disso é simples:
 
 <table>
 <tr>
 <td> Python API </td>
-<td> or use <a href="https://github.com/jina-ai/jina/blob/master/jina/resources/helloworld.flow.index.yml">YAML spec</a></td>
-<td> or use <a href="https://github.com/jina-ai/dashboard">Dashboard</a></td>
+<td> ou use <a href="https://github.com/jina-ai/jina/blob/master/jina/resources/helloworld.flow.index.yml">YAML spec</a></td>
+<td> ou use <a href="https://github.com/jina-ai/dashboard">Dashboard</a></td>
 </tr>
 <tr>
 <td>
@@ -170,9 +170,9 @@ pods:
 </table>
 
 <details>
-<summary><strong>Explore sharding, containerization, concatenating embeddings, and more</strong></summary>
+<summary><strong>Explore sharding, conteinerização, concatenação de embeddings, e mais</strong></summary>
 
-#### Adding Parallelism and Sharding
+#### Adicionando Paralelismo e Sharding
 
 ```python
 from jina.flow import Flow
@@ -181,7 +181,7 @@ f = (Flow().add(uses='encoder.yml', parallel=2)
            .add(uses='indexer.yml', shards=2, separated_workspace=True))
 ```
 
-#### [Distributing the Flow](https://docs.jina.ai/chapters/remote/index.html)
+#### [Distribuindo Flow](https://docs.jina.ai/chapters/remote/index.html)
 
 ```python
 from jina.flow import Flow
@@ -189,7 +189,7 @@ from jina.flow import Flow
 f = Flow().add(uses='encoder.yml', host='192.168.0.99')
 ```
 
-#### [Using a Docker Container](https://docs.jina.ai/chapters/hub/index.html)
+#### [Usando um Container Docker](https://docs.jina.ai/chapters/hub/index.html)
 
 ```python
 from jina.flow import Flow
@@ -198,7 +198,7 @@ f = (Flow().add(uses='jinahub/cnn-encode:0.1')
            .add(uses='jinahub/faiss-index:0.2', host='192.168.0.99'))
 ```
 
-#### Concatenating Embeddings
+#### Concatenando embeddings
 
 ```python
 from jina.flow import Flow
@@ -208,7 +208,7 @@ f = (Flow().add(name='eb1', uses='BiTImageEncoder')
            .needs(['eb1', 'eb2'], uses='_concat'))
 ```
 
-#### [Enabling Network Queries](https://docs.jina.ai/chapters/restapi/index.html)
+#### [Permitindo Network Query](https://docs.jina.ai/chapters/restapi/index.html)
 
 ```python
 from jina.flow import Flow
@@ -219,24 +219,24 @@ with f:
     f.block()
 ```
 
-Intrigued? Play with different options:
+Ficou interessado(a)? Explore outras opções:
 
 ```bash
 jina hello-world --help
 ```
 </details>
 
-### Create Your First Jina Project
+### Crie seu primeiro projeto com Jina
 
 ```bash
 pip install jina[devel]
 jina hub new --type app
 ```
 
-You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
+Você pode facilmente criar um projeto com Jina a partir de templates, basta um comando no terminal. Este comando acima cria um ponto de entrada (entrypoint) de Python, configurações YAML e um Dockerfile. Você pode começar a partir dali.
 
 
-## Tutorials
+## Tutoriais
 
 <table>
   <tr>
@@ -246,7 +246,7 @@ You can easily create a Jina project from templates with one terminal command. T
     </a>
     </td>
     <td width="70%">
-&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Things to Learn About Jina</a></h3>
+&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: A primeira coisa para se aprender sobre Jina</a></h3>
 &nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ja.md">日本語</a> •
   <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">Français</a> •
@@ -262,116 +262,115 @@ You can easily create a Jina project from templates with one terminal command. T
 
 <table>
 <tr>
-<th width="10%">Level</th>
-<th width="90%">Tutorials</th>
+<th width="10%">Nível</th>
+<th width="90%">Tutoriais</th>
 </tr>
 
 <tr>
 <td><h3>🐣</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build an NLP Semantic Search System</a></h4>
-Search South Park scripts and practice with Flows and Pods
+<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Construir um sistema de busca semântica com PLN (NLP)</a></h4>
+Procure scripts de South Park e pratique com Flows e Pods
 </td>
 </tr>
 
 <tr>
 <td><h3>🐣</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Jina App</a></h4>
-Using cookiecutter for bootstrap a jina app
+<h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">Meu primeiro App com Jina</a></h4>
+Use cookiecutter para iniciar um app com Jina
 </td>
 </tr>
 
 <tr>
 <td><h3>🐣</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Fashion Search with Query Language</a></h4>
-Spice up the Hello-World with Query Language
+<h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Fashion Search com Query Language (Linguagem de consulta)</a></h4>
+Torne o Hello-World mais interessante com uma Query Language
 </td>
 </tr>
 
 <tr>
 <td><h3>🕊</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/multires-lyrics-search">Use Chunk to search Lyrics</a></h4>
-Split documents in order to search on a finegrained level
+<h4><a href="https://github.com/jina-ai/examples/tree/master/multires-lyrics-search">Use Chunk para procurar letras de músicas</a></h4>
+Divida documentos para procurar em um nível detalhado
 </td>
 </tr>
 
 <tr>
 <td><h3>🕊</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/cross-modal-search">Mix and Match images and captions</a></h4>
-Search cross modal to get images from captions and vice versa
+<h4><a href="https://github.com/jina-ai/examples/tree/master/cross-modal-search">Misture e combine imagens e legendas</a></h4>
+Procure cross modal para conseguir imagens a partir de suas legendas e vice-e-versa
 </td>
 </tr>
 
 <tr>
 <td><h3>🚀</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Scale Up Video Semantic Search</a></h4>
-Improve performance using prefetching and sharding
+<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Aumente a intensidade da busca semântica de vídeo</a></h4>
+Melhore a performance usando prefetching e sharding
 </td>
 </tr>
 
 <!-- <tr>
 <td><h3>🐣</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
-Extract feature vector data using any deep learning representation
+<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">De BERT-as-Service até X-as-Service</a></h4>
+Extraia elementos de dados vetoriais (vector data) usando qualquer representação de deep learning
 </td>
 </tr>
 
 <tr>
 <td><h3>🚀</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
-Search Pokemon with state-of-the-art visual representation
-</td>
+<h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Big Transfer Model do Google em (Poké-)Produção</a></h4>
+Procure Pokémon com a representação visual de state-of-the-art</td>
 </tr>
  -->
 </table>
 
-## Documentation
+## Documentação
 
 <a href="https://docs.jina.ai/">
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release of the master branch.
+A melhor maneira de aprender Jina de forma aprofundada é lendo nossa documentação. A documentação é construída em cima de cada push, merge, e release na branch master.
 
-#### The Basics
+#### O básico
 
-- [Use Flow API to Compose Your Search Workflow](https://docs.jina.ai/chapters/flow/index.html)
-- [Input and Output Functions in Jina](https://docs.jina.ai/chapters/io/index.html)
-- [Use Dashboard to Get Insight of Jina Workflow](https://github.com/jina-ai/dashboard)
-- [Distribute Your Workflow Remotely](https://docs.jina.ai/chapters/remote/index.html)
-- [Run Jina Pods via Docker Container](https://docs.jina.ai/chapters/hub/index.html)
+- [Use Flow API para compor o seu Workflow de busca](https://docs.jina.ai/chapters/flow/index.html)
+- [Funções de Entrada e Saída em Jina](https://docs.jina.ai/chapters/io/index.html)
+- [Use Dashboard para conseguir Insight do Workflow de Jina](https://github.com/jina-ai/dashboard)
+- [Distribua seu Workflow remotamente](https://docs.jina.ai/chapters/remote/index.html)
+- [Rode Jina Pods via Conteiner Docker](https://docs.jina.ai/chapters/hub/index.html)
 
-#### Reference
+#### Referência
 
-- [Command line interface arguments](https://docs.jina.ai/chapters/cli/index.html)
-- [Python API interface](https://docs.jina.ai/api/jina.html)
-- [YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
+- [Argumentos de interface da linha de comando](https://docs.jina.ai/chapters/cli/index.html)
+- [Interface Python API](https://docs.jina.ai/api/jina.html)
+- [YAML sintaxe para Executor, Driver e Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
 - [Protobuf schema](https://docs.jina.ai/chapters/proto/index.html)
-- [Environment variables](https://docs.jina.ai/chapters/envs.html)
-- ... [and more](https://docs.jina.ai/index.html)
+- [Variáveis de ambiente](https://docs.jina.ai/chapters/envs.html)
+- ... [e mais](https://docs.jina.ai/index.html)
 
-Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
+Você é um(a) "Doc"-star? Junte-se a nós! Todo tipo de ajuda na documentação é bem-vindo.
 
-[Documentation for older versions is archived here](https://github.com/jina-ai/docs/releases).
+[Documentação para versões antigas está arquivada aqui](https://github.com/jina-ai/docs/releases).
 
-## Contributing
+## Contribuindo
 
-We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
+Todo tipo de contribuição da comunidade open-source é bem-vindo, individuais e parceiros. Nós devemos nosso sucesso à sua participação ativa.
 
-- [Contributing guidelines](CONTRIBUTING.md)
-- [Release cycles and development stages](RELEASE.md)
+- [Orientações para contribuição](CONTRIBUTING.md)
+- [Ciclos de Release e estágios de desenvolvimento](RELEASE.md)
 
-### Contributors ✨
+### Contribuidores ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-68-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-66-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -383,40 +382,40 @@ We welcome all kinds of contributions from the open-source community, individual
 <kbd><a href="https://github.com/iego2017"><img src="https://avatars3.githubusercontent.com/u/44792649?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.davidsanwald.net/"><img src="https://avatars1.githubusercontent.com/u/10153003?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://alexcg1.github.io/"><img src="https://avatars2.githubusercontent.com/u/4182659?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/shivam-raj"><img src="https://avatars3.githubusercontent.com/u/43991882?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://dncc.github.io/"><img src="https://avatars1.githubusercontent.com/u/126445?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://johnarevalo.github.io/"><img src="https://avatars3.githubusercontent.com/u/1301626?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/imsergiy"><img src="https://avatars3.githubusercontent.com/u/8855485?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://guiferviz.com/"><img src="https://avatars2.githubusercontent.com/u/11474949?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/rohan1chaudhari"><img src="https://avatars1.githubusercontent.com/u/9986322?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/mohong-pan/"><img src="https://avatars0.githubusercontent.com/u/45755474?v=4" class="avatar-user" width="50px;"/></a></kbd>
 <kbd><a href="https://github.com/anish2197"><img src="https://avatars2.githubusercontent.com/u/16228282?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/joanna350"><img src="https://avatars0.githubusercontent.com/u/19216902?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/madhukar01"><img src="https://avatars0.githubusercontent.com/u/15910378?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/maximilianwerk"><img src="https://avatars0.githubusercontent.com/u/4920275?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/emmaadesile"><img src="https://avatars2.githubusercontent.com/u/26192691?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/YikSanChan"><img src="https://avatars1.githubusercontent.com/u/17229109?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/Zenahr"><img src="https://avatars1.githubusercontent.com/u/47085752?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/JoanFM"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://yangboz.github.io/"><img src="https://avatars3.githubusercontent.com/u/481954?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/boussoffara"><img src="https://avatars0.githubusercontent.com/u/10478725?v=4" class="avatar-user" width="50px;"/></a></kbd>
 <kbd><a href="https://github.com/fhaase2"><img src="https://avatars2.githubusercontent.com/u/44052928?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/Morriaty-The-Murderer"><img src="https://avatars3.githubusercontent.com/u/12904434?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/rutujasurve94"><img src="https://avatars1.githubusercontent.com/u/9448002?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/theUnkownName"><img src="https://avatars0.githubusercontent.com/u/3002344?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/vltmn"><img src="https://avatars3.githubusercontent.com/u/8930322?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/Kavan72"><img src="https://avatars3.githubusercontent.com/u/19048640?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/bwanglzu"><img src="https://avatars1.githubusercontent.com/u/9794489?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/antonkurenkov"><img src="https://avatars2.githubusercontent.com/u/52166018?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/redram"><img src="https://avatars3.githubusercontent.com/u/1285370?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/ericsyh"><img src="https://avatars3.githubusercontent.com/u/10498732?v=4" class="avatar-user" width="50px;"/></a></kbd>
-<kbd><a href="https://github.com/festeh"><img src="https://avatars1.githubusercontent.com/u/6877858?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://julielab.de/Staff/Erik+F%C3%A4%C3%9Fler.html"><img src="https://avatars1.githubusercontent.com/u/4648560?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-jinaai"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/coolmian"><img src="https://avatars3.githubusercontent.com/u/36444522?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://www.joaopalotti.com/"><img src="https://avatars2.githubusercontent.com/u/852343?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://stackoverflow.com/story/umbertogriffo"><img src="https://avatars2.githubusercontent.com/u/1609440?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://sreerag-ibtl.github.io/"><img src="https://avatars2.githubusercontent.com/u/39914922?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/jancijen"><img src="https://avatars0.githubusercontent.com/u/28826229?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/pswu11"><img src="https://avatars2.githubusercontent.com/u/48913707?v=4" class="avatar-user" width="50px;"/></a></kbd>
-<kbd><a href="https://github.com/Showtim3"><img src="https://avatars3.githubusercontent.com/u/30312043?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/kaushikb11"><img src="https://avatars1.githubusercontent.com/u/45285388?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/RenrakuRunrat"><img src="https://avatars3.githubusercontent.com/u/14925249?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.imxiqi.com/"><img src="https://avatars2.githubusercontent.com/u/4802250?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/deepankar-mahapatro/"><img src="https://avatars1.githubusercontent.com/u/9050737?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/bhavsarpratik"><img src="https://avatars1.githubusercontent.com/u/23080576?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/YueLiu1415926"><img src="https://avatars1.githubusercontent.com/u/64522311?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/fsal"><img src="https://avatars2.githubusercontent.com/u/9203508?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/lusloher"><img src="https://avatars2.githubusercontent.com/u/64148900?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-616"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="50px;"/></a></kbd>
-<kbd><a href="https://github.com/fernandakawasaki"><img src="https://avatars2.githubusercontent.com/u/50497814?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/averkij"><img src="https://avatars0.githubusercontent.com/u/1473991?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/alasdairtran"><img src="https://avatars0.githubusercontent.com/u/10582768?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://educatorsrlearners.github.io/portfolio.github.io/"><img src="https://avatars1.githubusercontent.com/u/17770276?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/Arrrlex"><img src="https://avatars1.githubusercontent.com/u/13290269?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/dalekatwork"><img src="https://avatars3.githubusercontent.com/u/40423996?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/rameshwara"><img src="https://avatars1.githubusercontent.com/u/13378629?v=4" class="avatar-user" width="50px;"/></a></kbd>
+<kbd><a href="https://github.com/festeh"><img src="https://avatars1.githubusercontent.com/u/6877858?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://julielab.de/Staff/Erik+F%C3%A4%C3%9Fler.html"><img src="https://avatars1.githubusercontent.com/u/4648560?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-jinaai"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/coolmian"><img src="https://avatars3.githubusercontent.com/u/36444522?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://www.joaopalotti.com/"><img src="https://avatars2.githubusercontent.com/u/852343?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://educatorsrlearners.github.io/portfolio.github.io/"><img src="https://avatars1.githubusercontent.com/u/17770276?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/deepankar-mahapatro/"><img src="https://avatars1.githubusercontent.com/u/9050737?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/jancijen"><img src="https://avatars0.githubusercontent.com/u/28826229?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-616"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="50px;"/></a></kbd>
+<kbd><a href="https://github.com/bhavsarpratik"><img src="https://avatars1.githubusercontent.com/u/23080576?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/kaushikb11"><img src="https://avatars1.githubusercontent.com/u/45285388?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/lusloher"><img src="https://avatars2.githubusercontent.com/u/64148900?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://sreerag-ibtl.github.io/"><img src="https://avatars2.githubusercontent.com/u/39914922?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/fsal"><img src="https://avatars2.githubusercontent.com/u/9203508?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/pswu11"><img src="https://avatars2.githubusercontent.com/u/48913707?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/rameshwara"><img src="https://avatars1.githubusercontent.com/u/13378629?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="http://stackoverflow.com/story/umbertogriffo"><img src="https://avatars2.githubusercontent.com/u/1609440?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/RenrakuRunrat"><img src="https://avatars3.githubusercontent.com/u/14925249?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="50px;"/></a></kbd>
+<kbd><a href="https://www.imxiqi.com/"><img src="https://avatars2.githubusercontent.com/u/4802250?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/dalekatwork"><img src="https://avatars3.githubusercontent.com/u/40423996?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/YueLiu1415926"><img src="https://avatars1.githubusercontent.com/u/64522311?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/Arrrlex"><img src="https://avatars1.githubusercontent.com/u/13290269?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/Showtim3"><img src="https://avatars3.githubusercontent.com/u/30312043?v=4" class="avatar-user" width="50px;"/></a></kbd> <kbd><a href="https://github.com/alasdairtran"><img src="https://avatars0.githubusercontent.com/u/10582768?v=4" class="avatar-user" width="50px;"/></a></kbd>
 
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-## Community
+## Comunidade
 
-- [Slack workspace](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - join #general on our Slack to meet the team and ask questions
-- [YouTube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
-- [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
-- [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow and interact with us using hashtag `#JinaSearch`
-- [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source.
+- [Slack workspace](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - junte-se ao #general no nosso Slack para conhecer o time e fazer perguntas
+- [Canal no YouTube](https://youtube.com/c/jina-ai) - inscreva-se para receber nossos tutoriais mais recentes, demos de release, webinários e apresentações
+- [LinkedIn](https://www.linkedin.com/company/jinaai/) - conheça Jina AI como uma empresa e encontre oportunidades de emprego
+- [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - siga e interaja conosco usando a hashtag `#JinaSearch`
+- [Empresa](https://jina.ai) - aprenda mais sobre nossa empresa e como somos totalmente comprometidos com open-source.
 
-## Open Governance
+## Governança Aberta
 
-[GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to Jina's future improvements.
+[Marcos/milestones GitHub](https://github.com/jina-ai/jina/milestones) planeje o caminho para futuras melhoras de Jina.
 
-As part of our open governance model, we host Jina's [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) in public. This Zoom meeting recurs monthly on the second Tuesday of each month, at 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
+Como parte do nosso modelo de governança aberta, nós hosteamos [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) de Jina publicamente. Essa reunião no Zoom ocorre mensalmente na segunda terça-feira de cada mês, às 14:00-15:30 (CET). Qualquer um pode se juntar por meio do convite de calendário a seguir.
 
-- [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
+- [Adicionar ao Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
 - [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
 
-The meeting will also be live-streamed and later published to our [YouTube channel](https://youtube.com/c/jina-ai).
+Será feita uma live-stream da reunião, que depois será publicada em nosso [Canal do YouTube](https://youtube.com/c/jina-ai).
 
-## Join Us
+## Junte-se a nós
 
-Jina is an open-source project. [We are hiring](https://jobs.jina.ai) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
+Jina é um projeto open-source. [Estamos contratando](https://jobs.jina.ai) desenvolvedores full-stack, evangelists, e PMs para construir o próximo ecossistema de busca neural em open source.
 
 
-## License
+## Licença
 
 Copyright (c) 2020 Jina AI Limited. All rights reserved.
 
