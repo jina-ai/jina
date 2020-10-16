@@ -161,6 +161,6 @@ setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    keywords='jina cloud-native neural-search CODEOWNERS query search index elastic neural-network encoding '
+    keywords='jina cloud-native neural-search query search index elastic neural-network encoding '
              'embedding serving docker container image video audio deep-learning',
 )
