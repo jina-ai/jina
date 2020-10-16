@@ -6,8 +6,4 @@
 
 # Han Xiao owns CICD and README.md
 .github   @hanxiao
-README.md @hanxiao @jina-ai/dev-rel
 setup.py  @hanxiao
-
-# Dev rel team should be requested for reviews on doc
-*.md *.rst LICENSE docs/*        @jina-ai/dev-rel @jina-ai/engineering
