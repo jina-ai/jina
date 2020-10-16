@@ -340,12 +340,17 @@ class Flow(ExitStack):
         """ Gather all inspect pods output into one pod. When the flow has no inspect pod then the flow itself
         is returned.
 
+        .. note::
+
+            If ``--no-inspect`` is **not** given, then :meth:`gather_inspect` is auto called before :meth:`build`. So
+            in general you don't need to manually call :meth:`gather_inspect`.
+
         :param name: the name of the gather pod
         :param uses: the config of the executor, by default is ``_merge``
         :param include_last_pod: if to include the last modified pod in the flow
         :param args:
         :param kwargs:
-        :return:
+        :return: the modified flow or the copy of it
         """
 
         needs = [k for k, v in self._pod_nodes.items() if v.role == PodRoleType.INSPECT]
