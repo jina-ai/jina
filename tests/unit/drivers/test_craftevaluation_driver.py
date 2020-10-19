@@ -12,7 +12,7 @@ class MockDiffEvaluator(BaseCraftingEvaluator):
         super().__init__(*args, **kwargs)
 
     @property
-    def name(self):
+    def metric(self):
         return 'MockDiffEvaluator'
 
     def evaluate(self, doc_content: Any, groundtruth_content: Any, *args, **kwargs) -> float:

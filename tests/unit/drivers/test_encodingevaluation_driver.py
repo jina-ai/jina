@@ -11,7 +11,7 @@ class MockDiffEvaluator(BaseEncodingEvaluator):
         super().__init__(*args, **kwargs)
 
     @property
-    def name(self):
+    def metric(self):
         return 'MockDiffEvaluator'
 
     def evaluate(self, doc_embedding: 'np.array', groundtruth_embedding: 'np.array', *args, **kwargs) -> float:

@@ -13,7 +13,7 @@ class StringLengthEvaluator(BaseEvaluator):
         super().__init__(*args, **kwargs)
 
     @property
-    def metric_name(self):
+    def metric(self):
         return 'Length'
 
     @as_aggregator

@@ -15,7 +15,7 @@ class CosineEvaluator(BaseEncodingEvaluator):
     """
 
     @property
-    def metric_name(self):
+    def metric(self):
         return f'CosineDistance'
 
     @as_aggregator

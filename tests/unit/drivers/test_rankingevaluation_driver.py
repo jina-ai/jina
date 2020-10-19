@@ -11,7 +11,7 @@ class MockPrecisionEvaluator(BaseRankingEvaluator):
         super().__init__(eval_at=2, *args, **kwargs)
 
     @property
-    def name(self):
+    def metric(self):
         return f'MockPrecision@{self.eval_at}'
 
     def evaluate(self, matches_ids, groundtruth_ids, *args, **kwargs) -> float:

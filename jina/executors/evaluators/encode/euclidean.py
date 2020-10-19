@@ -10,7 +10,7 @@ class EuclideanEvaluator(BaseEncodingEvaluator):
     """
 
     @property
-    def metric_name(self):
+    def metric(self):
         return f'EuclideanDistance'
 
     @as_aggregator

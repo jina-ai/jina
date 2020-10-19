@@ -22,7 +22,7 @@ class BaseEvaluationDriver(BaseExecutableDriver):
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
 
     @property
-    def id(self):
+    def metric(self):
         if self.pea:
             return self.pea.name
         else:
@@ -64,7 +64,7 @@ class RankingEvaluationDriver(BaseEvaluationDriver):
             matches_ids = [x.tags[self.id_tag] for x in doc.matches]
             groundtruth_ids = [x.tags[self.id_tag] for x in groundtruth.matches]
             evaluation.value = self.exec_fn(matches_ids, groundtruth_ids)
-            evaluation.op_name = f'{self.id}-{self.exec.metric_name}'
+            evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
 
 
@@ -86,7 +86,7 @@ class EncodeEvaluationDriver(BaseEvaluationDriver):
             groundtruth = doc_groundtruth.groundtruth
             evaluation = doc.evaluations.add()
             evaluation.value = self.exec_fn(pb2array(doc.embedding), pb2array(groundtruth.embedding))
-            evaluation.op_name = f'{self.id}-{self.exec.metric_name}'
+            evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
 
 
@@ -117,5 +117,5 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
             if isinstance(gt_content, jina_pb2.NdArray):
                 gt_content = pb2array(gt_content)
             evaluation.value = self.exec_fn(doc_content, gt_content)
-            evaluation.op_name = f'{self.id}-{self.exec.metric_name}'
+            evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
