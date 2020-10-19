@@ -241,7 +241,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         self.backend = backend
 
     @staticmethod
-    def _find_smallest_distances(dist: 'np.array', top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
+    def _get_sorted_top_k(dist: 'np.array', top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
         """ Find top-k smallest distances in ascending order.
 
         Idea is to use partial sort to retrieve top-k smallest distances unsorted and then sort these
@@ -283,7 +283,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
-        idx, dist = self._find_smallest_distances(dist, top_k)
+        idx, dist = self._get_sorted_top_k(dist, top_k)
         return self.int2ext_id[idx], dist
 
     def build_advanced_index(self, vecs: 'np.ndarray'):

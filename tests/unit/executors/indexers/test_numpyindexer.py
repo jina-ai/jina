@@ -148,14 +148,14 @@ def test_scipy_indexer_known_big(batch_size, compress_level, test_metas):
 
 
 @pytest.mark.parametrize('batch_size, num_docs, top_k', [(1, 10, 1), (1, 10, 10), (10, 1, 1), (10, 1000, 10), (10, 10, 100)])
-def test__find_smallest_distances(batch_size, num_docs, top_k):
+def test__get_sorted_top_k(batch_size, num_docs, top_k):
     dist = np.random.uniform(size=(batch_size, num_docs))
 
     expected_idx = np.argsort(dist)[:, :top_k]
     expected_dist = np.sort(dist)[:, :top_k]
 
     with NumpyIndexer() as indexer:
-        idx, dist = indexer._find_smallest_distances(dist, top_k=top_k)
+        idx, dist = indexer._get_sorted_top_k(dist, top_k=top_k)
 
         np.testing.assert_equal(idx, expected_idx)
         np.testing.assert_equal(dist, expected_dist)
