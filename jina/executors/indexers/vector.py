@@ -240,8 +240,28 @@ class NumpyIndexer(BaseNumpyIndexer):
         self.metric = metric
         self.backend = backend
 
+    @staticmethod
+    def _find_smallest_distances(dist: 'np.array', top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
+        """ Find top-k smallest distances in ascending order.
+
+        Idea is to use partial sort to retrieve top-k smallest distances unsorted and then sort these
+        in ascending order. Equivalent to full sort but faster for n >> k. If n == k revert to full sort.
+
+        """
+        if top_k == dist.shape[1]:
+            idx = dist.argsort(axis=1)[:, :top_k]
+            dist = np.take_along_axis(dist, idx, axis=1)
+        else:
+            idx_ps = dist.argpartition(kth=top_k, axis=1)[:, :top_k]
+            dist = np.take_along_axis(dist, idx_ps, axis=1)
+            idx_fs = dist.argsort(axis=1)
+            idx = np.take_along_axis(idx_ps, idx_fs, axis=1)
+            dist = np.take_along_axis(dist, idx_fs, axis=1)
+
+        return idx, dist
+
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        """ Find the top-k vectors with smallest ``metric`` and return their ids.
+        """ Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
         :return: a tuple of two ndarray.
             The first is ids in shape B x K (`dtype=int`), the second is metric in shape B x K (`dtype=float`)
@@ -263,8 +283,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
-        idx = dist.argpartition(kth=top_k, axis=1)[:, :top_k]
-        dist = np.take_along_axis(dist, idx, axis=1)
+        idx, dist = self._find_smallest_distances(dist, top_k)
         return self.int2ext_id[idx], dist
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
