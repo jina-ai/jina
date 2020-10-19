@@ -62,7 +62,9 @@ def ground_truth_pairs():
     return pairs
 
 
-def test_ranking_evaluate_driver(mock_precision_evaluator, simple_evaluate_driver, ground_truth_pairs):
+def test_ranking_evaluate_driver(mock_precision_evaluator,
+                                 simple_evaluate_driver,
+                                 ground_truth_pairs):
     simple_evaluate_driver.attach(executor=mock_precision_evaluator, pea=None)
     simple_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
@@ -117,7 +119,8 @@ def eval_request():
     return req
 
 
-def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_evaluate_driver, mock_precision_evaluator,
+def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_evaluate_driver,
+                                                   mock_precision_evaluator,
                                                    eval_request):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
@@ -160,7 +163,8 @@ def eval_request_with_unmatching_struct():
     return req
 
 
-def test_evaluate_assert_doc_groundtruth_structure(simple_chunk_evaluate_driver, mock_precision_evaluator,
+def test_evaluate_assert_doc_groundtruth_structure(simple_chunk_evaluate_driver,
+                                                   mock_precision_evaluator,
                                                    eval_request_with_unmatching_struct):
     simple_chunk_evaluate_driver.attach(executor=mock_precision_evaluator, pea=None)
     simple_chunk_evaluate_driver.eval_request = eval_request_with_unmatching_struct
