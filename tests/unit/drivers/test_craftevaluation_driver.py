@@ -19,6 +19,65 @@ class MockDiffEvaluator(BaseCraftingEvaluator):
         return abs(len(doc_content) - len(groundtruth_content))
 
 
+@pytest.fixture(scope='function', params=['text', 'buffer', 'blob'])
+def field_type(request):
+    return request.param
+
+
+@pytest.fixture(scope='function')
+def doc_with_field_type(field_type):
+    class DocCreator(object):
+        def create(self):
+            doc = jina_pb2.Document()
+            if field_type == 'text':
+                doc.text = 'aaa'
+            elif field_type == 'buffer':
+                doc.buffer = b'\x01\x02\x03'
+            elif field_type == 'blob':
+                doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
+            return doc
+
+    return DocCreator()
+
+
+@pytest.fixture(scope='function')
+def groundtruth_with_field_type(field_type):
+    class GTCreator(object):
+        def create(self):
+            gt = jina_pb2.Document()
+            if field_type == 'text':
+                gt.text = 'aaaa'
+            elif field_type == 'buffer':
+                gt.buffer = b'\x01\x02\x03\04'
+            elif field_type == 'blob':
+                gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
+            return gt
+
+    return GTCreator()
+
+
+@pytest.fixture(scope='function')
+def doc_groundtruth_pair(doc_with_field_type, groundtruth_with_field_type):
+    class DocGroundtruthPairFactory(object):
+        def create(self):
+            return DocGroundtruthPair(
+                doc=doc_with_field_type.create(),
+                groundtruth=groundtruth_with_field_type.create()
+            )
+
+    return DocGroundtruthPairFactory()
+
+
+@pytest.fixture(scope='function')
+def ground_truth_pairs(doc_groundtruth_pair):
+    doc_groundtruth_pairs = []
+    for _ in range(10):
+        doc_groundtruth_pairs.append(
+            doc_groundtruth_pair.create()
+        )
+    return doc_groundtruth_pairs
+
+
 @pytest.fixture
 def mock_diff_evaluator():
     return MockDiffEvaluator()
@@ -30,48 +89,15 @@ class SimpleEvaluateDriver(CraftEvaluationDriver):
         return self._exec_fn
 
 
-@pytest.fixture
-def simple_evaluate_driver():
-    def get_evaluate_driver(field_type):
-        return SimpleEvaluateDriver(field=field_type)
-
-    return get_evaluate_driver
+@pytest.fixture(scope='function')
+def simple_evaluate_driver(field_type):
+    return SimpleEvaluateDriver(field=field_type)
 
 
-@pytest.fixture
-def ground_truth_pairs():
-    def get_pairs(field_type):
-        num_docs = 10
-        pairs = []
-        for idx in range(num_docs):
-            doc = jina_pb2.Document()
-            gt = jina_pb2.Document()
-            if field_type == 'text':
-                doc.text = 'aaa'
-                gt.text = 'aaaa'
-            elif field_type == 'buffer':
-                doc.buffer = b'\x01\x02\x03'
-                gt.buffer = b'\x01\x02\x03\x04'
-            elif field_type == 'blob':
-                doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
-                gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
-
-            pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
-        return pairs
-
-    return get_pairs
-
-
-@pytest.mark.parametrize(
-    'field_type',
-    ['text', 'buffer', 'blob']
-)
-def test_crafter_evaluate_driver(field_type, mock_diff_evaluator, simple_evaluate_driver, ground_truth_pairs):
-    pairs = ground_truth_pairs(field_type)
-    driver = simple_evaluate_driver(field_type)
-    driver.attach(executor=mock_diff_evaluator, pea=None)
-    driver._apply_all(pairs)
-    for pair in pairs:
+def test_crafter_evaluate_driver(mock_diff_evaluator, simple_evaluate_driver, ground_truth_pairs):
+    simple_evaluate_driver.attach(executor=mock_diff_evaluator, pea=None)
+    simple_evaluate_driver._apply_all(ground_truth_pairs)
+    for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
         assert doc.evaluations[0].op_name == 'SimpleEvaluateDriver-MockDiffEvaluator'
@@ -95,7 +121,29 @@ class SimpleChunkEvaluateDriver(CraftEvaluationDriver):
         return self.eval_request
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
+def doc_groundtruth_pair(doc_with_field_type, groundtruth_with_field_type):
+    class DocGroundtruthPairFactory(object):
+        def create(self):
+            return DocGroundtruthPair(
+                doc=doc_with_field_type.create(),
+                groundtruth=groundtruth_with_field_type.create()
+            )
+
+    return DocGroundtruthPairFactory()
+
+
+@pytest.fixture(scope='function')
+def ground_truth_pairs(doc_groundtruth_pair):
+    doc_groundtruth_pairs = []
+    for _ in range(10):
+        doc_groundtruth_pairs.append(
+            doc_groundtruth_pair.create()
+        )
+    return doc_groundtruth_pairs
+
+
+@pytest.fixture(scope='function')
 def simple_chunk_evaluate_driver():
     def get_evaluate_driver(field_type):
         return SimpleChunkEvaluateDriver(field=field_type)
