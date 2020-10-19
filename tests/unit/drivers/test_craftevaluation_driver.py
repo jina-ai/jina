@@ -19,19 +19,29 @@ class MockDiffEvaluator(BaseCraftingEvaluator):
         return abs(len(doc_content) - len(groundtruth_content))
 
 
-class SimpleEvaluateDriver(CraftEvaluationDriver):
+@pytest.fixture
+def mock_diff_evaluator():
+    return MockDiffEvaluator()
 
+
+class SimpleEvaluateDriver(CraftEvaluationDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
 
 
-@pytest.mark.parametrize(
-    'field_type',
-    ['text', 'buffer', 'blob']
-)
-def test_crafter_evaluate_driver_text(field_type):
-    def create_document_ground_truth_pairs(num_docs):
+@pytest.fixture
+def simple_evaluate_driver():
+    def get_evaluate_driver(field_type):
+        return SimpleEvaluateDriver(field=field_type)
+
+    return get_evaluate_driver
+
+
+@pytest.fixture
+def ground_truth_pairs():
+    def get_pairs(field_type):
+        num_docs = 10
         pairs = []
         for idx in range(num_docs):
             doc = jina_pb2.Document()
@@ -49,10 +59,17 @@ def test_crafter_evaluate_driver_text(field_type):
             pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
         return pairs
 
-    pairs = create_document_ground_truth_pairs(10)
-    driver = SimpleEvaluateDriver(field=field_type)
-    executor = MockDiffEvaluator()
-    driver.attach(executor=executor, pea=None)
+    return get_pairs
+
+
+@pytest.mark.parametrize(
+    'field_type',
+    ['text', 'buffer', 'blob']
+)
+def test_crafter_evaluate_driver(field_type, mock_diff_evaluator, simple_evaluate_driver, ground_truth_pairs):
+    pairs = ground_truth_pairs(field_type)
+    driver = simple_evaluate_driver(field_type)
+    driver.attach(executor=mock_diff_evaluator, pea=None)
     driver._apply_all(pairs)
     for pair in pairs:
         doc = pair.doc
@@ -78,14 +95,18 @@ class SimpleChunkEvaluateDriver(CraftEvaluationDriver):
         return self.eval_request
 
 
-@pytest.mark.parametrize(
-    'field_type',
-    ['text', 'buffer', 'blob']
-)
-def test_crafter_evaluate_driver_in_chunks(field_type):
-    # this test proves that we can evaluate matches at chunk level,
-    # proving that the driver can traverse in a parallel way docs and groundtruth
-    def create_eval_request(num_docs):
+@pytest.fixture
+def simple_chunk_evaluate_driver():
+    def get_evaluate_driver(field_type):
+        return SimpleChunkEvaluateDriver(field=field_type)
+
+    return get_evaluate_driver
+
+
+@pytest.fixture
+def eval_request():
+    def request(field_type):
+        num_docs = 10
         req = jina_pb2.Request.IndexRequest()
         for idx in range(num_docs):
             doc = req.docs.add()
@@ -105,10 +126,22 @@ def test_crafter_evaluate_driver_in_chunks(field_type):
                 chunk_gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
         return req
 
-    req = create_eval_request(10)
-    driver = SimpleChunkEvaluateDriver(field=field_type)
-    executor = MockDiffEvaluator()
-    driver.attach(executor=executor, pea=None)
+    return request
+
+
+@pytest.mark.parametrize(
+    'field_type',
+    ['text', 'buffer', 'blob']
+)
+def test_crafter_evaluate_driver_in_chunks(field_type,
+                                           simple_chunk_evaluate_driver,
+                                           mock_diff_evaluator,
+                                           eval_request):
+    # this test proves that we can evaluate matches at chunk level,
+    # proving that the driver can traverse in a parallel way docs and groundtruth
+    req = eval_request(field_type)
+    driver = simple_chunk_evaluate_driver(field_type)
+    driver.attach(executor=mock_diff_evaluator, pea=None)
     driver.eval_request = req
     driver()
 

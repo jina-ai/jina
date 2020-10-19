@@ -14,7 +14,7 @@ class StringLengthEvaluator(BaseEvaluator):
 
     @property
     def metric_name(self):
-        return f'Length'
+        return 'Length'
 
     @as_aggregator
     def evaluate(self, doc_content: str, groundtruth_content: str, *args, **kwargs) -> float:
