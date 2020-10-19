@@ -18,7 +18,8 @@ from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, PretrainedModelFileDoesNotExist
+from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
+    PretrainedModelFileDoesNotExist
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
