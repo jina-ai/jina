@@ -10,7 +10,7 @@ class PrecisionEvaluator(BaseRankingEvaluator):
     """
 
     @property
-    def metric_name(self):
+    def metric(self):
         return f'Precision@{self.eval_at}'
 
     @as_aggregator

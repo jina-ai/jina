@@ -10,7 +10,7 @@ class RecallEvaluator(BaseRankingEvaluator):
     """
 
     @property
-    def metric_name(self):
+    def metric(self):
         return f'Recall@{self.eval_at}'
 
     @as_aggregator

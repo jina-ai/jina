@@ -1,0 +1,15 @@
+on:
+  ControlRequest:
+    - !ControlReqDriver {}
+  [SearchRequest]:
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+          - buffer
+          - blob
+          - text
+      traversal_paths: ['r']
+    - !CraftEvaluationDriver
+      with:
+        traversal_paths: ['r']
