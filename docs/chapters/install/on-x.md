@@ -45,4 +45,4 @@ If you've got Jina running on other systems, we'd love to hear from you, and esp
 
 ## Google Colab
 
-Jina requires Python 3.9. At the time of writing Google Colab runs Python 3.6.7 so Jina can't be installed via `pip`
+Jina requires Python 3.7 or 3.8. At the time of writing Google Colab runs Python 3.6.7 so Jina can't be installed via `pip`
