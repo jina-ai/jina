@@ -245,10 +245,10 @@ class NumpyIndexer(BaseNumpyIndexer):
         """ Find top-k smallest distances in ascending order.
 
         Idea is to use partial sort to retrieve top-k smallest distances unsorted and then sort these
-        in ascending order. Equivalent to full sort but faster for n >> k. If n == k revert to full sort.
+        in ascending order. Equivalent to full sort but faster for n >> k. If k >= n revert to full sort.
 
         """
-        if top_k == dist.shape[1]:
+        if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
             dist = np.take_along_axis(dist, idx, axis=1)
         else:
