@@ -7,6 +7,7 @@ import numpy as np
 
 from .reduce import ReduceDriver
 from .helper import pb2array, array2pb
+from ..proto import jina_pb2
 
 class MultimodalDriver(ReduceDriver):
     """
