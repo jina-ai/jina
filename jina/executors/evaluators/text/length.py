@@ -5,7 +5,7 @@ from . import BaseTextEvaluator
 
 
 class TextLengthEvaluator(BaseTextEvaluator):
-    """A :class:`TextLengthEvaluator` evaluates the different lengths between doc and groundtruth text
+    """A :class:`TextLengthEvaluator` evaluates the different lengths between actual and desired text
     """
 
     @property

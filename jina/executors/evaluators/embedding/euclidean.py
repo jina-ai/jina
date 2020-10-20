@@ -5,7 +5,7 @@ from ...indexers.vector import _euclidean, _ext_B, _ext_A
 
 
 class EuclideanEvaluator(BaseEmbeddingEvaluator):
-    """A :class:`EuclideanEvaluator` evaluates the distance between doc and groundtruth embeddings computing
+    """A :class:`EuclideanEvaluator` evaluates the distance between actual and desired embeddings computing
     the euclidean distance between them
     """
 

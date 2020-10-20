@@ -5,7 +5,7 @@ from ...indexers.vector import _euclidean, _ext_A, _ext_B, _cosine, _norm
 
 
 class CosineEvaluator(BaseEmbeddingEvaluator):
-    """A :class:`CosineEvaluator` evaluates the distance between doc and groundtruth embeddings computing
+    """A :class:`CosineEvaluator` evaluates the distance between actual and desired embeddings computing
     the cosine distance between them. (The smaller value the closest distance, it is not cosine similarity measure)
 
     .. math::
