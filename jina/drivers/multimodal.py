@@ -8,12 +8,13 @@ from .helper import pb2array
 
 class MultimodalDriver(BaseRecursiveDriver):
     """
+    TODO add docstring
     each document have multiple chunks
     each chunk has 1 modality
     group chunk i
     """
     def __init__(self, traversal_paths=('c', ), *args, **kwargs):
-        # traversal chunks
+        # traversal chunks from chunk level.
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(
