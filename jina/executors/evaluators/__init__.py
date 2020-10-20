@@ -22,9 +22,9 @@ class BaseEvaluator(BaseExecutor):
         return self.sum / self.num_documents
 
     @property
-    def metric(self):
+    def metric(self) -> str:
         """Get the name of the evaluation metric """
-        pass
+        raise NotImplementedError
 
     def evaluate(self, prediction: Any, groundtruth: Any, *args, **kwargs) -> float:
         raise NotImplementedError

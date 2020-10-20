@@ -1,16 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ...decorators import as_aggregator
-from .. import BaseEvaluator
+from ..decorators import as_aggregator
+from . import BaseTextEvaluator
 
 
-class StringLengthEvaluator(BaseEvaluator):
-    """A :class:`StringLengthEvaluator` evaluates the different lengths between doc and groundtruth text
+class TextLengthEvaluator(BaseTextEvaluator):
+    """A :class:`TextLengthEvaluator` evaluates the different lengths between doc and groundtruth text
     """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     @property
     def metric(self):

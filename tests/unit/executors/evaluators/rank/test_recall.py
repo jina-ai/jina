@@ -1,6 +1,6 @@
 import pytest
 
-from jina.executors.evaluators.rank.recall import RecallEvaluator
+from jina.executors.evaluators.ranking.recall import RecallEvaluator
 
 
 @pytest.mark.parametrize(
