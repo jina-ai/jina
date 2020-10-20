@@ -7,7 +7,7 @@ from .. import BaseEvaluator
 
 
 class BaseEmbeddingEvaluator(BaseEvaluator):
-    """A :class:`BaseEmbeddingEvaluator` evaluates the difference between doc and groundtruth embeddings
+    """A :class:`BaseEmbeddingEvaluator` evaluates the difference between actual and desired embeddings
     """
 
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
