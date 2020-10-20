@@ -77,7 +77,6 @@ class BasePod(ExitStack):
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
-            _set_after_to_pass(args)
             self.is_head_router = True
             self.is_tail_router = True
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
@@ -93,11 +92,9 @@ class BasePod(ExitStack):
                 peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args.get('head', None), peas_args.get('tail', None))
         else:
-            _set_after_to_pass(args)
             self.is_head_router = False
             self.is_tail_router = False
             peas_args['peas'] = [args]
-
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
@@ -415,14 +412,6 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
             _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
         result.append(_args)
     return result
-
-
-def _set_after_to_pass(args):
-    # TODO: I don't remember what is this for? once figure out, this function should be removed
-    # remark 1: i think it's related to route driver.
-    if hasattr(args, 'polling') and args.polling.is_push:
-        # ONLY reset when it is push
-        args.uses_after = '_pass'
 
 
 def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -> Namespace:
