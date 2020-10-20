@@ -14,13 +14,13 @@ class MockDiffEvaluator(BaseEmbeddingEvaluator):
     def metric(self):
         return 'MockDiffEvaluator'
 
-    def evaluate(self, prediction: 'np.array', groundtruth: 'np.array', *args, **kwargs) -> float:
+    def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
-        :param prediction: the embedding of the document (resulting from an Encoder)
-        :param groundtruth: the expected embedding of the document
+        :param actual: the embedding of the document (resulting from an Encoder)
+        :param desired: the expected embedding of the document
         :return the evaluation metric value for the request document
         """
-        return abs(sum(prediction - groundtruth) / len(prediction))
+        return abs(sum(actual - desired) / len(actual))
 
 
 @pytest.fixture

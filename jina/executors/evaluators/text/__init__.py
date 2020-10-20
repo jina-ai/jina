@@ -10,10 +10,10 @@ class BaseTextEvaluator(BaseEvaluator):
     """A :class:`BaseTextEvaluator` evaluates the difference between doc and groundtruth text
     """
 
-    def evaluate(self, prediction: Any, groundtruth: Any, *args, **kwargs) -> float:
+    def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
         """"
-        :param prediction: the content of the document
-        :param groundtruth: the expected content of the document
+        :param actual: the content of the document
+        :param desired: the expected content of the document
         :return the evaluation metric value for the request document
         """
         raise NotImplementedError
