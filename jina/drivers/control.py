@@ -55,10 +55,16 @@ class RouteDriver(ControlReqDriver):
 
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, raise_no_dealer: bool = False, *args, **kwargs):
+        """
+        :param raise_no_dealer: raise a RuntimeError when no available dealer
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self.idle_dealer_ids = set()
         self.is_pollin_paused = False
+        self.raise_no_dealer = raise_no_dealer
 
     def __call__(self, *args, **kwargs):
         if is_data_request(self.req):
@@ -69,12 +75,21 @@ class RouteDriver(ControlReqDriver):
                 if not self.idle_dealer_ids:
                     self.pea.zmqlet.pause_pollin()
                     self.is_pollin_paused = True
-
-            # else branch = FALLBACK to simple pass
-            # 'if this router connects more than one dealer, '
-            # 'then this error should never be raised. often when it '
-            # 'is raised, some Pods must fail to start, so please go '
-            # 'up and check the first error message in the log'
+            elif self.raise_no_dealer:
+                raise RuntimeError('if this router connects more than one dealer, '
+                                   'then this error should never be raised. often when it '
+                                   'is raised, some Pods must fail to start, so please go '
+                                   'up and check the first error message in the log')
+            # else:
+            #    this FALLBACK to trivial message pass
+            #
+            # Explanation on the logic here:
+            # there are two cases that when `idle_dealer_ids` is empty
+            # (1) this driver is used in a PUSH-PULL fan-out setting,
+            # where no dealer is registered in the first place, so `idle_dealer_ids` is empty
+            # all the time
+            # (2) this driver is used in a ROUTER-DEALER fan-out setting,
+            # where some dealer is broken/fails to start, so `idle_dealer_ids` is empty
         elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
             self.idle_dealer_ids.add(self.envelope.receiver_id)
             self.logger.debug(f'{self.envelope.receiver_id} is idle')
