@@ -3,8 +3,10 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable, Dict
 
+import numpy as np
+
 from .reduce import ReduceDriver
-from .helper import pb2array
+from .helper import pb2array, array2pb
 
 class MultimodalDriver(ReduceDriver):
     """
@@ -30,19 +32,47 @@ class MultimodalDriver(ReduceDriver):
             context_doc: 'jina_pb2.Document',
             field: str,
             doc_pointers: Dict,
+            concatenate_by_modality: bool = False,
             *args,
             **kwargs
     ) -> None:
-        # docs are chunks get by traversal rec
+        # docs are chunks of context_doc returned by traversal rec.
+        # Group chunks which has the same modality
+        modal_doc = {}
         for doc in docs:
-            modality = doc.modality
-            content = self._extract_chunk_level_content(doc) # one of buffer, blob or text.
-            embedding = self._extract_chunk_level_embedding(doc) # directly embedding
+            modal = doc.modality
+            if doc.id in modal_doc:
+                modal_doc[modal].append(doc.id)
+            else:
+                modal_doc[modal] = [doc.id]
 
+        for modal, doc_ids in modal_doc.items():
+            if concatenate_by_modality:
+                embeddings_with_same_modality = [
+                    doc_pointers[doc_id]
+                    for
+                    doc_id
+                    in
+                    doc_ids
+                ]
+                context_doc.embedding.CopyFrom(
+                    array2pb(
+                        np.concatenate(
+                            embeddings_with_same_modality,
+                            axis=0)
+                    )
+                )
+            else:
+                embedding = self._extract_chunk_level_embedding(doc)
+                if doc.id not in doc_pointers:
+                    doc_pointers[doc.id] = [embedding]
+                else:
+                    doc_pointers[doc.id].append(embedding)
 
 
     def _extract_chunk_level_content(self, doc):
-        return doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
+        return  doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
+
 
     def _extract_chunk_level_embedding(self, doc):
         return (doc.embedding.buffer or None) and pb2array(doc.embedding)
