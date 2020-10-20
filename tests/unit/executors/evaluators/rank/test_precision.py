@@ -1,6 +1,6 @@
 import pytest
 
-from jina.executors.evaluators.ranking.precision import PrecisionEvaluator
+from jina.executors.evaluators.rank.precision import PrecisionEvaluator
 
 
 @pytest.mark.parametrize(

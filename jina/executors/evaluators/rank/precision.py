@@ -1,7 +1,7 @@
 from typing import Sequence, Any
 
 from ..decorators import as_aggregator
-from ..ranking import BaseRankingEvaluator
+from ..rank import BaseRankingEvaluator
 
 
 class PrecisionEvaluator(BaseRankingEvaluator):

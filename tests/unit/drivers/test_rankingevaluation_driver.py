@@ -2,7 +2,7 @@ import pytest
 
 from jina.drivers.evaluate import RankingEvaluationDriver
 from jina.drivers.helper import DocGroundtruthPair
-from jina.executors.evaluators.ranking import BaseRankingEvaluator
+from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
 
 
