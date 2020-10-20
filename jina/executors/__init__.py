@@ -15,7 +15,7 @@ from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
 import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
 
-from .decorators import as_train_method, as_update_method, store_init_kwargs
+from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source
@@ -64,6 +64,7 @@ class ExecutorType(type):
         prof_funcs = ['train', 'encode', 'add', 'query', 'craft', 'score', 'evaluate']
         update_funcs = ['train', 'add']
         train_funcs = ['train']
+        aggregate_funcs = ['evaluate']
 
         def wrap_func(func_lst, wrapper):
             for f_name in func_lst:
@@ -78,6 +79,7 @@ class ExecutorType(type):
 
             wrap_func(train_funcs, as_train_method)
             wrap_func(update_funcs, as_update_method)
+            wrap_func(aggregate_funcs, as_aggregate_method)
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
