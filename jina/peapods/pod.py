@@ -38,11 +38,6 @@ class BasePod(ExitStack):
         self.deducted_head = None
         self.deducted_tail = None
 
-        # TODO: I don't remember what is this for???
-        # if hasattr(args, 'polling') and args.polling.is_push:
-        #     # ONLY reset when it is push
-        #     args.uses_after = '_pass'
-
         self._args = args
         self.peas_args = self._parse_args(args)
 
@@ -420,6 +415,13 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
     return result
 
 
+def _reset_to_pass(args):
+    # TODO: I don't remember what is this for? once figure out, this function should be removed
+    if hasattr(args, 'polling') and args.polling.is_push:
+        # ONLY reset when it is push
+        args.uses_after = '_pass'
+
+
 def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -> Namespace:
     """Set the outgoing args of the head router
     """
@@ -458,6 +460,10 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args.port_ctrl = random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
     _tail_args.uses = None
+
+    # TODO: unclear usage
+    _reset_to_pass(_tail_args)
+
     if as_router:
         _tail_args.uses = args.uses_after or '_merge'
         _tail_args.name = args.name or ''
