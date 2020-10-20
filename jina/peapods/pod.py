@@ -37,7 +37,6 @@ class BasePod(ExitStack):
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-
         self._args = args
         self.peas_args = self._parse_args(args)
 
@@ -78,6 +77,7 @@ class BasePod(ExitStack):
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
+            _set_after_to_pass(args)
             self.is_head_router = True
             self.is_tail_router = True
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
@@ -93,6 +93,7 @@ class BasePod(ExitStack):
                 peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args.get('head', None), peas_args.get('tail', None))
         else:
+            _set_after_to_pass(args)
             self.is_head_router = False
             self.is_tail_router = False
             peas_args['peas'] = [args]
@@ -416,8 +417,9 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
     return result
 
 
-def _reset_to_pass(args):
+def _set_after_to_pass(args):
     # TODO: I don't remember what is this for? once figure out, this function should be removed
+    # remark 1: i think it's related to route driver.
     if hasattr(args, 'polling') and args.polling.is_push:
         # ONLY reset when it is push
         args.uses_after = '_pass'
@@ -461,9 +463,6 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args.port_ctrl = random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
     _tail_args.uses = None
-
-    # TODO: unclear usage
-    _reset_to_pass(_tail_args)
 
     if as_router:
         _tail_args.uses = args.uses_after or '_merge'
