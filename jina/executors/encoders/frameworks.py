@@ -12,7 +12,7 @@ from ...helper import cached_property
 
 # mixin classes go first, base classes are read from right to left.
 class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
-    def __init__(self, output_feature: str, model_path: str = None, *args, **kwargs):
+    def __init__(self, output_feature: str = None, model_path: str = None, *args, **kwargs):
         """
 
         :param output_feature: the name of the layer for feature extraction.
@@ -29,20 +29,21 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
         Load the model from the `.onnx` file and add outputs for the selected layer, i.e. ``outputs_name``. The modified
              models is saved at `tmp_model_path`.
         """
-        import onnxruntime
         super().post_init()
-        model_name = self.raw_model_path.split('/')[-1]
-        tmp_model_path = self.get_file_from_workspace(f'{self.model_name}.tmp')
-        if is_url(self.raw_model_path):
+        model_name = self.raw_model_path.split('/')[-1] if self.raw_model_path else None
+        tmp_model_path = self.get_file_from_workspace(f'{model_name}.tmp') if model_name else None
+        raw_model_path = self.raw_model_path
+        if self.raw_model_path and is_url(self.raw_model_path):
             import urllib.request
             download_path, *_ = urllib.request.urlretrieve(self.raw_model_path)
             raw_model_path = download_path
             self.logger.info(f'download the model at {self.raw_model_path}')
-        if not os.path.exists(tmp_model_path):
+        if tmp_model_path and not os.path.exists(tmp_model_path) and self.outputs_name:
             self._append_outputs(raw_model_path, self.outputs_name, tmp_model_path)
             self.logger.info(f'save the model with outputs [{self.outputs_name}] at {tmp_model_path}')
 
-        if os.path.exists(tmp_model_path):
+        if tmp_model_path and os.path.exists(tmp_model_path):
+            import onnxruntime
             self.model = onnxruntime.InferenceSession(tmp_model_path, None)
             self.inputs_name = self.model.get_inputs()[0].name
             self._device = None
