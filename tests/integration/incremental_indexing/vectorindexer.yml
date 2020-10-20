@@ -4,16 +4,3 @@ with:
 metas:
   workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
   name: vec_idx
-requests:
-  on:
-    ControlRequest:
-      - !ControlReqDriver {}
-    SearchRequest:
-      - !VectorSearchDriver {}
-    IndexRequest:
-      - !ExcludeQL
-        with:
-          fields:
-            - buffer
-            - chunks
-      - !VectorIndexDriver {}

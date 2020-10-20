@@ -1,6 +1,8 @@
 !UniqueVectorIndexer
 components:
-  - !DocIDCache {}
+  - !DocIDCache
+    metas:
+      workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
   - !NumpyIndexer
     with:
       index_filename: vec.gz
