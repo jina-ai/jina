@@ -1,10 +1,10 @@
 import os
 
-from jina.flow import Flow
 from jina.executors import BaseExecutor
-from jina.executors.indexers.vector import NumpyIndexer
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
-from tests.integration.incremental_indexing import random_workspace, get_duplicate_docs
+from jina.executors.indexers.vector import NumpyIndexer
+from jina.flow import Flow
+from tests.integration.incremental_indexing import get_duplicate_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
