@@ -1,9 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Iterable, Tuple
 
 from . import BaseExecutableDriver
+from .search import BaseSearchDriver
 from .helper import DocGroundtruthPair, pb2array
 from jina.proto import jina_pb2
 
@@ -119,3 +120,37 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
             evaluation.value = self.exec_fn(doc_content, gt_content)
             evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
+
+
+class LoadGroundTruthDriver(BaseSearchDriver):
+    """Driver used to search for the `document key` in a KVIndexer to find the corresponding groundtruth.
+    Will not work for `traversal_path` other han `root`
+    """
+
+    def __init__(self, id_tag: str = 'id', *args, **kwargs):
+        """
+
+        :param id_tag: the name of the tag that corresponds to the key for which to search the `groundtruth` document
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(traversal_path=('r', ), *args, **kwargs)
+        self.id_tag = id_tag
+
+    def __call__(self, *args, **kwargs):
+        assert len(self.req.groundtruths) == 0
+        docs_groundtruths = [DocGroundtruthPair(doc, None) for doc in self.req.docs]
+        self._traverse_apply(docs_groundtruths, *args, **kwargs)
+
+    def _apply_all(self, groundtruth_pairs: Iterable[DocGroundtruthPair], *args, **kwargs) -> None:
+        miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
+        for idx, (doc, gt) in enumerate(groundtruth_pairs):
+            serialized_groundtruth = self.exec_fn(doc.tags[self.id_tag])
+            if serialized_groundtruth:
+                gt = jina_pb2.Document()
+                gt.ParseFromString(serialized_groundtruth)
+            else:
+                miss_idx.append(idx)
+            # delete non-existed matches in reverse
+        for j in reversed(miss_idx):
+            del groundtruth_pairs[j]

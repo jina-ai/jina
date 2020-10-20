@@ -67,12 +67,9 @@ class FileBasedEvaluator(CompoundExecutor):
 
          on:
            [SearchRequest, IndexRequest]:
-             - !KVSearchDriver
+             - !LoadGroundTruthDriver
                with:
                  executor: groundtruth_index
-             - !FilterQL
-                with:
-                 lookup: TODO: Adapt this
              - !BaseEvaluationDriver
                with:
                  executor: BaseKVIndexer
