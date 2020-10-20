@@ -12,14 +12,14 @@ class BaseEvaluator(BaseExecutor):
 
     def post_init(self):
         super().post_init()
-        self.num_documents = 0
-        self.sum = 0
+        self._num_docs = 0
+        self._total_sum = 0
 
     @property
     def avg(self):
-        if self.num_documents == 0:
+        if self._num_docs == 0:
             return 0.0
-        return self.sum / self.num_documents
+        return self._total_sum / self._num_docs
 
     @property
     def metric(self) -> str:
