@@ -1,10 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Tuple
+from typing import Iterable
 
 from . import BaseExecutableDriver
-from .search import BaseSearchDriver
 from .helper import DocGroundtruthPair, pb2array
 from jina.proto import jina_pb2
 
@@ -122,35 +121,40 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
             evaluation.ref_id = groundtruth.id
 
 
-class LoadGroundTruthDriver(BaseSearchDriver):
+class LoadGroundTruthDriver(BaseExecutableDriver):
     """Driver used to search for the `document key` in a KVIndexer to find the corresponding groundtruth.
-    Will not work for `traversal_path` other han `root`
+    (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument)
+     This driver's job is to fill the `request` groundtruth with the corresponding groundtruth for each document if found in the corresponding KVIndexer.
     """
 
-    def __init__(self, id_tag: str = 'id', *args, **kwargs):
+    def __init__(self,
+                 executor: str = None,
+                 method: str = 'query',
+                 id_tag: str = 'id', *args, **kwargs):
         """
 
         :param id_tag: the name of the tag that corresponds to the key for which to search the `groundtruth` document
         :param args:
         :param kwargs:
         """
-        super().__init__(traversal_path=('r', ), *args, **kwargs)
+        super().__init__(
+            executor=executor,
+            method=method,
+            *args,
+            **kwargs)
         self.id_tag = id_tag
 
     def __call__(self, *args, **kwargs):
         assert len(self.req.groundtruths) == 0
-        docs_groundtruths = [DocGroundtruthPair(doc, None) for doc in self.req.docs]
-        self._traverse_apply(docs_groundtruths, *args, **kwargs)
-
-    def _apply_all(self, groundtruth_pairs: Iterable[DocGroundtruthPair], *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
-        for idx, (doc, gt) in enumerate(groundtruth_pairs):
+        for idx, doc in enumerate(self.req.docs):
             serialized_groundtruth = self.exec_fn(doc.tags[self.id_tag])
             if serialized_groundtruth:
-                gt = jina_pb2.Document()
+                doc.tags['found'] = True
+                gt = self.req.groundtruths.add()
                 gt.ParseFromString(serialized_groundtruth)
             else:
                 miss_idx.append(idx)
             # delete non-existed matches in reverse
         for j in reversed(miss_idx):
-            del groundtruth_pairs[j]
+            del self.req.docs[j]
