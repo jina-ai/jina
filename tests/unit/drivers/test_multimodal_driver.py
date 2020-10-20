@@ -5,12 +5,7 @@ from jina.proto import uid
 from jina.flow import Flow
 from jina.proto.jina_pb2 import Document
 from jina.drivers.helper import pb2array, array2pb
-from jina.drivers.multimodal import MultimodalDriver
 
-e1 = np.random.random([7])
-e2 = np.random.random([5])
-e3 = np.random.random([3])
-e4 = np.random.random([9])
 
 @pytest.fixture(scope='function')
 def embedding():
