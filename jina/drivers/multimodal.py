@@ -1,10 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, List, Iterable, Tuple
+from typing import Iterable
 
 from . import BaseRecursiveDriver
-from .helper import extract_docs, pb2array
+from .helper import pb2array
 
 class MultimodalDriver(BaseRecursiveDriver):
     """
@@ -13,6 +13,7 @@ class MultimodalDriver(BaseRecursiveDriver):
     group chunk i
     """
     def __init__(self, traversal_paths=('c', ), *args, **kwargs):
+        # traversal chunks
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(
@@ -24,14 +25,18 @@ class MultimodalDriver(BaseRecursiveDriver):
             **kwargs
     ) -> None:
         """"""
+        # extract all the required fields from the chunks of a document (buffer, blob, text,
+        # or directly embedding)
         for doc in docs:
             doc_instance = {}
+            doc_instance['id'] = doc.id
             chunks = doc.chunks
             for chunk in chunks:
                 modality = chunk.modality
                 doc_instance[modality] = {}
                 doc_instance[modality][chunk.id]['content'] = self._extract_content(chunk)
                 doc_instance[modality][chunk.id]['embedding'] = self._extract_embedding(chunk)
+            # Set the return value to the context_doc embedding.
 
 
     def _extract_content(self, chunk):
