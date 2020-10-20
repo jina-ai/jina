@@ -299,8 +299,8 @@ def set_pea_parser(parser=None):
     gp3.add_argument('--separated-workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
                           'only effective when BasePod\'s `parallel` > 1')
-    gp3.add_argument('--replica-id', type=int, default=-1,
-                     help='the id of the storage of this replica, only effective when `separated_workspace=True`'
+    gp3.add_argument('--pea-id', type=int, default=-1,
+                     help='the id of the storage of this pea, only effective when `separated_workspace=True`'
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
