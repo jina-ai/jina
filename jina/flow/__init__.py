@@ -867,12 +867,9 @@ class Flow(ExitStack):
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 
-        if output.endswith('svg'):
-            image_type = 'svg'
-        elif output.endswith('jpg'):
+        image_type = 'svg'
+        if output and output.endswith('jpg'):
             image_type = 'jpg'
-        else:
-            raise ValueError(f'image_type must be svg/jpg, but given {output}')
 
         url = op_flow._mermaid_to_url(mermaid_str, image_type)
         showed = False
