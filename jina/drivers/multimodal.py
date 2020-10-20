@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Dict
+from typing import Iterable, Dict, Tuple
 
 import numpy as np
 
@@ -15,7 +15,7 @@ class MultimodalDriver(ReduceDriver):
     each chunk has 1 modality
     group chunk i
     """
-    def __init__(self, traversal_paths=('c', ), *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('c', ), *args, **kwargs):
         # traversal chunks from chunk level.
         # TODO discuss should we add root path
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
@@ -25,7 +25,11 @@ class MultimodalDriver(ReduceDriver):
         # traverse apply on ALL requests collected to collect embeddings
         # reversed since the last response should collect the chunks/matches
         for r in reversed(self.prev_reqs):
-            self._traverse_apply(r.docs, doc_pointers=doc_pointers, *args, **kwargs)
+            self._traverse_apply(
+                r.docs,
+                doc_pointers=doc_pointers,
+                *args, **kwargs
+            )
 
         self._traverse_apply(
             self.req.docs,
@@ -71,19 +75,19 @@ class MultimodalDriver(ReduceDriver):
                     )
                 )
             else:
-                embedding = self._extract_chunk_level_embedding(doc)
+                embedding = self._extract_doc_embedding(doc)
                 if doc.id not in doc_pointers:
                     doc_pointers[doc.id] = [embedding]
                 else:
                     doc_pointers[doc.id].append(embedding)
 
 
-    def _extract_doc_content(self, doc):
+    def _extract_doc_content(self, doc: 'jina_pb2.Document'):
         # TODO discuss when do we need doc content as described in the requirement
         # designing a driver that will extract all the required fields from the chunks of a document
         # (buffer, blob, text, or directly embedding)
         return  doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
 
 
-    def _extract_doc_embedding(self, doc):
+    def _extract_doc_embedding(self, doc: 'jina_pb2.Document'):
         return (doc.embedding.buffer or None) and pb2array(doc.embedding)
