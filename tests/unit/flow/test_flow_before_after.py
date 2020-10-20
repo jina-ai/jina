@@ -1,3 +1,5 @@
+import os
+
 from jina.flow import Flow
 from tests import random_docs
 
@@ -45,5 +47,7 @@ def test_flow_before_after():
         assert f._pod_nodes['p1'].num_peas == 3
         assert f.num_peas == 4
 
+
 def test_flow_before_after_plot():
-    f = Flow().add(uses_before='_pass', uses_after='_pass', name='p1')
+    Flow().add(uses_before='_pass', uses_after='_pass', name='p1').plot('tmp.svg')
+    assert os.path.exists('tmp.svg')
