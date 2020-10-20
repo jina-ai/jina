@@ -814,19 +814,24 @@ class Flow(ExitStack):
         start_repl = {}
         end_repl = {}
         for node, v in op_flow._pod_nodes.items():
-            if getattr(v._args, 'parallel', 1) > 1:
-                mermaid_graph.append(f'subgraph {node} ["{node} ({v._args.parallel})"]')
-                head_router = node + '_HEAD'
-                tail_router = node + '_TAIL'
+            if not v.is_singleton and v.role != PodRoleType.GATEWAY:
+                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v._args.parallel})"]')
+                if v.is_head_router:
+                    head_router = node + '_HEAD'
+                    end_repl[node] = (head_router, '((fa:fa-random))')
+                if v.is_tail_router:
+                    tail_router = node + '_TAIL'
+                    start_repl[node] = (tail_router, '((fa:fa-random))')
+
                 p_r = '((%s))'
                 p_e = '[[%s]]'
                 for j in range(v._args.parallel):
-                    r = node + '_%d' % j
-                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
-                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (r, p_e % r, tail_router, p_r % 'tail'))
+                    r = node + (f'_{j}' if v._args.parallel > 1 else '')
+                    if v.is_head_router:
+                        mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
+                    if v.is_tail_router:
+                        mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (r, p_e % r, tail_router, p_r % 'tail'))
                 mermaid_graph.append('end')
-                start_repl[node] = (tail_router, '((fa:fa-random))')
-                end_repl[node] = (head_router, '((fa:fa-random))')
 
         for node, v in op_flow._pod_nodes.items():
             ed_str = str(v.head_args.socket_in).split('_')[0]

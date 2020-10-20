@@ -41,4 +41,7 @@ def test_visualization_plot_in_middle():
 
     assert os.path.exists('flow3.svg')
 
-test_visualization_with_yml_file_img()
+
+def test_flow_before_after_plot():
+    Flow().add(uses_before='_pass', uses_after='_pass', name='p1').plot('tmp.svg')
+    assert os.path.exists('tmp.svg')
