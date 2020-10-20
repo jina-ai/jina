@@ -1,9 +1,9 @@
+"""Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
+
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from ..logging import default_logger
-
-"""Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
 
 import inspect
 from functools import wraps
@@ -13,6 +13,20 @@ import numpy as np
 
 from .metas import get_default_metas
 from ..helper import batch_iterator
+
+
+def as_aggregate_method(func: Callable) -> Callable:
+    """Mark a function so that it keeps track of the number of documents evaluated and a running sum
+    to have always access to average value
+    """
+
+    @wraps(func)
+    def arg_wrapper(self, *args, **kwargs):
+        f = func(self, *args, **kwargs)
+        self._running_stats += f
+        return f
+
+    return arg_wrapper
 
 
 def as_update_method(func: Callable) -> Callable:

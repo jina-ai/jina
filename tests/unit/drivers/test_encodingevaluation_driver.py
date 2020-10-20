@@ -2,11 +2,11 @@ import pytest
 import numpy as np
 from jina.drivers.evaluate import EncodeEvaluationDriver
 from jina.drivers.helper import DocGroundtruthPair, array2pb
-from jina.executors.evaluators.encode import BaseEncodingEvaluator
+from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator
 from jina.proto import jina_pb2
 
 
-class MockDiffEvaluator(BaseEncodingEvaluator):
+class MockDiffEvaluator(BaseEmbeddingEvaluator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -14,13 +14,13 @@ class MockDiffEvaluator(BaseEncodingEvaluator):
     def metric(self):
         return 'MockDiffEvaluator'
 
-    def evaluate(self, doc_embedding: 'np.array', groundtruth_embedding: 'np.array', *args, **kwargs) -> float:
+    def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
-        :param doc_embedding: the embedding of the document (resulting from an Encoder)
-        :param groundtruth_embedding: the expected embedding of the document
+        :param actual: the embedding of the document (resulting from an Encoder)
+        :param desired: the expected embedding of the document
         :return the evaluation metric value for the request document
         """
-        return abs(sum(doc_embedding - groundtruth_embedding) / len(doc_embedding))
+        return abs(sum(actual - desired) / len(actual))
 
 
 @pytest.fixture
