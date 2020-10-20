@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
+from .index import BaseIndexDriver
 from .helper import DocGroundtruthPair, pb2array
 from jina.proto import jina_pb2
 
@@ -119,6 +120,20 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
             evaluation.value = self.exec_fn(doc_content, gt_content)
             evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
+
+
+class GroundTruthKVIndexDriver(BaseIndexDriver):
+    """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
+    """
+    def __init__(self, id_tag: str = 'id', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._traversal_paths = ('r', )
+        self.id_tag = id_tag
+
+    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+        keys = [doc.tags[self.id_tag] for doc in docs]
+        values = [doc.SerializeToString() for doc in docs]
+        self.exec_fn(keys, values)
 
 
 class LoadGroundTruthDriver(BaseExecutableDriver):

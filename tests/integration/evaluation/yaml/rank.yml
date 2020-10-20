@@ -1,0 +1,9 @@
+!DummyRanker
+metas:
+  py_modules: dummy_ranker.py
+requests:
+  on:
+    [ SearchRequest ]:
+      - !Matches2DocRankDriver
+        with:
+          traversal_paths: [ 'm' ]

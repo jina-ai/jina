@@ -1,0 +1,23 @@
+!FileBasedEvaluator
+components:
+  - !BinaryPbIndexer
+    with:
+      index_filename: gt.gz'
+    metas:
+      name: gtidx
+      workspace: $JINA_TEST_RANKING_EVALUATION
+  - !StringLengthEvaluator
+    metas:
+      name: length-evaluator
+metas:
+  name: file-based-evaluation
+requests:
+  on:
+    SearchRequest:
+      - !LoadGroundTruthDriver
+        with:
+          executor: gtidx-1
+      - !CraftEvaluationDriver
+        with:
+          executor: length-evaluator
+          traversal_paths: [ 'r' ]

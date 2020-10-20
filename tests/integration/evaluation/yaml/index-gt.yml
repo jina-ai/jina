@@ -1,0 +1,12 @@
+!BinaryPbIndexer
+with:
+  index_filename: gt.gz
+metas:
+  name: gtidx
+  workspace: $JINA_TEST_RANKING_EVALUATION
+requests:
+  on:
+    IndexRequest:
+      - !GroundTruthKVIndexDriver
+        with:
+          executor: gtidx
