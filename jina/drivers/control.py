@@ -41,13 +41,6 @@ class WaitDriver(BaseDriver):
         time.sleep(5)
 
 
-class ForwardDriver(BaseDriver):
-    """Forward the message to next pod"""
-
-    def __call__(self, *args, **kwargs):
-        pass
-
-
 class RouteDriver(ControlReqDriver):
     """A simple load balancer forward message to the next available pea
 
@@ -76,11 +69,12 @@ class RouteDriver(ControlReqDriver):
                 if not self.idle_dealer_ids:
                     self.pea.zmqlet.pause_pollin()
                     self.is_pollin_paused = True
-            else:
-                raise RuntimeError('if this router connects more than one dealer, '
-                                   'then this error should never be raised. often when it '
-                                   'is raised, some Pods must fail to start, so please go '
-                                   'up and check the first error message in the log')
+
+            # else branch = FALLBACK to simple pass
+            # 'if this router connects more than one dealer, '
+            # 'then this error should never be raised. often when it '
+            # 'is raised, some Pods must fail to start, so please go '
+            # 'up and check the first error message in the log'
         elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
             self.idle_dealer_ids.add(self.envelope.receiver_id)
             self.logger.debug(f'{self.envelope.receiver_id} is idle')
@@ -90,3 +84,7 @@ class RouteDriver(ControlReqDriver):
             raise NoExplicitMessage
         else:
             super().__call__(*args, **kwargs)
+
+
+class ForwardDriver(RouteDriver):
+    """Alias to :class:`RouteDriver`"""
