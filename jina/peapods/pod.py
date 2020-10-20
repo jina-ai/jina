@@ -41,6 +41,11 @@ class BasePod(ExitStack):
         self.peas_args = self._parse_args(args)
 
     @property
+    def is_singleton(self) -> bool:
+        """Return if the Pod contains only a single Pea """
+        return not (self.is_head_router or self.is_tail_router)
+
+    @property
     def is_idle(self) -> bool:
         """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
         """

@@ -774,7 +774,6 @@ class Flow(ExitStack):
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
     def plot(self, output: str = None,
-             image_type: str = 'svg',
              vertical_layout: bool = False,
              inline_display: bool = True,
              build: bool = True,
@@ -793,8 +792,8 @@ class Flow(ExitStack):
 
             flow = Flow().add(name='pod_a').plot('flow.svg')
 
-        :param output: a filename specifying the name of the image to be created
-        :param image_type: svg/jpg the file type of the output image
+        :param output: a filename specifying the name of the image to be created,
+                    the suffix svg/jpg determines the file type of the output image
         :param vertical_layout: top-down or left-right layout
         :param inline_display: show image directly inside the Jupyter Notebook
         :param build: build the flow first before plotting, gateway connection can be better showed
@@ -814,19 +813,24 @@ class Flow(ExitStack):
         start_repl = {}
         end_repl = {}
         for node, v in op_flow._pod_nodes.items():
-            if getattr(v._args, 'parallel', 1) > 1:
-                mermaid_graph.append(f'subgraph {node} ["{node} ({v._args.parallel})"]')
-                head_router = node + '_HEAD'
-                tail_router = node + '_TAIL'
+            if not v.is_singleton and v.role != PodRoleType.GATEWAY:
+                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v._args.parallel})"]')
+                if v.is_head_router:
+                    head_router = node + '_HEAD'
+                    end_repl[node] = (head_router, '((fa:fa-random))')
+                if v.is_tail_router:
+                    tail_router = node + '_TAIL'
+                    start_repl[node] = (tail_router, '((fa:fa-random))')
+
                 p_r = '((%s))'
                 p_e = '[[%s]]'
                 for j in range(v._args.parallel):
-                    r = node + '_%d' % j
-                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
-                    mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (r, p_e % r, tail_router, p_r % 'tail'))
+                    r = node + (f'_{j}' if v._args.parallel > 1 else '')
+                    if v.is_head_router:
+                        mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
+                    if v.is_tail_router:
+                        mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (r, p_e % r, tail_router, p_r % 'tail'))
                 mermaid_graph.append('end')
-                start_repl[node] = (tail_router, '((fa:fa-random))')
-                end_repl[node] = (head_router, '((fa:fa-random))')
 
         for node, v in op_flow._pod_nodes.items():
             ed_str = str(v.head_args.socket_in).split('_')[0]
@@ -863,8 +867,9 @@ class Flow(ExitStack):
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 
-        if image_type not in {'svg', 'jpg'}:
-            raise ValueError(f'image_type must be svg/jpg, but given {image_type}')
+        image_type = 'svg'
+        if output and output.endswith('jpg'):
+            image_type = 'jpg'
 
         url = op_flow._mermaid_to_url(mermaid_str, image_type)
         showed = False

@@ -48,6 +48,4 @@ def test_flow_before_after():
         assert f.num_peas == 4
 
 
-def test_flow_before_after_plot():
-    Flow().add(uses_before='_pass', uses_after='_pass', name='p1').plot('tmp.svg')
-    assert os.path.exists('tmp.svg')
+
