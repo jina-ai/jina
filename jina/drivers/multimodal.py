@@ -17,6 +17,7 @@ class MultimodalDriver(ReduceDriver):
     """
     def __init__(self, traversal_paths=('c', ), *args, **kwargs):
         # traversal chunks from chunk level.
+        # TODO discuss should we add root path
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def reduce(self, *args, **kwargs) -> None:
@@ -25,6 +26,13 @@ class MultimodalDriver(ReduceDriver):
         # reversed since the last response should collect the chunks/matches
         for r in reversed(self.prev_reqs):
             self._traverse_apply(r.docs, doc_pointers=doc_pointers, *args, **kwargs)
+
+        self._traverse_apply(
+            self.req.docs,
+            doc_pointers=doc_pointers,
+            concatenate_by_modality=True,
+            *args, **kwargs
+        )
 
     def _apply_all(
             self,
@@ -70,12 +78,12 @@ class MultimodalDriver(ReduceDriver):
                     doc_pointers[doc.id].append(embedding)
 
 
-    def _extract_chunk_level_content(self, doc):
+    def _extract_doc_content(self, doc):
+        # TODO discuss when do we need doc content as described in the requirement
+        # designing a driver that will extract all the required fields from the chunks of a document
+        # (buffer, blob, text, or directly embedding)
         return  doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
 
 
-    def _extract_chunk_level_embedding(self, doc):
+    def _extract_doc_embedding(self, doc):
         return (doc.embedding.buffer or None) and pb2array(doc.embedding)
-
-
-
