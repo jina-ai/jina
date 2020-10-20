@@ -205,11 +205,10 @@ class PeaRoleType(BetterEnum):
     """ The enum of a Pea role
 
     """
-    REPLICA = 0
+    SINGLETON = 0
     HEAD = 1
     TAIL = 2
-    SHARD = 3
-    SINGLETON = 4
+    PARALLEL = 3
 
 
 class PodRoleType(BetterEnum):
