@@ -7,9 +7,7 @@ import pytest
 from jina.drivers.cache import BaseCacheDriver
 from jina.executors.indexers.cache import DocIDCache
 from jina.proto import jina_pb2, uid
-from tests import random_docs, rm_files
-
-filename = 'test-tmp.bin'
+from tests import random_docs
 
 
 class MockCacheDriver(BaseCacheDriver):
@@ -22,7 +20,8 @@ class MockCacheDriver(BaseCacheDriver):
         raise NotImplementedError
 
 
-def test_cache_driver_twice():
+def test_cache_driver_twice(tmp_path):
+    filename = tmp_path / 'test-tmp.bin'
     docs = list(random_docs(10))
     driver = MockCacheDriver()
     with DocIDCache(filename) as executor:
@@ -41,10 +40,9 @@ def test_cache_driver_twice():
 
         # check persistence
         assert os.path.exists(filename)
-        rm_files([filename])
 
 
-def test_cache_driver_tmpfile():
+def test_cache_driver_tmpfile(tmp_path):
     docs = list(random_docs(10))
     driver = MockCacheDriver()
     with DocIDCache() as executor:
@@ -65,7 +63,8 @@ def test_cache_driver_tmpfile():
     assert os.path.exists(executor.index_abspath)
 
 
-def test_cache_driver_from_file():
+def test_cache_driver_from_file(tmp_path):
+    filename = tmp_path / 'test-tmp.bin'
     docs = list(random_docs(10))
     with open(filename, 'wb') as fp:
         fp.write(np.array([uid.id2hash(d.id) for d in docs], dtype=np.int64).tobytes())
@@ -85,4 +84,3 @@ def test_cache_driver_from_file():
 
         # check persistence
         assert os.path.exists(filename)
-        rm_files([filename])
