@@ -42,7 +42,7 @@ def test_cache_driver_twice(tmp_path):
         assert os.path.exists(filename)
 
 
-def test_cache_driver_tmpfile(tmp_path):
+def test_cache_driver_tmpfile():
     docs = list(random_docs(10))
     driver = MockCacheDriver()
     with DocIDCache() as executor:
