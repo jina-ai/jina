@@ -17,3 +17,11 @@ class BaseEmbeddingEvaluator(BaseEvaluator):
         :return the evaluation metric value for the request document
         """
         raise NotImplementedError
+
+
+def expand_vector(vec):
+    if not isinstance(vec, np.ndarray):
+        vec = np.array(vec)
+    if len(vec.shape) == 1:
+        vec = np.expand_dims(vec, 0)
+    return vec

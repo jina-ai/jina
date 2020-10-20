@@ -1,6 +1,7 @@
 import numpy as np
 
-from ..embedding import BaseEmbeddingEvaluator
+from ..embedding import BaseEmbeddingEvaluator, expand_vector
+from ...indexers.vector import _euclidean, _ext_A, _ext_B, _cosine, _norm
 
 
 class CosineEvaluator(BaseEmbeddingEvaluator):
@@ -23,5 +24,6 @@ class CosineEvaluator(BaseEmbeddingEvaluator):
         :param desired: the expected embedding of the document
         :return the evaluation metric value for the request document
         """
-        from scipy.spatial.distance import cosine
-        return cosine(actual, desired)
+        actual = expand_vector(actual)
+        desired = expand_vector(desired)
+        return _cosine(_ext_A(_norm(actual)), _ext_B(_norm(desired)))
