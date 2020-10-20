@@ -18,7 +18,8 @@ from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, PretrainedModelFileDoesNotExist
+from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
+    PretrainedModelFileDoesNotExist
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
@@ -107,7 +108,7 @@ class BasePea(metaclass=PeaMeta):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
-        :param replica_id: the id used to separate the storage of each pea, only used when ``args.separate_storage=True``
+        :param pea_id: the id used to separate the storage of each pea, only used when ``args.separate_storage=True``
         """
         super().__init__()
         self.args = args
@@ -132,8 +133,8 @@ class BasePea(metaclass=PeaMeta):
             self.daemon = args.daemon
             if self.args.name:
                 self.name = self.args.name
-            if self.args.role == PeaRoleType.REPLICA:
-                self.name = '%s-%d' % (self.name, self.args.replica_id)
+            if self.args.role == PeaRoleType.PARALLEL:
+                self.name = '%s-%d' % (self.name, self.args.pea_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
             if self.args.name:
                 # everything in this Pea (process) will use the same name for display the log
@@ -196,7 +197,7 @@ class BasePea(metaclass=PeaMeta):
             try:
                 self.executor = BaseExecutor.load_config(
                     self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
-                    self.args.separated_workspace, self.args.replica_id)
+                    self.args.separated_workspace, self.args.pea_id)
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad
