@@ -37,9 +37,11 @@ class BasePod(ExitStack):
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        if hasattr(args, 'polling') and args.polling.is_push:
-            # ONLY reset when it is push
-            args.uses_after = '_pass'
+
+        # TODO: I don't remember what is this for???
+        # if hasattr(args, 'polling') and args.polling.is_push:
+        #     # ONLY reset when it is push
+        #     args.uses_after = '_pass'
 
         self._args = args
         self.peas_args = self._parse_args(args)
