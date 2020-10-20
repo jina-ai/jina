@@ -43,7 +43,7 @@ class BasePod(ExitStack):
     @property
     def is_singleton(self) -> bool:
         """Return if the Pod contains only a single Pea """
-        return not self.is_head_router and not self.is_tail_router
+        return not (self.is_head_router or self.is_tail_router)
 
     @property
     def is_idle(self) -> bool:
