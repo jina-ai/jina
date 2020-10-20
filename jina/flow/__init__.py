@@ -774,7 +774,6 @@ class Flow(ExitStack):
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
     def plot(self, output: str = None,
-             image_type: str = 'svg',
              vertical_layout: bool = False,
              inline_display: bool = True,
              build: bool = True,
@@ -793,8 +792,8 @@ class Flow(ExitStack):
 
             flow = Flow().add(name='pod_a').plot('flow.svg')
 
-        :param output: a filename specifying the name of the image to be created
-        :param image_type: svg/jpg the file type of the output image
+        :param output: a filename specifying the name of the image to be created,
+                    the suffix svg/jpg determines the file type of the output image
         :param vertical_layout: top-down or left-right layout
         :param inline_display: show image directly inside the Jupyter Notebook
         :param build: build the flow first before plotting, gateway connection can be better showed
@@ -868,8 +867,12 @@ class Flow(ExitStack):
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         mermaid_str = '\n'.join(mermaid_graph)
 
-        if image_type not in {'svg', 'jpg'}:
-            raise ValueError(f'image_type must be svg/jpg, but given {image_type}')
+        if output.endswith('svg'):
+            image_type = 'svg'
+        elif output.endswith('jpg'):
+            image_type = 'jpg'
+        else:
+            raise ValueError(f'image_type must be svg/jpg, but given {output}')
 
         url = op_flow._mermaid_to_url(mermaid_str, image_type)
         showed = False
