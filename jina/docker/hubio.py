@@ -53,18 +53,20 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
         except (ImportError, ModuleNotFoundError):
-            self.logger.error('requires "docker" dependency, please install it via "pip install jina[docker]"')
-            self.logger.info('usable commands: jina hub [list, new]')
+            self.logger.error('requires "docker" dependency, '
+                              'please install it via pip install "jina[docker]"')
+            self.logger.warning('available commands: jina hub [list, new]')
 
     def new(self) -> None:
         """Create a new executor using cookiecutter template """
         try:
             from cookiecutter.main import cookiecutter
         except (ImportError, ModuleNotFoundError):
-            self.logger.critical('requires "cookiecutter" dependency, please install it via "pip install cookiecutter"')
+            self.logger.critical('"jina hub new" requires "cookiecutter" dependency, '
+                                 'please install it via pip install "jina[cookiecutter]"')
             raise
 
-        import click
+        import click  # part of cookiecutter
         cookiecutter_template = self.args.template
         if self.args.type == 'app':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina.git'
