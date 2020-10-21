@@ -1,11 +1,10 @@
-
 import json
-import urllib
+from typing import Dict
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import requests
-from typing import Dict
 from pkg_resources import resource_stream
 
 from .helper import credentials_file
@@ -17,7 +16,7 @@ def _list(logger, name: str = None, kind: str = None, type_: str = None, keyword
     # TODO: Shouldn't pass a default argument for keywords. Need to handle after lambda function gets fixed
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
         hubapi_yml = yaml.load(fp)
-    
+
     hubapi_url = hubapi_yml['hubapi']['url']
     hubapi_list = hubapi_yml['hubapi']['list']
     params = {}
@@ -31,24 +30,26 @@ def _list(logger, name: str = None, kind: str = None, type_: str = None, keyword
         # The way lambda function handles params, we need to pass them comma separated rather than in an iterable 
         params['keywords'] = ','.join(keywords) if len(keywords) > 1 else keywords
     if params:
-        request = Request(f'{hubapi_url}{hubapi_list}', urlencode(params).encode())
-        urlopen(request)
-        json.load(resource)
+        data = urlencode(params).encode()
+        print(f'{hubapi_url}{hubapi_list}')
+        request = Request(f'{hubapi_url}{hubapi_list}', data)
 
-        response = requests.get(url=f'{hubapi_url}{hubapi_list}',
-                                params=params)
-        if response.status_code == requests.codes.bad_request and response.text == 'No docs found':
-            print(f'\n{colored("✗ Could not find any executors. Please change the arguments and retry!", "red")}\n')
-            return response
-        
-        if response.status_code == requests.codes.internal_server_error:
-            logger.warning(f'Got the following server error: {response.text}')
-            print(f'\n{colored("✗ Could not find any executors. Something wrong with the server!", "red")}\n')
-            return response
-        
-        manifests = response.json()['manifest']
+        try:
+            with urlopen(request) as resp:
+                response = json.load(resp)
+        except HTTPError as err:
+            if err.code == 400:
+                logger.error('Could not find any executors. Please change the filter and retry!')
+            elif err.code == 500:
+                logger.error(f'Got the following server error! {err.reason}')
+            else:
+                logger.error(f'Unknown error: {err.reason}')
+
+            return
+
+        manifests = response['manifest']
         for index, manifest in enumerate(manifests):
-            print(f'\n{colored("☟ Executor #" + str(index+1), "cyan", attrs=["bold"])}')
+            print(f'\n{colored("☟ Executor #" + str(index + 1), "cyan", attrs=["bold"])}')
             if 'name' in manifest:
                 print(f'{colored("☞", "green")} '
                       f'{colored("Name", "grey", attrs=["bold"]):<30s}: '
@@ -81,7 +82,7 @@ def _list(logger, name: str = None, kind: str = None, type_: str = None, keyword
                 print(f'{colored("☞", "green")} '
                       f'{colored("Documentation", "grey", attrs=["bold"]):<30s}: '
                       f'{manifest["documentation"]}')
-        
+
         return response
 
 
@@ -90,25 +91,25 @@ def _push(logger, summary: Dict = None):
     if not summary:
         logger.error(f'summary is empty.nothing to do')
         return
-    
+
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
         hubapi_yml = yaml.load(fp)
-    
+
     hubapi_url = hubapi_yml['hubapi']['url']
     hubapi_push = hubapi_yml['hubapi']['push']
-    
+
     if not credentials_file().is_file():
         logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
-    
+
     with open(credentials_file(), 'r') as cf:
         cred_yml = yaml.load(cf)
     access_token = cred_yml['access_token']
-    
+
     if not access_token:
         logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
-    
+
     headers = {
         'Accept': 'application/json',
         'authorizationToken': access_token
