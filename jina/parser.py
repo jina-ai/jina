@@ -131,14 +131,14 @@ def set_hub_list_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--name', type=str, default='',
-                        help='name of executor')
-    parser.add_argument('--keywords', type=str, nargs='+', default=['numeric'],
-                        help='keywords to search for')
+    parser.add_argument('--name', type=str,
+                        help='name of hub image')
+    parser.add_argument('--kind', type=str,
+                        help='kind of hub image')
+    parser.add_argument('--keywords', type=str, nargs='+',
+                        help='keywords for searching')
     parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app'],
-                        help='type of executor')
-    parser.add_argument('--kind', type=str, default='',
-                        help='kind of executor')
+                        help='type of the hub image')
     return parser
 
 
