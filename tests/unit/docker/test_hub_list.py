@@ -1,12 +1,23 @@
+import os
+
+import pytest
+
 from jina.docker.hubio import HubIO
 from jina.parser import set_hub_list_parser
 
 
-def test_hub_list_local():
+@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='submodule is not init in github CI test')
+def test_hub_list_local_with_submodule():
     args = set_hub_list_parser().parse_args(['--local-only'])
     response = HubIO(args).list()
-    numeric_count = len(response)
-    assert numeric_count > 1
+    assert len(response) > 1
+
+
+@pytest.mark.skipif('GITHUB_WORKFLOW' not in os.environ, reason='local dev usually have hub submodule inited')
+def test_hub_list_local_no_submodule():
+    args = set_hub_list_parser().parse_args(['--local-only'])
+    response = HubIO(args).list()
+    assert len(response) == 0
 
 
 def test_hub_list_keywords():
