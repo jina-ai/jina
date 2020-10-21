@@ -8,8 +8,6 @@ import urllib.request
 import webbrowser
 from typing import Dict, Any
 
-import requests
-
 from .checker import *
 from .helper import Waiter, credentials_file
 from .hubapi import _list, _push
@@ -78,6 +76,8 @@ class HubIO:
 
     def login(self) -> None:
         """Login using Github Device flow to allow push access to Jina Hub Registry"""
+        import requests
+
         with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
             hubapi_yml = yaml.load(fp)
 
@@ -135,7 +135,7 @@ class HubIO:
                         break
 
         except KeyError as exp:
-            self.logger.error(f'didnot get following key in response: {exp}')
+            self.logger.error(f'can not read the key in response: {exp}')
         except Exception as exp:
             self.logger.error(f'login failed: {exp}')
 
