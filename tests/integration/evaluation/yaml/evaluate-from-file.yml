@@ -2,11 +2,11 @@
 components:
   - !BinaryPbIndexer
     with:
-      index_filename: gt.gz'
+      index_filename: gt.gz
     metas:
       name: gtidx
-      workspace: $JINA_TEST_RANKING_EVALUATION
-  - !StringLengthEvaluator
+      workspace: $JINA_TEST_EVALUATION_FROM_FILE
+  - !TextLengthEvaluator
     metas:
       name: length-evaluator
 metas:
@@ -16,7 +16,7 @@ requests:
     SearchRequest:
       - !LoadGroundTruthDriver
         with:
-          executor: gtidx-1
+          executor: gtidx
       - !CraftEvaluationDriver
         with:
           executor: length-evaluator

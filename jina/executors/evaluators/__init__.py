@@ -38,11 +38,11 @@ class BaseEvaluator(BaseExecutor):
 
 
 class FileBasedEvaluator(CompoundExecutor):
-    """A Frequently used pattern for combining A :class:`BaseKVIndexer` and :class:`BaseEvaluator`.
+    """A Frequently used pattern for combining A :class:`BinaryPbIndexer` and :class:`BaseEvaluator`.
      It will be equipped with predefined ``requests.on`` behaviors:
 
          -  At evaluation time(query or index)
-             - 1. Checks for the incoming document, gets its value from the `BaseKVIndexer` and fills the `groundtruth of the request
+             - 1. Checks for the incoming document, gets its value from the `BinaryPbIndexer` and fills the `groundtruth of the request
              - 2. Filter the documents that do not have a corresponding groundtruth
              - 2. The BaseEvaluator works as if the `groundtruth` had been provided by the client as it comes in the request.
 
@@ -75,10 +75,10 @@ class FileBasedEvaluator(CompoundExecutor):
            [SearchRequest, IndexRequest]:
              - !LoadGroundTruthDriver
                with:
-                 executor: groundtruth_index
+                 executor: BaseKVIndexer
              - !BaseEvaluationDriver
                with:
-                 executor: BaseKVIndexer
+                 executor: BaseEvaluator
            ControlRequest:
              - !ControlReqDriver {}
      """
