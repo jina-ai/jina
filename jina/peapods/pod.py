@@ -37,16 +37,13 @@ class BasePod(ExitStack):
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        if hasattr(args, 'polling') and args.polling.is_push:
-            # ONLY reset when it is push
-            args.uses_after = '_pass'
-
-        if getattr(args, 'parallel', 1) > 1:
-            self.is_head_router = True
-            self.is_tail_router = True
-
         self._args = args
         self.peas_args = self._parse_args(args)
+
+    @property
+    def is_singleton(self) -> bool:
+        """Return if the Pod contains only a single Pea """
+        return not (self.is_head_router or self.is_tail_router)
 
     @property
     def is_idle(self) -> bool:
@@ -82,15 +79,30 @@ class BasePod(ExitStack):
             'tail': None,
             'peas': []
         }
-
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
+            _set_after_to_pass(args)
+            self.is_head_router = True
+            self.is_tail_router = True
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
+        elif getattr(args, 'uses_before', None) or getattr(args, 'uses_after', None):
+            args.scheduling = SchedulerType.ROUND_ROBIN
+            if getattr(args, 'uses_before', None):
+                self.is_head_router = True
+                peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
+            if getattr(args, 'uses_after', None):
+                self.is_tail_router = True
+                peas_args['tail'] = _copy_to_tail_args(args)
+            peas_args['peas'] = _set_peas_args(args, peas_args.get('head', None), peas_args.get('tail', None))
         else:
+            _set_after_to_pass(args)
+            self.is_head_router = False
+            self.is_tail_router = False
             peas_args['peas'] = [args]
+
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
@@ -382,12 +394,14 @@ class FlowPod(BasePod):
             return self
 
 
-def _set_peas_args(args: Namespace, head_args: Namespace, tail_args: Namespace) -> List[Namespace]:
+def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Namespace = None) -> List[Namespace]:
     result = []
     for _ in range(args.parallel):
         _args = copy.deepcopy(args)
-        _args.port_in = head_args.port_out
-        _args.port_out = tail_args.port_in
+        if head_args:
+            _args.port_in = head_args.port_out
+        if tail_args:
+            _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
         _args.identity = get_random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
@@ -400,10 +414,20 @@ def _set_peas_args(args: Namespace, head_args: Namespace, tail_args: Namespace) 
                 raise NotImplementedError
         else:
             _args.socket_in = SocketType.SUB_CONNECT
-        _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
-        _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
+        if head_args:
+            _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
+        if tail_args:
+            _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
         result.append(_args)
     return result
+
+
+def _set_after_to_pass(args):
+    # TODO: I don't remember what is this for? once figure out, this function should be removed
+    # remark 1: i think it's related to route driver.
+    if hasattr(args, 'polling') and args.polling.is_push:
+        # ONLY reset when it is push
+        args.uses_after = '_pass'
 
 
 def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -> Namespace:
@@ -444,6 +468,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args.port_ctrl = random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
     _tail_args.uses = None
+
     if as_router:
         _tail_args.uses = args.uses_after or '_merge'
         _tail_args.name = args.name or ''

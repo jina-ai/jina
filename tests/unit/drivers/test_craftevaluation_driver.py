@@ -3,20 +3,18 @@ import numpy as np
 from typing import Any
 from jina.drivers.evaluate import CraftEvaluationDriver
 from jina.drivers.helper import DocGroundtruthPair, array2pb
-from jina.executors.evaluators.craft import BaseCraftingEvaluator
+from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
 
 
-class MockDiffEvaluator(BaseCraftingEvaluator):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class MockDiffEvaluator(BaseEvaluator):
 
     @property
     def metric(self):
         return 'MockDiffEvaluator'
 
-    def evaluate(self, doc_content: Any, groundtruth_content: Any, *args, **kwargs) -> float:
-        return abs(len(doc_content) - len(groundtruth_content))
+    def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
+        return abs(len(actual) - len(desired))
 
 
 @pytest.fixture(scope='function', params=['text', 'buffer', 'blob'])

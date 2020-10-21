@@ -18,10 +18,10 @@ class BaseRankingEvaluator(BaseEvaluator):
         super().__init__(*args, **kwargs)
         self.eval_at = eval_at
 
-    def evaluate(self, matches_ids: Sequence[Any], groundtruth_ids: Sequence[Any], *args, **kwargs) -> float:
+    def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
-        :param matches_ids: the matched document identifiers from the request as matched by jina indexers and rankers
-        :param groundtruth_ids: the expected documents matches ids sorted as they are expected
+        :param actual: the matched document identifiers from the request as matched by jina indexers and rankers
+        :param desired: the expected documents matches ids sorted as they are expected
         :return the evaluation metric value for the request document
         """
         raise NotImplementedError

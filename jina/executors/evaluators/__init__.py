@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Any
 
+from .running_stats import RunningStats
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
 
@@ -13,22 +14,27 @@ class BaseEvaluator(BaseExecutor):
 
     def post_init(self):
         super().post_init()
-        self.num_documents = 0
-        self.sum = 0
+        self._running_stats = RunningStats()
 
     @property
-    def avg(self):
-        if self.num_documents == 0:
-            return 0.0
-        return self.sum / self.num_documents
-
-    @property
-    def metric(self):
+    def metric(self) -> str:
         """Get the name of the evaluation metric """
-        pass
-
-    def evaluate(self, prediction: Any, groundtruth: Any, *args, **kwargs) -> float:
         raise NotImplementedError
+
+    def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
+        raise NotImplementedError
+
+    @property
+    def mean(self) -> float:
+        return self._running_stats.mean
+
+    @property
+    def std(self) -> float:
+        return self._running_stats.std
+
+    @property
+    def variance(self) -> float:
+        return self._running_stats.variance
 
 
 class FileBasedEvaluator(CompoundExecutor):
