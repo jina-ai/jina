@@ -4,6 +4,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
+from cli import _is_latest_version
 from jina.clients.python import PyClient
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.helper import cached_property
@@ -83,3 +84,11 @@ def test_dunder_get():
     a = SimpleNamespace()
     a.b = {'c': 1}
     assert dunder_get(a, 'b__c') == 1
+
+
+def test_check_update():
+    assert _is_latest_version()
+    # now mock it as old version
+    import jina
+    jina.__version__ = '0.1.0'
+    assert not _is_latest_version()
