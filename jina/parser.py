@@ -139,6 +139,8 @@ def set_hub_list_parser(parser=None):
                         help='keywords for searching')
     parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app'],
                         help='type of the hub image')
+    parser.add_argument('--local-only', action='store_true', default=False,
+                        help='list all local hub images on the current machine')
     return parser
 
 
@@ -217,7 +219,7 @@ def set_flow_parser(parser=None):
                     help='type of the output')
     gp.add_argument('--output-path', type=argparse.FileType('w', encoding='utf8'),
                     help='output path of the flow')
-    gp.add_argument('--inspect',  type=FlowInspectType.from_string,
+    gp.add_argument('--inspect', type=FlowInspectType.from_string,
                     choices=list(FlowInspectType), default=FlowInspectType.COLLECT,
                     help='strategy on those inspect pods in the flow. '
                          'if REMOVE is given then all inspect pods are removed when building the flow')
