@@ -1,5 +1,9 @@
 
 import json
+import urllib
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+
 import requests
 from typing import Dict
 from pkg_resources import resource_stream
@@ -27,6 +31,10 @@ def _list(logger, name: str = None, kind: str = None, type_: str = None, keyword
         # The way lambda function handles params, we need to pass them comma separated rather than in an iterable 
         params['keywords'] = ','.join(keywords) if len(keywords) > 1 else keywords
     if params:
+        request = Request(f'{hubapi_url}{hubapi_list}', urlencode(params).encode())
+        urlopen(request)
+        json.load(resource)
+
         response = requests.get(url=f'{hubapi_url}{hubapi_list}',
                                 params=params)
         if response.status_code == requests.codes.bad_request and response.text == 'No docs found':
