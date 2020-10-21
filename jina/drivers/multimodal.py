@@ -15,7 +15,7 @@ class MultimodalDriver(ReduceDriver):
     TODO add docstring
     each document have multiple chunks
     each chunk has 1 modality
-    group chunk i
+    group chunks with same modality
     """
     def __init__(self, traversal_paths: Tuple[str] = ('c', ), *args, **kwargs):
         # traversal chunks from chunk level.
