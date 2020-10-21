@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from collections import defaultdict
 from typing import Iterable, Dict, Tuple
 
 import numpy as np
@@ -32,12 +33,6 @@ class MultimodalDriver(ReduceDriver):
                 *args, **kwargs
             )
 
-        self._traverse_apply(
-            self.req.docs,
-            doc_pointers=doc_pointers,
-            concatenate_by_modality=True,
-            *args, **kwargs
-        )
 
     def _apply_all(
             self,
@@ -45,42 +40,35 @@ class MultimodalDriver(ReduceDriver):
             context_doc: 'jina_pb2.Document',
             field: str,
             doc_pointers: Dict,
-            concatenate_by_modality: bool = False,
             *args,
             **kwargs
     ) -> None:
         # docs are chunks of context_doc returned by traversal rec.
         # Group chunks which has the same modality
-        modal_doc = {}
+        modal_docids = defaultdict(list)
         for doc in docs:
-            modal = doc.modality
-            if doc.id in modal_doc:
-                modal_doc[modal].append(doc.id)
+            modal_docids[doc.modality].append(doc.id)
+            embedding = self._extract_doc_embedding(doc)
+            if doc.id not in doc_pointers:
+                doc_pointers[doc.id] = [embedding]
             else:
-                modal_doc[modal] = [doc.id]
+                doc_pointers[doc.id].append(embedding)
 
-        for modal, doc_ids in modal_doc.items():
-            if concatenate_by_modality:
-                embeddings_with_same_modality = [
-                    doc_pointers[doc_id]
-                    for
-                    doc_id
-                    in
-                    doc_ids
-                ]
-                context_doc.embedding.CopyFrom(
-                    array2pb(
-                        np.concatenate(
-                            embeddings_with_same_modality,
-                            axis=0)
-                    )
+        for modal, doc_ids in modal_docids.items():
+            embeddings_with_same_modality = [
+                doc_pointers[doc_id]
+                for
+                doc_id
+                in
+                doc_ids
+            ]
+            context_doc.embedding.CopyFrom(
+                array2pb(
+                    np.concatenate(
+                        embeddings_with_same_modality,
+                        axis=0)
                 )
-            else:
-                embedding = self._extract_doc_embedding(doc)
-                if doc.id not in doc_pointers:
-                    doc_pointers[doc.id] = [embedding]
-                else:
-                    doc_pointers[doc.id].append(embedding)
+            )
 
 
     def _extract_doc_content(self, doc: 'jina_pb2.Document'):
