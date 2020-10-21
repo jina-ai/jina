@@ -1,9 +1,9 @@
 import pytest
 
 from typing import Optional, Iterator
-from jina.drivers.evaluate import GroundTruthKVIndexDriver
+from jina.drivers.index import KVIndexDriver
 from jina.executors.indexers import BaseKVIndexer
-from jina.proto import jina_pb2
+from jina.proto import jina_pb2, uid
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):
@@ -29,10 +29,9 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         pass
 
 
-class SimpleGroundTruthKVIndexDriver(GroundTruthKVIndexDriver):
+class SimpleKVIndexDriver(KVIndexDriver):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.id_tag = 'id'
 
     @property
     def exec_fn(self):
@@ -40,8 +39,8 @@ class SimpleGroundTruthKVIndexDriver(GroundTruthKVIndexDriver):
 
 
 @pytest.fixture(scope='function')
-def simple_kv_groundtruth_indexer_driver():
-    return SimpleGroundTruthKVIndexDriver()
+def simple_kv_indexer_driver(id_tag):
+    return SimpleKVIndexDriver(id_tag=id_tag)
 
 
 @pytest.fixture(scope='function')
@@ -56,20 +55,24 @@ def documents():
     # doc: 2
     # doc: 3
     # doc: 4
-    # doc: 5 - will be missing from KV indexer
+    # doc: 5
     for idx in range(5):
         doc = jina_pb2.Document()
         doc.tags['id'] = idx + 1
+        doc.id = uid.new_doc_id(doc)
         docs.append(doc)
 
     return docs
 
 
-def test_load_groundtruth_driver(mock_groundtruth_indexer, simple_kv_groundtruth_indexer_driver, documents):
-    simple_kv_groundtruth_indexer_driver.attach(executor=mock_groundtruth_indexer, pea=None)
-    simple_kv_groundtruth_indexer_driver._apply_all(documents)
+@pytest.mark.parametrize('id_tag', (None, 'id'))
+def test_kv_index_driver(mock_groundtruth_indexer, simple_kv_indexer_driver, documents, id_tag):
+    simple_kv_indexer_driver.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_kv_indexer_driver._apply_all(documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        print(f' ')
-        assert mock_groundtruth_indexer.docs[idx + 1] == doc.SerializeToString()
+        if id_tag:
+            assert mock_groundtruth_indexer.docs[idx + 1] == doc.SerializeToString()
+        else:
+            assert mock_groundtruth_indexer.docs[uid.id2hash(doc.id)] == doc.SerializeToString()

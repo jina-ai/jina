@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
-from .index import BaseIndexDriver
 from .helper import DocGroundtruthPair, pb2array
 from jina.proto import jina_pb2
 
@@ -122,22 +121,8 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
             evaluation.ref_id = groundtruth.id
 
 
-class GroundTruthKVIndexDriver(BaseIndexDriver):
-    """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
-    """
-    def __init__(self, id_tag: str = 'id', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._traversal_paths = ('r', )
-        self.id_tag = id_tag
-
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        keys = [doc.tags[self.id_tag] for doc in docs]
-        values = [doc.SerializeToString() for doc in docs]
-        self.exec_fn(keys, values)
-
-
 class LoadGroundTruthDriver(BaseExecutableDriver):
-    """Driver used to search for the `document key` in a KVIndexer to find the corresponding groundtruth.
+    """Driver used to search for the `document key` in a KVIndex to find the corresponding groundtruth.
     (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument)
      This driver's job is to fill the `request` groundtruth with the corresponding groundtruth for each document if found in the corresponding KVIndexer.
     """
