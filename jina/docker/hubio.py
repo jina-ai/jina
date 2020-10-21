@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 from .checker import *
 from .helper import Waiter, credentials_file
-from .hubapi import _list, _push
+from .hubapi import _list, _push, _list_local
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart, TimedOutException, DockerLoginFailed
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
@@ -53,9 +53,8 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
         except (ImportError, ModuleNotFoundError):
-            self.logger.error('requires "docker" dependency, '
-                              'please install it via pip install "jina[docker]"')
-            self.logger.warning('available commands: jina hub [list, new]')
+            self.logger.warning('missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
+                                'to enable full CLI, please do pip install "jina[docker]"')
 
     def new(self) -> None:
         """Create a new executor using cookiecutter template """
@@ -146,11 +145,14 @@ class HubIO:
 
     def list(self) -> Dict[str, Any]:
         """ List all hub images given a filter specified by CLI """
-        return _list(logger=self.logger,
-                     image_name=self.args.name,
-                     image_kind=self.args.kind,
-                     image_type=self.args.type,
-                     image_keywords=self.args.keywords)
+        if self.args.local_only:
+            return _list_local(self.logger)
+        else:
+            return _list(logger=self.logger,
+                         image_name=self.args.name,
+                         image_kind=self.args.kind,
+                         image_type=self.args.type,
+                         image_keywords=self.args.keywords)
 
     def push(self, name: str = None, readme_path: str = None) -> None:
         """ A wrapper of docker push 

@@ -1,14 +1,69 @@
 import json
+import os
+import pkgutil
+from pkgutil import iter_modules
 from typing import Dict, Sequence, Any, Optional
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from pkg_resources import resource_stream
+from setuptools import find_packages
 
 from .helper import credentials_file
-from ..helper import yaml, colored
+from ..helper import colored, yaml
+from ..logging import default_logger
 from ..logging.profile import TimeContext
+
+_header_attrs = ['bold', 'underline']
+
+
+def _load_local_hub_manifest():
+    namespace = 'jina.hub'
+    try:
+        path = os.path.dirname(pkgutil.get_loader(namespace).path)
+    except AttributeError:
+        default_logger.warning('local Hub is not initialized, '
+                               'try "git submodule update --init" if you are in dev mode')
+        return {}
+
+    def add_hub():
+        m_yml = f'{info.module_finder.path}/manifest.yml'
+        if info.ispkg and os.path.exists(m_yml):
+            try:
+                with open(m_yml) as fp:
+                    m = yaml.load(fp)
+                    hub_images[m['name']] = m
+            except:
+                pass
+
+    hub_images = {}
+
+    for info in iter_modules([path]):
+        add_hub()
+
+    for pkg in find_packages(path):
+        pkgpath = path + '/' + pkg.replace('.', '/')
+        for info in iter_modules([pkgpath]):
+            add_hub()
+
+    # filter
+    return hub_images
+
+
+def _list_local(logger) -> Optional[Dict[str, Any]]:
+    """
+    List all local hub manifests
+
+    .. note:
+
+        This does not implement query langauge
+
+    """
+    manifests = _load_local_hub_manifest()
+    if manifests:
+        _print_hub_table(logger, manifests.values())
+    return manifests
 
 
 def _list(logger, image_name: str = None, image_kind: str = None,
@@ -51,22 +106,24 @@ def _list(logger, image_name: str = None, image_kind: str = None,
                 return
 
         manifests = response['manifest']
-        attrs = ['bold', 'underline']
-        info_table = [f'found {len(manifests)} matched hub images',
-                      '{:<40s}{:<20s}{:<30s}'.format(colored('Name', attrs=attrs),
-                                                     colored('Version', attrs=attrs),
-                                                     colored('Description', attrs=attrs))]
-
-        for index, manifest in enumerate(manifests):
-            image_name = manifest.get('name', '')
-            ver = manifest.get('version', '')
-            desc = manifest.get('description', '')[:50] + '...'
-            if image_name and ver and desc:
-                info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<40s}'
-                                  f'{colored(ver, color="green"):<20s}'
-                                  f'{desc:<30s}')
-        logger.info('\n'.join(info_table))
+        _print_hub_table(logger, manifests)
         return manifests
+
+
+def _print_hub_table(logger, manifests):
+    info_table = [f'found {len(manifests)} matched hub images',
+                  '{:<40s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
+                                                 colored('Version', attrs=_header_attrs),
+                                                 colored('Description', attrs=_header_attrs))]
+    for index, manifest in enumerate(manifests):
+        image_name = manifest.get('name', '')
+        ver = manifest.get('version', '')
+        desc = manifest.get('description', '')[:60].strip() + '...'
+        if image_name and ver and desc:
+            info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<40s}'
+                              f'{colored(ver, color="green"):<20s}'
+                              f'{desc:<30s}')
+    logger.info('\n'.join(info_table))
 
 
 def _push(logger, summary: Dict = None):
