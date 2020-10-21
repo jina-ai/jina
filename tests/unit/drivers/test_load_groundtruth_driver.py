@@ -4,7 +4,7 @@ import numpy as np
 from typing import Optional
 from jina.drivers.evaluate import LoadGroundTruthDriver
 from jina.executors.indexers import BaseKVIndexer
-from jina.proto import jina_pb2
+from jina.proto import jina_pb2, uid
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):
@@ -30,18 +30,18 @@ class MockGroundTruthIndexer(BaseKVIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         doc1 = jina_pb2.Document()
-        doc1.tags['id'] = 1
+        doc1.id = '01'
         doc1.tags['groundtruth'] = True
         doc2 = jina_pb2.Document()
-        doc2.tags['id'] = 2
+        doc2.id = '02'
         doc2.tags['groundtruth'] = True
         doc4 = jina_pb2.Document()
-        doc4.tags['id'] = 4
+        doc4.id = '04'
         doc4.tags['groundtruth'] = True
         self.db = {
-            1: doc1.SerializeToString(),
-            2: doc2.SerializeToString(),
-            4: doc4.SerializeToString()
+            uid.id2hash(doc1.id): doc1.SerializeToString(),
+            uid.id2hash(doc2.id): doc2.SerializeToString(),
+            uid.id2hash(doc4.id): doc4.SerializeToString()
         }
 
 
@@ -80,7 +80,7 @@ def eval_request():
     # doc: 5 - will be missing from KV indexer
     for idx in range(5):
         doc = req.docs.add()
-        doc.tags['id'] = idx + 1
+        doc.id = f'0{str(idx + 1)}'
     return req
 
 
@@ -95,7 +95,7 @@ def test_load_groundtruth_driver(mock_groundtruth_indexer, simple_load_groundtru
     for groundtruth in eval_request.groundtruths:
         assert groundtruth.tags['groundtruth']
 
-    assert eval_request.groundtruths[0].tags['id'] == 1
-    assert eval_request.groundtruths[1].tags['id'] == 2
+    assert eval_request.groundtruths[0].id == '01'
+    assert eval_request.groundtruths[1].id == '02'
     # index 3 and 5 have no groundtruth in the KVIndexer
-    assert eval_request.groundtruths[2].tags['id'] == 4
+    assert eval_request.groundtruths[2].id == '04'

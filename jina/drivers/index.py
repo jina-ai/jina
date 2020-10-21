@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Optional
+from typing import Iterable
 
 import numpy as np
 
@@ -38,18 +38,7 @@ class KVIndexDriver(BaseIndexDriver):
     """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
     """
 
-    def __init__(self, id_tag: Optional[str] = None, *args, **kwargs):
-        """ Initialize a :class:`BaseExecutableDriver`
-
-        :param id_tag: Optional parameter if wants to index documents based on a specific tag instead of the `document` id field
-        """
-        super().__init__(*args, **kwargs)
-        self.id_tag = id_tag
-
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
-        if self.id_tag:
-            keys = [doc.tags[self.id_tag] for doc in docs]
-        else:
-            keys = [uid.id2hash(doc.id) for doc in docs]
+        keys = [uid.id2hash(doc.id) for doc in docs]
         values = [doc.SerializeToString() for doc in docs]
         self.exec_fn(keys, values)

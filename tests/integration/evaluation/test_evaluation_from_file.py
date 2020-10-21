@@ -8,26 +8,26 @@ from jina.proto import jina_pb2
 @pytest.fixture(scope='function')
 def index_groundtruth():
     """Index Groundtruth:
-        doc: tag__id = 0
+        doc: id = 00
              tag__groundtruth = True
              text = aa
-        doc: tag__id = 1
+        doc: id = 01
              tag__groundtruth = True
              text = aa
-        doc: tag__id = 3
+        doc: id = 03
              tag__groundtruth = True
              text = aa
     """
     doc0 = jina_pb2.Document()
-    doc0.tags['id'] = 0
+    doc0.id = '00'
     doc0.tags['groundtruth'] = True
     doc0.text = 'aa'
     doc1 = jina_pb2.Document()
-    doc1.tags['id'] = 1
+    doc1.id = '01'
     doc1.tags['groundtruth'] = True
     doc1.text = 'aa'
     doc3 = jina_pb2.Document()
-    doc3.tags['id'] = 3
+    doc3.id = '03'
     doc3.tags['groundtruth'] = True
     doc3.text = 'aa'
     return [doc0, doc1, doc3]
@@ -36,31 +36,31 @@ def index_groundtruth():
 @pytest.fixture(scope='function')
 def evaluate_docs():
     """Evaluate Documents:
-        doc: tag__id = 0
+        doc: id = 00
              tag__groundtruth = False
              text = aa
-        doc: tag__id = 1
+        doc: id = 01
              tag__groundtruth = False
              text = aa
-        doc: tag__id = 2
+        doc: id = 02
              tag__groundtruth = False
              text = aa
     """
     doc0 = jina_pb2.Document()
-    doc0.tags['id'] = 0
+    doc0.id = '00'
     doc0.tags['groundtruth'] = False
     doc0.text = 'aaa'
     doc1 = jina_pb2.Document()
-    doc1.tags['id'] = 1
+    doc1.id = '01'
     doc1.tags['groundtruth'] = False
     doc1.text = 'aaa'
     # doc2 does not have a groundtruth indexed
     doc2 = jina_pb2.Document()
-    doc2.tags['id'] = 2
+    doc2.id = '02'
     doc2.tags['groundtruth'] = False
     doc2.text = 'aaa'
     doc3 = jina_pb2.Document()
-    doc3.tags['id'] = 3
+    doc3.id = '03'
     doc3.tags['groundtruth'] = False
     doc3.text = 'aaa'
     return [doc0, doc1, doc2, doc3]
@@ -75,7 +75,7 @@ def random_workspace(tmpdir):
 
 def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs):
     with Flow().load_config('flow-index-gt.yml') as index_gt_flow:
-        index_gt_flow.index(input_fn=index_groundtruth)
+        index_gt_flow.index(input_fn=index_groundtruth, override_doc_id=False)
 
     def validate_evaluation_response(resp):
         assert len(resp.docs) == 3
@@ -92,5 +92,6 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
         evaluate_flow.search(
             input_fn=evaluate_docs,
             output_fn=validate_evaluation_response,
-            callback_on_body=True
+            callback_on_body=True,
+            override_doc_id=False
         )

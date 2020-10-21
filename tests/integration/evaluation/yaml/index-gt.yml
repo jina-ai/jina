@@ -7,6 +7,4 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !KVIndexDriver
-        with:
-          id_tag: 'id'
+      - !KVIndexDriver {}

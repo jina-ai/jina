@@ -39,8 +39,8 @@ class SimpleKVIndexDriver(KVIndexDriver):
 
 
 @pytest.fixture(scope='function')
-def simple_kv_indexer_driver(id_tag):
-    return SimpleKVIndexDriver(id_tag=id_tag)
+def simple_kv_indexer_driver():
+    return SimpleKVIndexDriver()
 
 
 @pytest.fixture(scope='function')
@@ -58,21 +58,17 @@ def documents():
     # doc: 5
     for idx in range(5):
         doc = jina_pb2.Document()
-        doc.tags['id'] = idx + 1
+        doc.text = str(idx + 1)
         doc.id = uid.new_doc_id(doc)
         docs.append(doc)
 
     return docs
 
 
-@pytest.mark.parametrize('id_tag', (None, 'id'))
-def test_kv_index_driver(mock_groundtruth_indexer, simple_kv_indexer_driver, documents, id_tag):
+def test_kv_index_driver(mock_groundtruth_indexer, simple_kv_indexer_driver, documents):
     simple_kv_indexer_driver.attach(executor=mock_groundtruth_indexer, pea=None)
     simple_kv_indexer_driver._apply_all(documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        if id_tag:
-            assert mock_groundtruth_indexer.docs[idx + 1] == doc.SerializeToString()
-        else:
-            assert mock_groundtruth_indexer.docs[uid.id2hash(doc.id)] == doc.SerializeToString()
+        assert mock_groundtruth_indexer.docs[uid.id2hash(doc.id)] == doc.SerializeToString()

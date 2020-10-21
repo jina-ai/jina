@@ -124,31 +124,21 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
 
 class LoadGroundTruthDriver(KVSearchDriver):
     """Driver used to search for the `document key` in a KVIndex to find the corresponding groundtruth.
-    (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument)
+    (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument.
+    It only retrieves `groundtruth` taking documents at root as key)
      This driver's job is to fill the `request` groundtruth with the corresponding groundtruth for each document if found in the corresponding KVIndexer.
     """
-
-    def __init__(self, id_tag: str = 'id', *args, **kwargs):
-        """
-
-        :param id_tag: the name of the tag that corresponds to the key for which to search the `groundtruth` document
-        :param args:
-        :param kwargs:
-        """
-        super().__init__(*args, **kwargs)
-        self.id_tag = id_tag
 
     def __call__(self, *args, **kwargs):
         assert len(self.req.groundtruths) == 0
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
         for idx, doc in enumerate(self.req.docs):
-            serialized_groundtruth = self.exec_fn(doc.tags[self.id_tag])
+            serialized_groundtruth = self.exec_fn(self.id2hash(doc.id))
             if serialized_groundtruth:
-                doc.tags['found'] = True
                 gt = self.req.groundtruths.add()
                 gt.ParseFromString(serialized_groundtruth)
             else:
                 miss_idx.append(idx)
-            # delete non-existed matches in reverse
+        # delete non-existed matches in reverse
         for j in reversed(miss_idx):
             del self.req.docs[j]
