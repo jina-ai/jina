@@ -5,6 +5,7 @@ from typing import Iterable
 
 from . import BaseExecutableDriver
 from .helper import DocGroundtruthPair, pb2array
+from .search import KVSearchDriver
 from jina.proto import jina_pb2
 
 
@@ -121,27 +122,20 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
             evaluation.ref_id = groundtruth.id
 
 
-class LoadGroundTruthDriver(BaseExecutableDriver):
+class LoadGroundTruthDriver(KVSearchDriver):
     """Driver used to search for the `document key` in a KVIndex to find the corresponding groundtruth.
     (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument)
      This driver's job is to fill the `request` groundtruth with the corresponding groundtruth for each document if found in the corresponding KVIndexer.
     """
 
-    def __init__(self,
-                 executor: str = None,
-                 method: str = 'query',
-                 id_tag: str = 'id', *args, **kwargs):
+    def __init__(self, id_tag: str = 'id', *args, **kwargs):
         """
 
         :param id_tag: the name of the tag that corresponds to the key for which to search the `groundtruth` document
         :param args:
         :param kwargs:
         """
-        super().__init__(
-            executor=executor,
-            method=method,
-            *args,
-            **kwargs)
+        super().__init__(*args, **kwargs)
         self.id_tag = id_tag
 
     def __call__(self, *args, **kwargs):
