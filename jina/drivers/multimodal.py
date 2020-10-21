@@ -40,8 +40,7 @@ class MultimodalDriver(ReduceDriver):
             context_doc: 'jina_pb2.Document',
             field: str,
             doc_pointers: Dict,
-            *args,
-            **kwargs
+            *args, **kwargs
     ) -> None:
         # docs are chunks of context_doc returned by traversal rec.
         # Group chunks which has the same modality
@@ -54,21 +53,24 @@ class MultimodalDriver(ReduceDriver):
             else:
                 doc_pointers[doc.id].append(embedding)
 
+        embeddings = []
         for modal, doc_ids in modal_docids.items():
-            embeddings_with_same_modality = [
+            embedding_with_same_modality = [
                 doc_pointers[doc_id]
                 for
                 doc_id
                 in
                 doc_ids
             ]
-            context_doc.embedding.CopyFrom(
-                array2pb(
-                    np.concatenate(
-                        embeddings_with_same_modality,
-                        axis=0)
-                )
+            embeddings.extend(embedding_with_same_modality)
+
+        context_doc.embedding.CopyFrom(
+            array2pb(
+                np.concatenate(
+                    embeddings,
+                    axis=0)
             )
+        )
 
 
     def _extract_doc_content(self, doc: 'jina_pb2.Document'):

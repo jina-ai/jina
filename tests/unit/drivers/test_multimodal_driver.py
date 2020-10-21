@@ -63,7 +63,11 @@ def test_multimodal_driver(flow, embeddings, doc_with_multimodal_chunks):
         assert chunk3.embedding.shape == [embeddings[2].shape[0]]
         assert chunk1.modality == chunk2.modality == 'visual'
         assert chunk3.modality == 'textual'
-        # TODO add np testing after resolve question.
+        np.testing.assert_almost_equal(
+            pb2array(doc.embedding),
+            np.concatenate(embeddings, axis=0),
+            decimal=4
+        )
 
     with flow:
         flow.index(input_fn=input_fn, output_fn=validate, callback_on_body=True)
