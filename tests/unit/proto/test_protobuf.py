@@ -22,7 +22,7 @@ def test_tags(document):
     assert isinstance(d2.tags['bool'], bool)
     assert isinstance(d2.tags['nested']['bool'], bool)
     # can be used as a dict
-    for k, v in d2.tags['nested'].items():
+    for _, _ in d2.tags['nested'].items():
         continue
 
 
