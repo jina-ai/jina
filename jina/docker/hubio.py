@@ -41,6 +41,9 @@ class HubIO:
     def __init__(self, args: 'argparse.Namespace'):
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.args = args
+        self._load_docker_client()
+
+    def _load_docker_client(self):
         try:
             import docker
             from docker import APIClient
@@ -50,8 +53,8 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
         except (ImportError, ModuleNotFoundError):
-            self.logger.critical('requires "docker" dependency, please install it via "pip install jina[docker]"')
-            raise
+            self.logger.error('requires "docker" dependency, please install it via "pip install jina[docker]"')
+            self.logger.info('usable commands: jina hub [list, new]')
 
     def new(self) -> None:
         """Create a new executor using cookiecutter template """
