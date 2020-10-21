@@ -1,45 +1,41 @@
 from logging import getLogger
 
 import mock
-
+import json
 from jina.docker.hubapi import _list
 
 
-def mock_list_api(url, params):
-    _list_api = mock.Mock()
-    _list_api.status_code = 200
-    _list_api.json.return_value = {
-        'manifest': [
-            {
-                "name": "Dummy MWU Encoder",
-                "description": "a minimum working unit of a containerized encoder, used for tutorial only",
-                "type": "pod",
-                "author": "Jina AI Dev-Team (dev-team@jina.ai)",
-                "url": "https://jina.ai",
-                "documentation": "https://github.com/jina-ai/jina-hub",
-                "version": "0.0.52",
-                "vendor": "Jina AI Limited",
-                "license": "apache-2.0",
-                "avatar": None,
-                "platform": [
-                    "linux/amd64"
-                ],
-                "keywords": [
-                    "toy",
-                    "example"
-                ],
-                "manifest_version": 1,
-                "update": "nightly",
-                "kind": "encoder"
-            }
-        ]
-    }
-    return _list_api
+sample_manifest = {
+    'manifest': [
+        {
+            "name": "Dummy MWU Encoder",
+            "description": "a minimum working unit of a containerized encoder, used for tutorial only",
+            "type": "pod",
+            "author": "Jina AI Dev-Team (dev-team@jina.ai)",
+            "url": "https://jina.ai",
+            "documentation": "https://github.com/jina-ai/jina-hub",
+            "version": "0.0.52",
+            "vendor": "Jina AI Limited",
+            "license": "apache-2.0",
+            "avatar": None,
+            "platform": [
+                "linux/amd64"
+            ],
+            "keywords": [
+                "toy",
+                "example"
+            ],
+            "manifest_version": 1,
+            "update": "nightly",
+            "kind": "encoder"
+        }
+    ]
+}
 
 
-@mock.patch('urllib.request.urlopen')
+@mock.patch('jina.docker.hubapi.urlopen')
 def test_hubapi_list(mocker):
-    mocker.side_effect = mock_list_api
+    mocker.return_value.__enter__.return_value.read.return_value = json.dumps(sample_manifest)
     result = _list(logger=getLogger(),
                    image_name='Dummy MWU Encoder',
                    image_kind='encoder',
