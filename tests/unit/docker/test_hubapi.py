@@ -1,8 +1,8 @@
-import mock
-import pytest
-
 from logging import getLogger
-from jina.docker.hubapi import _list, _push
+
+import mock
+
+from jina.docker.hubapi import _list
 
 
 def mock_list_api(url, params):
@@ -36,16 +36,17 @@ def mock_list_api(url, params):
     }
     return _list_api
 
-@mock.patch('jina.docker.hubapi.requests')
+
+@mock.patch('urllib.request.urlopen')
 def test_hubapi_list(mocker):
-    mocker.get.side_effect = mock_list_api
-    result = _list(logger=getLogger(), 
-                   name='Dummy MWU Encoder',
-                   kind='encoder',
-                   type_='pod',
-                   keywords=['toy'])
-    
-    mocker.get.assert_called_once()
-    assert result.json()['manifest'][0]['name'] == 'Dummy MWU Encoder'
-    assert result.json()['manifest'][0]['version'] == '0.0.52'
-    assert result.json()['manifest'][0]['kind'] == 'encoder'
+    mocker.side_effect = mock_list_api
+    result = _list(logger=getLogger(),
+                   image_name='Dummy MWU Encoder',
+                   image_kind='encoder',
+                   image_type='pod',
+                   image_keywords=['toy'])
+
+    mocker.assert_called_once()
+    assert result[0]['name'] == 'Dummy MWU Encoder'
+    assert result[0]['version'] == '0.0.52'
+    assert result[0]['kind'] == 'encoder'

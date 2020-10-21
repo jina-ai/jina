@@ -3,20 +3,21 @@ __license__ = "Apache-2.0"
 
 import glob
 import json
-import requests
 import urllib.parse
 import urllib.request
 import webbrowser
-from typing import Dict
+from typing import Dict, Any
+
+import requests
 
 from .checker import *
-from .helper import Waiter, handle_dot_in_keys, credentials_file
+from .helper import Waiter, credentials_file
+from .hubapi import _list, _push
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart, TimedOutException, DockerLoginFailed
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
-from .hubapi import _list, _push
 
 if False:
     import argparse
@@ -79,17 +80,17 @@ class HubIO:
         """Login using Github Device flow to allow push access to Jina Hub Registry"""
         with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
             hubapi_yml = yaml.load(fp)
-        
+
         client_id = hubapi_yml['github']['client_id']
         scope = hubapi_yml['github']['scope']
         device_code_url = hubapi_yml['github']['device_code_url']
         access_token_url = hubapi_yml['github']['access_token_url']
         grant_type = hubapi_yml['github']['grant_type']
         seconds_to_wait = hubapi_yml['github']['wait_time_for_access_token']
-        
+
         headers = {'Accept': 'application/json'}
         code_request_body = {
-            'client_id': client_id, 
+            'client_id': client_id,
             'scope': scope
         }
         try:
@@ -99,12 +100,12 @@ class HubIO:
                                      data=code_request_body)
             if response.status_code != requests.codes.ok:
                 self.logger.error('cannot reach github server. please make sure you\'re connected to internet')
-            
+
             code_response = response.json()
             device_code = code_response['device_code']
             user_code = code_response['user_code']
             verification_uri = code_response['verification_uri']
-            
+
             self.logger.info(f'please go to {colored(verification_uri, "cyan", attrs=["underline"])} & enter code '
                              f'{colored(user_code, "cyan", attrs=["bold"])} to authorize jina to login via Github OAuth')
             access_request_body = {
@@ -112,7 +113,7 @@ class HubIO:
                 'device_code': device_code,
                 'grant_type': grant_type
             }
-            
+
             with Waiter(seconds=seconds_to_wait, message='to fetch access token') as waiter:
                 while True:
                     response = requests.post(url=access_token_url,
@@ -132,18 +133,20 @@ class HubIO:
                             yaml.dump(token, cf)
                         self.logger.info(f'successfully logged in!')
                         break
-                  
+
         except KeyError as exp:
             self.logger.error(f'didnot get following key in response: {exp}')
         except Exception as exp:
             self.logger.error(f'login failed: {exp}')
-    
-    def list(self):
-        self.logger.info(f'Listing executors from Jina Hub registry')
-        response = _list(logger=self.logger, name=self.args.name, kind=self.args.kind, 
-                         type_=self.args.type, keywords=self.args.keywords)
-        return response
-        
+
+    def list(self) -> Dict[str, Any]:
+        """ List all hub images given a filter specified by CLI """
+        return _list(logger=self.logger,
+                     image_name=self.args.name,
+                     image_kind=self.args.kind,
+                     image_type=self.args.type,
+                     image_keywords=self.args.keywords)
+
     def push(self, name: str = None, readme_path: str = None) -> None:
         """ A wrapper of docker push 
         - Checks for the tempfile, returns without push if it cannot find
