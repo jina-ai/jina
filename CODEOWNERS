@@ -9,4 +9,5 @@
 setup.py  @hanxiao
 jina/peapods @JoanFM
 jina/proto @JoanFM
-jina/tests @bwanglzu
+tests @bwanglzu
+jina/drivers @maximilianwerk
