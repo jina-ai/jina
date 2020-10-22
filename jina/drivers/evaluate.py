@@ -124,9 +124,13 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
 
 class LoadGroundTruthDriver(KVSearchDriver):
     """Driver used to search for the `document key` in a KVIndex to find the corresponding groundtruth.
-    (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument.
-    It only retrieves `groundtruth` taking documents at root as key)
+     (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument.
+     It only retrieves `groundtruth` taking documents at root as key)
      This driver's job is to fill the `request` groundtruth with the corresponding groundtruth for each document if found in the corresponding KVIndexer.
+
+    .. warning::
+        The documents that are not found to have an indexed groundtruth are removed from the `request` so that the `Evaluator` only
+        works with documents which have groundtruth.
     """
 
     def __call__(self, *args, **kwargs):

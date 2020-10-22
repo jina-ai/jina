@@ -8,3 +8,5 @@ requests:
   on:
     IndexRequest:
       - !KVIndexDriver {}
+    SearchRequest:
+      - !LoadGroundTruthDriver {}
