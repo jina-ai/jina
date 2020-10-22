@@ -16,10 +16,10 @@ from jina.executors.evaluators.rank.precision import PrecisionEvaluator
 def test_precision_evaluator(eval_at, expected):
     matches_ids = [0, 1, 2, 3, 4]
 
-    groundtruth_ids = [1, 0, 20, 30, 40]
+    desired_ids = [1, 0, 20, 30, 40]
 
     evaluator = PrecisionEvaluator(eval_at=eval_at)
-    assert evaluator.evaluate(actual=matches_ids, desired=groundtruth_ids) == expected
+    assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == expected
     np.testing.assert_almost_equal(evaluator.mean, expected)
 
 
@@ -36,12 +36,12 @@ def test_precision_evaluator(eval_at, expected):
 def test_precision_evaluator_average(eval_at, expected_first):
     matches_ids = [[0, 1, 2, 3, 4], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1]]
 
-    groundtruth_ids = [[1, 0, 20, 30, 40], [1, 0, 20, 30, 40], [1, 0, 20, 30, 40]]
+    desired_ids = [[1, 0, 20, 30, 40], [1, 0, 20, 30, 40], [1, 0, 20, 30, 40]]
 
     evaluator = PrecisionEvaluator(eval_at=eval_at)
-    assert evaluator.evaluate(actual=matches_ids[0], desired=groundtruth_ids[0]) == expected_first
-    assert evaluator.evaluate(actual=matches_ids[1], desired=groundtruth_ids[1]) == 0.0
-    assert evaluator.evaluate(actual=matches_ids[2], desired=groundtruth_ids[2]) == 0.0
+    assert evaluator.evaluate(actual=matches_ids[0], desired=desired_ids[0]) == expected_first
+    assert evaluator.evaluate(actual=matches_ids[1], desired=desired_ids[1]) == 0.0
+    assert evaluator.evaluate(actual=matches_ids[2], desired=desired_ids[2]) == 0.0
     assert evaluator._running_stats._n == 3
     np.testing.assert_almost_equal(evaluator.mean, expected_first / 3)
 
@@ -49,9 +49,9 @@ def test_precision_evaluator_average(eval_at, expected_first):
 def test_precision_evaluator_no_groundtruth():
     matches_ids = [0, 1, 2, 3, 4]
 
-    groundtruth_ids = []
+    desired_ids = []
 
     evaluator = PrecisionEvaluator(eval_at=2)
-    assert evaluator.evaluate(actual=matches_ids, desired=groundtruth_ids) == 0.0
+    assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == 0.0
     assert evaluator._running_stats._n == 1
     np.testing.assert_almost_equal(evaluator.mean, 0.0)
