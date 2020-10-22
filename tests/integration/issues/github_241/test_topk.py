@@ -40,7 +40,6 @@ def test_topk(config):
 
 def validate_override_results(resp):
     assert len(resp.search.docs) == int(os.environ['JINA_NDOCS'])
-    # assert n.shape[1] == int(os.environ['JINA_TOPK_OVERRIDE'])
     for doc in resp.search.docs:
         assert len(doc.matches) == int(os.environ['JINA_TOPK_OVERRIDE'])
 
