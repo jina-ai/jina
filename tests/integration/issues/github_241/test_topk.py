@@ -9,7 +9,6 @@ from jina.drivers.helper import array2pb
 
 @pytest.fixture
 def config(tmpdir):
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
     os.environ['JINA_TOPK_DIR'] = str(tmpdir)
     os.environ['JINA_NDOCS'] = '3'
     os.environ['JINA_TOPK'] = '9'
@@ -26,31 +25,24 @@ def random_docs(num_docs, embed_dim=10, jitter=1):
 
 
 def validate_results(resp):
-    n = []
-    for d in resp.search.docs:
-        n.append([k.id for k in d.matches])
-    n = np.array(n)
-
-    np.testing.assert_equal(n.shape[0], int(os.environ['JINA_NDOCS']))
-    np.testing.assert_equal(n.shape[1], int(os.environ['JINA_TOPK']))
+    assert len(resp.search.docs) == int(os.environ['JINA_NDOCS'])
+    for doc in resp.search.docs:
+        assert len(doc.matches) == int(os.environ['JINA_TOPK'])
 
 
 def test_topk(config):
     with Flow().load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
-    with Flow().load_config('flow.yml') as index_flow:
-        index_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])), 
+    with Flow().load_config('flow.yml') as search_flow:
+        search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])), 
                           output_fn=validate_results)
 
 
 def validate_override_results(resp):
-    n = []
-    for d in resp.search.docs:
-        n.append([k.id for k in d.matches])
-    n = np.array(n)
-
-    np.testing.assert_equal(n.shape[0], int(os.environ['JINA_NDOCS']))
-    np.testing.assert_equal(n.shape[1], int(os.environ['JINA_TOPK_OVERRIDE']))
+    assert len(resp.search.docs) == int(os.environ['JINA_NDOCS'])
+    # assert n.shape[1] == int(os.environ['JINA_TOPK_OVERRIDE'])
+    for doc in resp.search.docs:
+        assert len(doc.matches) == int(os.environ['JINA_TOPK_OVERRIDE'])
 
 
 def test_topk_override(config):
@@ -62,7 +54,7 @@ def test_topk_override(config):
 
     with Flow().load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
-    with Flow().load_config('flow.yml') as index_flow:
-        index_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])), 
+    with Flow().load_config('flow.yml') as search_flow:
+        search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])), 
                           output_fn=validate_override_results, queryset=top_k_queryset)
 
