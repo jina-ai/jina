@@ -114,3 +114,7 @@ class DockerLoginFailed(Exception):
 
 class PretrainedModelFileDoesNotExist(Exception):
     """ Exception to raise for executors depending on pretrained model files when they do not exist """
+
+
+class BadDocID(Exception):
+    """ Exception when user give a non-hex string as the doc id """

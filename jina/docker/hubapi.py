@@ -7,6 +7,7 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from packaging import version
 from pkg_resources import resource_stream
 from setuptools import find_packages
 
@@ -62,7 +63,8 @@ def _list_local(logger) -> Optional[Dict[str, Any]]:
     """
     manifests = _load_local_hub_manifest()
     if manifests:
-        _print_hub_table(logger, manifests.values())
+        tb = _make_hub_table(manifests.values())
+        logger.info('\n'.join(tb))
     return manifests
 
 
@@ -106,13 +108,47 @@ def _list(logger, image_name: str = None, image_kind: str = None,
                 return
 
         manifests = response['manifest']
-        _print_hub_table(logger, manifests)
+        local_manifest = _load_local_hub_manifest()
+        if local_manifest:
+            tb = _make_hub_table_with_local(manifests, local_manifest)
+        else:
+            tb = _make_hub_table(manifests)
+        logger.info('\n'.join(tb))
         return manifests
 
 
-def _print_hub_table(logger, manifests):
+def _make_hub_table_with_local(manifests, local_manifests):
     info_table = [f'found {len(manifests)} matched hub images',
-                  '{:<40s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
+                  '{:<50s}{:<20s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
+                                                        colored('Version', attrs=_header_attrs),
+                                                        colored('Local', attrs=_header_attrs),
+                                                        colored('Description', attrs=_header_attrs))]
+    for index, manifest in enumerate(manifests):
+        image_name = manifest.get('name', '')
+        ver = manifest.get('version', '')
+        desc = manifest.get('description', '')[:60].strip() + '...'
+        if image_name and ver and desc:
+            local_ver = ''
+            color = 'white'
+            if image_name in local_manifests:
+                local_ver = local_manifests[image_name].get('version', '')
+                _v1, _v2 = version.parse(ver), version.parse(local_ver)
+                if _v1 > _v2:
+                    color = 'red'
+                elif _v1 == _v2:
+                    color = 'green'
+                else:
+                    color = 'yellow'
+            info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
+                              f'{colored(ver, color="green"):<20s}'
+                              f'{colored(local_ver, color=color):<20s}'
+                              f'{desc:<30s}')
+    return info_table
+
+
+def _make_hub_table(manifests):
+    info_table = [f'found {len(manifests)} matched hub images',
+                  '{:<50s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
                                                  colored('Version', attrs=_header_attrs),
                                                  colored('Description', attrs=_header_attrs))]
     for index, manifest in enumerate(manifests):
@@ -120,10 +156,10 @@ def _print_hub_table(logger, manifests):
         ver = manifest.get('version', '')
         desc = manifest.get('description', '')[:60].strip() + '...'
         if image_name and ver and desc:
-            info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<40s}'
+            info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
                               f'{colored(ver, color="green"):<20s}'
                               f'{desc:<30s}')
-    logger.info('\n'.join(info_table))
+    return info_table
 
 
 def _push(logger, summary: Dict = None):
