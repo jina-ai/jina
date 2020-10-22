@@ -92,6 +92,10 @@ We provide a universal Docker image that supports multiple architectures (includ
 docker run jinaai/jina --help
 ```
 
+### Windows Support
+
+At the moment, Jina doesn't support Windows environment. Because some low level dependencies used in Jina core are currently not compatible with Windows.
+
 ## Jina "Hello, World!" 👋🌍
 
 As a starter, you can try out our "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
