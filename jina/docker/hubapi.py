@@ -105,7 +105,7 @@ def _list(logger, image_name: str = None, image_kind: str = None,
                     logger.error(f'server is down: {err.reason}')
                 else:
                     logger.error(f'unknown error: {err.reason}')
-                return
+                return None
 
         manifests = response['manifest']
         local_manifest = _load_local_hub_manifest()
@@ -115,6 +115,7 @@ def _list(logger, image_name: str = None, image_kind: str = None,
             tb = _make_hub_table(manifests)
         logger.info('\n'.join(tb))
         return manifests
+    return None
 
 
 def _make_hub_table_with_local(manifests, local_manifests):

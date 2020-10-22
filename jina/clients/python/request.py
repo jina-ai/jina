@@ -77,7 +77,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
               queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args,
               **kwargs,
-              ) -> Iterator['jina_pb2.Message']:
+              ) -> Iterator['jina_pb2.Request']:
     buffer_sniff = False
 
     try:
@@ -110,7 +110,9 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
         req.request_id = uuid.uuid1().hex
         if queryset:
             if isinstance(queryset, jina_pb2.QueryLang):
-                queryset = [queryset]
+                # TODO (yartem): if queryset is of type Iterator['jina_pb2.QueryLang']
+                #  or None, then this is a dead branch. Temporarily muted mypy error.
+                queryset = [queryset]  # type: ignore
             req.queryset.extend(queryset)
 
         if top_k and mode == ClientMode.SEARCH:

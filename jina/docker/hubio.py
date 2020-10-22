@@ -451,11 +451,12 @@ class HubIO:
         return completeness
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:
+
         with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
             tmp = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
-        with open(path) as fp:
-            tmp.update(yaml.load(fp))
+        with open(path) as f:
+            tmp.update(yaml.load(f))
 
         if validate:
             self._validate_manifest(tmp)

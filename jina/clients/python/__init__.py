@@ -49,10 +49,10 @@ class PyClient(GrpcClient):
         """
         super().__init__(args)
         self._mode = self.args.mode
-        self._input_fn = None
+        self._input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes]] = None
 
     @property
-    def mode(self) -> str:
+    def mode(self) -> ClientMode:
         return self._mode
 
     @mode.setter
@@ -70,7 +70,7 @@ class PyClient(GrpcClient):
         :param input_fn: the input function
         """
         if hasattr(input_fn, '__call__'):
-            input_fn = input_fn()
+            input_fn = input_fn()  # type: ignore
 
         kwargs = {'data': input_fn}
 
@@ -101,11 +101,17 @@ class PyClient(GrpcClient):
         req_iter = getattr(request, str(self.mode).lower())(**kwargs)
         return self._stub.CallUnary(next(req_iter))
 
-    def call(self, callback: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
+    def call(self, *args, **kwargs) -> None:
         """ Calling the server, better use :func:`start` instead.
 
         :param callback: a callback function, invoke after every response is received
         """
+        callback: Callable[['jina_pb2.Message'], None]
+        if args:
+            callback, args = args[0], args[1:]
+        else:
+            callback = kwargs.pop("callback", None)
+
         # take the default args from client
         _kwargs = vars(self.args)
         _kwargs['data'] = self.input_fn
@@ -134,7 +140,7 @@ class PyClient(GrpcClient):
                 p_bar.update(self.args.batch_size)
 
     @property
-    def input_fn(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]:
+    def input_fn(self) -> Union[Iterator['jina_pb2.Document'], Iterator[bytes]]:
         """ An iterator of bytes, each element represents a document's raw content,
         i.e. ``input_fn`` defined in the protobuf
         """
@@ -143,14 +149,14 @@ class PyClient(GrpcClient):
         else:
             raise BadClient('input_fn is empty or not set')
 
-    @input_fn.setter
-    def input_fn(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]) -> None:
+    def _set_input_fn(self, bytes_gen: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]) -> None:
         if self._input_fn:
             self.logger.warning('input_fn is not empty, overrided')
         if hasattr(bytes_gen, '__call__'):
-            self._input_fn = bytes_gen()
+            input_fn = bytes_gen()  # type: ignore
         else:
-            self._input_fn = bytes_gen
+            input_fn = bytes_gen
+        self._input_fn = input_fn
 
     def dry_run(self, as_request: str) -> bool:
         """A dry run request is a Search/Index/Train Request with empty content.
@@ -186,26 +192,26 @@ class PyClient(GrpcClient):
 
         return False
 
-    def train(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
+    def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.TRAIN
-        self.input_fn = input_fn
+        self._set_input_fn(input_fn)
         if not self.args.skip_dry_run:
             self.dry_run(as_request='train')
         self.start(output_fn, **kwargs)
 
-    def search(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
+    def search(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
                output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.SEARCH
-        self.input_fn = input_fn
+        self._set_input_fn(input_fn)
         if not self.args.skip_dry_run:
             self.dry_run(as_request='search')
         self.start(output_fn, **kwargs)
 
-    def index(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable]= None,
+    def index(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable]= None,
               output_fn: Callable[['jina_pb2.Message'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.INDEX
-        self.input_fn = input_fn
+        self._set_input_fn(input_fn)
         if not self.args.skip_dry_run:
             self.dry_run(as_request='index')
         self.start(output_fn, **kwargs)

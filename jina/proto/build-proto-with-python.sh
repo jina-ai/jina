@@ -10,7 +10,7 @@ VER_FILE=../__init__.py
 
 printf "\e[1;33mgenerating protobuf and grpc python interface\e[0m\n"
 
-python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. ${SRC_NAME}
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. --mypy_out=. ${SRC_NAME}
 
 printf "\e[1;33mfixing grpc import\e[0m\n"
 # fix import bug in google generator

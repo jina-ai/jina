@@ -49,6 +49,13 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
+      - name: Type checking with mypy
+        run: |
+          pip install -U mypy==0.790 mypy-protobuf==1.23
+          # For now, mypy checks only part of the codebase
+          # TODO: just do 'mypy jina'
+          mypy jina/clients
+          mypy jina/docker
       - name: Test docker install
         run: |
           docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
