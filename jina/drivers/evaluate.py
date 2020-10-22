@@ -5,6 +5,7 @@ from typing import Iterable
 
 from . import BaseExecutableDriver
 from .helper import DocGroundtruthPair, pb2array
+from .search import KVSearchDriver
 from jina.proto import jina_pb2
 
 
@@ -119,3 +120,29 @@ class CraftEvaluationDriver(BaseEvaluationDriver):
             evaluation.value = self.exec_fn(doc_content, gt_content)
             evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
+
+
+class LoadGroundTruthDriver(KVSearchDriver):
+    """Driver used to search for the `document key` in a KVIndex to find the corresponding groundtruth.
+     (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument.
+     It only retrieves `groundtruth` taking documents at root as key)
+     This driver's job is to fill the `request` groundtruth with the corresponding groundtruth for each document if found in the corresponding KVIndexer.
+
+    .. warning::
+        The documents that are not found to have an indexed groundtruth are removed from the `request` so that the `Evaluator` only
+        works with documents which have groundtruth.
+    """
+
+    def __call__(self, *args, **kwargs):
+        assert len(self.req.groundtruths) == 0
+        miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
+        for idx, doc in enumerate(self.req.docs):
+            serialized_groundtruth = self.exec_fn(self.id2hash(doc.id))
+            if serialized_groundtruth:
+                gt = self.req.groundtruths.add()
+                gt.ParseFromString(serialized_groundtruth)
+            else:
+                miss_idx.append(idx)
+        # delete non-existed matches in reverse
+        for j in reversed(miss_idx):
+            del self.req.docs[j]
