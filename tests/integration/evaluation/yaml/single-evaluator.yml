@@ -1,0 +1,7 @@
+!TextLengthEvaluator
+requests:
+  on:
+    SearchRequest:
+      - !CraftEvaluationDriver
+        with:
+          traversal_paths: [ 'r' ]
