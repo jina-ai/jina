@@ -5,17 +5,15 @@ from urllib import request
 from jina.flow import Flow
 
 
-@pytest.fixture
-def TOP_K():
-    return '2'
+TOP_K = 2
 
 
 @pytest.fixture
-def query_dict(TOP_K):
+def query_dict():
     return {'top_k': TOP_K, 'mode': 'search', 'data': [f'text:query']}
 
 
-def test_top_k_with_rest_api(query_dict, TOP_K):
+def test_top_k_with_rest_api(query_dict):
     with Flow(rest_api=True, port_expose=45678).add(uses='_pass'):
         query = json.dumps(query_dict).encode('utf-8')
         req = request.Request('http://0.0.0.0:45678/api/search', data=query, headers={'content-type': 'application/json'})
