@@ -63,7 +63,7 @@ def _list_local(logger) -> Optional[Dict[str, Any]]:
     """
     manifests = _load_local_hub_manifest()
     if manifests:
-        _print_hub_table(logger, manifests.values())
+        _make_hub_table(logger, manifests.values())
     return manifests
 
 
@@ -109,13 +109,14 @@ def _list(logger, image_name: str = None, image_kind: str = None,
         manifests = response['manifest']
         local_manifest = _load_local_hub_manifest()
         if local_manifest:
-            _print_hub_table_with_local(logger, manifests, local_manifest)
+            tb = _make_hub_table_with_local(manifests, local_manifest)
         else:
-            _print_hub_table(logger, manifests)
+            tb = _make_hub_table(manifests)
+        logger.info('\n'.join(tb))
         return manifests
 
 
-def _print_hub_table_with_local(logger, manifests, local_manifests):
+def _make_hub_table_with_local(manifests, local_manifests):
     info_table = [f'found {len(manifests)} matched hub images',
                   '{:<50s}{:<20s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
                                                         colored('Version', attrs=_header_attrs),
@@ -141,10 +142,10 @@ def _print_hub_table_with_local(logger, manifests, local_manifests):
                               f'{colored(ver, color="green"):<20s}'
                               f'{colored(local_ver, color=color):<20s}'
                               f'{desc:<30s}')
-    logger.info('\n'.join(info_table))
+    return info_table
 
 
-def _print_hub_table(logger, manifests):
+def _make_hub_table(manifests):
     info_table = [f'found {len(manifests)} matched hub images',
                   '{:<50s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
                                                  colored('Version', attrs=_header_attrs),
@@ -157,7 +158,7 @@ def _print_hub_table(logger, manifests):
             info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
                               f'{colored(ver, color="green"):<20s}'
                               f'{desc:<30s}')
-    logger.info('\n'.join(info_table))
+    return info_table
 
 
 def _push(logger, summary: Dict = None):
