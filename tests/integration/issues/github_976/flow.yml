@@ -1,0 +1,5 @@
+!Flow
+pods:
+  indexer:
+    uses: yaml/index.yml
+    needs: gateway
