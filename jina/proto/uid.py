@@ -6,6 +6,12 @@ Remarks on the ``id``, we have three views for it
 - ``bytes``: ``bytes`` is the binary format of str, it has 8 bytes fixed length, so it can be used in the dense file storage, e.g. BinaryPbIndexer, as it requires the key has to be fixed length.
 - ``hash``:``int64`` is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
 
+.. note:
+
+    Customized ``id`` is acceptable as long as
+    - it only contains the symbols "0"–"9" to represent values 0 to 9,
+    and "A"–"F" (or alternatively "a"–"f").
+    - it has even length.
 """
 
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
@@ -16,6 +22,8 @@ from binascii import unhexlify
 from hashlib import blake2b
 
 from .jina_pb2 import Document
+from ..excepts import BadDocID
+from ..logging import default_logger
 
 _doc_field_mask = None
 _digest_size = 8
@@ -54,7 +62,14 @@ def bytes2hash(value: bytes) -> int:
 
 
 def id2bytes(value: str) -> bytes:
-    return unhexlify(value)
+    try:
+        return unhexlify(value)
+    except:
+        default_logger.critical('Customized ``id`` is only acceptable when: \
+            - it only contains the symbols "0"–"9" to represent values 0 to 9, \
+            and "A"–"F" (or alternatively "a"–"f"). \
+            - it has an even length.')
+        raise BadDocID(f'{value} is not a valid id for Document')
 
 
 def bytes2id(value: bytes) -> str:
