@@ -65,7 +65,7 @@ def id2bytes(value: str) -> bytes:
     try:
         return unhexlify(value)
     except:
-        default_logger.critical('Customized ``id`` is acceptable as long as \
+        default_logger.critical('Customized ``id`` is only acceptable when: \
             - it only contains the symbols "0"–"9" to represent values 0 to 9, \
             and "A"–"F" (or alternatively "a"–"f"). \
             - it has an even length.')
