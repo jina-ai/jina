@@ -63,7 +63,8 @@ def _list_local(logger) -> Optional[Dict[str, Any]]:
     """
     manifests = _load_local_hub_manifest()
     if manifests:
-        _make_hub_table(logger, manifests.values())
+        tb = _make_hub_table(manifests.values())
+        logger.info('\n'.join(tb))
     return manifests
 
 
