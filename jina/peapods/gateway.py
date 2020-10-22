@@ -282,16 +282,6 @@ class RESTGatewayPea(BasePea):
 
             content['mode'] = ClientMode.from_string(mode)
 
-            if 'top_k' in content:
-                top_k_queryset = jina_pb2.QueryLang()
-                top_k_queryset.name = 'VectorSearchDriver'
-                top_k_queryset.priority = 1
-                top_k_queryset.parameters['top_k'] = content['top_k']
-                if 'queryset' not in content:
-                    content['queryset'] = top_k_queryset
-                else:
-                    content['queryset'].append(top_k_queryset)
-
             results = get_result_in_json(getattr(python.request, mode)(**content))
             return Response(asyncio.run(results),
                             status=200,

@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pytest
+
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.drivers.helper import array2pb
@@ -55,5 +56,5 @@ def test_topk_override(config):
         index_flow.index(input_fn=random_docs(100))
     with Flow().load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])), 
-                          output_fn=validate_override_results, queryset=top_k_queryset)
+                          output_fn=validate_override_results, queryset=[top_k_queryset])
 

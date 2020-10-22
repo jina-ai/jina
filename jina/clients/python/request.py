@@ -142,6 +142,15 @@ def train(*args, **kwargs):
 
 def search(*args, **kwargs):
     """Generate a searching request """
+    if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
+        top_k_queryset = jina_pb2.QueryLang()
+        top_k_queryset.name = 'VectorSearchDriver'
+        top_k_queryset.priority = 1
+        top_k_queryset.parameters['top_k'] = kwargs['top_k']
+        if 'queryset' not in kwargs:
+            kwargs['queryset'] = [top_k_queryset]
+        else:
+            kwargs['queryset'].append(top_k_queryset)
     yield from _generate(*args, **kwargs)
 
 
