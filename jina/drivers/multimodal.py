@@ -2,83 +2,54 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Iterable, Dict, Tuple
+from typing import Iterable, Tuple
 
-import numpy as np
-
-from .reduce import ReduceDriver
+from .encode import BaseEncodeDriver
 from .helper import pb2array, array2pb
 from ..proto import jina_pb2
 
-class MultimodalDriver(ReduceDriver):
+
+def _extract_doc_content(doc: 'jina_pb2.Document'):
+    # TODO discuss when do we need doc content as described in the requirement
+    # designing a driver that will extract all the required fields from the chunks of a document
+    # (buffer, blob, text, or directly embedding)
+    return doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
+
+
+def _extract_doc_embedding(doc: 'jina_pb2.Document'):
+    return (doc.embedding.buffer or None) and pb2array(doc.embedding)
+
+
+class MultimodalDriver(BaseEncodeDriver):
     """
     TODO add docstring
     each document have multiple chunks
     each chunk has 1 modality
     group chunks with same modality
     """
-    def __init__(self, traversal_paths: Tuple[str] = ('c', ), *args, **kwargs):
+
+    def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         # traversal chunks from chunk level.
         # TODO discuss should we add root path
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
-
-    def reduce(self, *args, **kwargs) -> None:
-        doc_pointers = {}
-        # traverse apply on ALL requests collected to collect embeddings
-        # reversed since the last response should collect the chunks/matches
-        for r in reversed(self.prev_reqs):
-            self._traverse_apply(
-                r.docs,
-                doc_pointers=doc_pointers,
-                *args, **kwargs
-            )
-
 
     def _apply_all(
             self,
             docs: Iterable['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document',
-            field: str,
-            doc_pointers: Dict,
             *args, **kwargs
     ) -> None:
-        # docs are chunks of context_doc returned by traversal rec.
-        # Group chunks which has the same modality
-        modal_docids = defaultdict(list)
+        # docs are documents whose chunks are multimodal
+        # This is similar to ranking, needed to have batching?
+        data = []
         for doc in docs:
-            modal_docids[doc.modality].append(doc.id)
-            embedding = self._extract_doc_embedding(doc)
-            if doc.id not in doc_pointers:
-                doc_pointers[doc.id] = [embedding]
-            else:
-                doc_pointers[doc.id].append(embedding)
+            data_by_modality = defaultdict(list)
+            for chunk in doc.chunks:
+                # Group chunks which has the same modality
+                # TODO: How should the driver know what does it need to extract per modality?
+                data_by_modality[chunk.modality].append(_extract_doc_embedding(chunk))
+            data.append(data_by_modality)
 
-        embeddings = []
-        for modal, doc_ids in modal_docids.items():
-            embedding_with_same_modality = [
-                doc_pointers[doc_id]
-                for
-                doc_id
-                in
-                doc_ids
-            ]
-            embeddings.extend(embedding_with_same_modality)
-
-        context_doc.embedding.CopyFrom(
-            array2pb(
-                np.concatenate(
-                    embeddings,
-                    axis=0)
-            )
-        )
-
-
-    def _extract_doc_content(self, doc: 'jina_pb2.Document'):
-        # TODO discuss when do we need doc content as described in the requirement
-        # designing a driver that will extract all the required fields from the chunks of a document
-        # (buffer, blob, text, or directly embedding)
-        return  doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
-
-
-    def _extract_doc_embedding(self, doc: 'jina_pb2.Document'):
-        return (doc.embedding.buffer or None) and pb2array(doc.embedding)
+        for doc, modality_dict in zip(docs, data):
+            ret = self.exec_fn(modality_dict)
+            doc.embeedding.CopyFrom(array2pb(ret))
