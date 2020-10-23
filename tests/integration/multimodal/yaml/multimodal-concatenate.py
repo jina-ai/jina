@@ -12,9 +12,6 @@ class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
-        # TODO: learn how to pass dict as argument
-        self.field_by_modality = {'modality1': 'embedding',
-                                  'modality2': 'embedding'}
 
     @batching
     @as_ndarray
