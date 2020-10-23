@@ -82,7 +82,7 @@ On Linux/MacOS with Python >= 3.7:
 pip install jina
 ```
 
-To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai).
+To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai). If you are Windows user, see [this section](https://docs.jina.ai/chapters/install/via-pip.html?highlight=windows#on-windows-and-other-oses). 
 
 ### In a Docker Container
 
@@ -91,10 +91,6 @@ We provide a universal Docker image that supports multiple architectures (includ
 ```bash
 docker run jinaai/jina --help
 ```
-
-### Windows Support
-
-At the moment, Jina doesn't support Windows environment. Because some low level dependencies used in Jina core are currently not compatible with Windows.
 
 ## Jina "Hello, World!" 👋🌍
 
