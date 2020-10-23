@@ -1,0 +1,11 @@
+!DummyEncoder
+with:
+  {}
+metas:
+  py_modules: dummy-encoder.py
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !EncodeDriver
+        with:
+          traversal_paths: ['c']

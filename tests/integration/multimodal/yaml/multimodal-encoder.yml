@@ -1,0 +1,11 @@
+!ConcatenateMultiModalEncoder
+with:
+  {}
+metas:
+  py_modules: multimodal-concatenate.py
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !MultimodalDriver
+        with:
+          traversal_paths: ['r']
