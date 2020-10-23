@@ -1,7 +1,9 @@
 name: Test Examples
 
 on:
-  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   examples-test:
