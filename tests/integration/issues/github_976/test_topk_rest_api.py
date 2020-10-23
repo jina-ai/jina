@@ -1,7 +1,8 @@
 import json
-import pytest
 import random
 from urllib import request
+
+import pytest
 
 from jina.flow import Flow
 from jina.helper import random_port
