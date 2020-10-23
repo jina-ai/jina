@@ -1,6 +1,8 @@
 !ConcatenateMultiModalEncoder
 with:
-  {}
+  field_by_modality:
+    modality1: embedding
+    modality2: embedding
 metas:
   py_modules: multimodal-concatenate.py
 requests:
