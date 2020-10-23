@@ -2,7 +2,7 @@
 with:
   {}
 metas:
-  py_modules: multimocal-concatenate.py
+  py_modules: multimodal-concatenate.py
 requests:
   on:
     [IndexRequest, SearchRequest]:

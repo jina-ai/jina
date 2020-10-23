@@ -64,9 +64,9 @@ class MultimodalDriver(BaseEncodeDriver):
             for chunk in doc.chunks:
                 # Group chunks which has the same modality
                 # TODO: How should the driver know what does it need to extract per modality?
-                data_by_modality[chunk.modality].append(_extract_doc_content(self.field_by_modality[chunk.modality]))
+                data_by_modality[chunk.modality].append(_extract_doc_content(chunk, self.field_by_modality[chunk.modality]))
             data.append(data_by_modality)
 
         for doc, modality_dict in zip(docs, data):
             ret = self.exec_fn(modality_dict)
-            doc.embeedding.CopyFrom(array2pb(ret))
+            doc.embedding.CopyFrom(array2pb(ret))
