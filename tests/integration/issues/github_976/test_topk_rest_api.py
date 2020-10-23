@@ -1,5 +1,4 @@
 import json
-import random
 from urllib import request
 
 import pytest
