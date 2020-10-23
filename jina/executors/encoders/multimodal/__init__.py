@@ -5,23 +5,26 @@ __license__ = "Apache-2.0"
 import numpy as np
 from typing import Dict, Any
 from jina.executors.decorators import batching, as_ndarray
-from .. import BaseEncoder
+from ... import BaseExecutor
 
 
-class BaseMultiModalEncoder(BaseEncoder):
+class BaseMultiModalEncoder(BaseExecutor):
     """
-    :class:`TransformEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
+    :class:`BaseMultiModalEncoder` encodes data from multiple inputs (``text``, ``buffer``, ``blob`` or other ``embeddings``)
+    into a single ``embedding``
     """
 
     def __init__(self,
+                 field_by_modality: Dict[str, str] = {},
                  *args,
                  **kwargs):
         """
-        :param model_path: path from where to pickle the sklearn model.
+        :param field_by_modality: the map of fields that should be extracted by modality
+        :return:
         """
         super().__init__(*args, **kwargs)
+        self.field_by_modality = field_by_modality
 
-    # TODO: Think if `batching` can be used in this case
     @batching
     @as_ndarray
     def encode(self, data: Dict[str, Any], *args, **kwargs) -> 'np.ndarray':
