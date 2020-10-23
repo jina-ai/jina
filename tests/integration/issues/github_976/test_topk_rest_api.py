@@ -4,10 +4,11 @@ import random
 from urllib import request
 
 from jina.flow import Flow
+from jina.helper import random_port
 
 
 TOP_K = 2
-PORT = random.randint(1, 10000)
+PORT = random_port()
 
 @pytest.fixture
 def query_dict():
