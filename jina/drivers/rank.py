@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-# lift the chunk-level topk to doc-level topk
 from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
@@ -29,8 +28,6 @@ class Chunk2DocRankDriver(BaseRankDriver):
     """Extract matches score from chunks and use the executor to compute the rank and assign the resulting matches to the
     level above.
 
-    Note that it traverses on ``chunks`` not on ``matches``
-
     Input-Output ::
         Input:
         document: {granularity: k-1}
@@ -48,6 +45,10 @@ class Chunk2DocRankDriver(BaseRankDriver):
             |    |- matches: {granularity: k}
             |
             |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
+
+        .. note::
+            - It traverses on ``chunks`` not on ``matches``. This is because ranker needs context information
+            from ``matches`` for several ``chunks``
     """
 
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
@@ -64,15 +65,15 @@ class Chunk2DocRankDriver(BaseRankDriver):
         match_idx = []  # type: List[Tuple[int, int, int, float]]
         query_chunk_meta = {}  # type: Dict[int, Dict]
         match_chunk_meta = {}  # type: Dict[int, Dict]
-        for c in docs:
-            for match in c.matches:
+        for chunk in docs:
+            for match in chunk.matches:
                 match_idx.append(
                     (self.id2hash(match.parent_id),
                      self.id2hash(match.id),
-                     self.id2hash(c.id),
+                     self.id2hash(chunk.id),
                      match.score.value)
                 )
-                query_chunk_meta[self.id2hash(c.id)] = pb_obj2dict(c, self.exec.required_keys)
+                query_chunk_meta[self.id2hash(chunk.id)] = pb_obj2dict(chunk, self.exec.required_keys)
                 match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
 
         if match_idx:
@@ -98,14 +99,14 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
 
 class CollectMatches2DocRankDriver(BaseRankDriver):
-    """This Driver is intended to take a `document` with matches at a `given level depth > 0`, clear those matches and substitute
-    these matches by the documents at a lower depth level.
+    """This Driver is intended to take a `document` with matches at a `given granularity > 0`, clear those matches and substitute
+    these matches by the documents at a lower granularity level.
     Input-Output ::
         Input:
-        document: {granularity: k}
+        query document: {granularity: k}
             |- matches: {granularity: k}
         Output:
-        document: {granularity: k}
+        query document: {granularity: k}
             |- matches: {granularity: k-1} (Sorted according to Ranker Executor)
 
     Imagine a case where we are querying a system with text documents chunked by sentences. When we query the system,
@@ -115,7 +116,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     `
     But in the output we want to have the full document that better matches the `sentence`.
     `query sentence (documents of granularity 1):
-        matches: indexed full documents (documents of level depth 0).
+        matches: indexed full documents (documents of granularity 0).
     `
     Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
     """
@@ -127,9 +128,15 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
                    **kwargs) -> None:
         """
 
-        :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
-        :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
+        :param docs: the matches of the ``context_doc``, they are at granularity ``k``
+        :param context_doc: the query document having ``docs`` as its matches, it is at granularity ``k``
         :return:
+
+        .. note::
+            - This driver will substitute the ``matches`` of `docs` to the corresponding ``parent documents`` of its current ``matches`` according
+            to the executor.
+            - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the granularity desired
+            (with respect to the ``query``).
         """
 
         # if at the top-level already, no need to aggregate further
@@ -139,9 +146,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         match_idx = []
         query_chunk_meta = {}
         match_chunk_meta = {}
-        # doc_id_to_match_map = {}
         for match in docs:
-            # doc_id_to_match_map[match.id] = index
             match_idx.append((
                 self.id2hash(match.parent_id),
                 self.id2hash(match.id),
@@ -191,7 +196,16 @@ class Matches2DocRankDriver(BaseRankDriver):
 
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
                    **kwargs) -> None:
-        """ Call executer for score and sort afterwards here. """
+        """
+
+        :param docs: the matches of the ``context_doc``, they are at granularity ``k``
+        :param context_doc: the query document having ``docs`` as its matches, it is at granularity ``k``
+        :return:
+
+        .. note::
+            - This driver will change in place the ordering of ``matches`` of the ``context_doc`.
+            - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
+        """
 
         # if at the top-level already, no need to aggregate further
         query_meta = pb_obj2dict(context_doc, self.exec.required_keys)
