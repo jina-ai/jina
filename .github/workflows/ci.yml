@@ -51,7 +51,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
       - name: Test docker install
         run: |
-          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Test with pytest
         run: |
@@ -97,7 +97,8 @@ jobs:
         run: |
           # make sure docker exist
           docker ps
-          docker build  -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker run jinaai/jina:test-pip hello-world
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
