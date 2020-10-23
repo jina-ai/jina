@@ -22,11 +22,12 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Get examples repo
         uses: actions/checkout@v2
         with:
           repository: jina-ai/examples
           path: examples
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install .[cicd,test,http] requests --no-cache-dir
