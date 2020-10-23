@@ -3,7 +3,8 @@ __license__ = "Apache-2.0"
 
 
 import numpy as np
-from jina.executors.decorators import batching
+from typing import Dict, Any
+from jina.executors.decorators import batching, as_ndarray
 from .. import BaseEncoder
 
 
@@ -22,5 +23,6 @@ class BaseMultiModalEncoder(BaseEncoder):
 
     # TODO: Think if `batching` can be used in this case
     @batching
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    @as_ndarray
+    def encode(self, data: Dict[str, Any], *args, **kwargs) -> 'np.ndarray':
         raise NotImplementedError

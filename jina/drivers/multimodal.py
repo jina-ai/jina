@@ -21,11 +21,23 @@ def _extract_doc_embedding(doc: 'jina_pb2.Document'):
 
 
 class MultimodalDriver(BaseEncodeDriver):
-    """
-    TODO add docstring
-    each document have multiple chunks
-    each chunk has 1 modality
-    group chunks with same modality
+    """Extract multimodal embeddings from different modalities.
+    Input-Output ::
+        Input:
+        document:
+                |- chunk: {modality: mode1}
+                |
+                |- chunk: {modality: mode2}
+        Output:
+        document: (embedding: multimodal encoding)
+                |- chunk: {modality: mode1}
+                |
+                |- chunk: {modality: mode2}
+
+    .. note::
+        - It traverses on the ``documents`` for which we want to apply the ``multimodal`` embedding. This way
+        we can use the `batching` capabilities for the `executor`.
+        - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
     """
 
     def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
@@ -44,6 +56,7 @@ class MultimodalDriver(BaseEncodeDriver):
         data = []
         for doc in docs:
             data_by_modality = defaultdict(list)
+
             for chunk in doc.chunks:
                 # Group chunks which has the same modality
                 # TODO: How should the driver know what does it need to extract per modality?
