@@ -21,3 +21,6 @@ python -m http.server 8080 -d docs
 # python 2
 cd docs && python -m SimpleHTTPServer
 ```
+
+if you guys do find any error in thes files or programmes, then please let us know we will try to fix it asap. 
+thank you ^^
