@@ -51,7 +51,7 @@ def test_evaluation(tmpdir):
         assert doc.evaluations[1].op_name == 'evaluate_match-Precision@2'
         assert doc.evaluations[1].value == 0.5
         assert doc.evaluations[2].op_name == 'evaluate_match-Recall@1'
-        assert doc.evaluations[2].value == 1.0
+        assert doc.evaluations[2].value == 0.5
         assert doc.evaluations[3].op_name == 'evaluate_match-Recall@2'
         assert doc.evaluations[3].value == 0.5
 
@@ -60,7 +60,7 @@ def test_evaluation(tmpdir):
         assert doc.evaluations[5].op_name == 'evaluate_rank-Precision@2'
         assert doc.evaluations[5].value == 0.5
         assert doc.evaluations[6].op_name == 'evaluate_rank-Recall@1'
-        assert doc.evaluations[6].value == 1.0
+        assert doc.evaluations[6].value == 0.5
         assert doc.evaluations[7].op_name == 'evaluate_rank-Recall@2'
         assert doc.evaluations[7].value == 0.5
 
@@ -70,7 +70,7 @@ def test_evaluation(tmpdir):
         assert doc.evaluations[1].op_name == 'evaluate_match-Precision@2'
         assert doc.evaluations[1].value == 1.0
         assert doc.evaluations[2].op_name == 'evaluate_match-Recall@1'
-        assert doc.evaluations[2].value == 1.0
+        assert doc.evaluations[2].value == 0.5
         assert doc.evaluations[3].op_name == 'evaluate_match-Recall@2'
         assert doc.evaluations[3].value == 1.0
 
@@ -79,7 +79,7 @@ def test_evaluation(tmpdir):
         assert doc.evaluations[5].op_name == 'evaluate_rank-Precision@2'
         assert doc.evaluations[5].value == 1.0
         assert doc.evaluations[6].op_name == 'evaluate_rank-Recall@1'
-        assert doc.evaluations[6].value == 1.0
+        assert doc.evaluations[6].value == 0.5
         assert doc.evaluations[7].op_name == 'evaluate_rank-Recall@2'
         assert doc.evaluations[7].value == 1.0
 

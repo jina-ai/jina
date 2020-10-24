@@ -69,7 +69,6 @@ class BinaryPbIndexer(BaseKVIndexer):
             # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
 
     def query(self, key: int) -> Optional[bytes]:
-        # print(f'key={key}')
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info

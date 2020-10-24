@@ -14,13 +14,13 @@ class MockPrecisionEvaluator(BaseRankingEvaluator):
     def metric(self):
         return f'MockPrecision@{self.eval_at}'
 
-    def evaluate(self, matches_ids, groundtruth_ids, *args, **kwargs) -> float:
+    def evaluate(self, matches_ids, desired_ids, *args, **kwargs) -> float:
         ret = 0.0
         for doc_id in matches_ids[:self.eval_at]:
-            if doc_id in groundtruth_ids:
+            if doc_id in desired_ids:
                 ret += 1.0
 
-        divisor = min(self.eval_at, len(groundtruth_ids))
+        divisor = min(self.eval_at, len(desired_ids))
         if divisor == 0.0:
             return 0.0
         else:

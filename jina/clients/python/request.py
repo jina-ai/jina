@@ -71,7 +71,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
     Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Iterator['np.ndarray'], Iterator[
                               str], 'np.ndarray',],
               batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
-              top_k: Optional[int] = None,
               mime_type: str = None,
               override_doc_id: bool = True,
               queryset: Iterator['jina_pb2.QueryLang'] = None,
@@ -113,16 +112,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                 queryset = [queryset]
             req.queryset.extend(queryset)
 
-        if top_k and mode == ClientMode.SEARCH:
-            if top_k <= 0:
-                raise ValueError(f'"top_k: {top_k}" is not a valid number')
-            else:
-                top_k_queryset = jina_pb2.QueryLang()
-                top_k_queryset.name = 'VectorSearchDriver'
-                top_k_queryset.priority = 1
-                top_k_queryset.parameters['top_k'] = top_k
-                req.queryset.extend([top_k_queryset])
-
         _req = getattr(req, str(mode).lower())
         for content in batch:
             d = _req.docs.add()
@@ -153,6 +142,15 @@ def train(*args, **kwargs):
 
 def search(*args, **kwargs):
     """Generate a searching request """
+    if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
+        top_k_queryset = jina_pb2.QueryLang()
+        top_k_queryset.name = 'VectorSearchDriver'
+        top_k_queryset.priority = 1
+        top_k_queryset.parameters['top_k'] = kwargs['top_k']
+        if 'queryset' not in kwargs:
+            kwargs['queryset'] = [top_k_queryset]
+        else:
+            kwargs['queryset'].append(top_k_queryset)
     yield from _generate(*args, **kwargs)
 
 

@@ -1,7 +1,6 @@
 !Flow
 with:
   read_only: true  # better add this in the query time
-  rest_api: true
   port_expose: 5555
 pods:
   loader:
@@ -20,7 +19,6 @@ pods:
   chunk_indexer:
     polling: all
     parallel: 1
-    uses_after: _merge_topk_chunks
   ranker:
     uses: MinRanker
   doc_indexer:

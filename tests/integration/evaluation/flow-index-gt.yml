@@ -1,0 +1,5 @@
+!Flow
+pods:
+  gt_indexer:
+    uses: yaml/index-gt.yml
+    needs: gateway
