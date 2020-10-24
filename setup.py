@@ -1,6 +1,5 @@
 import sys
 from os import path
-
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.develop import develop
@@ -9,18 +8,23 @@ from setuptools.command.install import install
 PY37 = 'py37'
 PY38 = 'py38'
 
+
+
+
 if sys.version_info >= (3, 8, 0):
     py_tag = PY38
 elif sys.version_info >= (3, 7, 0):
     py_tag = PY37
 else:
-    raise OSError('Jina requires Python 3.7 and above, but yours is %s' % sys.version)
+    raise OSError(
+        'Jina requires Python 3.7 and above, but yours is %s' % sys.version)
 
 try:
     pkg_name = 'jina'
     libinfo_py = path.join(pkg_name, '__init__.py')
     libinfo_content = open(libinfo_py, 'r', encoding='utf8').readlines()
-    version_line = [l.strip() for l in libinfo_content if l.startswith('__version__')][0]
+    version_line = [l.strip()
+                    for l in libinfo_content if l.startswith('__version__')][0]
     exec(version_line)  # gives __version__
 except FileNotFoundError:
     __version__ = '0.0.0'
@@ -30,6 +34,8 @@ try:
         _long_description = fp.read()
 except FileNotFoundError:
     _long_description = ''
+
+
 
 
 def get_extra_requires(path, add_all=True):
@@ -54,7 +60,8 @@ def get_extra_requires(path, add_all=True):
 
             # add tag `all` at the end
             if add_all:
-                extra_deps['all'] = set(vv for v in extra_deps.values() for vv in v)
+                extra_deps['all'] = set(
+                    vv for v in extra_deps.values() for vv in v)
                 extra_deps['match-py-ver'] = extra_deps[py_tag]
 
         return extra_deps
@@ -79,7 +86,8 @@ def register_ac():
             with open(v_fp) as fp, open(resource_path % k) as fr:
                 sh_content = fp.read()
                 if re.findall(regex, sh_content, flags=re.S):
-                    _sh_content = re.sub(regex, fr.read(), sh_content, flags=re.S)
+                    _sh_content = re.sub(
+                        regex, fr.read(), sh_content, flags=re.S)
                 else:
                     _sh_content = sh_content + '\n\n' + fr.read()
 
@@ -138,6 +146,11 @@ setup(
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
     },
+
+
+
+
+    
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
