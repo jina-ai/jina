@@ -27,11 +27,11 @@ class BaseMultiModalEncoder(BaseExecutor):
         self.field_by_modality = field_by_modality
         self.position_by_modality = position_by_modality
 
-    @batching
-    @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    # @batching
+    # @as_ndarray
+    def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         """
-        :param data: a `B x ([M] x D)` numpy ``ndarray``, `B` is the size of the batch, `M` is the number of modalities
+        :param: data: M arguments of shape `B x (D)` numpy ``ndarray``, `B` is the size of the batch, `M` is the number of modalities
         :return: a `B x D` numpy ``ndarray``
         """
         raise NotImplementedError

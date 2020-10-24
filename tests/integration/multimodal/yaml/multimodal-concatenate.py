@@ -15,7 +15,10 @@ class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
                  **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching
-    @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs):
-        return data
+    #@batching
+    #@as_ndarray
+    def encode(self, *data: 'np.ndarray', **kwargs):
+        modality1 = data[0]
+        modality2 = data[1]
+
+        return np.concatenate((modality1, modality2), axis=0)
