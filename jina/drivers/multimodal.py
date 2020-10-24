@@ -81,6 +81,7 @@ class MultimodalDriver(BaseEncodeDriver):
                 valid_docs.append(doc)
                 for idx in range(num_modalities):
                     content_by_modality[idx].append(doc_content[idx])
+        # This len(docs) must be changed
         if len(docs) > 0:
             # I want to pass a variable length argument (one argument per array)
             embeds = self.exec_fn(*content_by_modality)

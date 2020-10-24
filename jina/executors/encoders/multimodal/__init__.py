@@ -28,7 +28,7 @@ class BaseMultiModalEncoder(BaseExecutor):
         self.position_by_modality = position_by_modality
 
     # @batching
-    #@as_ndarray
+    # @as_ndarray
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         """
         :param: data: M arguments of shape `B x (D)` numpy ``ndarray``, `B` is the size of the batch, `M` is the number of modalities
