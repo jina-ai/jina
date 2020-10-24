@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 
 import numpy as np
-from typing import Dict, Any
+from typing import Dict
 from jina.executors.decorators import batching, as_ndarray
 from ... import BaseExecutor
 
@@ -16,6 +16,7 @@ class BaseMultiModalEncoder(BaseExecutor):
 
     def __init__(self,
                  field_by_modality: Dict[str, str] = {},
+                 position_by_modality: Dict[str, str] = {},
                  *args,
                  **kwargs):
         """
@@ -24,8 +25,13 @@ class BaseMultiModalEncoder(BaseExecutor):
         """
         super().__init__(*args, **kwargs)
         self.field_by_modality = field_by_modality
+        self.position_by_modality = position_by_modality
 
     @batching
     @as_ndarray
-    def encode(self, data: Dict[str, Any], *args, **kwargs) -> 'np.ndarray':
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        """
+        :param data: a `B x ([M] x D)` numpy ``ndarray``, `B` is the size of the batch, `M` is the number of modalities
+        :return: a `B x D` numpy ``ndarray``
+        """
         raise NotImplementedError

@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from collections import defaultdict
+import numpy as np
 from typing import Iterable, Tuple
 
 from .encode import BaseEncodeDriver
@@ -46,6 +46,12 @@ class MultimodalDriver(BaseEncodeDriver):
             raise RuntimeError('Could not know which fields to load for each modality')
         return self._exec.field_by_modality
 
+    @property
+    def position_by_modality(self):
+        if not getattr(self._exec, 'position_by_modality', None):
+            raise RuntimeError('Could not know which position of the ndarray to load to each modality')
+        return self._exec.position_by_modality
+
     def _apply_all(
             self,
             docs: Iterable['jina_pb2.Document'],
@@ -57,16 +63,27 @@ class MultimodalDriver(BaseEncodeDriver):
         """
         # docs are documents whose chunks are multimodal
         # This is similar to ranking, needed to have batching?
-        data = []
+        contents = []
+        valid_docs = []
         for doc in docs:
-            data_by_modality = defaultdict(list)
-
+            doc_content = [None] * len(self.field_by_modality.keys())
+            valid = True
             for chunk in doc.chunks:
-                # Group chunks which has the same modality
-                # TODO: How should the driver know what does it need to extract per modality?
-                data_by_modality[chunk.modality].append(_extract_doc_content(chunk, self.field_by_modality[chunk.modality]))
-            data.append(data_by_modality)
+                modality_idx = self.position_by_modality[chunk.modality]
+                if doc_content[modality_idx]:
+                    valid = False
+                    self.logger.warning(f'Invalid doc {doc.id}. Only one chunk per modality is accepted')
+                else:
+                    doc_content[modality_idx] = _extract_doc_content(chunk, self.field_by_modality[chunk.modality])
 
-        for doc, modality_dict in zip(docs, data):
-            ret = self.exec_fn(modality_dict)
-            doc.embedding.CopyFrom(array2pb(ret))
+            if valid:
+                valid_docs.append(doc)
+                contents.append(doc_content)
+        if contents:
+            embeds = self.exec_fn(np.stack(contents))
+            if len(valid_docs) != embeds.shape[0]:
+                self.logger.error(
+                    f'mismatched {len(valid_docs)} docs from level {docs[0].granularity} '
+                    f'and a {embeds.shape} shape embedding, the first dimension must be the same')
+            for doc, embedding in zip(valid_docs, embeds):
+                doc.embedding.CopyFrom(array2pb(embedding))

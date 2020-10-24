@@ -8,6 +8,8 @@ from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 
 
 class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
+    batch_size = 10
+
     def __init__(self,
                  *args,
                  **kwargs):
@@ -15,5 +17,5 @@ class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: Dict[str, Any], *args, **kwargs):
-        return np.concatenate((data['modality1'], data['modality2']), axis=1)
+    def encode(self, data: 'np.ndarray', *args, **kwargs):
+        return data
