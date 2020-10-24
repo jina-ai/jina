@@ -63,10 +63,11 @@ class MultimodalDriver(BaseEncodeDriver):
         """
         # docs are documents whose chunks are multimodal
         # This is similar to ranking, needed to have batching?
-        contents = []
+        num_modalities = len(self.field_by_modality.keys())
+        content_by_modality = [[]] * num_modalities  # array of num_rows equal to num_docs and num_columns equal to num_modalities
         valid_docs = []
         for doc in docs:
-            doc_content = [None] * len(self.field_by_modality.keys())
+            doc_content = [None] * num_modalities
             valid = True
             for chunk in doc.chunks:
                 modality_idx = self.position_by_modality[chunk.modality]
@@ -78,9 +79,11 @@ class MultimodalDriver(BaseEncodeDriver):
 
             if valid:
                 valid_docs.append(doc)
-                contents.append(doc_content)
-        if contents:
-            embeds = self.exec_fn(np.stack(contents))
+                for idx in range(num_modalities):
+                    content_by_modality[idx].append(doc_content[idx])
+        if len(docs) > 0:
+            # I want to pass a variable length argument (one argument per array)
+            embeds = self.exec_fn(*content_by_modality)
             if len(valid_docs) != embeds.shape[0]:
                 self.logger.error(
                     f'mismatched {len(valid_docs)} docs from level {docs[0].granularity} '
