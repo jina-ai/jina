@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-
+import threading
 from . import BaseDriver
 from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
 from ..proto import jina_pb2, is_data_request
@@ -54,6 +54,15 @@ class RouteDriver(ControlReqDriver):
       if it is a control request in
 
     """
+    _instance_lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            with RouteDriver._instance_lock:
+                if not hasattr(cls, '_instance'):
+                    RouteDriver._instance = super().__new__(cls)
+
+        return RouteDriver._instance
 
     def __init__(self, raise_no_dealer: bool = False, *args, **kwargs):
         """
