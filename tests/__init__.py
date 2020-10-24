@@ -59,3 +59,7 @@ def rm_files(file_paths):
                 os.remove(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
+print("hello world")
+d=4+2
+c=2+1
+a=d+c
