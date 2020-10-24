@@ -209,4 +209,3 @@ class PyClient(GrpcClient):
         if not self.args.skip_dry_run:
             self.dry_run(as_request='index')
         self.start(output_fn, **kwargs)
-

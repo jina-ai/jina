@@ -59,9 +59,8 @@ def test_hub_build_push():
         '--type', summary['manifest_info']['type']
     ])
     response = HubIO(args).list()
-    manifests = response.json()['manifest']
+    manifests = response
     
-    assert response.status_code == 200
     assert len(manifests) >= 1
     assert manifests[0]['name'] == summary['manifest_info']['name']
     

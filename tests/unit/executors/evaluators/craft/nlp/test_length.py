@@ -1,6 +1,6 @@
 import pytest
-
-from jina.executors.evaluators.craft.nlp.length import StringLengthEvaluator
+import numpy as np
+from jina.executors.evaluators.text.length import TextLengthEvaluator
 
 
 @pytest.mark.parametrize(
@@ -11,21 +11,19 @@ from jina.executors.evaluators.craft.nlp.length import StringLengthEvaluator
     ]
 )
 def test_length_evaluator(doc, gt, expected):
-    evaluator = StringLengthEvaluator()
-    assert evaluator.evaluate(doc_content=doc, groundtruth_content=gt) == expected
-    assert evaluator.num_documents == 1
-    assert evaluator.sum == expected
-    assert evaluator.avg == expected
+    evaluator = TextLengthEvaluator()
+    assert evaluator.evaluate(actual=doc, desired=gt) == expected
+    assert evaluator._running_stats._n == 1
+    np.testing.assert_almost_equal(evaluator.mean, expected)
 
 
 def test_cosine_evaluator_average():
     doc_content = ['aaa', 'bbb', 'abc']
     gt_content = ['aaaa', 'ccc', 'ddd']
 
-    evaluator = StringLengthEvaluator()
-    assert evaluator.evaluate(doc_content=doc_content[0], groundtruth_content=gt_content[0]) == 1.0
-    assert evaluator.evaluate(doc_content=doc_content[1], groundtruth_content=gt_content[1]) == 0.0
-    assert evaluator.evaluate(doc_content=doc_content[2], groundtruth_content=gt_content[2]) == 0.0
-    assert evaluator.num_documents == 3
-    assert evaluator.sum == 1.0
-    assert evaluator.avg == 1.0 / 3
+    evaluator = TextLengthEvaluator()
+    assert evaluator.evaluate(actual=doc_content[0], desired=gt_content[0]) == 1.0
+    assert evaluator.evaluate(actual=doc_content[1], desired=gt_content[1]) == 0.0
+    assert evaluator.evaluate(actual=doc_content[2], desired=gt_content[2]) == 0.0
+    assert evaluator._running_stats._n == 3
+    np.testing.assert_almost_equal(evaluator.mean, 1.0 / 3)

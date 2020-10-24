@@ -131,14 +131,16 @@ def set_hub_list_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--name', type=str, default='',
-                        help='name of executor')
-    parser.add_argument('--keywords', type=str, nargs='+', default=['numeric'],
-                        help='keywords to search for')
+    parser.add_argument('--name', type=str,
+                        help='name of hub image')
+    parser.add_argument('--kind', type=str,
+                        help='kind of hub image')
+    parser.add_argument('--keywords', type=str, nargs='+',
+                        help='keywords for searching')
     parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app'],
-                        help='type of executor')
-    parser.add_argument('--kind', type=str, default='',
-                        help='kind of executor')
+                        help='type of the hub image')
+    parser.add_argument('--local-only', action='store_true', default=False,
+                        help='list all local hub images on the current machine')
     return parser
 
 
@@ -217,7 +219,7 @@ def set_flow_parser(parser=None):
                     help='type of the output')
     gp.add_argument('--output-path', type=argparse.FileType('w', encoding='utf8'),
                     help='output path of the flow')
-    gp.add_argument('--inspect',  type=FlowInspectType.from_string,
+    gp.add_argument('--inspect', type=FlowInspectType.from_string,
                     choices=list(FlowInspectType), default=FlowInspectType.COLLECT,
                     help='strategy on those inspect pods in the flow. '
                          'if REMOVE is given then all inspect pods are removed when building the flow')
@@ -299,8 +301,8 @@ def set_pea_parser(parser=None):
     gp3.add_argument('--separated-workspace', action='store_true', default=False,
                      help='the data and config files are separated for each pea in this pod, '
                           'only effective when BasePod\'s `parallel` > 1')
-    gp3.add_argument('--replica-id', type=int, default=-1,
-                     help='the id of the storage of this replica, only effective when `separated_workspace=True`'
+    gp3.add_argument('--pea-id', type=int, default=-1,
+                     help='the id of the storage of this pea, only effective when `separated_workspace=True`'
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
@@ -516,7 +518,6 @@ def set_client_cli_parser(parser=None):
                      # required=True,
                      help='the mode of the client and the server')
     gp1.add_argument('--top-k', type=int,
-                     default=10,
                      help='top_k results returned in the search mode')
     gp1.add_argument('--mime-type', type=str,
                      help='MIME type of the input, useful when input-type is set to BUFFER')
