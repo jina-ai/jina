@@ -18,6 +18,8 @@ class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
     #@batching
     @as_ndarray
     def encode(self, *data: 'np.ndarray', **kwargs):
+        assert len(data) == 2
         modality1 = data[0]
         modality2 = data[1]
+        assert len(modality1) == len(modality2)
         return np.concatenate((modality1, modality2), axis=1)

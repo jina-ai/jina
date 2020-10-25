@@ -14,7 +14,7 @@ def _extract_doc_content(doc: 'jina_pb2.Document'):
     """Returns the content of the document with the following priority:
     If the document has an embedding, return it, otherwise return its content.
     """
-    if doc.embedding:
+    if doc.embedding.buffer:
         return pb2array(doc.embedding)
     else:
         return doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
@@ -101,7 +101,7 @@ class MultimodalDriver(BaseEncodeDriver):
         if len(valid_docs) > 0:
             # I want to pass a variable length argument (one argument per array)
             for modality in self.position_by_modality.keys():
-                content_by_modality[modality] = np.stack(content_by_modality[modality], axis=0)
+                content_by_modality[modality] = np.stack(content_by_modality[modality])
 
             # Guarantee that the arguments are provided to the executor in its desired order
             input_args = self._get_executor_input_arguments(content_by_modality, num_modalities)
