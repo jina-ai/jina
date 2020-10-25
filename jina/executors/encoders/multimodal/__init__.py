@@ -19,14 +19,15 @@ class BaseMultiModalEncoder(BaseExecutor):
                  *args,
                  **kwargs):
         """
-        :param field_by_modality: the map of fields that should be extracted by modality
+        :param position_by_modality: the map of arguments indicating in which order the modalities they need to come
+        for the encoding method
         :return:
         """
         super().__init__(*args, **kwargs)
         self.position_by_modality = position_by_modality
 
     # @batching
-    # @as_ndarray
+    @as_ndarray
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         """
         :param: data: M arguments of shape `B x (D)` numpy ``ndarray``, `B` is the size of the batch, `M` is the number of modalities

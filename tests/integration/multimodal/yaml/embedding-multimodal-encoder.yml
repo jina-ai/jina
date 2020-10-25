@@ -4,7 +4,7 @@ with:
     modality1: 0
     modality2: 1
 metas:
-  py_modules: multimodal-concatenate.py
+  py_modules: embedding-multimodal-concatenate.py
 requests:
   on:
     [IndexRequest, SearchRequest]:

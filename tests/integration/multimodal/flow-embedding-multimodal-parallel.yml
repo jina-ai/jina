@@ -11,6 +11,6 @@ pods:
     needs: gateway
   multimodal_encoder:
     uses_before: _merge_all
-    uses: yaml/multimodal-encoder.yml
+    uses: yaml/embedding-multimodal-encoder.yml
     read_only: true
     needs: [encoder_modality_1, encoder_modality_2]

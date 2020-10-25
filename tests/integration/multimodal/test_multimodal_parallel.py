@@ -40,6 +40,6 @@ def test_multimodal_parallel(multimodal_documents):
         for idx, doc in enumerate(resp.index.docs):
             np.testing.assert_almost_equal(pb2array(doc.embedding), np.array([idx, idx, idx, idx, idx]))
 
-    with Flow().load_config(os.path.join(cur_dir, 'flow-multimodal-parallel.yml')) as index_gt_flow:
+    with Flow().load_config(os.path.join(cur_dir, 'flow-embedding-multimodal-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_documents,
                             output_fn=validate_response)
