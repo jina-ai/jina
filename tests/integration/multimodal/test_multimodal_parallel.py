@@ -26,7 +26,10 @@ def multimodal_documents():
         for modality in ['modality1', 'modality2']:
             chunk = doc.chunks.add()
             chunk.modality = modality
-            chunk.blob.CopyFrom(array2pb(np.array([idx, idx])))
+            if modality == 'modality1':
+                chunk.blob.CopyFrom(array2pb(np.array([idx, idx])))
+            else:
+                chunk.blob.CopyFrom(array2pb(np.array([idx, idx, idx])))
         docs.append(doc)
     return docs
 
@@ -36,7 +39,7 @@ def test_multimodal_parallel(multimodal_documents):
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
             # TODO: Investigate why the shape is [[]]
-            np.testing.assert_almost_equal(pb2array(doc.embedding), np.array([[idx, idx, idx, idx]]))
+            np.testing.assert_almost_equal(pb2array(doc.embedding), np.array([[idx, idx, idx, idx, idx]]))
 
     with Flow().load_config(os.path.join(cur_dir, 'flow-multimodal-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_documents,
