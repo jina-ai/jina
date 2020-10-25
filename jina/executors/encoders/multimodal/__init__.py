@@ -15,7 +15,6 @@ class BaseMultiModalEncoder(BaseExecutor):
     """
 
     def __init__(self,
-                 field_by_modality: Dict[str, str] = {},
                  position_by_modality: Dict[str, str] = {},
                  *args,
                  **kwargs):
@@ -24,7 +23,6 @@ class BaseMultiModalEncoder(BaseExecutor):
         :return:
         """
         super().__init__(*args, **kwargs)
-        self.field_by_modality = field_by_modality
         self.position_by_modality = position_by_modality
 
     # @batching

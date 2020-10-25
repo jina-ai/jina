@@ -1,8 +1,5 @@
 !ConcatenateMultiModalEncoder
 with:
-  field_by_modality:
-    modality1: embedding
-    modality2: embedding
   position_by_modality:
     modality1: 0
     modality2: 1
