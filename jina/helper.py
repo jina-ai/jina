@@ -172,26 +172,33 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
         raise TypeError(f'unsupported type: {type(data)}')
 
 
-def multiple_batch_iterator(datas: Iterable[Iterable[Any]], batch_size: int, axis: int = 0) -> Iterator[Any]:
+def multiple_batch_iterator(datas: Iterable[Iterable[Any]],
+                            batch_size: int,
+                            total_size: int,
+                            axis: int = 0) -> Iterator[Any]:
+    # TODO: check against total_size
     import numpy as np
     if not batch_size or batch_size <= 0:
         yield datas
         return
     data = datas[0]
+    print(f' JOAN data {data} => {type(data)}')
     if isinstance(data, np.ndarray):
         _l = data.shape[axis]
+        print(f' JOAN _l {_l} vs batch_size {batch_size}')
+
         if batch_size >= _l:
             yield datas
             return
-        batched_datas = []
-        for data in datas:
-            _d = data.ndim
-            sl = [slice(None)] * _d
-            for start in range(0, _l, batch_size):
+        for start in range(0, _l, batch_size):
+            batched_datas = []
+            for data in datas:
+                _d = data.ndim
+                sl = [slice(None)] * _d
                 end = min(_l, start + batch_size)
                 sl[axis] = slice(start, end)
                 batched_datas.append(data[tuple(sl)])
-        yield batched_datas
+            yield batched_datas
     else:
         raise TypeError(f'unsupported type for multiple_batch_iterator: {type(data)}')
 

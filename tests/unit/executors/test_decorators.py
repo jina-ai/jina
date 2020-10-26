@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina.executors.decorators import as_update_method, as_train_method, as_ndarray, batching, \
-    require_train, store_init_kwargs
+    require_train, store_init_kwargs, batching_multi_input
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -203,3 +203,34 @@ def test_batching_with_label():
     labels = ['label1', 'label1', 'label2', 'label2']
     result = instance.f(data, labels)
     assert result == [[(1, 'label1'), (1, 'label1')], [(2, 'label2'), (2, 'label2')]]
+
+
+def test_batching_multi():
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+            self.batching0 = []
+            self.batching1 = []
+            self.batching2 = []
+
+        @batching_multi_input(args_indeces=(1, 3))
+        def f(self, datas):
+            assert len(datas) == 3
+            self.batching0.append(datas[0])
+            self.batching1.append(datas[1])
+            self.batching2.append(datas[2])
+            return [datas[0], datas[1], datas[2]]
+
+    instance = A(2)
+    data = [np.random.rand(4, 2), np.random.rand(4, 4), np.random.rand(4, 6)]
+    print(data)
+    print(f'len {len(data)}')
+    print(f'data0 {data[0]}')
+    result = instance.f(data)
+    assert len(instance.batching0) == 2
+    assert len(instance.batching1) == 2
+    assert len(instance.batching0[0]) == 2
+    assert len(instance.batching0[1]) == 2
+    assert len(instance.batching1[0]) == 2
+    assert len(instance.batching1[1]) == 2
+

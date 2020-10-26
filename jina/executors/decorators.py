@@ -310,22 +310,28 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
         def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
             # by default data is in args[1:] (self needs to be taken into account)
-            data = args[args_indeces[0]: args_indeces[1]]
+            data = args[args_indeces[0]: args_indeces[1]][0]
+
             args = list(args)
 
+            b_size = batch_size or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
-            if batch_size is None:
+            if b_size is None:
                 return func(*args, **kwargs)
 
             default_logger.info(
-                f'batching enabled for {func.__qualname__} batch_size={batch_size} '
+                f'batching enabled for {func.__qualname__} batch_size={b_size} '
                 f'num_batch={num_batch} axis={split_over_axis}')
 
-            total_size = _get_total_size(data, batch_size, num_batch, split_over_axis)
+            # assume all datas have the same length
+            total_size = _get_total_size(data[0], b_size, num_batch, split_over_axis)
 
             final_result = []
+            print(f' data {data}')
 
-            for multiple_batch in multiple_batch_iterator(data[:total_size], batch_size, split_over_axis):
+            for multiple_batch in multiple_batch_iterator(data, b_size, total_size, split_over_axis):
+                print(f' multiple_batch {multiple_batch}')
+
                 for idx, data_batch in enumerate(multiple_batch):
                     args[args_indeces[0] + idx] = data_batch
 
