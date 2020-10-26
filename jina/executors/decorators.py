@@ -7,12 +7,12 @@ from ..logging import default_logger
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List, Optional
+from typing import Callable, Any, Union, Iterator, List, Optional, Tuple
 
 import numpy as np
 
 from .metas import get_default_metas
-from ..helper import batch_iterator
+from ..helper import batch_iterator, multiple_batch_iterator
 
 
 def as_aggregate_method(func: Callable) -> Callable:
@@ -133,6 +133,46 @@ def store_init_kwargs(func: Callable) -> Callable:
     return arg_wrapper
 
 
+def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> int:
+    if isinstance(data, np.ndarray):
+        total_size = data.shape[axis]
+    elif hasattr(data, '__len__'):
+        total_size = len(data)
+    else:
+        total_size = None
+    return total_size
+
+
+def _get_total_size(data, batch_size, num_batch, split_over_axis):
+    full_data_size = _get_size(data, split_over_axis)
+    batched_data_size = batch_size * num_batch if num_batch else None
+
+    if full_data_size is not None and batched_data_size is not None:
+        total_size = min(full_data_size, batched_data_size)
+    else:
+        total_size = full_data_size or batched_data_size
+    return total_size
+
+
+def _merge_results_after_batching(final_result, merge_over_axis):
+    if len(final_result) == 1:
+        # the only result of one batch
+        return final_result[0]
+
+    if len(final_result) and merge_over_axis is not None:
+        if isinstance(final_result[0], np.ndarray):
+            final_result = np.concatenate(final_result, merge_over_axis)
+        elif isinstance(final_result[0], tuple):
+            reduced_result = []
+            num_cols = len(final_result[0])
+            for col in range(num_cols):
+                reduced_result.append(np.concatenate([row[col] for row in final_result], merge_over_axis))
+            final_result = tuple(reduced_result)
+
+    if len(final_result):
+        return final_result
+
+
 def batching(func: Callable[[Any], np.ndarray] = None, *,
              batch_size: Union[int, Callable] = None,
              num_batch: Optional[int] = None,
@@ -189,13 +229,7 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                 f'batching enabled for {func.__qualname__} batch_size={b_size} '
                 f'num_batch={num_batch} axis={split_over_axis}')
 
-            full_data_size = _get_size(data, split_over_axis)
-            batched_data_size = b_size * num_batch if num_batch else None
-
-            if full_data_size is not None and batched_data_size is not None:
-                total_size = min(full_data_size, batched_data_size)
-            else:
-                total_size = full_data_size or batched_data_size
+            total_size = _get_total_size(data, batch_size, num_batch, split_over_axis)
 
             final_result = []
 
@@ -230,22 +264,7 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
                 if r is not None:
                     final_result.append(r)
 
-            if len(final_result) == 1:
-                # the only result of one batch
-                return final_result[0]
-
-            if len(final_result) and merge_over_axis is not None:
-                if isinstance(final_result[0], np.ndarray):
-                    final_result = np.concatenate(final_result, merge_over_axis)
-                elif isinstance(final_result[0], tuple):
-                    reduced_result = []
-                    num_cols = len(final_result[0])
-                    for col in range(num_cols):
-                        reduced_result.append(np.concatenate([row[col] for row in final_result], merge_over_axis))
-                    final_result = tuple(reduced_result)
-
-            if len(final_result):
-                return final_result
+            return _merge_results_after_batching(final_result, merge_over_axis)
 
         return arg_wrapper
 
@@ -255,11 +274,71 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
         return _batching
 
 
-def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> int:
-    if isinstance(data, np.ndarray):
-        total_size = data.shape[axis]
-    elif hasattr(data, '__len__'):
-        total_size = len(data)
+def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
+                         batch_size: Union[int, Callable] = None,
+                         num_batch: Optional[int] = None,
+                         split_over_axis: int = 0,
+                         merge_over_axis: int = 0,
+                         args_indeces: Tuple[int] = (1, 2)) -> Any:
+    """Split the input of a function into small batches and call :func:`func` on each batch
+    , collect the merged result and return. This is useful when the input is too big to fit into memory
+
+    :param func: function to decorate
+    :param batch_size: size of each batch
+    :param num_batch: number of batches to take, the rest will be ignored
+    :param split_over_axis: split over which axis into batches
+    :param merge_over_axis: merge over which axis into a single result
+    :param args_indeces: the indeces of the location of the different data.
+    :return: the merged result as if run :func:`func` once on the input.
+
+    Example:
+        .. highlight:: python
+        .. code-block:: python
+
+            class MultiModalExecutor:
+
+                @batching(batch_size = 64)
+                def encode(self, *batches, *args, **kwargs):
+                    batch_modality0 = batches[0]
+                    embed0 = _encode_modality(batch_modality0)
+                    batch_modality1 = batches[1]
+                    embed1 = _encode_modality(batch_modality0)
+    """
+
+    def _batching(func):
+        @wraps(func)
+        def arg_wrapper(*args, **kwargs):
+            # priority: decorator > class_attribute
+            # by default data is in args[1:] (self needs to be taken into account)
+            data = args[args_indeces[0]: args_indeces[1]]
+            args = list(args)
+
+            # no batching if b_size is None
+            if batch_size is None:
+                return func(*args, **kwargs)
+
+            default_logger.info(
+                f'batching enabled for {func.__qualname__} batch_size={batch_size} '
+                f'num_batch={num_batch} axis={split_over_axis}')
+
+            total_size = _get_total_size(data, batch_size, num_batch, split_over_axis)
+
+            final_result = []
+
+            for multiple_batch in multiple_batch_iterator(data[:total_size], batch_size, split_over_axis):
+                for idx, data_batch in enumerate(multiple_batch):
+                    args[args_indeces[0] + idx] = data_batch
+
+                r = func(*args, **kwargs)
+
+                if r is not None:
+                    final_result.append(r)
+
+            return _merge_results_after_batching(final_result, merge_over_axis)
+
+        return arg_wrapper
+
+    if func:
+        return _batching(func)
     else:
-        total_size = None
-    return total_size
+        return _batching

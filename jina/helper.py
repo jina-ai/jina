@@ -26,7 +26,7 @@ __all__ = ['batch_iterator', 'yaml',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
-           'cached_property', 'is_url', 'complete_path']
+           'cached_property', 'is_url', 'complete_path', 'multiple_batch_iterator']
 
 
 def deprecated_alias(**aliases):
@@ -170,6 +170,30 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
             yield chunk
     else:
         raise TypeError(f'unsupported type: {type(data)}')
+
+
+def multiple_batch_iterator(datas: Iterable[Iterable[Any]], batch_size: int, axis: int = 0) -> Iterator[Any]:
+    import numpy as np
+    if not batch_size or batch_size <= 0:
+        yield datas
+        return
+    data = datas[0]
+    if isinstance(data, np.ndarray):
+        _l = data.shape[axis]
+        if batch_size >= _l:
+            yield datas
+            return
+        batched_datas = []
+        for data in datas:
+            _d = data.ndim
+            sl = [slice(None)] * _d
+            for start in range(0, _l, batch_size):
+                end = min(_l, start + batch_size)
+                sl[axis] = slice(start, end)
+                batched_datas.append(data[tuple(sl)])
+        yield batched_datas
+    else:
+        raise TypeError(f'unsupported type for multiple_batch_iterator: {type(data)}')
 
 
 def _get_yaml():
