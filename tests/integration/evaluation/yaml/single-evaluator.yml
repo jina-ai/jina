@@ -2,6 +2,6 @@
 requests:
   on:
     SearchRequest:
-      - !CraftEvaluationDriver
+      - !TextEvaluateDriver
         with:
           traversal_paths: [ 'r' ]

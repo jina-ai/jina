@@ -10,7 +10,7 @@ on:
           - blob
           - text
       traversal_paths: ['r']
-    - !RankingEvaluationDriver
+    - !RankEvaluateDriver
       with:
         id_tag: 'id'
         traversal_paths: ['r']

@@ -17,7 +17,7 @@ requests:
       - !LoadGroundTruthDriver
         with:
           executor: gtidx
-      - !CraftEvaluationDriver
+      - !TextEvaluateDriver
         with:
           executor: length-evaluator
           traversal_paths: [ 'r' ]
