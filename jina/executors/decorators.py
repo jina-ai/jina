@@ -12,7 +12,7 @@ from typing import Callable, Any, Union, Iterator, List, Optional, Tuple
 import numpy as np
 
 from .metas import get_default_metas
-from ..helper import batch_iterator, multiple_batch_iterator
+from ..helper import batch_iterator
 
 
 def as_aggregate_method(func: Callable) -> Callable:
@@ -279,7 +279,8 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
                          num_batch: Optional[int] = None,
                          split_over_axis: int = 0,
                          merge_over_axis: int = 0,
-                         args_indeces: Tuple[int] = (1, 2)) -> Any:
+                         slice_on: int = 1,
+                         num_data: int) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
 
@@ -288,7 +289,9 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
     :param num_batch: number of batches to take, the rest will be ignored
     :param split_over_axis: split over which axis into batches
     :param merge_over_axis: merge over which axis into a single result
-    :param args_indeces: the indeces of the location of the different data.
+    :param slice_on: the location of the data. When using inside a class,
+            ``slice_on`` should take ``self`` into consideration.
+    :param num_data: the number of data inside the arguments (starting from ``slice_on``)
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
@@ -310,8 +313,8 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
         def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
             # by default data is in args[1:] (self needs to be taken into account)
-            data = args[args_indeces[0]: args_indeces[1]][0]
-
+            data_args = [args[slice_on][i] for i in range(0, num_data)]
+            data = list(zip(*data_args))
             args = list(args)
 
             b_size = batch_size or getattr(args[0], 'batch_size', None)
@@ -324,16 +327,14 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
                 f'num_batch={num_batch} axis={split_over_axis}')
 
             # assume all datas have the same length
-            total_size = _get_total_size(data[0], b_size, num_batch, split_over_axis)
-
+            total_size = _get_total_size(data, b_size, num_batch, split_over_axis)
             final_result = []
-            print(f' data {data}')
 
-            for multiple_batch in multiple_batch_iterator(data, b_size, total_size, split_over_axis):
-                print(f' multiple_batch {multiple_batch}')
+            for multiple_batch in batch_iterator(data[:total_size], b_size, split_over_axis):
+                multiple_batch = list(zip(*multiple_batch))
 
                 for idx, data_batch in enumerate(multiple_batch):
-                    args[args_indeces[0] + idx] = data_batch
+                    args[slice_on][idx] = data_batch
 
                 r = func(*args, **kwargs)
 

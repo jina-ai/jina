@@ -209,28 +209,24 @@ def test_batching_multi():
     class A:
         def __init__(self, batch_size):
             self.batch_size = batch_size
-            self.batching0 = []
-            self.batching1 = []
-            self.batching2 = []
+            self.batching = []
 
-        @batching_multi_input(args_indeces=(1, 3))
+        @batching_multi_input(num_data=3)
         def f(self, datas):
             assert len(datas) == 3
-            self.batching0.append(datas[0])
-            self.batching1.append(datas[1])
-            self.batching2.append(datas[2])
-            return [datas[0], datas[1], datas[2]]
+            concat = np.concatenate((datas[0], datas[1], datas[2]), axis=1)
+            self.batching.append(concat)
+            return concat
 
     instance = A(2)
-    data = [np.random.rand(4, 2), np.random.rand(4, 4), np.random.rand(4, 6)]
-    print(data)
-    print(f'len {len(data)}')
-    print(f'data0 {data[0]}')
+    data0 = np.random.rand(4, 2)
+    data1 = np.random.rand(4, 4)
+    data2 = np.random.rand(4, 6)
+    data = [data0, data1, data2]
     result = instance.f(data)
-    assert len(instance.batching0) == 2
-    assert len(instance.batching1) == 2
-    assert len(instance.batching0[0]) == 2
-    assert len(instance.batching0[1]) == 2
-    assert len(instance.batching1[0]) == 2
-    assert len(instance.batching1[1]) == 2
-
+    assert result.shape == (4, 12)
+    assert len(result) == 4
+    assert len(result[0]) == 12
+    assert len(instance.batching) == 2
+    for batch in instance.batching:
+        assert batch.shape == (2, 12)
