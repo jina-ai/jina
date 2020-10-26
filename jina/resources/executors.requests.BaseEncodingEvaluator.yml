@@ -10,6 +10,6 @@ on:
           - blob
           - text
       traversal_paths: ['r']
-    - !EncodeEvaluationDriver
+    - !NDArrayEvaluateDriver
       with:
         traversal_paths: ['r']

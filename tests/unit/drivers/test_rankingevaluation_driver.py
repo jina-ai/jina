@@ -1,6 +1,6 @@
 import pytest
 
-from jina.drivers.evaluate import RankingEvaluationDriver
+from jina.drivers.evaluate import RankEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators.rank import BaseRankingEvaluator
 from jina.proto import jina_pb2
@@ -32,7 +32,7 @@ def mock_precision_evaluator():
     return MockPrecisionEvaluator()
 
 
-class SimpleEvaluateDriver(RankingEvaluationDriver):
+class SimpleEvaluateDriver(RankEvaluateDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -74,7 +74,7 @@ def test_ranking_evaluate_driver(mock_precision_evaluator,
         assert doc.evaluations[0].value == 1.0
 
 
-class SimpleChunkEvaluateDriver(RankingEvaluationDriver):
+class SimpleChunkEvaluateDriver(RankEvaluateDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
