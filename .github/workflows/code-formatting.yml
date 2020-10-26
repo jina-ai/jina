@@ -25,9 +25,10 @@ jobs:
       - name: Install Black
         run: pip install black
       - name: Run black --check .
+        id: black_check
         run: black --check -S jina/drivers/__init__.py
       - name: If needed, commit black changes to master
-        if: failure()
+        if: "steps.black_check.outputs.exit_code != 0"
         run: |
           black -S jina/drivers/__init__.py
           git add -u
