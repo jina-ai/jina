@@ -87,6 +87,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5164,4 +5165,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d06a9fcb```](https://github.com/jina-ai/jina/commit/d06a9fcbc36765f30612d8aa8964d57fceb05a0d)] __-__ update contributors (*Jina Dev Bot*)
  - [[```78f8422f```](https://github.com/jina-ai/jina/commit/78f8422fa211ae0140832fa0ff0be67a3769191f)] __-__ add nan as the code owner (#1159) (*Nan Wang*)
  - [[```a1503cce```](https://github.com/jina-ai/jina/commit/a1503ccefbb809a659fd404b6aedd4ba58407f2c)] __-__ __version__: the next version will be 0.6.10 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-1></a>
+## Release Note (`0.7.1`)
+
+> Release time: 2020-10-26 16:56:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Maximilian Werk,  Joan Fontanals,  🙇
+
+
+### 🆕 New Features
+
+ - [[```c68d505c```](https://github.com/jina-ai/jina/commit/c68d505cc4fe5d16ef6fc87c8e3a4e05c5f8d0f2)] __-__ __cli__: remove the usage of packaging (#1164) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```d29602be```](https://github.com/jina-ai/jina/commit/d29602be7874714175a86ec62c4a70798acbdaa2)] __-__ __driver__: eval drivers focus on data type of field (#1165) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```53fe2e2d```](https://github.com/jina-ai/jina/commit/53fe2e2da4231aa0e5cc31682d99a7f96fdeb803)] __-__ hotfix packaging in cli (*Han Xiao*)
+ - [[```8d3e31a2```](https://github.com/jina-ai/jina/commit/8d3e31a2d8f680aea063f478a67fcf189b93f486)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```c2a02a31```](https://github.com/jina-ai/jina/commit/c2a02a317c1cfc8b59a2ebfcfb274a8f4875d43f)] __-__ added failure (#1162) (*Maximilian Werk*)
+ - [[```4c1d7641```](https://github.com/jina-ai/jina/commit/4c1d76412a0c8d36073ffc2fe312e1f4fcad92b7)] __-__ add packaging in extra requirements (#1150) (*Joan Fontanals*)
+ - [[```e542b186```](https://github.com/jina-ai/jina/commit/e542b1869b6ddb72ae112b89a680bfb1e3356bec)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```4cf25534```](https://github.com/jina-ai/jina/commit/4cf2553464238e69183a105d8f598b01baef1a0c)] __-__ black on merge (#1146) (*Maximilian Werk*)
+ - [[```8b0ba56e```](https://github.com/jina-ai/jina/commit/8b0ba56ef61a80af6c80d47d3c84c14601097849)] __-__ __version__: the next version will be 0.7.1 (*Jina Dev Bot*)
 
