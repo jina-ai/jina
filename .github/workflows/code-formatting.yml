@@ -1,0 +1,37 @@
+name: Codeformatting
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  autoblack:
+    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - name: Fetch Code
+        run: |
+          git fetch --prune --unshallow
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install Black
+        run: pip install black
+      - name: Run black --check .
+        id: black_check
+        run: black --check -S jina/drivers/__init__.py
+      - name: If needed, commit black changes to master
+        if: "steps.black_check.outputs.exit_code != 0"
+        run: |
+          black -S jina/drivers/__init__.py
+          git add -u
+          git commit -m "chore: update code-style"
+          git status
+          git push
