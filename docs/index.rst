@@ -45,6 +45,7 @@ Welcome to Jina Documentation!
    chapters/restapi/index
    chapters/envs
    chapters/api_schema
+   chapters/prevent_duplicate_indexing/index
 
 .. toctree::
    :maxdepth: 2
