@@ -60,4 +60,5 @@ pytest-repeat:              test
 flaky:                      test
 mock:                       test
 pymongo[srv]:               hub, devel, cicd
+packaging:                  hub
 
