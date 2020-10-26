@@ -1,9 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Dict
 
 import numpy as np
-from typing import Dict
+
 from jina.executors.decorators import batching, as_ndarray
 from ... import BaseExecutor
 

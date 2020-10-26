@@ -1,9 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import numpy as np
 from collections import defaultdict
 from typing import Iterable, Tuple, Dict
+
+import numpy as np
 
 from .encode import BaseEncodeDriver
 from .helper import pb2array, array2pb
@@ -63,15 +64,12 @@ class MultimodalDriver(BaseEncodeDriver):
             raise RuntimeError('Could not know which position of the ndarray to load to each modality')
         return self._exec.position_by_modality
 
-    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray'], num_modalities: int):
+    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray']):
         """
             From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
             passed to the executor.
         """
-        input_args = [None] * num_modalities
-        for modality in self.position_by_modality.keys():
-            input_args[self.position_by_modality[modality]] = content_by_modality[modality]
-        return input_args
+        return [content_by_modality[modality] for modality in self.position_by_modality.keys()]
 
     def _apply_all(
             self,
@@ -104,7 +102,7 @@ class MultimodalDriver(BaseEncodeDriver):
                 content_by_modality[modality] = np.stack(content_by_modality[modality])
 
             # Guarantee that the arguments are provided to the executor in its desired order
-            input_args = self._get_executor_input_arguments(content_by_modality, num_modalities)
+            input_args = self._get_executor_input_arguments(content_by_modality)
             embeds = self.exec_fn(*input_args)
             if len(valid_docs) != embeds.shape[0]:
                 self.logger.error(
