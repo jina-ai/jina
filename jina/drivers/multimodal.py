@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Iterable, Tuple, Dict
+from typing import Iterable, Tuple, Dict, List
 
 import numpy as np
 
@@ -59,21 +59,14 @@ class MultiModalDriver(BaseEncodeDriver):
                  traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    @property
-    def position_by_modality(self):
-        if not getattr(self._exec, 'position_by_modality', None):
-            raise RuntimeError('Could not know which position of the ndarray to load to each modality')
-        return self._exec.position_by_modality
 
-    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray'], num_modalities: int):
+    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray']):
         """
             From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
             passed to the executor.
         """
-        input_args = [None] * num_modalities
-        for modality in self.position_by_modality.keys():
-            input_args[self.position_by_modality[modality]] = content_by_modality[modality]
-        return input_args
+        return [content_by_modality[modality] for modality in self._exec.position_by_modality]
+
 
     def _apply_all(
             self,
@@ -85,7 +78,6 @@ class MultiModalDriver(BaseEncodeDriver):
         modalities
         :return:
         """
-        num_modalities = len(self.position_by_modality.keys())
         content_by_modality = defaultdict(list)  # array of num_rows equal to num_docs and num_columns equal to
 
         valid_docs = []
@@ -93,18 +85,18 @@ class MultiModalDriver(BaseEncodeDriver):
             doc_content = _extract_modalities_from_document(doc)
             if doc_content:
                 valid_docs.append(doc)
-                for modality in self.position_by_modality.keys():
+                for modality in self._exec.position_by_modality:
                     content_by_modality[modality].append(doc_content[modality])
             else:
                 self.logger.warning(f'Invalid doc {doc.id}. Only one chunk per modality is accepted')
 
         if len(valid_docs) > 0:
-            # I want to pass a variable length argument (one argument per array)
-            for modality in self.position_by_modality.keys():
+            # Pass a variable length argument (one argument per array)
+            for modality in self._exec.position_by_modality:
                 content_by_modality[modality] = np.stack(content_by_modality[modality])
 
             # Guarantee that the arguments are provided to the executor in its desired order
-            input_args = self._get_executor_input_arguments(content_by_modality, num_modalities)
+            input_args = self._get_executor_input_arguments(content_by_modality)
             embeds = self.exec_fn(*input_args)
             if len(valid_docs) != embeds.shape[0]:
                 self.logger.error(
