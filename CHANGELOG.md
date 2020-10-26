@@ -86,6 +86,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5139,4 +5140,27 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```3a01ee9a```](https://github.com/jina-ai/jina/commit/3a01ee9a3b227cafd0bfd9de0e53d7a7bb021929)] __-__ fix line space (#1105) (*Han Xiao*)
  - [[```6d00f2dd```](https://github.com/jina-ai/jina/commit/6d00f2dd74c66888425f6ccb208fb5132011216b)] __-__ __ci__: remove 3.9 from ci (*Han Xiao*)
  - [[```9721ddc2```](https://github.com/jina-ai/jina/commit/9721ddc2ed01d79019b1806a561f63c2f868de7d)] __-__ __version__: the next version will be 0.6.9 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-0></a>
+## Release Note (`0.7.0`)
+
+> Release time: 2020-10-26 08:08:10
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Nan Wang,  Rutuja Surve,  🙇
+
+
+### 🆕 New Features
+
+ - [[```20301a53```](https://github.com/jina-ai/jina/commit/20301a534e6c826a662c2f430a0955dfc758d458)] __-__ design pattern doc for incremental index (#1147) (*Rutuja Surve*)
+
+### 🍹 Other Improvements
+
+ - [[```2110f52f```](https://github.com/jina-ai/jina/commit/2110f52f030a6a38d5da75b67a2599d5e8568615)] __-__ hotfix release 0.7.0 (*Han Xiao*)
+ - [[```9cafaff2```](https://github.com/jina-ai/jina/commit/9cafaff2c979317963c8f1c1e8de0ab1be6a2b03)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d06a9fcb```](https://github.com/jina-ai/jina/commit/d06a9fcbc36765f30612d8aa8964d57fceb05a0d)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```78f8422f```](https://github.com/jina-ai/jina/commit/78f8422fa211ae0140832fa0ff0be67a3769191f)] __-__ add nan as the code owner (#1159) (*Nan Wang*)
+ - [[```a1503cce```](https://github.com/jina-ai/jina/commit/a1503ccefbb809a659fd404b6aedd4ba58407f2c)] __-__ __version__: the next version will be 0.6.10 (*Jina Dev Bot*)
 
