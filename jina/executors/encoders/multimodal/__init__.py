@@ -16,7 +16,7 @@ class BaseMultiModalEncoder(BaseExecutor):
     """
 
     def __init__(self,
-                 position_by_modality: Dict[str, str] = {},
+                 position_by_modality: Dict[str, int] = {},
                  *args,
                  **kwargs):
         """

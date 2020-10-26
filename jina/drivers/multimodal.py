@@ -27,14 +27,14 @@ def _extract_modalities_from_document(doc: 'jina_pb2.Document'):
     doc_content = {}
     for chunk in doc.chunks:
         modality = chunk.modality
-        if modality in doc_content.keys():
+        if modality in doc_content:
             return None
         else:
             doc_content[modality] = _extract_doc_content(chunk)
     return doc_content
 
 
-class MultimodalDriver(BaseEncodeDriver):
+class MultiModalDriver(BaseEncodeDriver):
     """Extract multimodal embeddings from different modalities.
     Input-Output ::
         Input:
@@ -51,7 +51,7 @@ class MultimodalDriver(BaseEncodeDriver):
     .. note::
         - It traverses on the ``documents`` for which we want to apply the ``multimodal`` embedding. This way
         we can use the `batching` capabilities for the `executor`.
-.. warning::
+    .. warning::
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
     """
 
@@ -65,12 +65,15 @@ class MultimodalDriver(BaseEncodeDriver):
             raise RuntimeError('Could not know which position of the ndarray to load to each modality')
         return self._exec.position_by_modality
 
-    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray']):
+    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray'], num_modalities: int):
         """
             From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
             passed to the executor.
         """
-        return [content_by_modality[modality] for modality in self.position_by_modality.keys()]
+        input_args = [None] * num_modalities
+        for modality in self.position_by_modality.keys():
+            input_args[self.position_by_modality[modality]] = content_by_modality[modality]
+        return input_args
 
     def _apply_all(
             self,
@@ -78,15 +81,13 @@ class MultimodalDriver(BaseEncodeDriver):
             *args, **kwargs
     ) -> None:
         """
-        :param docs: the docs for which a ``multimodal embedding`` will be computed
+        :param docs: the docs for which a ``multimodal embedding`` will be computed, whose chunks are of different
+        modalities
         :return:
         """
-        # docs are documents whose chunks are multimodal
-        # This is similar to ranking, needed to have batching?
         num_modalities = len(self.position_by_modality.keys())
         content_by_modality = defaultdict(list)  # array of num_rows equal to num_docs and num_columns equal to
 
-        # num_modalities
         valid_docs = []
         for doc in docs:
             doc_content = _extract_modalities_from_document(doc)
@@ -103,7 +104,7 @@ class MultimodalDriver(BaseEncodeDriver):
                 content_by_modality[modality] = np.stack(content_by_modality[modality])
 
             # Guarantee that the arguments are provided to the executor in its desired order
-            input_args = self._get_executor_input_arguments(content_by_modality)
+            input_args = self._get_executor_input_arguments(content_by_modality, num_modalities)
             embeds = self.exec_fn(*input_args)
             if len(valid_docs) != embeds.shape[0]:
                 self.logger.error(

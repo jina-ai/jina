@@ -3,9 +3,9 @@ import numpy as np
 
 from jina.proto import uid
 from jina.proto import jina_pb2
-from jina.drivers.helper import array2pb
+from jina.drivers.helper import array2pb, pb2array
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
-from jina.drivers.multimodal import MultimodalDriver
+from jina.drivers.multimodal import MultiModalDriver
 
 
 @pytest.fixture(scope='function')
@@ -47,11 +47,9 @@ def doc_with_multimodal_chunks(embeddings):
 
 class MockMultiModalEncoder(BaseMultiModalEncoder):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, position_by_modality, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.position_by_modality = {'visual1': 0,
-                                     'visual2': 1,
-                                     'textual': 2}
+        self.position_by_modality = position_by_modality
 
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         visual1 = data[self.position_by_modality['visual1']]
@@ -62,10 +60,12 @@ class MockMultiModalEncoder(BaseMultiModalEncoder):
 
 @pytest.fixture
 def mock_multimodal_encoder():
-    return MockMultiModalEncoder()
+    return MockMultiModalEncoder(position_by_modality={'visual1': 0,
+                                                       'visual2': 1,
+                                                       'textual': 2})
 
 
-class SimpleMultiModalDriver(MultimodalDriver):
+class SimpleMultiModalDriver(MultiModalDriver):
 
     def __init__(self, *args, **kwargs):
         import logging
@@ -124,3 +124,24 @@ def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_drive
     assert len(doc.chunks) == 3
     # Document consider invalid to be encoded by the driver
     assert len(doc.embedding.buffer) == 0
+
+
+@pytest.fixture
+def mock_multimodal_encoder_shuffled():
+    return MockMultiModalEncoder(position_by_modality={'visual1': 1,
+                                                       'visual2': 0,
+                                                       'textual': 2})
+
+
+def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_multimodal_encoder_shuffled,
+                                               doc_with_multimodal_chunks):
+    simple_multimodal_driver.attach(executor=mock_multimodal_encoder_shuffled, pea=None)
+    simple_multimodal_driver._apply_all([doc_with_multimodal_chunks])
+    doc = doc_with_multimodal_chunks
+    assert len(doc.chunks) == 3
+    visual1 = doc.chunks[1]
+    visual2 = doc.chunks[0]
+    textual = doc.chunks[2]
+    control = np.concatenate([pb2array(visual2.embedding), pb2array(visual1.embedding), pb2array(textual.embedding)])
+    test = pb2array(doc.embedding)
+    np.testing.assert_array_equal(control, test)

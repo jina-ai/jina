@@ -10,6 +10,6 @@ metas:
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !MultimodalDriver
+      - !MultiModalDriver
         with:
           traversal_paths: ['r']
