@@ -24,7 +24,7 @@ class BaseMultiModalEncoder(BaseExecutor):
         :return:
         """
         super().__init__(*args, **kwargs)
-        self._position_by_modality = position_by_modality
+        self.position_by_modality = position_by_modality
 
 
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
@@ -33,12 +33,3 @@ class BaseMultiModalEncoder(BaseExecutor):
         :return: a `B x D` numpy ``ndarray``
         """
         raise NotImplementedError
-
-    @property
-    def position_by_modality(self) -> List[str]:
-        """Get position per modality.
-        :return: the list of strings representing the name and order of the modality.
-        """
-        if not self._position_by_modality:
-            raise RuntimeError('Could not know which position of the ndarray to load to each modality')
-        return self._position_by_modality

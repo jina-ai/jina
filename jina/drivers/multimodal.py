@@ -60,12 +60,22 @@ class MultiModalDriver(BaseEncodeDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
 
+    @property
+    def position_by_modality(self) -> List[str]:
+        """Get position per modality.
+        :return: the list of strings representing the name and order of the modality.
+        """
+        if not self._exec.position_by_modality:
+            raise RuntimeError('Could not know which position of the ndarray to load to each modality')
+        return self._exec.position_by_modality
+
+
     def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray']):
         """
             From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
             passed to the executor.
         """
-        return [content_by_modality[modality] for modality in self._exec.position_by_modality]
+        return [content_by_modality[modality] for modality in self.position_by_modality]
 
 
     def _apply_all(
@@ -85,14 +95,14 @@ class MultiModalDriver(BaseEncodeDriver):
             doc_content = _extract_modalities_from_document(doc)
             if doc_content:
                 valid_docs.append(doc)
-                for modality in self._exec.position_by_modality:
+                for modality in self.position_by_modality:
                     content_by_modality[modality].append(doc_content[modality])
             else:
                 self.logger.warning(f'Invalid doc {doc.id}. Only one chunk per modality is accepted')
 
         if len(valid_docs) > 0:
             # Pass a variable length argument (one argument per array)
-            for modality in self._exec.position_by_modality:
+            for modality in self.position_by_modality:
                 content_by_modality[modality] = np.stack(content_by_modality[modality])
 
             # Guarantee that the arguments are provided to the executor in its desired order

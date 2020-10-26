@@ -49,7 +49,7 @@ class MockMultiModalEncoder(BaseMultiModalEncoder):
 
     def __init__(self, position_by_modality, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._position_by_modality = position_by_modality
+        self.position_by_modality = position_by_modality
 
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         visual1 = data[(self.position_by_modality.index('visual1'))]
