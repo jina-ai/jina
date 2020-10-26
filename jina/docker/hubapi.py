@@ -7,8 +7,7 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from packaging import version
-from pkg_resources import resource_stream
+from pkg_resources import resource_stream, parse_version
 from setuptools import find_packages
 
 from .helper import credentials_file
@@ -132,7 +131,7 @@ def _make_hub_table_with_local(manifests, local_manifests):
             color = 'white'
             if image_name in local_manifests:
                 local_ver = local_manifests[image_name].get('version', '')
-                _v1, _v2 = version.parse(ver), version.parse(local_ver)
+                _v1, _v2 = parse_version(ver), parse_version(local_ver)
                 if _v1 > _v2:
                     color = 'red'
                 elif _v1 == _v2:
