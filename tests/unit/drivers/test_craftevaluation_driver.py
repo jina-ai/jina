@@ -1,7 +1,9 @@
-import pytest
-import numpy as np
 from typing import Any
-from jina.drivers.evaluate import TextEvaluateDriver
+
+import numpy as np
+import pytest
+
+from jina.drivers.evaluate import FieldEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair, array2pb
 from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
@@ -17,7 +19,7 @@ class MockDiffEvaluator(BaseEvaluator):
         return abs(len(actual) - len(desired))
 
 
-@pytest.fixture(scope='function', params=['text'])
+@pytest.fixture(scope='function', params=['text', 'buffer', 'blob'])
 def field_type(request):
     return request.param
 
@@ -29,10 +31,10 @@ def doc_with_field_type(field_type):
             doc = jina_pb2.Document()
             if field_type == 'text':
                 doc.text = 'aaa'
-            # elif field_type == 'buffer':
-            #     doc.buffer = b'\x01\x02\x03'
-            # elif field_type == 'blob':
-            #     doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
+            elif field_type == 'buffer':
+                doc.buffer = b'\x01\x02\x03'
+            elif field_type == 'blob':
+                doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
             return doc
 
     return DocCreator()
@@ -45,10 +47,10 @@ def groundtruth_with_field_type(field_type):
             gt = jina_pb2.Document()
             if field_type == 'text':
                 gt.text = 'aaaa'
-            # elif field_type == 'buffer':
-            #     gt.buffer = b'\x01\x02\x03\04'
-            # elif field_type == 'blob':
-            #     gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
+            elif field_type == 'buffer':
+                gt.buffer = b'\x01\x02\x03\04'
+            elif field_type == 'blob':
+                gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
             return gt
 
     return GTCreator()
@@ -81,7 +83,7 @@ def mock_diff_evaluator():
     return MockDiffEvaluator()
 
 
-class SimpleEvaluateDriver(TextEvaluateDriver):
+class SimpleEvaluateDriver(FieldEvaluateDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -102,7 +104,7 @@ def test_crafter_evaluate_driver(mock_diff_evaluator, simple_evaluate_driver, gr
         assert doc.evaluations[0].value == 1.0
 
 
-class SimpleChunkEvaluateDriver(TextEvaluateDriver):
+class SimpleChunkEvaluateDriver(FieldEvaluateDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -164,12 +166,12 @@ def eval_request():
             if field_type == 'text':
                 chunk_doc.text = 'aaa'
                 chunk_gt.text = 'aaaa'
-            # elif field_type == 'buffer':
-            #     chunk_doc.buffer = b'\x01\x02\x03'
-            #     chunk_gt.buffer = b'\x01\x02\x03\x04'
-            # elif field_type == 'blob':
-            #     chunk_doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
-            #     chunk_gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
+            elif field_type == 'buffer':
+                chunk_doc.buffer = b'\x01\x02\x03'
+                chunk_gt.buffer = b'\x01\x02\x03\x04'
+            elif field_type == 'blob':
+                chunk_doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
+                chunk_gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
         return req
 
     return request
@@ -177,7 +179,7 @@ def eval_request():
 
 @pytest.mark.parametrize(
     'field_type',
-    ['text']
+    ['text', 'buffer', 'blob']
 )
 def test_crafter_evaluate_driver_in_chunks(field_type,
                                            simple_chunk_evaluate_driver,

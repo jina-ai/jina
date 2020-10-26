@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from jina.drivers.evaluate import EmbeddingEvaluateDriver
+from jina.drivers.evaluate import NDArrayEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair, array2pb
 from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator
 from jina.proto import jina_pb2
@@ -28,7 +28,7 @@ def mock_diff_evaluator():
     return MockDiffEvaluator()
 
 
-class SimpleEvaluateDriver(EmbeddingEvaluateDriver):
+class SimpleEvaluateDriver(NDArrayEvaluateDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -64,7 +64,7 @@ def test_encoding_evaluate_driver(mock_diff_evaluator,
         assert doc.evaluations[0].value == 1.0
 
 
-class SimpleChunkEvaluateDriver(EmbeddingEvaluateDriver):
+class SimpleChunkEvaluateDriver(NDArrayEvaluateDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

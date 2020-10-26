@@ -1,10 +1,11 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Any, List
+from typing import Iterable, Any
 
 from . import BaseExecutableDriver
 from .helper import DocGroundtruthPair, pb2array
+from .querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
 from ..proto import jina_pb2
 
@@ -55,6 +56,30 @@ class BaseEvaluateDriver(BaseExecutableDriver):
         raise NotImplementedError
 
 
+class FieldEvaluateDriver(BaseEvaluateDriver):
+    """
+    Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`
+    """
+
+    def __init__(self, field: str,
+                 *args,
+                 **kwargs):
+        """
+
+        :param field: the field name to be extracted from the Protobuf
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+        self.field = field
+
+    def extract(self, doc: 'jina_pb2.Document') -> Any:
+        r = dunder_get(doc, self.field)
+        if isinstance(r, jina_pb2.NdArray):
+            r = pb2array(r)
+        return r
+
+
 class RankEvaluateDriver(BaseEvaluateDriver):
     """Drivers used to pass `matches` from documents and groundtruths to an executor and add the evaluation value
     """
@@ -72,27 +97,40 @@ class RankEvaluateDriver(BaseEvaluateDriver):
         super().__init__(*args, **kwargs)
         self.id_tag = id_tag
 
-    def extract(self, doc: 'jina_pb2.Document') -> List[int]:
+    def extract(self, doc: 'jina_pb2.Document'):
         if self.id_tag:
             return [x.tags[self.id_tag] for x in doc.matches]
         else:
             return [x.id for x in doc.matches]
 
 
-class EmbeddingEvaluateDriver(BaseEvaluateDriver):
+class NDArrayEvaluateDriver(FieldEvaluateDriver):
     """Drivers used to pass `embedding` from documents and groundtruths to an executor and add the evaluation value
+
+    - Valid fields:
+        ['blob', 'embedding']
+
     """
 
-    def extract(self, doc: 'jina_pb2.Document'):
-        return pb2array(doc.embedding)
+    def __init__(self, field: str = 'embedding', *args, **kwargs):
+        super().__init__(field, *args, **kwargs)
 
 
-class TextEvaluateDriver(BaseEvaluateDriver):
+class TextEvaluateDriver(FieldEvaluateDriver):
     """Drivers used to pass a content field from documents and groundtruths to an executor and add the evaluation value
+
+    - Valid fields:
+                ['id',
+                 'level_name',
+                 'parent_id',
+                 'text',
+                 'mime_type',
+                 'uri',
+                 'modality']
     """
 
-    def extract(self, doc: 'jina_pb2.Document'):
-        return doc.text
+    def __init__(self, field: str = 'text', *args, **kwargs):
+        super().__init__(field, *args, **kwargs)
 
 
 class LoadGroundTruthDriver(KVSearchDriver):
