@@ -51,6 +51,7 @@ class MultimodalDriver(BaseEncodeDriver):
     .. note::
         - It traverses on the ``documents`` for which we want to apply the ``multimodal`` embedding. This way
         we can use the `batching` capabilities for the `executor`.
+.. warning::
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
     """
 
