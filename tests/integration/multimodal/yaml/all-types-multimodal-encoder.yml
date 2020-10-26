@@ -1,10 +1,10 @@
 !AllTypesConcatenateMultiModalEncoder
 with:
   position_by_modality:
-    modality1: 0
-    modality2: 1
-    modality3: 2
-    modality4: 3
+    - modality1
+    - modality2
+    - modality3
+    - modality4
 metas:
   py_modules: all-types-multimodal-encoder.py
 requests:

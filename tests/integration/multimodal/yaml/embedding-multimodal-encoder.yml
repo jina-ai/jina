@@ -1,8 +1,8 @@
 !ConcatenateMultiModalEncoder
 with:
   position_by_modality:
-    modality1: 0
-    modality2: 1
+    - modality1
+    - modality2
 metas:
   py_modules: embedding-multimodal-concatenate.py
 requests:
