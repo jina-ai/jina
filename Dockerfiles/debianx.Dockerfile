@@ -29,6 +29,8 @@ ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/pytho
 ENV JINA_VERSION=$JINA_VERSION
 ENV JINA_VCS_VERSION=$VCS_REF
 ENV JINA_BUILD_DATE=$BUILD_DATE
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 WORKDIR /jina/
 
@@ -37,8 +39,8 @@ ADD cli ./cli/
 ADD jina ./jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
-    pip install . --no-cache-dir --compile && \
-    if [ -n "$INSTALL_DEV" ]; then pip install .[devel] --no-cache-dir --compile; fi && \
+    pip install . --compile && \
+    if [ -n "$INSTALL_DEV" ]; then pip install .[devel] --compile; fi && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 
