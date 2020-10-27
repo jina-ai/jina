@@ -25,7 +25,6 @@ _allowed = {'name', 'description', 'author', 'url',
             'documentation', 'version', 'vendor', 'license', 'avatar',
             'platform', 'update', 'keywords'}
 
-_repo_prefix = 'jinahub/'
 _label_prefix = 'ai.jina.hub.'
 
 
@@ -119,9 +118,9 @@ class HubIO:
                 self.logger.info(f'You should see a "Device Activation" page open in your browser. '
                                  f'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}')
                 self.logger.info('Please follow the steps:\n'
-                                    f'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}\n'
-                                    '2. Click "Continue"\n'
-                                    '3. Come back to this terminal\n')
+                                 f'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}\n'
+                                 '2. Click "Continue"\n'
+                                 '3. Come back to this terminal\n')
 
             access_request_body = {
                 'client_id': client_id,
@@ -149,7 +148,6 @@ class HubIO:
 
         except KeyError as exp:
             self.logger.error(f'can not read the key in response: {exp}')
-
 
     def list(self) -> Dict[str, Any]:
         """ List all hub images given a filter specified by CLI """
@@ -194,7 +192,7 @@ class HubIO:
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
-        check_registry(self.args.registry, name, _repo_prefix)
+        check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
         self._docker_login()
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
@@ -211,7 +209,7 @@ class HubIO:
             _env = {
                 'DOCKERHUB_USERNAME': self.args.username,
                 'DOCKERHUB_PASSWORD': self.args.password,
-                'DOCKERHUB_REPOSITORY': name.split(':')[0],
+                'DOCKERHUB_self.args.repository': name.split(':')[0],
                 'README_FILEPATH': '/workspace/README.md',
             }
 
@@ -233,7 +231,7 @@ class HubIO:
 
     def pull(self) -> None:
         """A wrapper of docker pull """
-        check_registry(self.args.registry, self.args.name, _repo_prefix)
+        check_registry(self.args.registry, self.args.name, self.args.repository)
         try:
             self._docker_login()
             with TimeContext(f'pulling {self.args.name}', self.logger):
@@ -254,7 +252,7 @@ class HubIO:
                 self.logger.warning(f'{r} is missing in your docker image labels, you may want to check it')
         try:
             if name != safe_url_name(
-                    f'{_repo_prefix}' + '{type}.{kind}.{name}:{version}'.format(
+                    f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}'.format(
                         **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})):
                 raise ValueError(f'image {name} does not match with label info in the image')
         except KeyError:
@@ -454,8 +452,8 @@ class HubIO:
 
         self.manifest = self._read_manifest(self.manifest_path)
         self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
-        self.tag = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}:{version}'.format(**self.manifest))
-        self.canonical_name = safe_url_name(f'{_repo_prefix}' + '{type}.{kind}.{name}'.format(**self.manifest))
+        self.tag = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}'.format(**self.manifest))
+        self.canonical_name = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}'.format(**self.manifest))
         return completeness
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:

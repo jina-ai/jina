@@ -68,7 +68,8 @@ def set_hub_base_parser(parser=None):
                         default=os.environ.get('JINAHUB_PASSWORD', ''))
     parser.add_argument('--registry', type=str, default='https://index.docker.io/v1/',
                         help='the URL to the registry, e.g. https://index.docker.io/v1/')
-
+    parser.add_argument('--repository', type=str, default='jinahub',
+                        help='the repository name, change this to push image to a personal repository')
     return parser
 
 
