@@ -126,7 +126,7 @@ def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_drive
 
 @pytest.fixture
 def mock_multimodal_encoder_shuffled():
-    return MockMultiModalEncoder(position_by_modality=['visual1', 'visual2', 'textual'])
+    return MockMultiModalEncoder(position_by_modality=['visual2', 'textual', 'visual1'])
 
 
 def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_multimodal_encoder_shuffled,
@@ -135,9 +135,9 @@ def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_mu
     simple_multimodal_driver._apply_all([doc_with_multimodal_chunks])
     doc = doc_with_multimodal_chunks
     assert len(doc.chunks) == 3
-    visual1 = doc.chunks[1]
+    visual1 = doc.chunks[2]
     visual2 = doc.chunks[0]
-    textual = doc.chunks[2]
-    control = np.concatenate([pb2array(visual2.embedding), pb2array(visual1.embedding), pb2array(textual.embedding)])
+    textual = doc.chunks[1]
+    control = np.concatenate([pb2array(visual2.embedding), pb2array(textual.embedding), pb2array(visual1.embedding)])
     test = pb2array(doc.embedding)
     np.testing.assert_array_equal(control, test)
