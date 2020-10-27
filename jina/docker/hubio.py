@@ -9,11 +9,12 @@ import webbrowser
 from typing import Dict, Any
 
 from .checker import *
-from .helper import Waiter, credentials_file
+from .helper import credentials_file
 from .hubapi import _list, _register_to_mongodb, _list_local
 from ..clients.python import ProgressBar
-from ..excepts import PeaFailToStart, TimedOutException, DockerLoginFailed
-from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
+from ..excepts import PeaFailToStart, DockerLoginFailed
+from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
+    countdown
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -90,7 +91,7 @@ class HubIO:
         device_code_url = hubapi_yml['github']['device_code_url']
         access_token_url = hubapi_yml['github']['access_token_url']
         grant_type = hubapi_yml['github']['grant_type']
-        seconds_to_wait = hubapi_yml['github']['wait_time_for_access_token']
+        login_max_retry = hubapi_yml['github']['login_max_retry']
 
         headers = {'Accept': 'application/json'}
         code_request_body = {
@@ -98,7 +99,7 @@ class HubIO:
             'scope': scope
         }
         try:
-            self.logger.info('logging in via Github device flow!')
+            self.logger.info('Jina Hub login via Github device')
             response = requests.post(url=device_code_url,
                                      headers=headers,
                                      data=code_request_body)
@@ -118,25 +119,21 @@ class HubIO:
                 'grant_type': grant_type
             }
 
-            with Waiter(seconds=seconds_to_wait, message='to fetch access token') as waiter:
-                while True:
-                    response = requests.post(url=access_token_url,
-                                             headers=headers,
-                                             data=access_request_body)
-                    access_token_response = response.json()
-                    if waiter.is_time_up:
-                        raise TimedOutException(f'login operation failed. '
-                                                f'waited for {seconds_to_wait} seconds before timing out.')
-                    if 'error' in access_token_response and access_token_response['error'] == 'authorization_pending':
-                        waiter.sleep(5)
-                    if 'access_token' in access_token_response:
-                        token = {
-                            'access_token': access_token_response['access_token']
-                        }
-                        with open(credentials_file(), 'w') as cf:
-                            yaml.dump(token, cf)
-                        self.logger.info(f'successfully logged in!')
-                        break
+            for j in range(login_max_retry):
+                response = requests.post(url=access_token_url,
+                                         headers=headers,
+                                         data=access_request_body)
+                access_token_response = response.json()
+                if 'error' in access_token_response and access_token_response['error'] == 'authorization_pending':
+                    countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
+                elif 'access_token' in access_token_response:
+                    token = {
+                        'access_token': access_token_response['access_token']
+                    }
+                    with open(credentials_file(), 'w') as cf:
+                        yaml.dump(token, cf)
+                    self.logger.success(f'successfully logged in!')
+                    break
 
         except KeyError as exp:
             self.logger.error(f'can not read the key in response: {exp}')

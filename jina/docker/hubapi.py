@@ -179,7 +179,7 @@ def _register_to_mongodb(logger, summary: Dict = None):
     access_token = cred_yml['access_token']
 
     if not access_token:
-        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
 
     headers = {
