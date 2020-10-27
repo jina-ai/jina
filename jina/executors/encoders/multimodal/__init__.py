@@ -15,17 +15,16 @@ class BaseMultiModalEncoder(BaseExecutor):
     """
 
     def __init__(self,
-                 position_by_modality: List[str] = [],
+                 position_modality: List[str] = [],
                  *args,
                  **kwargs):
         """
-        :param position_by_modality: the list of arguments indicating in which order the modalities they need to come
+        :param position_modality: the list of arguments indicating in which order the modalities they need to come
         for the encoding method
         :return:
         """
         super().__init__(*args, **kwargs)
-        self.position_by_modality = position_by_modality
-
+        self.position_modality = position_modality
 
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
         """

@@ -47,20 +47,19 @@ def doc_with_multimodal_chunks(embeddings):
 
 class MockMultiModalEncoder(BaseMultiModalEncoder):
 
-    def __init__(self, position_by_modality, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.position_by_modality = position_by_modality
+    def __init__(self, position_modality, *args, **kwargs):
+        super().__init__(position_modality=position_modality, *args, **kwargs)
 
     def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
-        visual1 = data[(self.position_by_modality.index('visual1'))]
-        visual2 = data[(self.position_by_modality.index('visual2'))]
-        textual = data[(self.position_by_modality.index('textual'))]
+        visual1 = data[(self.position_modality.index('visual1'))]
+        visual2 = data[(self.position_modality.index('visual2'))]
+        textual = data[(self.position_modality.index('textual'))]
         return np.concatenate((visual1, visual2, textual), axis=1)
 
 
 @pytest.fixture
 def mock_multimodal_encoder():
-    return MockMultiModalEncoder(position_by_modality=['visual1', 'visual2','textual'])
+    return MockMultiModalEncoder(position_modality=['visual1', 'visual2','textual'])
 
 
 class SimpleMultiModalDriver(MultiModalDriver):
@@ -126,7 +125,7 @@ def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_drive
 
 @pytest.fixture
 def mock_multimodal_encoder_shuffled():
-    return MockMultiModalEncoder(position_by_modality=['visual2', 'textual', 'visual1'])
+    return MockMultiModalEncoder(position_modality=['visual2', 'textual', 'visual1'])
 
 
 def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_multimodal_encoder_shuffled,
