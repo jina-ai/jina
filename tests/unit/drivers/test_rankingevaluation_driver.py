@@ -208,10 +208,7 @@ class MockNDCGEvaluator(BaseRankingEvaluator):
             raise ValueError(f'Expecting gains with minimal length of 2, {len(actual)} received.')
         dcg = _compute_dcg(gains=actual_at_k)
         idcg = _compute_idcg(gains=desired_at_k)
-        if idcg == 0.0:
-            return 0.0
-        else:
-            return dcg / idcg
+        return 0.0 if idcg == 0.0 else dcg / idcg
 
 
 @pytest.fixture
