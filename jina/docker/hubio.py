@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 from .checker import *
 from .helper import Waiter, credentials_file
-from .hubapi import _list, _push, _list_local
+from .hubapi import _list, _register_to_mongodb, _list_local
 from ..clients.python import ProgressBar
 from ..excepts import PeaFailToStart, TimedOutException, DockerLoginFailed
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
@@ -154,29 +154,35 @@ class HubIO:
                          image_type=self.args.type,
                          image_keywords=self.args.keywords)
 
-    def push(self, name: str = None, readme_path: str = None) -> None:
+    def push(self, name: str = None, readme_path: str = None, build_result: Dict = None) -> None:
         """ A wrapper of docker push 
         - Checks for the tempfile, returns without push if it cannot find
         - Pushes to docker hub, returns withput writing to db if it fails
         - Writes to the db
         """
         name = name or self.args.name
-        file_path = get_summary_path(name)
-        if not os.path.isfile(file_path):
-            self.logger.error(f'can not find the build summary file. '
-                              f'please build the image before pushing and pass tag with the image name')
-            return
 
         try:
             self._push_docker_hub(name, readme_path)
+
+            if not build_result:
+                file_path = get_summary_path(name)
+                if os.path.isfile(file_path):
+                    with open(file_path) as f:
+                        build_result = json.load(f)
+                else:
+                    self.logger.error(f'can not find the build summary file.'
+                                      f'please use "jina hub build" to build the image first '
+                                      f'before pushing.')
+
+            if build_result:
+                if build_result.get('is_build_success', False):
+                    _register_to_mongodb(logger=self.logger, summary=build_result)
+                if build_result.get('details', None) and build_result.get('build_history', None):
+                    self._write_slack_message(build_result, build_result['details'], build_result['build_history'])
+
         except Exception as ex:
             self.logger.error(f'can not complete the push due to {repr(ex)}')
-            return
-
-        with open(file_path) as f:
-            result = json.load(f)
-        if result['is_build_success']:
-            _push(logger=self.logger, summary=result)
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
@@ -211,6 +217,7 @@ class HubIO:
         try:
             webbrowser.open(share_link, new=2)
         except:
+            # pass intentionally, dont want to bother users on opening browser failure
             pass
         finally:
             self.logger.info(
@@ -258,8 +265,6 @@ class HubIO:
                 self.logger.debug(f'successfully logged in to docker hub')
             except APIError:
                 raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
-        else:
-            raise DockerLoginFailed('no username/password specified, docker login failed')
 
     def build(self) -> Dict:
         """A wrapper of docker build """
@@ -373,23 +378,18 @@ class HubIO:
                 'manifest_info': self.manifest if is_build_success else '',
                 'details': _details,
                 'is_build_success': is_build_success,
-                'build_history': [_build_history]
+                'build_history': _build_history
             }
 
             # only successful build (NOT dry run) writes the summary to disk
             if result['is_build_success']:
                 self._write_summary_to_file(summary=result)
                 if self.args.push:
-                    try:
-                        self._push_docker_hub(image.tags[0], self.readme_path)
-                        _push(logger=self.logger, summary=result)
-                        self._write_slack_message(result, _details, _build_history)
-                    except Exception as ex:
-                        self.logger.error(f'can not complete the push due to {repr(ex)}')
+                    self.push(image.tags[0], self.readme_path, result)
 
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
-            result['build_history'][0].pop('logs')
+            result['build_history'].pop('logs')
             raise RuntimeError(result)
 
         return result
