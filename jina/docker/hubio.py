@@ -9,11 +9,12 @@ import webbrowser
 from typing import Dict, Any
 
 from .checker import *
-from .helper import Waiter, credentials_file
-from .hubapi import _list, _push, _list_local
+from .helper import credentials_file
+from .hubapi import _list, _register_to_mongodb, _list_local
 from ..clients.python import ProgressBar
-from ..excepts import PeaFailToStart, TimedOutException, DockerLoginFailed
-from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict
+from ..excepts import PeaFailToStart, DockerLoginFailed
+from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
+    countdown
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -90,7 +91,7 @@ class HubIO:
         device_code_url = hubapi_yml['github']['device_code_url']
         access_token_url = hubapi_yml['github']['access_token_url']
         grant_type = hubapi_yml['github']['grant_type']
-        seconds_to_wait = hubapi_yml['github']['wait_time_for_access_token']
+        login_max_retry = hubapi_yml['github']['login_max_retry']
 
         headers = {'Accept': 'application/json'}
         code_request_body = {
@@ -98,7 +99,7 @@ class HubIO:
             'scope': scope
         }
         try:
-            self.logger.info('logging in via Github device flow!')
+            self.logger.info('Jina Hub login will use Github Device to generate one time token')
             response = requests.post(url=device_code_url,
                                      headers=headers,
                                      data=code_request_body)
@@ -110,38 +111,45 @@ class HubIO:
             user_code = code_response['user_code']
             verification_uri = code_response['verification_uri']
 
-            self.logger.info(f'please go to {colored(verification_uri, "cyan", attrs=["underline"])} & enter code '
-                             f'{colored(user_code, "cyan", attrs=["bold"])} to authorize jina to login via Github OAuth')
+            try:
+                webbrowser.open(verification_uri, new=2)
+            except:
+                pass  # intentional pass, browser support isn't cross-platform
+            finally:
+                self.logger.info(f'You should see a "Device Activation" page open in your browser. '
+                                 f'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}')
+                self.logger.info('Please follow the steps:\n'
+                                    f'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}\n'
+                                    '2. Click "Continue"\n'
+                                    '3. Come back to this terminal\n')
+
             access_request_body = {
                 'client_id': client_id,
                 'device_code': device_code,
                 'grant_type': grant_type
             }
 
-            with Waiter(seconds=seconds_to_wait, message='to fetch access token') as waiter:
-                while True:
-                    response = requests.post(url=access_token_url,
-                                             headers=headers,
-                                             data=access_request_body)
-                    access_token_response = response.json()
-                    if waiter.is_time_up:
-                        raise TimedOutException(f'login operation failed. '
-                                                f'waited for {seconds_to_wait} seconds before timing out.')
-                    if 'error' in access_token_response and access_token_response['error'] == 'authorization_pending':
-                        waiter.sleep(5)
-                    if 'access_token' in access_token_response:
-                        token = {
-                            'access_token': access_token_response['access_token']
-                        }
-                        with open(credentials_file(), 'w') as cf:
-                            yaml.dump(token, cf)
-                        self.logger.info(f'successfully logged in!')
-                        break
+            for _ in range(login_max_retry):
+                access_token_response = requests.post(url=access_token_url,
+                                                      headers=headers,
+                                                      data=access_request_body).json()
+                if access_token_response.get('error', None) == 'authorization_pending':
+                    self.logger.warning('still waiting for authorization')
+                    countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
+                elif 'access_token' in access_token_response:
+                    token = {
+                        'access_token': access_token_response['access_token']
+                    }
+                    with open(credentials_file(), 'w') as cf:
+                        yaml.dump(token, cf)
+                    self.logger.success(f'successfully logged in!')
+                    break
+            else:
+                self.logger.error(f'max retries {login_max_retry} reached')
 
         except KeyError as exp:
             self.logger.error(f'can not read the key in response: {exp}')
-        except Exception as exp:
-            self.logger.error(f'login failed: {exp}')
+
 
     def list(self) -> Dict[str, Any]:
         """ List all hub images given a filter specified by CLI """
@@ -154,29 +162,35 @@ class HubIO:
                          image_type=self.args.type,
                          image_keywords=self.args.keywords)
 
-    def push(self, name: str = None, readme_path: str = None) -> None:
+    def push(self, name: str = None, readme_path: str = None, build_result: Dict = None) -> None:
         """ A wrapper of docker push 
         - Checks for the tempfile, returns without push if it cannot find
         - Pushes to docker hub, returns withput writing to db if it fails
         - Writes to the db
         """
         name = name or self.args.name
-        file_path = get_summary_path(name)
-        if not os.path.isfile(file_path):
-            self.logger.error(f'can not find the build summary file. '
-                              f'please build the image before pushing and pass tag with the image name')
-            return
 
         try:
             self._push_docker_hub(name, readme_path)
+
+            if not build_result:
+                file_path = get_summary_path(name)
+                if os.path.isfile(file_path):
+                    with open(file_path) as f:
+                        build_result = json.load(f)
+                else:
+                    self.logger.error(f'can not find the build summary file.'
+                                      f'please use "jina hub build" to build the image first '
+                                      f'before pushing.')
+
+            if build_result:
+                if build_result.get('is_build_success', False):
+                    _register_to_mongodb(logger=self.logger, summary=build_result)
+                if build_result.get('details', None) and build_result.get('build_history', None):
+                    self._write_slack_message(build_result, build_result['details'], build_result['build_history'])
+
         except Exception as ex:
             self.logger.error(f'can not complete the push due to {repr(ex)}')
-            return
-
-        with open(file_path) as f:
-            result = json.load(f)
-        if result['is_build_success']:
-            _push(logger=self.logger, summary=result)
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
@@ -211,6 +225,7 @@ class HubIO:
         try:
             webbrowser.open(share_link, new=2)
         except:
+            # pass intentionally, dont want to bother users on opening browser failure
             pass
         finally:
             self.logger.info(
@@ -258,8 +273,6 @@ class HubIO:
                 self.logger.debug(f'successfully logged in to docker hub')
             except APIError:
                 raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
-        else:
-            raise DockerLoginFailed('no username/password specified, docker login failed')
 
     def build(self) -> Dict:
         """A wrapper of docker build """
@@ -373,23 +386,18 @@ class HubIO:
                 'manifest_info': self.manifest if is_build_success else '',
                 'details': _details,
                 'is_build_success': is_build_success,
-                'build_history': [_build_history]
+                'build_history': _build_history
             }
 
             # only successful build (NOT dry run) writes the summary to disk
             if result['is_build_success']:
                 self._write_summary_to_file(summary=result)
                 if self.args.push:
-                    try:
-                        self._push_docker_hub(image.tags[0], self.readme_path)
-                        _push(logger=self.logger, summary=result)
-                        self._write_slack_message(result, _details, _build_history)
-                    except Exception as ex:
-                        self.logger.error(f'can not complete the push due to {repr(ex)}')
+                    self.push(image.tags[0], self.readme_path, result)
 
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
-            result['build_history'][0].pop('logs')
+            result['build_history'].pop('logs')
             raise RuntimeError(result)
 
         return result

@@ -161,11 +161,9 @@ def _make_hub_table(manifests):
     return info_table
 
 
-def _push(logger, summary: Dict = None):
+def _register_to_mongodb(logger, summary: Dict = None):
     """ Hub API Invocation to run `hub push` """
-    if not summary:
-        logger.error(f'summary is empty. nothing to do')
-        return
+    logger.info('registering image to Jina Hub database...')
 
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
         hubapi_yml = yaml.load(fp)
@@ -181,7 +179,7 @@ def _push(logger, summary: Dict = None):
     access_token = cred_yml['access_token']
 
     if not access_token:
-        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
 
     headers = {
@@ -205,4 +203,3 @@ def _push(logger, summary: Dict = None):
             logger.error(f'got an error from the API: {response.text}')
     except Exception as exp:
         logger.error(f'got an exception while invoking hubapi for push {repr(exp)}')
-        return

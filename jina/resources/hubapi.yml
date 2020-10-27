@@ -4,7 +4,7 @@ github:
   grant_type: urn:ietf:params:oauth:grant-type:device_code
   device_code_url: https://github.com/login/device/code
   access_token_url: https://github.com/login/oauth/access_token
-  wait_time_for_access_token: 240
+  login_max_retry: 10
 hubapi:
   url: https://hubapi.jina.ai
   list: /list
