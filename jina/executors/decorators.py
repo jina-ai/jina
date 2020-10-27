@@ -7,7 +7,7 @@ from ..logging import default_logger
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List, Optional, Tuple
+from typing import Callable, Any, Union, Iterator, List, Optional
 
 import numpy as np
 
@@ -300,8 +300,8 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
 
             class MultiModalExecutor:
 
-                @batching(batch_size = 64)
-                def encode(self, *batches, *args, **kwargs):
+                @batching_multi_input(batch_size = 64, num_data=2)
+                def encode(self, *batches, **kwargs):
                     batch_modality0 = batches[0]
                     embed0 = _encode_modality(batch_modality0)
                     batch_modality1 = batches[1]
@@ -313,7 +313,8 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
         def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
             # by default data is in args[1:] (self needs to be taken into account)
-            data_args = [args[slice_on][i] for i in range(0, num_data)]
+            data_args = [args[slice_on + i] for i in range(0, num_data)]
+
             data = list(zip(*data_args))
             args = list(args)
 
@@ -334,7 +335,7 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
                 multiple_batch = list(zip(*multiple_batch))
 
                 for idx, data_batch in enumerate(multiple_batch):
-                    args[slice_on][idx] = data_batch
+                    args[slice_on + idx] = data_batch
 
                 r = func(*args, **kwargs)
 

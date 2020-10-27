@@ -212,7 +212,7 @@ def test_batching_multi():
             self.batching = []
 
         @batching_multi_input(num_data=3)
-        def f(self, datas):
+        def f(self, *datas):
             assert len(datas) == 3
             concat = np.concatenate((datas[0], datas[1], datas[2]), axis=1)
             self.batching.append(concat)
@@ -223,7 +223,7 @@ def test_batching_multi():
     data1 = np.random.rand(4, 4)
     data2 = np.random.rand(4, 6)
     data = [data0, data1, data2]
-    result = instance.f(data)
+    result = instance.f(*data)
     assert result.shape == (4, 12)
     assert len(result) == 4
     assert len(result[0]) == 12
