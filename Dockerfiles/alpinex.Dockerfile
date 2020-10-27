@@ -22,9 +22,9 @@ ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD cli ./cli/
 ADD jina ./jina/
 
-ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.8/dist-packages:/usr/local/lib/python3.8/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.8/dist-packages:/usr/local/lib/python3.8/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # py3-scipy
 RUN apk add --no-cache py3-pyzmq py3-numpy grpc && \
@@ -39,7 +39,7 @@ RUN apk add --no-cache py3-pyzmq py3-numpy grpc && \
 
 WORKDIR /
 
-ENV JINA_VCS_VERSION=$VCS_REF
-ENV JINA_BUILD_DATE=$BUILD_DATE
+ENV JINA_VCS_VERSION=$VCS_REF \
+    JINA_BUILD_DATE=$BUILD_DATE
 
 ENTRYPOINT ["jina"]
