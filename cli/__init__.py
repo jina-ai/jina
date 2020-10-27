@@ -60,15 +60,15 @@ def _is_latest_version(suppress_on_error=True):
     try:
         from urllib.request import Request, urlopen
         import json
-        from packaging import version
+        from pkg_resources import parse_version
         from jina import __version__
         from jina.logging import default_logger
 
         req = Request('https://api.jina.ai/latest', headers={'User-Agent': 'Mozilla/5.0'})
         with urlopen(req, timeout=1) as resource:  # 'with' is important to close the resource after use
             latest_ver = json.load(resource)['version']
-            latest_ver = version.parse(latest_ver)
-            cur_ver = version.parse(__version__)
+            latest_ver = parse_version(latest_ver)
+            cur_ver = parse_version(__version__)
             if cur_ver < latest_ver:
                 default_logger.warning(
                     f'WARNING: You are using Jina version {cur_ver}, however version {latest_ver} is available. '

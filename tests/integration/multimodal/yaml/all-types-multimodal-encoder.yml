@@ -1,0 +1,15 @@
+!AllTypesConcatenateMultiModalEncoder
+with:
+  positional_modality:
+    - modality1
+    - modality2
+    - modality3
+    - modality4
+metas:
+  py_modules: all-types-multimodal-encoder.py
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !MultiModalDriver
+        with:
+          traversal_paths: ['r']

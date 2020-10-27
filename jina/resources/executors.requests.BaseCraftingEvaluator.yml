@@ -10,6 +10,6 @@ on:
           - blob
           - text
       traversal_paths: ['r']
-    - !CraftEvaluationDriver
+    - !TextEvaluateDriver
       with:
         traversal_paths: ['r']

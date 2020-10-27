@@ -1,0 +1,13 @@
+!ConcatenateMultiModalEncoder
+with:
+  positional_modality:
+    - modality1
+    - modality2
+metas:
+  py_modules: embedding-multimodal-concatenate.py
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !MultiModalDriver
+        with:
+          traversal_paths: ['r']

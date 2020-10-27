@@ -1,0 +1,16 @@
+!Flow
+pods:
+  encoder_modality_1:
+    uses_before: '- !FilterQL | {lookups: {modality__in: [modality1]}, traversal_paths: [c]}'
+    uses: yaml/encoder-modality1.yml
+    read_only: true
+  encoder_modality_2:
+    uses_before: '- !FilterQL | {lookups: {modality__in: [modality2]}, traversal_paths: [c]}'
+    uses: yaml/encoder-modality2.yml
+    read_only: true
+    needs: gateway
+  multimodal_encoder:
+    uses_before: _merge_all
+    uses: yaml/embedding-multimodal-encoder.yml
+    read_only: true
+    needs: [encoder_modality_1, encoder_modality_2]

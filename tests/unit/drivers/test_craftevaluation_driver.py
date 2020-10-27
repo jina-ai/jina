@@ -1,7 +1,9 @@
-import pytest
-import numpy as np
 from typing import Any
-from jina.drivers.evaluate import CraftEvaluationDriver
+
+import numpy as np
+import pytest
+
+from jina.drivers.evaluate import FieldEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair, array2pb
 from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
@@ -81,7 +83,7 @@ def mock_diff_evaluator():
     return MockDiffEvaluator()
 
 
-class SimpleEvaluateDriver(CraftEvaluationDriver):
+class SimpleEvaluateDriver(FieldEvaluateDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -102,7 +104,7 @@ def test_crafter_evaluate_driver(mock_diff_evaluator, simple_evaluate_driver, gr
         assert doc.evaluations[0].value == 1.0
 
 
-class SimpleChunkEvaluateDriver(CraftEvaluationDriver):
+class SimpleChunkEvaluateDriver(FieldEvaluateDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

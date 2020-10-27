@@ -75,7 +75,7 @@ class FileBasedEvaluator(CompoundExecutor):
              - !LoadGroundTruthDriver
                with:
                  executor: BaseKVIndexer
-             - !BaseEvaluationDriver
+             - !BaseEvaluateDriver
                with:
                  executor: BaseEvaluator
            ControlRequest:
