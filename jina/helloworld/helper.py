@@ -39,7 +39,7 @@ def write_html(html_path):
     try:
         webbrowser.open(url_html_path, new=2)
     except:
-        pass
+        pass  # intentional pass, browser support isn't cross-platform
     finally:
         default_logger.success(f'You should see a "hello-world.html" opened in your browser, '
                                f'if not you may open {url_html_path} manually')

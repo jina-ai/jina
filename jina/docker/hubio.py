@@ -99,7 +99,7 @@ class HubIO:
             'scope': scope
         }
         try:
-            self.logger.info('Jina Hub login via Github device')
+            self.logger.info('Jina Hub login will use Github Device to generate one time token')
             response = requests.post(url=device_code_url,
                                      headers=headers,
                                      data=code_request_body)
@@ -111,20 +111,30 @@ class HubIO:
             user_code = code_response['user_code']
             verification_uri = code_response['verification_uri']
 
-            self.logger.info(f'please go to {colored(verification_uri, "cyan", attrs=["underline"])} & enter code '
-                             f'{colored(user_code, "cyan", attrs=["bold"])} to authorize jina to login via Github OAuth')
+            try:
+                webbrowser.open(verification_uri, new=2)
+            except:
+                pass  # intentional pass, browser support isn't cross-platform
+            finally:
+                self.logger.info(f'You should see a "Device Activation" page open in your browser. '
+                                 f'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}')
+                self.logger.info('Please follow the steps:\n'
+                                    f'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}\n'
+                                    '2. Click "Continue"\n'
+                                    '3. Come back to this terminal\n')
+
             access_request_body = {
                 'client_id': client_id,
                 'device_code': device_code,
                 'grant_type': grant_type
             }
 
-            for j in range(login_max_retry):
-                response = requests.post(url=access_token_url,
-                                         headers=headers,
-                                         data=access_request_body)
-                access_token_response = response.json()
-                if 'error' in access_token_response and access_token_response['error'] == 'authorization_pending':
+            for _ in range(login_max_retry):
+                access_token_response = requests.post(url=access_token_url,
+                                                      headers=headers,
+                                                      data=access_request_body).json()
+                if access_token_response.get('error', None) == 'authorization_pending':
+                    self.logger.warning('still waiting for authorization')
                     countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
                 elif 'access_token' in access_token_response:
                     token = {
@@ -134,11 +144,12 @@ class HubIO:
                         yaml.dump(token, cf)
                     self.logger.success(f'successfully logged in!')
                     break
+            else:
+                self.logger.error(f'max retries {login_max_retry} reached')
 
         except KeyError as exp:
             self.logger.error(f'can not read the key in response: {exp}')
-        except Exception as exp:
-            self.logger.error(f'login failed: {exp}')
+
 
     def list(self) -> Dict[str, Any]:
         """ List all hub images given a filter specified by CLI """
