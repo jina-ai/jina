@@ -1,0 +1,22 @@
+!Flow
+pods:
+  pass_modality_1:
+    uses: '- !FilterQL | {lookups: {modality__in: [modality1]}, traversal_paths: [c]}'
+    read_only: true
+  pass_modality_2:
+    uses: '- !FilterQL | {lookups: {modality__in: [modality2]}, traversal_paths: [c]}'
+    read_only: true
+    needs: gateway
+  pass_modality_3:
+    uses: '- !FilterQL | {lookups: {modality__in: [modality3]}, traversal_paths: [c]}'
+    read_only: true
+    needs: gateway
+  pass_modality_4:
+    uses: '- !FilterQL | {lookups: {modality__in: [modality4]}, traversal_paths: [c]}'
+    read_only: true
+    needs: gateway
+  multimodal_encoder:
+    uses_before: _merge_all
+    uses: yaml/all-types-multimodal-encoder.yml
+    read_only: true
+    needs: [pass_modality_1, pass_modality_2, pass_modality_3, pass_modality_4]
