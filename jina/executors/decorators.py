@@ -143,8 +143,7 @@ def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) 
     return total_size
 
 
-def _get_total_size(data, batch_size, num_batch, split_over_axis):
-    full_data_size = _get_size(data, split_over_axis)
+def _get_total_size(full_data_size, batch_size, num_batch):
     batched_data_size = batch_size * num_batch if num_batch else None
 
     if full_data_size is not None and batched_data_size is not None:
@@ -173,7 +172,7 @@ def _merge_results_after_batching(final_result, merge_over_axis):
         return final_result
 
 
-def batching(func: Callable[[Any], np.ndarray] = None, *,
+def batching(func: Callable[[Any], np.ndarray] = None,
              batch_size: Union[int, Callable] = None,
              num_batch: Optional[int] = None,
              split_over_axis: int = 0,
@@ -225,11 +224,12 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
             if b_size is None:
                 return func(*args, **kwargs)
 
-            default_logger.info(
+            default_logger.debug(
                 f'batching enabled for {func.__qualname__} batch_size={b_size} '
                 f'num_batch={num_batch} axis={split_over_axis}')
 
-            total_size = _get_total_size(data, batch_size, num_batch, split_over_axis)
+            full_data_size = _get_size(data, split_over_axis)
+            total_size = _get_total_size(full_data_size, batch_size, num_batch)
 
             final_result = []
 
@@ -274,13 +274,13 @@ def batching(func: Callable[[Any], np.ndarray] = None, *,
         return _batching
 
 
-def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
+def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
                          batch_size: Union[int, Callable] = None,
                          num_batch: Optional[int] = None,
                          split_over_axis: int = 0,
                          merge_over_axis: int = 0,
                          slice_on: int = 1,
-                         num_data: int) -> Any:
+                         num_data: int = 1) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
 
@@ -291,8 +291,11 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
-    :param num_data: the number of data inside the arguments (starting from ``slice_on``)
+    :param num_data: the number of data inside the arguments
     :return: the merged result as if run :func:`func` once on the input.
+
+    ..warning:
+        data arguments will be taken starting from ``slice_on` to ``slice_on + num_data``
 
     Example:
         .. highlight:: python
@@ -313,29 +316,27 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None, *,
         def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
             # by default data is in args[1:] (self needs to be taken into account)
-            data_args = [args[slice_on + i] for i in range(0, num_data)]
-
-            data = list(zip(*data_args))
-            args = list(args)
-
             b_size = batch_size or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
             if b_size is None:
                 return func(*args, **kwargs)
 
-            default_logger.info(
+            args = list(args)
+            default_logger.debug(
                 f'batching enabled for {func.__qualname__} batch_size={b_size} '
                 f'num_batch={num_batch} axis={split_over_axis}')
 
             # assume all datas have the same length
-            total_size = _get_total_size(data, b_size, num_batch, split_over_axis)
+            full_data_size = _get_size(args[slice_on], split_over_axis)
+            total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
+            data_iterators = [batch_iterator(args[slice_on + i][:total_size], b_size, split_over_axis) for i in
+                              range(0, num_data)]
 
-            for multiple_batch in batch_iterator(data[:total_size], b_size, split_over_axis):
-                multiple_batch = list(zip(*multiple_batch))
-
-                for idx, data_batch in enumerate(multiple_batch):
-                    args[slice_on + idx] = data_batch
+            for batch in data_iterators[0]:
+                args[slice_on] = batch
+                for idx in range(1, num_data):
+                    args[slice_on + idx] = next(data_iterators[idx])
 
                 r = func(*args, **kwargs)
 

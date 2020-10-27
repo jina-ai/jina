@@ -7,6 +7,7 @@ from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 
 
 class AllTypesConcatenateMultiModalEncoder(BaseMultiModalEncoder):
+
     batch_size = 10
 
     def __init__(self,
@@ -19,7 +20,7 @@ class AllTypesConcatenateMultiModalEncoder(BaseMultiModalEncoder):
     def encode(self, *data: 'np.ndarray', **kwargs):
         assert len(data) == 4
         for d in data:
-            assert self.batch_size == 10
+            assert self.batch_size == AllTypesConcatenateMultiModalEncoder.batch_size
             assert len(d) == self.batch_size
         # modality1 is blob, modality2 is embedding, modality3 is text, modality4 is buffer
         modality1 = data[0]

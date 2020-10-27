@@ -20,7 +20,7 @@ class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
     def encode(self, *data: 'np.ndarray', **kwargs):
         assert len(data) == 2
         for d in data:
-            assert self.batch_size == 10
+            assert self.batch_size == ConcatenateMultiModalEncoder.batch_size
             assert len(d) == self.batch_size
         modality1 = data[0]
         modality2 = data[1]

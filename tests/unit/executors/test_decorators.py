@@ -206,27 +206,31 @@ def test_batching_with_label():
 
 
 def test_batching_multi():
+    num_data = 3
+
     class A:
         def __init__(self, batch_size):
             self.batch_size = batch_size
             self.batching = []
 
-        @batching_multi_input(num_data=3)
+        @batching_multi_input(num_data=num_data)
         def f(self, *datas):
-            assert len(datas) == 3
-            concat = np.concatenate((datas[0], datas[1], datas[2]), axis=1)
+            assert len(datas) == num_data
+            concat = np.concatenate(datas, axis=1)
             self.batching.append(concat)
             return concat
 
-    instance = A(2)
-    data0 = np.random.rand(4, 2)
-    data1 = np.random.rand(4, 4)
-    data2 = np.random.rand(4, 6)
+    num_docs = 4
+    batch_size = 2
+    instance = A(batch_size)
+    data0 = np.random.rand(num_docs, 2)
+    data1 = np.random.rand(num_docs, 4)
+    data2 = np.random.rand(num_docs, 6)
     data = [data0, data1, data2]
     result = instance.f(*data)
-    assert result.shape == (4, 12)
-    assert len(result) == 4
-    assert len(result[0]) == 12
-    assert len(instance.batching) == 2
+    from math import ceil
+    result_dim = sum([d.shape[1] for d in data])
+    assert result.shape == (num_docs, result_dim)
+    assert len(instance.batching) == ceil(num_docs / batch_size)
     for batch in instance.batching:
-        assert batch.shape == (2, 12)
+        assert batch.shape == (batch_size, result_dim)
