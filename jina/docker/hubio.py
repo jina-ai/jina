@@ -209,7 +209,7 @@ class HubIO:
             _env = {
                 'DOCKERHUB_USERNAME': self.args.username,
                 'DOCKERHUB_PASSWORD': self.args.password,
-                'DOCKERHUB_self.args.repository': name.split(':')[0],
+                'DOCKERHUB_REPOSITORY': self.args.repository,
                 'README_FILEPATH': '/workspace/README.md',
             }
 
