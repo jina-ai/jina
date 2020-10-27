@@ -51,6 +51,7 @@ def ground_truth_pairs():
         for idx in range(num_matches):
             match = doc.matches.add()
             match.tags['id'] = idx
+            match.tags['score'] = idx
 
     pairs = []
     for idx in range(num_docs):
@@ -170,3 +171,66 @@ def test_evaluate_assert_doc_groundtruth_structure(simple_chunk_evaluate_driver,
     simple_chunk_evaluate_driver.eval_request = eval_request_with_unmatching_struct
     with pytest.raises(AssertionError):
         simple_chunk_evaluate_driver()
+
+
+def _compute_dcg(gains):
+    from math import log
+    """Compute discounted cumulative gain."""
+    ret = 0.0
+    for score, position in zip(gains[1:], range(2, len(gains) + 1)):
+        ret += score / log(position, 2)
+    return gains[0] + ret
+
+
+def _compute_idcg(gains):
+    """Compute ideal discounted cumulative gain."""
+    sorted_gains = sorted(gains, reverse=True)
+    return _compute_dcg(sorted_gains)
+
+
+class MockNDCGEvaluator(BaseRankingEvaluator):
+    def __init__(self, *args, **kwargs):
+        super().__init__(eval_at=2, *args, **kwargs)
+
+    @property
+    def metric(self):
+        return f'MockNDCG@{self.eval_at}'
+
+    def evaluate(self, actual, desired, *args, **kwargs) -> float:
+        """"
+        :param actual: the scores predicted by the search system.
+        :param desired: the expected score given by user as groundtruth.
+        :return the evaluation metric value for the request document.
+        """
+        actual_at_k = actual[:self.eval_at]
+        desired_at_k = desired[:self.eval_at]
+        if len(actual) < 2:
+            raise ValueError(f'Expecting gains with minimal length of 2, {len(actual)} received.')
+        dcg = _compute_dcg(gains=actual_at_k)
+        idcg = _compute_idcg(gains=desired_at_k)
+        if idcg == 0.0:
+            return 0.0
+        else:
+            return dcg / idcg
+
+
+@pytest.fixture
+def mock_ndcg_evaluator():
+    return MockNDCGEvaluator()
+
+
+@pytest.fixture
+def simple_evaluate_driver_ndcg():
+    return SimpleEvaluateDriver(id_tag='score')
+
+
+def test_ranking_ndcg_evaluate_driver(mock_ndcg_evaluator,
+                                      simple_evaluate_driver_ndcg,
+                                      ground_truth_pairs):
+    simple_evaluate_driver_ndcg.attach(executor=mock_ndcg_evaluator, pea=None)
+    simple_evaluate_driver_ndcg._apply_all(ground_truth_pairs)
+    for pair in ground_truth_pairs:
+        doc = pair.doc
+        assert len(doc.evaluations) == 1
+        assert doc.evaluations[0].op_name == 'SimpleEvaluateDriver-MockNDCG@2'
+        assert doc.evaluations[0].value == 1.0
