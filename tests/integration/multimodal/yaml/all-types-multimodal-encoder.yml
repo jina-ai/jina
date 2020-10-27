@@ -1,6 +1,6 @@
 !AllTypesConcatenateMultiModalEncoder
 with:
-  position_modality:
+  positional_modality:
     - modality1
     - modality2
     - modality3
