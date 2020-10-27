@@ -203,16 +203,19 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
-    sys.stdout.write('\n')
-    sys.stdout.flush()
-    while t > 0:
-        t -= 1
-        msg = f'⏳ {colored("%3d" % t, "yellow")}s left: {reason}'
-        sys.stdout.write(f'\r{msg}')
+    try:
+        sys.stdout.write('\n')
         sys.stdout.flush()
-        time.sleep(1)
-    sys.stdout.write('\n')
-    sys.stdout.flush()
+        while t > 0:
+            t -= 1
+            msg = f'⏳ {colored("%3d" % t, "yellow")}s left: {reason}'
+            sys.stdout.write(f'\r{msg}')
+            sys.stdout.flush()
+            time.sleep(1)
+        sys.stdout.write('\n')
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        sys.stdout.write('no more patience? good bye!')
 
 
 def load_contrib_module() -> Optional[List[Any]]:
