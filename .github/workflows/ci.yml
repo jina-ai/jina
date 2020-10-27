@@ -60,7 +60,7 @@ jobs:
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
-          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=240 -v tests/unit
+          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=600 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
         timeout-minutes: 30
         env:
@@ -102,7 +102,7 @@ jobs:
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
-          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=240 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration
+          pytest --force-flaky --min-passes 1 --cov=jina --cov-report=xml -n 1 --timeout=600 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration
           mv coverage.xml integration-test-coverage.xml
         timeout-minutes: 30
         env:
