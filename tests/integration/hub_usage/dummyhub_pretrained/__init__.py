@@ -1,7 +1,7 @@
 from typing import Dict
 
 from jina.executors.crafters import BaseCrafter
-from jina.excepts import PretrainedModelFileDoesNotExist
+from jina.excepts import ModelCheckpointNotExist
 
 
 class DummyPretrainedExecutor(BaseCrafter):
@@ -10,7 +10,7 @@ class DummyPretrainedExecutor(BaseCrafter):
         super().__init__(*args, **kwargs)
 
     def post_init(self):
-        raise PretrainedModelFileDoesNotExist
+        raise ModelCheckpointNotExist
 
     def craft(self, *args, **kwargs) -> Dict:
         pass

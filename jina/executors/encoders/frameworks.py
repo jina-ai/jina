@@ -3,11 +3,10 @@ __license__ = "Apache-2.0"
 
 import os
 
-from jina.excepts import PretrainedModelFileDoesNotExist
 from . import BaseEncoder
 from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice, MindsporeDevice
-from ...helper import is_url
-from ...helper import cached_property
+from ...excepts import ModelCheckpointNotExist
+from ...helper import is_url, cached_property
 
 
 # mixin classes go first, base classes are read from right to left.
@@ -49,7 +48,7 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
             self._device = None
             self.to_device(self.model)
         else:
-            raise PretrainedModelFileDoesNotExist(f'model at {tmp_model_path} does not exist')
+            raise ModelCheckpointNotExist(f'model at {tmp_model_path} does not exist')
 
     @staticmethod
     def _append_outputs(input_fn, outputs_name_to_append, output_fn):
@@ -95,7 +94,7 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
                 from mindspore import Tensor
                 return self.model(Tensor(data)).asnumpy()
 
-            def get_model(self):
+            def get_cell(self):
                 return YourAwesomeModel()
 
     """
@@ -112,18 +111,27 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
         """
         Load the model from the `.ckpt` checkpoint.
         """
-        from mindspore.train.serialization import load_checkpoint, load_param_into_net
         super().post_init()
         if self.model_path and os.path.exists(self.model_path):
             self.to_device()
+            from mindspore.train.serialization import load_checkpoint, load_param_into_net
             _param_dict = load_checkpoint(ckpt_file_name=self.model_path)
             load_param_into_net(self.model, _param_dict)
         else:
-            raise PretrainedModelFileDoesNotExist(f'model {self.model_path} does not exist')
+            raise ModelCheckpointNotExist(f'model {self.model_path} does not exist')
 
     @cached_property
     def model(self):
-        return self.get_model()
+        return self.get_cell()
 
-    def get_model(self):
-        raise NotImplemented('the model is not implemented')
+    def get_cell(self):
+        """
+        Return Mindspore Neural Networks Cells.
+
+        Pre-defined building blocks or computing units to construct Neural Networks.
+        A ``Cell`` could be a single neural network cell, such as conv2d, relu, batch_norm, etc.
+        or a composition of cells to constructing a network.
+
+        :return: :class:`mindspore.nn.Cell`
+        """
+        raise NotImplementedError

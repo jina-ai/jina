@@ -336,7 +336,7 @@ class HubIO:
 
             if is_build_success:
                 if self.args.test_uses:
-                    from jina.excepts import PretrainedModelFileDoesNotExist
+                    from jina.excepts import ModelCheckpointNotExist
                     try:
                         is_build_success = False
                         from jina.flow import Flow
@@ -348,7 +348,7 @@ class HubIO:
                             self._raw_client.stop(p_name)
                         self._raw_client.prune_containers()
                         is_build_success = True
-                    except PretrainedModelFileDoesNotExist:
+                    except ModelCheckpointNotExist:
                         self.logger.warning(f' Pretrained Model File Does not Exist is considered as a test passing')
                         is_build_success = True
                     except PeaFailToStart:

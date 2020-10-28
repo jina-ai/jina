@@ -19,7 +19,7 @@ from .. import __ready_msg__, __stop_msg__
 from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
-    PretrainedModelFileDoesNotExist
+    ModelCheckpointNotExist
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
@@ -201,7 +201,7 @@ class BasePea(metaclass=PeaMeta):
                 self.executor.attach(pea=self)
             except FileNotFoundError:
                 raise ExecutorFailToLoad
-            except PretrainedModelFileDoesNotExist as exception:
+            except ModelCheckpointNotExist as exception:
                 self.is_pretrained_model_exception.set()
                 raise exception
         else:
@@ -356,7 +356,7 @@ class BasePea(metaclass=PeaMeta):
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
         except zmq.error.ZMQError:
             self.logger.critical('zmqlet can not be initiated')
-        except PretrainedModelFileDoesNotExist:
+        except ModelCheckpointNotExist:
             self.logger.critical(__unable_to_load_pretrained_model_msg__)
             self.is_pretrained_model_exception.set()
         except Exception as ex:
@@ -413,7 +413,7 @@ class BasePea(metaclass=PeaMeta):
                 self.logger.critical(f'fail to start {self.__class__} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
                 if self.is_pretrained_model_exception.is_set():
-                    raise PretrainedModelFileDoesNotExist
+                    raise ModelCheckpointNotExist
                 else:
                     raise PeaFailToStart
             return self
