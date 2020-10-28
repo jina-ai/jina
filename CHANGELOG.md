@@ -88,6 +88,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5195,4 +5196,44 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e542b186```](https://github.com/jina-ai/jina/commit/e542b1869b6ddb72ae112b89a680bfb1e3356bec)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```4cf25534```](https://github.com/jina-ai/jina/commit/4cf2553464238e69183a105d8f598b01baef1a0c)] __-__ black on merge (#1146) (*Maximilian Werk*)
  - [[```8b0ba56e```](https://github.com/jina-ai/jina/commit/8b0ba56ef61a80af6c80d47d3c84c14601097849)] __-__ __version__: the next version will be 0.7.1 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-2></a>
+## Release Note (`0.7.2`)
+
+> Release time: 2020-10-28 20:06:03
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  Pratik Bhavsar,  Maximilian Werk,  Wang Bo,  Nan Wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```0c69ef8d```](https://github.com/jina-ai/jina/commit/0c69ef8d5d0106d538969029b2daa8d80b24bab4)] __-__ allow zipped-like batching (#1170) (*Joan Fontanals*)
+ - [[```4a1fddbf```](https://github.com/jina-ai/jina/commit/4a1fddbf2ae0a6fe461daf01af388925069a0400)] __-__ add multimodal driver (#1113) (*Wang Bo*)
+
+### 🐞 Bug fixes
+
+ - [[```f60ef871```](https://github.com/jina-ai/jina/commit/f60ef871cbe5f7ecc2787d3f6598fb2e83032315)] __-__ disabled pip cache in docker (#1168) (*Pratik Bhavsar*)
+ - [[```6087ca0c```](https://github.com/jina-ai/jina/commit/6087ca0ce44d192c879822157cb09fec9af23a14)] __-__ __hub__: hub repo name should given by user (#1175) (*Han Xiao*)
+ - [[```5d389605```](https://github.com/jina-ai/jina/commit/5d389605f1791603cb3baf4d4686419276e2e4f4)] __-__ failure not combinable (#1169) (*Maximilian Werk*)
+
+### 🚧 Code Refactoring
+
+ - [[```4486d032```](https://github.com/jina-ai/jina/commit/4486d032c534c59ad20945b5849a9d1ab9554f1c)] __-__ __encoder__: change get_model to get_cell mindspore idiom (#1180) (*Han Xiao*)
+ - [[```4d154b5a```](https://github.com/jina-ai/jina/commit/4d154b5a37ba94472492aab78c23bff1e90a2b54)] __-__ ranking evaluator inherit from field evaluator (#1176) (*Joan Fontanals*)
+ - [[```ccbf7342```](https://github.com/jina-ai/jina/commit/ccbf73426c36147be90322f8cedccddf078907ef)] __-__ __hubio__: remove duplicate logic on hub push (#1172) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```c5788eec```](https://github.com/jina-ai/jina/commit/c5788eecb1f8db5a788715f3e17105c461b7c6e7)] __-__ fix the format issues (#1163) (*Nan Wang*)
+
+### 🍹 Other Improvements
+
+ - [[```00ea808d```](https://github.com/jina-ai/jina/commit/00ea808dd951ed350f2e8c27d1fdcffc3470da77)] __-__ hotfix packaging in cli (*Han Xiao*)
+ - [[```04e84464```](https://github.com/jina-ai/jina/commit/04e8446404f96f7d8076e66a2523be02a659a234)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```94b606f9```](https://github.com/jina-ai/jina/commit/94b606f90fcdd4bb9947145948e44b4b6681b20c)] __-__ update code-style (*Jina Dev Bot*)
+ - [[```521436c1```](https://github.com/jina-ai/jina/commit/521436c17a3a807bb47c020a4527b209651624c4)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```6a61ee22```](https://github.com/jina-ai/jina/commit/6a61ee228d8225610a3dbb4a07cc1824df42a4ff)] __-__ __version__: the next version will be 0.7.2 (*Jina Dev Bot*)
 
