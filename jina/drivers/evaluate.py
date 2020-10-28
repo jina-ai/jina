@@ -80,28 +80,25 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
         return r
 
 
-class RankEvaluateDriver(BaseEvaluateDriver):
+class RankEvaluateDriver(FieldEvaluateDriver):
     """Drivers used to pass `matches` from documents and groundtruths to an executor and add the evaluation value
+
+        - Example fields:
+        ['tags__id', 'id', 'score__value]
     """
 
     def __init__(self,
-                 id_tag: str = 'id',
+                 field: str = 'tags__id',
                  *args,
                  **kwargs):
         """
-
-        :param id_tag: the name of the tag to be extracted, when not given then ``document.id`` is used.
         :param args:
         :param kwargs:
         """
-        super().__init__(*args, **kwargs)
-        self.id_tag = id_tag
+        super().__init__(field, *args, **kwargs)
 
     def extract(self, doc: 'jina_pb2.Document'):
-        if self.id_tag:
-            return [x.tags[self.id_tag] for x in doc.matches]
-        else:
-            return [x.id for x in doc.matches]
+        return [dunder_get(x, self.field) for x in doc.matches]
 
 
 class NDArrayEvaluateDriver(FieldEvaluateDriver):

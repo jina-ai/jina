@@ -3,25 +3,21 @@ components:
   - !PrecisionEvaluator
     with:
       eval_at: 1
-      id_tag: 'id'
     metas:
       name: precision-1
   - !PrecisionEvaluator
     with:
       eval_at: 2
-      id_tag: 'id'
     metas:
       name: precision-2
   - !RecallEvaluator
     with:
       eval_at: 1
-      id_tag: 'id'
     metas:
       name: recall-1
   - !RecallEvaluator
     with:
       eval_at: 2
-      id_tag: 'id'
     metas:
       name: recall-2
 metas:
