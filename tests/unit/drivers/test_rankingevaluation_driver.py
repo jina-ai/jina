@@ -2,45 +2,23 @@ import pytest
 
 from jina.drivers.evaluate import RankEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair
-from jina.executors.evaluators.rank import BaseRankingEvaluator
+from jina.executors.evaluators.rank.precision import PrecisionEvaluator
 from jina.proto import jina_pb2
 
 
-class MockPrecisionEvaluator(BaseRankingEvaluator):
-    def __init__(self, *args, **kwargs):
-        super().__init__(eval_at=2, *args, **kwargs)
+class SimpleRankEvaluateDriver(RankEvaluateDriver):
 
-    @property
-    def metric(self):
-        return f'MockPrecision@{self.eval_at}'
+    def __init__(self, field: str, *args, **kwargs):
+        super().__init__(field, *args, **kwargs)
 
-    def evaluate(self, matches_ids, desired_ids, *args, **kwargs) -> float:
-        ret = 0.0
-        for doc_id in matches_ids[:self.eval_at]:
-            if doc_id in desired_ids:
-                ret += 1.0
-
-        divisor = min(self.eval_at, len(desired_ids))
-        if divisor == 0.0:
-            return 0.0
-        else:
-            return ret / divisor
-
-
-@pytest.fixture
-def mock_precision_evaluator():
-    return MockPrecisionEvaluator()
-
-
-class SimpleEvaluateDriver(RankEvaluateDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
 
 
 @pytest.fixture
-def simple_evaluate_driver():
-    return SimpleEvaluateDriver()
+def simple_rank_evaluate_driver(field):
+    return SimpleRankEvaluateDriver(field)
 
 
 @pytest.fixture
@@ -51,6 +29,7 @@ def ground_truth_pairs():
         for idx in range(num_matches):
             match = doc.matches.add()
             match.tags['id'] = idx
+            match.score.value = idx
 
     pairs = []
     for idx in range(num_docs):
@@ -62,19 +41,19 @@ def ground_truth_pairs():
     return pairs
 
 
-def test_ranking_evaluate_driver(mock_precision_evaluator,
-                                 simple_evaluate_driver,
+@pytest.mark.parametrize('field', ['tags__id', 'score__value'])
+def test_ranking_evaluate_driver(simple_rank_evaluate_driver,
                                  ground_truth_pairs):
-    simple_evaluate_driver.attach(executor=mock_precision_evaluator, pea=None)
-    simple_evaluate_driver._apply_all(ground_truth_pairs)
+    simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
+    simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'SimpleEvaluateDriver-MockPrecision@2'
+        assert doc.evaluations[0].op_name == 'SimpleRankEvaluateDriver-Precision@2'
         assert doc.evaluations[0].value == 1.0
 
 
-class SimpleChunkEvaluateDriver(RankEvaluateDriver):
+class SimpleChunkRankEvaluateDriver(RankEvaluateDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -92,8 +71,8 @@ class SimpleChunkEvaluateDriver(RankEvaluateDriver):
 
 
 @pytest.fixture
-def simple_chunk_evaluate_driver():
-    return SimpleChunkEvaluateDriver()
+def simple_chunk_rank_evaluate_driver():
+    return SimpleChunkRankEvaluateDriver()
 
 
 @pytest.fixture
@@ -119,14 +98,13 @@ def eval_request():
     return req
 
 
-def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_evaluate_driver,
-                                                   mock_precision_evaluator,
+def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_driver,
                                                    eval_request):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
-    simple_chunk_evaluate_driver.attach(executor=mock_precision_evaluator, pea=None)
-    simple_chunk_evaluate_driver.eval_request = eval_request
-    simple_chunk_evaluate_driver()
+    simple_chunk_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
+    simple_chunk_rank_evaluate_driver.eval_request = eval_request
+    simple_chunk_rank_evaluate_driver()
 
     assert len(eval_request.docs) == len(eval_request.groundtruths)
     assert len(eval_request.docs) == 10
@@ -135,7 +113,7 @@ def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_evaluate_driver,
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].op_name == 'SimpleChunkEvaluateDriver-MockPrecision@2'
+        assert chunk.evaluations[0].op_name == 'SimpleChunkRankEvaluateDriver-Precision@2'
         assert chunk.evaluations[0].value == 1.0
 
 
@@ -163,10 +141,9 @@ def eval_request_with_unmatching_struct():
     return req
 
 
-def test_evaluate_assert_doc_groundtruth_structure(simple_chunk_evaluate_driver,
-                                                   mock_precision_evaluator,
+def test_evaluate_assert_doc_groundtruth_structure(simple_chunk_rank_evaluate_driver,
                                                    eval_request_with_unmatching_struct):
-    simple_chunk_evaluate_driver.attach(executor=mock_precision_evaluator, pea=None)
-    simple_chunk_evaluate_driver.eval_request = eval_request_with_unmatching_struct
+    simple_chunk_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
+    simple_chunk_rank_evaluate_driver.eval_request = eval_request_with_unmatching_struct
     with pytest.raises(AssertionError):
-        simple_chunk_evaluate_driver()
+        simple_chunk_rank_evaluate_driver()

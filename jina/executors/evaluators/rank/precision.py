@@ -24,8 +24,4 @@ class PrecisionEvaluator(BaseRankingEvaluator):
                 ret += 1.0
 
         divisor = min(self.eval_at, len(desired))
-        if divisor == 0.0:
-            """TODO: Agree on a behavior"""
-            return 0.0
-        else:
-            return ret / divisor
+        return ret / divisor if divisor != 0.0 else 0.0
