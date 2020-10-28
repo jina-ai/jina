@@ -17,18 +17,19 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.title="Jina" \
       org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology"
 
-ENV JINA_BUILD_BASE_DEP="python3-numpy python3-zmq python3-protobuf python3-grpcio python3-tornado python3-uvloop python3-lz4"
-ENV JINA_BUILD_DEVEL_DEP="gcc libc-dev python3-gevent libmagic1"
+ENV JINA_BUILD_BASE_DEP="python3-numpy python3-zmq python3-protobuf python3-grpcio python3-tornado python3-uvloop python3-lz4" \
+    JINA_BUILD_DEVEL_DEP="gcc libc-dev python3-gevent libmagic1"
 
 RUN apt-get update && apt-get install --no-install-recommends -y $JINA_BUILD_BASE_DEP && \
     if [ -n "$INSTALL_DEV" ]; then apt-get install --no-install-recommends -y $JINA_BUILD_DEVEL_DEP; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages
-
-ENV JINA_VERSION=$JINA_VERSION
-ENV JINA_VCS_VERSION=$VCS_REF
-ENV JINA_BUILD_DATE=$BUILD_DATE
+ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages \
+    JINA_VERSION=$JINA_VERSION \
+    JINA_VCS_VERSION=$VCS_REF \
+    JINA_BUILD_DATE=$BUILD_DATE \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 WORKDIR /jina/
 
@@ -37,8 +38,8 @@ ADD cli ./cli/
 ADD jina ./jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
-    pip install . --no-cache-dir --compile && \
-    if [ -n "$INSTALL_DEV" ]; then pip install .[devel] --no-cache-dir --compile; fi && \
+    pip install . --compile && \
+    if [ -n "$INSTALL_DEV" ]; then pip install .[devel] --compile; fi && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 
