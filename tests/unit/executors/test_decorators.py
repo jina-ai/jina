@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina.executors.decorators import as_update_method, as_train_method, as_ndarray, batching, \
-    require_train, store_init_kwargs
+    require_train, store_init_kwargs, batching_multi_input
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -203,3 +203,34 @@ def test_batching_with_label():
     labels = ['label1', 'label1', 'label2', 'label2']
     result = instance.f(data, labels)
     assert result == [[(1, 'label1'), (1, 'label1')], [(2, 'label2'), (2, 'label2')]]
+
+
+def test_batching_multi():
+    num_data = 3
+
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+            self.batching = []
+
+        @batching_multi_input(num_data=num_data)
+        def f(self, *datas):
+            assert len(datas) == num_data
+            concat = np.concatenate(datas, axis=1)
+            self.batching.append(concat)
+            return concat
+
+    num_docs = 4
+    batch_size = 2
+    instance = A(batch_size)
+    data0 = np.random.rand(num_docs, 2)
+    data1 = np.random.rand(num_docs, 4)
+    data2 = np.random.rand(num_docs, 6)
+    data = [data0, data1, data2]
+    result = instance.f(*data)
+    from math import ceil
+    result_dim = sum([d.shape[1] for d in data])
+    assert result.shape == (num_docs, result_dim)
+    assert len(instance.batching) == ceil(num_docs / batch_size)
+    for batch in instance.batching:
+        assert batch.shape == (batch_size, result_dim)
