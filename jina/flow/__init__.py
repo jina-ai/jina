@@ -296,10 +296,14 @@ class Flow(ExitStack):
         kwargs.update(op_flow._common_kwargs)
         kwargs['name'] = pod_name
 
-        op_flow._pod_nodes[pod_name] = FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
+        op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
         op_flow.last_pod = pod_name
 
         return op_flow
+
+    def _invoke_flowpod(self, kwargs, needs, pod_role):
+        """This gets inherited in jinad"""
+        return FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
 
     def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
         """Add an inspection on the last changed Pod in the Flow
