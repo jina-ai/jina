@@ -7,11 +7,6 @@
 # Han Xiao owns CICD and README.md
 .github   @hanxiao
 setup.py  @hanxiao
-jina/peapods @JoanFM
-jina/proto @JoanFM
-jina/drivers @maximilianwerk
 docs @nan-wang
 Dockerfiles @nan-wang
-jina/executors @nan-wang
 jina/resources @nan-wang
-jina/flow @nan-wang
