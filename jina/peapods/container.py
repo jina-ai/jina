@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 
 from .pea import BasePea
+from .zmq import send_ctrl_message
+from ..proto import jina_pb2
 from .. import __ready_msg__, __unable_to_load_pretrained_model_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger
@@ -65,14 +67,13 @@ class ContainerPea(BasePea):
         _args = kwargs2list(non_defaults)
         self._container = self._client.containers.run(self.args.uses, _args,
                                                       detach=True, auto_remove=True,
-                                                      ports={'%d/tcp' % v: v for v in
+                                                      ports={f'{v}': v for v in
                                                              _expose_port},
                                                       name=self.name,
                                                       volumes=_volumes,
                                                       network_mode=net_mode,
                                                       entrypoint=self.args.entrypoint,
-                                                      # network='mynetwork',
-                                                      # publish_all_ports=True
+                                                      # publish_all_ports=True # This looks like something I would activate
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
@@ -82,18 +83,20 @@ class ContainerPea(BasePea):
         import docker
 
         logger = JinaLogger('🐳', **vars(self.args))
+        ready = False
         with logger:
             try:
                 for line in self._container.logs(stream=True):
                     msg = line.strip().decode()
                     # this is shabby, but it seems the only easy way to detect is_ready signal meanwhile
                     # print all error message when fails
-                    if __ready_msg__ in msg:
+                    logger.info(line.strip().decode())
+                    if not ready and self.get_ready:
                         self.is_ready.set()
                         self.logger.success(__ready_msg__)
+                        ready = True
                     if __unable_to_load_pretrained_model_msg__ in msg:
                         self.is_pretrained_model_exception.set()
-                    logger.info(line.strip().decode())
             except docker.errors.NotFound:
                 self.logger.error('the container can not be started, check your arguments, entrypoint')
 
@@ -108,6 +111,18 @@ class ContainerPea(BasePea):
                     'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()
+
+    @property
+    def status(self):
+        """Send the control signal ``STATUS`` to itself and return the status """
+        if getattr(self, 'ctrl_addr'):
+            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
+                                     timeout=self.args.timeout_ctrl)
+
+    @property
+    def get_ready(self) -> bool:
+        status = self.status
+        return status and status.envelope.status.code == jina_pb2.Status.READY
 
     def close(self) -> None:
         self.send_terminate_signal()
