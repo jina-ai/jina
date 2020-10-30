@@ -39,10 +39,6 @@ class BaseNdArray:
         """Set the value from numpy, scipy, tensorflow, pytorch type to protobuf"""
         raise NotImplementedError
 
-    @property
-    def is_sparse(self) -> bool:
-        """Return true if the ndarray is sparse """
-        raise NotImplementedError
 
     def copy_to(self, proto: 'jina_pb2._reflection.GeneratedProtocolMessageType') -> 'BaseNdArray':
         """Copy itself to another protobuf message, return a view of the copied message"""
@@ -111,6 +107,3 @@ class DenseNdArray(BaseNdArray):
         blob.shape.extend(list(x.shape))
         blob.dtype = x.dtype.str
 
-    @property
-    def is_sparse(self) -> bool:
-        return False

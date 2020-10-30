@@ -1,11 +1,10 @@
 from tensorflow import SparseTensor
 
-from .. import BaseNdArray
+from .. import BaseSparseNdArray
 from ..dense.numpy import DenseNdArray
-from ...proto import jina_pb2
 
 
-class SparseNdArray(BaseNdArray):
+class SparseNdArray(BaseSparseNdArray):
     """Scipy powered sparse ndarray
 
     .. warning::
@@ -23,4 +22,3 @@ class SparseNdArray(BaseNdArray):
         DenseNdArray(self.proto.indicies).value = value.indices.numpy()
         DenseNdArray(self.proto.values).value = value.values.numpy()
         self.proto.dense_shape.extend(value.shape.as_list())
-

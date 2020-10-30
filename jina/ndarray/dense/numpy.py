@@ -65,6 +65,4 @@ class DenseNdArray(BaseDenseNdArray):
         blob.shape.extend(list(x.shape))
         blob.dtype = x.dtype.str
 
-    @property
-    def is_sparse(self) -> bool:
-        return False
+

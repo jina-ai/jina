@@ -3,11 +3,11 @@ import pytest
 from scipy.sparse import coo_matrix
 
 from jina.ndarray.dense.numpy import DenseNdArray
-from jina.ndarray.sparse.scipy import SparseNdArray
 
 
 @pytest.mark.parametrize('sp_format', ['coo', 'bsr', 'csc', 'csr'])
 def test_scipy_sparse(sp_format):
+    from jina.ndarray.sparse.scipy import SparseNdArray
     row = np.array([0, 3, 1, 0])
     col = np.array([0, 3, 1, 2])
     data = np.array([4, 5, 7, 9])
@@ -32,3 +32,13 @@ def test_numpy_dense(dtype):
     # get
     np.testing.assert_equal(b.value.shape, a.shape)
     np.testing.assert_equal(b.value, a)
+
+
+def test_tf_sparse():
+    import tensorflow as tf
+    from tensorflow import SparseTensor
+    from jina.ndarray.sparse.tensorflow import SparseNdArray
+    a = SparseTensor(indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4])
+    b = SparseNdArray()
+    b.value = a
+    np.testing.assert_equal(tf.sparse.to_dense(b.value).numpy(), tf.sparse.to_dense(a).numpy())
