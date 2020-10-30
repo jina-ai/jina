@@ -1,7 +1,7 @@
 import numpy as np
 from jina.peapods.zmq import _extract_bytes_from_documents
 from jina.proto import jina_pb2
-from jina.drivers.helper import array2pb
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 def test_extract_bytes_from_msg_no_chunks():
@@ -12,15 +12,15 @@ def test_extract_bytes_from_msg_no_chunks():
     def docs():
         doc0 = jina_pb2.Document()
         doc0.text = text
-        doc0.embedding.CopyFrom(array2pb(random_np_array))
+        GenericNdArray(doc0.embedding).value=random_np_array
         chunk = doc0.chunks.add()
         chunk.text = text
         doc1 = jina_pb2.Document()
-        doc1.blob.CopyFrom(array2pb(random_np_array))
-        doc1.embedding.CopyFrom(array2pb(random_np_array))
+        GenericNdArray(doc1.blob).value=random_np_array
+        GenericNdArray(doc1.embedding).value=random_np_array
         doc2 = jina_pb2.Document()
         doc2.buffer = buffer
-        doc2.embedding.CopyFrom(array2pb(random_np_array))
+        GenericNdArray(doc2.embedding).value=random_np_array
         chunk2 = doc2.chunks.add()
         chunk2.text = text
         chunk3 = doc2.chunks.add()

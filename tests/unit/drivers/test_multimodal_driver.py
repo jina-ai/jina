@@ -3,7 +3,7 @@ import numpy as np
 
 from jina.proto import uid
 from jina.proto import jina_pb2
-from jina.drivers.helper import array2pb, pb2array
+from jina.proto.ndarray.generic import GenericNdArray
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 from jina.drivers.multimodal import MultiModalDriver
 
@@ -39,9 +39,9 @@ def doc_with_multimodal_chunks(embeddings):
     chunk1.id = uid.new_doc_id(chunk1)
     chunk2.id = uid.new_doc_id(chunk2)
     chunk3.id = uid.new_doc_id(chunk3)
-    chunk1.embedding.CopyFrom(array2pb(embeddings[0]))
-    chunk2.embedding.CopyFrom(array2pb(embeddings[1]))
-    chunk3.embedding.CopyFrom(array2pb(embeddings[2]))
+    GenericNdArray(chunk1.embedding).value=embeddings[0]
+    GenericNdArray(chunk2.embedding).value=embeddings[1]
+    GenericNdArray(chunk3.embedding).value=embeddings[2]
     return doc
 
 
@@ -107,9 +107,9 @@ def doc_with_multimodal_chunks_wrong(embeddings):
     chunk1.id = uid.new_doc_id(chunk1)
     chunk2.id = uid.new_doc_id(chunk2)
     chunk3.id = uid.new_doc_id(chunk3)
-    chunk1.embedding.CopyFrom(array2pb(embeddings[0]))
-    chunk2.embedding.CopyFrom(array2pb(embeddings[1]))
-    chunk3.embedding.CopyFrom(array2pb(embeddings[2]))
+    GenericNdArray(chunk1.embedding).value=embeddings[0]
+    GenericNdArray(chunk2.embedding).value=embeddings[1]
+    GenericNdArray(chunk3.embedding).value=embeddings[2]
     return doc
 
 
@@ -137,6 +137,6 @@ def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_mu
     visual1 = doc.chunks[2]
     visual2 = doc.chunks[0]
     textual = doc.chunks[1]
-    control = np.concatenate([pb2array(visual2.embedding), pb2array(textual.embedding), pb2array(visual1.embedding)])
-    test = pb2array(doc.embedding)
+    control = np.concatenate([GenericNdArray(visual2.embedding).value, GenericNdArray(textual.embedding).value, GenericNdArray(visual1.embedding).value])
+    test = GenericNdArray(doc.embedding).value
     np.testing.assert_array_equal(control, test)

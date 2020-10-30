@@ -3,7 +3,7 @@ from typing import Any
 import numpy as np
 
 from jina.drivers.encode import EncodeDriver
-from jina.drivers.helper import array2pb
+from jina.proto.ndarray.generic import GenericNdArray
 from jina.executors.encoders import BaseEncoder
 from jina.proto import jina_pb2
 
@@ -31,7 +31,7 @@ def create_documents_to_encode(num_docs):
     docs = []
     for idx in range(num_docs):
         doc = jina_pb2.Document()
-        doc.blob.CopyFrom(array2pb(np.array([idx])))
+        GenericNdArray(doc.blob).value=np.array([idx])
         docs.append(doc)
     return docs
 

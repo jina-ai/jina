@@ -3,13 +3,13 @@ from PIL import Image
 import pytest
 
 from jina.drivers.convert import Blob2PngURI
-from jina.drivers.helper import array2pb
+from jina.proto.ndarray.generic import GenericNdArray
 from jina.proto import jina_pb2
 
 
 def create_document(arr_size):
     doc = jina_pb2.Document()
-    doc.blob.CopyFrom(array2pb(np.random.randint(0, 255, arr_size)))
+    GenericNdArray(doc.blob).value=np.random.randint(0, 255, arr_size)
     return doc
 
 

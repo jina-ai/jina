@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from jina.flow import Flow
-from jina.drivers.helper import array2pb
+from jina.proto.ndarray.generic import GenericNdArray
 from jina.proto import jina_pb2, uid
 
 
@@ -13,12 +13,12 @@ def test_binarypb_in_flow(test_metas):
             d = jina_pb2.Document()
             d.tags['id'] = j
             d.text = b'hello world'
-            d.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+            GenericNdArray(d.embedding).value=np.random.random([embed_dim + np.random.randint(0, jitter)])
             d.id = uid.new_doc_id(d)
             for k in range(chunks_per_doc):
                 c = d.chunks.add()
                 c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-                c.embedding.CopyFrom(array2pb(np.random.random([embed_dim + np.random.randint(0, jitter)])))
+                GenericNdArray(c.embedding).value=np.random.random([embed_dim + np.random.randint(0, jitter)])
                 c.tags['id'] = c_id
                 c.tags['parent_id'] = j
                 c_id += 1

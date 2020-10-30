@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina.drivers.evaluate import FieldEvaluateDriver
-from jina.drivers.helper import DocGroundtruthPair, array2pb
+from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
 
@@ -34,7 +34,7 @@ def doc_with_field_type(field_type):
             elif field_type == 'buffer':
                 doc.buffer = b'\x01\x02\x03'
             elif field_type == 'blob':
-                doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
+                GenericNdArray(doc.blob).value=np.array([1, 1, 1])
             return doc
 
     return DocCreator()
@@ -50,7 +50,7 @@ def groundtruth_with_field_type(field_type):
             elif field_type == 'buffer':
                 gt.buffer = b'\x01\x02\x03\04'
             elif field_type == 'blob':
-                gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
+                GenericNdArray(gt.blob).value=np.array([1, 1, 1, 1])
             return gt
 
     return GTCreator()
@@ -170,8 +170,8 @@ def eval_request():
                 chunk_doc.buffer = b'\x01\x02\x03'
                 chunk_gt.buffer = b'\x01\x02\x03\x04'
             elif field_type == 'blob':
-                chunk_doc.blob.CopyFrom(array2pb(np.array([1, 1, 1])))
-                chunk_gt.blob.CopyFrom(array2pb(np.array([1, 1, 1, 1])))
+                GenericNdArray(chunk_doc.blob).value=np.array([1, 1, 1])
+                GenericNdArray(chunk_gt.blob).value=np.array([1, 1, 1, 1])
         return req
 
     return request

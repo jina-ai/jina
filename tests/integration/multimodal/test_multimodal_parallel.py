@@ -5,7 +5,7 @@ import numpy as np
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.drivers.helper import array2pb, pb2array
+from jina.proto.ndarray.generic import GenericNdArray
 
 NUM_DOCS = 100
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -30,9 +30,9 @@ def multimodal_documents():
             chunk = doc.chunks.add()
             chunk.modality = modality
             if modality == 'modality1':
-                chunk.blob.CopyFrom(array2pb(np.array([idx, idx])))
+                GenericNdArray(chunk.blob).value=np.array([idx, idx])
             else:
-                chunk.blob.CopyFrom(array2pb(np.array([idx, idx, idx])))
+                GenericNdArray(chunk.blob).value=np.array([idx, idx, idx])
         docs.append(doc)
     return docs
 
@@ -41,7 +41,7 @@ def test_multimodal_embedding_parallel(multimodal_documents):
     def validate_response(resp):
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
-            np.testing.assert_almost_equal(pb2array(doc.embedding), np.array([idx, idx, idx, idx, idx]))
+            np.testing.assert_almost_equal(GenericNdArray(doc.embedding).value, np.array([idx, idx, idx, idx, idx]))
 
     with Flow().load_config(os.path.join(cur_dir, 'flow-embedding-multimodal-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_documents,
@@ -69,9 +69,9 @@ def multimodal_all_types_documents():
             chunk = doc.chunks.add()
             chunk.modality = modality
             if modality == 'modality1':
-                chunk.embedding.CopyFrom(array2pb(np.array([idx, idx])))
+                GenericNdArray(chunk.embedding).value=np.array([idx, idx])
             elif modality == 'modality2':
-                chunk.blob.CopyFrom(array2pb(np.array([idx, idx, idx])))
+                GenericNdArray(chunk.blob).value=np.array([idx, idx, idx])
             elif modality == 'modality3':
                 chunk.text = 'modality3'
             elif modality == 'modality4':
@@ -84,7 +84,7 @@ def test_multimodal_all_types_parallel(multimodal_all_types_documents):
     def validate_response(resp):
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
-            np.testing.assert_almost_equal(pb2array(doc.embedding), np.array([idx, idx, idx, idx, idx, 3, 3, 4, 4]))
+            np.testing.assert_almost_equal(GenericNdArray(doc.embedding).value, np.array([idx, idx, idx, idx, idx, 3, 3, 4, 4]))
 
     with Flow().load_config(os.path.join(cur_dir, 'flow-multimodal-all-types-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_all_types_documents,
