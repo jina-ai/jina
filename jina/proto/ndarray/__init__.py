@@ -5,6 +5,8 @@ from jina.proto import jina_pb2
 if False:
     import numpy as np
 
+AnyNdArray = TypeVar('AnyNdArray')
+
 
 class BaseNdArray:
     """An abstract class for containing the protobuf message of NdArray. It defines interfaces
@@ -28,12 +30,12 @@ class BaseNdArray:
         raise NotImplementedError
 
     @property
-    def value(self):
+    def value(self) -> AnyNdArray:
         """Return the value of the ndarray, in numpy, scipy, tensorflow, pytorch type"""
         raise NotImplementedError
 
     @value.setter
-    def value(self, value):
+    def value(self, value: AnyNdArray):
         """Set the value from numpy, scipy, tensorflow, pytorch type to protobuf"""
         raise NotImplementedError
 
