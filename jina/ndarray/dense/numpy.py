@@ -2,11 +2,11 @@ import os
 
 import numpy as np
 
-from .. import BaseNdArray
+from .. import BaseDenseNdArray
 from ...proto import jina_pb2
 
 
-class DenseNdArray(BaseNdArray):
+class DenseNdArray(BaseDenseNdArray):
 
     def __init__(self, proto: 'jina_pb2.NdArray' = None, quantize: str = None, *args, **kwargs):
         """
@@ -30,8 +30,6 @@ class DenseNdArray(BaseNdArray):
         super().__init__(proto, *args, **kwargs)
         self.quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
 
-    def get_null_proto(self):
-        return jina_pb2.DenseNdArray()
 
     @property
     def value(self) -> 'np.ndarray':

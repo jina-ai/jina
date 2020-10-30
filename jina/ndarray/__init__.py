@@ -20,9 +20,12 @@ class BaseNdArray:
         if proto:
             self.proto = proto  # a weak ref/copy
         else:
-            self.proto = self.get_null_proto()
+            self.proto = self.null_proto()
 
-    def get_null_proto(self):
+        self.is_sparse = False  # set to true if the ndarray is sparse
+
+    @property
+    def null_proto(self) -> 'jina_pb2._reflection.GeneratedProtocolMessageType':
         """Get the new protobuf representation"""
         raise NotImplementedError
 
@@ -36,12 +39,22 @@ class BaseNdArray:
         """Set the value from numpy, scipy, tensorflow, pytorch type to protobuf"""
         raise NotImplementedError
 
-    @property
-    def is_sparse(self) -> bool:
-        """Return true if the ndarray is sparse """
-        raise NotImplementedError
-
     def copy_to(self, proto: 'jina_pb2._reflection.GeneratedProtocolMessageType') -> 'BaseNdArray':
         """Copy itself to another protobuf message, return a view of the copied message"""
         proto.CopyFrom(self.proto)
         return BaseNdArray(proto)
+
+
+class BaseDenseNdArray(BaseNdArray):
+
+    def null_proto(self):
+        return jina_pb2.DenseNdArray()
+
+
+class BaseSparseNdArray(BaseNdArray):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_sparse = True
+
+    def null_proto(self):
+        return jina_pb2.SparseNdArray()

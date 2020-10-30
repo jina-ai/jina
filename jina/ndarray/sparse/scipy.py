@@ -2,12 +2,12 @@ import numpy as np
 import scipy.sparse
 from scipy.sparse import coo_matrix
 
-from .. import BaseNdArray
+from .. import BaseSparseNdArray
 from ..dense.numpy import DenseNdArray
 from ...proto import jina_pb2
 
 
-class SparseNdArray(BaseNdArray):
+class SparseNdArray(BaseSparseNdArray):
     """Scipy powered sparse ndarray
 
     .. warning::
@@ -28,9 +28,6 @@ class SparseNdArray(BaseNdArray):
         else:
             raise ValueError(f'{sp_format} sparse matrix is not supported, please choose one of those: {support_fmt}')
 
-    def get_null_proto(self):
-        return jina_pb2.SparseNdArray()
-
     @property
     def value(self) -> 'scipy.sparse.spmatrix':
         row_col = DenseNdArray(self.proto.indicies).value
@@ -47,7 +44,3 @@ class SparseNdArray(BaseNdArray):
         DenseNdArray(self.proto.indicies).value = np.stack([v.row, v.col], axis=1)
         DenseNdArray(self.proto.values).value = v.data
         self.proto.dense_shape.extend(v.shape)
-
-    @property
-    def is_sparse(self) -> bool:
-        return True
