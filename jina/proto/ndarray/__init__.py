@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from ..proto import jina_pb2
+from .. import jina_pb2
 
 AnyNdArray = TypeVar('AnyNdArray')
 

@@ -4,7 +4,8 @@ __license__ = "Apache-2.0"
 from typing import Iterable
 
 from . import BaseExecutableDriver
-from .helper import extract_docs, array2pb
+from .helper import extract_docs
+from ..proto.ndarray.generic import GenericNdArray
 
 if False:
     from ..proto import jina_pb2
@@ -35,4 +36,4 @@ class EncodeDriver(BaseEncodeDriver):
                     f'mismatched {len(docs_pts)} docs from level {docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(docs_pts, embeds):
-                doc.embedding.CopyFrom(array2pb(embedding))
+                GenericNdArray(doc.embedding).value = embedding

@@ -3,7 +3,7 @@ from typing import Type
 from . import BaseNdArray, BaseDenseNdArray, BaseSparseNdArray
 from .dense.numpy import DenseNdArray
 from .sparse.scipy import SparseNdArray
-from ..proto import jina_pb2
+from .. import jina_pb2
 
 
 class GenericNdArray(BaseNdArray):

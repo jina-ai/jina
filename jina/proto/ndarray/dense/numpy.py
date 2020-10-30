@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 from .. import BaseDenseNdArray
-from ...proto import jina_pb2
+from ... import jina_pb2
 
 
 class DenseNdArray(BaseDenseNdArray):
@@ -17,19 +17,17 @@ class DenseNdArray(BaseDenseNdArray):
 
         .. note::
             Remarks on quantization:
-                The quantization only works when ``x`` is in ``float32`` or ``float64``. The motivation is to
-                save the network bandwidth by using less bits to store the numpy array in the protobuf.
+            The quantization only works when ``x`` is in ``float32`` or ``float64``. The motivation is to
+            save the network bandwidth by using less bits to store the numpy array in the protobuf.
 
-                    - ``fp16`` quantization is lossless, can be used widely. Each float is represented by 16 bits.
-                    - ``uint8`` quantization is lossy. Each float is represented by 8 bits.
-                    The algorithm behind is standard scaling.
+                - ``fp16`` quantization is lossless, can be used widely. Each float is represented by 16 bits.
+                - ``uint8`` quantization is lossy. Each float is represented by 8 bits.
+                The algorithm behind is standard scaling.
 
-                There is no need to specify the quantization type in :func:`pb2array`,
-                as the quantize type is stored and the blob is self-contained to recover the original numpy array
+            the quantize type is stored and the blob is self-contained to recover the original numpy array
         """
         super().__init__(proto, *args, **kwargs)
         self.quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
-
 
     @property
     def value(self) -> 'np.ndarray':
@@ -64,5 +62,3 @@ class DenseNdArray(BaseDenseNdArray):
         blob.buffer = x.tobytes()
         blob.shape.extend(list(x.shape))
         blob.dtype = x.dtype.str
-
-

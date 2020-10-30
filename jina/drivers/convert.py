@@ -12,7 +12,8 @@ from typing import Iterable
 import numpy as np
 
 from . import BaseRecursiveDriver
-from .helper import guess_mime, array2pb, pb2array
+from .helper import guess_mime
+from ..proto.ndarray.generic import GenericNdArray
 
 if False:
     from ..proto import jina_pb2
@@ -100,7 +101,7 @@ class Buffer2NdArray(BaseConvertDriver):
         super().__init__(target, *args, **kwargs)
 
     def convert(self, d):
-        d.blob.CopyFrom(array2pb(np.frombuffer(d.buffer)))
+        GenericNdArray(d.blob).value = np.frombuffer(d.buffer)
 
 
 class NdArray2PngURI(BaseConvertDriver):
@@ -180,7 +181,7 @@ class Blob2PngURI(NdArray2PngURI):
         super().__init__(target, width, height, *args, **kwargs)
 
     def convert(self, d):
-        arr = pb2array(d.blob)
+        arr = GenericNdArray(d.blob).value
         d.uri = self.png_convertor(arr)
 
 

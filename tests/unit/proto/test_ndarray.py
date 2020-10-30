@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 
-from jina.ndarray.dense.numpy import DenseNdArray
+from jina.proto.ndarray.dense.numpy import DenseNdArray
 
 
 @pytest.mark.parametrize('sp_format', ['coo', 'bsr', 'csc', 'csr'])
 def test_scipy_sparse(sp_format):
     from scipy.sparse import coo_matrix
-    from jina.ndarray.sparse.scipy import SparseNdArray
+    from jina.proto.ndarray.sparse.scipy import SparseNdArray
     row = np.array([0, 3, 1, 0])
     col = np.array([0, 3, 1, 2])
     data = np.array([4, 5, 7, 9])
@@ -40,7 +40,7 @@ def test_numpy_dense(dtype):
 def test_tf_sparse(idx_shape):
     import tensorflow as tf
     from tensorflow import SparseTensor
-    from jina.ndarray.sparse.tensorflow import SparseNdArray
+    from jina.proto.ndarray.sparse.scipy import SparseNdArray
     a = SparseTensor(indices=idx_shape[0], values=[1, 2], dense_shape=idx_shape[1])
     b = SparseNdArray()
     b.value = a
@@ -51,7 +51,7 @@ def test_tf_sparse(idx_shape):
                                        ([[0, 1, 1], [2, 0, 2]], [2, 3]),
                                        ([[0, 1, 1], [2, 0, 2], [1, 0, 2]], [2, 3, 3])])
 def test_torch_sparse(idx_shape):
-    from jina.ndarray.sparse.pytorch import SparseNdArray
+    from jina.proto.ndarray.sparse.pytorch import SparseNdArray
     import torch
     i = torch.LongTensor(idx_shape[0])
     v = torch.FloatTensor([3, 4, 5])
@@ -63,7 +63,7 @@ def test_torch_sparse(idx_shape):
 
 
 def test_generic():
-    from jina.ndarray.generic import GenericNdArray
+    from jina.proto.ndarray.generic import GenericNdArray
     from scipy.sparse import coo_matrix
 
     row = np.array([0, 3, 1, 0])

@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import mimetypes
-import os
 import urllib.parse
 import urllib.request
 from typing import Dict, Any, Iterable, Tuple
@@ -10,64 +9,7 @@ from typing import Dict, Any, Iterable, Tuple
 import numpy as np
 
 from ..proto import jina_pb2
-
-
-def pb2array(blob: 'jina_pb2.DenseNdArray') -> 'np.ndarray':
-    """Convert a blob protobuf to a numpy ndarray.
-
-    Note if the argument ``quantize`` is specified in :func:`array2pb` then the returned result may be lossy.
-    Nonetheless, it will always in original ``dtype``, i.e. ``float32`` or ``float64``
-
-    :param blob: a blob described in protobuf
-    """
-    x = np.frombuffer(blob.buffer, dtype=blob.dtype)
-
-    if blob.quantization == jina_pb2.DenseNdArray.FP16:
-        x = x.astype(blob.original_dtype)
-    elif blob.quantization == jina_pb2.DenseNdArray.UINT8:
-        x = x.astype(blob.original_dtype) * blob.scale + blob.min_val
-
-    return x.reshape(blob.shape)
-
-
-def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.DenseNdArray':
-    """Convert a numpy ndarray to blob protobuf.
-
-    :param x: the target ndarray
-    :param quantize: the quantization method used when converting to protobuf.
-            Availables are ``fp16``, ``uint8``, default is None.
-
-    Remarks on quantization:
-        The quantization only works when ``x`` is in ``float32`` or ``float64``. The motivation is to
-        save the network bandwidth by using less bits to store the numpy array in the protobuf.
-
-            - ``fp16`` quantization is lossless, can be used widely. Each float is represented by 16 bits.
-            - ``uint8`` quantization is lossy. Each float is represented by 8 bits. The algorithm behind is standard scaling.
-
-        There is no need to specify the quantization type in :func:`pb2array`,
-        as the quantize type is stored and the blob is self-contained to recover the original numpy array
-    """
-    blob = jina_pb2.DenseNdArray()
-
-    quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
-
-    if quantize == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):
-        blob.quantization = jina_pb2.DenseNdArray.FP16
-        blob.original_dtype = x.dtype.name
-        x = x.astype(np.float16)
-    elif quantize == 'uint8' and (x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16):
-        blob.quantization = jina_pb2.DenseNdArray.UINT8
-        blob.max_val, blob.min_val = x.max(), x.min()
-        blob.original_dtype = x.dtype.name
-        blob.scale = (blob.max_val - blob.min_val) / 256
-        x = ((x - blob.min_val) / blob.scale).astype(np.uint8)
-    else:
-        blob.quantization = jina_pb2.DenseNdArray.NONE
-
-    blob.buffer = x.tobytes()
-    blob.shape.extend(list(x.shape))
-    blob.dtype = x.dtype.str
-    return blob
+from ..proto.ndarray.generic import GenericNdArray
 
 
 def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
@@ -88,9 +30,9 @@ def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
     bad_doc_ids = []
 
     if embedding:
-        _extract_fn = lambda doc: (doc.embedding.buffer or None) and pb2array(doc.embedding)
+        _extract_fn = lambda doc: (doc.embedding.buffer or None) and GenericNdArray(doc.embedding).value
     else:
-        _extract_fn = lambda doc: doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
+        _extract_fn = lambda doc: doc.text or doc.buffer or (doc.blob and GenericNdArray(doc.blob).value)
 
     for doc in docs:
         content = _extract_fn(doc)
@@ -139,7 +81,7 @@ def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     """
     ret = {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
     if 'blob' in ret:
-        ret['blob'] = pb2array(obj.blob)
+        ret['blob'] = GenericNdArray(obj.blob).value
     return ret
 
 

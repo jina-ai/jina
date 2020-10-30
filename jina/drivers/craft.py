@@ -4,8 +4,9 @@ __license__ = "Apache-2.0"
 from typing import Dict, Iterable, Set, Tuple
 
 from . import BaseExecutableDriver
-from .helper import array2pb, pb_obj2dict
+from .helper import pb_obj2dict
 from ..proto import jina_pb2, uid
+from ..proto.ndarray.generic import GenericNdArray
 
 
 class CraftDriver(BaseExecutableDriver):
@@ -23,10 +24,10 @@ class CraftDriver(BaseExecutableDriver):
     def set_doc_attr(self, doc: 'jina_pb2.Document', doc_info: Dict, protected_keys: Set = None):
         for k, v in doc_info.items():
             if k == 'blob':
-                if isinstance(v, jina_pb2.DenseNdArray):
+                if isinstance(v, jina_pb2.NdArray):
                     doc.blob.CopyFrom(v)
                 else:
-                    doc.blob.CopyFrom(array2pb(v))
+                    GenericNdArray(doc.blob).value = v
             elif isinstance(protected_keys, dict) and k in protected_keys:
                 self.logger.warning(f'you are assigning a {k} in {self.exec.__class__}, '
                                     f'is it intentional? {k} will be overwritten by {self.__class__} '

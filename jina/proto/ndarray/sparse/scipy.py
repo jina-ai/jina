@@ -2,7 +2,7 @@ import numpy as np
 
 from .. import BaseSparseNdArray
 from ..dense.numpy import DenseNdArray
-from ...proto import jina_pb2
+from ... import jina_pb2
 
 
 class SparseNdArray(BaseSparseNdArray):
