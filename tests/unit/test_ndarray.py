@@ -60,3 +60,35 @@ def test_torch_sparse(idx_shape):
     b = SparseNdArray()
     b.value = a
     np.testing.assert_equal(b.value.to_dense().numpy(), a.to_dense().numpy())
+
+
+def test_generic():
+    from jina.ndarray.generic import GenericNdArray
+    from scipy.sparse import coo_matrix
+
+    row = np.array([0, 3, 1, 0])
+    col = np.array([0, 3, 1, 2])
+    data = np.array([4, 5, 7, 9])
+    a = coo_matrix((data, (row, col)), shape=(4, 4))
+    dense_a = a.toarray()
+
+    b = GenericNdArray(is_sparse=True)
+
+    # not set should raise empty value error
+    with pytest.raises(ValueError):
+        print(b.value)
+
+    b.value = a
+
+    dense_b = b.value.toarray()
+    np.testing.assert_equal(dense_b, dense_a)
+
+    c = np.random.random([10, 3, 4])
+
+    # without change of `is_sparse`, this should raise error
+    with pytest.raises(AttributeError):
+        b.value = c
+    b.is_sparse = False
+    b.value = c
+
+    np.testing.assert_equal(b.value, c)

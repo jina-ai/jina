@@ -22,12 +22,12 @@ flask_cors:                 devel, cicd, http, sse
 fluent-logger:              logging, http, sse, dashboard, devel, cicd
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub
-torch>=1.1.0:               framework
+torch>=1.1.0:               framework, cicd
 transformers>=2.6.0:        nlp
 flair:                      nlp
 paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
-tensorflow>=2.0:            framework
+tensorflow>=2.0:            framework, cicd
 tensorflow-hub:             framework, py37
 torchvision>=0.3.0:         framework, cv
 onnx:                       framework, py37

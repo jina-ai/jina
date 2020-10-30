@@ -1,6 +1,4 @@
 import numpy as np
-import scipy.sparse
-from scipy.sparse import coo_matrix
 
 from .. import BaseSparseNdArray
 from ..dense.numpy import DenseNdArray
@@ -21,6 +19,7 @@ class SparseNdArray(BaseSparseNdArray):
         :param args:
         :param kwargs:
         """
+        import scipy.sparse
         super().__init__(proto, *args, **kwargs)
         support_fmt = {'coo', 'bsr', 'csc', 'csr'}
         if sp_format in support_fmt:
@@ -40,7 +39,7 @@ class SparseNdArray(BaseSparseNdArray):
 
     @value.setter
     def value(self, value: 'scipy.sparse.spmatrix'):
-        v = coo_matrix(value)
+        v = value.tocoo()
         DenseNdArray(self.proto.indicies).value = np.stack([v.row, v.col], axis=1)
         DenseNdArray(self.proto.values).value = v.data
         self.proto.dense_shape.extend(v.shape)
