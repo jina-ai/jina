@@ -777,6 +777,8 @@ def _extract_bytes_from_documents(docs: Iterable['jina_pb2.Document']) -> Tuple:
 
 def _fill_buffer_to_documents(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
     """
+    DEPRECIATED!
+
     Message comes split in different parts (that's why it comes as an Iterable, Each element
             can be any sendable object (Frame, bytes, buffer-providers)):
     Parts 0 and 1 contain information about potentially the receiver (if DEALER) and whether it is compressed or not.
