@@ -8,6 +8,12 @@ from ...proto import jina_pb2
 
 
 class SparseNdArray(BaseNdArray):
+    """Scipy powered sparse ndarray
+
+    .. warning::
+        scipy only supports ndim=2
+    """
+
     def __init__(self, proto: 'jina_pb2.SparseNdArray' = None, sp_format: str = 'coo', *args, **kwargs):
         """
 
@@ -33,7 +39,7 @@ class SparseNdArray(BaseNdArray):
         row = row_col[:, 0]
         col = row_col[:, 1]
         val = DenseNdArray(self.proto.values).value
-        return coo_matrix((val, (row, col)), shape=self.proto.dense_shape)
+        return self.spmat_fn((val, (row, col)), shape=self.proto.dense_shape)
 
     @value.setter
     def value(self, value: 'scipy.sparse.spmatrix'):

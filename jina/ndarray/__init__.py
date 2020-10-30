@@ -6,7 +6,7 @@ AnyNdArray = TypeVar('AnyNdArray')
 
 
 class BaseNdArray:
-    """An abstract class for containing the protobuf message of NdArray. It defines interfaces
+    """A base class for containing the protobuf message of NdArray. It defines interfaces
     for easier get/set value.
 
     Do not use this class directly. Subclass should be used.
