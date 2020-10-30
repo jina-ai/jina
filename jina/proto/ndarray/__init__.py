@@ -29,18 +29,23 @@ class BaseNdArray:
 
     @property
     def value(self):
-        """Return the value of the ndarray, in numpy, scipy, tensorflow, pytorch format"""
+        """Return the value of the ndarray, in numpy, scipy, tensorflow, pytorch type"""
         raise NotImplementedError
 
     @value.setter
     def value(self, value):
-        """Set the value to protobuf"""
+        """Set the value from numpy, scipy, tensorflow, pytorch type to protobuf"""
         raise NotImplementedError
 
     @property
     def is_sparse(self) -> bool:
         """Return true if the ndarray is sparse """
         raise NotImplementedError
+
+    def copy_to(self, proto: 'jina_pb2._reflection.GeneratedProtocolMessageType') -> 'BaseNdArray':
+        """Copy itself to another protobuf message, return a view of the copied message"""
+        proto.CopyFrom(self.proto)
+        return BaseNdArray(proto)
 
 
 class DenseNdArray(BaseNdArray):
