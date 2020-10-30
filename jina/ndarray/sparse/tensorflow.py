@@ -5,10 +5,7 @@ from ..dense.numpy import DenseNdArray
 
 
 class SparseNdArray(BaseSparseNdArray):
-    """Scipy powered sparse ndarray
-
-    .. warning::
-        scipy only supports ndim=2
+    """Tensorflow powered sparse ndarray, i.e. SparseTensor
     """
 
     @property
