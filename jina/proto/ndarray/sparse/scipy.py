@@ -4,6 +4,9 @@ from .. import BaseSparseNdArray
 from ..dense.numpy import DenseNdArray
 from ... import jina_pb2
 
+if False:
+    import scipy.sparse
+
 
 class SparseNdArray(BaseSparseNdArray):
     """Scipy powered sparse ndarray
