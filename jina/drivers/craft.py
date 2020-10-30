@@ -23,7 +23,7 @@ class CraftDriver(BaseExecutableDriver):
     def set_doc_attr(self, doc: 'jina_pb2.Document', doc_info: Dict, protected_keys: Set = None):
         for k, v in doc_info.items():
             if k == 'blob':
-                if isinstance(v, jina_pb2.NdArray):
+                if isinstance(v, jina_pb2.DenseNdArray):
                     doc.blob.CopyFrom(v)
                 else:
                     doc.blob.CopyFrom(array2pb(v))

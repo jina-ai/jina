@@ -12,7 +12,7 @@ import numpy as np
 from ..proto import jina_pb2
 
 
-def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
+def pb2array(blob: 'jina_pb2.DenseNdArray') -> 'np.ndarray':
     """Convert a blob protobuf to a numpy ndarray.
 
     Note if the argument ``quantize`` is specified in :func:`array2pb` then the returned result may be lossy.
@@ -22,15 +22,15 @@ def pb2array(blob: 'jina_pb2.NdArray') -> 'np.ndarray':
     """
     x = np.frombuffer(blob.buffer, dtype=blob.dtype)
 
-    if blob.quantization == jina_pb2.NdArray.FP16:
+    if blob.quantization == jina_pb2.DenseNdArray.FP16:
         x = x.astype(blob.original_dtype)
-    elif blob.quantization == jina_pb2.NdArray.UINT8:
+    elif blob.quantization == jina_pb2.DenseNdArray.UINT8:
         x = x.astype(blob.original_dtype) * blob.scale + blob.min_val
 
     return x.reshape(blob.shape)
 
 
-def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
+def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.DenseNdArray':
     """Convert a numpy ndarray to blob protobuf.
 
     :param x: the target ndarray
@@ -47,22 +47,22 @@ def array2pb(x: 'np.ndarray', quantize: str = None) -> 'jina_pb2.NdArray':
         There is no need to specify the quantization type in :func:`pb2array`,
         as the quantize type is stored and the blob is self-contained to recover the original numpy array
     """
-    blob = jina_pb2.NdArray()
+    blob = jina_pb2.DenseNdArray()
 
     quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
 
     if quantize == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):
-        blob.quantization = jina_pb2.NdArray.FP16
+        blob.quantization = jina_pb2.DenseNdArray.FP16
         blob.original_dtype = x.dtype.name
         x = x.astype(np.float16)
     elif quantize == 'uint8' and (x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16):
-        blob.quantization = jina_pb2.NdArray.UINT8
+        blob.quantization = jina_pb2.DenseNdArray.UINT8
         blob.max_val, blob.min_val = x.max(), x.min()
         blob.original_dtype = x.dtype.name
         blob.scale = (blob.max_val - blob.min_val) / 256
         x = ((x - blob.min_val) / blob.scale).astype(np.uint8)
     else:
-        blob.quantization = jina_pb2.NdArray.NONE
+        blob.quantization = jina_pb2.DenseNdArray.NONE
 
     blob.buffer = x.tobytes()
     blob.shape.extend(list(x.shape))

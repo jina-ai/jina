@@ -5,7 +5,7 @@ import mimetypes
 import os
 import urllib.parse
 import uuid
-from typing import Iterator, Union, Optional, Tuple
+from typing import Iterator, Union, Tuple
 
 import numpy as np
 

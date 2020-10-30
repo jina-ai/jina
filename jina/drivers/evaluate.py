@@ -75,7 +75,7 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
 
     def extract(self, doc: 'jina_pb2.Document') -> Any:
         r = dunder_get(doc, self.field)
-        if isinstance(r, jina_pb2.NdArray):
+        if isinstance(r, jina_pb2.DenseNdArray):
             r = pb2array(r)
         return r
 
