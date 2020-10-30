@@ -69,7 +69,6 @@ Jina est un projet open-source[Nous recrutons](https://jobs.jina.ai) Des ingéni
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Installez](#installez)
 - [Jina "Bonjour, le monde ! 👋🌍](#jina-bonjour-le-monde--)
 - [Pour commencer](#pour-commencer)

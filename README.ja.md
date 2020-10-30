@@ -68,7 +68,6 @@ Jinaはオープンソースのプロジェクトです。[採用しています
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [インストール](#%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
 - [ジーナ「こんにちはｗｗｗｗ👋🌍](#%E3%82%B8%E3%83%BC%E3%83%8A%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%EF%BD%97%EF%BD%97%EF%BD%97%EF%BD%97)
 - [はじめに](#%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB)

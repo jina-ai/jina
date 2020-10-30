@@ -59,7 +59,6 @@ Jina is an AI-powered search framework, empowering developers to create **cross-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Get Started](#get-started)
 - [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
 - [Tutorials](#tutorials)

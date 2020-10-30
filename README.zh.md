@@ -70,7 +70,6 @@ Jina是一个开源项目。[我们正在招聘](https://jobs.jina.ai)AI工程�
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [安装](#%E5%AE%89%E8%A3%85)
 - [Jina "你好，世界！"👋🌍](#jina-%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C)
 - [开始](#%E5%BC%80%E5%A7%8B)
