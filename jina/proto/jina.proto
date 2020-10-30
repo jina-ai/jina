@@ -53,7 +53,7 @@ message SparseNdArray {
     DenseNdArray values = 2;
 
     // A 1-D int64 tensor of shape [ndims], which specifies the dense_shape of the sparse tensor.
-    repeated uint64 dense_shape = 3;
+    repeated int64 dense_shape = 3;
 }
 
 /**
