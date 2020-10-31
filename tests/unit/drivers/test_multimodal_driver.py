@@ -92,7 +92,7 @@ def test_multimodal_driver(simple_multimodal_driver, mock_multimodal_encoder, do
     visual2 = doc.chunks[1]
     textual = doc.chunks[2]
     assert GenericNdArray(doc).value.shape[0] == GenericNdArray(visual1.embedding).value.shape[0] + \
-           GenericNdArray(visual2.embedding).value.shape[0] + textual.embedding.shape[0]
+           GenericNdArray(visual2.embedding).value.shape[0] + GenericNdArray(textual.embedding).value.shape[0]
 
 
 @pytest.fixture(scope='function')
