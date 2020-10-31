@@ -16,6 +16,14 @@ def test_empty_ndarray():
     a = sp2()
     assert a.value is None
 
+    from jina.proto.ndarray.sparse.tensorflow import SparseNdArray as sp2
+    a = sp2()
+    assert a.value is None
+
+    from jina.proto.ndarray.sparse.numpy import SparseNdArray as sp2
+    a = sp2()
+    assert a.value is None
+
 
 @pytest.mark.parametrize('sp_format', ['coo'])
 def test_scipy_sparse(sp_format):
