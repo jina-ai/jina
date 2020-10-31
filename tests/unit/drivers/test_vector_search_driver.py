@@ -106,6 +106,6 @@ def test_vectorsearch_driver_mock_indexer_with_fill():
     driver._apply_all(doc.chunks)
 
     for chunk in doc.chunks:
-        assert GenericNdArray(chunk.matches[0]).value.shape == (7,)
-        assert GenericNdArray(chunk.matches[-1]).value.shape == (7,)
+        assert GenericNdArray(chunk.matches[0].embedding).value.shape == (7,)
+        assert GenericNdArray(chunk.matches[-1].embedding).value.shape == (7,)
         assert GenericNdArray(chunk.matches[-1].embedding).value is not None

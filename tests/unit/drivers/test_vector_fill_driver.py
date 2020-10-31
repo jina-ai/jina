@@ -40,4 +40,4 @@ def test_index_driver():
     driver._apply_all(docs)
     assert len(docs) == 10
     for doc in docs:
-        assert GenericNdArray(doc).value.shape == [5]
+        assert GenericNdArray(doc.embedding).value.shape == [5]
