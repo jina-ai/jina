@@ -31,8 +31,6 @@ class GenericNdArray(BaseNdArray):
             return self.dense_cls(self.proto.dense).value
         elif stype == 'sparse':
             return self.sparse_cls(self.proto.sparse).value
-        else:
-            raise ValueError('empty value, this protobuf is probably not initialized yet?')
 
     @value.setter
     def value(self, value):

@@ -36,7 +36,8 @@ def test_binarypb_in_flow(test_metas):
     def validate(req):
         assert len(docs) == len(req.docs)
         for d, d0 in zip(req.docs, docs):
-            assert d.embedding.buffer == d0.embedding.buffer
+            np.testing.assert_almost_equal(GenericNdArray(d.embedding).value,
+                                           GenericNdArray(d0.embedding).value)
 
     with f:
         f.search(docs, output_fn=validate, override_doc_id=False)

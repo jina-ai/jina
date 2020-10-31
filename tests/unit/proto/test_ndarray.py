@@ -24,6 +24,10 @@ def test_empty_ndarray():
     a = sp2()
     assert a.value is None
 
+    from jina.proto.ndarray.generic import GenericNdArray as sp2
+    a = sp2()
+    assert a.value is None
+
 
 @pytest.mark.parametrize('sp_format', ['coo'])
 def test_scipy_sparse(sp_format):
@@ -109,10 +113,6 @@ def test_generic():
     dense_a = a.toarray()
 
     b = GenericNdArray(is_sparse=True)
-
-    # not set should raise empty value error
-    with pytest.raises(ValueError):
-        print(b.value)
 
     b.value = a
 

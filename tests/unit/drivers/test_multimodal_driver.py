@@ -120,7 +120,7 @@ def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_drive
     doc = doc_with_multimodal_chunks_wrong
     assert len(doc.chunks) == 3
     # Document consider invalid to be encoded by the driver
-    assert len(doc.embedding.buffer) == 0
+    assert GenericNdArray(doc.embedding).value is None
 
 
 @pytest.fixture

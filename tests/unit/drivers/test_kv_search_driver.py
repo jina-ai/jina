@@ -111,14 +111,14 @@ def test_vectorsearch_driver_mock_indexer_apply_all():
 
     assert len(doc.chunks) == 5
     for chunk in doc.chunks:
-        assert chunk.embedding.buffer == b''
+        assert GenericNdArray(chunk.embedding).value is None
 
     driver._apply_all(doc.chunks)
 
     # chunk idx: 5 had no matched and is removed as missing idx
     assert len(doc.chunks) == 4
     for chunk in doc.chunks:
-        assert chunk.embedding.buffer != b''
+        assert GenericNdArray(chunk.embedding).value is not None
         embedding_array = GenericNdArray(chunk.embedding).value
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
@@ -132,14 +132,14 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply():
 
     assert len(doc.chunks) == 5
     for chunk in doc.chunks:
-        assert chunk.embedding.buffer == b''
+        assert GenericNdArray(chunk.embedding).value is None
 
     driver._traverse_apply(doc.chunks)
 
     # chunk idx: 5 had no matched and is removed as missing idx
     assert len(doc.chunks) == 4
     for chunk in doc.chunks:
-        assert chunk.embedding.buffer != b''
+        assert GenericNdArray(chunk.embedding).value is not None
         embedding_array = GenericNdArray(chunk.embedding).value
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
@@ -156,6 +156,6 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
     chunk = doc.chunks[0]
     assert len(chunk.matches) == 3
     for match in chunk.matches:
-        assert match.embedding.buffer != b''
+        assert GenericNdArray(match.embedding).value is not None
         embedding_array = GenericNdArray(match.embedding).value
         np.testing.assert_equal(embedding_array, np.array([int(match.id)]))

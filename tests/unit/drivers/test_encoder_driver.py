@@ -43,7 +43,7 @@ def test_encode_driver():
     driver.attach(executor=executor, pea=None)
     assert len(docs) == 10
     for doc in docs:
-        assert doc.embedding.buffer == b''
+        assert GenericNdArray(doc.embedding).value is None
     driver._apply_all(docs)
     assert len(docs) == 10
     for doc in docs:

@@ -15,10 +15,7 @@ def _extract_doc_content(doc: 'jina_pb2.Document'):
     """Returns the content of the document with the following priority:
     If the document has an embedding, return it, otherwise return its content.
     """
-    if doc.embedding.buffer:
-        return GenericNdArray(doc.embedding).value
-    else:
-        return doc.text or doc.buffer or (doc.blob and GenericNdArray(doc.blob).value)
+    return GenericNdArray(doc.embedding).value or doc.text or doc.buffer or GenericNdArray(doc.blob).value
 
 
 def _extract_modalities_from_document(doc: 'jina_pb2.Document'):

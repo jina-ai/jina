@@ -95,7 +95,7 @@ def test_vectorsearch_driver_mock_indexer():
         assert chunk.matches[1].score.ref_id == str(chunk.id)
         assert chunk.matches[0].score.value == pytest.approx(int(chunk.id) * 0.01, 0.0001)
         assert chunk.matches[1].score.value == pytest.approx(int(chunk.id) * 0.1, 0.0001)
-        assert chunk.matches[-1].embedding.buffer == b''
+        assert GenericNdArray(chunk.matches[-1].embedding).value is None
 
 
 def test_vectorsearch_driver_mock_indexer_with_fill():
@@ -108,4 +108,4 @@ def test_vectorsearch_driver_mock_indexer_with_fill():
     for chunk in doc.chunks:
         assert chunk.matches[0].embedding.shape == [7]
         assert chunk.matches[-1].embedding.shape == [7]
-        assert chunk.matches[-1].embedding.buffer != b''
+        assert GenericNdArray(chunk.matches[-1].embedding).value is not None

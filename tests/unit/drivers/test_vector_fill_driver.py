@@ -5,6 +5,7 @@ import numpy as np
 from jina.drivers.search import VectorFillDriver
 from jina.executors.indexers import BaseIndexer
 from jina.proto import jina_pb2
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 class MockIndexer(BaseIndexer):
@@ -35,7 +36,7 @@ def test_index_driver():
     driver.attach(executor=executor, pea=None)
     assert len(docs) == 10
     for doc in docs:
-        assert doc.embedding.buffer == b''
+        assert GenericNdArray(doc.embedding).value is None
     driver._apply_all(docs)
     assert len(docs) == 10
     for doc in docs:
