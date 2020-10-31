@@ -293,7 +293,10 @@ class Flow(ExitStack):
 
         needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
 
-        kwargs.update(op_flow._common_kwargs)
+        for key, value in op_flow._common_kwargs.items():
+            if key not in kwargs:
+                kwargs[key] = value
+
         kwargs['name'] = pod_name
 
         op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
