@@ -231,8 +231,8 @@ class CompoundExecutor(BaseExecutor):
         """
 
         for c in self.components:
-            c.save()
-        super().save()  # do i really need to save the compound executor itself
+            c.save(filename=filename)
+        super().save(filename=filename)  # do i really need to save the compound executor itself
         return True
 
     @property
