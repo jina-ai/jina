@@ -47,30 +47,45 @@ def test_numpy_dense(dtype):
     np.testing.assert_equal(b.value, a)
 
 
-@pytest.mark.parametrize('idx_shape', [([[0, 1, 1]], [3]),
-                                       ([[0, 1, 1], [2, 0, 2]], [3, 3]),
-                                       ([[0, 1, 1], [2, 0, 2], [1, 0, 2]], [3, 3, 3])])
+@pytest.mark.parametrize('idx_shape', [([[0], [1], [2]], [3]),
+                                       ([[0, 1], [0, 2], [1, 2]], [3, 3]),
+                                       ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3])])
 def test_tf_sparse(idx_shape):
     import tensorflow as tf
     from tensorflow import SparseTensor
-    from jina.proto.ndarray.sparse.scipy import SparseNdArray
-    a = SparseTensor(indices=idx_shape[0], values=[1, 2], dense_shape=idx_shape[1])
+    from jina.proto.ndarray.sparse.tensorflow import SparseNdArray
+    a = SparseTensor(indices=idx_shape[0], values=[1, 2, 3], dense_shape=idx_shape[1])
     b = SparseNdArray()
     b.value = a
     np.testing.assert_equal(tf.sparse.to_dense(b.value).numpy(), tf.sparse.to_dense(a).numpy())
 
 
-@pytest.mark.parametrize('idx_shape', [([[0, 1, 1]], [3]),
-                                       ([[0, 1, 1], [2, 0, 2]], [3, 3]),
-                                       ([[0, 1, 1], [2, 0, 2], [1, 0, 2]], [3, 3, 3])])
-def test_torch_sparse(idx_shape):
+@pytest.mark.parametrize('idx_shape', [([[0], [1], [2]], [3]),
+                                       ([[0, 2], [1, 0], [1, 2]], [2, 3]),
+                                       ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3])])
+def test_torch_sparse_with_transpose(idx_shape, transpose=True):
+    from jina.proto.ndarray.sparse.pytorch import SparseNdArray
+    import torch
+    i = torch.LongTensor(idx_shape[0])
+    v = torch.FloatTensor([3, 4, 5])
+    a = torch.sparse.FloatTensor(i.t() if transpose else i, v, torch.Size(idx_shape[1]))
+
+    b = SparseNdArray(transpose_indices=transpose)
+    b.value = a
+    np.testing.assert_equal(b.value.to_dense().numpy(), a.to_dense().numpy())
+
+
+@pytest.mark.parametrize('idx_shape', [([[0, 1, 2]], [3]),
+                                       ([[0, 2, 1], [1, 0, 2]], [3, 3]),
+                                       ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3])])
+def test_torch_sparse(idx_shape, transpose=False):
     from jina.proto.ndarray.sparse.pytorch import SparseNdArray
     import torch
     i = torch.LongTensor(idx_shape[0])
     v = torch.FloatTensor([3, 4, 5])
     a = torch.sparse.FloatTensor(i, v, torch.Size(idx_shape[1]))
 
-    b = SparseNdArray()
+    b = SparseNdArray(transpose_indices=transpose)
     b.value = a
     np.testing.assert_equal(b.value.to_dense().numpy(), a.to_dense().numpy())
 

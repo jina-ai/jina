@@ -14,6 +14,9 @@ class SparseNdArray(BaseSparseNdArray):
 
     .. warning::
         scipy only supports ndim=2
+
+    .. seealso::
+        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
 
     def __init__(self, proto: 'jina_pb2.SparseNdArray' = None, sp_format: str = 'coo', *args, **kwargs):

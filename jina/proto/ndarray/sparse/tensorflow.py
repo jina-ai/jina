@@ -10,6 +10,10 @@ if False:
 
 class SparseNdArray(BaseSparseNdArray):
     """Tensorflow powered sparse ndarray, i.e. SparseTensor
+
+    .. seealso::
+        https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor
+
     """
 
     def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> 'SparseTensor':
