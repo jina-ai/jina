@@ -1,7 +1,8 @@
+from typing import List, Tuple
+
 import numpy as np
 
-from .. import BaseSparseNdArray
-from ..dense.numpy import DenseNdArray
+from . import BaseSparseNdArray
 from ... import jina_pb2
 
 if False:
@@ -30,19 +31,12 @@ class SparseNdArray(BaseSparseNdArray):
         else:
             raise ValueError(f'{sp_format} sparse matrix is not supported, please choose one of those: {support_fmt}')
 
-    @property
-    def value(self) -> 'scipy.sparse.spmatrix':
-        row_col = DenseNdArray(self.proto.indicies).value
-        if row_col.shape[-1] != 2:
-            raise ValueError(f'scipy backend only supports ndim=2 sparse matrix, given {row_col.value.shape}')
-        row = row_col[:, 0]
-        col = row_col[:, 1]
-        val = DenseNdArray(self.proto.values).value
-        return self.spmat_fn((val, (row, col)), shape=self.proto.dense_shape)
+    def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray',
+                           shape: List[int]) -> 'scipy.sparse.spmatrix':
+        if indices.shape[-1] != 2:
+            raise ValueError(f'scipy backend only supports ndim=2 sparse matrix, given {indices.shape}')
+        return self.spmat_fn((indices, values.T), shape=shape)
 
-    @value.setter
-    def value(self, value: 'scipy.sparse.spmatrix'):
+    def sparse_parser(self, value: 'scipy.sparse.spmatrix') -> Tuple['np.ndarray', 'np.ndarray', List[int]]:
         v = value.tocoo()
-        DenseNdArray(self.proto.indicies).value = np.stack([v.row, v.col], axis=1)
-        DenseNdArray(self.proto.values).value = v.data
-        self.proto.dense_shape.extend(v.shape)
+        return np.stack([v.row, v.col], axis=1), v.data, v.shape

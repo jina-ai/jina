@@ -1,8 +1,9 @@
 from typing import TypeVar
 
-from .. import jina_pb2
-
 AnyNdArray = TypeVar('AnyNdArray')
+
+if False:
+    from .. import jina_pb2
 
 
 class BaseNdArray:
@@ -43,18 +44,3 @@ class BaseNdArray:
         """Copy itself to another protobuf message, return a view of the copied message"""
         proto.CopyFrom(self.proto)
         return BaseNdArray(proto)
-
-
-class BaseDenseNdArray(BaseNdArray):
-
-    def null_proto(self):
-        return jina_pb2.DenseNdArray()
-
-
-class BaseSparseNdArray(BaseNdArray):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.is_sparse = True
-
-    def null_proto(self):
-        return jina_pb2.SparseNdArray()

@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-from .. import BaseDenseNdArray
+from . import BaseDenseNdArray
 from ... import jina_pb2
 
 
@@ -32,14 +32,15 @@ class DenseNdArray(BaseDenseNdArray):
     @property
     def value(self) -> 'np.ndarray':
         blob = self.proto
-        x = np.frombuffer(blob.buffer, dtype=blob.dtype)
+        if blob.buffer:
+            x = np.frombuffer(blob.buffer, dtype=blob.dtype)
 
-        if blob.quantization == jina_pb2.DenseNdArray.FP16:
-            x = x.astype(blob.original_dtype)
-        elif blob.quantization == jina_pb2.DenseNdArray.UINT8:
-            x = x.astype(blob.original_dtype) * blob.scale + blob.min_val
+            if blob.quantization == jina_pb2.DenseNdArray.FP16:
+                x = x.astype(blob.original_dtype)
+            elif blob.quantization == jina_pb2.DenseNdArray.UINT8:
+                x = x.astype(blob.original_dtype) * blob.scale + blob.min_val
 
-        return x.reshape(blob.shape)
+            return x.reshape(blob.shape)
 
     @value.setter
     def value(self, value: 'np.ndarray'):

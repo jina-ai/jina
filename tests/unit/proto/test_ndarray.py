@@ -4,6 +4,19 @@ import pytest
 from jina.proto.ndarray.dense.numpy import DenseNdArray
 
 
+def test_empty_ndarray():
+    a = DenseNdArray()
+    assert a.value is None
+
+    from jina.proto.ndarray.sparse.pytorch import SparseNdArray as sp1
+    a = sp1()
+    assert a.value is None
+
+    from jina.proto.ndarray.sparse.scipy import SparseNdArray as sp2
+    a = sp2()
+    assert a.value is None
+
+
 @pytest.mark.parametrize('sp_format', ['coo', 'bsr', 'csc', 'csr'])
 def test_scipy_sparse(sp_format):
     from scipy.sparse import coo_matrix

@@ -1,21 +1,19 @@
+from typing import List, Tuple
+
 from tensorflow import SparseTensor
 
-from .. import BaseSparseNdArray
-from ..dense.numpy import DenseNdArray
+from . import BaseSparseNdArray
+
+if False:
+    import numpy as np
 
 
 class SparseNdArray(BaseSparseNdArray):
     """Tensorflow powered sparse ndarray, i.e. SparseTensor
     """
 
-    @property
-    def value(self) -> 'SparseTensor':
-        return SparseTensor(DenseNdArray(self.proto.indicies).value,
-                            DenseNdArray(self.proto.values).value,
-                            self.proto.dense_shape)
+    def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> 'SparseTensor':
+        return SparseTensor(indices, values, shape)
 
-    @value.setter
-    def value(self, value: 'SparseTensor'):
-        DenseNdArray(self.proto.indicies).value = value.indices.numpy()
-        DenseNdArray(self.proto.values).value = value.values.numpy()
-        self.proto.dense_shape.extend(value.shape.as_list())
+    def sparse_parser(self, value: 'SparseTensor') -> Tuple['np.ndarray', 'np.ndarray', List[int]]:
+        return value.indices.numpy(), value.values.numpy(), value.shape.as_list()

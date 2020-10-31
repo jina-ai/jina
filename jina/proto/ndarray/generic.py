@@ -1,7 +1,9 @@
 from typing import Type
 
-from . import BaseNdArray, BaseDenseNdArray, BaseSparseNdArray
+from . import BaseNdArray
+from .dense import BaseDenseNdArray
 from .dense.numpy import DenseNdArray
+from .sparse import BaseSparseNdArray
 from .sparse.scipy import SparseNdArray
 from .. import jina_pb2
 
