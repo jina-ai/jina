@@ -120,3 +120,15 @@ def test_generic():
     b.value = c
 
     np.testing.assert_equal(b.value, c)
+
+
+@pytest.mark.parametrize('shape', [[10], [7, 8], [7, 8, 9]])
+def test_dummy_numpy_sparse(shape):
+    a = np.random.random(shape)
+    a[a > 0.5] = 1
+
+    from jina.proto.ndarray.sparse.numpy import SparseNdArray
+    b = SparseNdArray()
+    b.value = a
+
+    np.testing.assert_almost_equal(a, b.value)
