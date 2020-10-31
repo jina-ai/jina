@@ -48,10 +48,10 @@ def test_concat_embed_driver():
 
     def validate(req):
         assert len(req.docs) == 2
-        assert GenericNdArray(req.docs[0]).value.shape == [e1.shape[0] * 2]
-        assert GenericNdArray(req.docs[1]).value.shape == [e3.shape[0] * 2]
-        assert GenericNdArray(req.docs[0].chunks[0]).value.shape == [e2.shape[0] * 2]
-        assert GenericNdArray(req.docs[1].chunks[0]).value.shape == [e4.shape[0] * 2]
+        assert GenericNdArray(req.docs[0].embedding).value.shape == [e1.shape[0] * 2]
+        assert GenericNdArray(req.docs[1].embedding).value.shape == [e3.shape[0] * 2]
+        assert GenericNdArray(req.docs[0].chunks[0].embedding).value.shape == [e2.shape[0] * 2]
+        assert GenericNdArray(req.docs[1].chunks[0].embedding).value.shape == [e4.shape[0] * 2]
         np.testing.assert_almost_equal(GenericNdArray(req.docs[0].embedding).value, np.concatenate([e1, e1], axis=0),
                                        decimal=4)
         np.testing.assert_almost_equal(GenericNdArray(req.docs[0].chunks[0].embedding).value,
