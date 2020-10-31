@@ -15,7 +15,7 @@ In this guide we're going to go through the steps for each kind of contribution,
 
 - [🏁 Before you Start](#-before-you-start)
 - [🐞 Bugs and Issues](#-bugs-and-issues)
-- [🥇 Making Your First Submission ](#-making-your-first-submission)
+- [🥇 Making Your First Submission](#-making-your-first-submission)
 - [☑️ Naming Conventions](#-naming-conventions)
 - [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
 - [📖 Contributing Documentation](#-contributing-documentation)
