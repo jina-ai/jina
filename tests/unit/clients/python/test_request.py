@@ -52,7 +52,7 @@ def test_request_generate_lines_with_fake_url():
 def test_request_generate_bytes():
     def random_lines(num_lines):
         for j in range(1, num_lines + 1):
-            yield f'i\'m dummy doc {j}'.encode('utf8')
+            yield f'i\'m dummy doc {j}'
 
     req = _generate(data=random_lines(100), batch_size=100)
 
@@ -60,8 +60,8 @@ def test_request_generate_bytes():
     assert len(request.index.docs) == 100
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 100
+        assert doc.text == f'i\'m dummy doc {index}'
         assert doc.mime_type == 'text/plain'
-        assert doc.buffer.decode() == f'i\'m dummy doc {index}'
 
 
 def test_request_generate_docs():
@@ -95,14 +95,12 @@ def test_request_generate_numpy_arrays():
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
         assert GenericNdArray(doc.blob).value.shape == (10,)
-        assert doc.blob.shape == [10]
 
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
         assert GenericNdArray(doc.blob).value.shape == (10,)
-        assert doc.blob.shape == [10]
 
 
 def test_request_generate_numpy_arrays_iterator():
@@ -119,11 +117,9 @@ def test_request_generate_numpy_arrays_iterator():
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
         assert GenericNdArray(doc.blob).value.shape == (10,)
-        assert doc.blob.shape == [10]
 
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
         assert GenericNdArray(doc.blob).value.shape == (10,)
-        assert doc.blob.shape == [10]
