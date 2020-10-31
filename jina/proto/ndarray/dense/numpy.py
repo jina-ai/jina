@@ -7,6 +7,11 @@ from ... import jina_pb2
 
 
 class DenseNdArray(BaseDenseNdArray):
+    """
+    Dense NdArray powered by numpy, supports quantization method.
+
+    Most of the cases you don't want use this class directly, use :class:`GenericNdArray` instead.
+    """
 
     def __init__(self, proto: 'jina_pb2.NdArray' = None, quantize: str = None, *args, **kwargs):
         """

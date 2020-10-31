@@ -6,7 +6,7 @@ from . import BaseSparseNdArray
 
 
 class SparseNdArray(BaseSparseNdArray):
-    """Numpy powered sparse ndarray, it uses nonzero
+    """Numpy powered sparse ndarray, it uses nonzero.
 
     .. note::
         This always take a dense :class:`np.ndarray` and return a :class:`np.ndarray`.
