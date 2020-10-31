@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import pytest
 
@@ -39,5 +41,8 @@ def test_binarypb_in_flow(test_metas):
             np.testing.assert_almost_equal(GenericNdArray(d.embedding).value,
                                            GenericNdArray(d0.embedding).value)
 
+    docs_no_embedding = copy.deepcopy(docs)
+    for d in docs_no_embedding:
+        d.ClearField('embedding')
     with f:
-        f.search(docs, output_fn=validate, override_doc_id=False)
+        f.search(docs_no_embedding, output_fn=validate, override_doc_id=False)

@@ -55,4 +55,5 @@ class BaseSparseNdArray(BaseNdArray):
         r = self.sparse_parser(value)
         DenseNdArray(self.proto.indices).value = r['indices']
         DenseNdArray(self.proto.values).value = r['values']
+        self.proto.ClearField('dense_shape')
         self.proto.dense_shape.extend(r['shape'])

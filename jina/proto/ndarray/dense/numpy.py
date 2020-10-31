@@ -66,5 +66,6 @@ class DenseNdArray(BaseDenseNdArray):
             blob.quantization = jina_pb2.DenseNdArray.NONE
 
         blob.buffer = x.tobytes()
+        blob.ClearField('shape')
         blob.shape.extend(list(x.shape))
         blob.dtype = x.dtype.str
