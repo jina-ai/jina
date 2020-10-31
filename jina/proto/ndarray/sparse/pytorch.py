@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 import torch
 from torch.sparse import FloatTensor
@@ -18,5 +18,7 @@ class SparseNdArray(BaseSparseNdArray):
                            torch.FloatTensor(values),
                            torch.Size(shape))
 
-    def sparse_parser(self, value: 'FloatTensor') -> Tuple['np.ndarray', 'np.ndarray', List[int]]:
-        return value._indices().numpy(), value._values().numpy(), list(value.shape)
+    def sparse_parser(self, value: 'FloatTensor'):
+        return {'indices': value._indices().numpy(),
+                'values': value._values().numpy(),
+                'shape': list(value.shape)}

@@ -17,7 +17,7 @@ def test_empty_ndarray():
     assert a.value is None
 
 
-@pytest.mark.parametrize('sp_format', ['coo', 'bsr', 'csc', 'csr'])
+@pytest.mark.parametrize('sp_format', ['coo'])
 def test_scipy_sparse(sp_format):
     from scipy.sparse import coo_matrix
     from jina.proto.ndarray.sparse.scipy import SparseNdArray
@@ -48,8 +48,8 @@ def test_numpy_dense(dtype):
 
 
 @pytest.mark.parametrize('idx_shape', [([[0, 1, 1]], [3]),
-                                       ([[0, 1, 1], [2, 0, 2]], [2, 3]),
-                                       ([[0, 1, 1], [2, 0, 2], [1, 0, 2]], [2, 3, 3])])
+                                       ([[0, 1, 1], [2, 0, 2]], [3, 3]),
+                                       ([[0, 1, 1], [2, 0, 2], [1, 0, 2]], [3, 3, 3])])
 def test_tf_sparse(idx_shape):
     import tensorflow as tf
     from tensorflow import SparseTensor
@@ -61,8 +61,8 @@ def test_tf_sparse(idx_shape):
 
 
 @pytest.mark.parametrize('idx_shape', [([[0, 1, 1]], [3]),
-                                       ([[0, 1, 1], [2, 0, 2]], [2, 3]),
-                                       ([[0, 1, 1], [2, 0, 2], [1, 0, 2]], [2, 3, 3])])
+                                       ([[0, 1, 1], [2, 0, 2]], [3, 3]),
+                                       ([[0, 1, 1], [2, 0, 2], [1, 0, 2]], [3, 3, 3])])
 def test_torch_sparse(idx_shape):
     from jina.proto.ndarray.sparse.pytorch import SparseNdArray
     import torch

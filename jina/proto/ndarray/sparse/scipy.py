@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 
@@ -35,8 +35,10 @@ class SparseNdArray(BaseSparseNdArray):
                            shape: List[int]) -> 'scipy.sparse.spmatrix':
         if indices.shape[-1] != 2:
             raise ValueError(f'scipy backend only supports ndim=2 sparse matrix, given {indices.shape}')
-        return self.spmat_fn((indices, values.T), shape=shape)
+        return self.spmat_fn((values, indices.T), shape=shape)
 
-    def sparse_parser(self, value: 'scipy.sparse.spmatrix') -> Tuple['np.ndarray', 'np.ndarray', List[int]]:
+    def sparse_parser(self, value: 'scipy.sparse.spmatrix'):
         v = value.tocoo()
-        return np.stack([v.row, v.col], axis=1), v.data, v.shape
+        return {'indices': np.stack([v.row, v.col], axis=1),
+                'values': v.data,
+                'shape': v.shape}

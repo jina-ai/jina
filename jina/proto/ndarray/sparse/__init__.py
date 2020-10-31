@@ -1,8 +1,8 @@
-from typing import List, Tuple, TypeVar
+from typing import List, TypeVar, Union, Dict
 
-from ... import jina_pb2
 from .. import BaseNdArray
 from ..dense.numpy import DenseNdArray
+from ... import jina_pb2
 
 AnySparseNdArray = TypeVar('AnySparseNdArray')
 
@@ -21,7 +21,7 @@ class BaseSparseNdArray(BaseNdArray):
     def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> AnySparseNdArray:
         raise NotImplementedError
 
-    def sparse_parser(self, value: AnySparseNdArray) -> Tuple['np.ndarray', 'np.ndarray', List[int]]:
+    def sparse_parser(self, value: AnySparseNdArray) -> Dict[str, Union['np.ndarray', List[int]]]:
         raise NotImplementedError
 
     @property
@@ -34,7 +34,7 @@ class BaseSparseNdArray(BaseNdArray):
 
     @value.setter
     def value(self, value: AnySparseNdArray):
-        ind, val, shape = self.sparse_parser(value)
-        DenseNdArray(self.proto.indices).value = ind
-        DenseNdArray(self.proto.values).value = val
-        self.proto.dense_shape.extend(val)
+        r = self.sparse_parser(value)
+        DenseNdArray(self.proto.indices).value = r['indices']
+        DenseNdArray(self.proto.values).value = r['values']
+        self.proto.dense_shape.extend(r['shape'])
