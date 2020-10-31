@@ -24,6 +24,7 @@ def random_docs(num_docs):
                 dmm.score.ref_id = dm.id
         yield d
 
+
 PyClient.check_input(random_docs(10))
 
 

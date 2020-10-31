@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 
 from jina.executors.evaluators.embedding.cosine import CosineEvaluator
 

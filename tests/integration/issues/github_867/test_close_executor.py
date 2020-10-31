@@ -1,12 +1,13 @@
-import time
 import os
+import time
+
 import pytest
 from mock import patch
+
 from jina.excepts import BadPersistantFile
-from jina.peapods.pea import BasePea
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-
+from jina.peapods.pea import BasePea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 save_abs_path = os.path.join(cur_dir, 'slow-save-executor.bin')
@@ -57,6 +58,7 @@ class OldErrorPea(BasePea):
     """
     This Pea tries to simulate the behavior of Pea before issue was fixed
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.daemon = True

@@ -105,4 +105,3 @@ class HelloWorldTestCase(JinaTestCase):
         req = urllib.request.Request(args.index_data_url, method="HEAD")
         response = urllib.request.urlopen(req, timeout=5)
         assert response.status == 200
-

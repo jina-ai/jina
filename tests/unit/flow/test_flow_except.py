@@ -1,7 +1,8 @@
 import pytest
+
+from jina.excepts import ModelCheckpointNotExist
 from jina.executors.crafters import BaseCrafter
 from jina.executors.encoders import BaseEncoder
-from jina.excepts import ModelCheckpointNotExist
 from jina.flow import Flow
 from jina.proto import jina_pb2
 

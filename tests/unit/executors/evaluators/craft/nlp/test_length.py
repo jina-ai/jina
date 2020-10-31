@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from jina.executors.evaluators.text.length import TextLengthEvaluator
 
 

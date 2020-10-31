@@ -1,6 +1,7 @@
 from typing import Dict
 
 import numpy as np
+
 from jina.executors.rankers import Match2DocRanker
 
 

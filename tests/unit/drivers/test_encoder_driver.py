@@ -3,9 +3,9 @@ from typing import Any
 import numpy as np
 
 from jina.drivers.encode import EncodeDriver
-from jina.drivers.helper import array2pb
 from jina.executors.encoders import BaseEncoder
 from jina.proto import jina_pb2
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 class MockEncoder(BaseEncoder):
@@ -31,7 +31,7 @@ def create_documents_to_encode(num_docs):
     docs = []
     for idx in range(num_docs):
         doc = jina_pb2.Document()
-        doc.blob.CopyFrom(array2pb(np.array([idx])))
+        GenericNdArray(doc.blob).value = np.array([idx])
         docs.append(doc)
     return docs
 
@@ -43,7 +43,7 @@ def test_encode_driver():
     driver.attach(executor=executor, pea=None)
     assert len(docs) == 10
     for doc in docs:
-        assert doc.embedding.buffer == b''
+        assert GenericNdArray(doc.embedding).value is None
     driver._apply_all(docs)
     assert len(docs) == 10
     for doc in docs:

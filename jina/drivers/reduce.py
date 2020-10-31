@@ -7,9 +7,9 @@ from typing import Dict, List, Iterable, Tuple
 import numpy as np
 
 from . import BaseRecursiveDriver
-from .helper import pb2array, array2pb
 from ..excepts import NoExplicitMessage
 from ..proto import jina_pb2
+from ..proto.ndarray.generic import GenericNdArray
 
 
 class ReduceDriver(BaseRecursiveDriver):
@@ -136,12 +136,12 @@ class ConcatEmbedDriver(ReduceDriver):
             **kwargs):
         for doc in docs:
             if concatenate:
-                doc.embedding.CopyFrom(array2pb(np.concatenate(doc_pointers[doc.id], axis=0)))
+                GenericNdArray(doc.embedding).value = np.concatenate(doc_pointers[doc.id], axis=0)
             else:
                 if doc.id not in doc_pointers:
-                    doc_pointers[doc.id] = [pb2array(doc.embedding)]
+                    doc_pointers[doc.id] = [GenericNdArray(doc.embedding).value]
                 else:
-                    doc_pointers[doc.id].append(pb2array(doc.embedding))
+                    doc_pointers[doc.id].append(GenericNdArray(doc.embedding).value)
 
     def reduce(self, *args, **kwargs):
         doc_pointers = {}

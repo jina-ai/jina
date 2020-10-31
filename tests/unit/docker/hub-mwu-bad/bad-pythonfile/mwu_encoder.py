@@ -1,6 +1,6 @@
+import numeqwepy as np
 from tyeqweqweping import Any
 
-import numeqwepy as np
 eqw
 from jina.executors.encoders import BaseEncoder
 

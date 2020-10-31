@@ -52,18 +52,18 @@ def test_hub_build_push():
     assert manifest['type'] == summary['manifest_info']['type']
     assert manifest['vendor'] == summary['manifest_info']['vendor']
     assert manifest['keywords'] == summary['manifest_info']['keywords']
-    
+
     args = set_hub_list_parser().parse_args([
-        '--name', summary['manifest_info']['name'], 
+        '--name', summary['manifest_info']['name'],
         '--keywords', summary['manifest_info']['keywords'][0],
         '--type', summary['manifest_info']['type']
     ])
     response = HubIO(args).list()
     manifests = response
-    
+
     assert len(manifests) >= 1
     assert manifests[0]['name'] == summary['manifest_info']['name']
-    
+
 
 def test_hub_build_failures():
     for j in ['bad-dockerfile', 'bad-pythonfile', 'missing-dockerfile', 'missing-manifest']:

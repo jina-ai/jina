@@ -8,6 +8,7 @@ from jina.drivers.querylang.queryset.dunderkey import (
 )
 from jina.proto.jina_pb2 import Document
 
+
 def test_dunder_get():
     assert dunder_get({'a': {'b': 5}}, 'a__b') == 5
     assert dunder_get({'a': {'b': 8, 'c': {'d': 8}}}, 'a__c__d') == 8
@@ -15,6 +16,7 @@ def test_dunder_get():
 
     class B:
         c = 5
+
     class A:
         b = B
 
@@ -40,6 +42,7 @@ def test_dunder_partition():
     assert dunder_partition('a__b') == ('a', 'b')
     assert dunder_partition('a__b__c') == ('a__b', 'c')
 
+
 def test_undunder_keys():
     assert undunder_keys({'a__b': 5, 'a__c': 6, 'x': 7}) == {'a': {'b': 5, 'c': 6}, 'x': 7}
     assert undunder_keys({'a__b__c__d': 5}) == {'a': {'b': {'c': {'d': 5}}}}
@@ -49,6 +52,7 @@ def test_undunder_keys():
         undunder_keys({'a__b__c': 5, 'a__b': 4})
     with pytest.raises(Exception):
         undunder_keys({'a__b': 5, 'a__b__c': 4})
+
 
 def test_dunder_truncate():
     '''

@@ -1,8 +1,8 @@
 import os
 
 import numpy as np
+
 from jina.executors import BaseExecutor
-from jina.proto import jina_pb2
 from tests import JinaTestCase
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
