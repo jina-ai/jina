@@ -1,6 +1,6 @@
-from jina.executors.crafters import BaseCrafter
-
 from helper import foo
+
+from jina.executors.crafters import BaseCrafter
 
 
 class DummyHubExecutorAbs(BaseCrafter):

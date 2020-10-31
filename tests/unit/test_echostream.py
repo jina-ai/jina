@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from jina.flow import Flow
@@ -5,7 +6,6 @@ from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet, add_envelope
 from jina.proto import jina_pb2
-import logging
 
 
 def test_simple_zmqlet():

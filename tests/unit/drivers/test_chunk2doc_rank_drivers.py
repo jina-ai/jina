@@ -1,9 +1,9 @@
 import pytest
-from jina.hub.rankers.MaxRanker import MaxRanker
-from jina.hub.rankers.MinRanker import MinRanker
 
 from jina.drivers.rank import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
+from jina.hub.rankers.MaxRanker import MaxRanker
+from jina.hub.rankers.MinRanker import MinRanker
 from jina.proto import jina_pb2
 
 

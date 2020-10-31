@@ -1,6 +1,7 @@
+from typing import Optional, Iterator
+
 import pytest
 
-from typing import Optional, Iterator
 from jina.drivers.index import KVIndexDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2, uid

@@ -1,6 +1,5 @@
 import os
 
-
 from jina.flow import Flow
 
 

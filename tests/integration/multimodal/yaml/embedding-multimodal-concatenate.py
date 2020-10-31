@@ -2,12 +2,12 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import numpy as np
+
 from jina.executors.decorators import batching_multi_input, as_ndarray
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 
 
 class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
-
     batch_size = 10
 
     def __init__(self,

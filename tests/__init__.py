@@ -6,8 +6,8 @@ from os.path import dirname
 
 import numpy as np
 
-from jina.proto.ndarray.generic import GenericNdArray
 from jina.proto import jina_pb2, uid
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 class JinaTestCase(unittest.TestCase):
@@ -38,12 +38,12 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
         d = jina_pb2.Document()
         d.tags['id'] = j
         d.text = b'hello world'
-        GenericNdArray(d.embedding).value=np.random.random([embed_dim + np.random.randint(0, jitter)])
+        GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
         d.id = uid.new_doc_id(d)
         for k in range(chunks_per_doc):
             c = d.chunks.add()
             c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            GenericNdArray(c.embedding).value=np.random.random([embed_dim + np.random.randint(0, jitter)])
+            GenericNdArray(c.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
             c.tags['id'] = c_id
             c.tags['parent_id'] = j
             c_id += 1

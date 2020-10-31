@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from jina.flow import Flow
+from jina.proto.ndarray.generic import GenericNdArray
 from tests import random_docs
 
 parallel = 10

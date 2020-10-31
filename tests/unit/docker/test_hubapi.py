@@ -1,9 +1,9 @@
+import json
 from logging import getLogger
 
 import mock
-import json
-from jina.docker.hubapi import _list
 
+from jina.docker.hubapi import _list
 
 sample_manifest = {
     'manifest': [

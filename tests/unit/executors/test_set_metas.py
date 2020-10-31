@@ -1,5 +1,5 @@
-from jina.executors.indexers.vector import NumpyIndexer
 from jina.executors import BaseExecutor
+from jina.executors.indexers.vector import NumpyIndexer
 from jina.executors.metas import get_default_metas
 
 

@@ -21,7 +21,7 @@ def random_docs(num_docs, embed_dim=10, jitter=1):
         d = jina_pb2.Document()
         d.tags['id'] = j
         d.text = b'hello'
-        GenericNdArray(d.embedding).value=np.random.random([embed_dim + np.random.randint(0, jitter)])
+        GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
         yield d
 
 
@@ -35,8 +35,8 @@ def test_topk(config):
     with Flow().load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
     with Flow().load_config('flow.yml') as search_flow:
-        search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])), 
-                          output_fn=validate_results)
+        search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])),
+                           output_fn=validate_results)
 
 
 def validate_override_results(resp):
@@ -55,6 +55,5 @@ def test_topk_override(config):
     with Flow().load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
     with Flow().load_config('flow.yml') as search_flow:
-        search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])), 
-                          output_fn=validate_override_results, queryset=[top_k_queryset])
-
+        search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])),
+                           output_fn=validate_override_results, queryset=[top_k_queryset])

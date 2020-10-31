@@ -4,6 +4,7 @@ import time
 import unittest
 
 import numpy as np
+
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector import NumpyIndexer
 from jina.flow import Flow

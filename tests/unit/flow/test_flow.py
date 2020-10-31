@@ -4,9 +4,9 @@ import pytest
 import requests
 
 from jina import JINA_GLOBAL
+from jina.checker import NetworkChecker
 from jina.enums import FlowOptimizeLevel, SocketType
 from jina.flow import Flow
-from jina.checker import NetworkChecker
 from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod

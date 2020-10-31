@@ -1,8 +1,8 @@
 import pytest
 
+from jina.parser import set_gateway_parser, set_pea_parser
 from jina.peapods.pod import GatewayPod
 from jina.peapods.remote import PeaSpawnHelper
-from jina.parser import set_gateway_parser, set_pea_parser
 
 
 def test_remote_not_allowed():
@@ -10,6 +10,7 @@ def test_remote_not_allowed():
     p_args = set_pea_parser().parse_args(['--host', 'localhost', '--port-expose', str(f_args.port_expose)])
     with GatewayPod(f_args):
         PeaSpawnHelper(p_args).start()
+
 
 @pytest.mark.parametrize('args', [['--allow-spawn'], []])
 def test_cont_gateway(args):

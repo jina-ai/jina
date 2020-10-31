@@ -3,9 +3,9 @@ import random
 import numpy as np
 import pytest
 
-from jina.proto.ndarray.generic import GenericNdArray
 from jina.drivers.helper import pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 @pytest.mark.parametrize(
@@ -64,7 +64,7 @@ def test_extract_docs():
     assert contents is None
 
     vec = np.random.random([2, 2])
-    GenericNdArray(d.embedding).value=vec
+    GenericNdArray(d.embedding).value = vec
     contents, docs_pts, bad_doc_ids = extract_docs([d], embedding=True)
     assert len(bad_doc_ids) == 0
     np.testing.assert_equal(contents[0], vec)

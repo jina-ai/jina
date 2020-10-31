@@ -1,8 +1,9 @@
-import pytest
 import numpy as np
+import pytest
+
 from jina.flow import Flow
-from jina.proto.ndarray.generic import GenericNdArray
 from jina.proto import jina_pb2, uid
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_WORKSPACE_BINARY_PB'])
@@ -13,12 +14,12 @@ def test_binarypb_in_flow(test_metas):
             d = jina_pb2.Document()
             d.tags['id'] = j
             d.text = b'hello world'
-            GenericNdArray(d.embedding).value=np.random.random([embed_dim + np.random.randint(0, jitter)])
+            GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
             d.id = uid.new_doc_id(d)
             for k in range(chunks_per_doc):
                 c = d.chunks.add()
                 c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-                GenericNdArray(c.embedding).value=np.random.random([embed_dim + np.random.randint(0, jitter)])
+                GenericNdArray(c.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
                 c.tags['id'] = c_id
                 c.tags['parent_id'] = j
                 c_id += 1

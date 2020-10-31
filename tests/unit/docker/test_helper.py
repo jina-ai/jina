@@ -4,6 +4,7 @@ import pytest
 
 from jina.docker.helper import credentials_file, handle_dot_in_keys, Waiter
 
+
 @pytest.mark.parametrize(
     'seconds, expected', [(0, True), (10, False)]
 )

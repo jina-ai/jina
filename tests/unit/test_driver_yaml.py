@@ -1,5 +1,7 @@
-import pytest
 import os
+
+import pytest
+from pkg_resources import resource_filename
 
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
@@ -8,7 +10,6 @@ from jina.executors import BaseExecutor
 from jina.helper import yaml
 from jina.parser import set_pod_parser
 from jina.peapods import Pod
-from pkg_resources import resource_filename
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

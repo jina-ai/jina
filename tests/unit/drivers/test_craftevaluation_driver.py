@@ -7,6 +7,7 @@ from jina.drivers.evaluate import FieldEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 class MockDiffEvaluator(BaseEvaluator):
@@ -34,7 +35,7 @@ def doc_with_field_type(field_type):
             elif field_type == 'buffer':
                 doc.buffer = b'\x01\x02\x03'
             elif field_type == 'blob':
-                GenericNdArray(doc.blob).value=np.array([1, 1, 1])
+                GenericNdArray(doc.blob).value = np.array([1, 1, 1])
             return doc
 
     return DocCreator()
@@ -50,7 +51,7 @@ def groundtruth_with_field_type(field_type):
             elif field_type == 'buffer':
                 gt.buffer = b'\x01\x02\x03\04'
             elif field_type == 'blob':
-                GenericNdArray(gt.blob).value=np.array([1, 1, 1, 1])
+                GenericNdArray(gt.blob).value = np.array([1, 1, 1, 1])
             return gt
 
     return GTCreator()
@@ -170,8 +171,8 @@ def eval_request():
                 chunk_doc.buffer = b'\x01\x02\x03'
                 chunk_gt.buffer = b'\x01\x02\x03\x04'
             elif field_type == 'blob':
-                GenericNdArray(chunk_doc.blob).value=np.array([1, 1, 1])
-                GenericNdArray(chunk_gt.blob).value=np.array([1, 1, 1, 1])
+                GenericNdArray(chunk_doc.blob).value = np.array([1, 1, 1])
+                GenericNdArray(chunk_gt.blob).value = np.array([1, 1, 1, 1])
         return req
 
     return request

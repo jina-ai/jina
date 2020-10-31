@@ -1,6 +1,8 @@
-import pytest
-import numpy as np
 from math import sqrt
+
+import numpy as np
+import pytest
+
 from jina.executors.evaluators.embedding.euclidean import EuclideanEvaluator
 
 

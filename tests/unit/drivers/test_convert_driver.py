@@ -1,19 +1,19 @@
 import numpy as np
-from PIL import Image
 import pytest
+from PIL import Image
 
 from jina.drivers.convert import Blob2PngURI
-from jina.proto.ndarray.generic import GenericNdArray
 from jina.proto import jina_pb2
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 def create_document(arr_size):
     doc = jina_pb2.Document()
-    GenericNdArray(doc.blob).value=np.random.randint(0, 255, arr_size)
+    GenericNdArray(doc.blob).value = np.random.randint(0, 255, arr_size)
     return doc
 
 
-docs = [create_document([32*28]), create_document([32, 28]), create_document([32, 28, 3])]
+docs = [create_document([32 * 28]), create_document([32, 28]), create_document([32, 28, 3])]
 modes = ['L', 'L', 'RGB']
 test_data = zip(docs, modes)
 
@@ -25,4 +25,5 @@ def test_blob2pnguri_driver(data):
 
     driver = Blob2PngURI(target='uri', width=width, height=height)
     driver._apply_all([doc])
-    Image.frombytes(mode, (width, height), doc.uri.encode()) # just to check if the data is enough for the image recreation
+    Image.frombytes(mode, (width, height),
+                    doc.uri.encode())  # just to check if the data is enough for the image recreation

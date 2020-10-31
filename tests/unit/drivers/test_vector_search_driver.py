@@ -3,10 +3,10 @@ from typing import Tuple
 import numpy as np
 import pytest
 
-from jina.proto.ndarray.generic import GenericNdArray
 from jina.drivers.search import VectorSearchDriver
 from jina.executors.indexers import BaseVectorIndexer
 from jina.proto import jina_pb2
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 class MockIndexer(BaseVectorIndexer):
@@ -66,7 +66,7 @@ def create_document_to_search():
     for c in range(10):
         chunk = doc.chunks.add()
         chunk.id = str(c + 2)
-        GenericNdArray(chunk.embedding).value=np.array([int(chunk.id)])
+        GenericNdArray(chunk.embedding).value = np.array([int(chunk.id)])
     return doc
 
 
