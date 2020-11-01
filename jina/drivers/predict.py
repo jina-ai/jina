@@ -1,4 +1,4 @@
-from typing import Iterable, List, Any
+from typing import Iterable, List, Any, Union
 
 import numpy as np
 
@@ -43,7 +43,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
         if docs_pts:
             prediction = self.exec_fn(np.stack(embed_vecs))
-            labels = self.prediction2label(prediction)
+            labels = self.prediction2label(prediction)  # type: List[Union[str, List[str]]]
             for doc, label in zip(docs_pts, labels):
                 doc.tags[self.output_tag] = label
 
@@ -60,7 +60,9 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
 
 class BinaryPredictDriver(BaseLabelPredictDriver):
-    """ Converts binary prediction into string label
+    """ Converts binary prediction into string label.
+
+    This is often used with binary classifier
     """
 
     def __init__(self, one_label: str = 'yes', zero_label: str = 'no', *args, **kwargs):
@@ -75,7 +77,12 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
         self.one_label = one_label
         self.zero_label = zero_label
 
-    def prediction2label(self, prediction: 'np.ndarray') -> List[Any]:
+    def prediction2label(self, prediction: 'np.ndarray') -> List[str]:
+        """
+
+        :param prediction: a (B,) or (B, 1) zero one array
+        :return:
+        """
         p = np.squeeze(prediction)
         if p.ndim > 1:
             raise ValueError(f'{self.__class__} expects prediction has ndim=1, but receiving ndim={p.ndim}')
@@ -83,9 +90,37 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
         return [self.one_label if v else self.zero_label for v in p.astype(bool)]
 
 
-class MultiClassPredictDriver(BaseLabelPredictDriver):
-    pass
+class OneHotPredictDriver(BaseLabelPredictDriver):
+    """ Mapping prediction to one of the given labels
+
+    Expect prediction to be 2dim array, zero-one valued. Each row corresponds to
+    a sample, each column corresponds to a label. Each row can have only one 1.
+    """
+
+    def __init__(self, labels: List[str], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.labels = labels
+
+    def prediction2label(self, prediction: 'np.ndarray') -> List[str]:
+        """
+
+        :param prediction: a (B, C) array where C is the number of classes, only one element can be one
+        :return:
+        """
+        if prediction.ndim != 2:
+            raise ValueError(f'{self.__class__} expects prediction has ndim=2, but receiving {prediction.ndim}')
+        p = np.argmax(prediction, axis=1)
+        return [self.labels[v] for v in p]
 
 
-class MultiLabelPredictDriver(BaseLabelPredictDriver):
-    pass
+class MultiLabelPredictDriver(OneHotPredictDriver):
+    """ Mapping prediction to a list of labels
+
+    Expect prediction to be 2dim array, zero-one valued. Each row corresponds to
+    a sample, each column corresponds to a label. Each row can have only multiple 1s.
+    """
+
+    def prediction2label(self, prediction: 'np.ndarray') -> List[List[str]]:
+        if prediction.ndim != 2:
+            raise ValueError(f'{self.__class__} expects prediction has ndim=2, but receiving {prediction.ndim}')
+        return [[self.labels[int(pp)] for pp in p.nonzero()[0]] for p in prediction]
