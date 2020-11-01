@@ -45,13 +45,16 @@ class BaseLabelPredictDriver(BasePredictDriver):
             prediction = self.exec_fn(np.stack(embed_vecs))
             labels = self.prediction2label(prediction)
             for doc, label in zip(docs_pts, labels):
-                doc.tags[self.output_tag].update(label)
+                doc.tags[self.output_tag] = label
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[Any]:
         """ Converting ndarray prediction into list of readable labels
 
-        :param prediction:
-        :return:
+        .. note::
+            ``len(output)`` should be the same as ``prediction.shape[0]``
+
+        :param prediction: the float/int numpy ndarray given by :class:`BaseClassifier`
+        :return: the readable label to be stored.
         """
         raise NotImplementedError
 
