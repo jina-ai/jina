@@ -262,9 +262,9 @@ The corresponding `crafter` takes whatever is stored in the `buffer` and tries t
 ```python
 import io
 from PIL import Image
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 
-class GifCrafter(BaseDocCrafter):
+class GifCrafter(BaseCrafter):
     def craft(self, buffer):
         im = Image.open(io.BytesIO(buffer))
         # manipulate the image here
@@ -286,9 +286,9 @@ Then the corresponding `crafter` should change accordingly.
 ```python
 
 from PIL import Image
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 
-class GifCrafter(BaseDocCrafter):
+class GifCrafter(BaseCrafter):
     def craft(self, buffer):
         im = Image.open(buffer.decode())
         # manipulate the image here
@@ -309,11 +309,11 @@ def input_fn():
 The `crafter` then can be implemented as:
 
 ```python
-from jina.executors.crafters import BaseDocCrafter
+from jina.executors.crafters import BaseCrafter
 import io
 from PIL import Image
 
-class GifCrafter(BaseDocCrafter):
+class GifCrafter(BaseCrafter):
 
     def craft(self, buffer, *args, **kwargs):
         file_name, img_raw = buffer.split(b'JINA_DELIM')
