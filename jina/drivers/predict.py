@@ -62,7 +62,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
 class BinaryPredictDriver(BaseLabelPredictDriver):
     """ Converts binary prediction into string label.
 
-    This is often used with binary classifier
+    This is often used with binary classifier.
     """
 
     def __init__(self, one_label: str = 'yes', zero_label: str = 'no', *args, **kwargs):
@@ -95,11 +95,20 @@ class OneHotPredictDriver(BaseLabelPredictDriver):
 
     Expect prediction to be 2dim array, zero-one valued. Each row corresponds to
     a sample, each column corresponds to a label. Each row can have only one 1.
+
+    This is often used with multi-class classifier.
     """
 
     def __init__(self, labels: List[str], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.labels = labels
+
+    def validate_labels(self, prediction: 'np.ndarray'):
+        if prediction.ndim != 2:
+            raise ValueError(f'{self.__class__} expects prediction has ndim=2, but receiving {prediction.ndim}')
+        if prediction.shape[1] != len(self.labels):
+            raise ValueError(
+                f'{self.__class__} expects prediction.shape[1]==len(self.labels), but receiving {prediction.shape}')
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[str]:
         """
@@ -107,8 +116,7 @@ class OneHotPredictDriver(BaseLabelPredictDriver):
         :param prediction: a (B, C) array where C is the number of classes, only one element can be one
         :return:
         """
-        if prediction.ndim != 2:
-            raise ValueError(f'{self.__class__} expects prediction has ndim=2, but receiving {prediction.ndim}')
+        self.validate_labels(prediction)
         p = np.argmax(prediction, axis=1)
         return [self.labels[v] for v in p]
 
@@ -118,9 +126,10 @@ class MultiLabelPredictDriver(OneHotPredictDriver):
 
     Expect prediction to be 2dim array, zero-one valued. Each row corresponds to
     a sample, each column corresponds to a label. Each row can have only multiple 1s.
+
+    This is often used with multi-label classifier, where each instance can have multiple labels
     """
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[List[str]]:
-        if prediction.ndim != 2:
-            raise ValueError(f'{self.__class__} expects prediction has ndim=2, but receiving {prediction.ndim}')
+        self.validate_labels(prediction)
         return [[self.labels[int(pp)] for pp in p.nonzero()[0]] for p in prediction]

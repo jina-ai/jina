@@ -25,4 +25,5 @@ def test_multi_label_predict_driver():
     assert driver.prediction2label(np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]])) == [['human'], ['cat'], ['dog']]
 
     assert driver.prediction2label(np.array([[0, 1, 1], [1, 1, 0], [1, 1, 1]])) == [['dog', 'human'], ['cat', 'dog'],
+
                                                                                     ['cat', 'dog', 'human']]
