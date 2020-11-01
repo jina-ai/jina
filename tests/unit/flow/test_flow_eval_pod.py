@@ -68,17 +68,6 @@ def test_flow3(inspect):
 
 
 @pytest.mark.parametrize('inspect', params)
-def test_flow4(inspect):
-    f = Flow(inspect=inspect).add(name='p1').add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(
-        uses='DummyEvaluator1')
-
-    with f:
-        f.index(docs)
-
-    validate([1], expect=f.args.inspect.is_keep)
-
-
-@pytest.mark.parametrize('inspect', params)
 def test_flow5(inspect):
     f = Flow(inspect=inspect).add().inspect(uses='DummyEvaluator1').add().inspect(
         uses='DummyEvaluator2').add().inspect(
