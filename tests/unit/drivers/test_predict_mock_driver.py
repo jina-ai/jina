@@ -1,7 +1,9 @@
 import numpy as np
 from google.protobuf.struct_pb2 import ListValue
 
-from jina.drivers.predict import BinaryPredictDriver, MultiLabelPredictDriver, OneHotPredictDriver
+from jina.drivers.predict import BinaryPredictDriver, MultiLabelPredictDriver, OneHotPredictDriver, \
+    Prediction2DocBlobDriver
+from jina.proto.ndarray.generic import GenericNdArray
 from tests import random_docs
 
 
@@ -24,6 +26,11 @@ class MockMultiLabelPredictDriver(MultiLabelPredictDriver):
 class MockAllLabelPredictDriver(MultiLabelPredictDriver):
     def exec_fn(self, embed):
         return np.ones([embed.shape[0], 3])
+
+
+class MockPrediction2DocBlobDriver(Prediction2DocBlobDriver):
+    def exec_fn(self, embed):
+        return np.eye(3)[np.random.choice(3, embed.shape[0])]
 
 
 def test_binary_predict_driver():
@@ -65,3 +72,12 @@ def test_multi_label_predict_driver():
     for d in docs:
         assert isinstance(d.tags['prediction'], ListValue)
         assert list(d.tags['prediction']) == ['cat', 'dog', 'human']
+
+
+def test_as_blob_driver():
+    docs = list(random_docs(2))
+    driver = MockPrediction2DocBlobDriver()
+    driver._traverse_apply(docs)
+
+    for d in docs:
+        assert GenericNdArray(d.blob).value.shape == (3,)

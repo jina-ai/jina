@@ -4,6 +4,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
+from ..proto.ndarray.generic import GenericNdArray
 
 if False:
     from ..proto import jina_pb2
@@ -133,3 +134,30 @@ class MultiLabelPredictDriver(OneHotPredictDriver):
     def prediction2label(self, prediction: 'np.ndarray') -> List[List[str]]:
         self.validate_labels(prediction)
         return [[self.labels[int(pp)] for pp in p.nonzero()[0]] for p in prediction]
+
+
+class Prediction2DocBlobDriver(BasePredictDriver):
+    """ Write the prediction result directly into ``document.blob``.
+
+    .. warning::
+
+        This will erase the content in ``document.text`` and ``document.buffer``.
+    """
+
+    def _apply_all(
+            self,
+            docs: Iterable['jina_pb2.Document'],
+            context_doc: 'jina_pb2.Document',
+            field: str,
+            *args,
+            **kwargs,
+    ) -> None:
+        embed_vecs, docs_pts, bad_doc_ids = extract_docs(docs, embedding=True)
+
+        if bad_doc_ids:
+            self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
+
+        if docs_pts:
+            prediction = self.exec_fn(np.stack(embed_vecs))
+            for doc, pred in zip(docs_pts, prediction):
+                GenericNdArray(doc.blob).value = pred
