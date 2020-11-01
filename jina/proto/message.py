@@ -1,7 +1,9 @@
+import os
 import sys
 from typing import List
 
 from . import jina_pb2
+from ..excepts import MismatchedVersion
 
 _trigger_body_fields = set(kk
                            for v in [jina_pb2.Request.IndexRequest,
@@ -47,7 +49,7 @@ class LazyRequest:
         else:
             raise AttributeError
 
-    def dump(self):
+    def SerializeToString(self):
         if self.is_used:
             _buffer = self._deserialized.SerializeToString()
             if self._compress == jina_pb2.Envelope.LZ4:
@@ -70,15 +72,17 @@ class LazyRequest:
 
 class LazyMessage:
 
-    def __init__(self, envelope: bytes, request: bytes):
+    def __init__(self, envelope: bytes, request: bytes, check_version: bool = False):
         self.envelope = jina_pb2.Envelope()
         self.envelope.ParseFromString(envelope)
         self.request = LazyRequest(request, self.envelope.compress)
-        self._size = sys.getsizeof(envelope) + sys.getsizeof(request)
+        self._size = sys.getsizeof(request) + sys.getsizeof(envelope)
+        if check_version:
+            self.check_version()
 
-    def dump(self) -> List[bytes]:
+    def SerializeToString(self) -> List[bytes]:
         r1 = self.envelope.SerializeToString()
-        r2 = self.request.dump()
+        r2 = self.request.SerializeToString()
         self._size = sys.getsizeof(r1) + sys.getsizeof(r2)
         return [r1, r2]
 
@@ -89,3 +93,42 @@ class LazyMessage:
         To get the latest size, use it after :meth:`dump`
         """
         return self._size
+
+    def check_version(self):
+        from ..logging import default_logger
+        from .. import __version__, __proto_version__
+        if hasattr(self.envelope, 'version'):
+            if not self.envelope.version.jina:
+                # only happen in unittest
+                default_logger.warning('incoming message contains empty "version.jina", '
+                                       'you may ignore it in debug/unittest mode. '
+                                       'otherwise please check if gateway service set correct version')
+            elif __version__ != self.envelope.version.jina:
+                raise MismatchedVersion('mismatched JINA version! '
+                                        'incoming message has JINA version %s, whereas local JINA version %s' % (
+                                            self.envelope.version.jina, __version__))
+
+            if not self.envelope.version.proto:
+                # only happen in unittest
+                default_logger.warning('incoming message contains empty "version.proto", '
+                                       'you may ignore it in debug/unittest mode. '
+                                       'otherwise please check if gateway service set correct version')
+            elif __proto_version__ != self.envelope.version.proto:
+                raise MismatchedVersion('mismatched protobuf version! '
+                                        'incoming message has protobuf version %s, whereas local protobuf version %s' % (
+                                            self.envelope.version.proto, __proto_version__))
+
+            if not self.envelope.version.vcs or not os.environ.get('JINA_VCS_VERSION'):
+                default_logger.warning('incoming message contains empty "version.vcs", '
+                                       'you may ignore it in debug/unittest mode, '
+                                       'or if you run jina OUTSIDE docker container where JINA_VCS_VERSION is unset'
+                                       'otherwise please check if gateway service set correct version')
+            elif os.environ.get('JINA_VCS_VERSION') != self.envelope.version.vcs:
+                raise MismatchedVersion('mismatched vcs version! '
+                                        'incoming message has vcs_version %s, whereas local environment vcs_version is %s' % (
+                                            self.envelope.version.vcs, os.environ.get('JINA_VCS_VERSION')))
+
+        else:
+            raise MismatchedVersion('version_check=True locally, '
+                                    'but incoming message contains no version info in its envelope. '
+                                    'the message is probably sent from a very outdated JINA version')

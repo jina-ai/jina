@@ -189,6 +189,8 @@ message Envelope {
     }
 
     CompressAlgo compress = 9; // compress algorithm used for request
+
+    bool is_data_request = 10; // set to true if it is not control request
 }
 
 message Status {
