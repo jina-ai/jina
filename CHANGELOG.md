@@ -89,6 +89,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5236,4 +5237,48 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```94b606f9```](https://github.com/jina-ai/jina/commit/94b606f90fcdd4bb9947145948e44b4b6681b20c)] __-__ update code-style (*Jina Dev Bot*)
  - [[```521436c1```](https://github.com/jina-ai/jina/commit/521436c17a3a807bb47c020a4527b209651624c4)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```6a61ee22```](https://github.com/jina-ai/jina/commit/6a61ee228d8225610a3dbb4a07cc1824df42a4ff)] __-__ __version__: the next version will be 0.7.2 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-3></a>
+## Release Note (`0.7.3`)
+
+> Release time: 2020-11-01 23:08:06
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Han Xiao,  Wang Bo,  Maximilian Werk,  Deepankar Mahapatro,  Joan Fontanals,  Nan Wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```0040be0a```](https://github.com/jina-ai/jina/commit/0040be0a09035ff6000931121977737d5f9772ee)] __-__ __executor__: add classifier as new family of executor (#1194) (*Han Xiao*)
+ - [[```008638d3```](https://github.com/jina-ai/jina/commit/008638d3e61c20c585b376ea003be712123a6eb2)] __-__ __proto__: introduce sparse ndarray (#1190) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```cb6b1a86```](https://github.com/jina-ai/jina/commit/cb6b1a86892a92aa1cd7b2c06ed4d8b921f5a227)] __-__ pod argument overriden by flow (#1189) (*Maximilian Werk*)
+ - [[```553e9871```](https://github.com/jina-ai/jina/commit/553e9871f344af07c9f17a38c9eced04805cafe6)] __-__ __docker__: include submodule when building devel images (#1184) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```08c08333```](https://github.com/jina-ai/jina/commit/08c08333ff324805e6adb8d40f6d220356cee227)] __-__ flowpod invocation for easier inheritance in jinad (#1182) (*Deepankar Mahapatro*)
+
+### 📗 Documentation
+
+ - [[```b5e56343```](https://github.com/jina-ai/jina/commit/b5e56343d5a3d922c10db87261337f185f1815d0)] __-__ fix codeblock and filename highlights (#1181) (*Nan Wang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b57dfad0```](https://github.com/jina-ai/jina/commit/b57dfad02afd0138e3d3e0baa8811495ff1c7208)] __-__ disable hacktoberfest.yml (*Han Xiao*)
+ - [[```27c8c8ec```](https://github.com/jina-ai/jina/commit/27c8c8ecad310be8eda2ec1d76950df25203b50d)] __-__ refactor workspace test (#1192) (*Wang Bo*)
+ - [[```229d30d1```](https://github.com/jina-ai/jina/commit/229d30d12f55c881df8c8cc5b92d688053b972a0)] __-__ remove unused executor test case (#1188) (*Wang Bo*)
+ - [[```108d44b3```](https://github.com/jina-ai/jina/commit/108d44b35253ccc4daf9361e904638e7a29383d1)] __-__ refactor container pea test (#1179) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```0e481c16```](https://github.com/jina-ai/jina/commit/0e481c16445137dc19f19bfa283b7770be05eb9f)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```97622bee```](https://github.com/jina-ai/jina/commit/97622bee0b45b5ff96d6e18ca6156e2f3234f7da)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```852f6911```](https://github.com/jina-ai/jina/commit/852f691110c0c9888f06ccd68b76ecf2b1c2d9eb)] __-__ __cli__: revert fashion mnist url (#1183) (*Han Xiao*)
+ - [[```e7bb5e42```](https://github.com/jina-ai/jina/commit/e7bb5e42614028a0b1432aef3066231cc1093c17)] __-__ remove Nan, Joan and Maxim as codeowners of modules (#1177) (*Joan Fontanals*)
+ - [[```07920ca7```](https://github.com/jina-ai/jina/commit/07920ca7143c18acc51b433e39a91a249f543b46)] __-__ __version__: the next version will be 0.7.3 (*Jina Dev Bot*)
 
