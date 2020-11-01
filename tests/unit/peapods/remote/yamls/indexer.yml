@@ -1,0 +1,17 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+    metas:
+      name: vecidx
+      workspace: 
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: chunkidx
+      workspace: /tmp/blah2
+metas:
+  name: chunk_indexer
+  workspace: /tmp/blah2
