@@ -2,7 +2,7 @@
 metas:
   name: myenc  # a customized name
   workspace: /tmp/blah
-  py_modules: yamls/components.py
+  py_modules: tests/unit/peapods/remote/yamls/components.py
 requests:
   on:
     [IndexRequest, SearchRequest]:

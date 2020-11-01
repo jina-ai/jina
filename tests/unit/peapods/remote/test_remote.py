@@ -15,14 +15,14 @@ def test_fetch_files_from_yaml():
         'peas': [
             {
                 'name': 'encode',
-                'uses': 'yamls/encoder.yml',
+                'uses': 'tests/unit/peapods/remote/yamls/encoder.yml',
                 'py_modules': None,
                 'uses_before': None,
                 'uses_after': None
             },
             {
                 'name': 'index',
-                'uses': 'yamls/indexer.yml',
+                'uses': 'tests/unit/peapods/remote/yamls/indexer.yml',
                 'py_modules': None,
                 'uses_before': None,
                 'uses_after': None
@@ -30,8 +30,9 @@ def test_fetch_files_from_yaml():
         ]
     }
     _uses_files, _pymodule_files = fetch_files_from_yaml(pea_args, logger)
-    assert _uses_files == {'yamls/encoder.yml', 'yamls/indexer.yml'}
-    assert _pymodule_files == {'yamls/components.py'}
+    assert _uses_files == {'tests/unit/peapods/remote/yamls/encoder.yml',
+                           'tests/unit/peapods/remote/yamls/indexer.yml'}
+    assert _pymodule_files == {'tests/unit/peapods/remote/yamls/components.py'}
 
 
 def test_namespace_to_dict():
