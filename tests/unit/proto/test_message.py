@@ -9,22 +9,22 @@ from tests import random_docs
 def test_lazy_access(field):
     reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
     for r in reqs:
-        assert not r.was_read
+        assert not r.is_used
 
         # access r.train
         print(getattr(r, field))
 
         # now it is read
-        assert r.was_read
+        assert r.is_used
 
 
 def test_lazy_nest_access():
     reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
     for r in reqs:
-        assert not r.was_read
+        assert not r.is_used
 
         # access r.train
         print(r.docs[0].id)
 
         # now it is read
-        assert r.was_read
+        assert r.is_used

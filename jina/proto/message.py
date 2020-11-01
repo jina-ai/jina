@@ -19,7 +19,7 @@ class LazyRequest:
         self._is_compressed = is_compressed
 
     @property
-    def was_read(self):
+    def is_used(self):
         return self._deserialized is not None
 
     def __getattr__(self, name: str):
