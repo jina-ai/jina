@@ -19,21 +19,34 @@ This version of Jina includes 80 Executors.
                - `ChunkLeveldbIndexer`
                - `DocLeveldbIndexer`
    - `BaseCrafter`
+      - `ArrayBytesReader`
+      - `ArrayStringReader`
+      - `AudioMonophoner`
+      - `AudioNormalizer`
+      - `AudioReader`
+      - `CenterlmageCropper`
+      - `DummyHubExecutor`
+      - `DummyHubExecutorAbs`
+      - `DummyPretrainedExecutor`
+      - `ImageCropper`
+      - `ImageFlipper`
+      - `ImageNormalizer`
+      - `ImageReader`
+      - `ImageResizer`
+      - `TikaExtractor`
       - `BaseSegmenter`
+         - `AudioSlicer`
+         - `DeepSegmenter`
+         - `FivelmageCropper`
          - `JiebaSegmenter`
-         - `SlidingWindowSegmenter`
+         - `PDFExtractorSegmenter`
+         - `RandomlmageCropper`
          - `Sentencizer`
-         - `ImageReader`
-      - `BaseChunkCrafter`
-         - `ImageChunkCrafter`
-            - `ImageResizer`
-            - `CenterImageCropper`
-            - `FiveImageCropper`
-            - `ImageCropper`
-            - `RandomImageCropper`
-            - `SlidingWindowImageCropper`
-            - `ImageNormalizer`
-      - `BaseDocCrafter`
+         - `SlidingWindowAudioSlicer`
+         - `SlidingWindowlmageCropper`
+         - `SlidingWindowSegmenter`
+ 
+
    - `BaseEncoder`
       - `BaseFrameworkExecutor`
          - `BasePaddleExecutor`
@@ -101,9 +114,7 @@ This version of Jina includes 80 Executors.
 | `BaseCVTFEncoder` | `jina.executors.encoders.frameworks` |
 | `BaseCVTorchEncoder` |   |
 | `BaseCVTorchEncoder` | `jina.executors.encoders.frameworks` |
-| `BaseChunkCrafter` | `jina.executors.crafters` |
 | `BaseCrafter` | `jina.executors.encoders` |
-| `BaseDocCrafter` | `jina.executors.crafters` |
 | `BaseEncoder` | `jina.executors.encoders` |
 | `BaseExecutor` |   |
 | `BaseFrameworkExecutor` | `jina.executors.encoders` |
@@ -146,7 +157,6 @@ This version of Jina includes 80 Executors.
 | `FarmTextEncoder` | `jina.executors.encoders.nlp.transformer` |
 | `FiveImageCropper` | `jina.executors.crafters.image` |
 | `FlairTextEncoder` | `jina.executors.encoders.nlp.transformer` |
-| `ImageChunkCrafter` | `jina.executors.crafters` |
 | `ImageCropper` | `jina.executors.crafters.image` |
 | `ImageNormalizer` | `jina.executors.crafters.image` |
 | `ImagePaddlehubEncoder` | `jina.executors.encoders.frameworks` |
