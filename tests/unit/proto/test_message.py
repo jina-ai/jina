@@ -1,8 +1,9 @@
 import pytest
 
 from jina.clients.python.request import _generate
+from jina.peapods.zmq import add_envelope
 from jina.proto import jina_pb2
-from jina.proto.message import LazyRequest, _trigger_fields
+from jina.proto.message import LazyRequest, _trigger_fields, LazyMessage
 from tests import random_docs
 
 
@@ -19,16 +20,16 @@ def test_lazy_access(field):
         assert r.is_used
 
 
-def test_no_access():
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+def test_multiple_access():
+    reqs = [LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10))]
     for r in reqs:
         assert not r.is_used
-        print(r)
+        assert r
         assert not r.is_used
 
     for r in reqs:
         assert not r.is_used
-        print(r.train)
+        assert r.index
         assert r.is_used
 
 
@@ -70,3 +71,25 @@ def test_lazy_nested_clear_access():
         r.index.ClearField('docs')
         # now it is read
         assert r.is_used
+
+
+def test_lazy_msg_access():
+    reqs = [LazyMessage(add_envelope(r, 'test', '123').envelope.SerializeToString(),
+                        r.SerializeToString()) for r in _generate(random_docs(10))]
+    for r in reqs:
+        assert not r.request.is_used
+        assert r.envelope
+        assert len(r.dump()) == 2
+        assert not r.request.is_used
+
+    for r in reqs:
+        assert not r.request.is_used
+        assert r.request
+        assert len(r.dump()) == 2
+        assert not r.request.is_used
+
+    for r in reqs:
+        assert not r.request.is_used
+        assert r.request.index.docs
+        assert len(r.dump()) == 2
+        assert r.request.is_used

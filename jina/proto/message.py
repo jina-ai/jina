@@ -1,3 +1,4 @@
+import sys
 from typing import List
 
 from . import jina_pb2
@@ -17,10 +18,11 @@ _empty_request = jina_pb2.Request()
 
 
 class LazyRequest:
-    def __init__(self, request: bytes, is_compressed: bool):
+    def __init__(self, request: bytes, compress: 'jina_pb2.Envelope.CompressAlgo'):
         self._buffer = request
         self._deserialized = None  # type: jina_pb2.Request
-        self._is_compressed = is_compressed
+        self._compress = compress
+        self._size = sys.getsizeof(self._buffer)
 
     @property
     def is_used(self) -> bool:
@@ -33,7 +35,7 @@ class LazyRequest:
             if self._deserialized is None:
                 self._deserialized = jina_pb2.Request()
                 _buffer = self._buffer
-                if self._is_compressed:
+                if self._compress == jina_pb2.Envelope.LZ4:
                     import lz4.frame
                     _buffer = lz4.frame.decompress(_buffer)
                 self._deserialized.ParseFromString(_buffer)
@@ -47,10 +49,23 @@ class LazyRequest:
 
     def dump(self):
         if self.is_used:
-            return self._deserialized.SerializeToString()
+            _buffer = self._deserialized.SerializeToString()
+            if self._compress == jina_pb2.Envelope.LZ4:
+                import lz4.frame
+                _buffer = lz4.frame.compress(_buffer)
+            self._size = sys.getsizeof(_buffer)
+            return _buffer
         else:
             # no touch, skip serialization, return original
             return self._buffer
+
+    @property
+    def size(self) -> int:
+        """Get the size in bytes.
+
+        To get the latest size, use it after :meth:`dump`
+        """
+        return self._size
 
 
 class LazyMessage:
@@ -58,7 +73,19 @@ class LazyMessage:
     def __init__(self, envelope: bytes, request: bytes):
         self.envelope = jina_pb2.Envelope()
         self.envelope.ParseFromString(envelope)
-        self.request = LazyRequest(request, False)
+        self.request = LazyRequest(request, self.envelope.compress)
+        self._size = sys.getsizeof(envelope) + sys.getsizeof(request)
 
     def dump(self) -> List[bytes]:
-        return [self.envelope.SerializeToString(), self.request.dump()]
+        r1 = self.envelope.SerializeToString()
+        r2 = self.request.dump()
+        self._size = sys.getsizeof(r1) + sys.getsizeof(r2)
+        return [r1, r2]
+
+    @property
+    def size(self) -> int:
+        """Get the size in bytes.
+
+        To get the latest size, use it after :meth:`dump`
+        """
+        return self._size
