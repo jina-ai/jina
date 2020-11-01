@@ -16,17 +16,21 @@ from jina.proto.jina_pb2 import Document
 def flow():
     return Flow(rest_api=False).add(uses='_pass')
 
+
 @pytest.fixture(scope='function')
 def flow_with_rest_api_enabled():
     return Flow(rest_api=True).add(uses='_pass')
+
 
 @pytest.fixture(scope='function')
 def test_img_1():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC'
 
+
 @pytest.fixture(scope='function')
 def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
+
 
 def test_client(flow):
     with flow:
@@ -34,14 +38,17 @@ def test_client(flow):
             b'a1234', mode=ClientMode.INDEX
         )
 
+
 @pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([Document(), Document()])])
 def test_check_input_success(input_fn):
     PyClient.check_input(input_fn)
 
-@pytest.mark.parametrize('input_fn', [iter([b'1234', '45467', [12, 2, 3]]),iter([Document(), None]) ])
+
+@pytest.mark.parametrize('input_fn', [iter([b'1234', '45467', [12, 2, 3]]), iter([Document(), None])])
 def test_check_input_fail(input_fn):
     with pytest.raises(TypeError):
         PyClient.check_input(input_fn)
+
 
 @pytest.mark.parametrize(
     'port_expose, route, status_code',

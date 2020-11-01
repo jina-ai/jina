@@ -1,7 +1,8 @@
-import pytest
-import numpy as np
-
 from typing import Optional
+
+import numpy as np
+import pytest
+
 from jina.drivers.evaluate import LoadGroundTruthDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2, uid

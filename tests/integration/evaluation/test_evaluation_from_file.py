@@ -1,5 +1,6 @@
-import pytest
 import os
+
+import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2

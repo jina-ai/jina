@@ -1,7 +1,7 @@
+import numpy as np
 import pytest
 
 from jina.executors.evaluators.rank.recall import RecallEvaluator
-import numpy as np
 
 
 @pytest.mark.parametrize(

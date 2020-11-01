@@ -123,7 +123,7 @@ All keyword arguments of `p1` now forward to ``jina-encoder:cv-blah``. So instea
    :lines: 405-415
 
 
-It should run the Pod via :command:`docker run jina-encoder:cv-blah --name p1 --yaml_path ./encode.yml`.
+It should run the Pod via :command:`docker run -v jina-encoder:cv-blah --name p1 --yaml_path ./encode.yml`.
 
 But how to handle multiple replicas?
 

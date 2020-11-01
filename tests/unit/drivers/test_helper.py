@@ -3,8 +3,9 @@ import random
 import numpy as np
 import pytest
 
-from jina.drivers.helper import array2pb, pb2array, pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
+from jina.drivers.helper import pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
+from jina.proto.ndarray.generic import GenericNdArray
 
 
 @pytest.mark.parametrize(
@@ -13,7 +14,9 @@ from jina.proto import jina_pb2
 @pytest.mark.repeat(10)
 def test_array_protobuf_conversions(type):
     random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(type)
-    np.testing.assert_almost_equal(pb2array(array2pb(random_array, None)), random_array)
+    d = GenericNdArray()
+    d.value = random_array
+    np.testing.assert_almost_equal(d.value, random_array)
 
 
 @pytest.mark.parametrize(
@@ -22,7 +25,9 @@ def test_array_protobuf_conversions(type):
 @pytest.mark.repeat(10)
 def test_array_protobuf_conversions_with_quantize(quantize, type):
     random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(type)
-    np.testing.assert_almost_equal(pb2array(array2pb(random_array, quantize)), random_array, decimal=2)
+    d = GenericNdArray(quantize=quantize)
+    d.value = random_array
+    np.testing.assert_almost_equal(d.value, random_array, decimal=2)
 
 
 def test_pb_obj2dict():
@@ -59,7 +64,7 @@ def test_extract_docs():
     assert contents is None
 
     vec = np.random.random([2, 2])
-    d.embedding.CopyFrom(array2pb(vec))
+    GenericNdArray(d.embedding).value = vec
     contents, docs_pts, bad_doc_ids = extract_docs([d], embedding=True)
     assert len(bad_doc_ids) == 0
     np.testing.assert_equal(contents[0], vec)

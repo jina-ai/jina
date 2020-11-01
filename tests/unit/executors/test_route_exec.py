@@ -1,11 +1,11 @@
+import os
 from pprint import pprint
 
-from jina.flow import Flow
-
-from tests import random_docs
 import pytest
+
 from jina.executors import BaseExecutor
-import os
+from jina.flow import Flow
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,5 +29,6 @@ def test_route():
 
     with f:
         f.index(docs)
+
 
 test_load_driver()

@@ -188,7 +188,8 @@ def test_batching_ordinal_idx_arg(tmpdir):
     assert result == [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
 
 
-@pytest.mark.skip(reason='Currently wrong implementation of batching with labels, not well considered in batching helper')
+@pytest.mark.skip(
+    reason='Currently wrong implementation of batching with labels, not well considered in batching helper')
 def test_batching_with_label():
     class A:
         def __init__(self, batch_size):

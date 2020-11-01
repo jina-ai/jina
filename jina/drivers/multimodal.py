@@ -7,18 +7,21 @@ from typing import Iterable, Tuple, Dict, List
 import numpy as np
 
 from .encode import BaseEncodeDriver
-from .helper import pb2array, array2pb
 from ..proto import jina_pb2
+from ..proto.ndarray.generic import GenericNdArray
 
 
 def _extract_doc_content(doc: 'jina_pb2.Document'):
     """Returns the content of the document with the following priority:
     If the document has an embedding, return it, otherwise return its content.
     """
-    if doc.embedding.buffer:
-        return pb2array(doc.embedding)
+    r = GenericNdArray(doc.embedding).value
+    if r is not None:
+        return r
+    elif doc.text or doc.buffer:
+        return doc.text or doc.buffer
     else:
-        return doc.text or doc.buffer or (doc.blob and pb2array(doc.blob))
+        return GenericNdArray(doc.blob).value
 
 
 def _extract_modalities_from_document(doc: 'jina_pb2.Document'):
@@ -110,4 +113,4 @@ class MultiModalDriver(BaseEncodeDriver):
                     f'mismatched {len(valid_docs)} docs from level {docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(valid_docs, embeds):
-                doc.embedding.CopyFrom(array2pb(embedding))
+                GenericNdArray(doc.embedding).value = embedding
