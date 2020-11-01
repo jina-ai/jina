@@ -18,7 +18,7 @@ class BasePredictDriver(BaseExecutableDriver):
 
 class BaseLabelPredictDriver(BasePredictDriver):
 
-    def __init__(self, output_tag: str = 'predicted_label', *args, **kwargs):
+    def __init__(self, output_tag: str = 'prediction', *args, **kwargs):
         """
 
         :param output_tag: output label will be written to ``doc.tags``
@@ -60,12 +60,32 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
 
 class BinaryPredictDriver(BaseLabelPredictDriver):
-    raise NotImplementedError
+    """ Converts binary prediction into string label
+    """
+
+    def __init__(self, one_label: str = 'yes', zero_label: str = 'no', *args, **kwargs):
+        """
+
+        :param one_label: label when prediction is one
+        :param zero_label: label when prediction is zero
+        :param args:
+        :param kwargs:
+        """
+        super().__init__(*args, **kwargs)
+        self.one_label = one_label
+        self.zero_label = zero_label
+
+    def prediction2label(self, prediction: 'np.ndarray') -> List[Any]:
+        p = np.squeeze(prediction)
+        if p.ndim > 1:
+            raise ValueError(f'{self.__class__} expects prediction has ndim=1, but receiving ndim={p.ndim}')
+
+        return [self.one_label if v else self.zero_label for v in p.astype(bool)]
 
 
 class MultiClassPredictDriver(BaseLabelPredictDriver):
-    raise NotImplementedError
+    pass
 
 
 class MultiLabelPredictDriver(BaseLabelPredictDriver):
-    raise NotImplementedError
+    pass
