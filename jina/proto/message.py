@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List
+from typing import List, Union
 
 from . import jina_pb2
 from ..excepts import MismatchedVersion
@@ -72,9 +72,12 @@ class LazyRequest:
 
 class LazyMessage:
 
-    def __init__(self, envelope: bytes, request: bytes, check_version: bool = False):
-        self.envelope = jina_pb2.Envelope()
-        self.envelope.ParseFromString(envelope)
+    def __init__(self, envelope: Union[bytes, 'jina_pb2.Envelope'], request: Union[bytes, 'jina_pb2.Request'], check_version: bool = False):
+        if isinstance(envelope, bytes):
+            self.envelope = jina_pb2.Envelope()
+            self.envelope.ParseFromString(envelope)
+        else:
+            self.envelope = envelope
         self.request = LazyRequest(request, self.envelope.compress)
         self._size = sys.getsizeof(request) + sys.getsizeof(envelope)
         if check_version:
