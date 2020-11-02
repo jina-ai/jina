@@ -1,7 +1,8 @@
+import sys
+
 import pytest
 
 from jina.clients.python.request import _generate
-from jina.peapods.zmq import add_envelope
 from jina.proto import jina_pb2
 from jina.proto.message import LazyRequest, _trigger_fields, LazyMessage
 from tests import random_docs
@@ -39,6 +40,17 @@ def test_lazy_nest_access():
         assert not r.is_used
         # write access r.train
         r.docs[0].id = '1'
+        # now it is read
+        assert r.is_used
+        assert r.index.docs[0].id == '1'
+
+
+def test_lazy_change_message_type():
+    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    for r in reqs:
+        assert not r.is_used
+        # write access r.train
+        r.control.command = jina_pb2.Request.ControlRequest.IDLE
         # now it is read
         assert r.is_used
 
@@ -93,3 +105,14 @@ def test_lazy_msg_access():
         assert r.request.index.docs
         assert len(r.dump()) == 2
         assert r.request.is_used
+
+
+def test_message_size():
+    reqs = [LazyMessage(add_envelope(r, 'test', '123').envelope.SerializeToString(),
+                        r.SerializeToString()) for r in _generate(random_docs(10))]
+    for r in reqs:
+        assert r.size
+        assert sys.getsizeof(r.envelope.SerializeToString())
+        assert sys.getsizeof(r.request.SerializeToString())
+        assert r.size == sys.getsizeof(r.envelope.SerializeToString()) \
+               + sys.getsizeof(r.request.SerializeToString())

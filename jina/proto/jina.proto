@@ -191,6 +191,10 @@ message Envelope {
     CompressAlgo compress = 9; // compress algorithm used for request
 
     bool is_data_request = 10; // set to true if it is not control request
+
+    bool check_version = 11; // check local Protobuf version on every Pod that this message flows to
+
+    string request_type = 12; // type of the request: TrainRequest, IndexRequest, SearchRequest, ControlRequest
 }
 
 message Status {

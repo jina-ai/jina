@@ -20,6 +20,7 @@ from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 from ..parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
+from ..proto.message import LazyMessage, LazyRequest
 
 use_uvloop()
 
@@ -102,26 +103,32 @@ class GatewayPea:
             self.peapods = []
 
         @property
-        def message(self) -> 'jina_pb2.Message':
+        def message(self) -> 'LazyMessage':
             """Get the current protobuf message to be processed"""
             return self._message
 
         @property
         def request_type(self) -> str:
-            return self._request.__class__.__name__
+            return self._message.envelope.request_type
 
         @property
         def request(self) -> 'jina_pb2.Request':
             """Get the current request body inside the protobuf message"""
             return self._request
 
-        def handle(self, msg: 'jina_pb2.Message'):
+        def handle(self, msg: 'LazyMessage') -> 'jina_pb2.Request':
+            """ Note gRPC accepts :class:`jina_pb2.Request` only, so no more :class:`LazyRequest`.
+
+            :param msg:
+            :return:
+            """
             try:
-                msg.request.status.CopyFrom(msg.envelope.status)
-                self._request = getattr(msg.request, msg.request.WhichOneof('body'))
                 self._message = msg
+                self._request = msg.request.deserialize()
+
                 if msg.envelope.num_part != [1]:
                     raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
+
                 # self.executor(self.request_type)
                 # envelope will be dropped when returning to the client
             except NoDriverForRequest:
@@ -139,7 +146,8 @@ class GatewayPea:
                 d.traceback = traceback.format_exc()
                 d.time.GetCurrentTime()
             finally:
-                return msg.request
+                self.request.status.CopyFrom(msg.envelope.status)
+                return self.request
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:

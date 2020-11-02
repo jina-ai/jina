@@ -47,32 +47,6 @@ def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
     return contents, docs_pts, bad_doc_ids
 
 
-def routes2str(msg: 'jina_pb2.Message', flag_current: bool = False) -> str:
-    """Get the string representation of the routes in a message.
-
-    :param msg: a protobuf message
-    :param flag_current: flag the current :class:`BasePod` as ``⚐``
-    """
-    route_str = [r.pod for r in msg.envelope.routes]
-    if flag_current:
-        route_str.append('⚐')
-    from ..helper import colored
-    return colored('▸', 'green').join(route_str)
-
-
-def add_route(evlp: 'jina_pb2.Envelope', name: str, identity: str) -> None:
-    """Add a route to the envelope
-
-    :param evlp: the envelope to modify
-    :param name: the name of the pod service
-    :param identity: the identity of the pod service
-    """
-    r = evlp.routes.add()
-    r.pod = name
-    r.start_time.GetCurrentTime()
-    r.pod_id = identity
-
-
 def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     """Convert a protobuf object to a Dict by selected keys
 

@@ -77,7 +77,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
               queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args,
               **kwargs,
-              ) -> Iterator['jina_pb2.Message']:
+              ) -> Iterator['jina_pb2.Request']:
     buffer_sniff = False
 
     try:

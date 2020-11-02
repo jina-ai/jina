@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import asyncio
 import os
-import sys
 import tempfile
 import time
 from typing import List, Callable, Optional, Union, Tuple
@@ -18,12 +17,10 @@ from ..enums import SocketType
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..logging import default_logger, profile_logger, JinaLogger
 from ..proto import jina_pb2
-from ..proto.message import LazyMessage
+from ..proto.message import LazyMessage, ControlMessage
 
 if False:
-    # fix type-hint complain for sphinx and flake
     import argparse
-    from ..proto.jina_pb2 import Message
 
 use_uvloop()
 
@@ -216,19 +213,18 @@ class Zmqlet:
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
             self.send_idle(msg)
 
-    def send_idle(self, msg: Optional['jina_pb2.Message'] = None):
+    def send_idle(self, msg: Optional['LazyMessage'] = None):
         """Tell the upstream router this dealer is idle """
         if msg:
             msg.request.control.command = jina_pb2.Request.ControlRequest.IDLE
         else:
-            req = jina_pb2.Request()
-            req.control.command = jina_pb2.Request.ControlRequest.IDLE
-            msg = add_envelope(req, self.name, self.args.identity)
+            msg = ControlMessage(jina_pb2.Request.ControlRequest.IDLE,
+                                 pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
 
-    def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
+    def recv_message(self, callback: Callable[['LazyMessage'], 'LazyMessage'] = None) -> 'LazyMessage':
         """Receive a protobuf message from the input socket
 
         :param callback: the callback function, which modifies the recevied message inplace.
@@ -258,7 +254,7 @@ class AsyncZmqlet(Zmqlet):
     def _get_zmq_ctx(self):
         return zmq.asyncio.Context()
 
-    async def send_message(self, msg: 'jina_pb2.Message', sleep: float = 0, **kwargs):
+    async def send_message(self, msg: 'LazyMessage', sleep: float = 0, **kwargs):
         """Send a protobuf message in async via the output socket
 
         :param msg: the protobuf message to send
@@ -275,8 +271,8 @@ class AsyncZmqlet(Zmqlet):
 
     async def recv_message(self, callback: Callable[['LazyMessage'], 'LazyMessage'] = None) -> 'LazyMessage':
         try:
-            msg, num_bytes = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
-            self.bytes_recv += num_bytes
+            msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
+            self.bytes_recv += msg.size
             self.msg_recv += 1
             if callback:
                 return callback(msg)
@@ -375,9 +371,7 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        req = jina_pb2.Request()
-        req.control.command = cmd
-        msg = add_envelope(req, 'ctl', '')
+        msg = ControlMessage(cmd, pod_name='ctl', identity='')
         send_message(sock, msg, timeout)
         r = None
         try:
@@ -402,9 +396,9 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'LazyMessage', tim
     """
     num_bytes = 0
     try:
-        _msg, num_bytes = _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout)
-
-        sock.send_multipart(_msg)
+        _prep_send_socket(sock, timeout)
+        sock.send_multipart(msg.dump())
+        num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(
             'cannot send message to sock %s after timeout=%dms, please check the following:'
@@ -421,15 +415,18 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'LazyMessage', tim
     return num_bytes
 
 
-def _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout):
+def _prep_send_socket(sock, timeout):
     if timeout > 0:
         sock.setsockopt(zmq.SNDTIMEO, timeout)
     else:
         sock.setsockopt(zmq.SNDTIMEO, -1)
-    return _serialize_to_frames(msg.envelope.receiver_id,
-                                msg,
-                                compress_hwm,
-                                compress_lwm)
+
+
+def _prep_recv_socket(sock, timeout):
+    if timeout > 0:
+        sock.setsockopt(zmq.RCVTIMEO, timeout)
+    else:
+        sock.setsockopt(zmq.RCVTIMEO, -1)
 
 
 async def send_message_async(sock: 'zmq.Socket', msg: 'LazyMessage', timeout: int = -1,
@@ -445,11 +442,9 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'LazyMessage', timeout: in
     :return: the size (in bytes) of the sent message
     """
     try:
-        _msg, num_bytes = _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout)
-
-        await sock.send_multipart(_msg)
-
-        return num_bytes
+        _prep_send_socket(sock, timeout)
+        await sock.send_multipart(msg.dump())
+        return msg.size
     except zmq.error.Again:
         raise TimeoutError(
             'cannot send message to sock %s after timeout=%dms, please check the following:'
@@ -480,13 +475,8 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
             - the size of the message in bytes
     """
     try:
-        if timeout > 0:
-            sock.setsockopt(zmq.RCVTIMEO, timeout)
-        else:
-            sock.setsockopt(zmq.RCVTIMEO, -1)
-
+        _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
-
         return _parse_from_frames(sock.type, msg_data, check_version)
 
     except zmq.error.Again:
@@ -514,13 +504,8 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
     """
 
     try:
-        if timeout > 0:
-            sock.setsockopt(zmq.RCVTIMEO, timeout)
-        else:
-            sock.setsockopt(zmq.RCVTIMEO, -1)
-
+        _prep_recv_socket(sock, timeout)
         msg_data = await sock.recv_multipart()
-
         return _parse_from_frames(sock.type, msg_data, check_version)
 
     except zmq.error.Again:
@@ -541,29 +526,6 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
             pass
 
 
-def _serialize_to_frames(client_id, msg: 'LazyMessage',
-                         compress_hwm: float, compress_lwm: float) -> Tuple[List[bytes], int]:
-    """
-    Serialize a :class:`LazyMessage` object into a list of frames. The list of frames (has length >=3) has the following structure:
-
-        - offset 0: the client id, can be empty
-        - offset 1: is the offset 2 frame compressed
-        - offset 2: the body of the serialized protobuf message
-
-    :param client_id: the client id
-    :param msg: the protobuf message object to be serialized
-    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
-    :param compress_lwm: the low watermark that enables the sending of a compressed message.
-    :return:
-    """
-    body = msg.dump()
-    if isinstance(client_id, str):
-        client_id = client_id.encode()
-    frames = [client_id] + body
-    num_bytes = sum(sys.getsizeof(m) for m in frames)
-    return frames, num_bytes
-
-
 def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> 'LazyMessage':
     """
     Build :class:`LazyMessage` from a list of frames.
@@ -577,7 +539,7 @@ def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> '
     :param sock_type: the recv socket type
     :param frames: list of bytes to parse from
     :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
-    :return: a :class:`jina_pb2.Message` object and the size of the frames (in bytes)
+    :return: a :class:`LazyMessage` object
     """
     if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
@@ -662,42 +624,3 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
         sock.subscribe('')  # An empty shall subscribe to all incoming messages
 
     return sock, sock.getsockopt_string(zmq.LAST_ENDPOINT)
-
-
-def _add_route(evlp, pod_name, identity):
-    r = evlp.routes.add()
-    r.pod = pod_name
-    r.start_time.GetCurrentTime()
-    r.pod_id = identity
-
-
-def add_envelope(req, pod_name, identity, num_part=1) -> 'jina_pb2.Message':
-    """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
-
-    :param req: the protobuf request
-    :param pod_name: the name of the current pod
-    :param identity: the identity of the current pod
-    :param num_part: the total parts of the message, 0 and 1 means single part
-    :return: the resulted protobuf message
-    """
-    msg = jina_pb2.Message()
-    msg.envelope.receiver_id = identity
-    if req.request_id is not None:
-        msg.envelope.request_id = req.request_id
-    else:
-        raise AttributeError('"request_id" is missing or unset!')
-    msg.envelope.timeout = 5000
-    _add_version(msg.envelope)
-    _add_route(msg.envelope, pod_name, identity)
-    msg.request.CopyFrom(req)
-    msg.envelope.num_part.append(1)
-    if num_part > 1:
-        msg.envelope.num_part.append(num_part)
-    return msg
-
-
-def _add_version(evlp: 'jina_pb2.Envelope'):
-    from .. import __version__, __proto_version__
-    evlp.version.jina = __version__
-    evlp.version.proto = __proto_version__
-    evlp.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
