@@ -54,3 +54,11 @@ def test_flow_with_jump():
 
     with f:
         f.index(random_docs(10))
+
+
+def test_flow_with_parallel():
+    f = (Flow().add(name='r1', uses='_pass')
+         .add(name='r2', uses='_pass', parallel=3))
+
+    with f:
+        f.index(random_docs(1000))

@@ -3,7 +3,7 @@ import random
 import numpy as np
 import pytest
 
-from jina.drivers.helper import pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
+from jina.drivers.helper import pb_obj2dict, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
 from jina.proto.ndarray.generic import GenericNdArray
 

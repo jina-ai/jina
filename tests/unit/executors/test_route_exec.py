@@ -29,6 +29,3 @@ def test_route():
 
     with f:
         f.index(docs)
-
-
-test_load_driver()

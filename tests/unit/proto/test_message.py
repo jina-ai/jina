@@ -53,6 +53,7 @@ def test_lazy_change_message_type():
         r.control.command = jina_pb2.Request.ControlRequest.IDLE
         # now it is read
         assert r.is_used
+        assert len(r.index.docs) == 0
 
 
 def test_lazy_append_access():
