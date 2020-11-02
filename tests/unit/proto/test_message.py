@@ -4,13 +4,14 @@ import pytest
 
 from jina.clients.python.request import _generate
 from jina.proto import jina_pb2
+from jina.proto.jina_pb2 import Envelope
 from jina.proto.message import LazyRequest, _trigger_fields, LazyMessage
 from tests import random_docs
 
 
 @pytest.mark.parametrize('field', _trigger_fields.difference({'command', 'args', 'flush'}))
 def test_lazy_access(field):
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
 
@@ -22,7 +23,7 @@ def test_lazy_access(field):
 
 
 def test_multiple_access():
-    reqs = [LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10))]
+    reqs = [LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10))]
     for r in reqs:
         assert not r.is_used
         assert r
@@ -35,7 +36,7 @@ def test_multiple_access():
 
 
 def test_lazy_nest_access():
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -46,7 +47,7 @@ def test_lazy_nest_access():
 
 
 def test_lazy_change_message_type():
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -57,7 +58,7 @@ def test_lazy_change_message_type():
 
 
 def test_lazy_append_access():
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -67,7 +68,7 @@ def test_lazy_append_access():
 
 
 def test_lazy_clear_access():
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -77,7 +78,7 @@ def test_lazy_clear_access():
 
 
 def test_lazy_nested_clear_access():
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -120,6 +121,6 @@ def test_message_size():
 
 
 def test_lazy_request_fields():
-    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())
