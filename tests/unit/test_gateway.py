@@ -22,10 +22,10 @@ class DummyEncoder(BaseEncoder):
 @pytest.mark.parametrize('compress_algo', list(CompressAlgo))
 def test_compression(compress_algo):
     print(str(compress_algo))
-    f = Flow().add(name='DummyEncoder', parallel=2)
+    f = Flow(compress=str(compress_algo)).add(name='DummyEncoder', parallel=2)
 
     with f:
-        f.index(random_docs(100))
+        f.index(random_docs(10))
 
 
 # @pytest.mark.skip('this tests hang up for unknown reason on github')

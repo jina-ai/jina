@@ -82,8 +82,8 @@ class LazyRequest:
             return self._deserialized
 
     def SerializeToString(self):
-        print('serialze!!!!!')
         if self.is_used:
+            print('serialze!!!!!')
             _buffer = self._deserialized.SerializeToString()
             _compress = CompressAlgo.from_string(self._envelope.compress)
             print(_compress)
