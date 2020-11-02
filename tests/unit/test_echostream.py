@@ -61,4 +61,4 @@ def test_flow_with_parallel():
          .add(name='r2', uses='_pass', parallel=3))
 
     with f:
-        f.index(random_docs(1000))
+        f.index(random_docs(100))

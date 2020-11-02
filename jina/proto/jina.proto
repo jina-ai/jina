@@ -184,7 +184,7 @@ message Envelope {
     repeated uint32 num_part = 8; // the number of partial messages
 
     enum CompressAlgo {
-        NONE = 0; // no compress
+        NO_COMPRESS = 0; // no compress
         LZ4 = 1; // lz4 compression
     }
 

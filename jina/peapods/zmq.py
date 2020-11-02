@@ -203,14 +203,11 @@ class Zmqlet:
         self.msg_sent += 1
 
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
-            self.send_idle(msg)
+            self.send_idle()
 
-    def send_idle(self, msg: Optional['LazyMessage'] = None):
+    def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        if msg:
-            msg.request.control.command = jina_pb2.Request.ControlRequest.IDLE
-        else:
-            msg = ControlMessage(jina_pb2.Request.ControlRequest.IDLE,
+        msg = ControlMessage(jina_pb2.Request.ControlRequest.IDLE,
                                  pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1

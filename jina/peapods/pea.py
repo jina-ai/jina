@@ -236,7 +236,7 @@ class BasePea(metaclass=PeaMeta):
 
     def pre_hook(self, msg: 'LazyMessage') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
-        self.logger.info(f'received from {msg.colored_route}')
+        self.logger.info(f'received {msg.envelope.request_type} from {msg.colored_route}')
         msg.add_route(self.name, self.args.identity)
         self._request = msg.request
         self._message = msg

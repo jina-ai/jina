@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List, Union
+from typing import List, Union, Optional
 
 from . import jina_pb2
 from .. import __version__, __proto_version__
@@ -22,10 +22,10 @@ _empty_request = jina_pb2.Request()
 
 
 class LazyRequest:
-    def __init__(self, request: bytes, compress: 'jina_pb2.Envelope.CompressAlgo'):
+    def __init__(self, request: bytes, envelope: Optional['jina_pb2.Envelope'] = None):
         self._buffer = request
         self._deserialized = None  # type: jina_pb2.Request
-        self._compress = compress
+        self._envelope = envelope
         self._size = sys.getsizeof(self._buffer)
 
     @property
@@ -49,11 +49,20 @@ class LazyRequest:
         if self._deserialized is None:
             r = jina_pb2.Request()
             _buffer = self._buffer
-            if self._compress == jina_pb2.Envelope.LZ4:
+            if self._envelope.compress == jina_pb2.Envelope.LZ4:
                 import lz4.frame
                 _buffer = lz4.frame.decompress(_buffer)
             r.ParseFromString(_buffer)
             self._deserialized = r
+
+            # # Though I can modify back the envelope, not sure if it is a good design:
+            # # My intuition is: if the content is changed dramatically, e.g. fron index to control request,
+            # # then whatever writes on the envelope should be dropped
+            # # depreciated. The only reason to reuse the envelope is saving cost on Envelope(), which is
+            # # really a minor minor (and evil) optimization.
+            # if self._envelope:
+            #     self._envelope.request_type = getattr(r, r.WhichOneof('body')).__class__.__name__
+
             return r
         else:
             return self._deserialized
@@ -61,7 +70,7 @@ class LazyRequest:
     def SerializeToString(self):
         if self.is_used:
             _buffer = self._deserialized.SerializeToString()
-            if self._compress == jina_pb2.Envelope.LZ4:
+            if self._envelope.compress == jina_pb2.Envelope.LZ4:
                 import lz4.frame
                 _buffer = lz4.frame.compress(_buffer)
             self._size = sys.getsizeof(_buffer)
@@ -88,17 +97,14 @@ class LazyMessage:
             self.envelope = jina_pb2.Envelope()
             self.envelope.ParseFromString(envelope)
             self._size = sys.getsizeof(envelope)
-            _compress = self.envelope.compress
         elif isinstance(envelope, jina_pb2.Envelope):
             self.envelope = envelope
-            _compress = self.envelope.compress
         else:
             # otherwise delay it to after request is built
-            #
-            _compress = None
+            self.envelope = None
 
         if isinstance(request, bytes):
-            self.request = LazyRequest(request, _compress)
+            self.request = LazyRequest(request, self.envelope)
             self._size += sys.getsizeof(request)
         elif isinstance(request, jina_pb2.Request):
             self.request = request  # type: Union['LazyRequest', 'jina_pb2.Request']
@@ -107,6 +113,9 @@ class LazyMessage:
 
         if envelope is None:
             self.envelope = self._add_envelope(*args, **kwargs)
+            # delayed assignment, now binding envelope to request
+            if isinstance(self.request, LazyRequest):
+                self.request._envelope = self.envelope
 
         if self.envelope.check_version:
             self._check_version()
@@ -123,9 +132,7 @@ class LazyMessage:
 
     @property
     def is_data_request(self) -> bool:
-        """check if the request is data request
-
-        DRY_RUN is a ControlRequest but considered as data request
+        """check if the request is not a control request
         """
         return self.envelope.request_type != 'ControlRequest'
 
