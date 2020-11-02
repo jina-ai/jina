@@ -133,6 +133,10 @@ class LazyMessage:
     @property
     def is_data_request(self) -> bool:
         """check if the request is not a control request
+
+        .. warning::
+            If ``request`` change the type, e.g. by leveraging the feature of ``oneof``, this
+            property wont be updated. This is not considered as a good practice.
         """
         return self.envelope.request_type != 'ControlRequest'
 
