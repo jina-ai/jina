@@ -23,6 +23,15 @@ _empty_request = jina_pb2.Request()
 
 
 class LazyRequest:
+    """
+    A container for serialized :class:`jina_pb2.Request` that only triggers deserialization
+    and decompression when receives the first read access to its member.
+
+    It overrides :meth:`__getattr__` to provide the same get/set interface as an
+    :class:`jina_pb2.Request` object.
+
+    """
+
     def __init__(self, request: bytes, envelope: Optional['jina_pb2.Envelope'] = None):
         self._buffer = request
         self._deserialized = None  # type: jina_pb2.Request
@@ -92,6 +101,19 @@ class LazyRequest:
 
 
 class LazyMessage:
+    """
+    A container class for :class:`jina_pb2.Message`. Note, the Protobuf version of :class:`jina_pb2.Message`
+    contains a :class:`jina_pb2.Envelope` and :class:`jina_pb2.Request`. Here, it contains:
+        - a :class:`jina_pb2.Envelope` object
+        - and one of:
+            - a :class:`LazyRequest` object wrapping :class:`jina_pb2.Request`
+            - a :class:`jina_pb2.Request` object
+
+    It provide a generic view of as :class:`jina_pb2.Message`, allowing one to access its member, request
+    and envelope.
+
+    This class also collected all helper functions related to :class:`jina_pb2.Message` into one place.
+    """
 
     def __init__(self, envelope: Union[bytes, 'jina_pb2.Envelope', None],
                  request: Union[bytes, 'jina_pb2.Request'], *args, **kwargs):
