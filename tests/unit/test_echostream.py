@@ -4,8 +4,10 @@ import uuid
 from jina.flow import Flow
 from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
-from jina.peapods.zmq import Zmqlet, add_envelope
+from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
+from jina.proto.message import LazyMessage
+from tests import random_docs
 
 
 def test_simple_zmqlet():
@@ -35,7 +37,7 @@ def test_simple_zmqlet():
         req.request_id = uuid.uuid1().hex
         d = req.index.docs.add()
         d.tags['id'] = 2
-        msg = add_envelope(req, 'tmp', '')
+        msg = LazyMessage(None, req, 'tmp', '')
         z.send_message(msg)
 
 
@@ -51,4 +53,4 @@ def test_flow_with_jump():
          .add(name='r10', uses='_merge', needs=['r9', 'r8']))
 
     with f:
-        f.dry_run()
+        f.index(random_docs(10))

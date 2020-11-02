@@ -1,12 +1,14 @@
+import pytest
+
 from jina.clients.python.request import _generate
 from jina.logging.profile import TimeContext
-from jina.peapods.zmq import add_envelope
 from jina.proto import jina_pb2
 from tests import random_docs
 
 num_reqs, num_docs = 10, 1000
 
 
+@pytest.mark.skip('this is for jina < 0.7.3 to showcase the performance issue')
 def test_all_in_one_request():
     recv = [add_envelope(r, 'test', '123') for r in _generate(random_docs(num_docs))]
     with TimeContext('serialize and deserialize'):
@@ -25,6 +27,7 @@ def test_all_in_one_request():
         assert r.envelope.request_id.endswith('r' * num_reqs)
 
 
+@pytest.mark.skip('this is for jina < 0.7.3 to showcase the performance issue')
 def test_envelope_in_sep_request():
     """ ser/des on envelope only much faster
 

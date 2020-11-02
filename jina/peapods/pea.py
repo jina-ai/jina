@@ -247,6 +247,7 @@ class BasePea(metaclass=PeaMeta):
         msg.envelope.routes[-1].end_time.GetCurrentTime()
         if self.args.num_part > 1:
             msg.envelope.num_part.append(self.args.num_part)
+        # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()

@@ -92,12 +92,16 @@ class LazyMessage:
         if isinstance(request, bytes):
             self.request = LazyRequest(request, self.envelope.compress)
             self._size += sys.getsizeof(envelope)
+        elif isinstance(request, jina_pb2.Request):
+            self.request = request
+        else:
+            raise TypeError(f'expecting request to be bytes or jina_pb2.Request, but receiving {type(request)}')
 
         if envelope is None:
-            self.envelope = self.add_envelope(*args, **kwargs)
+            self.envelope = self._add_envelope(*args, **kwargs)
 
         if self.envelope.check_version:
-            self.check_version()
+            self._check_version()
 
     @property
     def is_data_request(self) -> bool:
@@ -107,7 +111,7 @@ class LazyMessage:
         """
         return self.envelope.request_type != 'ControlRequest'
 
-    def add_envelope(self, pod_name, identity, num_part=1) -> 'jina_pb2.Envelope':
+    def _add_envelope(self, pod_name, identity, num_part=1) -> 'jina_pb2.Envelope':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
         .. note::
@@ -125,7 +129,7 @@ class LazyMessage:
             # not lazy request, so we can directly access its request_id without worrying about
             # triggering the deserialization
             envelope.request_id = self.request.request_id
-            envelope.request_type = self.request.__class__.__name__
+            envelope.request_type = getattr(self.request, self.request.WhichOneof('body')).__class__.__name__
         elif isinstance(self.request, LazyRequest):
             raise TypeError('can add envelope to a LazyRequest object, '
                             'as it will trigger the deserialization.'
@@ -135,8 +139,8 @@ class LazyMessage:
             raise TypeError(f'expecting request in type: jina_pb2.Request, but receiving {type(self.request)}')
 
         envelope.timeout = 5000
-        self._add_version()
-        self.add_route(pod_name, identity)
+        self._add_version(envelope)
+        self._add_route(pod_name, identity, envelope)
         envelope.num_part.append(1)
         if num_part > 1:
             envelope.num_part.append(num_part)
@@ -161,13 +165,16 @@ class LazyMessage:
         from ..helper import colored
         return colored('▸', 'green').join(route_str)
 
-    def add_route(self, name: str, identity: str) -> None:
+    def add_route(self, name: str, identity: str):
+        self._add_route(name, identity, self.envelope)
+
+    def _add_route(self, name: str, identity: str, envelope: 'jina_pb2.Envelope') -> None:
         """Add a route to the envelope
 
         :param name: the name of the pod service
         :param identity: the identity of the pod service
         """
-        r = self.envelope.routes.add()
+        r = envelope.routes.add()
         r.pod = name
         r.start_time.GetCurrentTime()
         r.pod_id = identity
@@ -180,7 +187,7 @@ class LazyMessage:
         """
         return self._size
 
-    def check_version(self):
+    def _check_version(self):
         if hasattr(self.envelope, 'version'):
             if not self.envelope.version.jina:
                 # only happen in unittest
@@ -218,10 +225,10 @@ class LazyMessage:
                                     'but incoming message contains no version info in its envelope. '
                                     'the message is probably sent from a very outdated JINA version')
 
-    def _add_version(self):
-        self.envelope.version.jina = __version__
-        self.envelope.version.proto = __proto_version__
-        self.envelope.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
+    def _add_version(self, envelope):
+        envelope.version.jina = __version__
+        envelope.version.proto = __proto_version__
+        envelope.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
 
 
 class ControlMessage(LazyMessage):
