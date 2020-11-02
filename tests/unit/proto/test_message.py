@@ -86,33 +86,39 @@ def test_lazy_nested_clear_access():
 
 
 def test_lazy_msg_access():
-    reqs = [LazyMessage(add_envelope(r, 'test', '123').envelope.SerializeToString(),
-                        r.SerializeToString()) for r in _generate(random_docs(10))]
+    reqs = [LazyMessage(None, r.SerializeToString(), 'test', '123',
+                        request_id='123', request_type='IndexRequest') for r in _generate(random_docs(10))]
     for r in reqs:
         assert not r.request.is_used
         assert r.envelope
-        assert len(r.dump()) == 2
+        assert len(r.dump()) == 3
         assert not r.request.is_used
 
     for r in reqs:
         assert not r.request.is_used
         assert r.request
-        assert len(r.dump()) == 2
+        assert len(r.dump()) == 3
         assert not r.request.is_used
 
     for r in reqs:
         assert not r.request.is_used
         assert r.request.index.docs
-        assert len(r.dump()) == 2
+        assert len(r.dump()) == 3
         assert r.request.is_used
 
 
 def test_message_size():
-    reqs = [LazyMessage(add_envelope(r, 'test', '123').envelope.SerializeToString(),
-                        r.SerializeToString()) for r in _generate(random_docs(10))]
+    reqs = [LazyMessage(None, r, 'test', '123') for r in _generate(random_docs(10))]
     for r in reqs:
-        assert r.size
+        assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())
         assert sys.getsizeof(r.request.SerializeToString())
-        assert r.size == sys.getsizeof(r.envelope.SerializeToString()) \
+        assert len(r.dump()) == 3
+        assert r.size > sys.getsizeof(r.envelope.SerializeToString()) \
                + sys.getsizeof(r.request.SerializeToString())
+
+
+def test_lazy_request_fields():
+    reqs = (LazyRequest(r.SerializeToString(), False) for r in _generate(random_docs(10)))
+    for r in reqs:
+        assert list(r.DESCRIPTOR.fields_by_name.keys())

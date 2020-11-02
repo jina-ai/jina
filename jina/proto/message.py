@@ -58,7 +58,7 @@ class LazyRequest:
         else:
             return self._deserialized
 
-    def dump(self):
+    def SerializeToString(self):
         if self.is_used:
             _buffer = self._deserialized.SerializeToString()
             if self._compress == jina_pb2.Envelope.LZ4:
@@ -87,14 +87,19 @@ class LazyMessage:
         if isinstance(envelope, bytes):
             self.envelope = jina_pb2.Envelope()
             self.envelope.ParseFromString(envelope)
-            self._size = sys.getsizeof(request)
+            self._size = sys.getsizeof(envelope)
+            _compress = self.envelope.compress
         elif isinstance(envelope, jina_pb2.Envelope):
             self.envelope = envelope
-        # otherwise delay it to after request is built
+            _compress = self.envelope.compress
+        else:
+            # otherwise delay it to after request is built
+            #
+            _compress = None
 
         if isinstance(request, bytes):
-            self.request = LazyRequest(request, self.envelope.compress)
-            self._size += sys.getsizeof(envelope)
+            self.request = LazyRequest(request, _compress)
+            self._size += sys.getsizeof(request)
         elif isinstance(request, jina_pb2.Request):
             self.request = request  # type: Union['LazyRequest', 'jina_pb2.Request']
         else:
@@ -124,7 +129,8 @@ class LazyMessage:
         """
         return self.envelope.request_type != 'ControlRequest'
 
-    def _add_envelope(self, pod_name, identity, num_part=1, check_version=False) -> 'jina_pb2.Envelope':
+    def _add_envelope(self, pod_name, identity, num_part=1, check_version=False,
+                      request_id: str = None, request_type: str = None) -> 'jina_pb2.Envelope':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
         .. note::
@@ -139,11 +145,12 @@ class LazyMessage:
         """
         envelope = jina_pb2.Envelope()
         envelope.receiver_id = identity
-        if isinstance(self.request, jina_pb2.Request):
+        if isinstance(self.request, jina_pb2.Request) or (request_id and request_type):
             # not lazy request, so we can directly access its request_id without worrying about
             # triggering the deserialization
-            envelope.request_id = self.request.request_id
-            envelope.request_type = getattr(self.request, self.request.WhichOneof('body')).__class__.__name__
+            envelope.request_id = request_id or self.request.request_id
+            envelope.request_type = request_type or \
+                                    getattr(self.request, self.request.WhichOneof('body')).__class__.__name__
         elif isinstance(self.request, LazyRequest):
             raise TypeError('can add envelope to a LazyRequest object, '
                             'as it will trigger the deserialization.'
