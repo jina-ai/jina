@@ -11,7 +11,7 @@ from google.protobuf.json_format import MessageToJson
 
 from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
-from .zmq import AsyncZmqlet, add_envelope
+from .zmq import AsyncZmqlet
 from .. import __stop_msg__
 from ..enums import ClientMode
 from ..excepts import NoDriverForRequest, BadRequestType, GatewayPartialMessage
@@ -20,7 +20,7 @@ from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 from ..parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
-from ..proto.message import LazyMessage, LazyRequest
+from ..proto.message import LazyMessage
 
 use_uvloop()
 
@@ -151,8 +151,8 @@ class GatewayPea:
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
-                await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity,
-                                                       num_part=self.args.num_part))
+                await zmqlet.send_message(LazyMessage(None, request, 'gateway', zmqlet.args.identity,
+                                                      num_part=self.args.num_part))
                 return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
@@ -167,8 +167,8 @@ class GatewayPea:
                         try:
                             asyncio.create_task(
                                 zmqlet.send_message(
-                                    add_envelope(next(request_iterator), 'gateway', zmqlet.args.identity,
-                                                 num_part=self.args.num_part)))
+                                    LazyMessage(None, next(request_iterator), 'gateway', zmqlet.args.identity,
+                                                num_part=self.args.num_part)))
                             fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                         except StopIteration:
                             return True

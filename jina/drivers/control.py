@@ -5,7 +5,7 @@ import time
 
 from . import BaseDriver
 from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
-from ..proto import jina_pb2, is_data_request
+from ..proto import jina_pb2
 
 
 class ControlReqDriver(BaseDriver):
@@ -67,7 +67,7 @@ class RouteDriver(ControlReqDriver):
         self.raise_no_dealer = raise_no_dealer
 
     def __call__(self, *args, **kwargs):
-        if is_data_request(self.req):
+        if self.msg.is_data_request:
             self.logger.debug(self.idle_dealer_ids)
             if self.idle_dealer_ids:
                 dealer_id = self.idle_dealer_ids.pop()

@@ -99,6 +99,14 @@ class LazyMessage:
         if self.envelope.check_version:
             self.check_version()
 
+    @property
+    def is_data_request(self) -> bool:
+        """check if the request is data request
+
+        DRY_RUN is a ControlRequest but considered as data request
+        """
+        return self.envelope.request_type != 'ControlRequest'
+
     def add_envelope(self, pod_name, identity, num_part=1) -> 'jina_pb2.Envelope':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 

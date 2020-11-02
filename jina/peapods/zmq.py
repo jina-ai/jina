@@ -202,7 +202,7 @@ class Zmqlet:
         """
         # choose output sock
 
-        if msg.envelope.is_data_request:
+        if msg.is_data_request:
             o_sock = self.out_sock
         else:
             o_sock = self.ctrl_sock
