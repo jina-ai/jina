@@ -155,7 +155,7 @@ jina pod --uses hub/example/mwu_encoder.yml --port-in 55555 --port-out 55556
 One can also override the internal YAML config by giving an out-of-docker external YAML config via:
 
 ```bash
-docker run $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --uses /ext.yml
+docker run -v $(pwd)/hub/example/mwu_encoder_ext.yml:/ext.yml jinaai/hub.examples.mwu_encoder --uses /ext.yml
 ```
 
 
