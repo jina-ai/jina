@@ -307,17 +307,6 @@ def set_pea_parser(parser=None):
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
-    gp5.add_argument('--check-version', action='store_true', default=False,
-                     help='comparing the jina and proto version of incoming message with local setup, '
-                          'mismatch raise an exception')
-    gp5.add_argument('--compress-hwm', type=int, default=-1,
-                     help='the high watermark that triggers the message compression. '
-                          'message bigger than this HWM (in bytes) will be compressed by lz4 algorithm.'
-                          'set this to -1 to disable this feature.')
-    gp5.add_argument('--compress-lwm', type=float, default=1.,
-                     help='the low watermark that enables the sending of a compressed message. '
-                          'compression rate (after_size/before_size) lower than this LWM will be considered as successeful '
-                          'compression, and will be sent. Otherwise, it will send the original message without compression')
     gp5.add_argument('--num-part', type=int, default=0,
                      help='the number of replicated message sent to the next Pod, 0 and 1 means single part'
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
@@ -498,6 +487,9 @@ def set_gateway_parser(parser=None):
     gp1.add_argument('--rest-api', action='store_true', default=False,
                      help='use REST-API as the interface instead of gRPC with port number '
                           'set to the value of "port-expose"')
+    gp1.add_argument('--check-version', action='store_true', default=False,
+                     help='comparing the jina and proto version of incoming message with local setup, '
+                          'mismatch raise an exception')
     # gp1.add_argument('--to-datauri', action='store_true', default=False,
     #                  help='always represent the result document with data URI, instead of using buffer/blob/text')
     return parser

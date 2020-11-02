@@ -43,14 +43,6 @@ class Zmqlet:
         self.args = args
         self.name = args.name or self.__class__.__name__
         self.logger = logger
-        if args.compress_hwm > 0:
-            try:
-                import lz4
-                self.logger.success(f'compression is enabled and the high watermark is {args.compress_hwm} bytes')
-            except ModuleNotFoundError:
-                self.logger.error(f'compression is enabled but you do not have lz4 package. '
-                                  f'use pip install "jina[lz4]" to install this dependency')
-                args.compress_hwm = -1  # disable the compression
         self.send_recv_kwargs = vars(args)
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
         self.bytes_sent = 0
@@ -341,7 +333,7 @@ class ZmqStreamlet(Zmqlet):
 
     def start(self, callback: Callable[['LazyMessage'], 'LazyMessage']):
         def _callback(msg, sock_type):
-            msg = _parse_from_frames(sock_type, msg, self.args.check_version)
+            msg = _parse_from_frames(sock_type, msg)
             self.bytes_recv += msg.size
             self.msg_recv += 1
 
@@ -383,15 +375,12 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
         return r
 
 
-def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'LazyMessage', timeout: int = -1,
-                 compress_hwm: float = -1, compress_lwm: float = 1., **kwargs) -> int:
+def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'LazyMessage', timeout: int = -1, **kwargs) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
-    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
-    :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     num_bytes = 0
@@ -430,15 +419,12 @@ def _prep_recv_socket(sock, timeout):
 
 
 async def send_message_async(sock: 'zmq.Socket', msg: 'LazyMessage', timeout: int = -1,
-                             compress_hwm: float = -1, compress_lwm: float = 1.,
                              **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
-    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
-    :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     try:
@@ -463,12 +449,11 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'LazyMessage', timeout: in
             pass
 
 
-def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = False, **kwargs) -> 'LazyMessage':
+def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'LazyMessage':
     """ Receive a protobuf message from a socket
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
-    :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
     :return: a tuple of two pieces
 
             - the received protobuf message
@@ -477,7 +462,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
     try:
         _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
-        return _parse_from_frames(sock.type, msg_data, check_version)
+        return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -490,13 +475,12 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
         sock.setsockopt(zmq.RCVTIMEO, -1)
 
 
-async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = False,
+async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
                              **kwargs) -> 'LazyMessage':
     """ Receive a protobuf message from a socket in async manner
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
-    :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
     :return: a tuple of two pieces
 
             - the received protobuf message
@@ -506,7 +490,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
     try:
         _prep_recv_socket(sock, timeout)
         msg_data = await sock.recv_multipart()
-        return _parse_from_frames(sock.type, msg_data, check_version)
+        return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -526,7 +510,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
             pass
 
 
-def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> 'LazyMessage':
+def _parse_from_frames(sock_type, frames: List[bytes]) -> 'LazyMessage':
     """
     Build :class:`LazyMessage` from a list of frames.
 
@@ -538,7 +522,6 @@ def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> '
 
     :param sock_type: the recv socket type
     :param frames: list of bytes to parse from
-    :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
     :return: a :class:`LazyMessage` object
     """
     if sock_type == zmq.DEALER:
@@ -548,7 +531,7 @@ def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> '
         # the router appends dealer id when receive it, we need to remove it
         frames.pop(0)
 
-    return LazyMessage(frames[1], frames[2], check_version)
+    return LazyMessage(frames[1], frames[2])
 
 
 def _get_random_ipc() -> str:
@@ -603,7 +586,7 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
             else:
                 try:
                     sock.bind(f'tcp://{host}:{port}')
-                except zmq.error.ZMQError as ex:
+                except zmq.error.ZMQError:
                     default_logger.error(f'error when binding port {port} to {host}')
                     raise
     else:

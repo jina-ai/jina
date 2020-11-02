@@ -124,16 +124,17 @@ class LazyMessage:
         """
         return self.envelope.request_type != 'ControlRequest'
 
-    def _add_envelope(self, pod_name, identity, num_part=1) -> 'jina_pb2.Envelope':
+    def _add_envelope(self, pod_name, identity, num_part=1, check_version=False) -> 'jina_pb2.Envelope':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
         .. note::
             this method should only be called at the gateway before the first pod of flow, not inside the flow.
 
-        :param req: the protobuf request
+
         :param pod_name: the name of the current pod
         :param identity: the identity of the current pod
         :param num_part: the total parts of the message, 0 and 1 means single part
+        :param check_version: turn on check_version 
         :return: the resulted protobuf message
         """
         envelope = jina_pb2.Envelope()
@@ -155,8 +156,10 @@ class LazyMessage:
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)
         envelope.num_part.append(1)
+        # keep in mind num_part works like FILO queue
         if num_part > 1:
             envelope.num_part.append(num_part)
+        envelope.check_version = check_version
         return envelope
 
     def dump(self) -> List[bytes]:
