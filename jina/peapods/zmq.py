@@ -360,7 +360,7 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int):
+def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int) -> 'LazyMessage':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send

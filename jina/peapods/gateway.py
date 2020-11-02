@@ -124,7 +124,7 @@ class GatewayPea:
             """
             try:
                 self._message = msg
-                self._request = msg.request.deserialize()
+                self._request = msg.request.as_pb_object()
 
                 if msg.envelope.num_part != [1]:
                     raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')

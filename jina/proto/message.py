@@ -36,8 +36,7 @@ class LazyRequest:
     def __getattr__(self, name: str):
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
         if (name in _trigger_fields) or hasattr(_empty_request, name):
-            if self._deserialized is None:
-                self._deserialized = self.deserialize()
+            self._deserialized = self.as_pb_object()
         if name in _trigger_body_fields:
             req = getattr(self._deserialized, self._deserialized.WhichOneof('body'))
             return getattr(req, name)
@@ -46,14 +45,18 @@ class LazyRequest:
         else:
             raise AttributeError
 
-    def deserialize(self) -> 'jina_pb2.Request':
-        r = jina_pb2.Request()
-        _buffer = self._buffer
-        if self._compress == jina_pb2.Envelope.LZ4:
-            import lz4.frame
-            _buffer = lz4.frame.decompress(_buffer)
-        r.ParseFromString(_buffer)
-        return r
+    def as_pb_object(self) -> 'jina_pb2.Request':
+        if self._deserialized is None:
+            r = jina_pb2.Request()
+            _buffer = self._buffer
+            if self._compress == jina_pb2.Envelope.LZ4:
+                import lz4.frame
+                _buffer = lz4.frame.decompress(_buffer)
+            r.ParseFromString(_buffer)
+            self._deserialized = r
+            return r
+        else:
+            return self._deserialized
 
     def dump(self):
         if self.is_used:
@@ -93,7 +96,7 @@ class LazyMessage:
             self.request = LazyRequest(request, self.envelope.compress)
             self._size += sys.getsizeof(envelope)
         elif isinstance(request, jina_pb2.Request):
-            self.request = request
+            self.request = request  # type: Union['LazyRequest', 'jina_pb2.Request']
         else:
             raise TypeError(f'expecting request to be bytes or jina_pb2.Request, but receiving {type(request)}')
 
@@ -102,6 +105,16 @@ class LazyMessage:
 
         if self.envelope.check_version:
             self._check_version()
+
+    def as_pb_object(self) -> 'jina_pb2.Message':
+        r = jina_pb2.Message()
+        r.envelope.CopyFrom(self.envelope)
+        if isinstance(self.request, jina_pb2.Request):
+            req = self.request
+        else:
+            req = self.request.as_pb_object()
+        r.request.CopyFrom(req)
+        return r
 
     @property
     def is_data_request(self) -> bool:
