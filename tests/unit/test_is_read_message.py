@@ -5,17 +5,17 @@ from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
-from jina.proto.message import LazyMessage
+from jina.proto.message import ProtoMessage
 
 
 class MockBasePeaNotRead(BasePea):
-    def post_hook(self, msg: 'LazyMessage') -> 'BasePea':
+    def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         super().post_hook(msg)
         assert not msg.request.is_used
 
 
 class MockBasePeaRead(BasePea):
-    def post_hook(self, msg: 'LazyMessage') -> 'BasePea':
+    def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         super().post_hook(msg)
         assert msg.request.is_used
 
@@ -58,7 +58,7 @@ def test_read_zmqlet():
         req.request_id = uuid.uuid1().hex
         d = req.index.docs.add()
         d.tags['id'] = 2
-        msg = LazyMessage(None, req, 'tmp', '')
+        msg = ProtoMessage(None, req, 'tmp', '')
         z.send_message(msg)
 
 
@@ -68,5 +68,5 @@ def test_not_read_zmqlet():
         req.request_id = uuid.uuid1().hex
         d = req.index.docs.add()
         d.tags['id'] = 2
-        msg = LazyMessage(None, req, 'tmp', '')
+        msg = ProtoMessage(None, req, 'tmp', '')
         z.send_message(msg)

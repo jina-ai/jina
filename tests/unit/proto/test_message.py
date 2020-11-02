@@ -5,7 +5,7 @@ import pytest
 from jina.clients.python.request import _generate
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import Envelope
-from jina.proto.message import LazyRequest, _trigger_fields, LazyMessage
+from jina.proto.message import LazyRequest, _trigger_fields, ProtoMessage
 from tests import random_docs
 
 
@@ -88,8 +88,8 @@ def test_lazy_nested_clear_access():
 
 
 def test_lazy_msg_access():
-    reqs = [LazyMessage(None, r.SerializeToString(), 'test', '123',
-                        request_id='123', request_type='IndexRequest') for r in _generate(random_docs(10))]
+    reqs = [ProtoMessage(None, r.SerializeToString(), 'test', '123',
+                         request_id='123', request_type='IndexRequest') for r in _generate(random_docs(10))]
     for r in reqs:
         assert not r.request.is_used
         assert r.envelope
@@ -110,7 +110,7 @@ def test_lazy_msg_access():
 
 
 def test_message_size():
-    reqs = [LazyMessage(None, r, 'test', '123') for r in _generate(random_docs(10))]
+    reqs = [ProtoMessage(None, r, 'test', '123') for r in _generate(random_docs(10))]
     for r in reqs:
         assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())

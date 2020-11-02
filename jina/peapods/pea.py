@@ -25,7 +25,7 @@ from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..logging.queue import clear_queues
 from ..proto import jina_pb2
-from ..proto.message import LazyMessage, LazyRequest
+from ..proto.message import ProtoMessage, LazyRequest
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -151,7 +151,7 @@ class BasePea(metaclass=PeaMeta):
             r += f'({str(self.executor)})'
         return r
 
-    def handle(self, msg: 'LazyMessage') -> 'BasePea':
+    def handle(self, msg: 'ProtoMessage') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
@@ -173,7 +173,7 @@ class BasePea(metaclass=PeaMeta):
         return self._request
 
     @property
-    def message(self) -> 'LazyMessage':
+    def message(self) -> 'ProtoMessage':
         """Get the current protobuf message to be processed"""
         return self._message
 
@@ -234,7 +234,7 @@ class BasePea(metaclass=PeaMeta):
             if hasattr(self, 'zmqlet'):
                 self.zmqlet.print_stats()
 
-    def pre_hook(self, msg: 'LazyMessage') -> 'BasePea':
+    def pre_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
         self.logger.info(f'received {msg.envelope.request_type} from {msg.colored_route}')
         msg.add_route(self.name, self.args.identity)
@@ -242,7 +242,7 @@ class BasePea(metaclass=PeaMeta):
         self._message = msg
         return self
 
-    def post_hook(self, msg: 'LazyMessage') -> 'BasePea':
+    def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
         msg.envelope.routes[-1].end_time.GetCurrentTime()
         if self.args.num_part > 1:
@@ -263,7 +263,7 @@ class BasePea(metaclass=PeaMeta):
         self.is_ready.clear()
         self.logger.success(__stop_msg__)
 
-    def _callback(self, msg: 'LazyMessage'):
+    def _callback(self, msg: 'ProtoMessage'):
         if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
             self.pre_hook(msg).handle(msg).post_hook(msg)
         return msg
@@ -283,7 +283,7 @@ class BasePea(metaclass=PeaMeta):
         self.loop_teardown()
         self.is_shutdown.set()
 
-    def msg_callback(self, msg: 'LazyMessage') -> Optional['LazyMessage']:
+    def msg_callback(self, msg: 'ProtoMessage') -> Optional['ProtoMessage']:
         """Callback function after receiving the message
 
         When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.

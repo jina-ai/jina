@@ -5,7 +5,7 @@ import pytest
 
 from jina.drivers.helper import pb_obj2dict, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
-from jina.proto.message import LazyMessage
+from jina.proto.message import ProtoMessage
 from jina.proto.ndarray.generic import GenericNdArray
 
 
@@ -52,7 +52,7 @@ def test_pb_obj2dict():
 def test_add_route():
     r = jina_pb2.Request()
     r.control.command = jina_pb2.Request.ControlRequest.IDLE
-    msg = LazyMessage(None, r, pod_name='test1', identity='sda')
+    msg = ProtoMessage(None, r, pod_name='test1', identity='sda')
     msg.add_route('name', 'identity')
     assert len(msg.envelope.routes) == 2
     assert msg.envelope.routes[1].pod == 'name'

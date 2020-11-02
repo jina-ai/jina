@@ -9,7 +9,7 @@ import numpy as np
 from . import BaseRecursiveDriver
 from ..excepts import NoExplicitMessage
 from ..proto import jina_pb2
-from ..proto.message import LazyMessage, LazyRequest
+from ..proto.message import ProtoMessage, LazyRequest
 from ..proto.ndarray.generic import GenericNdArray
 
 
@@ -37,7 +37,7 @@ class ReduceDriver(BaseRecursiveDriver):
         return self._prev_requests[:-1]
 
     @property
-    def prev_msgs(self) -> List['LazyMessage']:
+    def prev_msgs(self) -> List['ProtoMessage']:
         """Get all previous messages that has the same ``request_id``, shortcut to ``self.pea.prev_messages``
 
         This returns ``None`` when ``num_part=1``.

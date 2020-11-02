@@ -100,7 +100,7 @@ class LazyRequest:
             return self._buffer
 
 
-class LazyMessage:
+class ProtoMessage:
     """
     A container class for :class:`jina_pb2.Message`. Note, the Protobuf version of :class:`jina_pb2.Message`
     contains a :class:`jina_pb2.Envelope` and :class:`jina_pb2.Request`. Here, it contains:
@@ -110,7 +110,7 @@ class LazyMessage:
             - a :class:`jina_pb2.Request` object
 
     It provide a generic view of as :class:`jina_pb2.Message`, allowing one to access its member, request
-    and envelope.
+    and envelope as if using :class:`jina_pb2.Message` object directly.
 
     This class also collected all helper functions related to :class:`jina_pb2.Message` into one place.
     """
@@ -354,7 +354,7 @@ class LazyMessage:
         envelope.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
 
 
-class ControlMessage(LazyMessage):
+class ControlMessage(ProtoMessage):
     def __init__(self, command: 'jina_pb2.Request.ControlRequest',
                  *args, **kwargs):
         req = jina_pb2.Request()
