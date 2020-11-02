@@ -7,16 +7,22 @@ import pytest
 import requests
 
 from jina.enums import CompressAlgo
+from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 from tests import random_docs
 
 concurrency = 10
 
 
+class DummyEncoder(BaseEncoder):
+    def encode(self, data, *args, **kwargs):
+        pass
+
+
 @pytest.mark.parametrize('compress_algo', list(CompressAlgo))
 def test_compression(compress_algo):
     print(str(compress_algo))
-    f = Flow().add(uses='_pass', parallel=2)
+    f = Flow().add(name='DummyEncoder', parallel=2)
 
     with f:
         f.index(random_docs(100))
