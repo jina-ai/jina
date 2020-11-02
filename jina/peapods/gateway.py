@@ -94,27 +94,7 @@ class GatewayPea:
             self.args = args
             self.name = args.name or self.__class__.__name__
             self.logger = JinaLogger(self.name, **vars(args))
-            # self.executor = BaseExecutor()
-            # if args.to_datauri:
-            #     from ..drivers.convert import All2URI
-            #     for k in ['SearchRequest', 'IndexRequest', 'TrainRequest']:
-            #         self.executor.add_driver(All2URI(), k)
-            # self.executor.attach(pea=self)
             self.peapods = []
-
-        @property
-        def message(self) -> 'LazyMessage':
-            """Get the current protobuf message to be processed"""
-            return self._message
-
-        @property
-        def request_type(self) -> str:
-            return self._message.envelope.request_type
-
-        @property
-        def request(self) -> 'jina_pb2.Request':
-            """Get the current request body inside the protobuf message"""
-            return self._request
 
         def handle(self, msg: 'LazyMessage') -> 'jina_pb2.Request':
             """ Note gRPC accepts :class:`jina_pb2.Request` only, so no more :class:`LazyRequest`.
@@ -122,32 +102,13 @@ class GatewayPea:
             :param msg:
             :return:
             """
-            try:
-                self._request = msg.request.as_pb_object()
-                self._message = msg
 
-                if msg.envelope.num_part != [1]:
-                    raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
+            if msg.envelope.num_part != [1]:
+                raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
 
-                # self.executor(self.request_type)
-                # envelope will be dropped when returning to the client
-            except NoDriverForRequest:
-                # remove envelope and send back the request
-                pass
-            except Exception as ex:
-                msg.envelope.status.code = jina_pb2.Status.ERROR
-                if not msg.envelope.status.description:
-                    msg.envelope.status.description = f'{self} throws {repr(ex)}'
-                d = msg.envelope.status.details.add()
-                d.pod = self.name
-                d.pod_id = self.args.identity
-                d.exception = repr(ex)
-                d.executor = str(getattr(self, 'executor', ''))
-                d.traceback = traceback.format_exc()
-                d.time.GetCurrentTime()
-            finally:
-                self.request.status.CopyFrom(msg.envelope.status)
-                return self.request
+            request = msg.request.as_pb_object()
+            request.status.CopyFrom(msg.envelope.status)
+            return request
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:

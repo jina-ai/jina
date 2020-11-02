@@ -27,7 +27,6 @@ class LazyRequest:
         self._buffer = request
         self._deserialized = None  # type: jina_pb2.Request
         self._envelope = envelope
-        self._size = sys.getsizeof(self._buffer)
 
     @property
     def is_used(self) -> bool:
@@ -46,26 +45,29 @@ class LazyRequest:
         else:
             raise AttributeError
 
+    def _decompress(self, data: bytes) -> bytes:
+        ctag = CompressAlgo.from_string(self._envelope.compress)
+        if ctag == CompressAlgo.LZ4:
+            import lz4.frame
+            data = lz4.frame.decompress(data)
+        elif ctag == CompressAlgo.BZ2:
+            import bz2
+            data = bz2.decompress(data)
+        elif ctag == CompressAlgo.LZMA:
+            import lzma
+            data = lzma.decompress(data)
+        elif ctag == CompressAlgo.ZLIB:
+            import zlib
+            data = zlib.decompress(data)
+        elif ctag == CompressAlgo.GZIP:
+            import gzip
+            data = gzip.decompress(data)
+        return data
+
     def as_pb_object(self) -> 'jina_pb2.Request':
         if self._deserialized is None:
             r = jina_pb2.Request()
-            _buffer = self._buffer
-            _compress = CompressAlgo.from_string(self._envelope.compress)
-            if _compress == CompressAlgo.LZ4:
-                import lz4.frame
-                _buffer = lz4.frame.decompress(_buffer)
-            elif _compress == CompressAlgo.BZ2:
-                import bz2
-                _buffer = bz2.decompress(_buffer)
-            elif _compress == CompressAlgo.LZMA:
-                import lzma
-                _buffer = lzma.decompress(_buffer)
-            elif _compress == CompressAlgo.ZLIB:
-                import zlib
-                _buffer = zlib.decompress(_buffer)
-            elif _compress == CompressAlgo.ZLIB:
-                import gzip
-                _buffer = gzip.decompress(_buffer)
+            _buffer = self._decompress(self._buffer)
             r.ParseFromString(_buffer)
             self._deserialized = r
 
@@ -83,38 +85,10 @@ class LazyRequest:
 
     def SerializeToString(self):
         if self.is_used:
-            print('serialze!!!!!')
-            _buffer = self._deserialized.SerializeToString()
-            _compress = CompressAlgo.from_string(self._envelope.compress)
-            print(_compress)
-            if _compress == CompressAlgo.LZ4:
-                import lz4.frame
-                _buffer = lz4.frame.compress(_buffer)
-            elif _compress == CompressAlgo.BZ2:
-                import bz2
-                _buffer = bz2.compress(_buffer)
-            elif _compress == CompressAlgo.LZMA:
-                import lzma
-                _buffer = lzma.compress(_buffer)
-            elif _compress == CompressAlgo.ZLIB:
-                import zlib
-                _buffer = zlib.compress(_buffer)
-            elif _compress == CompressAlgo.ZLIB:
-                import gzip
-                _buffer = gzip.compress(_buffer)
-            self._size = sys.getsizeof(_buffer)
-            return _buffer
+            return self._deserialized.SerializeToString()
         else:
             # no touch, skip serialization, return original
             return self._buffer
-
-    @property
-    def size(self):
-        """Get the size in bytes.
-
-        To get the latest size, use it after :meth:`dump`
-        """
-        return self._size
 
 
 class LazyMessage:
@@ -211,12 +185,46 @@ class LazyMessage:
         return envelope
 
     def dump(self) -> List[bytes]:
+        r2 = self.request.SerializeToString()
+        r2 = self._compress(r2)
+
         r0 = self.envelope.receiver_id.encode()
         r1 = self.envelope.SerializeToString()
-        r2 = self.request.SerializeToString()
         m = [r0, r1, r2]
         self._size = sum(sys.getsizeof(r) for r in m)
         return m
+
+    def _compress(self, data: bytes) -> bytes:
+        if isinstance(self.request, LazyRequest) and not self.request.is_used:
+            # no furthur compression or post processing is required.
+            return data
+
+        # otherwise there are two cases
+        # 1. it is a lazy request, and being used, so `self.request.SerializeToString()` is a new uncompressed string
+        # 2. it is a regular request, `self.request.SerializeToString()` is a uncompressed string
+        # either way need compress
+        ctag = CompressAlgo.from_string(self.envelope.compress)
+        try:
+            if ctag == CompressAlgo.LZ4:
+                import lz4.frame
+                data = lz4.frame.compress(data)
+            elif ctag == CompressAlgo.BZ2:
+                import bz2
+                data = bz2.compress(data)
+            elif ctag == CompressAlgo.LZMA:
+                import lzma
+                data = lzma.compress(data)
+            elif ctag == CompressAlgo.ZLIB:
+                import zlib
+                data = zlib.compress(data)
+            elif ctag == CompressAlgo.GZIP:
+                import gzip
+                data = gzip.compress(data)
+        except Exception as ex:
+            default_logger.error(f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {repr(ex)}')
+            self.envelope.compress = 'NONE'
+
+        return data
 
     @property
     def colored_route(self) -> str:
