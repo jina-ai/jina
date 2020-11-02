@@ -112,10 +112,8 @@ class GatewayPea:
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
-                await zmqlet.send_message(LazyMessage(None, request, 'gateway', zmqlet.args.identity,
-                                                      num_part=self.args.num_part,
-                                                      check_version=self.args.check_version,
-                                                      compress=self.args.compress))
+                await zmqlet.send_message(LazyMessage(None, request, 'gateway',
+                                                      **vars(self.args)))
                 return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
@@ -130,9 +128,8 @@ class GatewayPea:
                         try:
                             asyncio.create_task(
                                 zmqlet.send_message(
-                                    LazyMessage(None, next(request_iterator), 'gateway', zmqlet.args.identity,
-                                                num_part=self.args.num_part, check_version=self.args.check_version,
-                                                compress=self.args.compress)))
+                                    LazyMessage(None, next(request_iterator), 'gateway',
+                                                **vars(self.args))))
                             fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                         except StopIteration:
                             return True

@@ -122,6 +122,10 @@ class PretrainedModelFileDoesNotExist(ModelCheckpointNotExist):
     TODO: to be removed after hub executors uses ModelCheckpointNotExist
     """
 
+class CompressionRateTooLow(Exception):
+    """ Compression rate is too low, no need to compression
+
+    """
 
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """

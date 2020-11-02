@@ -183,12 +183,25 @@ message Envelope {
 
     repeated uint32 num_part = 8; // the number of partial messages
 
-    string compress = 9; // compress algorithm used for request, do not use enum here for stablizing protobuf
+    string request_type = 9; // type of the request: TrainRequest, IndexRequest, SearchRequest, ControlRequest
 
-    string request_type = 10; // type of the request: TrainRequest, IndexRequest, SearchRequest, ControlRequest
+    bool check_version = 10; // check local Protobuf version on every Pod that this message flows to
 
-    bool check_version = 11; // check local Protobuf version on every Pod that this message flows to
+    CompressConfig compression = 11; // compress configuration used for request
 
+}
+
+/**
+ * Represents a config for the compression algorithm
+ */
+message CompressConfig {
+    string algorithm = 1;  // compress algorithm used for request
+
+    uint64 high_watermark = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
+
+    float low_watermark = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
+
+    google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
 }
 
 message Status {

@@ -46,7 +46,7 @@ class LazyRequest:
             raise AttributeError
 
     def _decompress(self, data: bytes) -> bytes:
-        ctag = CompressAlgo.from_string(self._envelope.compress)
+        ctag = CompressAlgo.from_string(self._envelope.compression.algorithm)
         if ctag == CompressAlgo.LZ4:
             import lz4.frame
             data = lz4.frame.decompress(data)
@@ -144,7 +144,9 @@ class LazyMessage:
         return self.envelope.request_type != 'ControlRequest'
 
     def _add_envelope(self, pod_name, identity, num_part=1, check_version=False,
-                      request_id: str = None, request_type: str = None, compress: str = 'NONE') -> 'jina_pb2.Envelope':
+                      request_id: str = None, request_type: str = None,
+                      compress: str = 'NONE', compress_hwm: int = 0, compress_lwm: float = 1., *args,
+                      **kwargs) -> 'jina_pb2.Envelope':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
         .. note::
@@ -173,7 +175,9 @@ class LazyMessage:
         else:
             raise TypeError(f'expecting request in type: jina_pb2.Request, but receiving {type(self.request)}')
 
-        envelope.compress = str(compress)
+        envelope.compression.algorithm = str(compress)
+        envelope.compression.low_watermark = compress_lwm
+        envelope.compression.high_watermark = compress_hwm
         envelope.timeout = 5000
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)
@@ -195,34 +199,59 @@ class LazyMessage:
         return m
 
     def _compress(self, data: bytes) -> bytes:
+        # no further compression or post processing is required
         if isinstance(self.request, LazyRequest) and not self.request.is_used:
-            # no furthur compression or post processing is required.
             return data
 
         # otherwise there are two cases
         # 1. it is a lazy request, and being used, so `self.request.SerializeToString()` is a new uncompressed string
         # 2. it is a regular request, `self.request.SerializeToString()` is a uncompressed string
         # either way need compress
-        ctag = CompressAlgo.from_string(self.envelope.compress)
+        ctag = CompressAlgo.from_string(self.envelope.compression.algorithm)
+
+        if ctag == CompressAlgo.NONE:
+            return data
+
+        _size_before = sys.getsizeof(data)
+
+        # lower than hwm, pass compression
+        if _size_before < self.envelope.compression.high_watermark or self.envelope.compression.high_watermark == 0:
+            self.envelope.compression.algorithm = 'NONE'
+            return data
+
         try:
             if ctag == CompressAlgo.LZ4:
                 import lz4.frame
-                data = lz4.frame.compress(data)
+                c_data = lz4.frame.compress(data)
             elif ctag == CompressAlgo.BZ2:
                 import bz2
-                data = bz2.compress(data)
+                c_data = bz2.compress(data)
             elif ctag == CompressAlgo.LZMA:
                 import lzma
-                data = lzma.compress(data)
+                c_data = lzma.compress(data)
             elif ctag == CompressAlgo.ZLIB:
                 import zlib
-                data = zlib.compress(data)
+                c_data = zlib.compress(data)
             elif ctag == CompressAlgo.GZIP:
                 import gzip
-                data = gzip.compress(data)
+                c_data = gzip.compress(data)
+
+            _size_after = sys.getsizeof(c_data)
+            _c_ratio = _size_after / _size_before
+
+            if _c_ratio < self.envelope.compression.low_watermark:
+                data = c_data
+            else:
+                # compression rate is too bad, dont bother
+                # save time on decompression
+                default_logger.debug(f'compression rate {(_size_after / _size_before * 100):.0f}% '
+                                     f'is lower than low_watermark '
+                                     f'{self.envelope.compression.low_watermark}')
+                self.envelope.compression.algorithm = 'NONE'
         except Exception as ex:
-            default_logger.error(f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {repr(ex)}')
-            self.envelope.compress = 'NONE'
+            default_logger.error(
+                f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {repr(ex)}')
+            self.envelope.compression.algorithm = 'NONE'
 
         return data
 
