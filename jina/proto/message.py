@@ -4,6 +4,7 @@ from typing import List, Union, Optional
 
 from . import jina_pb2
 from .. import __version__, __proto_version__
+from ..enums import CompressAlgo
 from ..excepts import MismatchedVersion
 from ..logging import default_logger
 
@@ -49,9 +50,22 @@ class LazyRequest:
         if self._deserialized is None:
             r = jina_pb2.Request()
             _buffer = self._buffer
-            if self._envelope.compress == jina_pb2.Envelope.LZ4:
+            _compress = CompressAlgo.from_string(self._envelope.compress)
+            if _compress == CompressAlgo.LZ4:
                 import lz4.frame
                 _buffer = lz4.frame.decompress(_buffer)
+            elif _compress == CompressAlgo.BZ2:
+                import bz2
+                _buffer = bz2.decompress(_buffer)
+            elif _compress == CompressAlgo.LZMA:
+                import lzma
+                _buffer = lzma.decompress(_buffer)
+            elif _compress == CompressAlgo.ZLIB:
+                import zlib
+                _buffer = zlib.decompress(_buffer)
+            elif _compress == CompressAlgo.ZLIB:
+                import gzip
+                _buffer = gzip.decompress(_buffer)
             r.ParseFromString(_buffer)
             self._deserialized = r
 
@@ -70,9 +84,22 @@ class LazyRequest:
     def SerializeToString(self):
         if self.is_used:
             _buffer = self._deserialized.SerializeToString()
-            if self._envelope.compress == jina_pb2.Envelope.LZ4:
+            _compress = CompressAlgo.from_string(self._envelope.compress)
+            if _compress == CompressAlgo.LZ4:
                 import lz4.frame
                 _buffer = lz4.frame.compress(_buffer)
+            elif _compress == CompressAlgo.BZ2:
+                import bz2
+                _buffer = bz2.compress(_buffer)
+            elif _compress == CompressAlgo.LZMA:
+                import lzma
+                _buffer = lzma.compress(_buffer)
+            elif _compress == CompressAlgo.ZLIB:
+                import zlib
+                _buffer = zlib.compress(_buffer)
+            elif _compress == CompressAlgo.ZLIB:
+                import gzip
+                _buffer = gzip.compress(_buffer)
             self._size = sys.getsizeof(_buffer)
             return _buffer
         else:
@@ -141,7 +168,7 @@ class LazyMessage:
         return self.envelope.request_type != 'ControlRequest'
 
     def _add_envelope(self, pod_name, identity, num_part=1, check_version=False,
-                      request_id: str = None, request_type: str = None) -> 'jina_pb2.Envelope':
+                      request_id: str = None, request_type: str = None, compress: str = 'NONE') -> 'jina_pb2.Envelope':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
         .. note::
@@ -170,6 +197,7 @@ class LazyMessage:
         else:
             raise TypeError(f'expecting request in type: jina_pb2.Request, but receiving {type(self.request)}')
 
+        envelope.compress = str(compress)
         envelope.timeout = 5000
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)

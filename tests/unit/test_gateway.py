@@ -6,9 +6,20 @@ import numpy as np
 import pytest
 import requests
 
+from jina.enums import CompressAlgo
 from jina.flow import Flow
+from tests import random_docs
 
 concurrency = 10
+
+
+@pytest.mark.parametrize('compress_algo', list(CompressAlgo))
+def test_compression(compress_algo):
+    print(str(compress_algo))
+    f = Flow().add(uses='_pass', parallel=2)
+
+    with f:
+        f.index(random_docs(100))
 
 
 # @pytest.mark.skip('this tests hang up for unknown reason on github')

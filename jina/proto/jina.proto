@@ -183,12 +183,7 @@ message Envelope {
 
     repeated uint32 num_part = 8; // the number of partial messages
 
-    enum CompressAlgo {
-        NO_COMPRESS = 0; // no compress
-        LZ4 = 1; // lz4 compression
-    }
-
-    CompressAlgo compress = 9; // compress algorithm used for request
+    string compress = 9; // compress algorithm used for request, do not use enum here for stablizing protobuf
 
     string request_type = 10; // type of the request: TrainRequest, IndexRequest, SearchRequest, ControlRequest
 
