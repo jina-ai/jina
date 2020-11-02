@@ -189,7 +189,7 @@ def test_container_status():
                                         '--uses-internal',
                                         os.path.join(cur_dir, '../mwu-encoder/mwu_encoder_ext.yml')])
     pea = ContainerPea(args)
-    assert not pea.get_ready
+    assert not pea.is_ready
     with pea:
         time.sleep(1.)
-        assert pea.get_ready
+        assert pea.is_ready

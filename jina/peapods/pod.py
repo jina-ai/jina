@@ -49,7 +49,7 @@ class BasePod(ExitStack):
     def is_idle(self) -> bool:
         """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
         """
-        return all(p.is_idle for p in self.peas if p.is_ready.is_set())
+        return all(p.is_idle for p in self.peas if p.is_ready_event.is_set())
 
     def close_if_idle(self):
         """Check every second if the pod is in idle, if yes, then close the pod"""
@@ -248,7 +248,7 @@ class BasePod(ExitStack):
 
     @property
     def is_shutdown(self) -> bool:
-        return all(not p.is_ready.is_set() for p in self.peas)
+        return all(not p.is_ready_event.is_set() for p in self.peas)
 
     def __enter__(self) -> Union['GatewayFlowPod', 'FlowPod']:
         return self.start()
@@ -261,10 +261,10 @@ class BasePod(ExitStack):
     def is_ready(self) -> bool:
         """Wait till the ready signal of this BasePod.
 
-        The pod is ready only when all the contained Peas returns is_ready
+        The pod is ready only when all the contained Peas returns is_ready_event
         """
         for p in self.peas:
-            p.is_ready.wait()
+            p.is_ready_event.wait()
         return True
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

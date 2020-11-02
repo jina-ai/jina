@@ -114,10 +114,10 @@ class BasePea(metaclass=PeaMeta):
         self.args = args
         self.name = self.__class__.__name__  #: this is the process name
 
-        self.is_ready = _get_event(self)
+        self.is_ready_event = _get_event(self)
         self.is_shutdown = _get_event(self)
         self.is_pretrained_model_exception = _get_event(self)
-        self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
+        self.ready_or_shutdown = _make_or_event(self, self.is_ready_event, self.is_shutdown)
         self.is_shutdown.clear()
         self.is_pretrained_model_exception.clear()
 
@@ -183,7 +183,7 @@ class BasePea(metaclass=PeaMeta):
     def log_iterator(self):
         """Get the last log using iterator """
         from ..logging.queue import __log_queue__
-        while self.is_ready.is_set():
+        while self.is_ready_event.is_set():
             try:
                 yield __log_queue__.get_nowait()
             except Empty:
@@ -253,12 +253,12 @@ class BasePea(metaclass=PeaMeta):
 
     def set_ready(self, *args, **kwargs):
         """Set the status of the pea to ready """
-        self.is_ready.set()
+        self.is_ready_event.set()
         self.logger.success(__ready_msg__)
 
     def unset_ready(self, *args, **kwargs):
         """Set the status of the pea to shutdown """
-        self.is_ready.clear()
+        self.is_ready_event.clear()
         self.logger.success(__stop_msg__)
 
     def _callback(self, msg):
@@ -384,14 +384,14 @@ class BasePea(metaclass=PeaMeta):
 
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
-        if self.is_ready.is_set() and hasattr(self, 'ctrl_addr'):
+        if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
             return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
                                      timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
-        if self.is_ready.is_set() and getattr(self, 'ctrl_addr'):
+        if self.is_ready_event.is_set() and getattr(self, 'ctrl_addr'):
             return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
                                      timeout=self.args.timeout_ctrl)
 
