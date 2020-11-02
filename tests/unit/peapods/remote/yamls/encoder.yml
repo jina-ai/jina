@@ -1,8 +1,7 @@
-!MyEncoder
+!DummyExecutor
 metas:
-  name: myenc  # a customized name
-  workspace: /tmp/blah
-  py_modules: tests/unit/peapods/remote/yamls/components.py
+  name: myenc
+  py_modules: tests/unit/peapods/remote/yamls/dummy.py
 requests:
   on:
     [IndexRequest, SearchRequest]:
