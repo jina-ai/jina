@@ -42,7 +42,7 @@ Here are a list of reasons that may motivate you to build a Pod image:
 - Your awesome executor requires certain Linux headers that can only be installed via `apt` or `yum`, but you don't have `sudo` on the host.
 - You executor relies on a pretrained model, you want to include this 100MB file into the image so that people don't need to download it again.  
 - You use Kubernetes or Docker Swarm and this orchestration framework requires each microservice to run as a Docker container.
-- You are using Jina on the cloud and you want to deploy a immutable Pod and version control it.
+- You are using Jina on the cloud and you want to deploy an immutable Pod and version control it.
 - You have figured out a set of parameters that works best for an executor, you want to write it down in a YAML config and share it to others.
 - You are debugging, doing try-and-error on exploring new packages, and you don't want ruin your local dev environments. 
 
