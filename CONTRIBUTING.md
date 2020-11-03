@@ -228,7 +228,7 @@ We don't enforce naming of PRs and branches, but we recommend you follow the sam
 Locally you can do unittest via:
 
 ```bash
-pip install ".[match-py-ver]"
+pip install ".[test]"
 pytest -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests
 ```
 
