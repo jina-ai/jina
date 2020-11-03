@@ -86,7 +86,7 @@ class LazyRequest:
             self._deserialized = r
 
             # # Though I can modify back the envelope, not sure if it is a good design:
-            # # My intuition is: if the content is changed dramatically, e.g. fron index to control request,
+            # # My intuition is: if the content is changed dramatically, e.g. from index to control request,
             # # then whatever writes on the envelope should be dropped
             # # depreciated. The only reason to reuse the envelope is saving cost on Envelope(), which is
             # # really a minor minor (and evil) optimization.
