@@ -130,7 +130,7 @@ with f:
     f.index_files(f'../pokedex-with-bit/pods/*.yml')
 ```
 
-API `index_files()` reads input data from `../pokedex-with-bit/pods/*.yml`. In this directory, there are 5 YAML files, so you in the protobuf you can see:
+API `index_files()` reads input data from `../pokedex-with-bit/pods/*.yml`. In this directory, there are 5 YAML files. Therefore, you can see them in the protobuf request as well:
 
 * 5 `docs` under `request.index`
 * Each file's path in a `request.index.doc.uri`
