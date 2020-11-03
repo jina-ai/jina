@@ -6,7 +6,7 @@ from jina.flow import Flow
 num_docs = 100
 
 
-def input_fn(pattern='../../../**/*.png'):
+def input_fn(pattern='../../**/*.png'):
     idx = 0
     for g in glob.glob(pattern, recursive=True)[:num_docs]:
         with open(g, 'rb') as fp:
@@ -14,7 +14,7 @@ def input_fn(pattern='../../../**/*.png'):
             idx += 1
 
 
-def input_fn2(pattern='../../*.*'):
+def input_fn2(pattern='../*.*'):
     for g in glob.glob(pattern, recursive=True)[:num_docs]:
         yield g
 

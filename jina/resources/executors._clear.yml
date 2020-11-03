@@ -4,10 +4,20 @@ metas:
   name: clear
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest]:
+    SearchRequest:
       - !ExcludeReqQL
         with:
           fields:
-            - request
+            - search
+    TrainRequest:
+      - !ExcludeReqQL
+        with:
+          fields:
+            - train
+    IndexRequest:
+      - !ExcludeReqQL
+        with:
+          fields:
+            - index
     ControlRequest:
       - !ControlReqDriver {}

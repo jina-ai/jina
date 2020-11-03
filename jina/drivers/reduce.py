@@ -9,6 +9,7 @@ import numpy as np
 from . import BaseRecursiveDriver
 from ..excepts import NoExplicitMessage
 from ..proto import jina_pb2
+from ..proto.message import ProtoMessage, LazyRequest
 from ..proto.ndarray.generic import GenericNdArray
 
 
@@ -22,7 +23,7 @@ class ReduceDriver(BaseRecursiveDriver):
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List]
 
     @property
-    def prev_reqs(self) -> List['jina_pb2.Request']:
+    def prev_reqs(self) -> List['LazyRequest']:
         """Get all previous requests that has the same ``request_id``, shortcut to ``self.pea.prev_requests``
 
         This returns ``None`` when ``num_part=1``.
@@ -30,13 +31,13 @@ class ReduceDriver(BaseRecursiveDriver):
         return self._prev_requests
 
     @property
-    def prev_reqs_exclude_last(self) -> List['jina_pb2.Request']:
+    def prev_reqs_exclude_last(self) -> List['LazyRequest']:
         """Get all previous requests but excluding the current request (last received request)
         """
         return self._prev_requests[:-1]
 
     @property
-    def prev_msgs(self) -> List['jina_pb2.Message']:
+    def prev_msgs(self) -> List['ProtoMessage']:
         """Get all previous messages that has the same ``request_id``, shortcut to ``self.pea.prev_messages``
 
         This returns ``None`` when ``num_part=1``.
@@ -44,17 +45,16 @@ class ReduceDriver(BaseRecursiveDriver):
         return self._prev_messages
 
     def __call__(self, *args, **kwargs):
-        if self.envelope.num_part[-1] > 1:
+        if self.msg.num_part > 1:
             req_id = self.envelope.request_id
             self._pending_msgs[req_id].append(self.msg)
             num_req = len(self._pending_msgs[req_id])
 
-            self.logger.info(f'collected {num_req}/{self.envelope.num_part[-1]} parts of {type(self.req).__name__}')
+            self.logger.info(f'collected {num_req}/{self.msg.num_part} parts of {type(self.req).__name__}')
 
-            if num_req == self.envelope.num_part[-1]:
+            if num_req == self.msg.num_part:
                 self._prev_messages = self._pending_msgs.pop(req_id)
-                self._prev_requests = [getattr(v.request, v.request.WhichOneof('body')) for v in
-                                       self._prev_messages]
+                self._prev_requests = [v.request for v in self._prev_messages]
             else:
                 raise NoExplicitMessage
 
@@ -66,7 +66,7 @@ class ReduceDriver(BaseRecursiveDriver):
             self.msg.envelope.ClearField('routes')
             self.msg.envelope.routes.extend(
                 sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
-            self.envelope.num_part.pop(-1)
+            self.msg.complete_last_part()
 
     def reduce(self, *args, **kwargs) -> None:
         """ Reduce the message from all requests by merging their envelopes

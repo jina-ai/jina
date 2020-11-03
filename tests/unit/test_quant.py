@@ -46,6 +46,6 @@ def test_quant_f2(quant):
     np.random.seed(rseed)
     os.environ['JINA_ARRAY_QUANT'] = quant
 
-    f = Flow(callback_on_body=True, compress_hwm=1024).add(uses='_pass')
+    f = Flow(callback_on_body=True).add(uses='_pass')
     with f as fl:
         fl.index(random_docs(num_docs, chunks_per_doc=chunks_per_doc, embed_dim=embed_dim), output_fn=get_output)

@@ -16,7 +16,6 @@ import zmq
 from jina import __unable_to_load_pretrained_model_msg__
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
-from ..drivers.helper import routes2str, add_route
 from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
     ModelCheckpointNotExist
@@ -26,6 +25,7 @@ from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..logging.queue import clear_queues
 from ..proto import jina_pb2
+from ..proto.message import ProtoMessage, LazyRequest
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -149,7 +149,7 @@ class BasePea(metaclass=PeaMeta):
             r += f'({str(self.executor)})'
         return r
 
-    def handle(self, msg: 'jina_pb2.Message') -> 'BasePea':
+    def handle(self, msg: 'ProtoMessage') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
@@ -166,18 +166,18 @@ class BasePea(metaclass=PeaMeta):
         return (time.perf_counter() - self.last_active_time) > self.args.max_idle_time
 
     @property
-    def request(self) -> 'jina_pb2.Request':
+    def request(self) -> 'LazyRequest':
         """Get the current request body inside the protobuf message"""
         return self._request
 
     @property
-    def message(self) -> 'jina_pb2.Message':
+    def message(self) -> 'ProtoMessage':
         """Get the current protobuf message to be processed"""
         return self._message
 
     @property
     def request_type(self) -> str:
-        return self._request.__class__.__name__
+        return self._message.envelope.request_type
 
     @property
     def log_iterator(self):
@@ -232,20 +232,20 @@ class BasePea(metaclass=PeaMeta):
             if hasattr(self, 'zmqlet'):
                 self.zmqlet.print_stats()
 
-    def pre_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
+    def pre_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
-        msg_type = msg.request.WhichOneof('body')
-        self.logger.info(f'received "{msg_type}" from {routes2str(msg, flag_current=True)}')
-        add_route(msg.envelope, self.name, self.args.identity)
-        self._request = getattr(msg.request, msg_type)
+        self.logger.info(f'received {msg.envelope.request_type} from {msg.colored_route}')
+        msg.add_route(self.name, self.args.identity)
+        self._request = msg.request
         self._message = msg
         return self
 
-    def post_hook(self, msg: 'jina_pb2.Message') -> 'BasePea':
+    def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
-        msg.envelope.routes[-1].end_time.GetCurrentTime()
+        msg.update_timestamp()
         if self.args.num_part > 1:
-            msg.envelope.num_part.append(self.args.num_part)
+            msg.num_part = self.args.num_part
+        # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
@@ -261,7 +261,7 @@ class BasePea(metaclass=PeaMeta):
         self.is_ready_event.clear()
         self.logger.success(__stop_msg__)
 
-    def _callback(self, msg):
+    def _callback(self, msg: 'ProtoMessage'):
         if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
             self.pre_hook(msg).handle(msg).post_hook(msg)
         return msg
@@ -281,7 +281,7 @@ class BasePea(metaclass=PeaMeta):
         self.loop_teardown()
         self.is_shutdown.set()
 
-    def msg_callback(self, msg: 'jina_pb2.Message') -> Optional['jina_pb2.Message']:
+    def msg_callback(self, msg: 'ProtoMessage') -> Optional['ProtoMessage']:
         """Callback function after receiving the message
 
         When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.

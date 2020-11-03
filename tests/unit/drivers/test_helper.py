@@ -3,8 +3,9 @@ import random
 import numpy as np
 import pytest
 
-from jina.drivers.helper import pb_obj2dict, add_route, extract_docs, DocGroundtruthPair
+from jina.drivers.helper import pb_obj2dict, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
+from jina.proto.message import ProtoMessage
 from jina.proto.ndarray.generic import GenericNdArray
 
 
@@ -49,11 +50,13 @@ def test_pb_obj2dict():
 
 
 def test_add_route():
-    envelope = jina_pb2.Envelope()
-    add_route(envelope, 'name', 'identity')
-    assert len(envelope.routes) == 1
-    assert envelope.routes[0].pod == 'name'
-    assert envelope.routes[0].pod_id == 'identity'
+    r = jina_pb2.Request()
+    r.control.command = jina_pb2.Request.ControlRequest.IDLE
+    msg = ProtoMessage(None, r, pod_name='test1', identity='sda')
+    msg.add_route('name', 'identity')
+    assert len(msg.envelope.routes) == 2
+    assert msg.envelope.routes[1].pod == 'name'
+    assert msg.envelope.routes[1].pod_id == 'identity'
 
 
 def test_extract_docs():
