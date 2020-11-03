@@ -493,7 +493,7 @@ def set_gateway_parser(parser=None):
                      help='comparing the jina and proto version of incoming message with local setup, '
                           'mismatch raise an exception')
     gp2.add_argument('--compress', choices=list(CompressAlgo), type=CompressAlgo.from_string,
-                     default=CompressAlgo.NONE,
+                     default=CompressAlgo.LZ4,
                      help='the algorithm used for compressing request data, this can reduce the network overhead but may '
                           'increase CPU usage')
     gp2.add_argument('--compress-hwm', type=int, default=100,
