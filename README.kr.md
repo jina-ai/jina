@@ -60,15 +60,15 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [착수하다](#착수하다)
-- [Jina "안녕 세계" 👋🌍](#jina-안녕-세계-)
-- [자습서](#자습서)
-- [문서화](#문서화)
-- [기여하는](#기여하는)
-- [공동체의](#공동체의)
-- [개방적인 통치](#개방적인-통치)
-- [우리와 합류하다](#우리와-합류하다)
-- [면허를 따다](#면허를따다)
+- [착수하다](#%EC%B0%A9%EC%88%98%ED%95%98%EB%8B%A4)
+- [Jina "안녕 세계" 👋🌍](#jina-%EC%95%88%EB%85%95-%EC%84%B8%EA%B3%84-)
+- [자습서](#%EC%9E%90%EC%8A%B5%EC%84%9C)
+- [문서화](#%EB%AC%B8%EC%84%9C%ED%99%94)
+- [기여하는](#%EA%B8%B0%EC%97%AC%ED%95%98%EB%8A%94)
+- [community](#community)
+- [오픈 거버넌스](#%EC%98%A4%ED%94%88-%EA%B1%B0%EB%B2%84%EB%84%8C%EC%8A%A4)
+- [참여하기](#%EC%B0%B8%EC%97%AC%ED%95%98%EA%B8%B0)
+- [면허증](#%EB%A9%B4%ED%97%88%EC%A6%9D)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
