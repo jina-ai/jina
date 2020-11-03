@@ -21,6 +21,8 @@ _trigger_req_fields = set(jina_pb2.Request.DESCRIPTOR.fields_by_name.keys()).dif
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
 _empty_request = jina_pb2.Request()
 
+__all__ = ['ProtoMessage', 'ControlMessage']
+
 
 class LazyRequest:
     """
