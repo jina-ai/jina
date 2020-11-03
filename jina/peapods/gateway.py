@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import asyncio
 import os
 import threading
-import traceback
 
 import grpc
 from google.protobuf.json_format import MessageToJson
@@ -14,7 +13,7 @@ from .pea import BasePea
 from .zmq import AsyncZmqlet
 from .. import __stop_msg__
 from ..enums import ClientMode
-from ..excepts import NoDriverForRequest, BadRequestType, GatewayPartialMessage
+from ..excepts import BadRequestType, GatewayPartialMessage
 from ..helper import use_uvloop
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -103,7 +102,7 @@ class GatewayPea:
             :return:
             """
 
-            if msg.envelope.num_part != [1]:
+            if not msg.is_complete:
                 raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
 
             request = msg.request.as_pb_object()

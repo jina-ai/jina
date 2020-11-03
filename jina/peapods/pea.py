@@ -30,8 +30,6 @@ from ..proto.message import ProtoMessage, LazyRequest
 __all__ = ['PeaMeta', 'BasePea']
 
 
-
-
 class PeaMeta(type):
     """Meta class of :class:`BasePea` to enable switching between ``thread`` and ``process`` backend. """
     _dct = {}
@@ -244,9 +242,9 @@ class BasePea(metaclass=PeaMeta):
 
     def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
-        msg.envelope.routes[-1].end_time.GetCurrentTime()
+        msg.update_timestamp()
         if self.args.num_part > 1:
-            msg.envelope.num_part.append(self.args.num_part)
+            msg.expecting_parts = self.args.num_part
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)

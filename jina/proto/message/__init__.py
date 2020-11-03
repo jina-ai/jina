@@ -266,6 +266,29 @@ class ProtoMessage:
         envelope.version.proto = __proto_version__
         envelope.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
 
+    @property
+    def is_complete(self):
+        """Return true if a the message is a single-part message """
+        return self.envelope.num_part == [1]
+
+    @property
+    def expecting_parts(self):
+        """Return the number of parts of the message """
+        return self.envelope.num_part[-1]
+
+    @expecting_parts.setter
+    def expecting_parts(self, expect: int):
+        """Add new expected parts to the message"""
+        self.envelope.num_part.append(expect)
+
+    def mark_as_complete(self):
+        """Mark the last expected parts as complete"""
+        self.envelope.num_part.pop(-1)
+
+    def update_timestamp(self):
+        """Update the timestamp of the last route"""
+        self.envelope.routes[-1].end_time.GetCurrentTime()
+
 
 class ControlMessage(ProtoMessage):
     def __init__(self, command: 'jina_pb2.Request.ControlRequest',
