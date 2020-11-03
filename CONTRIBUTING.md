@@ -228,8 +228,8 @@ We don't enforce naming of PRs and branches, but we recommend you follow the sam
 Locally you can do unittest via:
 
 ```bash
-pip install ".[match-py-ver]"
-python -m unittest -v
+pip install ".[test]"
+pytest -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests
 ```
 
 When you add an executor or a driver, you may introduce new dependencies to Jina. You can verify the dependencies via:
