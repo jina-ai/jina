@@ -8,11 +8,10 @@ from .. import BaseExecutor
 
 
 class BaseCrafter(BaseExecutor):
-    """A :class:`BaseCrafter` craft the content of `Document` or `Chunk`. It can be used for preprocessing,
-    segmenting etc.
+    """A :class:`BaseCrafter` transforms the content of `Document` or `Chunk`. It can be used for preprocessing,
+    segmenting etc. It is an interface for Crafters which is a family of executors intended to apply
+    transformations to single documents.
     The apply function is :func:`craft`, where the name of the arguments will be used as keys of the content.
-    .. seealso::
-        :mod:`jina.drivers.handlers.craft`
     """
 
     def __init__(self, *args, **kwargs):
