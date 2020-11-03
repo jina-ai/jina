@@ -321,7 +321,7 @@ class FlowPod(BasePod):
         return f'{cmd} {" ".join(self.cli_args)}'
 
     @staticmethod
-    def connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
+    def connect(first: 'FlowPod', second: 'FlowPod', first_socket_type: 'SocketType') -> None:
         """Connect two Pods
 
         :param first: the first BasePod
@@ -342,7 +342,8 @@ class FlowPod(BasePod):
             second.head_args.host_in = __default_host__
             first.tail_args.port_out = second.head_args.port_in
         elif first_socket_type == SocketType.PUB_BIND:
-            first.tail_args.num_part += 1
+            if not second.role.is_inspect:
+                first.tail_args.num_part += 1
             first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
             second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
                                                      connect_args=second.head_args)  # the hostname of s_pod
