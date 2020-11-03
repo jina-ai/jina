@@ -85,4 +85,4 @@ Here is the checklist to help you locate the problem.
 
 Click "Details" and checkout the log of the CICD pipeline:
 
-![](.github/.README_images/5f4181e9.png)
+![](img/5f4181e9.png)
