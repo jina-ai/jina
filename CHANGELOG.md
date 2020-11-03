@@ -90,6 +90,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5282,4 +5283,46 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```852f6911```](https://github.com/jina-ai/jina/commit/852f691110c0c9888f06ccd68b76ecf2b1c2d9eb)] __-__ __cli__: revert fashion mnist url (#1183) (*Han Xiao*)
  - [[```e7bb5e42```](https://github.com/jina-ai/jina/commit/e7bb5e42614028a0b1432aef3066231cc1093c17)] __-__ remove Nan, Joan and Maxim as codeowners of modules (#1177) (*Joan Fontanals*)
  - [[```07920ca7```](https://github.com/jina-ai/jina/commit/07920ca7143c18acc51b433e39a91a249f543b46)] __-__ __version__: the next version will be 0.7.3 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-4></a>
+## Release Note (`0.7.4`)
+
+> Release time: 2020-11-03 16:52:26
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Alex Cureton-Griffiths,  Joan Fontanals,  cristian,  hoenickf,  Nicholas Chin,  🙇
+
+
+### 🆕 New Features
+
+ - [[```752fc6c5```](https://github.com/jina-ai/jina/commit/752fc6c55d6c945823af851d0b4025535a8a3f77)] __-__ __zmq__: lazy access to request body (#1210) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```a911d024```](https://github.com/jina-ai/jina/commit/a911d02477e6911e651159822463a64f34e7c02b)] __-__ clean up root file structure (#1214) (*Han Xiao*)
+ - [[```aada7487```](https://github.com/jina-ai/jina/commit/aada74879466bfa8bd260b789da0a5e10592bf61)] __-__ rely on control request to set ready docker pea (#1187) (*Joan Fontanals*)
+ - [[```ba815016```](https://github.com/jina-ai/jina/commit/ba815016d2133dd2b60abfb49543efce2d032301)] __-__ __contributing__: switch testing to pytest (#1207) (*Alex Cureton-Griffiths*)
+
+### 📗 Documentation
+
+ - [[```b7b8f5df```](https://github.com/jina-ai/jina/commit/b7b8f5df71c677fc604b8e33c4ef13367c50f8e9)] __-__ update all executors and drivers (#1211) (*Han Xiao*)
+ - [[```e56b560c```](https://github.com/jina-ai/jina/commit/e56b560c968e96d814552c86854aedeba3a6e6f1)] __-__ cleanup crafters docstring (#1209) (*cristian*)
+ - [[```c3293422```](https://github.com/jina-ai/jina/commit/c32934229b56879fe9a755667ee28bcd8f9faf8d)] __-__ __io__: use new crafter base class (#1201) (*hoenickf*)
+ - [[```b1d57141```](https://github.com/jina-ai/jina/commit/b1d571410902209282c781cfeb9c32eefe5b2aa2)] __-__ __io__: correct duplicate word (#1200) (*hoenickf*)
+ - [[```efc4723a```](https://github.com/jina-ai/jina/commit/efc4723a2709508db0a3cd92c19a4021f07eb2a2)] __-__ v parameter missing (#1205) (*hoenickf*)
+ - [[```7a7be4ae```](https://github.com/jina-ai/jina/commit/7a7be4ae560751446ae3ded1b1c90b4f63afa369)] __-__ __hub__: minor spelling correction (#1204) (*hoenickf*)
+ - [[```83beef90```](https://github.com/jina-ai/jina/commit/83beef90e148ba23f82189e6bb374ed80ac86634)] __-__ __hub__: fix picture (#1206) (*hoenickf*)
+ - [[```e6a90380```](https://github.com/jina-ai/jina/commit/e6a90380419bcce0037a09e2894a7a8544945cb0)] __-__ add korean translation of readme (*Nicholas Chin*)
+
+### 🍹 Other Improvements
+
+ - [[```42030db7```](https://github.com/jina-ai/jina/commit/42030db74f3846ec1c9a4a4360088ff035fa8522)] __-__ hotfix is_ready api (*Han Xiao*)
+ - [[```e1b61949```](https://github.com/jina-ai/jina/commit/e1b61949ed0cc96bde6eb568a2a51d902c05726c)] __-__ update contributors (*Jina Dev Bot*)
+ - [[```e5740439```](https://github.com/jina-ai/jina/commit/e574043970dde40a40c33b302fdc2151ca72fd0a)] __-__ Chore move i18n readmes (#1213) (*Alex Cureton-Griffiths*)
+ - [[```610eb240```](https://github.com/jina-ai/jina/commit/610eb240cfb7fd911921db1f4d2b0c1c9ac4dc5d)] __-__ fix codeowners (*Han Xiao*)
+ - [[```d948339d```](https://github.com/jina-ai/jina/commit/d948339ddc407fe81780a0df50d9c0362dab24e3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b7aba3fa```](https://github.com/jina-ai/jina/commit/b7aba3fa41ae17382aa95fb5e5bbf658e4901f8e)] __-__ update extra req for test (#1208) (*Joan Fontanals*)
+ - [[```39491637```](https://github.com/jina-ai/jina/commit/394916371e7d6e0643c171dbde2880d3caa78aa5)] __-__ __version__: the next version will be 0.7.4 (*Jina Dev Bot*)
 
