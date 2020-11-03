@@ -56,13 +56,14 @@ class ProtoMessage:
         if self.envelope.check_version:
             self._check_version()
 
+    @property
     def as_pb_object(self) -> 'jina_pb2.Message':
         r = jina_pb2.Message()
         r.envelope.CopyFrom(self.envelope)
         if isinstance(self.request, jina_pb2.Request):
             req = self.request
         else:
-            req = self.request.as_pb_object()
+            req = self.request.as_pb_object
         r.request.CopyFrom(req)
         return r
 

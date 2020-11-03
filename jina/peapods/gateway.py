@@ -105,7 +105,7 @@ class GatewayPea:
             if not msg.is_complete:
                 raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
 
-            request = msg.request.as_pb_object()
+            request = msg.request.as_pb_object
             request.status.CopyFrom(msg.envelope.status)
             return request
 
