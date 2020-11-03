@@ -57,6 +57,9 @@ class LazyRequest:
             raise AttributeError
 
     def _decompress(self, data: bytes) -> bytes:
+        if not self._envelope.compression.algorithm:
+            return data
+
         ctag = CompressAlgo.from_string(self._envelope.compression.algorithm)
         if ctag == CompressAlgo.LZ4:
             import lz4.frame
@@ -231,6 +234,9 @@ class ProtoMessage:
         # 1. it is a lazy request, and being used, so `self.request.SerializeToString()` is a new uncompressed string
         # 2. it is a regular request, `self.request.SerializeToString()` is a uncompressed string
         # either way need compress
+        if not self.envelope.compression.algorithm:
+            return data
+
         ctag = CompressAlgo.from_string(self.envelope.compression.algorithm)
 
         if ctag == CompressAlgo.NONE:
