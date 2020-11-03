@@ -18,7 +18,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path-to-signatures: '.github/signatures/v1/cla.json'
-          path-To-cladocument: 'https://github.com/jina-ai/jina/blob/master/CLA.md'
+          path-To-cladocument: 'https://github.com/jina-ai/jina/blob/master/.github/CLA.md'
           # branch should not be protected
           branch: 'cla'
           empty-commit-flag: false

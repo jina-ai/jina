@@ -69,7 +69,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 4. Commit the changes with the [correct commit style](#commit-message).
 5. Make a pull request. 
 6. Submit your pull request and wait for all checks to pass.
-7. Request reviews from one of [the code owners](CODEOWNERS).
+7. Request reviews from one of [the code owners](.github/CODEOWNERS).
 8. Get a LGTM 👍 and PR gets merged.
 
 **Note:** If you're just fixing a typo or grammatical issue, you can go straight to a pull request.
@@ -281,7 +281,7 @@ Docstrings are how we document Jina's functions. This is suitable for more exper
 To build documentation locally, you need Docker installed. Clone this repository and run the following command: 
 
 ```bash
-bash ./make-doc.sh serve 8080
+bash ./scripts/make-doc.sh serve 8080
 ```
 
 The documentation is then available in your browser at [`http://0.0.0.0:8080/`](http://0.0.0.0:8080/).

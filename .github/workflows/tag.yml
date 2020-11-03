@@ -49,7 +49,7 @@ jobs:
       - name: install the release version
         run: |
           pip install .  --no-cache-dir
-          ./make-doc.sh release "release $JINA_VERSION of ${{github.repository}}"
+          ./scripts/make-doc.sh release "release $JINA_VERSION of ${{github.repository}}"
         env:
           JINA_VERSION: ${{steps.get_version.outputs.JINA_VERSION}}
           V_JINA_VERSION: ${{steps.get_version.outputs.V_JINA_VERSION}}
