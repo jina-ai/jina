@@ -45,14 +45,14 @@ class ReduceDriver(BaseRecursiveDriver):
         return self._prev_messages
 
     def __call__(self, *args, **kwargs):
-        if self.msg.expecting_parts > 1:
+        if self.msg.num_part > 1:
             req_id = self.envelope.request_id
             self._pending_msgs[req_id].append(self.msg)
             num_req = len(self._pending_msgs[req_id])
 
-            self.logger.info(f'collected {num_req}/{self.msg.expecting_parts} parts of {type(self.req).__name__}')
+            self.logger.info(f'collected {num_req}/{self.msg.num_part} parts of {type(self.req).__name__}')
 
-            if num_req == self.msg.expecting_parts:
+            if num_req == self.msg.num_part:
                 self._prev_messages = self._pending_msgs.pop(req_id)
                 self._prev_requests = [v.request for v in self._prev_messages]
             else:
@@ -66,7 +66,7 @@ class ReduceDriver(BaseRecursiveDriver):
             self.msg.envelope.ClearField('routes')
             self.msg.envelope.routes.extend(
                 sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
-            self.msg.mark_as_complete()
+            self.msg.complete_last_part()
 
     def reduce(self, *args, **kwargs) -> None:
         """ Reduce the message from all requests by merging their envelopes

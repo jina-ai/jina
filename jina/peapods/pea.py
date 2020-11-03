@@ -244,7 +244,7 @@ class BasePea(metaclass=PeaMeta):
         """Post-hook function, what to do before handing out the message """
         msg.update_timestamp()
         if self.args.num_part > 1:
-            msg.expecting_parts = self.args.num_part
+            msg.num_part = self.args.num_part
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)

@@ -82,8 +82,9 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             first_socket_type = SocketType.PUB_BIND
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
-        flow.logger.debug(f'Connect {start_node_name} with {end_node_name} {str(end_node.role)}')
         FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
+        flow.logger.debug(f'Connect {start_node_name} ({start_node.tail_args.num_part}) '
+                          f'with {end_node_name} {str(end_node.role)} {end_node.head_args.num_part}')
 
     return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
 

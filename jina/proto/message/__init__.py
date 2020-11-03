@@ -272,16 +272,16 @@ class ProtoMessage:
         return self.envelope.num_part == [1]
 
     @property
-    def expecting_parts(self):
+    def num_part(self):
         """Return the number of parts of the message """
         return self.envelope.num_part[-1]
 
-    @expecting_parts.setter
-    def expecting_parts(self, expect: int):
+    @num_part.setter
+    def num_part(self, expect: int):
         """Add new expected parts to the message"""
         self.envelope.num_part.append(expect)
 
-    def mark_as_complete(self):
+    def complete_last_part(self):
         """Mark the last expected parts as complete"""
         self.envelope.num_part.pop(-1)
 
