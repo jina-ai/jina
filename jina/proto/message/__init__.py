@@ -89,7 +89,7 @@ class ProtoMessage:
         :param pod_name: the name of the current pod
         :param identity: the identity of the current pod
         :param num_part: the total parts of the message, 0 and 1 means single part
-        :param check_version: turn on check_version
+        :param check_version: turn on check_version 
         :return: the resulted protobuf message
         """
         envelope = jina_pb2.Envelope()
