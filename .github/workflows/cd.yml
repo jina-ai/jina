@@ -13,7 +13,10 @@ on:
 
 jobs:
   update-doc:
-    if: "!startsWith(github.event.head_commit.message, 'chore') && !startsWith(github.event.head_commit.message, 'build: hotfix')"
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'Reformatted by jina-dev-bot.')
     runs-on: ubuntu-latest
     steps:
       - uses: peter-evans/dockerhub-description@v2.3.0
