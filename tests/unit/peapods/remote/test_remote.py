@@ -2,39 +2,7 @@ import pytest
 from argparse import Namespace
 
 from jina.enums import PollingType
-from jina.logging import JinaLogger
-from jina.peapods.jinad import fetch_files_from_yaml
 from jina.peapods.remote import namespace_to_dict
-
-logger = JinaLogger(context='test-remote')
-
-
-def test_fetch_files_from_yaml():
-    yaml_path = 'tests/unit/peapods/remote'
-    pea_args = {
-        'head': None,
-        'tail': None,
-        'peas': [
-            {
-                'name': 'encode',
-                'uses': f'{yaml_path}/yamls/encoder.yml',
-                'py_modules': None,
-                'uses_before': None,
-                'uses_after': None
-            },
-            {
-                'name': 'index',
-                'uses': f'{yaml_path}/yamls/indexer.yml',
-                'py_modules': None,
-                'uses_before': None,
-                'uses_after': None
-            },
-        ]
-    }
-    _uses_files, _pymodule_files = fetch_files_from_yaml(pea_args, logger)
-    assert _uses_files == {f'{yaml_path}/yamls/encoder.yml',
-                           f'{yaml_path}/yamls/indexer.yml'}
-    assert _pymodule_files == {f'{yaml_path}/yamls/dummy.py'}
 
 
 def test_namespace_to_dict():
