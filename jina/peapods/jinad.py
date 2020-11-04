@@ -111,14 +111,13 @@ class JinadAPI:
             if r.status_code == requests.codes.ok:
                 self.logger.info(f'Got status {colored(r.json()["status"], "green")} from remote')
 
-    def create(self, kind: str, pea_args: Dict):
+    def create(self, kind: str, pea_args: Dict, pod_type: str = 'flow'):
         import requests
         try:
-            url = self.pea_url if kind == 'pea' else self.pod_url
-            id_key = 'pea_id' if kind == 'pea' else 'pod_id'
+            url = self.pea_url if kind == 'pea' else f'{self.pod_url}/{pod_type}'
             r = requests.put(url=url,
                              json=pea_args)
-            return r.json()[id_key] if r.status_code == requests.codes.ok else False
+            return r.json()[f'{kind}_id'] if r.status_code == requests.codes.ok else False
         except requests.exceptions.ConnectionError:
             self.logger.error('couldn\'t connect with remote jinad url')
             return False
@@ -184,8 +183,8 @@ class PodAPI(JinadAPI):
         except Exception as e:
             self.logger.error(f'got an error while uploading context files to remote pod {repr(e)}')
 
-    def create(self, pea_args: Dict):
-        return super().create(kind='pod', pea_args=pea_args)
+    def create(self, pea_args: Dict, pod_type: str = 'flow'):
+        return super().create(kind='pod', pea_args=pea_args, pod_type=pod_type)
 
     def log(self, pod_id: uuid.UUID):
         super().log(kind='pod', remote_id=pod_id)
