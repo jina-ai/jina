@@ -51,7 +51,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.7]
-        path: [draft/southpark-search-dockerized]
+        path: [southpark-search]
 
     steps:
       - uses: actions/checkout@v2
