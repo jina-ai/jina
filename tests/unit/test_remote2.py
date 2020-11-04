@@ -5,8 +5,10 @@ from multiprocessing import Process
 
 from jina.parser import set_gateway_parser, set_pea_parser, set_pod_parser
 from jina.peapods.pod import GatewayPod, BasePod
-from jina.peapods.remote import RemotePea, PodSpawnHelper, PeaSpawnHelper, MutablePodSpawnHelper, RemotePod, \
-    RemoteMutablePod
+# TODO: this test file needs to be removed
+if False:
+    from jina.peapods.remote import RemotePea, PodSpawnHelper, PeaSpawnHelper, MutablePodSpawnHelper, RemotePod, \
+        RemoteMutablePod
 from tests import JinaTestCase
 
 
