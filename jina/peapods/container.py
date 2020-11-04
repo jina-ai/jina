@@ -69,13 +69,14 @@ class ContainerPea(BasePea):
         _args = kwargs2list(non_defaults)
         self._container = self._client.containers.run(self.args.uses, _args,
                                                       detach=True, auto_remove=True,
-                                                      ports={f'{v}': v for v in
+                                                      ports={f'{v}/tcp': v for v in
                                                              _expose_port},
                                                       name=self.name,
                                                       volumes=_volumes,
                                                       network_mode=net_mode,
                                                       entrypoint=self.args.entrypoint,
-                                                      # publish_all_ports=True # This looks like something I would activate
+                                                      # publish_all_ports=True # This looks like something I would
+                                                      # activate
                                                       )
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
