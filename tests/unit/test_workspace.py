@@ -5,40 +5,40 @@ import numpy as np
 
 from jina.executors import BaseExecutor
 
-@pytest.mark.parametrize('replica_id', [1,2,3])
-def test_share_workspace(tmpdir, replica_id):
-    with BaseExecutor.load_config('yaml/test-workspace.yml', True, replica_id) as executor:
+@pytest.mark.parametrize('pea_id', [1,2,3])
+def test_share_workspace(tmpdir, pea_id):
+    with BaseExecutor.load_config('yaml/test-workspace.yml', True, pea_id) as executor:
         executor.touch()
-        executor_dir = tmpdir.join(f'{executor.name}-{replica_id}-{executor.name}.bin')
+        executor_dir = tmpdir.join(f'{executor.name}-{pea_id}-{executor.name}.bin')
         executor.save(executor_dir)
         assert os.path.exists(executor_dir)
 
-@pytest.mark.parametrize('replica_id', [1,2,3])
-def test_compound_workspace(tmpdir, replica_id):
-    with BaseExecutor.load_config('yaml/test-compound-workspace.yml', True, replica_id) as executor:
+@pytest.mark.parametrize('pea_id', [1,2,3])
+def test_compound_workspace(tmpdir, pea_id):
+    with BaseExecutor.load_config('yaml/test-compound-workspace.yml', True, pea_id) as executor:
         for c in executor.components:
             c.touch()
-            component_dir = tmpdir.join(f'{executor.name}-{replica_id}-{c.name}.bin')
+            component_dir = tmpdir.join(f'{executor.name}-{pea_id}-{c.name}.bin')
             c.save(component_dir)
             assert os.path.exists(component_dir)
         executor.touch()
-        executor_dir = tmpdir.join(f'{executor.name}-{replica_id}-{executor.name}.bin')
+        executor_dir = tmpdir.join(f'{executor.name}-{pea_id}-{executor.name}.bin')
         executor.save(executor_dir)
         assert os.path.exists(executor_dir)
 
-@pytest.mark.parametrize('replica_id', [1,2,3])
-def test_compound_indexer(tmpdir, replica_id):
-    with BaseExecutor.load_config('yaml/test-compound-indexer.yml', True, replica_id) as e:
+@pytest.mark.parametrize('pea_id', [1,2,3])
+def test_compound_indexer(tmpdir, pea_id):
+    with BaseExecutor.load_config('yaml/test-compound-indexer.yml', True, pea_id) as e:
         for c in e:
             c.touch()
-            component_dir = tmpdir.join(f'{e.name}-{replica_id}-{c.name}.bin')
+            component_dir = tmpdir.join(f'{e.name}-{pea_id}-{c.name}.bin')
             c.save(component_dir)
             assert os.path.exists(c.index_abspath)
             assert c.save_abspath.startswith(e.current_workspace)
             assert c.index_abspath.startswith(e.current_workspace)
 
         e.touch()
-        executor_dir = tmpdir.join(f'{e.name}-{replica_id}-{e.name}.bin')
+        executor_dir = tmpdir.join(f'{e.name}-{pea_id}-{e.name}.bin')
         e.save(executor_dir)
         assert os.path.exists(executor_dir)
 
