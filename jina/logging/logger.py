@@ -82,7 +82,7 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
 class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
-    def __init__(self, context: str, id: Optional[str] = None, log_config: Optional[str] = None, **kwargs):
+    def __init__(self, context: str, log_config: Optional[str] = None, **kwargs):
         from .. import __uptime__
 
         if not log_config:
@@ -102,8 +102,6 @@ class JinaLogger:
         context_vars = {'name': os.environ.get('JINA_POD_NAME', context),
                         'uptime': __uptime__,
                         'context': context}
-        if id:
-            context_vars['id'] = id
         self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there
