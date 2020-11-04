@@ -242,6 +242,24 @@ class ClientMode(BetterEnum):
     EVALUATE = 3
 
 
+class CompressAlgo(BetterEnum):
+    """ The enum of Compress algorithms
+
+    .. note::
+        LZ4 requires additional package, to install it use pip install "jina[lz4]"
+
+    .. seealso::
+
+        https://docs.python.org/3/library/archiving.html
+    """
+    NONE = 0
+    LZ4 = 1
+    ZLIB = 2
+    GZIP = 3
+    BZ2 = 4
+    LZMA = 5
+
+
 class OnErrorSkip(BetterEnum):
     """ The level of error handling
 

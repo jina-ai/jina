@@ -3,10 +3,9 @@ __license__ = "Apache-2.0"
 
 import asyncio
 import os
-import sys
 import tempfile
 import time
-from typing import List, Callable, Optional, Union, Tuple, Iterable
+from typing import List, Callable, Optional, Union, Tuple
 
 import zmq
 import zmq.asyncio
@@ -15,15 +14,13 @@ from zmq.ssh import tunnel_connection
 
 from .. import __default_host__
 from ..enums import SocketType
-from ..excepts import MismatchedVersion
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..logging import default_logger, profile_logger, JinaLogger
-from ..proto import jina_pb2, is_data_request
+from ..proto import jina_pb2
+from ..proto.message import ProtoMessage, ControlMessage
 
 if False:
-    # fix type-hint complain for sphinx and flake
     import argparse
-    from ..proto.jina_pb2 import Message
 
 use_uvloop()
 
@@ -46,14 +43,6 @@ class Zmqlet:
         self.args = args
         self.name = args.name or self.__class__.__name__
         self.logger = logger
-        if args.compress_hwm > 0:
-            try:
-                import lz4
-                self.logger.success(f'compression is enabled and the high watermark is {args.compress_hwm} bytes')
-            except ModuleNotFoundError:
-                self.logger.error(f'compression is enabled but you do not have lz4 package. '
-                                  f'use pip install "jina[lz4]" to install this dependency')
-                args.compress_hwm = -1  # disable the compression
         self.send_recv_kwargs = vars(args)
         self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
         self.bytes_sent = 0
@@ -198,16 +187,14 @@ class Zmqlet:
                              'bytes_sent': self.bytes_sent,
                              'bytes_recv': self.bytes_recv})
 
-    def send_message(self, msg: 'jina_pb2.Message'):
+    def send_message(self, msg: 'ProtoMessage'):
         """Send a message via the output socket
 
         :param msg: the protobuf message to send
         """
         # choose output sock
 
-        _req = getattr(msg.request, msg.request.WhichOneof('body'))
-
-        if is_data_request(_req):
+        if msg.is_data_request:
             o_sock = self.out_sock
         else:
             o_sock = self.ctrl_sock
@@ -216,21 +203,17 @@ class Zmqlet:
         self.msg_sent += 1
 
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
-            self.send_idle(msg)
+            self.send_idle()
 
-    def send_idle(self, msg: Optional['jina_pb2.Message'] = None):
+    def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        if msg:
-            msg.request.control.command = jina_pb2.Request.ControlRequest.IDLE
-        else:
-            req = jina_pb2.Request()
-            req.control.command = jina_pb2.Request.ControlRequest.IDLE
-            msg = add_envelope(req, self.name, self.args.identity)
+        msg = ControlMessage(jina_pb2.Request.ControlRequest.IDLE,
+                                 pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
 
-    def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
+    def recv_message(self, callback: Callable[['ProtoMessage'], 'ProtoMessage'] = None) -> 'ProtoMessage':
         """Receive a protobuf message from the input socket
 
         :param callback: the callback function, which modifies the recevied message inplace.
@@ -238,8 +221,8 @@ class Zmqlet:
         """
         i_sock = self._pull()
         if i_sock is not None:
-            msg, num_bytes = recv_message(i_sock, **self.send_recv_kwargs)
-            self.bytes_recv += num_bytes
+            msg = recv_message(i_sock, **self.send_recv_kwargs)
+            self.bytes_recv += msg.size
             self.msg_recv += 1
             if callback:
                 return callback(msg)
@@ -260,7 +243,7 @@ class AsyncZmqlet(Zmqlet):
     def _get_zmq_ctx(self):
         return zmq.asyncio.Context()
 
-    async def send_message(self, msg: 'jina_pb2.Message', sleep: float = 0, **kwargs):
+    async def send_message(self, msg: 'ProtoMessage', sleep: float = 0, **kwargs):
         """Send a protobuf message in async via the output socket
 
         :param msg: the protobuf message to send
@@ -275,10 +258,10 @@ class AsyncZmqlet(Zmqlet):
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'sending message error: {ex}, gateway cancelled?')
 
-    async def recv_message(self, callback: Callable[['jina_pb2.Message'], None] = None) -> 'jina_pb2.Message':
+    async def recv_message(self, callback: Callable[['ProtoMessage'], 'ProtoMessage'] = None) -> 'ProtoMessage':
         try:
-            msg, num_bytes = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
-            self.bytes_recv += num_bytes
+            msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
+            self.bytes_recv += msg.size
             self.msg_recv += 1
             if callback:
                 return callback(msg)
@@ -345,10 +328,10 @@ class ZmqStreamlet(Zmqlet):
         """Put :attr:`in_sock` back to the poller """
         self.in_sock.on_recv(self._in_sock_callback)
 
-    def start(self, callback: Callable[['jina_pb2.Message'], None]):
+    def start(self, callback: Callable[['ProtoMessage'], 'ProtoMessage']):
         def _callback(msg, sock_type):
-            msg, num_bytes = _parse_from_frames(sock_type, msg, self.args.check_version)
-            self.bytes_recv += num_bytes
+            msg = _parse_from_frames(sock_type, msg)
+            self.bytes_recv += msg.size
             self.msg_recv += 1
 
             msg = callback(msg)
@@ -366,7 +349,7 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int):
+def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int) -> 'ProtoMessage':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
@@ -377,13 +360,11 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        req = jina_pb2.Request()
-        req.control.command = cmd
-        msg = add_envelope(req, 'ctl', '')
+        msg = ControlMessage(cmd, pod_name='ctl', identity='')
         send_message(sock, msg, timeout)
         r = None
         try:
-            r, _ = recv_message(sock, timeout)
+            r = recv_message(sock, timeout)
         except TimeoutError:
             pass
         finally:
@@ -391,22 +372,19 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
         return r
 
 
-def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message', timeout: int = -1,
-                 compress_hwm: float = -1, compress_lwm: float = 1., **kwargs) -> int:
+def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'ProtoMessage', timeout: int = -1, **kwargs) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
-    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
-    :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     num_bytes = 0
     try:
-        _msg, num_bytes = _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout)
-
-        sock.send_multipart(_msg)
+        _prep_send_socket(sock, timeout)
+        sock.send_multipart(msg.dump())
+        num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(
             'cannot send message to sock %s after timeout=%dms, please check the following:'
@@ -423,35 +401,33 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'jina_pb2.Message'
     return num_bytes
 
 
-def _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout):
+def _prep_send_socket(sock, timeout):
     if timeout > 0:
         sock.setsockopt(zmq.SNDTIMEO, timeout)
     else:
         sock.setsockopt(zmq.SNDTIMEO, -1)
-    return _serialize_to_frames(msg.envelope.receiver_id,
-                                msg,
-                                compress_hwm,
-                                compress_lwm)
 
 
-async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeout: int = -1,
-                             compress_hwm: float = -1, compress_lwm: float = 1.,
+def _prep_recv_socket(sock, timeout):
+    if timeout > 0:
+        sock.setsockopt(zmq.RCVTIMEO, timeout)
+    else:
+        sock.setsockopt(zmq.RCVTIMEO, -1)
+
+
+async def send_message_async(sock: 'zmq.Socket', msg: 'ProtoMessage', timeout: int = -1,
                              **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
-    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
-    :param compress_lwm: the low watermark that enables the sending of a compressed message.
     :return: the size (in bytes) of the sent message
     """
     try:
-        _msg, num_bytes = _prep_send_msg(compress_hwm, compress_lwm, msg, sock, timeout)
-
-        await sock.send_multipart(_msg)
-
-        return num_bytes
+        _prep_send_socket(sock, timeout)
+        await sock.send_multipart(msg.dump())
+        return msg.size
     except zmq.error.Again:
         raise TimeoutError(
             'cannot send message to sock %s after timeout=%dms, please check the following:'
@@ -470,27 +446,20 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'jina_pb2.Message', timeou
             pass
 
 
-def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = False, **kwargs) -> Tuple[
-    'jina_pb2.Message', int]:
+def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'ProtoMessage':
     """ Receive a protobuf message from a socket
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
-    :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
     :return: a tuple of two pieces
 
             - the received protobuf message
             - the size of the message in bytes
     """
     try:
-        if timeout > 0:
-            sock.setsockopt(zmq.RCVTIMEO, timeout)
-        else:
-            sock.setsockopt(zmq.RCVTIMEO, -1)
-
+        _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
-
-        return _parse_from_frames(sock.type, msg_data, check_version)
+        return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -503,13 +472,12 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = Fa
         sock.setsockopt(zmq.RCVTIMEO, -1)
 
 
-async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_version: bool = False, **kwargs) -> Tuple[
-    'jina_pb2.Message', int]:
+async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
+                             **kwargs) -> 'ProtoMessage':
     """ Receive a protobuf message from a socket in async manner
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
-    :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
     :return: a tuple of two pieces
 
             - the received protobuf message
@@ -517,14 +485,9 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
     """
 
     try:
-        if timeout > 0:
-            sock.setsockopt(zmq.RCVTIMEO, timeout)
-        else:
-            sock.setsockopt(zmq.RCVTIMEO, -1)
-
+        _prep_recv_socket(sock, timeout)
         msg_data = await sock.recv_multipart()
-
-        return _parse_from_frames(sock.type, msg_data, check_version)
+        return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
         raise TimeoutError(
@@ -544,50 +507,9 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1, check_versio
             pass
 
 
-def _serialize_to_frames(client_id, msg: 'jina_pb2.Message',
-                         compress_hwm: float, compress_lwm: float) -> Tuple[List[bytes], int]:
+def _parse_from_frames(sock_type, frames: List[bytes]) -> 'ProtoMessage':
     """
-    Serialize a :class:`jina_pb2.Message` object into a list of frames. The list of frames (has length >=3) has the following structure:
-
-        - offset 0: the client id, can be empty
-        - offset 1: is the offset 2 frame compressed
-        - offset 2: the body of the serialized protobuf message
-
-    :param client_id: the client id
-    :param msg: the protobuf message object to be serialized
-    :param compress_hwm: message bigger than this size (in bytes) will be compressed by lz4 algorithm, set to -1 to disable this feature.
-    :param compress_lwm: the low watermark that enables the sending of a compressed message.
-    :return:
-    """
-    _body = [msg.SerializeToString()]
-
-    _size_before = sum(sys.getsizeof(m) for m in _body)
-    if _size_before > compress_hwm > 0:
-        import lz4.frame
-        body = [lz4.frame.compress(m) for m in _body]
-        is_compressed = b'1'
-        _size_after = sum(sys.getsizeof(m) for m in body)
-        rate = _size_after / _size_before
-        default_logger.debug(f'compressed, before: {_size_before} after: {_size_after}, '
-                             f'ratio: {(_size_after / _size_before * 100):.0f}%')
-        if rate > compress_lwm:
-            body = _body
-            is_compressed = b'0'
-            default_logger.debug(f'ineffective compression as the rate {rate:.2f} is higher than {compress_lwm}')
-    else:
-        body = _body
-        is_compressed = b'0'
-
-    if isinstance(client_id, str):
-        client_id = client_id.encode()
-    frames = [client_id, is_compressed] + body
-    num_bytes = sum(sys.getsizeof(m) for m in frames)
-    return frames, num_bytes
-
-
-def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> Tuple['jina_pb2.Message', int]:
-    """
-    Build :class:`jina_pb2.Message` from a list of frames.
+    Build :class:`ProtoMessage` from a list of frames.
 
     The list of frames (has length >=3) has the following structure:
 
@@ -597,8 +519,7 @@ def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> T
 
     :param sock_type: the recv socket type
     :param frames: list of bytes to parse from
-    :param check_version: check if the jina, protobuf version info in the incoming message consists with the local versions
-    :return: a :class:`jina_pb2.Message` object and the size of the frames (in bytes)
+    :return: a :class:`ProtoMessage` object
     """
     if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
@@ -607,23 +528,7 @@ def _parse_from_frames(sock_type, frames: List[bytes], check_version: bool) -> T
         # the router appends dealer id when receive it, we need to remove it
         frames.pop(0)
 
-    # count the size before decompress
-    num_bytes = sum(sys.getsizeof(m) for m in frames)
-
-    if frames[1] == b'1':
-        # body message is compressed
-        import lz4.frame
-        for l in range(2, len(frames)):
-            frames[l] = lz4.frame.decompress(frames[l])
-
-    msg = jina_pb2.Message()
-
-    msg.ParseFromString(frames[2])
-
-    if check_version:
-        _check_msg_version(msg)
-
-    return msg, num_bytes
+    return ProtoMessage(frames[1], frames[2])
 
 
 def _get_random_ipc() -> str:
@@ -678,7 +583,7 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
             else:
                 try:
                     sock.bind(f'tcp://{host}:{port}')
-                except zmq.error.ZMQError as ex:
+                except zmq.error.ZMQError:
                     default_logger.error(f'error when binding port {port} to {host}')
                     raise
     else:
@@ -699,160 +604,3 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: int,
         sock.subscribe('')  # An empty shall subscribe to all incoming messages
 
     return sock, sock.getsockopt_string(zmq.LAST_ENDPOINT)
-
-
-def _check_msg_version(msg: 'jina_pb2.Message'):
-    from ..logging import default_logger
-    from .. import __version__, __proto_version__
-    if hasattr(msg.envelope, 'version'):
-        if not msg.envelope.version.jina:
-            # only happen in unittest
-            default_logger.warning('incoming message contains empty "version.jina", '
-                                   'you may ignore it in debug/unittest mode. '
-                                   'otherwise please check if gateway service set correct version')
-        elif __version__ != msg.envelope.version.jina:
-            raise MismatchedVersion('mismatched JINA version! '
-                                    'incoming message has JINA version %s, whereas local JINA version %s' % (
-                                        msg.envelope.version.jina, __version__))
-
-        if not msg.envelope.version.proto:
-            # only happen in unittest
-            default_logger.warning('incoming message contains empty "version.proto", '
-                                   'you may ignore it in debug/unittest mode. '
-                                   'otherwise please check if gateway service set correct version')
-        elif __proto_version__ != msg.envelope.version.proto:
-            raise MismatchedVersion('mismatched protobuf version! '
-                                    'incoming message has protobuf version %s, whereas local protobuf version %s' % (
-                                        msg.envelope.version.proto, __proto_version__))
-
-        if not msg.envelope.version.vcs or not os.environ.get('JINA_VCS_VERSION'):
-            default_logger.warning('incoming message contains empty "version.vcs", '
-                                   'you may ignore it in debug/unittest mode, '
-                                   'or if you run jina OUTSIDE docker container where JINA_VCS_VERSION is unset'
-                                   'otherwise please check if gateway service set correct version')
-        elif os.environ.get('JINA_VCS_VERSION') != msg.envelope.version.vcs:
-            raise MismatchedVersion('mismatched vcs version! '
-                                    'incoming message has vcs_version %s, whereas local environment vcs_version is %s' % (
-                                        msg.envelope.version.vcs, os.environ.get('JINA_VCS_VERSION')))
-
-    else:
-        raise MismatchedVersion('version_check=True locally, '
-                                'but incoming message contains no version info in its envelope. '
-                                'the message is probably sent from a very outdated JINA version')
-
-
-def _extract_bytes_from_documents(docs: Iterable['jina_pb2.Document']) -> Tuple:
-    doc_bytes = []
-    chunk_bytes = []
-    chunk_byte_type = b''
-
-    # for train request
-    for d in docs:
-        doc_bytes.append(d.buffer)
-        d.ClearField('buffer')
-
-        for c in d.chunks:
-            # oneof content {
-            # string text = 2;
-            # NdArray blob = 3;
-            # bytes raw = 7;
-            # }
-            chunk_bytes.append(c.embedding.buffer)
-            c.embedding.ClearField('buffer')
-
-            ctype = c.WhichOneof('content') or ''
-            chunk_byte_type = ctype.encode()
-            if ctype == 'buffer':
-                chunk_bytes.append(c.buffer)
-                c.ClearField('buffer')
-            elif ctype == 'blob':
-                chunk_bytes.append(c.blob.buffer)
-                c.blob.ClearField('buffer')
-            elif ctype == 'text':
-                chunk_bytes.append(c.text.encode())
-                c.ClearField('text')
-
-    return doc_bytes, chunk_bytes, chunk_byte_type
-
-
-def _fill_buffer_to_documents(msg_data: List[bytes], docs: Iterable['jina_pb2.Document'], offset: int = 3):
-    """
-    Message comes split in different parts (that's why it comes as an Iterable, Each element
-            can be any sendable object (Frame, bytes, buffer-providers)):
-    Parts 0 and 1 contain information about potentially the receiver (if DEALER) and whether it is compressed or not.
-    Part 2 has a msg representation.
-    Part 3 (offset = 3) has the encoded name of the type of chunk bytes (Limitation: Only consider one chunk type for complete message)
-    Parts 4 and 5 contain the length of the doc_bytes and chunk_bytes respectively.
-    Then N number of Parts come with the doc bytes
-    Then M number of Parts com with the chunk bytes (chunk bytes length is twice the number of chunks in the message)
-    """
-    chunk_byte_type = msg_data[offset].decode()
-    doc_bytes_len = int(msg_data[offset + 1])
-    chunk_bytes_len = int(msg_data[offset + 2])
-    doc_bytes = msg_data[(offset + 3):(offset + 3 + doc_bytes_len)]
-    chunk_bytes = msg_data[(offset + 3 + doc_bytes_len):]
-
-    if len(chunk_bytes) != chunk_bytes_len:
-        raise ValueError('"chunk_bytes_len"=%d in message, but the actual length is %d' % (
-            chunk_bytes_len, len(chunk_bytes)))
-
-    c_idx = 0
-    d_idx = 0
-    for d in docs:
-        if doc_bytes and doc_bytes[d_idx]:
-            d.buffer = doc_bytes[d_idx]
-            d_idx += 1
-
-        for c in d.chunks:
-            if chunk_bytes and chunk_bytes[c_idx]:
-                c.embedding.buffer = chunk_bytes[c_idx]
-            c_idx += 1
-
-            if chunk_byte_type == 'buffer':
-                c.buffer = chunk_bytes[c_idx]
-                c_idx += 1
-            elif chunk_byte_type == 'blob':
-                c.blob.buffer = chunk_bytes[c_idx]
-                c_idx += 1
-            elif chunk_byte_type == 'text':
-                c.text = chunk_bytes[c_idx].decode()
-                c_idx += 1
-
-
-def _add_route(evlp, pod_name, identity):
-    r = evlp.routes.add()
-    r.pod = pod_name
-    r.start_time.GetCurrentTime()
-    r.pod_id = identity
-
-
-def add_envelope(req, pod_name, identity, num_part=1) -> 'jina_pb2.Message':
-    """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
-
-    :param req: the protobuf request
-    :param pod_name: the name of the current pod
-    :param identity: the identity of the current pod
-    :param num_part: the total parts of the message, 0 and 1 means single part
-    :return: the resulted protobuf message
-    """
-    msg = jina_pb2.Message()
-    msg.envelope.receiver_id = identity
-    if req.request_id is not None:
-        msg.envelope.request_id = req.request_id
-    else:
-        raise AttributeError('"request_id" is missing or unset!')
-    msg.envelope.timeout = 5000
-    _add_version(msg.envelope)
-    _add_route(msg.envelope, pod_name, identity)
-    msg.request.CopyFrom(req)
-    msg.envelope.num_part.append(1)
-    if num_part > 1:
-        msg.envelope.num_part.append(num_part)
-    return msg
-
-
-def _add_version(evlp: 'jina_pb2.Envelope'):
-    from .. import __version__, __proto_version__
-    evlp.version.jina = __version__
-    evlp.version.proto = __proto_version__
-    evlp.version.vcs = os.environ.get('JINA_VCS_VERSION', '')

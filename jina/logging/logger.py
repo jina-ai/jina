@@ -2,11 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import logging
+import logging.handlers
 import os
 import platform
 import re
 import sys
-from logging.handlers import SysLogHandler
 
 from pkg_resources import resource_filename
 
@@ -60,7 +60,7 @@ class NTLogger:
             sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
 
 
-class SysLogHandlerWrapper(SysLogHandler):
+class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
     """ Override the priority_map :class:`SysLogHandler`
 
     .. warning::

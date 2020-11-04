@@ -4,22 +4,22 @@ __license__ = "Apache-2.0"
 import asyncio
 import os
 import threading
-import traceback
 
 import grpc
 from google.protobuf.json_format import MessageToJson
 
 from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
-from .zmq import AsyncZmqlet, add_envelope
+from .zmq import AsyncZmqlet
 from .. import __stop_msg__
 from ..enums import ClientMode
-from ..excepts import NoDriverForRequest, BadRequestType, GatewayPartialMessage
+from ..excepts import BadRequestType, GatewayPartialMessage
 from ..helper import use_uvloop
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 from ..parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
+from ..proto.message import ProtoMessage
 
 use_uvloop()
 
@@ -93,58 +93,26 @@ class GatewayPea:
             self.args = args
             self.name = args.name or self.__class__.__name__
             self.logger = JinaLogger(self.name, **vars(args))
-            # self.executor = BaseExecutor()
-            # if args.to_datauri:
-            #     from ..drivers.convert import All2URI
-            #     for k in ['SearchRequest', 'IndexRequest', 'TrainRequest']:
-            #         self.executor.add_driver(All2URI(), k)
-            # self.executor.attach(pea=self)
             self.peapods = []
 
-        @property
-        def message(self) -> 'jina_pb2.Message':
-            """Get the current protobuf message to be processed"""
-            return self._message
+        def handle(self, msg: 'ProtoMessage') -> 'jina_pb2.Request':
+            """ Note gRPC accepts :class:`jina_pb2.Request` only, so no more :class:`LazyRequest`.
 
-        @property
-        def request_type(self) -> str:
-            return self._request.__class__.__name__
+            :param msg:
+            :return:
+            """
 
-        @property
-        def request(self) -> 'jina_pb2.Request':
-            """Get the current request body inside the protobuf message"""
-            return self._request
+            if not msg.is_complete:
+                raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
 
-        def handle(self, msg: 'jina_pb2.Message'):
-            try:
-                msg.request.status.CopyFrom(msg.envelope.status)
-                self._request = getattr(msg.request, msg.request.WhichOneof('body'))
-                self._message = msg
-                if msg.envelope.num_part != [1]:
-                    raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
-                # self.executor(self.request_type)
-                # envelope will be dropped when returning to the client
-            except NoDriverForRequest:
-                # remove envelope and send back the request
-                pass
-            except Exception as ex:
-                msg.envelope.status.code = jina_pb2.Status.ERROR
-                if not msg.envelope.status.description:
-                    msg.envelope.status.description = f'{self} throws {repr(ex)}'
-                d = msg.envelope.status.details.add()
-                d.pod = self.name
-                d.pod_id = self.args.identity
-                d.exception = repr(ex)
-                d.executor = str(getattr(self, 'executor', ''))
-                d.traceback = traceback.format_exc()
-                d.time.GetCurrentTime()
-            finally:
-                return msg.request
+            request = msg.request.as_pb_object
+            request.status.CopyFrom(msg.envelope.status)
+            return request
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
-                await zmqlet.send_message(add_envelope(request, 'gateway', zmqlet.args.identity,
-                                                       num_part=self.args.num_part))
+                await zmqlet.send_message(ProtoMessage(None, request, 'gateway',
+                                                       **vars(self.args)))
                 return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
@@ -159,8 +127,8 @@ class GatewayPea:
                         try:
                             asyncio.create_task(
                                 zmqlet.send_message(
-                                    add_envelope(next(request_iterator), 'gateway', zmqlet.args.identity,
-                                                 num_part=self.args.num_part)))
+                                    ProtoMessage(None, next(request_iterator), 'gateway',
+                                                 **vars(self.args))))
                             fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                         except StopIteration:
                             return True

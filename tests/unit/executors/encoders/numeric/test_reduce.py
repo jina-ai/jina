@@ -1,4 +1,5 @@
 import numpy as np
+
 from jina.executors.encoders.helper import reduce_max, reduce_mean, reduce_cls, reduce_min
 
 test_data = np.array([[

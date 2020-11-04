@@ -12,6 +12,7 @@ from ..enums import OnErrorSkip
 from ..executors.compound import CompoundExecutor
 from ..helper import yaml
 from ..proto import jina_pb2
+from ..proto.message import ProtoMessage, LazyRequest
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -152,12 +153,12 @@ class BaseDriver(metaclass=DriverType):
         self.attached = True
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> 'LazyRequest':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.pea.request
 
     @property
-    def msg(self) -> 'jina_pb2.Message':
+    def msg(self) -> 'ProtoMessage':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message
 

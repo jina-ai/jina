@@ -1,5 +1,6 @@
-from jina.executors.evaluators.running_stats import RunningStats
 import numpy as np
+
+from jina.executors.evaluators.running_stats import RunningStats
 
 
 def test_running_stats():

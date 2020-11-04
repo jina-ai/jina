@@ -66,7 +66,7 @@ class ExcludeReqQL(ExcludeQL):
 
     def __call__(self, *args, **kwargs):
         for k in self.fields:
-            self.msg.ClearField(k)
+            self.req.ClearField(k)
 
 
 class SelectReqQL(ExcludeReqQL):
@@ -75,6 +75,6 @@ class SelectReqQL(ExcludeReqQL):
     """
 
     def __call__(self, *args, **kwargs):
-        for k in self.msg.DESCRIPTOR.fields_by_name.keys():
+        for k in self.req.DESCRIPTOR.fields_by_name.keys():
             if k not in self.fields:
-                self.msg.ClearField(k)
+                self.req.ClearField(k)

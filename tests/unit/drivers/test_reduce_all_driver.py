@@ -62,6 +62,7 @@ def test_merge_chunks_with_different_modality():
     with flow:
         flow.index(input_fn=input_fn, output_fn=validate)
 
+
 def get_prev_reqs():
     # three requests, each with the SAME doc, but diff evaluations
     result = []
@@ -75,7 +76,9 @@ def get_prev_reqs():
         result.append(r.index)
     return result
 
+
 prev_reqs = get_prev_reqs()
+
 
 class MockCollectEvalDriver(CollectEvaluationDriver):
 
@@ -107,4 +110,3 @@ def test_collect_evals():
     assert len(driver.prev_reqs[0].docs[0].evaluations) == 1
     assert len(driver.prev_reqs[1].docs[0].evaluations) == 1
     assert len(driver.prev_reqs[2].docs[0].evaluations) == 3
-

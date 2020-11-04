@@ -8,6 +8,9 @@ from tests.integration.incremental_indexing import random_workspace, get_duplica
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
+# don't remove this line, otherwise auto-code-format will remove `random_workspace`
+print(random_workspace)
+
 
 def test_incremental_indexing_sequential_indexers(random_workspace):
     total_docs = 20

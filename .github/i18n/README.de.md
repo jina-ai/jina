@@ -47,70 +47,67 @@
 
 </p>
 
-想建立一个以深度学习为支撑的搜索系统？你来对地方了!
+Wollen Sie ein Suchsystem aufbauen, das durch tiefes Lernen unterstützt wird? Hier sind Sie an der richtigen Stelle!
 
-Jina是由最先进的AI和深度学习驱动的云端神经搜索框架。它得到了一个全职的、由风险投资支持的团队的长期支持。
+Jina ist das cloud-native neuronale Such-Framework, das auf modernster KI und tiefgehendem Lernen basiert. Es wird langfristig von einem Vollzeitteam unterstützt, das von Venture Capital finanziert wird.
 
-🌌**通用搜索解决方案** - Jina可以在多个平台和架构上实现任何类型的大规模索引和查询。无论您是搜索图片、视频片段、音频片段、长的法律文档、短的推文，Jina都能处理。
+🌌**Die universelle Suchlösung** - Jina ermöglicht groß angelegte Indizes und Abfragen jeder Art auf mehreren Plattformen und Architekturen. Ob Sie nach Bildern, Videoclips, Audioschnipseln, langen juristischen Dokumenten oder kurzen Tweets suchen, Jina kann sie alle verarbeiten.
 
-🚀**高性能和最先进的设备** - Jina的目标是AI在生产过程中。你可以轻松地扩展出你的VideoBERT、Xception、你的单词令牌器、图像分割器和数据库来处理亿级数据。复制品和碎片等功能都是现成的。
+🚀**Leistungsstark und auf dem neuesten Stand der Technik** - Jina strebt KI in Produktion an. Sie können Ihr VideoBERT, Xception, Ihren Word-Tokenizer, Bildsegmentierer und Ihre Datenbank leicht skalieren, um Daten auf Milliardenebene zu verarbeiten. Funktionen wie Replikate und Scherben kommen von der Stange.
 
-🐣**简单的系统工程** - Jina提供了一个一站式的解决方案，让你从手工制作和粘合包、库和数据库中解脱出来。通过最直观的API和[仪表板](https://github.com/jina-ai/dashboard)构建一个云端搜索系统只是分分钟的事情。
-
+🐣**Systemtechnik leicht gemacht** - Jina bietet eine Lösung aus einer Hand, die Sie von Handarbeit und Kleben von Verpackungen, Bibliotheken und Datenbanken befreit. Mit der intuitivsten API und[dashboard](https://github.com/jina-ai/dashboard)Der Aufbau eines cloud-nativen Suchsystems ist nur eine Kleinigkeit.
 <!---
-🧩**强大的扩展功能，简单的集成** - Jina的新AI模型？只需编写一个Python脚本或构建一个Docker镜像即可。插入新的算法从来都不是那么容易的事情，就像它应该做的那样。[看看Jina Hub (测试版)](https://github.com/jina-ai/jina-hub)并在社区贡献的不同用例上找到更多的扩展。
+🧩**Leistungsstarke Erweiterungen, einfache Integration** - Neues KI-Modell für Jina? Schreiben Sie einfach ein Python-Skript oder erstellen Sie ein Docker-Image. Das Einfügen neuer Algorithmen war noch nie so einfach, wie es sein sollte[Sehen Sie sich Jina Hub an (beta)](https://github.com/jina-ai/jina-hub) und finden Sie weitere Erweiterungen zu verschiedenen Anwendungsfällen, die von der Gemeinschaft beigetragen wurden.
 -->
+Jina ist ein Open-Source-Projekt[Wir stellen ein](https://jobs.jina.ai) KI-Ingenieure, Full-Stack-Entwickler, Evangelisten, PMs zum Aufbau des nächsten neuronalen Such-Ökosystems in Open-Source
 
-Jina是一个开源项目。[我们正在招聘](https://jobs.jina.ai)AI工程师、全栈开发者、传道者、PM，打造下一个开源的神经搜索生态。
-
-## 目录
+## Inhaltsverzeichnis
 
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
-- [安装](#%E5%AE%89%E8%A3%85)
-- [Jina "你好，世界！"👋🌍](#jina-%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C)
-- [开始](#%E5%BC%80%E5%A7%8B)
-- [文档](#%E6%96%87%E6%A1%A3)
-- [贡献者](#%E8%B4%A1%E7%8C%AE%E8%80%85)
-- [社区](#%E7%A4%BE%E5%8C%BA)
-- [路线图](#%E8%B7%AF%E7%BA%BF%E5%9B%BE)
-- [许可证](#%E8%AE%B8%E5%8F%AF%E8%AF%81)
+- [Installieren](#installieren)
+- [Jina "Hallo, Welt!" 👋🌍](#jina-hallo-welt-)
+- [Erste Schritte](#erste-schritte)
+- [Dokumentation](#dokumentation)
+- [Beitragend](#beitragend)
+- [Gemeinschaft](#gemeinschaft)
+- [Fahrplan](#fahrplan)
+- [Lizenz](#lizenz)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## 安装
+## Installieren
 
-#### 从PyPi安装
+#### Aus PyPi installieren
 
-在安装了 Python >= 3.7 的 Linux/MacOS 上，只需在终端上运行此命令即可。
+Unter Linux/MacOS mit installiertem Python >= 3.7 führen Sie einfach diesen Befehl in Ihrem Terminal aus:
 
 ```bash
 pip install jina
 ```
 
-要在Raspberry Pi上安装Jina，或者在Raspberry Pi上安装Jina，需要额外的依赖关系。[请参考文件](https://docs.jina.ai)
+So installieren Sie Jina mit zusätzlichen Abhängigkeiten, oder installieren Sie es auf Raspberry Pi[bitte beachten Sie die Dokumentationen](https://docs.jina.ai).
 
-#### ...或使用Docker容器运行
+#### ...oder Ausführen mit Docker-Container
 
-我们提供了一个通用的Docker图像（只有80MB！），支持多种架构（包括x64、x86、x86、arm-64/v7/v6），只需做到这一点。
+Wir bieten ein universelles Docker-Image (nur 80MB!) an, das mehrere Architekturen unterstützt (einschließlich x64, x86, arm-64/v7/v6), einfach tun
 
 ```bash
 docker run jinaai/jina
 ```
 
-## Jina "你好，世界！"👋🌍
+## Jina "Hallo, Welt!" 👋🌍
 
-作为入门者，我们邀请你尝试一下Jina的 "Hello，世界"--简单的图像神经搜索的演示[Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/)。不需要额外的依赖关系，只需做。
+Als Einsteiger sind Sie eingeladen, Jinas "Hello, World" auszuprobieren - eine einfache Demo der neuronalen Bildsuche für[Mode-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). Keine zusätzlichen Abhängigkeiten nötig, einfach tun:
 
 ```bash
 jina hello-world
 ```
 
-....甚至对Docker用户来说更容易。**不需要任何安装**。简单地。
+...oder noch einfacher für Docker-Benutzer,**keine Installation erforderlich,** einfach:
 
 ```bash
 docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
@@ -125,13 +122,13 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 
 </details>  
 
-它下载Fashi-MNIST训练和测试数据；告诉Jina从训练集中索引6万张图像。然后，它从测试集中随机抽取图像作为查询，要求Jina检索相关结果。大约1分钟后，它将打开一个网页，并显示出这样的结果。
+Sie lädt die Trainings- und Testdaten von Fashion-MNIST herunter; Jina wird angewiesen, 60.000 Bilder aus dem Trainingsset zu indexieren. Dann entnimmt sie nach dem Zufallsprinzip Bilder aus dem Testset als Abfragen und bittet Jina, relevante Ergebnisse abzurufen. Nach etwa 1 Minute öffnet sie eine Webseite und zeigt Ergebnisse wie dieses:
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
 </p>
 
-那背后的实施呢？就像它应该是很简单的。
+Und die Umsetzung dahinter? So einfach wie es sein sollte:
 
 <table>
 <tr>
@@ -189,25 +186,25 @@ pods:
 </tr>
 </table>
 
-所有你能说出名字的大词：计算机视觉、神经IR、微服务、消息队列、弹性、复制&碎片，都是在短短一分钟内发生的!
+Alle großen Wörter, die Sie nennen können: Computer Vision, neuronale IR, Mikroservice, Nachrichtenwarteschlange, elastisch, Repliken & Scherben geschahen in nur einer Minute!
 
-有兴趣吗？玩，并尝试不同的选择。
+Interessiert? Spielen Sie und probieren Sie verschiedene Optionen aus:
 
 ```bash
 jina hello-world --help
 ```
 
-[请务必继续关注我们的《Jina101指南》。](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - 在3分钟内理解Jina的所有关键概念!  
+[Vergewissern Sie sich, dass Sie mit unserem Jina 101 Leitfaden fortfahren](https://github.com/jina-ai/jina#jina-101-first-thing-to-learn-about-jina) - alle Schlüsselkonzepte von Jina in 3 Minuten verstehen!  
 
-## 开始
+## Erste Schritte
 
-### 从模板开始一个项目
+### Starten Sie ein Projekt von der Vorlage aus
 
 ```bash
 pip install cookiecutter && cookiecutter gh:jina-ai/cookiecutter-jina
 ``` 
 
-### 教程
+### Tutorials
 
 <table>
   <tr>
@@ -290,6 +287,7 @@ Learn how to increase the performance by using prefetching and sharding
 <td><h3>🕊</h3></td>
 </tr>
 
+
 <tr>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Revisit "Hello, World!" in a Client-Server Architecture</a></h4>
@@ -338,54 +336,53 @@ Learn to use Jina Hub and share your extensions with engineers around the globe
 <td><h3>🚀</h3></td>
 </tr>
 -->
-
 </table>
   
 
-## 文档
+## Dokumentation
 
 <a href="https://docs.jina.ai/">
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-要深入学习Jina，最好的方法就是阅读我们的文档。文档建立在主分支的每个推送、合并和发布事件上。你可以在我们的文档中找到关于以下主题的更多细节。
+Der beste Weg, Jina gründlich kennenzulernen, ist, unsere Dokumentation zu lesen. Die Dokumentation wird bei jedem Push, Merge und Release-Ereignis des Master-Zweiges erstellt. Weitere Einzelheiten zu den folgenden Themen finden Sie in unserer Dokumentation.
 
--   [Jina命令行接口参数解释](https://docs.jina.ai/chapters/cli/index.html)
--   [Jina Python API接口](https://docs.jina.ai/api/jina.html)
--   [用于执行器、驱动和流程的Jina YAML语法](https://docs.jina.ai/chapters/yaml/yaml.html)
--   [Jina Protobuf方案](https://docs.jina.ai/chapters/proto/index.html)
--   [Jina中使用的环境变量](https://docs.jina.ai/chapters/envs.html)
--   ..[以及更多](https://docs.jina.ai/index.html)
+-   [Jina Befehlszeilenschnittstelle Argumente erklärt](https://docs.jina.ai/chapters/cli/index.html)
+-   [Jina Python API-Schnittstelle](https://docs.jina.ai/api/jina.html)
+-   [Jina YAML-Syntax für Ausführer, Treiber und Ablauf](https://docs.jina.ai/chapters/yaml/yaml.html)
+-   [Jina Protobuf-Schema](https://docs.jina.ai/chapters/proto/index.html)
+-   [In Jina verwendete Umgebungsvariablen](https://docs.jina.ai/chapters/envs.html)
+-   ..[und mehr](https://docs.jina.ai/index.html)
 
-你是"文档"明星吗？是的?加入我们吧!我们欢迎大家对文档进行各种改进。
+Sind Sie ein "Doc"-Star? Bejaht? Kommen Sie zu uns! Wir begrüßen alle Arten von Verbesserungen an der Dokumentation
 
-[旧版本的文档在这里存档。](https://github.com/jina-ai/docs/releases)
+[Dokumentationen für die älteren Versionen werden hier archiviert](https://github.com/jina-ai/docs/releases).
 
-## 贡献者
+## Beitragend
 
-我们欢迎来自开源社区、个人和合作伙伴的各种贡献。没有你的积极参与，Jina就不会成功。
+Wir begrüßen alle Arten von Beiträgen aus der Open-Source-Gemeinschaft, von Einzelpersonen und Partnern. Ohne Ihre aktive Beteiligung wird Jina nicht erfolgreich sein.
 
-下面的资源将帮助你做好第一份贡献。
+Die folgenden Ressourcen werden Ihnen helfen, einen guten ersten Beitrag zu leisten:
 
--   [缴款准则](CONTRIBUTING.md)
--   [释放周期和发展阶段](RELEASE.md)
+-   [Richtlinien zur Beitragsleistung](CONTRIBUTING.md)
+-   [Release-Zyklen und Entwicklungsstufen](RELEASE.md)
 
-## 社区
+## Gemeinschaft
 
--   [Slack频道](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - 为开发者提供交流平台，探讨Jina
--   [社区通讯](mailto:newsletter+subscribe@jina.ai) - 订阅金娜的最新更新、发布和活动消息，订阅金娜的最新动态、发布和活动消息。
--   [LinkedIn](https://www.linkedin.com/company/jinaai/) - 了解Jina AI公司并寻找工作机会
--   ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - 关注我们，并使用tag标签与我们互动`#JinaSearch`  
--   [公司](https://jina.ai) - 了解更多关于我们公司的信息，我们完全致力于开源!
+-   [Schlupfkanal](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w) - eine Kommunikationsplattform für Entwickler, um über Jina zu diskutieren
+-   [Rundbrief der Gemeinschaft](mailto:newsletter+subscribe@jina.ai) - abonnieren Sie die neuesten Aktualisierungs-, Veröffentlichungs- und Veranstaltungsnachrichten von Jina
+-   [VerlinktIn](https://www.linkedin.com/company/jinaai/) - jina AI als Unternehmen kennenlernen und Stellenangebote finden
+-   ![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social) - folgen Sie uns und interagieren Sie mit uns mittels Hashtag`#JinaSearch`  
+-   [Unternehmen](https://jina.ai) - erfahren Sie mehr über unser Unternehmen, wir setzen uns voll und ganz für Open-Source ein!
 
-## 路线图
+## Fahrplan
 
-[GitHub的里程碑](https://github.com/jina-ai/jina/milestones)为今后的改进工作铺设了道路。
+[Meilensteine von GitHub](https://github.com/jina-ai/jina/milestones) den Weg zu den künftigen Verbesserungen aufzuzeigen.
 
-我们正在寻找合作伙伴，围绕Jina建立一个开放治理模式（如技术指导委员会），以建立一个健康的开源生态系统和开发者友好的文化。如果您有兴趣参与，请随时联系我们，地址是[hello@jina.ai](mailto:hello@jina.ai)。
+Wir suchen nach Partnerschaften zum Aufbau eines Open-Governance-Modells (z.B. Technischer Lenkungsausschuss) um Jina herum, das ein gesundes Open-Source-Ökosystem und eine entwicklerfreundliche Kultur ermöglicht. Wenn Sie an einer Teilnahme interessiert sind, zögern Sie nicht, uns zu kontaktieren[hello@jina.ai](mailto:hello@jina.ai).
 
-## 许可证
+## Lizenz
 
-Copyright (c) 2020 Jina AI Limited.保留所有权利。
+Urheberrecht (c) 2020 Jina AI Limited. Alle Rechte vorbehalten.
 
-Jina是在Apache License 2.0版本下授权的。[许可证全文见LICENSE。](LICENSE)
+Jina ist unter der Apache-Lizenz, Version 2.0, lizenziert[Siehe LIZENZ für den vollständigen Lizenztext.](LICENSE)

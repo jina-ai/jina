@@ -5,9 +5,9 @@ import "google/protobuf/struct.proto";
 package jina;
 
 /**
- * Represents the a (quantized) numpy ndarray
+ * Represents a (quantized) dense n-dim array
  */
-message NdArray {
+message DenseNdArray {
     // the actual array data, in bytes
     bytes buffer = 1;
 
@@ -30,6 +30,30 @@ message NdArray {
     float min_val = 6; // the min value of the ndarray
     float scale = 7; // the scale of the ndarray
     string original_dtype = 8; // the original dtype of the array
+}
+
+/**
+ * Represents a general n-dim array, can be either dense or sparse
+ */
+message NdArray {
+    oneof content {
+        DenseNdArray dense = 1; // dense representation of the ndarray
+        SparseNdArray sparse = 2; // sparse representation of the ndarray
+    }
+}
+
+/**
+ * Represents a sparse ndarray
+ */
+message SparseNdArray {
+    // A 2-D int64 tensor of shape [N, ndims], which specifies the indices of the elements in the sparse tensor that contain nonzero values (elements are zero-indexed)
+    DenseNdArray indices = 1;
+
+    // A 1-D tensor of any type and shape [N], which supplies the values for each element in indices.
+    DenseNdArray values = 2;
+
+    // A 1-D int64 tensor of shape [ndims], which specifies the dense_shape of the sparse tensor.
+    repeated int64 dense_shape = 3;
 }
 
 /**
@@ -159,6 +183,25 @@ message Envelope {
 
     repeated uint32 num_part = 8; // the number of partial messages
 
+    string request_type = 9; // type of the request: TrainRequest, IndexRequest, SearchRequest, ControlRequest
+
+    bool check_version = 10; // check local Protobuf version on every Pod that this message flows to
+
+    CompressConfig compression = 11; // compress configuration used for request
+
+}
+
+/**
+ * Represents a config for the compression algorithm
+ */
+message CompressConfig {
+    string algorithm = 1;  // compress algorithm used for request
+
+    uint64 high_watermark = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
+
+    float low_watermark = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
+
+    google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
 }
 
 message Status {

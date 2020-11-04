@@ -4,8 +4,9 @@ __license__ = "Apache-2.0"
 from typing import Iterable, Tuple
 
 from . import BaseExecutableDriver, QuerySetReader
-from .helper import extract_docs, array2pb
+from .helper import extract_docs
 from ..proto import uid, jina_pb2
+from ..proto.ndarray.generic import GenericNdArray
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -87,7 +88,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
     def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
         embeds = self.exec_fn([self.id2hash(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
-            doc.embedding.CopyFrom(array2pb(embedding))
+            GenericNdArray(doc.embedding).value = embedding
 
 
 class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
@@ -134,4 +135,4 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
                 r.score.value = score
                 r.score.op_name = op_name
                 if vec is not None:
-                    r.embedding.CopyFrom(array2pb(vec))
+                    GenericNdArray(r.embedding).value = vec

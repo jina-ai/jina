@@ -5,15 +5,16 @@ import mimetypes
 import os
 import urllib.parse
 import uuid
-from typing import Iterator, Union, Optional, Tuple
+from typing import Iterator, Union, Tuple
 
 import numpy as np
 
-from ...drivers.helper import array2pb, guess_mime
+from ...drivers.helper import guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
 from ...logging import default_logger
 from ...proto import jina_pb2, uid
+from ...proto.ndarray.generic import GenericNdArray
 
 
 def _fill_document(document: 'jina_pb2.Document',
@@ -27,7 +28,7 @@ def _fill_document(document: 'jina_pb2.Document',
     if isinstance(content, jina_pb2.Document):
         document.CopyFrom(content)
     elif isinstance(content, np.ndarray):
-        document.blob.CopyFrom(array2pb(content))
+        GenericNdArray(document.blob).value = content
     elif isinstance(content, bytes):
         document.buffer = content
         if not mime_type and buffer_sniff:
@@ -76,7 +77,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
               queryset: Iterator['jina_pb2.QueryLang'] = None,
               *args,
               **kwargs,
-              ) -> Iterator['jina_pb2.Message']:
+              ) -> Iterator['jina_pb2.Request']:
     buffer_sniff = False
 
     try:

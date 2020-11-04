@@ -1,9 +1,10 @@
-import pytest
 import os
 
+import pytest
+
 from jina.flow import Flow
-from jina.peapods import Pod
 from jina.parser import set_pod_parser
+from jina.peapods import Pod
 
 """
 Github issue: https://github.com/jina-ai/jina/issues/936
