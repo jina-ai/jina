@@ -1,0 +1,113 @@
+name: Autocommit to jina-ai/jina
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  autoblack:
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !contains(github.event.head_commit.message, 'Reformatted by jina-dev-bot')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - name: Fetch Code
+        run: |
+          git fetch --prune --unshallow
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install Black
+        run: pip install black
+      - name: Run black --check .
+        run: black --check -S jina/drivers/__init__.py
+      - name: If needed, commit black changes to master
+        if: failure()
+        run: |
+          black -S jina/drivers/__init__.py
+          git add -u
+          export JINA_GIT_COMMIT_MSG_OLD=$(git log --format=%B -n1)
+          git commit --amend -m"$JINA_GIT_COMMIT_MSG_OLD" -m"Reformatted by jina-dev-bot."
+          git status
+          git push
+        continue-on-error: true
+
+  update-copyright:
+    needs: autoblack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          git fetch --prune --unshallow
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - uses: hanxiao/copyright-action@master
+        with:
+          CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
+          FileType: '.py'
+          Path: 'jina/'
+          IgnorePath: 'jina/drivers/querylang/queryset/'
+      - run: |
+          git add -u
+          git commit -m "chore: update copyright header"
+          git status
+          git push
+        continue-on-error: true
+
+  update-contributors:
+    needs: update-copyright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          git fetch --prune --unshallow
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/wall-of-honor
+          path: wall
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          cd wall
+          npm i -D all-contributors-cli@6.17.1
+          npm list all-contributors-cli
+          cp patch.js ./node_modules/all-contributors-cli/dist/generate/index.js
+          cp ../README.md README.md
+          pip install -r requirements.txt
+          python app.py config.yml export.yml
+          cp README.md ../README.md
+          cd ..
+          rm -rf wall
+          git add README.md
+          git commit -m 'chore: update contributors'
+          git status
+          git push
+        env:
+          PRIVATE_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+        continue-on-error: true
+      - uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 2
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          COMMIT_NAME: Jina Dev Bot
+          COMMIT_EMAIL: dev-bot@jina.ai
+          TOC_TITLE: ''
+          TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
+          COMMIT_MESSAGE: 'chore(docs): update TOC'
