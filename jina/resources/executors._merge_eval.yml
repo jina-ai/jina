@@ -4,5 +4,7 @@ metas:
   name: merge
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+    [SearchRequest, TrainRequest, IndexRequest]:
       - !CollectEvaluationDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}
