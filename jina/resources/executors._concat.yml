@@ -4,5 +4,5 @@ metas:
   name: merge
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+    [SearchRequest, TrainRequest, IndexRequest]:
       - !ConcatEmbedDriver {}

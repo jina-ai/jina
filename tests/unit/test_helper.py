@@ -92,3 +92,37 @@ def test_check_update():
     import jina
     jina.__version__ = '0.1.0'
     assert not _is_latest_version()
+
+
+def test_wrap_func():
+    from jina.executors import BaseExecutor
+    from jina.executors.encoders import BaseEncoder
+
+    class DummyEncoder(BaseEncoder):
+        def train(self):
+            pass
+
+    class MockEnc(DummyEncoder):
+        pass
+
+    class MockMockEnc(MockEnc):
+        pass
+
+    class MockMockMockEnc(MockEnc):
+        def train(self):
+            pass
+
+    def check_override(cls, method):
+        is_inherit = any(getattr(cls, method) == getattr(i, method, None) for i in cls.mro()[1:])
+        is_parent_method = any(hasattr(i, method) for i in cls.mro()[1:])
+        is_override = not is_inherit and is_parent_method
+        return is_override
+
+    # newly created
+    assert not check_override(BaseExecutor, 'train')
+
+    assert not check_override(BaseEncoder, 'train')
+    assert check_override(DummyEncoder, 'train')
+    assert not check_override(MockEnc, 'train')
+    assert not check_override(MockMockEnc, 'train')
+    assert check_override(MockMockMockEnc, 'train')
