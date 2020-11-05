@@ -33,7 +33,7 @@ AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 # some variables may be self-referred and they must be resolved at here
 _ref_desolve_map = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'] = SimpleNamespace()
-_ref_desolve_map.__dict__['metas'].__dict__['replica_id'] = 0
+_ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
 _ref_desolve_map.__dict__['metas'].__dict__['separated_workspace'] = False
 
 
@@ -270,9 +270,9 @@ class BaseExecutor(metaclass=ExecutorType):
         """ Get the path of the current workspace.
 
         :return: if ``separated_workspace`` is set to ``False`` then ``metas.workspace`` is returned,
-                otherwise the ``metas.replica_workspace`` is returned
+                otherwise the ``metas.pea_workspace`` is returned
         """
-        work_dir = self.replica_workspace if self.separated_workspace else self.workspace  # type: str
+        work_dir = self.pea_workspace if self.separated_workspace else self.workspace  # type: str
         return work_dir
 
     def get_file_from_workspace(self, name: str) -> str:
@@ -280,7 +280,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
         :param name: the name of the file
 
-        :return depending on ``metas.separated_workspace`` the file could be located in ``metas.workspace`` or ``metas.replica_workspace``
+        :return depending on ``metas.separated_workspace`` the file could be located in ``metas.workspace`` or ``metas.pea_workspace``
         """
         Path(self.current_workspace).mkdir(parents=True, exist_ok=True)
         return os.path.join(self.current_workspace, name)
@@ -322,7 +322,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     def save(self, filename: str = None) -> bool:
         """
-        Persist data of this executor to the :attr:`workspace` (or :attr:`replica_workspace`). The data could be
+        Persist data of this executor to the :attr:`workspace` (or :attr:`pea_workspace`). The data could be
         a file or collection of files produced/used during an executor run.
 
         These are some of the common data that you might want to persist:
@@ -387,13 +387,13 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def load_config(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
-                    replica_id: int = 0) -> AnyExecutor:
+                    pea_id: int = 0) -> AnyExecutor:
         """Build an executor from a YAML file.
 
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
         :param separated_workspace: the dump and data files associated to this executor will be stored separately for
-                each replica, which will be indexed by the ``replica_id``
-        :param replica_id: the id of the storage of this replica, only effective when ``separated_workspace=True``
+                each parallel pea, which will be indexed by the ``pea_id``
+        :param pea_id: the id of the storage of this parallel pea, only effective when ``separated_workspace=True``
         :return: an executor object
         """
         if not source: raise FileNotFoundError
@@ -421,7 +421,7 @@ class BaseExecutor(metaclass=ExecutorType):
                         raise TypeError(f'{type(mod)!r} is not acceptable, only str or list are acceptable')
 
                 tmp['metas']['separated_workspace'] = separated_workspace
-                tmp['metas']['replica_id'] = replica_id
+                tmp['metas']['pea_id'] = pea_id
 
             else:
                 raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')
@@ -524,13 +524,13 @@ class BaseExecutor(metaclass=ExecutorType):
     def _get_dump_path_from_config(meta_config: Dict):
         if 'name' in meta_config:
             if meta_config.get('separated_workspace', False) is True:
-                if 'replica_id' in meta_config and isinstance(meta_config['replica_id'], int):
-                    work_dir = meta_config['replica_workspace']
+                if 'pea_id' in meta_config and isinstance(meta_config['pea_id'], int):
+                    work_dir = meta_config['pea_workspace']
                     dump_path = os.path.join(work_dir, f'{meta_config["name"]}.{"bin"}')
                     if os.path.exists(dump_path):
                         return dump_path
                 else:
-                    raise BadWorkspace('separated_workspace=True but replica_id is unset or set to a bad value')
+                    raise BadWorkspace('separated_workspace=True but pea_id is unset or set to a bad value')
             else:
                 dump_path = os.path.join(meta_config.get('workspace', os.getcwd()),
                                          f'{meta_config["name"]}.{"bin"}')

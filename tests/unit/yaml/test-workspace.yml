@@ -2,4 +2,4 @@
 metas:
   name: test1
   separated_workspace: true
-  replica_id: 0
+  pea_id: 0

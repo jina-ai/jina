@@ -43,7 +43,7 @@ def test_yaml_expand3():
     with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
-    assert b['replica_workspace'] != '{root.workspace}/{root.name}-{this.replica_id}'
+    assert b['pea_workspace'] != '{root.workspace}/{root.name}-{this.pea_id}'
 
 
 def test_attr_dict():

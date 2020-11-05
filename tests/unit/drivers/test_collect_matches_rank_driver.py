@@ -2,9 +2,19 @@ import pytest
 
 from jina.drivers.rank import CollectMatches2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
-from jina.hub.rankers.MaxRanker import MaxRanker
-from jina.hub.rankers.MinRanker import MinRanker
 from jina.proto import jina_pb2
+
+
+class MockMaxRanker(Chunk2DocRanker):
+
+    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return self.get_doc_id(match_idx), match_idx[self.COL_SCORE].max()
+
+
+class MockMinRanker(Chunk2DocRanker):
+
+    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())
 
 
 class SimpleCollectMatchesRankDriver(CollectMatches2DocRankDriver):
@@ -90,7 +100,7 @@ test_collect_matches2doc_ranker_driver_mock_ranker()
 def test_collect_matches2doc_ranker_driver_min_ranker():
     doc = create_document_to_score_same_depth_level()
     driver = SimpleCollectMatchesRankDriver()
-    executor = MinRanker()
+    executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
     import sys
     min_value_30 = sys.maxsize
@@ -118,7 +128,7 @@ def test_collect_matches2doc_ranker_driver_min_ranker():
 def test_collect_matches2doc_ranker_driver_max_ranker():
     doc = create_document_to_score_same_depth_level()
     driver = SimpleCollectMatchesRankDriver()
-    executor = MaxRanker()
+    executor = MockMaxRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply([doc, ])
     assert len(doc.matches) == 2

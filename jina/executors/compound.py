@@ -93,7 +93,7 @@ class CompoundExecutor(BaseExecutor):
         c[0].add(obj)
 
     .. note::
-        All components ``workspace`` and ``replica_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
+        All components ``workspace`` and ``pea_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
 
     .. warning::
 
@@ -265,7 +265,7 @@ class CompoundExecutor(BaseExecutor):
         for c in self.components:
             c.separated_workspace = self.separated_workspace
             c.workspace = self.workspace
-            c.replica_workspace = self.current_workspace
+            c.pea_workspace = self.current_workspace
 
     def _resolve_routes(self) -> None:
         if self._routes:
