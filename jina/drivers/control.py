@@ -26,14 +26,6 @@ class WaitDriver(BaseDriver):
         time.sleep(5)
 
 
-class ReduceDriver(BaseRecursiveDriver):
-    def __init__(self, *args, **kwargs):
-        super().__init__(expect_parts=None, *args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        pass
-
-
 class ControlReqDriver(BaseDriver):
     """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
 

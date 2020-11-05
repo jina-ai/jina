@@ -10,6 +10,7 @@ from jina.executors import BaseExecutor
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
+from jina.logging import default_logger
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import Document, Envelope
 from jina.proto.message import ProtoMessage
@@ -104,6 +105,10 @@ class MockCollectEvalDriver(CollectEvaluationDriver):
     def msg(self) -> 'ProtoMessage':
         r = prev_msgs[self._num_call]
         return r
+
+    @property
+    def logger(self) -> 'JinaLogger':
+        return default_logger
 
 
 def test_collect_evals():

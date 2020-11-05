@@ -84,8 +84,9 @@ def as_reduce_method(func: Callable) -> Callable:
         if self.expect_parts > 1:
             req_id = self.envelope.request_id
             self._pending_msgs[req_id].append(self.msg)
-
-            if self.expect_parts > len(self._pending_msgs[req_id]):
+            num_part = len(self._pending_msgs[req_id])
+            self.logger.info(f'collected {num_part}/{self.expect_parts} parts of {self.envelope.request_type}')
+            if self.expect_parts > num_part:
                 raise NoExplicitMessage
 
             f = func(self, *args, **kwargs)

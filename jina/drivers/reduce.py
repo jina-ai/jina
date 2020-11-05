@@ -10,6 +10,14 @@ from ..proto import jina_pb2
 from ..proto.ndarray.generic import GenericNdArray
 
 
+class ReduceDriver(BaseRecursiveDriver):
+    def __init__(self, *args, **kwargs):
+        super().__init__(expect_parts=None, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        """Intentionally override traverse_apply with empty function"""
+
+
 class ReduceAllDriver(BaseRecursiveDriver):
     """:class:`ReduceAllDriver` merges chunks/matches from all requests, recursively.
 
