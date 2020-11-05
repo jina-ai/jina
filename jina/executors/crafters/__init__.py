@@ -17,8 +17,11 @@ class BaseCrafter(BaseExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.required_keys = {k for k in inspect.getfullargspec(self.craft).args if k != 'self'}
+        
+    def post_init(self):
         if not self.required_keys:
             self.logger.warning(f'{self.__class__} works on keys, but no keys are specified')
+        super(BaseCrafter, self).post_init()
 
     def craft(self, *args, **kwargs) -> Dict:
         """The apply function of this executor.

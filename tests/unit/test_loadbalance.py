@@ -15,6 +15,9 @@ class SlowWorker(BaseCrafter):
         super().__init__(*args, **kwargs)
         # half of worker is slow
         self.is_slow = os.getpid() % 2 != 0
+
+    def post_init(self):
+        super(SlowWorker, self).post_init()
         self.logger.warning('im a slow worker')
 
     def craft(self, id, *args, **kwargs):
