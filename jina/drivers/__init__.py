@@ -156,6 +156,7 @@ class BaseDriver(metaclass=DriverType):
 
     @property
     def expect_parts(self) -> int:
+        """The expected number of partial messages before trigger :meth:`__call__` """
         return self._expect_parts or self.msg.num_part
 
     def attach(self, pea: 'BasePea', *args, **kwargs) -> None:
