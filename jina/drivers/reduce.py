@@ -61,6 +61,10 @@ class CollectEvaluationDriver(ReduceAllDriver):
 class ConcatEmbedDriver(ReduceAllDriver):
     """Concat all embeddings into one, grouped by ```doc.id``` """
 
+    def __call__(self, *args, **kwargs):
+        self._traverse_apply(self.docs, *args, **kwargs)
+        self._traverse_apply(self.req.docs, concatenate=True, *args, **kwargs)
+
     def _apply_all(
             self,
             docs: Iterable['jina_pb2.Document'],
@@ -70,11 +74,11 @@ class ConcatEmbedDriver(ReduceAllDriver):
             *args,
             **kwargs):
         doc = context_doc
-        if doc.id not in self.doc_pointers:
-            self.doc_pointers[doc.id] = [GenericNdArray(doc.embedding).value]
-        else:
-            self.doc_pointers[doc.id].append(GenericNdArray(doc.embedding).value)
-
-        # if collect all already, concat the embedding
-        if len(self.doc_pointers[doc.id]) == self.msg.num_part:
+        if concatenate:
             GenericNdArray(doc.embedding).value = np.concatenate(self.doc_pointers[doc.id], axis=0)
+        else:
+            if doc.id not in self.doc_pointers:
+                self.doc_pointers[doc.id] = [GenericNdArray(doc.embedding).value]
+            else:
+                self.doc_pointers[doc.id].append(GenericNdArray(doc.embedding).value)
+
