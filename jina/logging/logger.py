@@ -8,6 +8,7 @@ import platform
 import re
 import sys
 
+from typing import Optional
 from pkg_resources import resource_filename
 
 from . import formatter
@@ -81,7 +82,7 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
 class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
-    def __init__(self, context: str, log_config: str = None, **kwargs):
+    def __init__(self, context: str, log_config: Optional[str] = None, group_id: Optional[str] = None, **kwargs):
         from .. import __uptime__
 
         if not log_config:
@@ -101,6 +102,8 @@ class JinaLogger:
         context_vars = {'name': os.environ.get('JINA_POD_NAME', context),
                         'uptime': __uptime__,
                         'context': context}
+        if group_id:
+            context_vars['group_id'] = group_id
         self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there

@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
+from typing import Dict, Any, Union, TypeVar, Type, TextIO, List, Optional
 
 import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
@@ -51,6 +51,8 @@ class ExecutorType(type):
         r = kwargs.pop('requests') if 'requests' in kwargs else {}
 
         obj = type.__call__(cls, *args, **kwargs)
+
+        obj.logger = JinaLogger(obj.__class__.__name__, id=m['pod_id'] if 'pod_id' in m else None)
 
         # set attribute with priority
         # metas in YAML > class attribute > default_jina_config
@@ -132,7 +134,6 @@ class BaseExecutor(metaclass=ExecutorType):
             self.args = args[0]
         else:
             self.args = args
-        self.logger = JinaLogger(self.__class__.__name__)
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
@@ -387,7 +388,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def load_config(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
-                    replica_id: int = 0) -> AnyExecutor:
+                    replica_id: int = 0, pod_id: Optional[int] = None) -> AnyExecutor:
         """Build an executor from a YAML file.
 
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
@@ -403,6 +404,7 @@ class BaseExecutor(metaclass=ExecutorType):
             # ignore all lines start with ! because they could trigger the deserialization of that class
             safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
             tmp = yaml.load(safe_yml)
+
             if tmp:
                 if 'metas' not in tmp:
                     tmp['metas'] = {}
@@ -422,15 +424,20 @@ class BaseExecutor(metaclass=ExecutorType):
 
                 tmp['metas']['separated_workspace'] = separated_workspace
                 tmp['metas']['replica_id'] = replica_id
+                if pod_id:
+                    tmp['metas']['pod_id'] = pod_id
 
             else:
                 raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')
 
             tmp = expand_dict(tmp)
+
             stream = StringIO()
             yaml.dump(tmp, stream)
             tmp_s = stream.getvalue().strip().replace('__tag: ', '!')
-            return yaml.load(tmp_s)
+            executor = yaml.load(tmp_s)
+
+            return executor
 
     @staticmethod
     def load(filename: str = None) -> AnyExecutor:
