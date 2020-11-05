@@ -399,7 +399,7 @@ We welcome all kinds of contributions from the open-source community, individual
 
 ## Community
 
-- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nice with the Jina community
+- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
 - [Slack workspace](https://slack.jina.ai) - join #general on our Slack to meet the team and ask questions
 - [YouTube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
