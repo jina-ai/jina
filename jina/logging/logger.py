@@ -83,6 +83,14 @@ class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
     def __init__(self, context: str, log_config: Optional[str] = None, group_id: Optional[str] = None, **kwargs):
+        """Build a logger for a context
+
+        :param context: The context identifier of the class, module or method
+        :param log_config: the configuration file for the logger
+        :param group_id: the id of the group the messages from this logger will belong, used by fluentd default configuration
+        to group logs by pod
+        :return: an executor object
+        """
         from .. import __uptime__
 
         if not log_config:

@@ -7,6 +7,6 @@ on_gpu: false
 warn_unamed: false
 max_snapshot: 0
 py_modules:
-replica_id: 1
+pea_id: 1
 separated_workspace: false
-replica_workspace: '{root.workspace}/{root.name}-{this.replica_id}'
+pea_workspace: '{root.workspace}/{root.name}-{this.pea_id}'

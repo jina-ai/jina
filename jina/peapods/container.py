@@ -83,35 +83,26 @@ class ContainerPea(BasePea):
 
     def loop_body(self):
         """Direct the log from the container to local console """
-        def check_ready():
-            while not self.is_ready:
-                asyncio.sleep(0.1)
-            self.is_ready_event.set()
-            self.logger.success(__ready_msg__)
-            return True
+        import docker
 
-        async def _loop_body():
-            import docker
-            loop = asyncio.get_event_loop()
-            loop.run_in_executor(None, check_ready)
+        logger = JinaLogger('🐳', id=self.args.identity, **vars(self.args))
 
-            logger = JinaLogger('🐳', **vars(self.args))
-
-            with logger:
-                try:
-                    for line in self._container.logs(stream=True):
-                        msg = line.strip().decode()
-                        logger.info(line.strip().decode())
-                        # this is shabby, but it seems the only easy way to detect is_pretrained_model_exception signal,
-                        # so that it can be raised during an executor hub build (hub --test-uses). This exception
-                        # is raised during executor load and before the `ZMQ` is configured and ready to get requests
-                        # and communicate
-                        if __unable_to_load_pretrained_model_msg__ in msg:
-                            self.is_pretrained_model_exception.set()
-                except docker.errors.NotFound:
-                    self.logger.error('the container can not be started, check your arguments, entrypoint')
-
-        asyncio.run(_loop_body())
+        with logger:
+            try:
+                for line in self._container.logs(stream=True):
+                    msg = line.strip().decode()
+                    logger.info(msg)
+                    # this is shabby, but it seems the only easy way to detect is_pretrained_model_exception signal,
+                    # so that it can be raised during an executor hub build (hub --test-uses). This exception
+                    # is raised during executor load and before the `ZMQ` is configured and ready to get requests
+                    # and communicate
+                    if __ready_msg__ in msg:
+                        self.is_ready_event.set()
+                        self.logger.success(__ready_msg__)
+                    if __unable_to_load_pretrained_model_msg__ in msg:
+                        self.is_pretrained_model_exception.set()
+            except docker.errors.NotFound:
+                self.logger.error('the container can not be started, check your arguments, entrypoint')
 
     def loop_teardown(self):
         """Stop the container """

@@ -139,9 +139,9 @@ class BasePea(metaclass=PeaMeta):
             if self.args.name:
                 # everything in this Pea (process) will use the same name for display the log
                 os.environ['JINA_POD_NAME'] = self.args.name
-            self.logger = JinaLogger(self.name, **vars(self.args))
+            self.logger = JinaLogger(self.name, id=self.args.identity, **vars(self.args))
         else:
-            self.logger = JinaLogger(self.name)
+            self.logger = JinaLogger(self.name, id=self.args.identity)
 
     def __str__(self):
         r = self.name

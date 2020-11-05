@@ -17,7 +17,7 @@ class HeadPea(BasePea):
             if self.args.name:
                 self.name = self.args.name
                 self.name = f'{self.name}-head'
-            self.logger = JinaLogger(self.name, **vars(self.args))
+            self.logger = JinaLogger(self.name, id=self.args.identity, **vars(self.args))
         else:
             self.logger = JinaLogger(self.name)
 
