@@ -15,7 +15,7 @@ from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
 import ruamel.yaml.constructor
 from ruamel.yaml import StringIO
 
-from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method
+from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source
@@ -23,7 +23,6 @@ from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
-    from ..drivers import BaseDriver
     from ..peapods.pea import BasePea
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
@@ -61,25 +60,17 @@ class ExecutorType(type):
 
     @staticmethod
     def register_class(cls):
-        prof_funcs = ['train', 'encode', 'add', 'query', 'craft', 'score', 'evaluate']
         update_funcs = ['train', 'add']
         train_funcs = ['train']
         aggregate_funcs = ['evaluate']
 
-        def wrap_func(func_lst, wrapper):
-            for f_name in func_lst:
-                if hasattr(cls, f_name):
-                    setattr(cls, f_name, wrapper(getattr(cls, f_name)))
-
         reg_cls_set = getattr(cls, '_registered_class', set())
         if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
-            cls.__init__ = store_init_kwargs(cls.__init__)
-            # if 'JINA_PROFILING' in os.environ:
-            #     wrap_func(prof_funcs, profiling)
 
-            wrap_func(train_funcs, as_train_method)
-            wrap_func(update_funcs, as_update_method)
-            wrap_func(aggregate_funcs, as_aggregate_method)
+            wrap_func(cls, ['__init__'], store_init_kwargs)
+            wrap_func(cls, train_funcs, as_train_method)
+            wrap_func(cls, update_funcs, as_update_method)
+            wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)

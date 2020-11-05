@@ -2,14 +2,16 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
+from collections import defaultdict
 from functools import wraps
-from typing import Any, Dict, Callable, Tuple, Iterable, Iterator
-from google.protobuf.struct_pb2 import Struct
+from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, List, Optional, Sequence
 
 import ruamel.yaml.constructor
+from google.protobuf.struct_pb2 import Struct
 
 from ..enums import OnErrorSkip
 from ..executors.compound import CompoundExecutor
+from ..executors.decorators import as_reduce_method, wrap_func
 from ..helper import yaml
 from ..proto import jina_pb2
 from ..proto.message import ProtoMessage, LazyRequest
@@ -86,10 +88,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                    not q.disabled
-                    and self.__class__.__name__ == q.name
-                    and q.priority > self._priority
-                    and key in q.parameters
+                        not q.disabled
+                        and self.__class__.__name__ == q.name
+                        and q.priority > self._priority
+                        and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -114,7 +116,8 @@ class DriverType(type):
     def register_class(cls):
         reg_cls_set = getattr(cls, '_registered_class', set())
         if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
-            cls.__init__ = store_init_kwargs(cls.__init__)
+            wrap_func(cls, ['__init__'], store_init_kwargs)
+            wrap_func(cls, ['__call__'], as_reduce_method)
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
@@ -134,15 +137,26 @@ class BaseDriver(metaclass=DriverType):
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
-    def __init__(self, priority: int = 0, *args, **kwargs):
+    def __init__(self, priority: int = 0, expect_parts: Optional[int] = 1, *args, **kwargs):
         """
 
         :param priority: the priority of its default arg values (hardcoded in Python). If the
              received ``QueryLang`` has a higher priority, it will override the hardcoded value
         """
         self.attached = False  #: represent if this driver is attached to a :class:`jina.peapods.pea.BasePea` (& :class:`jina.executors.BaseExecutor`)
-        self.pea = None  # type: 'BasePea'
+        self.pea = None  # type: Optional['BasePea']
         self._priority = priority
+        self._expect_parts = expect_parts
+
+        # all pending messages collected so far, key is the request id
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List['ProtoMessage']]
+
+        # all pointers of the docs, provide the weak ref to all docs in partial reqs
+        self.doc_pointers = {}  # type: Dict[str, Any]
+
+    @property
+    def expect_parts(self) -> int:
+        return self._expect_parts or self.msg.num_part
 
     def attach(self, pea: 'BasePea', *args, **kwargs) -> None:
         """Attach this driver to a :class:`jina.peapods.pea.BasePea`
@@ -156,6 +170,15 @@ class BaseDriver(metaclass=DriverType):
     def req(self) -> 'LazyRequest':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.pea.request
+
+    @property
+    def partial_reqs(self) -> Sequence['LazyRequest']:
+        """The collected partial requests under the current ``request_id`` """
+        if self.expect_parts <= 1:
+            raise ValueError(f'trying to get collected requests even though expect_parts={self.expect_parts},'
+                             f'maybe you want to use self.req instead?')
+
+        return [v.request for v in self._pending_msgs[self.envelope.request_id]]
 
     @property
     def msg(self) -> 'ProtoMessage':
@@ -233,12 +256,12 @@ class BaseRecursiveDriver(BaseDriver):
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
     def _apply_all(
-        self,
-        docs: Iterable['jina_pb2.Document'],
-        context_doc: 'jina_pb2.Document',
-        field: str,
-        *args,
-        **kwargs,
+            self,
+            docs: Iterable['jina_pb2.Document'],
+            context_doc: 'jina_pb2.Document',
+            field: str,
+            *args,
+            **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
@@ -247,11 +270,18 @@ class BaseRecursiveDriver(BaseDriver):
         :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
         """
 
+    @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
+
     def __call__(self, *args, **kwargs):
-        self._traverse_apply(self.req.docs, *args, **kwargs)
+        self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(
-        self, docs: Iterable['jina_pb2.Document'], *args, **kwargs
+            self, docs: Iterable['jina_pb2.Document'], *args, **kwargs
     ) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
@@ -314,8 +344,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
-            self.envelope.status.code != jina_pb2.Status.ERROR
-            or self.pea.args.skip_on_error < OnErrorSkip.EXECUTOR
+                self.envelope.status.code != jina_pb2.Status.ERROR
+                or self.pea.args.skip_on_error < OnErrorSkip.EXECUTOR
         ):
             return self._exec_fn
         else:
@@ -330,7 +360,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break

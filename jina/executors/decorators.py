@@ -3,8 +3,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from ..logging import default_logger
-
 import inspect
 from functools import wraps
 from typing import Callable, Any, Union, Iterator, List, Optional
@@ -12,7 +10,9 @@ from typing import Callable, Any, Union, Iterator, List, Optional
 import numpy as np
 
 from .metas import get_default_metas
+from ..excepts import NoExplicitMessage
 from ..helper import batch_iterator
+from ..logging import default_logger
 
 
 def as_aggregate_method(func: Callable) -> Callable:
@@ -56,6 +56,46 @@ def as_train_method(func: Callable) -> Callable:
                                 'training it again will override the previous training' % self.__class__.__name__)
         f = func(self, *args, **kwargs)
         self.is_trained = True
+        return f
+
+    return arg_wrapper
+
+
+def wrap_func(cls, func_lst, wrapper):
+    """ Wrapping a class method only once, inherited but not overrided method will not be wrapped again
+
+    :param cls: class
+    :param func_lst: function list to wrap
+    :param wrapper: the wrapper
+    :return:
+    """
+    for f_name in func_lst:
+        if hasattr(cls, f_name) and all(getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]):
+            setattr(cls, f_name, wrapper(getattr(cls, f_name)))
+
+
+def as_reduce_method(func: Callable) -> Callable:
+    """Mark a function as the reduce function of this driver.
+    Will clear the self.doc_pointers() property after function is called.
+    """
+
+    @wraps(func)
+    def arg_wrapper(self, *args, **kwargs):
+        if self.expect_parts > 1:
+            req_id = self.envelope.request_id
+            self._pending_msgs[req_id].append(self.msg)
+
+            if self.expect_parts > len(self._pending_msgs[req_id]):
+                raise NoExplicitMessage
+
+            f = func(self, *args, **kwargs)
+            self.msg.merge_envelope_from(self._pending_msgs[req_id], pop_last_part=True)
+
+            # this request is done, clean everything
+            self._pending_msgs.pop(req_id)
+            self.doc_pointers.clear()
+        else:
+            f = func(self, *args, **kwargs)
         return f
 
     return arg_wrapper
