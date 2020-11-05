@@ -24,6 +24,7 @@ from ..logging.profile import TimeContext
 
 if False:
     from ..peapods.pea import BasePea
+    from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
