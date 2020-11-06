@@ -150,7 +150,7 @@ class JinadAPI:
         import requests
         try:
             url = self.pea_url if self.kind == 'pea' else f'{self.pod_url}/{pod_type}'
-            r = requests.put(url=url, json=pea_args)
+            r = requests.put(url=url, json=pea_args, timeout=self.timeout)
             if r.status_code == requests.codes.ok:
                 return r.json()[f'{self.kind}_id']
         except requests.exceptions.RequestException as ex:
@@ -185,7 +185,7 @@ class JinadAPI:
         import requests
         try:
             url = f'{self.pea_url}/?pea_id={remote_id}' if self.kind == 'pea' else f'{self.pod_url}/?pod_id={remote_id}'
-            r = requests.delete(url=url)
+            r = requests.delete(url=url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t connect with remote jinad url {ex}')
