@@ -28,7 +28,6 @@ jobs:
       - name: If needed, commit black changes to master
         if: failure()
         run: |
-          git fetch --prune --unshallow
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           black -S jina/drivers/__init__.py
@@ -56,7 +55,6 @@ jobs:
           Path: 'jina/'
           IgnorePath: 'jina/drivers/querylang/queryset/'
       - run: |
-          git fetch --prune --unshallow
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add -u
@@ -84,7 +82,6 @@ jobs:
           path: wall
           token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
-          git fetch --prune --unshallow
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           cd wall
