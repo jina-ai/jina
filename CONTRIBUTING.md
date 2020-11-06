@@ -225,6 +225,12 @@ We don't enforce naming of PRs and branches, but we recommend you follow the sam
 <a name="-testing-jina-locally-and-on-ci"></a>
 ## 💥 Testing Jina Locally and on CI
 
+You need to build a local docker image tagged jinaai/jina:test-pip for all the tests to run as in the CI, via: 
+
+```bash
+docker build --build-arg PIP_TAG="[devel]" -f ${PATH_TO_JINA}/Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip ${PATH_TO_JINA}
+```
+
 Locally you can do unittest via:
 
 ```bash
@@ -244,12 +250,6 @@ docker run jinaai/jina:my-local-version check
 ```
 
 It prints a list of components the current version of Jina supports, and then exits. Make sure yours are not in red.
-
-You need to build a local docker image tagged jinaai/jina:test-pip for all the tests to run as in the CI, via: 
-
-```bash
-docker build --build-arg PIP_TAG="[devel]" -f ${PATH_TO_JINA}/Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip ${PATH_TO_JINA}
-```
 
 Once you submit the PR, your code will be tested in the environment of Python 3.7 and 3.8 with [full exta dependencies](extra-requirements.txt) (`pip install .[all]`) installed.
 
