@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
@@ -47,6 +48,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: hanxiao/copyright-action@master
         with:
           CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
@@ -72,6 +74,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
