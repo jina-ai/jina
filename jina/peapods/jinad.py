@@ -1,14 +1,13 @@
-import uuid
 from contextlib import ExitStack
 from pathlib import Path
-from typing import Dict, Tuple, Set
+from typing import Dict, Tuple, Set, List, Optional
 
 import ruamel.yaml
 
-from ..helper import colored
+from ..logging import JinaLogger
 
 
-def _add_file_to_list(_file: str, _file_list: Set, logger):
+def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
     if _file and _file.endswith(('yml', 'yaml', 'py')):
         if Path(_file).is_file():
             _file_list.add(_file)
@@ -17,7 +16,7 @@ def _add_file_to_list(_file: str, _file_list: Set, logger):
             logger.warning(f'file {_file} doesn\'t exist in the disk')
 
 
-def _add_files_in_main_yaml(current_pea: Dict, uses_files: Set, pymodules_files: Set, logger):
+def _add_files_in_main_yaml(current_pea: Dict, uses_files: Set, pymodules_files: Set, logger: 'JinaLogger'):
     for _arg in ['uses', 'uses_before', 'uses_after']:
         if _arg in current_pea:
             _add_file_to_list(_file=current_pea.get(_arg),
@@ -29,7 +28,7 @@ def _add_files_in_main_yaml(current_pea: Dict, uses_files: Set, pymodules_files:
                       logger=logger)
 
 
-def fetch_files_from_yaml(pea_args: Dict, logger) -> Tuple[set, set]:
+def fetch_files_from_yaml(pea_args: Dict, logger: 'JinaLogger') -> Tuple[Set[str], Set[str]]:
     """ helper function to fetch yaml & pymodules to be uploaded to remote """
     uses_files = set()
     pymodules_files = set()
@@ -64,11 +63,25 @@ def fetch_files_from_yaml(pea_args: Dict, logger) -> Tuple[set, set]:
 
 
 class JinadAPI:
+    kind = 'pea'  # select from pea/pod, TODO: enum
+
     def __init__(self,
                  host: str,
                  port: int,
-                 logger):
-        self.logger = logger
+                 logger: 'JinaLogger' = None,
+                 timeout: int = 5,
+                 kind: str = 'pea'):
+        """
+
+        :param host: the host address of ``jinad`` instance
+        :param port: the port number of ``jinad`` instance
+        :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
+        :param logger:
+        """
+        self.logger = logger or JinaLogger(host)
+        self.timeout = timeout
+        if self.kind not in ('pea', 'pod'):
+            raise ValueError(f'kind must be pea/pod')
 
         # for now it is http. but it can be https or unix socket or fd
         # TODO: for https, the jinad server would need a tls certificate.
@@ -87,112 +100,101 @@ class JinadAPI:
             self.logger.critical('missing "requests" dependency, please do pip install "jina[http]"'
                                  'to enable remote Pea/Pod invocation')
 
-    def is_alive(self):
+    def is_alive(self) -> bool:
+        """ Return True if ``jinad`` is alive at remote
+
+        :return:
+        """
         import requests
         try:
-            r = requests.get(url=self.alive_url)
+            r = requests.get(url=self.alive_url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.RequestException as ex:
+            self.logger.error(f'something wrong on remote: {ex}')
             return False
 
-    def _upload_files(self, uses_files, pymodules_files):
+    def _upload_files(self, pea_args: Dict) -> None:
+        """ Upload local dependencies to remote server
+
+        :param uses_files: YAML file names in pod argument ``--uses``
+        :param pymodules_files: Python file names in pod argument ``--pymodules``
+        :return:
+        """
         import requests
 
+        uses_files, pymodules_files = fetch_files_from_yaml(pea_args=pea_args, logger=self.logger)
+
         with ExitStack() as file_stack:
-            files = []
+            files = []  # type: List[Tuple[str, bytes]]
             if uses_files:
                 files.extend([('uses_files', file_stack.enter_context(open(fname, 'rb')))
                               for fname in uses_files])
             if pymodules_files:
                 files.extend([('pymodules_files', file_stack.enter_context(open(fname, 'rb')))
                               for fname in pymodules_files])
-            if not files:
-                self.logger.info('nothing to upload to remote')
-                return
+            if files:
+                try:
+                    r = requests.put(url=self.upload_url, files=files, timeout=self.timeout)
+                    if r.status_code == requests.codes.ok:
+                        self.logger.success(f'Got status {r.json()["status"]} from remote')
+                except requests.exceptions.RequestException as ex:
+                    self.logger.error(f'something wrong on remote: {ex}')
 
-            r = requests.put(url=self.upload_url,
-                             files=files)
+    def create(self, pea_args: Dict, pod_type: str = 'flow') -> Optional[str]:
+        """ Create a remote pea/pod
+
+        :param pea_args: the arguments in dict that pea can accept
+        :param pod_type: two types of pod, can be ``cli``, ``flow`` TODO: need clarify this
+        :return: the identity of the spawned pea/pod
+        """
+        import requests
+        try:
+            url = self.pea_url if self.kind == 'pea' else f'{self.pod_url}/{pod_type}'
+            r = requests.put(url=url, json=pea_args)
             if r.status_code == requests.codes.ok:
-                self.logger.info(f'Got status {colored(r.json()["status"], "green")} from remote')
+                return r.json()[f'{self.kind}_id']
+        except requests.exceptions.RequestException as ex:
+            self.logger.error(f'couldn\'t connect with remote jinad url {ex}')
 
-    def create(self, kind: str, pea_args: Dict, pod_type: str = 'flow'):
+    def log(self, remote_id: 'str') -> None:
+        """ Start the log stream from remote pea/pod, will use local logger for output
+
+        :param remote_id: the identity of that pea/pod
+        :return:
+        """
+
         import requests
         try:
-            url = self.pea_url if kind == 'pea' else f'{self.pod_url}/{pod_type}'
-            r = requests.put(url=url,
-                             json=pea_args)
-            return r.json()[f'{kind}_id'] if r.status_code == requests.codes.ok else None
-        except requests.exceptions.ConnectionError:
-            self.logger.error('couldn\'t connect with remote jinad url')
-
-    def log(self, kind: str, remote_id: uuid.UUID):
-        import requests
-        try:
-            if kind not in ('pea', 'pod'):
-                return
-            url = f'{self.log_url}/?{kind}_id={remote_id}'
-            r = requests.get(url=url,
-                             stream=True)
+            url = f'{self.log_url}/?{self.kind}_id={remote_id}'
+            r = requests.get(url=url, stream=True)
             for log_line in r.iter_content():
                 if log_line:
-                    self.logger.info(f'🌏 {log_line}')
-        except requests.exceptions.ConnectionError:
-            self.logger.error('couldn\'t connect with remote jinad url')
+                    self.logger.info(f'🌏 {log_line.strip()}')
+        except requests.exceptions.RequestException as ex:
+            self.logger.error(f'couldn\'t connect with remote jinad url {ex}')
         finally:
-            return self.logger.info(f'🌏 exiting from remote logger')
+            self.logger.info(f'🌏 exiting from remote logger')
 
-    def delete(self, kind: str, remote_id: uuid.UUID):
+    def delete(self, remote_id: 'str') -> bool:
+        """ Delete a remote pea/pod
+
+        :param kind: pea/pod
+        :param remote_id: the identity of that pea/pod
+        :return: True if the deletion is successful
+        """
         import requests
         try:
-            url = f'{self.pea_url}/?pea_id={remote_id}' if kind == 'pea' else f'{self.pod_url}/?pod_id={remote_id}'
+            url = f'{self.pea_url}/?pea_id={remote_id}' if self.kind == 'pea' else f'{self.pod_url}/?pod_id={remote_id}'
             r = requests.delete(url=url)
             return r.status_code == requests.codes.ok
-        except requests.exceptions.ConnectionError:
-            self.logger.error('couldn\'t connect with remote jinad url')
+        except requests.exceptions.RequestException as ex:
+            self.logger.error(f'couldn\'t connect with remote jinad url {ex}')
             return False
 
 
 class PeaAPI(JinadAPI):
-    def __init__(self, host: str, port: int, logger):
-        super().__init__(host=host, port=port, logger=logger)
-
-    def upload(self, pea_args):
-        try:
-            _uses_files, _pymodules_files = fetch_files_from_yaml(pea_args=pea_args,
-                                                                  logger=self.logger)
-            self._upload_files(uses_files=_uses_files,
-                               pymodules_files=_pymodules_files)
-        except Exception as e:
-            self.logger.error(f'got an error while uploading context files to remote pea {repr(e)}')
-
-    def create(self, pea_args: Dict):
-        return super().create(kind='pea', pea_args=pea_args)
-
-    def log(self, pea_id: uuid.UUID):
-        super().log(kind='pea', remote_id=pea_id)
-
-    def delete(self, pea_id: uuid.UUID):
-        return super().delete(kind='pea', remote_id=pea_id)
+    kind = 'pea'
 
 
 class PodAPI(JinadAPI):
-    def __init__(self, host: str, port: int, logger):
-        super().__init__(host=host, port=port, logger=logger)
-
-    def upload(self, pea_args: Dict):
-        try:
-            _uses_files, _pymodules_files = fetch_files_from_yaml(pea_args=pea_args,
-                                                                  logger=self.logger)
-            self._upload_files(uses_files=_uses_files,
-                               pymodules_files=_pymodules_files)
-        except Exception as e:
-            self.logger.error(f'got an error while uploading context files to remote pod {repr(e)}')
-
-    def create(self, pea_args: Dict, pod_type: str = 'flow'):
-        return super().create(kind='pod', pea_args=pea_args, pod_type=pod_type)
-
-    def log(self, pod_id: uuid.UUID):
-        super().log(kind='pod', remote_id=pod_id)
-
-    def delete(self, pod_id: uuid.UUID):
-        return super().delete(kind='pod', remote_id=pod_id)
+    kind = 'pod'
