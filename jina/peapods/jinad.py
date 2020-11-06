@@ -69,7 +69,7 @@ class JinadAPI:
                  host: str,
                  port: int,
                  logger: 'JinaLogger' = None,
-                 timeout: int = 5):
+                 timeout: int = 5, **kwargs):
         """
 
         :param host: the host address of ``jinad`` instance
@@ -99,6 +99,7 @@ class JinadAPI:
             self.logger.critical('missing "requests" dependency, please do pip install "jina[http]"'
                                  'to enable remote Pea/Pod invocation')
 
+    @property
     def is_alive(self) -> bool:
         """ Return True if ``jinad`` is alive at remote
 
@@ -113,15 +114,15 @@ class JinadAPI:
             self.logger.error(f'something wrong on remote: {ex}')
             return False
 
-    def upload(self, pea_args: Dict) -> None:
+    def upload(self, args: Dict, **kwargs) -> bool:
         """ Upload local file dependencies to remote server by extracting from the pea_args
 
-        :param pea_args: the arguments in dict that pea can accept
-        :return:
+        :param args: the arguments in dict that pea can accept
+        :return: if upload is successful
         """
         import requests
 
-        uses_files, pymodules_files = fetch_files_from_yaml(pea_args=pea_args, logger=self.logger)
+        uses_files, pymodules_files = fetch_files_from_yaml(pea_args=args, logger=self.logger)
 
         with ExitStack() as file_stack:
             files = []  # type: List[Tuple[str, bytes]]
@@ -137,26 +138,29 @@ class JinadAPI:
                     r = requests.put(url=self.upload_url, files=files, timeout=self.timeout)
                     if r.status_code == requests.codes.ok:
                         self.logger.success(f'Got status {r.json()["status"]} from remote')
+                        return True
                 except requests.exceptions.RequestException as ex:
                     self.logger.error(f'something wrong on remote: {ex}')
 
-    def create(self, pea_args: Dict, pod_type: str = 'flow') -> Optional[str]:
+        return False
+
+    def create(self, args: Dict, pod_type: str = 'flow', **kwargs) -> Optional[str]:
         """ Create a remote pea/pod
 
-        :param pea_args: the arguments in dict that pea can accept
+        :param args: the arguments in dict that pea can accept
         :param pod_type: two types of pod, can be ``cli``, ``flow`` TODO: need clarify this
         :return: the identity of the spawned pea/pod
         """
         import requests
         try:
             url = self.pea_url if self.kind == 'pea' else f'{self.pod_url}/{pod_type}'
-            r = requests.put(url=url, json=pea_args, timeout=self.timeout)
+            r = requests.put(url=url, json=args, timeout=self.timeout)
             if r.status_code == requests.codes.ok:
                 return r.json()[f'{self.kind}_id']
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t connect with remote jinad url {ex}')
+            self.logger.error(f'couldn\'t create {pod_type} with remote jinad {ex}')
 
-    def log(self, remote_id: 'str') -> None:
+    def log(self, remote_id: 'str', **kwargs) -> None:
         """ Start the log stream from remote pea/pod, will use local logger for output
 
         :param remote_id: the identity of that pea/pod
@@ -175,7 +179,7 @@ class JinadAPI:
         finally:
             self.logger.info(f'🌏 exiting from remote logger')
 
-    def delete(self, remote_id: 'str') -> bool:
+    def delete(self, remote_id: 'str', **kwargs) -> bool:
         """ Delete a remote pea/pod
 
         :param kind: pea/pod
@@ -193,8 +197,10 @@ class JinadAPI:
 
 
 class PeaAPI(JinadAPI):
+    """Pea API, we might have different endpoints for peas & pods later"""
     kind = 'pea'
 
 
 class PodAPI(JinadAPI):
+    """Pod API, we might have different endpoints for peas & pods later"""
     kind = 'pod'
