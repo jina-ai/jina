@@ -11,6 +11,9 @@ def log(logger):
     logger.warning('this is test warning message')
     logger.error('this is test error message')
     logger.critical('this is test critical message')
+    # super long log
+    logger.info('x' * 65536)
+    logger.error('x' * 65536)
 
 
 def test_logging_syslog():

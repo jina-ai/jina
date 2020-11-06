@@ -310,11 +310,12 @@ class BasePea(metaclass=PeaMeta):
             d = msg.envelope.status.details.add()
             d.pod = self.name
             d.pod_id = self.args.identity
-            d.exception = repr(ex)
+            d.exception = ex.__class__.__name__
+            d.exception_args.extend([str(v) for v in ex.args])
             d.executor = str(getattr(self, 'executor', ''))
             d.traceback = traceback.format_exc()
             d.time.GetCurrentTime()
-            self.logger.error(ex, exc_info=True)
+            self.logger.error(repr(ex))
             self.zmqlet.send_message(msg)
 
     def loop_body(self):

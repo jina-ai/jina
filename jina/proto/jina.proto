@@ -240,6 +240,9 @@ message Status {
         // the timestamp when error occurs
         google.protobuf.Timestamp time = 6;
 
+        // the list of arguments given to the exception constructor.
+        repeated string exception_args = 7;
+
     }
 
     // the details of the error
