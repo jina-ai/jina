@@ -1,4 +1,4 @@
-name: Autocommit to jina-ai/jina
+name: Autocommit
 
 on:
   push:
@@ -76,3 +76,6 @@ jobs:
           TOC_TITLE: ''
           TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
           COMMIT_MESSAGE: 'chore(docs): update TOC'
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
