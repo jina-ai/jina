@@ -225,7 +225,7 @@ We don't enforce naming of PRs and branches, but we recommend you follow the sam
 <a name="-testing-jina-locally-and-on-ci"></a>
 ## 💥 Testing Jina Locally and on CI
 
-You need to build a local docker image tagged jinaai/jina:test-pip for all the tests to run as in the CI via: 
+You need to build a local docker image tagged 'jinaai/jina:test-pip' for all the tests to run as in the CI, via: 
 
 ```bash
 docker build --build-arg PIP_TAG="[devel]" -f ${PATH_TO_JINA}/Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip ${PATH_TO_JINA}
