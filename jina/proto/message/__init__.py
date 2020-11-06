@@ -290,6 +290,14 @@ class ProtoMessage:
         """Update the timestamp of the last route"""
         self.envelope.routes[-1].end_time.GetCurrentTime()
 
+    def merge_envelope_from(self, msgs: List['ProtoMessage'], pop_last_part: bool = False):
+        routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}
+        self.envelope.ClearField('routes')
+        self.envelope.routes.extend(
+            sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
+        if pop_last_part:
+            self.envelope.num_part.pop(-1)
+
 
 class ControlMessage(ProtoMessage):
     def __init__(self, command: 'jina_pb2.Request.ControlRequest',

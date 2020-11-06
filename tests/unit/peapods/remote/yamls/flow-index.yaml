@@ -1,0 +1,12 @@
+!Flow
+with:
+  logserver: false
+  compress_hwm: 1024
+pods:
+  encode:
+    uses: yamls/encoder.yml
+    parallel: 2
+  index:
+    uses: yamls/indexer.yml
+    shards: 2
+    separated_workspace: true

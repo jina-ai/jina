@@ -3,24 +3,9 @@ __license__ = "Apache-2.0"
 
 import time
 
-from . import BaseDriver
+from . import BaseDriver, BaseRecursiveDriver
 from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
 from ..proto import jina_pb2
-
-
-class ControlReqDriver(BaseDriver):
-    """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
-
-    def __call__(self, *args, **kwargs):
-        if self.req.command == jina_pb2.Request.ControlRequest.TERMINATE:
-            self.envelope.status.code = jina_pb2.Status.SUCCESS
-            raise RequestLoopEnd
-        elif self.req.command == jina_pb2.Request.ControlRequest.STATUS:
-            self.envelope.status.code = jina_pb2.Status.READY
-            for k, v in vars(self.pea.args).items():
-                self.req.args[k] = str(v)
-        else:
-            raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
 
 
 class LogInfoDriver(BaseDriver):
@@ -39,6 +24,21 @@ class WaitDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         time.sleep(5)
+
+
+class ControlReqDriver(BaseDriver):
+    """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
+
+    def __call__(self, *args, **kwargs):
+        if self.req.command == jina_pb2.Request.ControlRequest.TERMINATE:
+            self.envelope.status.code = jina_pb2.Status.SUCCESS
+            raise RequestLoopEnd
+        elif self.req.command == jina_pb2.Request.ControlRequest.STATUS:
+            self.envelope.status.code = jina_pb2.Status.READY
+            for k, v in vars(self.pea.args).items():
+                self.req.args[k] = str(v)
+        else:
+            raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
 
 
 class RouteDriver(ControlReqDriver):
