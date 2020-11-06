@@ -10,7 +10,7 @@ jobs:
     if: |
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
-      !contains(github.event.head_commit.message, 'Reformatted by jina-dev-bot')
+      !endsWith(github.event.head_commit.message, 'style: reformatted by jina-dev-bot')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,10 +32,11 @@ jobs:
       - name: If needed, commit black changes to master
         if: failure()
         run: |
+          git pull
           black -S jina/drivers/__init__.py
           git add -u
           export JINA_GIT_COMMIT_MSG_OLD=$(git log --format=%B -n1)
-          git commit --amend -m"$JINA_GIT_COMMIT_MSG_OLD" -m"Reformatted by jina-dev-bot."
+          git commit --amend -m"$JINA_GIT_COMMIT_MSG_OLD" -m"style: reformatted by jina-dev-bot"
           git status
           git push
         continue-on-error: true
@@ -58,6 +59,7 @@ jobs:
           Path: 'jina/'
           IgnorePath: 'jina/drivers/querylang/queryset/'
       - run: |
+          git pull
           git add -u
           git commit -m "chore: update copyright header"
           git status
@@ -84,6 +86,7 @@ jobs:
           path: wall
           token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
+          git pull
           cd wall
           npm i -D all-contributors-cli@6.17.1
           npm list all-contributors-cli
