@@ -3,7 +3,8 @@ __license__ = "Apache-2.0"
 
 import time
 
-from . import BaseDriver, BaseRecursiveDriver
+from . import BaseDriver
+from .querylang.queryset.dunderkey import dunder_get
 from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
 from ..proto import jina_pb2
 
@@ -11,12 +12,17 @@ from ..proto import jina_pb2
 class LogInfoDriver(BaseDriver):
     """Log output the request info"""
 
-    def __init__(self, field: str = 'msg', *args, **kwargs):
+    def __init__(self, key: str = 'request', *args, **kwargs):
+        """
+        :param key: (str) that represents a first level or nested key in the dict
+        :param args:
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
-        self.field = field
+        self.key = key
 
     def __call__(self, *args, **kwargs):
-        self.logger.info(getattr(self, self.field, 'msg'))
+        self.logger.info(dunder_get(self.msg.as_pb_object, self.key))
 
 
 class WaitDriver(BaseDriver):

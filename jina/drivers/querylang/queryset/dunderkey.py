@@ -116,7 +116,6 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     """
 
-
     try:
         part1, part2 = key.split('__', 1)
     except ValueError:
@@ -138,6 +137,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
         result = getattr(_dict, part1)
 
     return dunder_get(result, part2) if part2 else result
+
 
 def undunder_keys(_dict: Dict) -> Dict:
     """Returns dict with the dunder keys converted back to nested dicts
@@ -164,7 +164,7 @@ def undunder_keys(_dict: Dict) -> Dict:
             dict1[key] = val
 
     result = {}
-    for k,v in _dict.items():
+    for k, v in _dict.items():
         merge(result, f(k.split('__'), v))
 
     return result
