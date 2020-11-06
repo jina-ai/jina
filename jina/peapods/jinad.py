@@ -1,6 +1,5 @@
 import uuid
 from pathlib import Path
-from argparse import Namespace
 from typing import Dict, Tuple, Set
 from contextlib import ExitStack
 
@@ -15,17 +14,17 @@ def _add_file_to_list(_file: str, _file_list: Set, logger):
             _file_list.add(_file)
             logger.debug(f'adding file {_file} to be uploaded to remote context')
         else:
-            logger.debug(f'file {_file} doesn\'t exist in the disk')
+            logger.warning(f'file {_file} doesn\'t exist in the disk')
 
 
 def _add_files_in_main_yaml(current_pea: Dict, uses_files: Set, pymodules_files: Set, logger):
     for _arg in ['uses', 'uses_before', 'uses_after']:
         if _arg in current_pea:
-            _add_file_to_list(_file=current_pea[_arg],
+            _add_file_to_list(_file=current_pea.get(_arg),
                               _file_list=uses_files,
                               logger=logger)
 
-    _add_file_to_list(_file=current_pea['py_modules'],
+    _add_file_to_list(_file=current_pea.get('py_modules'),
                       _file_list=pymodules_files,
                       logger=logger)
 
@@ -35,17 +34,18 @@ def fetch_files_from_yaml(pea_args: Dict, logger) -> Tuple[set, set]:
     uses_files = set()
     pymodules_files = set()
 
-    # This is for remote Pods
-    if 'peas' in pea_args and isinstance(pea_args['peas'], list):
-        for current_pea in pea_args['peas']:
-            _add_files_in_main_yaml(current_pea=current_pea,
-                                    uses_files=uses_files,
-                                    pymodules_files=pymodules_files,
-                                    logger=logger)
+    _pea_list = []
+    if 'peas' in pea_args:
+        # This is for remote Pods
+        if isinstance(pea_args['peas'], list):
+            for _pea_args in pea_args['peas']:
+                _pea_list.append(_pea_args)
+    else:
+        # This is for remote Peas
+        _pea_list.append(pea_args)
 
-    # This is for remote Peas
-    if 'peas' not in pea_args:
-        _add_files_in_main_yaml(current_pea=pea_args,
+    for _pea_args in _pea_list:
+        _add_files_in_main_yaml(current_pea=_pea_args,
                                 uses_files=uses_files,
                                 pymodules_files=pymodules_files,
                                 logger=logger)
@@ -105,7 +105,6 @@ class JinadAPI:
                 self.logger.info('nothing to upload to remote')
                 return
 
-            headers = {'content-type': 'multipart/form-data'}
             r = requests.put(url=self.upload_url,
                              files=files)
             if r.status_code == requests.codes.ok:
@@ -117,15 +116,17 @@ class JinadAPI:
             url = self.pea_url if kind == 'pea' else f'{self.pod_url}/{pod_type}'
             r = requests.put(url=url,
                              json=pea_args)
-            return r.json()[f'{kind}_id'] if r.status_code == requests.codes.ok else False
+            return r.json()[f'{kind}_id'] if r.status_code == requests.codes.ok else None
         except requests.exceptions.ConnectionError:
             self.logger.error('couldn\'t connect with remote jinad url')
-            return False
+            return None
 
     def log(self, kind: str, remote_id: uuid.UUID):
         import requests
         try:
-            url = f'{self.log_url}/?pea_id={remote_id}' if kind == 'pea' else f'{self.log_url}/?pod_id={remote_id}'
+            if kind not in ('pea', 'pod'):
+                return
+            url = f'{self.log_url}/?{kind}_id={remote_id}'
             r = requests.get(url=url,
                              stream=True)
             for log_line in r.iter_content():
@@ -141,7 +142,7 @@ class JinadAPI:
         try:
             url = f'{self.pea_url}/?pea_id={remote_id}' if kind == 'pea' else f'{self.pod_url}/?pod_id={remote_id}'
             r = requests.delete(url=url)
-            return True if r.status_code == requests.codes.ok else False
+            return r.status_code == requests.codes.ok
         except requests.exceptions.ConnectionError:
             self.logger.error('couldn\'t connect with remote jinad url')
             return False
