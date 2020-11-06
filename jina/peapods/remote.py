@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from argparse import Namespace
 from typing import Dict, Union, Type, Optional, Any
 
-from .jinad import PeaAPI, PodAPI
+from .jinad import PeaAPI, PodAPI, JinadAPI
 from .pea import BasePea
 from ..helper import colored, cached_property
 
