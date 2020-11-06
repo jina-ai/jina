@@ -106,10 +106,7 @@ class GatewayPea:
             if not msg.is_complete:
                 raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
 
-            request = msg.request.as_pb_object
-            request.status.CopyFrom(msg.envelope.status)
-            request.routes.extend(msg.envelope.routes)
-            return request
+            return msg.response
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:

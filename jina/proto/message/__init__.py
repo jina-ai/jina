@@ -301,6 +301,19 @@ class ProtoMessage:
         """Update the timestamp of the last route"""
         self.envelope.routes[-1].end_time.GetCurrentTime()
 
+    @property
+    def response(self):
+        """Get the response of the message
+
+        .. note::
+            This should be only called at Gateway
+        """
+        self.envelope.routes[0].end_time.GetCurrentTime()
+        request = self.request.as_pb_object
+        request.status.CopyFrom(self.envelope.status)
+        request.routes.extend(self.envelope.routes)
+        return request
+
     def merge_envelope_from(self, msgs: List['ProtoMessage'], pop_last_part: bool = False):
         routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}
         self.envelope.ClearField('routes')

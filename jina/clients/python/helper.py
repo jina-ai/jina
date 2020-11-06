@@ -8,9 +8,7 @@ from typing import Sequence
 from ...helper import colored
 from ...logging import profile_logger
 from ...logging.profile import TimeContext
-
-if False:
-    from ...proto import jina_pb2
+from ...proto import jina_pb2
 
 
 class ProgressBar(TimeContext):
@@ -92,4 +90,20 @@ class ProgressBar(TimeContext):
 
 
 def pprint_error(status: 'jina_pb2.Status', routes: Sequence['jina_pb2.Route']):
-    pass
+    from prettytable import PrettyTable, ALL
+    from textwrap import fill
+
+    header = [colored(v, attrs=['bold']) for v in ('Pod', 'Status', 'Exception')]
+    table = PrettyTable(field_names=header, align='l', hrules=ALL)
+    for route in routes:
+        status_icon = '🟢'
+        if route.status.code == jina_pb2.Status.ERROR:
+            status_icon = '🔴'
+        elif route.status.code == jina_pb2.Status.ERROR_CHAINED:
+            status_icon = '⚪'
+
+        table.add_row([route.pod, status_icon,
+                       fill(''.join(route.status.exception.stacks[-3:]), width=50,
+                            break_long_words=False, replace_whitespace=False)])
+        # you can change the width="number" to as many character you want per line.
+    print(table)
