@@ -69,8 +69,7 @@ class JinadAPI:
                  host: str,
                  port: int,
                  logger: 'JinaLogger' = None,
-                 timeout: int = 5,
-                 kind: str = 'pea'):
+                 timeout: int = 5):
         """
 
         :param host: the host address of ``jinad`` instance
@@ -106,6 +105,7 @@ class JinadAPI:
         :return:
         """
         import requests
+
         try:
             r = requests.get(url=self.alive_url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
@@ -113,11 +113,10 @@ class JinadAPI:
             self.logger.error(f'something wrong on remote: {ex}')
             return False
 
-    def _upload_files(self, pea_args: Dict) -> None:
-        """ Upload local dependencies to remote server
+    def upload(self, pea_args: Dict) -> None:
+        """ Upload local file dependencies to remote server by extracting from the pea_args
 
-        :param uses_files: YAML file names in pod argument ``--uses``
-        :param pymodules_files: Python file names in pod argument ``--pymodules``
+        :param pea_args: the arguments in dict that pea can accept
         :return:
         """
         import requests
@@ -126,6 +125,7 @@ class JinadAPI:
 
         with ExitStack() as file_stack:
             files = []  # type: List[Tuple[str, bytes]]
+
             if uses_files:
                 files.extend([('uses_files', file_stack.enter_context(open(fname, 'rb')))
                               for fname in uses_files])
