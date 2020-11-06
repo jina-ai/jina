@@ -26,10 +26,6 @@ jobs:
       - name: Install and run black --check .
         run: |
           pip install black
-          black --check -S jina/drivers/__init__.py
-      - name: If needed, commit black changes to master
-        if: failure()
-        run: |
           black -S jina/drivers/__init__.py
           git add -u
           export JINA_GIT_COMMIT_MSG_OLD=$(git log --format=%B -n1)
