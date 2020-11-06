@@ -17,6 +17,9 @@ jobs:
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           ref: ${{ github.event.pull_request.head.sha }}
+      - run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
