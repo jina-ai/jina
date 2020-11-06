@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  autoblack:
+  autocommit:
     if: |
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
