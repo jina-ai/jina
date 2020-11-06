@@ -1,11 +1,11 @@
 import uuid
+from contextlib import ExitStack
 from pathlib import Path
 from typing import Dict, Tuple, Set
-from contextlib import ExitStack
 
 import ruamel.yaml
 
-from jina.helper import colored
+from ..helper import colored
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger):
@@ -69,6 +69,11 @@ class JinadAPI:
                  port: int,
                  logger):
         self.logger = logger
+
+        # for now it is http. but it can be https or unix socket or fd
+        # TODO: for https, the jinad server would need a tls certificate.
+        # no changes would be required in terms of how the api gets invoked,
+        # as requests does ssl verfication. we'd need to add some exception handling logic though
         self.base_url = f'http://{host}:{port}/v1'
         self.alive_url = f'{self.base_url}/alive'
         self.upload_url = f'{self.base_url}/upload'
@@ -86,7 +91,7 @@ class JinadAPI:
         import requests
         try:
             r = requests.get(url=self.alive_url)
-            return True if r.status_code == requests.codes.ok else False
+            return r.status_code == requests.codes.ok
         except requests.exceptions.ConnectionError:
             return False
 
