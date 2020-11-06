@@ -129,6 +129,8 @@ class BasePea(metaclass=PeaMeta):
         self._request = None
         self._message = None
 
+        os.environ['JINA_LOG_ID'] = self.args.identity
+
         if isinstance(self.args, argparse.Namespace):
             self.daemon = args.daemon
             if self.args.name:
@@ -344,6 +346,8 @@ class BasePea(metaclass=PeaMeta):
     def run(self):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
+            # Every logger created in this process will be identified by the `Pod Id`
+            os.environ['JINA_LOG_ID'] = self.args.identity
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:
@@ -385,8 +389,8 @@ class BasePea(metaclass=PeaMeta):
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                     timeout=self.args.timeout_ctrl)
+            send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                              timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
