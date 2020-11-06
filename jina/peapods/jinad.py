@@ -119,7 +119,6 @@ class JinadAPI:
             return r.json()[f'{kind}_id'] if r.status_code == requests.codes.ok else None
         except requests.exceptions.ConnectionError:
             self.logger.error('couldn\'t connect with remote jinad url')
-            return None
 
     def log(self, kind: str, remote_id: uuid.UUID):
         import requests
