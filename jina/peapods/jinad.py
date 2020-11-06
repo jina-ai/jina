@@ -133,16 +133,16 @@ class JinadAPI:
             if pymodules_files:
                 files.extend([('pymodules_files', file_stack.enter_context(open(fname, 'rb')))
                               for fname in pymodules_files])
-            if files:
-                try:
-                    r = requests.put(url=self.upload_url, files=files, timeout=self.timeout)
-                    if r.status_code == requests.codes.ok:
-                        self.logger.success(f'Got status {r.json()["status"]} from remote')
-                        return True
-                except requests.exceptions.RequestException as ex:
-                    self.logger.error(f'something wrong on remote: {ex}')
-
-        return False
+            if not files:
+                self.logger.debug('no files to be uploaded to remote')
+                return True
+            try:
+                r = requests.put(url=self.upload_url, files=files, timeout=self.timeout)
+                if r.status_code == requests.codes.ok:
+                    self.logger.success(f'Got status {r.json()["status"]} from remote')
+                    return True
+            except requests.exceptions.RequestException as ex:
+                self.logger.error(f'something wrong on remote: {ex}')
 
     def create(self, args: Dict, pod_type: str = 'flow', **kwargs) -> Optional[str]:
         """ Create a remote pea/pod
