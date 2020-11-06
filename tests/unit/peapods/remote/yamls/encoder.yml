@@ -1,0 +1,14 @@
+!DummyExecutor
+metas:
+  name: myenc
+  py_modules: tests/unit/peapods/remote/yamls/dummy.py
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !Blob2PngURI {}
+      - !EncodeDriver {}
+      - !ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks

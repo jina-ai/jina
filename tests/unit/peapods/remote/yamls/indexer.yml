@@ -1,0 +1,14 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+    metas:
+      name: vecidx
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: chunkidx
+metas:
+  name: chunk_indexer
