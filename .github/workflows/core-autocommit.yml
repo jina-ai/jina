@@ -33,7 +33,7 @@ jobs:
           black -S jina/drivers/__init__.py
           git add -u
           export JINA_GIT_COMMIT_MSG_OLD=$(git log --format=%B -n1)
-          git commit --amend -m"$JINA_GIT_COMMIT_MSG_OLD" -m"chore(style): reformatted by jina-dev-bot"
+          git commit -m "chore(style): reformatted by jina-dev-bot"
           git status
       - name: Run copyright generator
         uses: hanxiao/copyright-action@master
@@ -44,7 +44,7 @@ jobs:
           IgnorePath: 'jina/drivers/querylang/queryset/'
       - run: |
           git add -u
-          git commit -m "chore: update copyright header"
+          git commit -m "chore(copyright): update copyright header"
           git status
       - name: Checkout wall-of-honor
         uses: actions/checkout@v2
@@ -65,7 +65,7 @@ jobs:
           cd ..
           rm -rf wall
           git add README.md
-          git commit -m 'chore: update contributors'
+          git commit -m 'chore(contributor): update contributors'
           git status
         env:
           PRIVATE_TOKEN: ${{ secrets.JINA_DEV_BOT }}
