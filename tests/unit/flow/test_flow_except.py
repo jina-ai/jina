@@ -20,7 +20,7 @@ class PretrainedModelEncoder(BaseEncoder):
 def test_bad_flow():
     def validate(req):
         assert req.status.code == jina_pb2.Status.ERROR
-        assert req.status.details[0].pod == 'r1'
+        assert req.routes[0].pod == 'r1'
 
     f = (Flow().add(name='r1', uses='!BaseCrafter')
          .add(name='r2', uses='!BaseEncoder')

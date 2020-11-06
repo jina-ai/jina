@@ -79,6 +79,7 @@ class GatewayPea:
         self._server.stop(None)
         self._stop_event.set()
         self.logger.success(__stop_msg__)
+        self.logger.close()
 
     def join(self):
         try:
@@ -107,6 +108,7 @@ class GatewayPea:
 
             request = msg.request.as_pb_object
             request.status.CopyFrom(msg.envelope.status)
+            request.routes.extend(msg.envelope.routes)
             return request
 
         async def CallUnary(self, request, context):
@@ -215,6 +217,7 @@ class RESTGatewayPea(BasePea):
     def close(self):
         if hasattr(self, 'terminate'):
             self.terminate()
+        self.logger.close()
 
     def get_http_server(self):
         try:

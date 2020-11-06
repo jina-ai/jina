@@ -3,10 +3,14 @@ __license__ = "Apache-2.0"
 
 import sys
 import time
+from typing import Sequence
 
 from ...helper import colored
 from ...logging import profile_logger
 from ...logging.profile import TimeContext
+
+if False:
+    from ...proto import jina_pb2
 
 
 class ProgressBar(TimeContext):
@@ -85,3 +89,7 @@ class ProgressBar(TimeContext):
         else:
             speed = self.num_reqs / self.duration
         sys.stdout.write('\t%s\n' % colored(f'✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s', 'green'))
+
+
+def pprint_error(status: 'jina_pb2.Status', routes: Sequence['jina_pb2.Route']):
+    pass

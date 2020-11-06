@@ -6,7 +6,6 @@ import multiprocessing
 import os
 import threading
 import time
-import traceback
 from multiprocessing.synchronize import Event
 from queue import Empty
 from typing import Dict, Optional, Union
@@ -18,7 +17,7 @@ from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..enums import PeaRoleType, OnErrorSkip
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
-    ModelCheckpointNotExist
+    ModelCheckpointNotExist, ChainedPodException
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
@@ -158,6 +157,8 @@ class BasePea(metaclass=PeaMeta):
         """
         if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.HANDLE:
             self.executor(self.request_type)
+        else:
+            raise ChainedPodException
         return self
 
     @property
@@ -242,13 +243,13 @@ class BasePea(metaclass=PeaMeta):
 
     def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
-        msg.update_timestamp()
-        if self.args.num_part > 1:
-            msg.num_part = self.args.num_part
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
+        msg.update_timestamp()
+        if self.args.num_part > 1:
+            msg.num_part = self.args.num_part
         return self
 
     def set_ready(self, *args, **kwargs):
@@ -262,8 +263,12 @@ class BasePea(metaclass=PeaMeta):
         self.logger.success(__stop_msg__)
 
     def _callback(self, msg: 'ProtoMessage'):
+        self.is_post_hook_done = False  #: if the post_hook is called
         if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
             self.pre_hook(msg).handle(msg).post_hook(msg)
+            self.is_post_hook_done = True
+        else:
+            raise ChainedPodException
         return msg
 
     def _handle_terminate_signal(self, msg):
@@ -302,20 +307,16 @@ class BasePea(metaclass=PeaMeta):
             # 1. wait partial message to be finished
             # 2. dealer send a control message and no need to go on
             pass
-        except (RuntimeError, Exception) as ex:
+        except (RuntimeError, Exception, ChainedPodException) as ex:
             # general runtime error and nothing serious, we simply mark the message to error and pass on
-            msg.envelope.status.code = jina_pb2.Status.ERROR
-            if not msg.envelope.status.description:
-                msg.envelope.status.description = f'{self} throws {repr(ex)}'
-            d = msg.envelope.status.details.add()
-            d.pod = self.name
-            d.pod_id = self.args.identity
-            d.exception = ex.__class__.__name__
-            d.exception_args.extend([str(v) for v in ex.args])
-            d.executor = str(getattr(self, 'executor', ''))
-            d.traceback = traceback.format_exc()
-            d.time.GetCurrentTime()
-            self.logger.error(repr(ex))
+            if not self.is_post_hook_done:
+                self.post_hook(msg)
+            if isinstance(ex, ChainedPodException):
+                msg.add_exception()
+                self.logger.warning(repr(ex))
+            else:
+                msg.add_exception(ex)
+                self.logger.error(repr(ex))
             self.zmqlet.send_message(msg)
 
     def loop_body(self):

@@ -142,6 +142,17 @@ message Document {
 }
 
 /**
+ * Represents a the route paths of this message
+ */
+message Route {
+    string pod = 1; // the name of the BasePod
+    string pod_id = 2; // the id of the BasePod
+    google.protobuf.Timestamp start_time = 3; // receiving time
+    google.protobuf.Timestamp end_time = 4; // sending (out) time
+    Status status = 5; // the status of the execution
+}
+
+/**
  * Represents a Envelope, a part of the ``Message``.
  */
 message Envelope {
@@ -157,15 +168,6 @@ message Envelope {
     // timeout in second until this message is dropped
     uint32 timeout = 4;
 
-    /**
-     * Represents a the route paths of this message
-     */
-    message Route {
-        string pod = 1; // the name of the BasePod
-        string pod_id = 2; // the id of the BasePod
-        google.protobuf.Timestamp start_time = 3; // receiving time
-        google.protobuf.Timestamp end_time = 4; // sending (out) time
-    }
     repeated Route routes = 5; // a list of routes this message goes through
 
     /**
@@ -211,8 +213,9 @@ message Status {
         PENDING = 1; // there are pending messages, more messages are followed
         READY = 2; // ready to use
         ERROR = 3; // error
-        ERROR_DUPLICATE = 4; // already a existing pea/pod running
-        ERROR_NOTALLOWED = 5; // not allowed to open pea/pod remotely
+        ERROR_DUPLICATE = 4; // already a existing pod running
+        ERROR_NOTALLOWED = 5; // not allowed to open pod remotely
+        ERROR_CHAINED = 6; // chained from the previous error
     }
 
     // status code
@@ -221,32 +224,27 @@ message Status {
     // error description of the very first exception
     string description = 2;
 
-    message Details {
-        // the name of that problematic peapod
-        string pod = 1;
+    message Exception {
+        // the class name of the exception
+        string name = 1;
 
-        // the id of that problematic peapod
-        string pod_id = 2;
+        // the list of arguments given to the exception constructor.
+        repeated string args = 2;
 
         // the name of the executor binded to that peapod (if applicable)
         string executor = 3;
 
-        // the class name of the exception
-        string exception = 4;
+        string driver = 4;
 
-        // the reason of the exception
-        string traceback = 5;
+        // the formatted traceback for print
+        string traceback_fmt = 5;
 
-        // the timestamp when error occurs
-        google.protobuf.Timestamp time = 6;
-
-        // the list of arguments given to the exception constructor.
-        repeated string exception_args = 7;
+        repeated string stacks = 6;
 
     }
 
     // the details of the error
-    repeated Details details = 3;
+    Exception exception = 3;
 }
 
 /**
@@ -315,6 +313,8 @@ message Request {
     }
 
     Status status = 6; // status info
+
+    repeated Route routes = 8; // status info on every routes
 
     repeated QueryLang queryset = 7; // the query set
 }
