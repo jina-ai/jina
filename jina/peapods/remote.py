@@ -47,16 +47,23 @@ class RemotePea(BasePea):
 
     def loop_body(self):
         if self.remote_id:
-            self.logger.success(f'created remote pea with id {colored(self.remote_id, "cyan")}')
+            self.logger.success(f'created remote {self.api.kind} with id {colored(self.remote_id, "cyan")}')
             self.set_ready()
             self.api.log(self.remote_id)
         else:
             self.logger.error(f'fail to create {self.__class__.__name__} remotely')
             self.is_shutdown.set()
 
-    def loop_teardown(self):
+    def delete_remote(self):
         if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
             self.api.delete(self.remote_id)
+
+    def loop_teardown(self):
+        self.delete_remote()
+
+    def close(self):
+        # close is `pass` here to avoid sending a terminate signal to the remote via zmq
+        pass
 
 
 class RemotePod(RemotePea):
@@ -68,15 +75,17 @@ class RemotePod(RemotePea):
     def spawn_remote(self, host: str, port: int, pod_type: str = 'cli', **kwargs) -> Optional[str]:
         return super().spawn_remote(host, port, pod_type=pod_type)
 
-    # TODO: this is a hack, as close runs in a separate process when triggered in cli
-    # This should be tackled when moving from BasePea inheritance
-    def close(self):
-        pass
-
 
 class RemoteMutablePod(RemotePod):
     """REST based Mutable pod to be used while invoking remote Pod via Flow API
     """
 
+    @cached_property
+    def remote_id(self) -> str:
+        return self.spawn_remote(host=self.args['peas'][0].host, port=self.args['peas'][0].port_expose)
+
     def spawn_remote(self, host: str, port: int, pod_type: str = 'flow', **kwargs) -> Optional[str]:
         return super().spawn_remote(host, port, pod_type=pod_type)
+
+    def close(self):
+        self.delete_remote()
