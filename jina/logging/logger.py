@@ -82,11 +82,10 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
 class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
-    def __init__(self, context: str,
-                 log_config: Optional[str] = os.getenv('JINA_LOG_CONFIG',
-                                                       resource_filename('jina', '/'.join(
-                                                           ('resources', 'logging.default.yml')))),
-                 group_id: Optional[str] = os.getenv('JINA_LOGGING_ID', None), **kwargs):
+    def __init__(self,
+                 context: str,
+                 log_config: Optional[str] = None,
+                 group_id: Optional[str] = None, **kwargs):
         """Build a logger for a context
         :param context: The context identifier of the class, module or method
         :param log_config: the configuration file for the logger

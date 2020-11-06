@@ -53,15 +53,15 @@ class Flow(ExitStack):
 
         """
         super().__init__()
-        if isinstance(args, argparse.Namespace):
-            self.logger = JinaLogger(self.__class__.__name__, group_id=args.identity, **vars(args))
-        else:
-            self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
+        if isinstance(self.args, argparse.Namespace):
+            self.logger = JinaLogger(self.__class__.__name__, group_id=self.args.identity, **vars(self.args))
+        else:
+            self.logger = JinaLogger(self.__class__.__name__)
 
     def _update_args(self, args, **kwargs):
         from ..parser import set_flow_parser

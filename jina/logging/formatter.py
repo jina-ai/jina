@@ -50,7 +50,7 @@ class JsonFormatter(Formatter):
         cr = copy(record)
         cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))
         return json.dumps(
-            {k: getattr(cr, k) for k in self.KEYS},
+            {k: getattr(cr, k) for k in self.KEYS if hasattr(cr, k)},
             sort_keys=True)
 
 
