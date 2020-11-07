@@ -38,4 +38,5 @@ def test_logging_file():
         log(logger)
     assert os.path.exists(f'jina-{__uptime__}.log')
     with open(f'jina-{__uptime__}.log') as fp:
-        assert len(fp.readlines()) == 5
+        assert len(fp.readlines()) == 7
+    os.remove('jina-{__uptime__}.log')

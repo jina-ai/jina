@@ -60,4 +60,4 @@ pytest-repeat:              test
 flaky:                      test
 mock:                       test
 requests:                   http
-prettytable:                devel
+prettytable:                devel, test
