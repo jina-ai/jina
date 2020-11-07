@@ -20,6 +20,8 @@ def test_logging(monkeypatch):
                 assert msg['group_id'] == 'identity_pod1'
             elif 'pod2' in ct:
                 assert msg['group_id'] == 'identity_pod2'
+        if msg['name'] == 'gateway':
+            assert 'group_id' in msg
 
     monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
 

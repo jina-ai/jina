@@ -129,8 +129,6 @@ class BasePea(metaclass=PeaMeta):
         self._request = None
         self._message = None
 
-        os.environ['JINA_LOG_ID'] = self.args.identity
-
         if isinstance(self.args, argparse.Namespace):
             self.daemon = args.daemon
             if self.args.name:
@@ -138,10 +136,7 @@ class BasePea(metaclass=PeaMeta):
             if self.args.role == PeaRoleType.PARALLEL:
                 self.name = '%s-%d' % (self.name, self.args.pea_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
-            if self.args.name:
-                # everything in this Pea (process) will use the same name for display the log
-                os.environ['JINA_POD_NAME'] = self.args.name
-            self.logger = JinaLogger(self.name, **vars(self.args))
+            self.logger = JinaLogger(self.name, group_id=self.args.identity, log_config=self.args.log_config)
         else:
             self.logger = JinaLogger(self.name)
 
@@ -346,7 +341,9 @@ class BasePea(metaclass=PeaMeta):
     def run(self):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
-            # Every logger created in this process will be identified by the `Pod Id`
+            # Every logger created in this process will be identified by the `Pod Id` and use the same name
+            if self.args.name:
+                os.environ['JINA_POD_NAME'] = self.args.name
             os.environ['JINA_LOG_ID'] = self.args.identity
             self.post_init()
             self.loop_body()

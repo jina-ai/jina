@@ -84,6 +84,7 @@ class JinaLogger:
 
     def __init__(self,
                  context: str,
+                 name: Optional[str] = None,
                  log_config: Optional[str] = None,
                  group_id: Optional[str] = None, **kwargs):
         """Build a logger for a context
@@ -103,6 +104,9 @@ class JinaLogger:
         if group_id is None:
             group_id = os.getenv('JINA_LOG_ID', None)
 
+        if name is None:
+            name = os.getenv('JINA_POD_NAME', context)
+
         # Remove all handlers associated with the root logger object.
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
@@ -110,7 +114,7 @@ class JinaLogger:
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
 
-        context_vars = {'name': os.environ.get('JINA_POD_NAME', context),
+        context_vars = {'name': name,
                         'uptime': __uptime__,
                         'context': context}
         if group_id:

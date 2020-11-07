@@ -49,6 +49,7 @@ def test_logging_fluentd(monkeypatch, log_config):
             msg = obj.format(record)
             assert msg['group_id'] == 'test_group_id'
             assert msg['context'] == 'test_logger'
+            assert msg['name'] == 'test_logger'
             assert msg['type'] == 'INFO'
             assert msg['message'] == 'logging progress'
 
