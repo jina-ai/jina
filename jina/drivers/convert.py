@@ -83,7 +83,7 @@ class MIMEDriver(BaseConvertDriver):
                         import magic
                         m_type = magic.from_buffer(d_content, mime=True)
                     except Exception as ex:
-                        self.logger.warning(f'can not sniff the MIME type due to the exception {ex}')
+                        self.logger.warning(f'can not sniff the MIME type due to the exception {repr(ex)}')
             if d.uri:
                 m_type = guess_mime(d.uri)
 

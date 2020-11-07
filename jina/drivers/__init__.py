@@ -19,7 +19,7 @@ from typing import (
 import ruamel.yaml.constructor
 from google.protobuf.struct_pb2 import Struct
 
-from ..enums import OnErrorSkip
+from ..enums import SkipOnErrorType
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import as_reduce_method, wrap_func
 from ..helper import yaml
@@ -360,7 +360,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
             self.envelope.status.code != jina_pb2.Status.ERROR
-            or self.pea.args.skip_on_error < OnErrorSkip.EXECUTOR
+            or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
         ):
             return self._exec_fn
         else:

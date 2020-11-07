@@ -5,10 +5,11 @@ from types import SimpleNamespace
 import numpy as np
 
 from cli import _is_latest_version
-from jina.clients.python import PyClient
+from jina.clients.python import PyClient, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.helper import cached_property
 from jina.logging.profile import TimeContext
+from jina.proto import jina_pb2
 from jina.proto.uid import *
 from tests import random_docs
 
@@ -126,3 +127,32 @@ def test_wrap_func():
     assert not check_override(MockEnc, 'train')
     assert not check_override(MockMockEnc, 'train')
     assert check_override(MockMockMockEnc, 'train')
+
+
+def test_pprint_routes(capfd):
+    result = []
+    r = jina_pb2.Route()
+    r.status.code = jina_pb2.Status.ERROR
+    r.status.exception.stacks.extend(['r1\nline1', 'r2\nline2'])
+    result.append(r)
+    r = jina_pb2.Route()
+    r.status.code = jina_pb2.Status.ERROR_CHAINED
+    r.status.exception.stacks.extend(['line1', 'line2'])
+    result.append(r)
+    r = jina_pb2.Route()
+    r.status.code = jina_pb2.Status.SUCCESS
+    result.append(r)
+    pprint_routes(result)
+    out, err = capfd.readouterr()
+    assert out == '''+-----+------+------------+
+| \x1b[1mPod\x1b[0m | \x1b[1mTime\x1b[0m | \x1b[1mException\x1b[0m  |
++-----+------+------------+
+| 🔴  | 0ms  | r1         |
+|     |      | line1r2    |
+|     |      | line2      |
++-----+------+------------+
+| ⚪  | 0ms  | line1line2 |
++-----+------+------------+
+| 🟢  | 0ms  |            |
++-----+------+------------+
+'''

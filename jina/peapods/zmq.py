@@ -5,7 +5,7 @@ import asyncio
 import os
 import tempfile
 import time
-from typing import List, Callable, Optional, Union, Tuple
+from typing import List, Callable, Union, Tuple
 
 import zmq
 import zmq.asyncio
@@ -208,7 +208,7 @@ class Zmqlet:
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
         msg = ControlMessage(jina_pb2.Request.ControlRequest.IDLE,
-                                 pod_name=self.name, identity=self.args.identity)
+                             pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
@@ -256,7 +256,7 @@ class AsyncZmqlet(Zmqlet):
             self.bytes_sent += num_bytes
             self.msg_sent += 1
         except (asyncio.CancelledError, TypeError) as ex:
-            self.logger.error(f'sending message error: {ex}, gateway cancelled?')
+            self.logger.error(f'sending message error: {repr(ex)}, gateway cancelled?')
 
     async def recv_message(self, callback: Callable[['ProtoMessage'], 'ProtoMessage'] = None) -> 'ProtoMessage':
         try:
@@ -266,7 +266,7 @@ class AsyncZmqlet(Zmqlet):
             if callback:
                 return callback(msg)
         except (asyncio.CancelledError, TypeError) as ex:
-            self.logger.error(f'receiving message error: {ex}, gateway cancelled?')
+            self.logger.error(f'receiving message error: {repr(ex)}, gateway cancelled?')
 
     def __enter__(self):
         time.sleep(.2)  # sleep a bit until handshake is done

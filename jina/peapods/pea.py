@@ -6,7 +6,6 @@ import multiprocessing
 import os
 import threading
 import time
-import traceback
 from multiprocessing.synchronize import Event
 from queue import Empty
 from typing import Dict, Optional, Union
@@ -16,9 +15,9 @@ import zmq
 from jina import __unable_to_load_pretrained_model_msg__
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
-from ..enums import PeaRoleType, OnErrorSkip
+from ..enums import PeaRoleType, SkipOnErrorType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
-    ModelCheckpointNotExist
+    ModelCheckpointNotExist, ChainedPodException
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
@@ -156,8 +155,10 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.HANDLE:
+        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < SkipOnErrorType.HANDLE:
             self.executor(self.request_type)
+        else:
+            raise ChainedPodException
         return self
 
     @property
@@ -242,13 +243,13 @@ class BasePea(metaclass=PeaMeta):
 
     def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
-        msg.update_timestamp()
-        if self.args.num_part > 1:
-            msg.num_part = self.args.num_part
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
+        msg.update_timestamp()
+        if self.args.num_part > 1:
+            msg.num_part = self.args.num_part
         return self
 
     def set_ready(self, *args, **kwargs):
@@ -262,8 +263,9 @@ class BasePea(metaclass=PeaMeta):
         self.logger.success(__stop_msg__)
 
     def _callback(self, msg: 'ProtoMessage'):
-        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
-            self.pre_hook(msg).handle(msg).post_hook(msg)
+        self.is_post_hook_done = False  #: if the post_hook is called
+        self.pre_hook(msg).handle(msg).post_hook(msg)
+        self.is_post_hook_done = True
         return msg
 
     def _handle_terminate_signal(self, msg):
@@ -302,19 +304,16 @@ class BasePea(metaclass=PeaMeta):
             # 1. wait partial message to be finished
             # 2. dealer send a control message and no need to go on
             pass
-        except (RuntimeError, Exception) as ex:
+        except (RuntimeError, Exception, ChainedPodException) as ex:
             # general runtime error and nothing serious, we simply mark the message to error and pass on
-            msg.envelope.status.code = jina_pb2.Status.ERROR
-            if not msg.envelope.status.description:
-                msg.envelope.status.description = f'{self} throws {repr(ex)}'
-            d = msg.envelope.status.details.add()
-            d.pod = self.name
-            d.pod_id = self.args.identity
-            d.exception = repr(ex)
-            d.executor = str(getattr(self, 'executor', ''))
-            d.traceback = traceback.format_exc()
-            d.time.GetCurrentTime()
-            self.logger.error(ex, exc_info=True)
+            if not self.is_post_hook_done:
+                self.post_hook(msg)
+            if isinstance(ex, ChainedPodException):
+                msg.add_exception()
+                self.logger.warning(repr(ex))
+            else:
+                msg.add_exception(ex, executor=getattr(self, 'executor'))
+                self.logger.error(repr(ex))
             self.zmqlet.send_message(msg)
 
     def loop_body(self):
@@ -385,8 +384,8 @@ class BasePea(metaclass=PeaMeta):
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                     timeout=self.args.timeout_ctrl)
+            send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                              timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):

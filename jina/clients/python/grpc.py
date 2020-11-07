@@ -93,4 +93,5 @@ class GrpcClient:
         if not self.is_closed:
             self._channel.close()
             self.logger.success(__stop_msg__)
+            self.logger.close()
             self.is_closed = True
