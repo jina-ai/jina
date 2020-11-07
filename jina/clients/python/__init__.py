@@ -106,7 +106,7 @@ class PyClient(GrpcClient):
              **kwargs) -> None:
         """ Calling the server, better use :func:`start` instead.
 
-        :param callback: a callback function, invoke after every response is received
+        :param callback: a callback function, invoke after every success response is received
         :param on_error: a callback function on error, invoke on every error response
         """
         # take the default args from client
@@ -125,7 +125,7 @@ class PyClient(GrpcClient):
             for resp in self._stub.Call(req_iter):
                 if resp.status.code >= jina_pb2.Status.ERROR:
                     on_error(resp.routes, resp.status)
-                if callback:
+                elif callback:
                     try:
                         if self.args.callback_on_body:
                             resp = getattr(resp, resp.WhichOneof('body'))

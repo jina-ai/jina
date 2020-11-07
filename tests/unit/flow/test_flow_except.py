@@ -79,3 +79,33 @@ def test_except_pretrained_model_file():
     with pytest.raises(ModelCheckpointNotExist):
         with Flow().add(name='r2', uses='!PretrainedModelEncoder', parallel=1):
             pass
+
+
+def test_on_error_callback():
+    def validate1():
+        raise NotImplementedError
+
+    def validate2(x, *args):
+        assert len(x) == 4  # gateway, r1, r3, gateway
+        badones = [r for r in x if r.status.code == jina_pb2.Status.ERROR]
+        assert badones[0].pod == 'r3'
+
+    f = (Flow().add(name='r1', uses='_pass')
+         .add(name='r3', uses='!BaseEncoder'))
+
+    with f:
+        f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate1, on_error=validate2)
+
+
+def test_no_error_callback():
+    def validate2():
+        raise NotImplementedError
+
+    def validate1(x, *args):
+        pass
+
+    f = (Flow().add(name='r1', uses='_pass')
+         .add(name='r3', uses='_pass'))
+
+    with f:
+        f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate1, on_error=validate2)
