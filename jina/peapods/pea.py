@@ -315,7 +315,7 @@ class BasePea(metaclass=PeaMeta):
                 msg.add_exception()
                 self.logger.warning(repr(ex))
             else:
-                msg.add_exception(ex)
+                msg.add_exception(ex, executor=getattr(self, 'executor'))
                 self.logger.error(repr(ex))
             self.zmqlet.send_message(msg)
 

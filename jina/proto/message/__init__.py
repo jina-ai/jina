@@ -11,6 +11,8 @@ from ...excepts import MismatchedVersion
 from ...helper import colored
 from ...logging import default_logger
 
+if False:
+    from ...executors import BaseExecutor
 
 class ProtoMessage:
     """
@@ -199,6 +201,7 @@ class ProtoMessage:
 
         :return:
         """
+
         def pod_str(r):
             result = r.pod
             if r.status.code == jina_pb2.Status.ERROR:
@@ -322,7 +325,7 @@ class ProtoMessage:
         if pop_last_part:
             self.envelope.num_part.pop(-1)
 
-    def add_exception(self, ex: Optional['Exception'] = None) -> None:
+    def add_exception(self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None) -> None:
         """ Add exception to the last route in the envelope
 
         :param ex: Exception to be added
@@ -335,6 +338,7 @@ class ProtoMessage:
                 self.envelope.status.description = repr(ex)
             d.code = jina_pb2.Status.ERROR
             d.description = repr(ex)
+            d.exception.executor = executor.__class__.__name__
             d.exception.name = ex.__class__.__name__
             d.exception.args.extend([str(v) for v in ex.args])
             d.exception.stacks.extend(traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__))

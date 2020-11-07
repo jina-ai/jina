@@ -231,15 +231,15 @@ message Status {
         // the list of arguments given to the exception constructor.
         repeated string args = 2;
 
-        // the name of the executor binded to that peapod (if applicable)
-        string executor = 3;
+        // the exception traceback stacks
+        repeated string stacks = 3;
 
-        string driver = 4;
+        // the name of the executor bind to that peapod (if applicable)
+        string executor = 4;
 
-        // the formatted traceback for print
-        string traceback_fmt = 5;
+        // the name of the driver bind to that peapod (if applicable)
+        string driver = 5;
 
-        repeated string stacks = 6;
 
     }
 
