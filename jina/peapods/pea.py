@@ -15,7 +15,7 @@ import zmq
 from jina import __unable_to_load_pretrained_model_msg__
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
-from ..enums import PeaRoleType, OnErrorSkip
+from ..enums import PeaRoleType, SkipOnErrorType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
     ModelCheckpointNotExist, ChainedPodException
 from ..executors import BaseExecutor
@@ -155,7 +155,7 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
-        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.HANDLE:
+        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < SkipOnErrorType.HANDLE:
             self.executor(self.request_type)
         else:
             raise ChainedPodException

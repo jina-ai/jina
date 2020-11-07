@@ -260,7 +260,7 @@ class CompressAlgo(BetterEnum):
     LZMA = 5
 
 
-class OnErrorSkip(BetterEnum):
+class SkipOnErrorType(BetterEnum):
     """ The level of error handling
 
     .. warning::

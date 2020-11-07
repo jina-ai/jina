@@ -1,4 +1,4 @@
-from jina.enums import OnErrorSkip
+from jina.enums import SkipOnErrorType
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -20,7 +20,7 @@ def test_bad_flow_skip_handle():
         assert bad_routes[2].pod == 'r3'
         assert bad_routes[2].status.code == jina_pb2.Status.ERROR_CHAINED
 
-    f = (Flow(skip_on_error=OnErrorSkip.HANDLE).add(name='r1', uses='DummyCrafter')
+    f = (Flow(skip_on_error=SkipOnErrorType.HANDLE).add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3'))
 
@@ -49,7 +49,7 @@ def test_bad_flow_skip_handle_join():
         assert bad_routes[-1].status.code == jina_pb2.Status.ERROR
         assert bad_routes[-1].status.exception.name == 'GatewayPartialMessage'
 
-    f = (Flow(skip_on_error=OnErrorSkip.HANDLE).add(name='r1', uses='DummyCrafter')
+    f = (Flow(skip_on_error=SkipOnErrorType.HANDLE).add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))
@@ -66,7 +66,7 @@ def test_bad_flow_skip_exec():
         assert req.status.code == jina_pb2.Status.ERROR
         assert bad_routes[0].pod == 'r1'
 
-    f = (Flow(skip_on_error=OnErrorSkip.EXECUTOR).add(name='r1', uses='DummyCrafter')
+    f = (Flow(skip_on_error=SkipOnErrorType.EXECUTOR).add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3'))
 
@@ -84,7 +84,7 @@ def test_bad_flow_skip_exec_join():
         assert req.status.code == jina_pb2.Status.ERROR
         assert bad_routes[0].pod == 'r1'
 
-    f = (Flow(skip_on_error=OnErrorSkip.EXECUTOR).add(name='r1', uses='DummyCrafter')
+    f = (Flow(skip_on_error=SkipOnErrorType.EXECUTOR).add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))
