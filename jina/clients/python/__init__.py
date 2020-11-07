@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-from typing import Iterator, Callable, Union, Sequence
+from typing import Iterator, Callable, Union, Sequence, Optional
 
 from . import request
 from .grpc import GrpcClient
@@ -102,7 +102,8 @@ class PyClient(GrpcClient):
         return self._stub.CallUnary(next(req_iter))
 
     def call(self, callback: Callable[['jina_pb2.Request'], None] = None,
-             on_error: Callable[['jina_pb2.Status', Sequence['jina_pb2.Route']], None] = pprint_routes,
+             on_error: Callable[[Sequence['jina_pb2.Route'],
+                                 Optional['jina_pb2.Status']], None] = pprint_routes,
              **kwargs) -> None:
         """ Calling the server, better use :func:`start` instead.
 
