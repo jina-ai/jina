@@ -181,7 +181,7 @@ message Envelope {
 
     Version version = 6; // version info
 
-    Status status = 7; // status info
+    Status status = 7; // status info, when present, it is the first exception that routes carry
 
     repeated uint32 num_part = 8; // the number of partial messages
 
