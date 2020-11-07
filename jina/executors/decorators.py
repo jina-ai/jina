@@ -61,6 +61,16 @@ def as_train_method(func: Callable) -> Callable:
     return arg_wrapper
 
 
+def as_success_fn(func: Callable) -> Callable:
+    @wraps(func)
+    def arg_wrapper(self, *args, **kwargs):
+        f = func(self, *args, **kwargs)
+        self._exec_fn_success = True
+        return f
+
+    return arg_wrapper
+
+
 def wrap_func(cls, func_lst, wrapper):
     """ Wrapping a class method only once, inherited but not overrided method will not be wrapped again
 

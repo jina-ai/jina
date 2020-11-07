@@ -264,11 +264,8 @@ class BasePea(metaclass=PeaMeta):
 
     def _callback(self, msg: 'ProtoMessage'):
         self.is_post_hook_done = False  #: if the post_hook is called
-        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < OnErrorSkip.CALLBACK:
-            self.pre_hook(msg).handle(msg).post_hook(msg)
-            self.is_post_hook_done = True
-        else:
-            raise ChainedPodException
+        self.pre_hook(msg).handle(msg).post_hook(msg)
+        self.is_post_hook_done = True
         return msg
 
     def _handle_terminate_signal(self, msg):
@@ -387,8 +384,8 @@ class BasePea(metaclass=PeaMeta):
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
-                                     timeout=self.args.timeout_ctrl)
+            send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+                              timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
