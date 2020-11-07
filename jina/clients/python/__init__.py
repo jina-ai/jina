@@ -6,7 +6,7 @@ from typing import Iterator, Callable, Union, Sequence
 
 from . import request
 from .grpc import GrpcClient
-from .helper import ProgressBar, pprint_error
+from .helper import ProgressBar, pprint_routes
 from ...enums import ClientMode
 from ...excepts import BadClient, BadClientCallback
 from ...logging import default_logger
@@ -102,7 +102,7 @@ class PyClient(GrpcClient):
         return self._stub.CallUnary(next(req_iter))
 
     def call(self, callback: Callable[['jina_pb2.Request'], None] = None,
-             on_error: Callable[['jina_pb2.Status', Sequence['jina_pb2.Route']], None] = pprint_error,
+             on_error: Callable[['jina_pb2.Status', Sequence['jina_pb2.Route']], None] = pprint_routes,
              **kwargs) -> None:
         """ Calling the server, better use :func:`start` instead.
 
@@ -124,7 +124,7 @@ class PyClient(GrpcClient):
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             for resp in self._stub.Call(req_iter):
                 if resp.status.code >= jina_pb2.Status.ERROR:
-                    on_error(resp.status, resp.routes)
+                    on_error(resp.routes, resp.status)
                 if callback:
                     try:
                         if self.args.callback_on_body:
