@@ -323,7 +323,7 @@ class ProtoMessage:
         self.envelope.routes.extend(
             sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
         if pop_last_part:
-            self.envelope.num_part.pop(-1)
+            self.complete_last_part()
 
     def add_exception(self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None) -> None:
         """ Add exception to the last route in the envelope
