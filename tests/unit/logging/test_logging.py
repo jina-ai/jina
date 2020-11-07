@@ -34,9 +34,12 @@ def test_logging_default():
 
 
 def test_logging_file():
+    fn = f'jina-{__uptime__}.log'
+    if os.path.exists(fn):
+        os.remove(fn)
     with JinaLogger('test_logger', log_config='yaml/file.yml') as logger:
         log(logger)
-    assert os.path.exists(f'jina-{__uptime__}.log')
-    with open(f'jina-{__uptime__}.log') as fp:
+    assert os.path.exists(fn)
+    with open(fn) as fp:
         assert len(fp.readlines()) == 7
-    os.remove('jina-{__uptime__}.log')
+    os.remove(fn)
