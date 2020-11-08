@@ -308,7 +308,10 @@ def set_pea_parser(parser=None):
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
     gp5.add_argument('--num-part', type=int, default=0,
-                     help='the number of replicated message sent to the next Pod, 0 and 1 means single part'
+                     help='the number of replicated messages sent to the downstream, 0 and 1 means single part'
+                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+    gp5.add_argument('--num-part-expect', type=int, default=1,
+                     help='the number of messages expected from upstream, 0 and 1 means single part'
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS)

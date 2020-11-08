@@ -10,7 +10,6 @@ from typing import Callable, Any, Union, Iterator, List, Optional
 import numpy as np
 
 from .metas import get_default_metas
-from ..excepts import NoExplicitMessage
 from ..helper import batch_iterator
 from ..logging import default_logger
 
@@ -82,34 +81,6 @@ def wrap_func(cls, func_lst, wrapper):
     for f_name in func_lst:
         if hasattr(cls, f_name) and all(getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]):
             setattr(cls, f_name, wrapper(getattr(cls, f_name)))
-
-
-def as_reduce_method(func: Callable) -> Callable:
-    """Mark a function as the reduce function of this driver.
-    Will clear the self.doc_pointers() property after function is called.
-    """
-
-    @wraps(func)
-    def arg_wrapper(self, *args, **kwargs):
-        if self.expect_parts > 1:
-            req_id = self.envelope.request_id
-            self._pending_msgs[req_id].append(self.msg)
-            num_part = len(self._pending_msgs[req_id])
-            self.logger.info(f'collected {num_part}/{self.expect_parts} parts of {self.envelope.request_type}')
-            if self.expect_parts > num_part:
-                raise NoExplicitMessage
-
-            f = func(self, *args, **kwargs)
-            self.msg.merge_envelope_from(self._pending_msgs[req_id], pop_last_part=True)
-
-            # this request is done, clean everything
-            self._pending_msgs.pop(req_id)
-            self.doc_pointers.clear()
-        else:
-            f = func(self, *args, **kwargs)
-        return f
-
-    return arg_wrapper
 
 
 def as_ndarray(func: Callable, dtype=np.float32) -> Callable:

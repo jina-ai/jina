@@ -6,9 +6,10 @@ import multiprocessing
 import os
 import threading
 import time
+from collections import defaultdict
 from multiprocessing.synchronize import Event
 from queue import Empty
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, List
 
 import zmq
 
@@ -128,6 +129,11 @@ class BasePea(metaclass=PeaMeta):
         self._request = None
         self._message = None
 
+        # all pending messages collected so far, key is the request id
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List['ProtoMessage']]
+        self._partial_requests = None
+        self._partial_messages = None
+
         if isinstance(self.args, argparse.Namespace):
             self.daemon = args.daemon
             if self.args.name:
@@ -155,6 +161,12 @@ class BasePea(metaclass=PeaMeta):
 
         :param msg: the message received
         """
+
+        if self.expect_parts > len(self.partial_requests):
+            # NOTE: reduce priority is higher than chain exception
+            # otherwise a reducer will lose its function when eailier pods raise exception
+            raise NoExplicitMessage
+
         if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < SkipOnErrorType.HANDLE:
             self.executor(self.request_type)
         else:
@@ -233,12 +245,33 @@ class BasePea(metaclass=PeaMeta):
             if hasattr(self, 'zmqlet'):
                 self.zmqlet.print_stats()
 
+    @property
+    def expect_parts(self) -> int:
+        """The expected number of partial messages before trigger :meth:`handle` """
+        return self.args.num_part_expect or self.message.num_part
+
+    @property
+    def partial_requests(self) -> List['LazyRequest']:
+        """The collected partial requests under the current ``request_id`` """
+        return self._partial_requests
+
+    @property
+    def partial_messages(self) -> List['ProtoMessage']:
+        """The collected partial messages under the current ``request_id`` """
+        return self._partial_messages
+
     def pre_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
         self.logger.info(f'received {msg.envelope.request_type} from {msg.colored_route}')
         msg.add_route(self.name, self.args.identity)
         self._request = msg.request
         self._message = msg
+        req_id = msg.envelope.request_id
+        self._pending_msgs[req_id].append(msg)
+        self._partial_messages = self._pending_msgs[req_id]
+        self._partial_requests = [v.request for v in self._partial_messages]
+        part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)' if self.expect_parts > 1 else ''
+        self.logger.info(f'received {msg.envelope.request_type} {part_str} from {msg.colored_route}')
         return self
 
     def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
@@ -247,9 +280,17 @@ class BasePea(metaclass=PeaMeta):
         self.last_active_time = time.perf_counter()
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
-        msg.update_timestamp()
+
+        # reduce from upstream is done
+        if self.expect_parts > 1:
+            msgs = self._pending_msgs.pop(msg.envelope.request_id)
+            msg.merge_envelope_from(msgs, pop_last_part=True)
+
+        # tell downstream a new reduce work
         if self.args.num_part > 1:
             msg.num_part = self.args.num_part
+
+        msg.update_timestamp()
         return self
 
     def set_ready(self, *args, **kwargs):
@@ -314,6 +355,8 @@ class BasePea(metaclass=PeaMeta):
             else:
                 msg.add_exception(ex, executor=getattr(self, 'executor'))
                 self.logger.error(repr(ex))
+            if 'JINA_RAISE_EARLY' in os.environ:
+                self.logger.error(ex, exc_info=True)
             self.zmqlet.send_message(msg)
 
     def loop_body(self):
