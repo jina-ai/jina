@@ -248,7 +248,10 @@ class BasePea(metaclass=PeaMeta):
     @property
     def expect_parts(self) -> int:
         """The expected number of partial messages before trigger :meth:`handle` """
-        return self.args.num_part_expect or self.message.num_part
+        if self.message.is_data_request:
+            return self.args.num_part_expect or self.message.num_part
+        else:
+            return 1
 
     @property
     def partial_requests(self) -> List['LazyRequest']:
@@ -281,10 +284,17 @@ class BasePea(metaclass=PeaMeta):
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
 
+        msgs = self._pending_msgs.pop(msg.envelope.request_id)
+
         # reduce from upstream is done
-        if self.expect_parts > 1:
-            msgs = self._pending_msgs.pop(msg.envelope.request_id)
+        if self.expect_parts > 1 and self.expect_parts == self.message.num_part:
             msg.merge_envelope_from(msgs, pop_last_part=True)
+        else:
+            # you ignore what the envelope described:
+            # most likely you are using asymmetric reduce,
+            # symmetric: 1,2,4,2,1
+            # asymmetric: 1,8,[1,2,5],3,1
+            pass
 
         # tell downstream a new reduce work
         if self.args.num_part > 1:

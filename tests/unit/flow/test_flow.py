@@ -538,9 +538,10 @@ def test_load_flow_from_cli():
 
 def test_flow_arguments_priorities():
     f = Flow(port_expose=12345).add(name='test', port_expose=23456)
-    assert f._pod_nodes["test"].cli_args[-1] == '23456'
+    assert '23456' in f._pod_nodes['test'].cli_args
+    assert '12345' not in f._pod_nodes['test'].cli_args
 
 
 def test_flow_default_argument_passing():
     f = Flow(port_expose=12345).add(name='test')
-    assert f._pod_nodes["test"].cli_args[-1] == '12345'
+    assert '12345' in f._pod_nodes['test'].cli_args

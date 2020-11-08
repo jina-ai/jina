@@ -103,7 +103,6 @@ class BasePod(ExitStack):
             self.is_tail_router = False
             peas_args['peas'] = [args]
 
-
         # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
 
@@ -474,6 +473,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
         _tail_args.uses = args.uses_after or '_merge'
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
+        _tail_args.num_part_expect = 1 if args.polling.is_push else args.parallel
 
     return _tail_args
 
