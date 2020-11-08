@@ -297,8 +297,7 @@ class BasePea(metaclass=PeaMeta):
             pass
 
         # tell downstream a new reduce work
-        if self.args.num_part > 1:
-            msg.num_part = self.args.num_part
+        msg.num_part = self.args.num_part
 
         msg.update_timestamp()
         return self

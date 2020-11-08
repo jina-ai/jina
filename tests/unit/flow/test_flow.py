@@ -545,3 +545,16 @@ def test_flow_arguments_priorities():
 def test_flow_default_argument_passing():
     f = Flow(port_expose=12345).add(name='test')
     assert '12345' in f._pod_nodes['test'].cli_args
+
+
+def test_flow_arbitrary_needs():
+    f = (Flow().add(name='p1').add(name='p2', needs='gateway')
+         .add(name='p3', needs='gateway')
+         .add(name='p4', needs='gateway')
+         .add(name='p5', needs='gateway')
+         .needs(['p2', 'p4'], name='r1', num_part=[3, 1])
+         .needs(['p3', 'p5'], name='r2', num_part=[3, 1])
+         .needs(['r1', 'r2', 'p1']))
+
+    with f:
+        f.index_lines(['abc', 'def'])

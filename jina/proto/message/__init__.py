@@ -292,9 +292,13 @@ class ProtoMessage:
         return self.envelope.num_part[-1]
 
     @num_part.setter
-    def num_part(self, expect: int):
+    def num_part(self, expect: Union[int, List]):
         """Add new expected parts to the message"""
-        self.envelope.num_part.append(expect)
+        if isinstance(expect, int) and expect>1:
+            self.envelope.num_part.append(expect)
+        elif isinstance(expect, list):
+            self.envelope.ClearField('num_part')
+            self.envelope.num_part.extend(expect)
 
     def complete_last_part(self):
         """Mark the last expected parts as complete"""

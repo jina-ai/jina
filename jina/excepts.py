@@ -137,5 +137,9 @@ class CompressionRateTooLow(Exception):
     """
 
 
+class DryRunException(Exception):
+    """Dryrun is not successful on the given flow"""
+
+
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """
