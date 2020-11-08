@@ -23,7 +23,7 @@ protoc -I ${SRC_DIR} --python_out=${SRC_DIR} --grpc_python_out=${SRC_DIR} --plug
 
 printf "\e[1;33mfixing grpc import\e[0m\n"
 # fix import bug in google generator
-sed -i '' -e '4s/.*/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
+sed -i '' -e 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
 
 OLDVER=$(sed -n 's/^__proto_version__ = '\''\(.*\)'\''$/\1/p' $VER_FILE)
 printf "current proto version:\t\e[1;33m$OLDVER\e[0m\n"
