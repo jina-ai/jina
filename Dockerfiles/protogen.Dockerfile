@@ -11,14 +11,17 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/p
     cp -r include/* /usr/local/include/ && \
     git clone --depth 1 https://github.com/grpc/grpc.git && \
     cd grpc && git submodule update --depth 1 --init && \
-    make grpc_python_plugin
-
-WORKDIR /target/
+    make plugins -j 12
 
 ADD jina ./jina/
 
-RUN cd jina/proto && bash build-proto.sh /builder/grpc/bins/opt/grpc_python_plugin
+WORKDIR /jina/jina/proto
 
+RUN bash build-proto.sh /jina/grpc/bins/opt/grpc_python_plugin
+
+# TODO:
+# add usage to docs
+# docker run -v $(pwd):/jina/jina/proto jinaai/protogen
 
 
 
