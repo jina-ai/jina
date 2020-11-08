@@ -20,10 +20,5 @@ WORKDIR /jina/proto
 
 ENTRYPOINT ["bash", "./build-proto.sh", "/builder/grpc/bins/opt/grpc_python_plugin"]
 
-# TODO:
-# add usage to docs
-# docker run -it --entrypoint bash -v $(pwd)/jina/proto:/jina/proto jinaai/protogen
-
-
 
 
