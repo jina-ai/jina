@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="https://github.com/jina-ai/jina/blob/master/.github/1500x667new.gif?raw=true" alt="Jina banner" width="100%">
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner">
+
+The easiest way to build neural search on the cloud.
+
 </p>
 
 <p align="center">
@@ -31,6 +35,20 @@
 </p>
 
 
+
+
+Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) on the cloud. Jina is long-term supported by a [full-time, venture-backed team](https://jina.ai).
+
+⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
+
+🧠 **First-Class AI models** - Jina is the design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
+
+🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, and more.
+
+🚀 **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
+
+🧩 **Plug & Play** - With [Jina Hub](https://github.com/jina-ai/jina-hub), easily extend Jina with simple Python interface optimized for your search domain.
+
 <p align="center">
   <a href="https://jina.ai">Website</a> •
   <a href="https://docs.jina.ai">Docs</a> •
@@ -40,20 +58,7 @@
   <a href="https://github.com/jina-ai/jinabox.js/">Jinabox (beta)</a> •
   <a href="http://www.twitter.com/JinaAI_">Twitter</a> •
   <a href="https://jobs.jina.ai">We are Hiring</a>
-
 </p>
-
-Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) on the cloud. Jina is long-term supported by a [full-time, venture-backed team](https://jina.ai).
-
-⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
-
-🧠 **First-Class AI models** - Jina is a new design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
-
-🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms. Video, image, long/short text, music, source code, and more.
-
-🚀 **Production Ready** - Cloud-native features work out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
-
-🧩 **Plug & Play** - With [Jina Hub](https://github.com/jina-ai/jina-hub), easily extend Jina with simple Python scripts or Docker images optimized for your search domain.
 
 ## Contents
 

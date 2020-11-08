@@ -47,7 +47,7 @@ librosa>=0.7.2:             audio
 uvloop:                     devel, cicd, perf
 numpy:                      core
 pyzmq>=17.1.0:              core
-protobuf:                   core
+protobuf>=3.13.0:           core
 grpcio:                     core
 ruamel.yaml>=0.15.89:       core
 tornado>=5.1.0:             core
