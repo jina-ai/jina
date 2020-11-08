@@ -2,9 +2,9 @@
 <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
 </p>
 <p align="center">
-<b>The easiest way to build neural search on the cloud.</b>
+The easiest way to build neural search on the cloud
 </p>
-<br><br>
+<br>
 
 <p align="center">
 
