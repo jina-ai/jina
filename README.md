@@ -80,21 +80,19 @@ Jina is an AI-powered search framework, empowering developers to create **cross-
 
 ## Get Started
 
-### From PyPi
-
 On Linux/MacOS with Python >= 3.7:
 
 ```bash
 pip install jina
 ```
 
-To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai). 
+To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). 
 
-⚠️ Currently, Jina doesn't support Windows. See [here](https://docs.jina.ai/chapters/install/via-pip.html?highlight=windows#on-windows-and-other-oses) for more information. 
+⚠️ For Windows users, you may install Jina [inside WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10). See [here](https://docs.jina.ai/chapters/install/via-pip.html?highlight=windows#on-windows-and-other-oses) for more information on our Windows support. 
 
 ### In a Docker Container
 
-We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). Simply run:
+We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). No need to install anything, simply run:
 
 ```bash
 docker run jinaai/jina --help
