@@ -17,7 +17,7 @@ ADD jina ./jina/
 
 WORKDIR /jina/jina/proto
 
-RUN bash build-proto.sh /jina/grpc/bins/opt/grpc_python_plugin
+ENTRYPOINT ["bash", "build-proto.sh", "/jina/grpc/bins/opt/grpc_python_plugin"]
 
 # TODO:
 # add usage to docs
