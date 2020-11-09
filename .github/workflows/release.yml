@@ -31,7 +31,7 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           npm install git-release-notes
           pip install twine wheel
-      - run: ./scritps/release.sh
+      - run: ./scripts/release.sh
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
