@@ -552,9 +552,10 @@ def test_flow_arbitrary_needs():
          .add(name='p3', needs='gateway')
          .add(name='p4', needs='gateway')
          .add(name='p5', needs='gateway')
-         .needs(['p2', 'p4'], name='r1', num_part=[3, 1])
-         .needs(['p3', 'p5'], name='r2', num_part=[3, 1])
-         .needs(['p1', 'r1', 'r2'], name='r3'))
+         .needs(['p2', 'p4'], name='r1')
+         .needs(['p3', 'p5'], name='r2')
+         .needs(['p1', 'r1'], name='r3')
+         .needs(['r2', 'r3'], name='r4'))
 
     with f:
         f.index_lines(['abc', 'def'])
