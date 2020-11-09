@@ -83,14 +83,21 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
         FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
-        flow.logger.debug(f'Connect {start_node_name} ({start_node.tail_args.num_part}) '
-                          f'with {end_node_name} {str(end_node.role)} {end_node.head_args.num_part}')
+        # flow.logger.debug(f'Connect {start_node_name} ({start_node.tail_args.num_part}) '
+        #                   f'with {end_node_name} {str(end_node.role)} {end_node.head_args.num_part}')
 
     return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
 
 
 def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str, str}) -> 'Flow':
     def _optimize_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
+        """ THIS CODE IS NEVER TESTED AND THE LOGIC MAY NOT APPLIED ANYMORE
+
+        :param flow:
+        :param start_node_name:
+        :param end_node_name:
+        :return:
+        """
         start_node = flow._pod_nodes[start_node_name]
         end_node = flow._pod_nodes[end_node_name]
         edges_with_same_start = [ed for ed in pod_edges if ed[0].startswith(start_node_name)]
@@ -104,6 +111,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
                         f'Node {end_node_name} connects to tail of {start_node_name}')
                     end_node.connect_to_tail_of(start_node)
             elif end_node.role == PodRoleType.GATEWAY:
+                # TODO: this part of the code is never executed given the current optimization level. Never tested.
                 if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and \
                         start_node.is_tail_router and start_node.tail_args.num_part <= 1:
                     # connect gateway directly to peas only if this is unblock router

@@ -214,7 +214,8 @@ def set_flow_parser(parser=None):
                     help='the yaml config of the log server')
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
-                            and hence not allow multiple clients connected to the gateway at the same time.')
+                            and hence not allow multiple clients connected to the gateway at the same time.'
+                    if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp.add_argument('--output-type', type=FlowOutputType.from_string,
                     choices=list(FlowOutputType), default=FlowOutputType.SHELL_PROC,
                     help='type of the output')
@@ -307,10 +308,7 @@ def set_pea_parser(parser=None):
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp5 = add_arg_group(parser, 'pea messaging arguments')
-    gp5.add_argument('--num-part', type=int, default=0, nargs='+',
-                     help='the number of messages sent to the downstream, 0 and 1 means single part'
-                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
-    gp5.add_argument('--num-part-expect', type=int, default=1,
+    gp5.add_argument('--num-part', type=int, default=0,
                      help='the number of messages expected from upstream, 0 and 1 means single part'
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),

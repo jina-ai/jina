@@ -298,7 +298,7 @@ class Flow(ExitStack):
                 kwargs[key] = value
 
         kwargs['name'] = pod_name
-        kwargs['num_part_expect'] = len(needs)
+        kwargs['num_part'] = len(needs)
 
         op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
         op_flow.last_pod = pod_name

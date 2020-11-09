@@ -109,3 +109,7 @@ class RouteDriver(ControlReqDriver):
 
 class ForwardDriver(RouteDriver):
     """Alias to :class:`RouteDriver`"""
+
+
+class ReduceDriver(RouteDriver):
+    """Alias to :class:`RouteDriver`"""

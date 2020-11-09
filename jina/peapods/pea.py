@@ -162,7 +162,7 @@ class BasePea(metaclass=PeaMeta):
         :param msg: the message received
         """
 
-        if self.expect_parts > len(self.partial_requests):
+        if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
             # NOTE: reduce priority is higher than chain exception
             # otherwise a reducer will lose its function when eailier pods raise exception
             raise NoExplicitMessage
@@ -248,10 +248,7 @@ class BasePea(metaclass=PeaMeta):
     @property
     def expect_parts(self) -> int:
         """The expected number of partial messages before trigger :meth:`handle` """
-        if self.message.is_data_request:
-            return self.args.num_part_expect or self.message.num_part
-        else:
-            return 1
+        return self.args.num_part if self.message.is_data_request else 1
 
     @property
     def partial_requests(self) -> List['LazyRequest']:
@@ -265,16 +262,19 @@ class BasePea(metaclass=PeaMeta):
 
     def pre_hook(self, msg: 'ProtoMessage') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
-        self.logger.info(f'received {msg.envelope.request_type} from {msg.colored_route}')
         msg.add_route(self.name, self.args.identity)
         self._request = msg.request
         self._message = msg
-        req_id = msg.envelope.request_id
-        self._pending_msgs[req_id].append(msg)
-        self._partial_messages = self._pending_msgs[req_id]
-        self._partial_requests = [v.request for v in self._partial_messages]
-        part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)' if self.expect_parts > 1 else ''
-        self.logger.info(f'received {msg.envelope.request_type} {part_str} from {msg.colored_route}')
+
+        part_str = ' '
+        if self.expect_parts > 1:
+            req_id = msg.envelope.request_id
+            self._pending_msgs[req_id].append(msg)
+            self._partial_messages = self._pending_msgs[req_id]
+            self._partial_requests = [v.request for v in self._partial_messages]
+            part_str = f' ({len(self.partial_requests)}/{self.expect_parts} parts) '
+
+        self.logger.info(f'recv {msg.envelope.request_type}{part_str}from {msg.colored_route}')
         return self
 
     def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
@@ -284,20 +284,9 @@ class BasePea(metaclass=PeaMeta):
         self.save_executor(self.args.dump_interval)
         self.check_memory_watermark()
 
-        msgs = self._pending_msgs.pop(msg.envelope.request_id)
-
-        # reduce from upstream is done
-        if self.expect_parts > 1 and self.expect_parts == self.message.num_part:
-            msg.merge_envelope_from(msgs, pop_last_part=True)
-        else:
-            # you ignore what the envelope described:
-            # most likely you are using asymmetric reduce,
-            # symmetric: 1,2,4,2,1
-            # asymmetric: 1,8,[1,2,5],3,1
-            pass
-
-        # tell downstream a new reduce work
-        msg.num_part = self.args.num_part
+        if self.expect_parts > 1:
+            msgs = self._pending_msgs.pop(msg.envelope.request_id)
+            msg.merge_envelope_from(msgs)
 
         msg.update_timestamp()
         return self
@@ -364,7 +353,7 @@ class BasePea(metaclass=PeaMeta):
             else:
                 msg.add_exception(ex, executor=getattr(self, 'executor'))
                 self.logger.error(repr(ex))
-            if 'JINA_RAISE_EARLY' in os.environ:
+            if 'JINA_RAISE_ERROR_EARLY' in os.environ:
                 self.logger.error(ex, exc_info=True)
             self.zmqlet.send_message(msg)
 

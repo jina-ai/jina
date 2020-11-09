@@ -14,6 +14,7 @@ from ...logging import default_logger
 if False:
     from ...executors import BaseExecutor
 
+
 class ProtoMessage:
     """
     A container class for :class:`jina_pb2.Message`. Note, the Protobuf version of :class:`jina_pb2.Message`
@@ -118,10 +119,6 @@ class ProtoMessage:
         envelope.timeout = 5000
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)
-        envelope.num_part.append(1)
-        # keep in mind num_part works like FILO queue
-        if num_part > 1:
-            envelope.num_part.append(num_part)
         envelope.check_version = check_version
         return envelope
 
@@ -281,29 +278,6 @@ class ProtoMessage:
         envelope.version.proto = __proto_version__
         envelope.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
 
-    @property
-    def is_complete(self):
-        """Return true if a the message is a single-part message """
-        return self.envelope.num_part == [1]
-
-    @property
-    def num_part(self):
-        """Return the number of parts of the message """
-        return self.envelope.num_part[-1]
-
-    @num_part.setter
-    def num_part(self, expect: Union[int, List]):
-        """Add new expected parts to the message"""
-        if isinstance(expect, int) and expect>1:
-            self.envelope.num_part.append(expect)
-        elif isinstance(expect, list):
-            self.envelope.ClearField('num_part')
-            self.envelope.num_part.extend(expect)
-
-    def complete_last_part(self):
-        """Mark the last expected parts as complete"""
-        self.envelope.num_part.pop(-1)
-
     def update_timestamp(self):
         """Update the timestamp of the last route"""
         self.envelope.routes[-1].end_time.GetCurrentTime()
@@ -321,13 +295,11 @@ class ProtoMessage:
         request.routes.extend(self.envelope.routes)
         return request
 
-    def merge_envelope_from(self, msgs: List['ProtoMessage'], pop_last_part: bool = False):
+    def merge_envelope_from(self, msgs: List['ProtoMessage']):
         routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}
         self.envelope.ClearField('routes')
         self.envelope.routes.extend(
             sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
-        if pop_last_part:
-            self.complete_last_part()
 
     def add_exception(self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None) -> None:
         """ Add exception to the last route in the envelope
