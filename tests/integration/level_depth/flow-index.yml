@@ -13,6 +13,6 @@ pods:
     uses: yaml/index-doc.yml
     needs: gateway
   join_all:
-    uses: _merge
+    uses: _pass
     needs: [doc_indexer, chunk_indexer]
     read_only: true

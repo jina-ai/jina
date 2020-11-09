@@ -11,5 +11,5 @@ pods:
     parallel: 2
     needs: chunk_seg
   joiner:
-    uses: _merge
+    uses: _pass
     needs: [wqncode1, encode2]

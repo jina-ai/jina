@@ -8,7 +8,7 @@ from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar, pprint_routes
 from ...enums import ClientMode
-from ...excepts import BadClient, BadClientCallback
+from ...excepts import BadClient, BadClientCallback, DryRunException
 from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
@@ -155,7 +155,7 @@ class PyClient(GrpcClient):
         else:
             self._input_fn = bytes_gen
 
-    def dry_run(self, as_request: str) -> bool:
+    def dry_run(self, as_request: str) -> None:
         """A dry run request is a Search/Index/Train Request with empty content.
         Useful for testing connectivity and debugging the connectivity of the server/flow
 
@@ -183,11 +183,8 @@ class PyClient(GrpcClient):
             if resp.status.code < jina_pb2.Status.ERROR:
                 self.logger.info(
                     f'dry run of {as_request} takes {time.perf_counter() - before:.3f}s, this flow has a good connectivity')
-                return True
             else:
-                self.logger.error(resp.status)
-
-        return False
+                raise DryRunException(resp.status)
 
     def train(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
               output_fn: Callable[['jina_pb2.Request'], None] = None, **kwargs) -> None:

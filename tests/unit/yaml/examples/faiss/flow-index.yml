@@ -11,6 +11,6 @@ pods:
   doc_indexer:
     needs: crafter
   join_all:
-    uses: _merge
+    uses: _pass
     needs: [doc_indexer, faiss_indexer]
     read_only: true

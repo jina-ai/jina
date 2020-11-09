@@ -183,8 +183,6 @@ message Envelope {
 
     Status status = 7; // status info, when present, it is the first exception that routes carry
 
-    repeated uint32 num_part = 8; // the number of partial messages
-
     string request_type = 9; // type of the request: TrainRequest, IndexRequest, SearchRequest, ControlRequest
 
     bool check_version = 10; // check local Protobuf version on every Pod that this message flows to

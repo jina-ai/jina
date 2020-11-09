@@ -42,23 +42,23 @@ def test_simple_zmqlet():
 
 
 def test_flow_with_jump():
-    f = (Flow().add(name='r1', uses='_pass')
-         .add(name='r2', uses='_pass')
-         .add(name='r3', uses='_pass', needs='r1')
-         .add(name='r4', uses='_pass', needs='r2')
-         .add(name='r5', uses='_pass', needs='r3')
-         .add(name='r6', uses='_pass', needs='r4')
-         .add(name='r8', uses='_pass', needs='r6')
-         .add(name='r9', uses='_pass', needs='r5')
-         .add(name='r10', uses='_merge', needs=['r9', 'r8']))
+    f = (Flow().add(name='r1')
+         .add(name='r2')
+         .add(name='r3', needs='r1')
+         .add(name='r4', needs='r2')
+         .add(name='r5', needs='r3')
+         .add(name='r6', needs='r4')
+         .add(name='r8', needs='r6')
+         .add(name='r9', needs='r5')
+         .add(name='r10', needs=['r9', 'r8']))
 
     with f:
         f.index(random_docs(10))
 
 
 def test_flow_with_parallel():
-    f = (Flow().add(name='r1', uses='_pass')
-         .add(name='r2', uses='_pass', parallel=3))
+    f = (Flow().add(name='r1')
+         .add(name='r2', parallel=3))
 
     with f:
         f.index(random_docs(100))

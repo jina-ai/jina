@@ -155,3 +155,9 @@ Here is the list of environment variables that ``jina`` respects during runtime.
     ``uvloop`` is ultra fast implementation of the asyncio event loop on top of libuv. Since Jina 0.3.6, Jina relies on ``uvloop`` to manage the sockets and streams.
 
     :default: unset
+
+.. confval:: JINA_RAISE_ERROR_EARLY
+
+    Raise exception immedidately instead of passing it forward in the flow. Useful in debugging
+
+    :default: unset

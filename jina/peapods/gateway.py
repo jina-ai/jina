@@ -103,8 +103,6 @@ class GatewayPea:
             :return:
             """
             msg.add_route(self.name, self.args.identity)
-            if not msg.is_complete:
-                msg.add_exception(GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}'))
             return msg.response
 
         async def CallUnary(self, request, context):

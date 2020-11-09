@@ -1,21 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Dict, Any
 
 import numpy as np
 
 from . import BaseRecursiveDriver
 from ..proto import jina_pb2
 from ..proto.ndarray.generic import GenericNdArray
-
-
-class ReduceDriver(BaseRecursiveDriver):
-    def __init__(self, *args, **kwargs):
-        super().__init__(expect_parts=None, *args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        """Intentionally override traverse_apply with empty function"""
 
 
 class ReduceAllDriver(BaseRecursiveDriver):
@@ -27,7 +19,13 @@ class ReduceAllDriver(BaseRecursiveDriver):
     """
 
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
-        super().__init__(traversal_paths=traversal_paths, expect_parts=None, *args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        # all pointers of the docs, provide the weak ref to all docs in partial reqs
+        self.doc_pointers = {}  # type: Dict[str, Any]
+        self._traverse_apply(self.docs, *args, **kwargs)
+        self.doc_pointers.clear()
 
     def _apply_all(
             self,
@@ -62,8 +60,11 @@ class ConcatEmbedDriver(ReduceAllDriver):
     """Concat all embeddings into one, grouped by ```doc.id``` """
 
     def __call__(self, *args, **kwargs):
+        # all pointers of the docs, provide the weak ref to all docs in partial reqs
+        self.doc_pointers = {}  # type: Dict[str, Any]
         self._traverse_apply(self.docs, *args, **kwargs)
         self._traverse_apply(self.req.docs, concatenate=True, *args, **kwargs)
+        self.doc_pointers.clear()
 
     def _apply_all(
             self,
@@ -81,4 +82,3 @@ class ConcatEmbedDriver(ReduceAllDriver):
                 self.doc_pointers[doc.id] = [GenericNdArray(doc.embedding).value]
             else:
                 self.doc_pointers[doc.id].append(GenericNdArray(doc.embedding).value)
-
