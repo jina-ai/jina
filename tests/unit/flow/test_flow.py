@@ -347,7 +347,7 @@ def test_py_client():
 
 
 def test_dry_run_with_two_pathways_diverging_at_gateway():
-    f = (Flow().add(name='r2', )
+    f = (Flow().add(name='r2')
          .add(name='r3', needs='gateway')
          .join(['r2', 'r3']))
 
@@ -372,8 +372,8 @@ def test_dry_run_with_two_pathways_diverging_at_gateway():
 
 
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
-    f = (Flow().add(name='r1', )
-         .add(name='r2', )
+    f = (Flow().add(name='r1')
+         .add(name='r2')
          .add(name='r3', needs='r1')
          .join(['r2', 'r3']))
 
