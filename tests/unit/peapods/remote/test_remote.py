@@ -1,4 +1,3 @@
-import pytest
 from argparse import Namespace
 
 from jina.enums import PollingType

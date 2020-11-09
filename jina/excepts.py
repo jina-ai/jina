@@ -8,6 +8,10 @@ class NoExplicitMessage(Exception):
     """Waiting until all partial messages are received"""
 
 
+class ChainedPodException(Exception):
+    """Chained exception from the last Pod"""
+
+
 class MismatchedVersion(SystemError):
     """When the jina version info of the incoming message does not match the local jina version"""
 
@@ -80,6 +84,10 @@ class BadClient(Exception):
     """A wrongly defined grpc client, can not communicate with jina server correctly """
 
 
+class BadClientCallback(BadClient):
+    """Error in the callback function on the client side"""
+
+
 class BadPersistantFile(Exception):
     """Bad or broken dump file that can not be deserialized with ``pickle.load``"""
 
@@ -122,10 +130,12 @@ class PretrainedModelFileDoesNotExist(ModelCheckpointNotExist):
     TODO: to be removed after hub executors uses ModelCheckpointNotExist
     """
 
+
 class CompressionRateTooLow(Exception):
     """ Compression rate is too low, no need to compression
 
     """
+
 
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """

@@ -78,6 +78,7 @@ class GatewayPea:
         self._server.stop(None)
         self._stop_event.set()
         self.logger.success(__stop_msg__)
+        self.logger.close()
 
     def join(self):
         try:
@@ -100,13 +101,10 @@ class GatewayPea:
             :param msg:
             :return:
             """
-
+            msg.add_route(self.name, self.args.identity)
             if not msg.is_complete:
-                raise GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}')
-
-            request = msg.request.as_pb_object
-            request.status.CopyFrom(msg.envelope.status)
-            return request
+                msg.add_exception(GatewayPartialMessage(f'gateway can not handle message with num_part={msg.envelope.num_part}'))
+            return msg.response
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
@@ -214,6 +212,7 @@ class RESTGatewayPea(BasePea):
     def close(self):
         if hasattr(self, 'terminate'):
             self.terminate()
+        self.logger.close()
 
     def get_http_server(self):
         try:

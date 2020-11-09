@@ -14,6 +14,9 @@ def log(logger):
     logger.warning('this is test warning message')
     logger.error('this is test error message')
     logger.critical('this is test critical message')
+    # super long log
+    logger.info('x' * 65536)
+    logger.error('x' * 65536)
 
 
 def test_logging_syslog():
@@ -34,11 +37,15 @@ def test_logging_default():
 
 
 def test_logging_file():
+    fn = f'jina-{__uptime__}.log'
+    if os.path.exists(fn):
+        os.remove(fn)
     with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
         log(logger)
-    assert os.path.exists(f'jina-{__uptime__}.log')
-    with open(f'jina-{__uptime__}.log') as fp:
-        assert len(fp.readlines()) == 5
+    assert os.path.exists(fn)
+    with open(fn) as fp:
+        assert len(fp.readlines()) == 7
+    os.remove(fn)
 
 
 @pytest.mark.parametrize('log_config', ['yaml/fluent.yml', None])

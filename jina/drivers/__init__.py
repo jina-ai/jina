@@ -4,12 +4,22 @@ __license__ = "Apache-2.0"
 import inspect
 from collections import defaultdict
 from functools import wraps
-from typing import Any, Dict, Callable, Tuple, Iterable, Iterator, List, Optional, Sequence
+from typing import (
+    Any,
+    Dict,
+    Callable,
+    Tuple,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+)
 
 import ruamel.yaml.constructor
 from google.protobuf.struct_pb2 import Struct
 
-from ..enums import OnErrorSkip
+from ..enums import SkipOnErrorType
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import as_reduce_method, wrap_func
 from ..helper import yaml
@@ -88,10 +98,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                        not q.disabled
-                        and self.__class__.__name__ == q.name
-                        and q.priority > self._priority
-                        and key in q.parameters
+                    not q.disabled
+                    and self.__class__.__name__ == q.name
+                    and q.priority > self._priority
+                    and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -137,7 +147,9 @@ class BaseDriver(metaclass=DriverType):
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
-    def __init__(self, priority: int = 0, expect_parts: Optional[int] = 1, *args, **kwargs):
+    def __init__(
+        self, priority: int = 0, expect_parts: Optional[int] = 1, *args, **kwargs
+    ):
         """
 
         :param priority: the priority of its default arg values (hardcoded in Python). If the
@@ -176,8 +188,10 @@ class BaseDriver(metaclass=DriverType):
     def partial_reqs(self) -> Sequence['LazyRequest']:
         """The collected partial requests under the current ``request_id`` """
         if self.expect_parts <= 1:
-            raise ValueError(f'trying to get collected requests even though expect_parts={self.expect_parts},'
-                             f'maybe you want to use self.req instead?')
+            raise ValueError(
+                f'trying to get collected requests even though expect_parts={self.expect_parts},'
+                f'maybe you want to use self.req instead?'
+            )
 
         return [v.request for v in self._pending_msgs[self.envelope.request_id]]
 
@@ -257,12 +271,12 @@ class BaseRecursiveDriver(BaseDriver):
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
     def _apply_all(
-            self,
-            docs: Iterable['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
-            field: str,
-            *args,
-            **kwargs,
+        self,
+        docs: Iterable['jina_pb2.Document'],
+        context_doc: 'jina_pb2.Document',
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
@@ -282,7 +296,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(
-            self, docs: Iterable['jina_pb2.Document'], *args, **kwargs
+        self, docs: Iterable['jina_pb2.Document'], *args, **kwargs
     ) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
@@ -345,8 +359,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
-                self.envelope.status.code != jina_pb2.Status.ERROR
-                or self.pea.args.skip_on_error < OnErrorSkip.EXECUTOR
+            self.envelope.status.code != jina_pb2.Status.ERROR
+            or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
         ):
             return self._exec_fn
         else:
@@ -361,7 +375,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break

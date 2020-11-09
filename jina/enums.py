@@ -260,16 +260,19 @@ class CompressAlgo(BetterEnum):
     LZMA = 5
 
 
-class OnErrorSkip(BetterEnum):
+class SkipOnErrorType(BetterEnum):
     """ The level of error handling
 
+    .. warning::
+        In theory, all methods below do not 100% guarantee the success
+        execution on the sequel flow. If something is wrong in the upstream,
+        it is hard to CARRY this exception and moving forward without ANY
+        side-effect.
     """
 
-    NONE = 0
-    EXECUTOR = 1
-    DRIVER = 2
-    HANDLE = 3
-    CALLBACK = 4
+    NONE = 0  # do not skip on error, keep running the original executor & driver logics
+    EXECUTOR = 1  # skip the executor on error, but driver is still called, no error message is labeled
+    HANDLE = 2  # skip the handle on error, no driver and executor is called, pre_hook and post_hook are called
 
 
 class FlowInspectType(BetterEnum):

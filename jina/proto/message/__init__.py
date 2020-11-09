@@ -1,6 +1,7 @@
 import os
 import sys
-from typing import Union, List
+import traceback
+from typing import Union, List, Optional
 
 from .lazyrequest import LazyRequest
 from .. import jina_pb2
@@ -10,6 +11,8 @@ from ...excepts import MismatchedVersion
 from ...helper import colored
 from ...logging import default_logger
 
+if False:
+    from ...executors import BaseExecutor
 
 class ProtoMessage:
     """
@@ -198,7 +201,18 @@ class ProtoMessage:
 
         :return:
         """
-        route_str = [r.pod for r in self.envelope.routes]
+
+        def pod_str(r):
+            result = r.pod
+            if r.status.code == jina_pb2.Status.ERROR:
+                result += '✖'
+                result = colored(result, 'red')
+            elif r.status.code == jina_pb2.Status.ERROR_CHAINED:
+                result += '∅'
+                result = colored(result, 'grey')
+            return result
+
+        route_str = [pod_str(r) for r in self.envelope.routes]
         route_str.append('⚐')
         return colored('▸', 'green').join(route_str)
 
@@ -290,13 +304,46 @@ class ProtoMessage:
         """Update the timestamp of the last route"""
         self.envelope.routes[-1].end_time.GetCurrentTime()
 
+    @property
+    def response(self):
+        """Get the response of the message
+
+        .. note::
+            This should be only called at Gateway
+        """
+        self.envelope.routes[0].end_time.GetCurrentTime()
+        request = self.request.as_pb_object
+        request.status.CopyFrom(self.envelope.status)
+        request.routes.extend(self.envelope.routes)
+        return request
+
     def merge_envelope_from(self, msgs: List['ProtoMessage'], pop_last_part: bool = False):
         routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}
         self.envelope.ClearField('routes')
         self.envelope.routes.extend(
             sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
         if pop_last_part:
-            self.envelope.num_part.pop(-1)
+            self.complete_last_part()
+
+    def add_exception(self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None) -> None:
+        """ Add exception to the last route in the envelope
+
+        :param ex: Exception to be added
+        :return:
+        """
+        d = self.envelope.routes[-1].status
+        if ex:
+            self.envelope.status.code = jina_pb2.Status.ERROR
+            if not self.envelope.status.description:
+                self.envelope.status.description = repr(ex)
+            d.code = jina_pb2.Status.ERROR
+            d.description = repr(ex)
+            d.exception.executor = executor.__class__.__name__
+            d.exception.name = ex.__class__.__name__
+            d.exception.args.extend([str(v) for v in ex.args])
+            d.exception.stacks.extend(traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__))
+        else:
+            d.code = jina_pb2.Status.ERROR_CHAINED
 
 
 class ControlMessage(ProtoMessage):

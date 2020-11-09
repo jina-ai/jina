@@ -38,7 +38,7 @@ def _fill_document(document: 'jina_pb2.Document',
                 mime_type = magic.from_buffer(content, mime=True)
             except Exception as ex:
                 default_logger.warning(
-                    f'can not sniff the MIME type due to the exception {ex}'
+                    f'can not sniff the MIME type due to the exception {repr(ex)}'
                 )
     elif isinstance(content, str):
         scheme = urllib.parse.urlparse(content).scheme

@@ -2,8 +2,10 @@ import pytest
 
 from jina.parser import set_gateway_parser, set_pea_parser
 from jina.peapods.pod import GatewayPod
+
 if False:
     from jina.peapods.remote import PeaSpawnHelper
+
 
 @pytest.mark.skip
 def test_remote_not_allowed():

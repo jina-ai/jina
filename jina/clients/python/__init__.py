@@ -2,13 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-from typing import Iterator, Callable, Union, Tuple
+from typing import Iterator, Callable, Union, Sequence, Optional
 
 from . import request
 from .grpc import GrpcClient
-from .helper import ProgressBar
+from .helper import ProgressBar, pprint_routes
 from ...enums import ClientMode
-from ...excepts import BadClient
+from ...excepts import BadClient, BadClientCallback
 from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
@@ -101,10 +101,14 @@ class PyClient(GrpcClient):
         req_iter = getattr(request, str(self.mode).lower())(**kwargs)
         return self._stub.CallUnary(next(req_iter))
 
-    def call(self, callback: Callable[['jina_pb2.Request'], None] = None, **kwargs) -> None:
+    def call(self, callback: Callable[['jina_pb2.Request'], None] = None,
+             on_error: Callable[[Sequence['jina_pb2.Route'],
+                                 Optional['jina_pb2.Status']], None] = pprint_routes,
+             **kwargs) -> None:
         """ Calling the server, better use :func:`start` instead.
 
-        :param callback: a callback function, invoke after every response is received
+        :param callback: a callback function, invoke after every success response is received
+        :param on_error: a callback function on error, invoke on every error response
         """
         # take the default args from client
         _kwargs = vars(self.args)
@@ -121,16 +125,15 @@ class PyClient(GrpcClient):
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             for resp in self._stub.Call(req_iter):
                 if resp.status.code >= jina_pb2.Status.ERROR:
-                    self.logger.error(f'callback() may not work properly '
-                                      f'due to the bad response: {resp.status.description}')
-                    self.logger.error(resp.status.details)
-                if callback:
+                    on_error(resp.routes, resp.status)
+                elif callback:
                     try:
                         if self.args.callback_on_body:
                             resp = getattr(resp, resp.WhichOneof('body'))
                         callback(resp)
                     except Exception as ex:
-                        raise BadClient('error in client\'s callback: %s' % ex)
+                        raise BadClientCallback(f'uncatched exception in callback '
+                                                f'"{callback.__name__}()": {repr(ex)}')
                 p_bar.update(self.args.batch_size)
 
     @property
@@ -202,7 +205,7 @@ class PyClient(GrpcClient):
             self.dry_run(as_request='search')
         self.start(output_fn, **kwargs)
 
-    def index(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable]= None,
+    def index(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
               output_fn: Callable[['jina_pb2.Request'], None] = None, **kwargs) -> None:
         self.mode = ClientMode.INDEX
         self.input_fn = input_fn

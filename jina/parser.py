@@ -231,7 +231,7 @@ def set_flow_parser(parser=None):
 
 
 def set_pea_parser(parser=None):
-    from .enums import SocketType, PeaRoleType, OnErrorSkip
+    from .enums import SocketType, PeaRoleType, SkipOnErrorType
     from .helper import random_port, get_random_identity
     from . import __default_host__
 
@@ -315,8 +315,8 @@ def set_pea_parser(parser=None):
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp5.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                      help='the role of this pea in a pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
-    gp5.add_argument('--skip-on-error', type=OnErrorSkip.from_string, choices=list(OnErrorSkip),
-                     default=OnErrorSkip.NONE,
+    gp5.add_argument('--skip-on-error', type=SkipOnErrorType.from_string, choices=list(SkipOnErrorType),
+                     default=SkipOnErrorType.NONE,
                      help='skip strategy on error message.')
 
     gp6 = add_arg_group(parser, 'pea EXPERIMENTAL arguments')

@@ -91,6 +91,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5326,4 +5327,60 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d948339d```](https://github.com/jina-ai/jina/commit/d948339ddc407fe81780a0df50d9c0362dab24e3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```b7aba3fa```](https://github.com/jina-ai/jina/commit/b7aba3fa41ae17382aa95fb5e5bbf658e4901f8e)] __-__ update extra req for test (#1208) (*Joan Fontanals*)
  - [[```39491637```](https://github.com/jina-ai/jina/commit/394916371e7d6e0643c171dbde2880d3caa78aa5)] __-__ __version__: the next version will be 0.7.4 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-5></a>
+## Release Note (`0.7.5`)
+
+> Release time: 2020-11-09 06:34:24
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Bing @Jina AI,  Jina Dev Bot,  Wang Bo,  Joan Fontanals,  Anshul Wadhawan,  Deepankar Mahapatro,  Alex Cureton-Griffiths,  Maximilian Werk,  Pratik Bhavsar,  🙇
+
+
+### 🆕 New Features
+
+ - [[```fdf01f89```](https://github.com/jina-ai/jina/commit/fdf01f8962caa4994e17cd2dc2612f3ecf72324f)] __-__ __except__: improved exception handling (#1238) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```2cfa8d66```](https://github.com/jina-ai/jina/commit/2cfa8d66c2c246088e68336bd5de14cb236d7349)] __-__ __proto__: dockerize proto generation (#1241) (*Han Xiao*)
+ - [[```9ede3c11```](https://github.com/jina-ai/jina/commit/9ede3c11ec6f5f8f63816ae8aa731147c43b852a)] __-__ adapt log info after lazy reading (#1235) (*Joan Fontanals*)
+ - [[```7b3cd1b8```](https://github.com/jina-ai/jina/commit/7b3cd1b89e5250d7cf6aad81ea6f82441ca16fa4)] __-__ revert change communication (#1223) (*Joan Fontanals*)
+ - [[```666554a4```](https://github.com/jina-ai/jina/commit/666554a413b711561c32d477962ba877c817e10f)] __-__ increase flaky test runs (#1219) (*Pratik Bhavsar*)
+ - [[```cf47c736```](https://github.com/jina-ai/jina/commit/cf47c73608ca4728b466f0a21257e327bd19326d)] __-__ back to tcp (#1217) (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```533feb94```](https://github.com/jina-ai/jina/commit/533feb9477df8ab98d12ebec03a834721387697e)] __-__ __driver__: move reduce logic to BaseDriver (#1228) (*Han Xiao*)
+ - [[```7e7bfae0```](https://github.com/jina-ai/jina/commit/7e7bfae0d9d2c38f2e1b5f7d947ace0da94a3032)] __-__ remove replica naming (#1222) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```360265ca```](https://github.com/jina-ai/jina/commit/360265cad73af87e34c71804f7dd13e5258534ff)] __-__ __proto__: add protogen to docs (#1242) (*Han Xiao*)
+ - [[```9f3edb8b```](https://github.com/jina-ai/jina/commit/9f3edb8bffa27005fbe78b72ef889930633d67d3)] __-__ __test__: improved documentation (#1234) (*Anshul Wadhawan*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1bee1cbe```](https://github.com/jina-ai/jina/commit/1bee1cbed4f785171a718e6f97a04149407b0155)] __-__ take out jina test case from test index (#1237) (*Wang Bo*)
+ - [[```e5f94c47```](https://github.com/jina-ai/jina/commit/e5f94c47761a226144b61a5d26e30cee71ff4def)] __-__ fix autocommit (*Han Xiao*)
+ - [[```a2d29300```](https://github.com/jina-ai/jina/commit/a2d29300e7fdbda999bf3fe77f3519a5f4de6586)] __-__ fix git pull and dev-bot msg (#1233) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```63ab42b3```](https://github.com/jina-ai/jina/commit/63ab42b3b71eefe9cf75513e607e5bc0da8b46a0)] __-__ hotfix release yml path (*Han Xiao*)
+ - [[```5818c32c```](https://github.com/jina-ai/jina/commit/5818c32c131cfe9c4d8ce40f0690d849aa63cd9b)] __-__ update readme slogan (#1244) (*Bing @Jina AI*)
+ - [[```e14e7b7d```](https://github.com/jina-ai/jina/commit/e14e7b7de22b54d167b399deb511a936b158a668)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```77127743```](https://github.com/jina-ai/jina/commit/77127743b07c817d04ba9a2cc9c88b3bde72b895)] __-__ update readme (*Han Xiao*)
+ - [[```ff03639e```](https://github.com/jina-ai/jina/commit/ff03639ec11077e6082ee3a5ce17c282bbc0d6c8)] __-__ update readme logo gif (*Han Xiao*)
+ - [[```7890f792```](https://github.com/jina-ai/jina/commit/7890f7923cd3f7e2ddcab8ec44be6ef4aa5b54cb)] __-__ update readme gif logo (*Han Xiao*)
+ - [[```bddea4cc```](https://github.com/jina-ai/jina/commit/bddea4cc26fb5638c31ecd5ebdc89ebc9fa7bc19)] __-__ move autocommit to 23pm (*Han Xiao*)
+ - [[```a63706c9```](https://github.com/jina-ai/jina/commit/a63706c93f9138d89fb2bf28e0f14f05720f7569)] __-__ autocommit is now nightly (*Han Xiao*)
+ - [[```27eaf34a```](https://github.com/jina-ai/jina/commit/27eaf34a246de0d1e278837c63a37ce1868a8753)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9a111589```](https://github.com/jina-ai/jina/commit/9a1115894be73158b42e4b0db547ad830bfad67e)] __-__ Fix readme contributor (#1236) (*Wang Bo*)
+ - [[```ced34d29```](https://github.com/jina-ai/jina/commit/ced34d2917bf45dda1ca5fab9045612624ef0ad9)] __-__ __jinad__: fixing jinad code styling (#1230) (*Han Xiao*)
+ - [[```a5a1b0fb```](https://github.com/jina-ai/jina/commit/a5a1b0fb7f07451aa7a1552a317039bc21b120cd)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
+ - [[```9e641596```](https://github.com/jina-ai/jina/commit/9e6415961d8f2b8064f4259db019b850bca73e15)] __-__ all commit to jina in one workflow (#1220) (*Maximilian Werk*)
+ - [[```229d5322```](https://github.com/jina-ai/jina/commit/229d5322059827d63f08b440ff1e2d51f5b034a7)] __-__ __version__: the next version will be 0.7.5 (*Jina Dev Bot*)
 

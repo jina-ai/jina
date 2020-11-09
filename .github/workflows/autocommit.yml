@@ -1,0 +1,80 @@
+name: Autocommit
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+
+jobs:
+  autocommit:
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
+      - run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install and run black --check .
+        run: |
+          pip install black
+          black -S jina/drivers/__init__.py
+          git add -u &> /dev/null || true
+          export JINA_GIT_COMMIT_MSG_OLD=$(git log --format=%B -n1)
+          git commit -m "chore(style): reformatted by jina-dev-bot" &> /dev/null || true
+          git status
+      - name: Run copyright generator
+        uses: hanxiao/copyright-action@master
+        with:
+          CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
+          FileType: '.py'
+          Path: 'jina/'
+          IgnorePath: 'jina/drivers/querylang/queryset/'
+      - run: |
+          git add -u &> /dev/null || true
+          git commit -m "chore(copyright): update copyright header" &> /dev/null || true
+          git status
+      - name: Checkout wall-of-honor
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/wall-of-honor
+          path: wall
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - name: Run contributor generation
+        run: |
+          cd wall
+          npm i -D all-contributors-cli@6.17.1
+          npm list all-contributors-cli
+          cp patch.js ./node_modules/all-contributors-cli/dist/generate/index.js
+          cp ../README.md README.md
+          pip install -r requirements.txt
+          python app.py config.yml export.yml
+          cp README.md ../README.md
+          cd ..
+          rm -rf wall
+          git add README.md &> /dev/null || true
+          git commit -m 'chore(contributor): update contributors' &> /dev/null || true
+          git status
+        env:
+          PRIVATE_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+      - name: Generate TOC
+        uses: technote-space/toc-generator@v2
+        with:
+          MAX_HEADER_LEVEL: 2
+          FOLDING: false
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          COMMIT_NAME: Jina Dev Bot
+          COMMIT_EMAIL: dev-bot@jina.ai
+          TOC_TITLE: ''
+          TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
+          COMMIT_MESSAGE: 'chore(docs): update TOC'
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
