@@ -111,7 +111,7 @@ class JinadAPI:
             r = requests.get(url=self.alive_url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'something wrong on remote: {ex}')
+            self.logger.error(f'something wrong on remote: {repr(ex)}')
             return False
 
     def upload(self, args: Dict, **kwargs) -> bool:
@@ -142,7 +142,7 @@ class JinadAPI:
                     self.logger.success(f'Got status {r.json()["status"]} from remote')
                     return True
             except requests.exceptions.RequestException as ex:
-                self.logger.error(f'something wrong on remote: {ex}')
+                self.logger.error(f'something wrong on remote: {repr(ex)}')
 
     def create(self, args: Dict, pod_type: str = 'flow', **kwargs) -> Optional[str]:
         """ Create a remote pea/pod
@@ -158,7 +158,7 @@ class JinadAPI:
             if r.status_code == requests.codes.ok:
                 return r.json()[f'{self.kind}_id']
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t create {pod_type} with remote jinad {ex}')
+            self.logger.error(f'couldn\'t create {pod_type} with remote jinad {repr(ex)}')
 
     def log(self, remote_id: 'str', **kwargs) -> None:
         """ Start the log stream from remote pea/pod, will use local logger for output
@@ -175,7 +175,7 @@ class JinadAPI:
                 if log_line:
                     self.logger.info(f'🌏 {log_line.strip()}')
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t connect with remote jinad url {ex}')
+            self.logger.error(f'couldn\'t connect with remote jinad url {repr(ex)}')
         finally:
             self.logger.info(f'🌏 exiting from remote logger')
 
@@ -192,7 +192,7 @@ class JinadAPI:
             r = requests.delete(url=url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t connect with remote jinad url {ex}')
+            self.logger.error(f'couldn\'t connect with remote jinad url {repr(ex)}')
             return False
 
 

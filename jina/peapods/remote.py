@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from argparse import Namespace
 from typing import Dict, Union, Type, Optional, Any
 
-from .jinad import PeaAPI, PodAPI, JinadAPI
+from .jinad import PeaAPI, PodAPI
 from .pea import BasePea
 from ..helper import colored, cached_property
 
@@ -58,12 +58,9 @@ class RemotePea(BasePea):
         if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
             self.api.delete(self.remote_id)
 
-    def loop_teardown(self):
-        self.delete_remote()
-
     def close(self):
-        # close is `pass` here to avoid sending a terminate signal to the remote via zmq
-        pass
+        self.delete_remote()
+        self.join()
 
 
 class RemotePod(RemotePea):
@@ -86,6 +83,3 @@ class RemoteMutablePod(RemotePod):
 
     def spawn_remote(self, host: str, port: int, pod_type: str = 'flow', **kwargs) -> Optional[str]:
         return super().spawn_remote(host, port, pod_type=pod_type)
-
-    def close(self):
-        self.delete_remote()
