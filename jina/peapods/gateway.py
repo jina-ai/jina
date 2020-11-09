@@ -168,8 +168,6 @@ class GatewayPea:
                     # need to return the new port and host ip number back
                     # we do not allow remote spawn request to spawn a "remote-remote" pea/pod
                     p = Pod(_args, allow_remote=False)
-                    from .remote import peas_args2mutable_pod_req
-                    request = peas_args2mutable_pod_req(p.peas_args)
                 elif _req_type == jina_pb2.SpawnRequest.MutablepodSpawnRequest:
                     from .remote import mutable_pod_req2peas_args
                     p = Pod(mutable_pod_req2peas_args(_req), allow_remote=False)
@@ -178,9 +176,6 @@ class GatewayPea:
 
                 with p:
                     self.peapods.append(p)
-                    for l in p.log_iterator:
-                        request.log_record = l.msg
-                        yield request
                 self.peapods.remove(p)
             else:
                 warn_msg = f'the gateway at {self.args.host}:{self.args.port_expose} ' \

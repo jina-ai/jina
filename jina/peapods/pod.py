@@ -226,26 +226,6 @@ class BasePod(ExitStack):
         return self
 
     @property
-    def log_iterator(self):
-        """Get the last log using iterator
-
-        The :class:`BasePod` log iterator goes through all peas :attr:`log_iterator` and
-        poll them sequentially. If non all them is active anymore, aka :attr:`is_event_loop`
-        is False, then the iterator ends.
-
-        .. warning::
-
-            The log may not strictly follow the time order given that we are polling the log
-            from all peas in the sequential manner.
-        """
-        from ..logging.queue import __log_queue__
-        while not self.is_shutdown:
-            try:
-                yield __log_queue__.get_nowait()
-            except Empty:
-                pass
-
-    @property
     def is_shutdown(self) -> bool:
         return all(not p.is_ready_event.is_set() for p in self.peas)
 

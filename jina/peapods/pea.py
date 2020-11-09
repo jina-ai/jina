@@ -22,7 +22,6 @@ from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
-from ..logging.queue import clear_queues
 from ..proto import jina_pb2
 from ..proto.message import ProtoMessage, LazyRequest
 
@@ -175,17 +174,7 @@ class BasePea(metaclass=PeaMeta):
 
     @property
     def request_type(self) -> str:
-        return self._message.envelope.request_type
-
-    @property
-    def log_iterator(self):
-        """Get the last log using iterator """
-        from ..logging.queue import __log_queue__
-        while self.is_ready_event.is_set():
-            try:
-                yield __log_queue__.get_nowait()
-            except Empty:
-                pass
+        return self._message.envelope.request_typed
 
     def load_executor(self):
         """Load the executor to this BasePea, specified by ``uses`` CLI argument.
@@ -428,7 +417,6 @@ class BasePea(metaclass=PeaMeta):
         self.send_terminate_signal()
         self.is_shutdown.wait()
         if not self.daemon:
-            clear_queues()
             self.logger.close()
             self.join()
 
