@@ -444,3 +444,68 @@ with:
 ```
 
 In this case, this construction lets the `FaissIndexer` use the `vectors` stored by the indexer named `wrapidx`. 
+
+
+### Using Queryset
+
+We can override parameter values in flows with the help of `queryset`. 
+
+Suppose we want to override `VectorSearchDriver's` top_k value of 10 with 20 in the below pod.
+
+```yaml
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: cosine
+    metas:
+      name: vecidx
+      workspace: $JINA_DIR
+  - !BinaryPbIndexer
+    with:
+      index_filename: doc.gz
+    metas:
+      name: docidx
+      workspace: $JINA_DIR
+metas:
+  name: chunk_indexer
+  workspace: $JINA_DIR
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['r']
+      - !KVIndexDriver
+        with:
+          executor: docidx
+          traversal_paths: ['r']
+    [SearchRequest]:
+      - !VectorSearchDriver
+        with:
+          executor: vecidx
+          top_k: 10
+          traversal_paths: ['r']
+      - !KVSearchDriver
+        with:
+          executor: docidx
+          traversal_paths: ['m']
+```
+
+We construct a queryset `top_k_queryset` which defines to use a top_k value of 20 for `VectorSearchDriver`.
+
+```python
+    top_k_queryset = jina_pb2.QueryLang()
+    top_k_queryset.name = 'VectorSearchDriver'
+    top_k_queryset.priority = 1
+    top_k_queryset.parameters['top_k'] = 20
+```
+
+Passing `top_k_queryset` to `flow.search` will override `top_k` value of `10` with `20` in the `VectorSearchDriver`.
+
+```python
+    with Flow().load_config('flow.yml') as search_flow:
+        search_flow.search(input_fn=docs, output_fn=print_results, queryset=[top_k_queryset])
+```
