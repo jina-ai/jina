@@ -63,10 +63,8 @@ To help users quickly use these patterns, we reserved the following keywords for
 | Reserved Name | Description |
 | --- | --- |
 | `_clear` | Clear request body from a message |
-| `_forward` | Forward the message to the downstream |
-| `_route` | Use load-balancing algorithm to route message to the downstream |
-| `_logforward` | Like `_forward`, but print the message |
-| `_pass` | Merge the envelope of all collected messages, often used in the tail of a Pod |
+| `_logforward` | Like `_pass`, but print the message |
+| `_pass` | Pass the message to the downstream |
 | `_merge_topk` | Merge the top-k search results (both doc and chunk level) of all collected messages, often used in the tail of a Pod |
 | `_merge_topk_chunks` | Merge the top-k search results (chunk level only) of all collected messages, often used in the tail of a Pod |
 | `_merge_topk_docs` | Merge the top-k search results (doc level only) of all collected messages, often used in the tail of a Pod |
