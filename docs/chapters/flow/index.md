@@ -446,12 +446,36 @@ with:
 In this case, this construction lets the `FaissIndexer` use the `vectors` stored by the indexer named `wrapidx`. 
 
 
-### Using Queryset
+## Override parameters using QuerySet
 
-We can override parameter values in flows with the help of `queryset`. 
+We can override parameter values in flows with the help of `QuerySet`. `querySet` is a set of `QueryLang` protobuf messages that 
+can be sent along with any `Request`. It is useful to dynamically override parameters of a driver for a specific request. (Not every parameter
+is able to be overriden) 
 
-Suppose we want to override `VectorSearchDriver's` top_k value of 10 with 20 in the below pod.
+This `QueryLang` has 3 main fields:
+- name: A name of the driver that will be overriden (the exact class name). For now any driver in the Flow of this class will be affected
+by this `QueryLang`
+- parameters: A key-value map where the key is the parameter to be overriden and the value the value that it will be used in the request
+- priority: The priority this `QueryLang` has with respect to potential defaults of the driver.
 
+For a driver to be able to override its parameters and read from the `QueryLang` messages it needs to do 2 things:
+- Implement `QuerySetReader` as a `mix-in` class
+- Declare the attribute with an underscore prefix, i.e (`self._top_k` to have `top_k` as an attribute with the potential to be overriden)
+ 
+Suppose we want to override `VectorSearchDriver's` top_k value of 10 with 20 in the below pod. We can see that `VectorSearchDriver`
+fullfills the requirements:
+
+```python
+class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
+    def __init__(self, top_k: int = 50, fill_embedding: bool = False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        ...
+        self._top_k = top_k
+        ...
+```
+
+The pod is defined as taking 10 for its `top_k` parameter in the `VectorSearchDriver`.
+ 
 ```yaml
 !CompoundIndexer
 components:
@@ -504,6 +528,7 @@ We construct a queryset `top_k_queryset` which defines to use a top_k value of 2
 ```
 
 Passing `top_k_queryset` to `flow.search` will override `top_k` value of `10` with `20` in the `VectorSearchDriver`.
+Note that more than one `queryset` can be passed with any request.
 
 ```python
     with Flow().load_config('flow.yml') as search_flow:
