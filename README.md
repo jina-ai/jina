@@ -84,7 +84,7 @@ pip install jina
 
 To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). 
 
-⚠️ Windows users can use Jina on CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We're welcome the community on native Windows support (see #1252).
+⚠️ Windows users can use Jina on CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). [We're welcome the community on native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 ### In a Docker Container
 
