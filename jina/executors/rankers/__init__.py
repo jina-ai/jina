@@ -82,7 +82,7 @@ class Chunk2DocRanker(BaseRanker):
     @staticmethod
     def sort_doc_by_score(r):
         """
-        Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
+        Sort a list of (``doc_id``, ``score``) tuples by the ``score`` (ascending order).
         :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
         """
         r = np.array(r, dtype=[
