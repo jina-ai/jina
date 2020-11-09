@@ -7,15 +7,13 @@ An easier way to build neural search in the cloud
 <br>
 
 <p align="center">
-
-[![Jina](https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true  "Jina is licensed under Apache-2.0")](#license)
-[![Python 3.7 3.8](https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true  "Jina supports Python 3.7 and above")](https://pypi.org/project/jina/)
-[![PyPI](https://img.shields.io/pypi/v/jina?color=%23099cec&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/jina/)
-[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&label=Docker&logo=docker&logoColor=white&sort=semver)](https://hub.docker.com/r/jinaai/jina/tags)
-[![CI](https://github.com/jina-ai/jina/workflows/CI/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3ACI)
-[![CD](https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master)](https://github.com/jina-ai/jina/actions?query=workflow%3ACD)
-[![codecov](https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg)](https://codecov.io/gh/jina-ai/jina)
-
+<a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
+<a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8" title="Jina supports Python 3.7 and above"></a>
+<a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
+<a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
+<a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACI"><img src="https://github.com/jina-ai/jina/workflows/CI/badge.svg" alt="CI"></a>
+<a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACD"><img src="https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master" alt="CD"></a>
+<a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
 </p>
 
 <p align="center">
@@ -30,17 +28,6 @@ An easier way to build neural search in the cloud
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">український</a>
 </p>
 
-<p align="center">
-  <a href="https://jina.ai">Website</a> •
-  <a href="https://docs.jina.ai">Docs</a> •
-  <a href="https://learn.jina.ai">Examples</a> •
-  <a href="https://github.com/jina-ai/jina-hub">Hub</a> •
-  <a href="https://dashboard.jina.ai">Dashboard</a> •
-  <a href="https://github.com/jina-ai/jinabox.js/">Jinabox</a> •
-  <a href="http://www.twitter.com/JinaAI_">Twitter</a> •
-  <a href="https://jobs.jina.ai">We are Hiring</a>
-</p>
-
 
 Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) on the cloud. Jina is long-term supported by a [full-time, venture-backed team](https://jina.ai).
 
@@ -53,6 +40,18 @@ Jina is an AI-powered search framework, empowering developers to create **cross-
 🚀 **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box, e.g. containerization, microservice, distributing, scaling, sharding, async IO, REST, gRPC.
 
 🧩 **Plug & Play** - With [Jina Hub](https://github.com/jina-ai/jina-hub), easily extend Jina with simple Python interface optimized for your search domain.
+
+---
+<p align="center">
+  <a href="https://jina.ai">Website</a> •
+  <a href="https://docs.jina.ai">Docs</a> •
+  <a href="https://learn.jina.ai">Examples</a> •
+  <a href="https://github.com/jina-ai/jina-hub">Hub</a> •
+  <a href="https://dashboard.jina.ai">Dashboard</a> •
+  <a href="https://github.com/jina-ai/jinabox.js/">Jinabox</a> •
+  <a href="http://www.twitter.com/JinaAI_">Twitter</a> •
+  <a href="https://jobs.jina.ai">We are Hiring</a>
+</p>
 
 
 ## Contents
