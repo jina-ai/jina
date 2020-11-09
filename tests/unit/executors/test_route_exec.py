@@ -14,7 +14,7 @@ def test_load_driver():
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/route.yml'))
     pprint(b._drivers)
 
-    c = BaseExecutor.load_config('_route')
+    c = BaseExecutor.load_config('_pass')
     assert len(b._drivers['ControlRequest']) == len(c._drivers['ControlRequest'])
     pprint(c._drivers)
 

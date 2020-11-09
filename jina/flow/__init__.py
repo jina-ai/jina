@@ -241,12 +241,12 @@ class Flow(ExitStack):
         self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
     def needs(self, needs: Union[Tuple[str], List[str]],
-              uses: str = '_merge', name: str = 'joiner', *args, **kwargs) -> 'Flow':
+              uses: str = '_pass', name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
         :param needs: list of service names to wait
-        :param uses: the config of the executor, by default is ``_merge``
+        :param uses: the config of the executor, by default is ``_pass``
         :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
@@ -359,7 +359,7 @@ class Flow(ExitStack):
             in general you don't need to manually call :meth:`gather_inspect`.
 
         :param name: the name of the gather pod
-        :param uses: the config of the executor, by default is ``_merge``
+        :param uses: the config of the executor, by default is ``_pass``
         :param include_last_pod: if to include the last modified pod in the flow
         :param args:
         :param kwargs:

@@ -170,7 +170,7 @@ pods:
     replicas: $SHARDS
     separated_workspace: true
   join_all:
-    uses: _merge
+    uses: _pass
     needs: [doc_idx, chunk_idx]
     read_only: true
 ```

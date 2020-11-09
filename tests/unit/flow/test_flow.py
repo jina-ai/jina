@@ -44,7 +44,7 @@ def test_flow_with_jump():
          .add(name='r6', uses='_pass', needs='r4')
          .add(name='r8', uses='_pass', needs='r6')
          .add(name='r9', uses='_pass', needs='r5')
-         .add(name='r10', uses='_merge', needs=['r9', 'r8']))
+         .add(name='r10', uses='_pass', needs=['r9', 'r8']))
 
     with f:
         f.dry_run()
@@ -293,7 +293,7 @@ def test_py_client():
          .add(name='r6', uses='_pass', needs='r4')
          .add(name='r8', uses='_pass', needs='r6')
          .add(name='r9', uses='_pass', needs='r5')
-         .add(name='r10', uses='_merge', needs=['r9', 'r8']))
+         .add(name='r10', uses='_pass', needs=['r9', 'r8']))
 
     with f:
         f.dry_run()

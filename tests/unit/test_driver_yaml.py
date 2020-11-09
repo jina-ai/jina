@@ -71,7 +71,7 @@ def test_load_yaml2(test_metas):
     [
         ('executors._route.yml', 'route', 4),
         ('executors._pass.yml', 'forward', 4),
-        ('executors._merge.yml', 'merge', 4),
+        ('executors._pass.yml', 'merge', 4),
         ('executors._clear.yml', 'clear', 4)
     ]
 )

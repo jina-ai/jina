@@ -43,7 +43,7 @@ def test_incremental_indexing_parallel_indexers(random_workspace):
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'),
               name='inc_doc',
               needs=['gateway'])
-         .add(uses='_merge', needs=['inc_vec', 'inc_doc']))
+         .add(uses='_pass', needs=['inc_vec', 'inc_doc']))
     with f:
         f.index(duplicate_docs[:500])
         f.index(duplicate_docs)
@@ -111,7 +111,7 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace):
               name='inc_doc',
               needs=['gateway'],
               separated_workspace=True)
-         .add(uses='_merge',
+         .add(uses='_pass',
               needs=['inc_vec', 'inc_doc']))
 
     with f:

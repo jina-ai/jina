@@ -444,7 +444,7 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
             if as_router:
-                _head_args.uses = args.uses_before or '_route'
+                _head_args.uses = args.uses_before or '_pass'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
         if as_router:
@@ -467,7 +467,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args.uses = None
 
     if as_router:
-        _tail_args.uses = args.uses_after or '_merge'
+        _tail_args.uses = args.uses_after or '_pass'
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
         _tail_args.num_part = 1 if args.polling.is_push else args.parallel
