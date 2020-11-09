@@ -14,12 +14,12 @@ from jina.proto.jina_pb2 import Document
 
 @pytest.fixture(scope='function')
 def flow():
-    return Flow(rest_api=False).add(uses='_pass')
+    return Flow(rest_api=False).add()
 
 
 @pytest.fixture(scope='function')
 def flow_with_rest_api_enabled():
-    return Flow(rest_api=True).add(uses='_pass')
+    return Flow(rest_api=True).add()
 
 
 @pytest.fixture(scope='function')

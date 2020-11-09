@@ -43,7 +43,7 @@ def test_incremental_indexing_parallel_indexers(random_workspace):
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'),
               name='inc_doc',
               needs=['gateway'])
-         .add(uses='_pass', needs=['inc_vec', 'inc_doc']))
+         .add(needs=['inc_vec', 'inc_doc']))
     with f:
         f.index(duplicate_docs[:500])
         f.index(duplicate_docs)
@@ -100,19 +100,19 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace):
     num_shards = 4
 
     f = (Flow()
-         .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
-              uses_before='_unique',
-              shards=num_shards,
-              name='inc_vec',
-              separated_workspace=True)
-         .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
-              uses_before='_unique',
-              shards=num_shards,
-              name='inc_doc',
-              needs=['gateway'],
-              separated_workspace=True)
-         .add(uses='_pass',
-              needs=['inc_vec', 'inc_doc']))
+        .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
+             uses_before='_unique',
+             shards=num_shards,
+             name='inc_vec',
+             separated_workspace=True)
+        .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
+             uses_before='_unique',
+             shards=num_shards,
+             name='inc_doc',
+             needs=['gateway'],
+             separated_workspace=True)
+        .add(
+        needs=['inc_vec', 'inc_doc']))
 
     with f:
         f.index(duplicate_docs[:500])

@@ -36,15 +36,15 @@ def test_ping():
 
 
 def test_flow_with_jump():
-    f = (Flow().add(name='r1', uses='_pass')
-         .add(name='r2', uses='_pass')
-         .add(name='r3', uses='_pass', needs='r1')
-         .add(name='r4', uses='_pass', needs='r2')
-         .add(name='r5', uses='_pass', needs='r3')
-         .add(name='r6', uses='_pass', needs='r4')
-         .add(name='r8', uses='_pass', needs='r6')
-         .add(name='r9', uses='_pass', needs='r5')
-         .add(name='r10', uses='_pass', needs=['r9', 'r8']))
+    f = (Flow().add(name='r1')
+         .add(name='r2')
+         .add(name='r3', needs='r1')
+         .add(name='r4', needs='r2')
+         .add(name='r5', needs='r3')
+         .add(name='r6', needs='r4')
+         .add(name='r8', needs='r6')
+         .add(name='r9', needs='r5')
+         .add(name='r10', needs=['r9', 'r8']))
 
     with f:
         f.dry_run()
@@ -110,7 +110,7 @@ def test_simple_flow():
             yield b'aaa'
 
     f = (Flow()
-         .add(uses='_pass'))
+         .add())
 
     with f:
         f.index(input_fn=bytes_gen)
@@ -285,15 +285,15 @@ def test_shards():
 
 
 def test_py_client():
-    f = (Flow().add(name='r1', uses='_pass')
-         .add(name='r2', uses='_pass')
-         .add(name='r3', uses='_pass', needs='r1')
-         .add(name='r4', uses='_pass', needs='r2')
-         .add(name='r5', uses='_pass', needs='r3')
-         .add(name='r6', uses='_pass', needs='r4')
-         .add(name='r8', uses='_pass', needs='r6')
-         .add(name='r9', uses='_pass', needs='r5')
-         .add(name='r10', uses='_pass', needs=['r9', 'r8']))
+    f = (Flow().add(name='r1')
+         .add(name='r2')
+         .add(name='r3', needs='r1')
+         .add(name='r4', needs='r2')
+         .add(name='r5', needs='r3')
+         .add(name='r6', needs='r4')
+         .add(name='r8', needs='r6')
+         .add(name='r9', needs='r5')
+         .add(name='r10', needs=['r9', 'r8']))
 
     with f:
         f.dry_run()
@@ -347,8 +347,8 @@ def test_py_client():
 
 
 def test_dry_run_with_two_pathways_diverging_at_gateway():
-    f = (Flow().add(name='r2', uses='_pass')
-         .add(name='r3', uses='_pass', needs='gateway')
+    f = (Flow().add(name='r2', )
+         .add(name='r3', needs='gateway')
          .join(['r2', 'r3']))
 
     with f:
@@ -372,9 +372,9 @@ def test_dry_run_with_two_pathways_diverging_at_gateway():
 
 
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
-    f = (Flow().add(name='r1', uses='_pass')
-         .add(name='r2', uses='_pass')
-         .add(name='r3', uses='_pass', needs='r1')
+    f = (Flow().add(name='r1', )
+         .add(name='r2', )
+         .add(name='r3', needs='r1')
          .join(['r2', 'r3']))
 
     with f:
@@ -516,7 +516,7 @@ def test_flow_with_modalitys_simple():
         doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 
-    flow = Flow().add(name='chunk_seg', parallel=3, uses='_pass'). \
+    flow = Flow().add(name='chunk_seg', parallel=3). \
         add(name='encoder12', parallel=2,
             uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
     with flow:

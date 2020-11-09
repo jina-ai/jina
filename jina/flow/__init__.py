@@ -241,18 +241,17 @@ class Flow(ExitStack):
         self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
     def needs(self, needs: Union[Tuple[str], List[str]],
-              uses: str = '_pass', name: str = 'joiner', *args, **kwargs) -> 'Flow':
+              name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
         :param needs: list of service names to wait
-        :param uses: the config of the executor, by default is ``_pass``
         :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return self.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
+        return self.add(name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
@@ -340,7 +339,7 @@ class Flow(ExitStack):
         # now remove uses and add an auxiliary Pod
         if 'uses' in kwargs:
             kwargs.pop('uses')
-        op_flow = op_flow.add(name=f'_aux_{name}', uses='_pass', needs=_last_pod,
+        op_flow = op_flow.add(name=f'_aux_{name}', needs=_last_pod,
                               pod_role=PodRoleType.INSPECT_AUX_PASS, *args, **kwargs)
 
         # register any future connection to _last_pod by the auxiliary pod
