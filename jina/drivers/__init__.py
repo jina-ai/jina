@@ -96,10 +96,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                        not q.disabled
-                        and self.__class__.__name__ == q.name
-                        and q.priority > self._priority
-                        and key in q.parameters
+                    not q.disabled
+                    and self.__class__.__name__ == q.name
+                    and q.priority > self._priority
+                    and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -145,9 +145,7 @@ class BaseDriver(metaclass=DriverType):
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
-    def __init__(
-            self, priority: int = 0, *args, **kwargs
-    ):
+    def __init__(self, priority: int = 0, *args, **kwargs):
         """
 
         :param priority: the priority of its default arg values (hardcoded in Python). If the
@@ -176,8 +174,10 @@ class BaseDriver(metaclass=DriverType):
         if self.expect_parts > 1:
             return self.pea.partial_requests
         else:
-            raise ValueError(f'trying to access all partial requests, '
-                             f'but {self.pea} has only one message')
+            raise ValueError(
+                f'trying to access all partial requests, '
+                f'but {self.pea} has only one message'
+            )
 
     @property
     def expect_parts(self) -> int:
@@ -260,12 +260,12 @@ class BaseRecursiveDriver(BaseDriver):
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
     def _apply_all(
-            self,
-            docs: Iterable['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
-            field: str,
-            *args,
-            **kwargs,
+        self,
+        docs: Iterable['jina_pb2.Document'],
+        context_doc: 'jina_pb2.Document',
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
@@ -285,7 +285,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(
-            self, docs: Iterable['jina_pb2.Document'], *args, **kwargs
+        self, docs: Iterable['jina_pb2.Document'], *args, **kwargs
     ) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
@@ -348,8 +348,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
-                self.envelope.status.code != jina_pb2.Status.ERROR
-                or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
+            self.envelope.status.code != jina_pb2.Status.ERROR
+            or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
         ):
             return self._exec_fn
         else:
@@ -364,7 +364,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break
