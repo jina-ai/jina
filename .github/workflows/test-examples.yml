@@ -1,13 +1,10 @@
 name: Test Examples
 
-# on:
-#   push:
-#     branches:
-#       - master
-
 on:
-  pull_request:
-    #
+  push:
+    branches:
+      - master
+
 jobs:
   examples-test:
     runs-on: ${{ matrix.os }}
