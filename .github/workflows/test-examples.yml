@@ -46,27 +46,6 @@ jobs:
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-  examples-test-dockerized:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.7]
-        path: [southpark-search]
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Get examples repo
-        uses: actions/checkout@v2
-        with:
-          repository: jina-ai/examples
-          path: examples
       - name: Test example with pytest
         run: |
           cd examples/${{ matrix.path }}
