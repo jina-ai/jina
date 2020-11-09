@@ -454,6 +454,10 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
         _head_args.name = args.name or ''
         _head_args.role = PeaRoleType.HEAD
 
+    # in any case, if header is present, it represent this Pod to consume `num_part`
+    # the following peas inside the pod will have num_part=1
+    args.num_part = 1
+
     return _head_args
 
 
