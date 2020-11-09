@@ -1,17 +1,20 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import time
+import asyncio
+from typing import Optional, List
 
 from . import default_logger
 from .. import JINA_GLOBAL, __version__
 from ..helper import yaml
 
 
-def start_sse_logger(server_config_path: str, flow_yaml: str = None):
+def start_sse_logger(server_config_path: str, identity: str, pod_identities: List[str], flow_yaml: Optional[str] = None):
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
     :param server_config_path: Path to the server configuration file path
+    :param identity: identifies of `Flow`
+    :param pod_identities: the identities of the Pods context managed by the Flow
     :param flow_yaml: Flow yaml description
 
     Example:
@@ -55,22 +58,38 @@ def start_sse_logger(server_config_path: str, flow_yaml: str = None):
     CORS(app)
     server = WSGIServer((_config['host'], _config['port']), app, log=None)
 
-    def _log_stream(path):
-        import glob
-        # fluentd creates files under this path with some tag based on day, so as temp solution,
-        # just get the first file matching this patter once it appears
-        while len(glob.glob(f'{path}*.log')) == 0:
-            time.sleep(0.1)
+    def _log_stream(base_path):
+        loop = asyncio.get_event_loop()
+        lines = []
+        async def gather_lines_from_file(path):
+            import glob
+            # fluentd creates files under this path with some tag based on day, so as temp solution,
+            # just get the first file matching this patter once it appears
+            while len(glob.glob(f'{path}/log.log')) == 0:
+                await asyncio.sleep(0.1)
 
-        file = glob.glob(f'{path}*.log')[0]
-        with open(file) as fp:
-            fp.seek(0, 2)
+            file = glob.glob(f'{path}/log.log')[0]
+            with open(file) as fp:
+                fp.seek(0, 2)
+                while True:
+                    line = fp.readline().strip()
+                    if line:
+                        lines.append(f'data: {line}\n\n')
+                    else:
+                        await asyncio.sleep(0.1)
+
+        async def send_all():
             while True:
-                line = fp.readline().strip()
-                if line:
-                    yield f'data: {line}\n\n'
+                if not lines:
+                    await asyncio.sleep(0.1)
                 else:
-                    time.sleep(0.1)
+                    yield lines.pop()
+        identities = pod_identities
+        identities.extend(identity)
+        log_paths = list(map(lambda x: f'{base_path}/{x}', identities))
+        [loop.create_task(gather_lines_from_file(path)) for path in log_paths]
+        loop.create_task(send_all)
+        loop.run_forever()
 
     @app.route(_config['endpoints']['log'])
     def get_log():

@@ -103,7 +103,6 @@ class BasePod(ExitStack):
             self.is_tail_router = False
             peas_args['peas'] = [args]
 
-
         # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
 
@@ -404,7 +403,7 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
         if tail_args:
             _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
-        _args.identity = get_random_identity()
+        _args.identity = args.identity if args.identity else get_random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:

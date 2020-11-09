@@ -125,8 +125,6 @@ class Flow(ExitStack):
         if not f:
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
         yaml.register_class(Flow)
-        # yaml.sort_base_mapping_type_on_output = False
-        # yaml.representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
 
         with open(f, 'w', encoding='utf8') as fp:
             yaml.dump(self, fp)
@@ -139,6 +137,10 @@ class Flow(ExitStack):
         stream = StringIO()
         yaml.dump(self, stream)
         return stream.getvalue().strip()
+
+    @property
+    def pod_identities(self):
+        return [pod._args.identity for pod in self._pod_nodes.values()]
 
     @classmethod
     def load_config(cls: Type['Flow'], filename: Union[str, TextIO]) -> 'Flow':
@@ -474,7 +476,10 @@ class Flow(ExitStack):
             self._sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                 target=start_sse_logger, daemon=True,
                                                 args=(self.args.logserver_config,
-                                                      self.yaml_spec))
+                                                      self.args.identity,
+                                                      self.pod_identities,
+                                                      self.yaml_spec,
+))
             self._sse_logger.start()
             time.sleep(1)
             response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
