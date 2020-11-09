@@ -16,7 +16,7 @@ from urllib.request import Request, urlopen
 import ruamel.yaml
 from ruamel.yaml import StringIO
 
-from .builder import build_required, _build_flow, _optimize_flow
+from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
@@ -442,6 +442,10 @@ class Flow(ExitStack):
 
         op_flow = _build_flow(op_flow, _outgoing_map)
         op_flow = _optimize_flow(op_flow, _outgoing_map, _pod_edges)
+        hanging_pods = _hanging_pods(op_flow)
+        if hanging_pods:
+            self.logger.warning(f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
+                                f'you may want to double check if it is intentional or some mistake')
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 

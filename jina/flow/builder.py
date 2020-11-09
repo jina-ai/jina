@@ -65,6 +65,14 @@ def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
     return op_flow
 
 
+def _hanging_pods(op_flow: 'Flow') -> List[str]:
+    """Return the names of hanging pods (nobody recv from them) in the flow"""
+    all_needs = {v for p in op_flow._pod_nodes.values() for v in p.needs}
+    all_names = {p for p in op_flow._pod_nodes.keys()}
+    # all_names is always a superset of all_needs
+    return list(all_names.difference(all_needs))
+
+
 def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
     def _build_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
         # Rule
