@@ -93,6 +93,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5400,4 +5401,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```6c7924e4```](https://github.com/jina-ai/jina/commit/6c7924e43e425b05feaf69559769b3fbd78c76e6)] __-__ hotfix fix docker dependency (*Han Xiao*)
  - [[```8905e0a0```](https://github.com/jina-ai/jina/commit/8905e0a0d69537b8dbc75800e91408045e21856c)] __-__ __version__: the next version will be 0.7.6 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-7></a>
+## Release Note (`0.7.7`)
+
+> Release time: 2020-11-09 12:14:25
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Maximilian Werk,  Jina Dev Bot,  🙇
+
+
+### 🚧 Code Refactoring
+
+ - [[```8bf12232```](https://github.com/jina-ai/jina/commit/8bf1223208cccdaae1b6017cc4e0e475c7a518bd)] __-__ __num_part__: rewrite num_part logic at pea, driver and proto (#1247) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```5a7d1114```](https://github.com/jina-ai/jina/commit/5a7d11145251cb18ab9f78b061a68869955e9f16)] __-__ southpark distributed (#1218) (*Maximilian Werk*)
+
+### 🍹 Other Improvements
+
+ - [[```bc326a34```](https://github.com/jina-ai/jina/commit/bc326a346449280bcc33f89184febe82bc743a62)] __-__ hotfix reduce driver (*Han Xiao*)
+ - [[```ba476532```](https://github.com/jina-ai/jina/commit/ba476532f41c6d0b3ec2ff2e8636811169e99f16)] __-__ __version__: the next version will be 0.7.7 (*Jina Dev Bot*)
 
