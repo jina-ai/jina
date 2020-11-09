@@ -39,6 +39,7 @@ jobs:
         run: |
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
+          export JINA_RAISE_ERROR_EARLY=1
           cd examples/${{ matrix.path }}
           pip install -r requirements.txt --no-cache-dir
           pytest -s -v .
