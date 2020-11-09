@@ -9,7 +9,8 @@ from .. import JINA_GLOBAL, __version__
 from ..helper import yaml
 
 
-def start_sse_logger(server_config_path: str, identity: str, pod_identities: List[str], flow_yaml: Optional[str] = None):
+def start_sse_logger(server_config_path: str, identity: str, pod_identities: List[str],
+                     flow_yaml: Optional[str] = None):
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
     :param server_config_path: Path to the server configuration file path
@@ -58,9 +59,11 @@ def start_sse_logger(server_config_path: str, identity: str, pod_identities: Lis
     CORS(app)
     server = WSGIServer((_config['host'], _config['port']), app, log=None)
 
-    def _log_stream(base_path):
-        loop = asyncio.get_event_loop()
+    def _log_stream(base_path: str):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         lines = []
+
         async def gather_lines_from_file(path):
             import glob
             # fluentd creates files under this path with some tag based on day, so as temp solution,
@@ -83,12 +86,13 @@ def start_sse_logger(server_config_path: str, identity: str, pod_identities: Lis
                 if not lines:
                     await asyncio.sleep(0.1)
                 else:
-                    yield lines.pop()
+                    print(f'pop {lines.pop()}')
+
         identities = pod_identities
         identities.extend(identity)
         log_paths = list(map(lambda x: f'{base_path}/{x}', identities))
         [loop.create_task(gather_lines_from_file(path)) for path in log_paths]
-        loop.create_task(send_all)
+        loop.create_task(send_all())
         loop.run_forever()
 
     @app.route(_config['endpoints']['log'])
