@@ -89,7 +89,7 @@ class Chunk2DocRanker(BaseRanker):
             (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
             (Chunk2DocRanker.COL_SCORE, np.float64)]
         )
-        return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
+        return np.sort(r, order=Chunk2DocRanker.COL_SCORE)
 
     def get_doc_id(self, match_with_same_doc_id):
         return match_with_same_doc_id[0][self.COL_MATCH_PARENT_HASH]
