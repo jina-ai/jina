@@ -354,7 +354,7 @@ class BasePea(metaclass=PeaMeta):
                 msg.add_exception(ex, executor=getattr(self, 'executor'))
                 self.logger.error(repr(ex))
             if 'JINA_RAISE_ERROR_EARLY' in os.environ:
-                self.logger.error(ex, exc_info=True)
+                raise
             self.zmqlet.send_message(msg)
 
     def loop_body(self):

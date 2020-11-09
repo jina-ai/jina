@@ -173,7 +173,16 @@ class BaseDriver(metaclass=DriverType):
     @property
     def partial_reqs(self) -> Sequence['LazyRequest']:
         """The collected partial requests under the current ``request_id`` """
-        return self.pea.partial_requests
+        if self.expect_parts > 1:
+            return self.pea.partial_requests
+        else:
+            raise ValueError(f'trying to access all partial requests, '
+                             f'but {self.pea} has only one message')
+
+    @property
+    def expect_parts(self) -> int:
+        """The expected number of partial messages """
+        return self.pea.expect_parts
 
     @property
     def msg(self) -> 'ProtoMessage':
@@ -267,7 +276,7 @@ class BaseRecursiveDriver(BaseDriver):
 
     @property
     def docs(self):
-        if len(self.partial_reqs) > 1:
+        if self.expect_parts > 1:
             return (d for r in reversed(self.partial_reqs) for d in r.docs)
         else:
             return self.req.docs
