@@ -17,7 +17,7 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.title="Jina" \
       org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology"
 
-ENV JINA_BUILD_BASE_DEP="python3-numpy python3-zmq python3-tornado python3-uvloop python3-lz4" \
+ENV JINA_BUILD_BASE_DEP="python3-numpy python3-zmq python3-tornado python3-uvloop python3-grpcio python3-lz4" \
     JINA_BUILD_DEVEL_DEP="gcc libc-dev python3-gevent libmagic1"
 
 RUN apt-get update && apt-get install --no-install-recommends -y $JINA_BUILD_BASE_DEP && \
