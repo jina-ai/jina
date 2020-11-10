@@ -242,7 +242,9 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--name', type=str,
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
-                     help='the identity of the Pea')
+                     help='the identity of the sockets, default a random string (Important for load balancing messages')
+    gp0.add_argument('--pod-identity', type=str, default=get_random_identity(),
+                     help='the identity of the Pod the Pea belongs to')
     gp0.add_argument('--flow-identity', type=str, default=None,
                      help='the identity of the Flow the Pea belongs to')
     gp0.add_argument('--uses', type=str, default='_pass',

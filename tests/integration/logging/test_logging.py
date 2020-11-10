@@ -59,9 +59,9 @@ def test_logging_pod(monkeypatch, flow_identity, expected_group_id):
 
     monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
     if flow_identity:
-        args = set_pod_parser().parse_args(['--flow-identity', flow_identity, '--identity', 'identity_pod'])
+        args = set_pod_parser().parse_args(['--flow-identity', flow_identity, '--pod-identity', 'identity_pod'])
     else:
-        args = set_pod_parser().parse_args(['--identity', 'identity_pod'])
+        args = set_pod_parser().parse_args(['--pod-identity', 'identity_pod'])
 
     with BasePod(args):
         pass

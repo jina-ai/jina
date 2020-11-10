@@ -141,7 +141,7 @@ class BasePea(metaclass=PeaMeta):
                 self.name = '%s-%d' % (self.name, self.args.pea_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
             self.logger = JinaLogger(self.name,
-                                     group_id=self.args.flow_identity or self.args.identity,
+                                     group_id=self.args.flow_identity or self.args.pod_identity,
                                      log_config=self.args.log_config)
         else:
             self.logger = JinaLogger(self.name)
@@ -218,7 +218,6 @@ class BasePea(metaclass=PeaMeta):
 
         :param dump_interval: the time interval for saving
         """
-
         if ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
             if self.args.read_only:
                 self.logger.debug('executor is not saved as "read_only" is set to true for this BasePea')
@@ -375,7 +374,7 @@ class BasePea(metaclass=PeaMeta):
             # Every logger created in this process will be identified by the `Pod Id` and use the same name
             if self.args.name:
                 os.environ['JINA_POD_NAME'] = self.args.name
-            os.environ['JINA_LOG_ID'] = self.args.flow_identity or self.args.identity
+            os.environ['JINA_LOG_ID'] = self.args.flow_identity or self.args.pod_identity
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:
