@@ -30,13 +30,13 @@ An easier way to build neural search in the cloud
 
 
 
-Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) on the cloud. Jina is long-term supported by a [full-time, venture-backed team](https://jina.ai).
+Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) in the cloud. Jina is supported long-term by a [full-time, venture-backed team](https://jina.ai).
 
 ⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
 
-🧠 **First-Class AI Models** - *The* design pattern for neural search systems with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
+🧠 **First-Class AI Models** - *The* design pattern for neural search systems, with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
 
-🌌 **Universal Search** - Large-scale indexing and querying data of any kind on multiple platforms: video, image, long/short text, music, source code, etc.
+🌌 **Universal Search** - Large-scale indexing and querying of any kind of data on multiple platforms: video, image, long/short text, music, source code, etc.
 
 🚀 **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box: containerization, microservice, scaling, sharding, async IO, REST, gRPC.
 
@@ -84,7 +84,7 @@ pip install jina
 
 To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). 
 
-⚠️ Windows users can use Jina on CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). [We're welcome the community on native Windows support](https://github.com/jina-ai/jina/issues/1252).
+⚠️ Windows users can use Jina on their CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). [We welcome the community to help us with native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 ### In a Docker Container
 
@@ -128,7 +128,7 @@ The implementation behind it is simple:
 <table>
 <tr>
 <td> Python API </td>
-<td> or use <a href="https://github.com/jina-ai/jina/blob/master/jina/resources/helloworld.flow.index.yml">YAML spec</a></td>
+<td> or use <a href="https://github.com/jina-ai/jina/blob/master/jina/resources/helloworld.flow.index.yml">YAML</a></td>
 <td> or use <a href="https://github.com/jina-ai/dashboard">Dashboard</a></td>
 </tr>
 <tr>
