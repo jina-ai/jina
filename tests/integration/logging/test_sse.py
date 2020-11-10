@@ -2,7 +2,7 @@ import os
 import time
 import threading
 
-import yaml
+from jina.helper import yaml
 from jina.logging.sse import start_sse_logger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -35,8 +35,8 @@ def sse_client(wrap):
     client = SSEClient(response)
     events = client.events()
     event = next(events)
-    if LOG_MESSAGE not in event.data:
-        wrap.add()
+    if LOG_MESSAGE in event.data:
+        wrap.count += 1
 
 
 def stop_log_server():
@@ -48,9 +48,6 @@ def test_sse_client(tmpdir):
     class WrapAssert:
         def __init__(self):
             self.count = 0
-
-        def add(self):
-            self.count += 1
 
     conf_path = os.path.join(tmpdir, 'log')
     path = os.path.join(conf_path, GROUP_ID)

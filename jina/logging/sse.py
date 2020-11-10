@@ -71,7 +71,6 @@ def start_sse_logger(log_config: Dict,
     @app.route(log_config['endpoints']['log'])
     def get_log():
         """Get the logs, endpoint `/log/stream`  """
-        a = log_config['files']['log']
         return Response(_log_stream(log_config['files']['log']), mimetype="text/event-stream")
 
     @app.route(log_config['endpoints']['yaml'])
