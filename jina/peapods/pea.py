@@ -139,7 +139,7 @@ class BasePea(metaclass=PeaMeta):
             if self.args.name:
                 self.name = self.args.name
             if self.args.role == PeaRoleType.PARALLEL:
-                self.name = f'{self.name}-{self.args.pea_id:d}'
+                self.name = f'{self.name}-{self.args.pea_id}'
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
             if self.args.name:
                 # everything in this Pea (process) will use the same name for display the log

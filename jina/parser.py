@@ -714,7 +714,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
             if len(action.choices) > 4:
                 choice_strs = ', '.join([str(c) for c in action.choices][:4])
-                result = f'{{{choice_strs} ... {len(action.choices) - 4:d} more choices}}'
+                result = f'{{{choice_strs} ... {len(action.choices) - 4} more choices}}'
             else:
                 choice_strs = ', '.join([str(c) for c in action.choices])
                 result = f'{{{choice_strs}}}'

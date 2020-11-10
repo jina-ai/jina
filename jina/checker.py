@@ -55,12 +55,12 @@ class NetworkChecker:
         from jina.logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time
-        ctrl_addr = f'tcp://{args.host}:{args.port:d}'
+        ctrl_addr = f'tcp://{args.host}:{args.port}'
         try:
             total_time = 0
             total_success = 0
             for j in range(args.retries):
-                with TimeContext(f'ping {ctrl_addr} at {j:d} round', default_logger) as tc:
+                with TimeContext(f'ping {ctrl_addr} at {j} round', default_logger) as tc:
                     r = send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.STATUS, timeout=args.timeout)
                     if not r:
                         default_logger.warning('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))

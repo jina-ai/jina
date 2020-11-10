@@ -30,7 +30,7 @@ class GrpcClient:
         self.logger.debug('setting up grpc insecure channel...')
         # A gRPC channel provides a connection to a remote gRPC server.
         self._channel = grpc.insecure_channel(
-            f'{args.host}:{args.port_expose:d}',
+            f'{args.host}:{args.port_expose}',
             options={
                 'grpc.max_send_message_length': -1,
                 'grpc.max_receive_message_length': -1,
