@@ -682,10 +682,10 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
                 if isinstance(action, argparse._StoreTrueAction):
 
                     help += colored(' (default: %s)' % (
-                        'enabled' if action.default else 'disabled, use "--%s" to enable it' % action.dest),
+                        'enabled' if action.default else f'disabled, use "--{action.dest}" to enable it'),
                                     attrs=['dark'])
                 elif action.choices:
-                    choices_str = '{%s}' % ', '.join([str(c) for c in action.choices])
+                    choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
                     help += colored(' (choose from: ' + choices_str + '; default: %(default)s)', attrs=['dark'])
                 elif action.option_strings or action.nargs in defaulting_nargs:
                     help += colored(' (type: %(type)s; default: %(default)s)', attrs=['dark'])
@@ -714,10 +714,10 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
             if len(action.choices) > 4:
                 choice_strs = ', '.join([str(c) for c in action.choices][:4])
-                result = '{%s ... %d more choices}' % (choice_strs, len(action.choices) - 4)
+                result = f'{{{choice_strs} ... {len(action.choices) - 4:d} more choices}}'
             else:
                 choice_strs = ', '.join([str(c) for c in action.choices])
-                result = '{%s}' % choice_strs
+                result = f'{{{choice_strs}}}'
         else:
             result = default_metavar
 

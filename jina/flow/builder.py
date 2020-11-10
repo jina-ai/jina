@@ -34,8 +34,7 @@ def build_required(required_level: 'FlowBuildLevel'):
                     return func(self, *args, **kwargs)
                 else:
                     raise FlowBuildLevelError(
-                        'build_level check failed for %r, required level: %s, actual level: %s' % (
-                            func, required_level, self._build_level))
+                        f'build_level check failed for {func!r}, required level: {required_level}, actual level: {self._build_level}')
             else:
                 raise AttributeError(f'{self!r} has no attribute "_build_level"')
 

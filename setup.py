@@ -14,7 +14,7 @@ if sys.version_info >= (3, 8, 0):
 elif sys.version_info >= (3, 7, 0):
     py_tag = PY37
 else:
-    raise OSError('Jina requires Python 3.7 and above, but yours is %s' % sys.version)
+    raise OSError(f'Jina requires Python 3.7 and above, but yours is {sys.version}')
 
 try:
     pkg_name = 'jina'

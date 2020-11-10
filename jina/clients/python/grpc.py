@@ -30,7 +30,7 @@ class GrpcClient:
         self.logger.debug('setting up grpc insecure channel...')
         # A gRPC channel provides a connection to a remote gRPC server.
         self._channel = grpc.insecure_channel(
-            '%s:%d' % (args.host, args.port_expose),
+            f'{args.host}:{args.port_expose:d}',
             options={
                 'grpc.max_send_message_length': -1,
                 'grpc.max_receive_message_length': -1,
@@ -41,17 +41,17 @@ class GrpcClient:
             grpc.channel_ready_future(self._channel).result(
                 timeout=(args.timeout_ready / 1000) if args.timeout_ready > 0 else None)
         except grpc.FutureTimeoutError:
-            self.logger.critical('can not connect to the server at %s:%d after %d ms, please double check the '
-                                 'ip and grpc port number of the server'
-                                 % (args.host, args.port_expose, args.timeout_ready))
-            raise GRPCServerError('can not connect to the server at %s:%d' % (args.host, args.port_expose))
+            self.logger.critical(f'can not connect to the server at {args.host}:{args.port_expose} after '
+                                 f'{args.timeout_ready} ms, please double check the ip and grpc port number'
+                                 f' of the server')
+            raise GRPCServerError(f'can not connect to the server at {args.host}:{args.port_expose}')
 
             # create new stub
         self.logger.debug('create new stub...')
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
 
         # attache response handler
-        self.logger.success('connected to the gateway at %s:%d!' % (self.args.host, self.args.port_expose))
+        self.logger.success(f'connected to the gateway at {self.args.host}:{self.args.port_expose}!')
         self.is_closed = False
 
     def call(self, *args, **kwargs):
@@ -80,9 +80,9 @@ class GrpcClient:
             elif my_code == grpc.StatusCode.INTERNAL:
                 self.logger.error('internal error on the server side')
             else:
-                raise BadClient('%s error in grpc: %s '
+                raise BadClient(f'{my_code} error in grpc: {my_details} '
                                 'often the case is that you define/send a bad input iterator to jina, '
-                                'please double check your input iterator' % (my_code, my_details))
+                                'please double check your input iterator')
         finally:
             self.close()
 

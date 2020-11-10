@@ -42,7 +42,7 @@ class ImportChecker:
         # check available driver group
 
         default_logger.info('\nenvironment variables\n'.upper())
-        default_logger.info('\n'.join('%-20s\t%s' % (k, os.environ.get(k, colored('(unset)', 'yellow'))) for k in
+        default_logger.info('\n'.join(f'{k:<20}\t{os.environ.get(k, colored("(unset)", "yellow"))}' for k in
                                       __jina_env__))
 
 
@@ -55,12 +55,12 @@ class NetworkChecker:
         from jina.logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time
-        ctrl_addr = 'tcp://%s:%d' % (args.host, args.port)
+        ctrl_addr = f'tcp://{args.host}:{args.port:d}'
         try:
             total_time = 0
             total_success = 0
             for j in range(args.retries):
-                with TimeContext('ping %s at %d round' % (ctrl_addr, j), default_logger) as tc:
+                with TimeContext(f'ping {ctrl_addr} at {j:d} round', default_logger) as tc:
                     r = send_ctrl_message(ctrl_addr, jina_pb2.Request.ControlRequest.STATUS, timeout=args.timeout)
                     if not r:
                         default_logger.warning('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))

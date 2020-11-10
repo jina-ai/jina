@@ -324,8 +324,7 @@ class CompoundExecutor(BaseExecutor):
                     new_routes.append(new_r)
                 else:
                     self.logger.warning(
-                        'function "%s" appears multiple times in %s, it needs to be resolved manually before using.' % (
-                            k, v))
+                        f'function "{k}" appears multiple times in {v}, it needs to be resolved manually before using.')
                     bad_routes.append(k)
         if new_routes:
             self.logger.debug(f'new functions added: {new_routes!r}')

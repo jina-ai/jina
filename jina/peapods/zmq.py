@@ -88,7 +88,7 @@ class Zmqlet:
         if ctrl_with_ipc:
             return _get_random_ipc(), ctrl_with_ipc
         else:
-            return 'tcp://%s:%d' % (args.host, args.port_ctrl), ctrl_with_ipc
+            return f'tcp://{args.host}:{args.port_ctrl:d}', ctrl_with_ipc
 
     def _pull(self, interval: int = 1):
         socks = dict(self.poller.poll(interval))
@@ -143,10 +143,7 @@ class Zmqlet:
             self.logger.debug(f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}')
 
             self.logger.info(
-                'input %s (%s) \t output %s (%s)\t control over %s (%s)' %
-                (colored(in_addr, 'yellow'), self.args.socket_in,
-                 colored(out_addr, 'yellow'), self.args.socket_out,
-                 colored(ctrl_addr, 'yellow'), SocketType.PAIR_BIND))
+                f'input {colored(in_addr, "yellow")} ({self.args.socket_in}) \t output {colored(out_addr, "yellow")} ({self.args.socket_out})\t control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND})')
 
             self.in_sock_type = in_sock.type
             self.out_sock_type = out_sock.type
@@ -387,9 +384,8 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'ProtoMessage', ti
         num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(
-            'cannot send message to sock %s after timeout=%dms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? ' % (
-                sock, timeout))
+            f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
+            'is the server still online? is the network broken? are "port" correct?')
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     finally:
@@ -430,9 +426,8 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'ProtoMessage', timeout: i
         return msg.size
     except zmq.error.Again:
         raise TimeoutError(
-            'cannot send message to sock %s after timeout=%dms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? ' % (
-                sock, timeout))
+            f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
+            'is the server still online? is the network broken? are "port" correct? ')
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:
@@ -463,9 +458,8 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'ProtoMessa
 
     except zmq.error.Again:
         raise TimeoutError(
-            'no response from sock %s after timeout=%dms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? ' % (
-                sock, timeout))
+            f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
+            'is the server still online? is the network broken? are "port" correct? ')
     except Exception as ex:
         raise ex
     finally:
@@ -491,9 +485,8 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
 
     except zmq.error.Again:
         raise TimeoutError(
-            'no response from sock %s after timeout=%dms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? ' % (
-                sock, timeout))
+            f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
+            'is the server still online? is the network broken? are "port" correct? ')
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:

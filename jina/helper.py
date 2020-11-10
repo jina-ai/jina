@@ -74,9 +74,8 @@ def print_load_table(load_stat: Dict[str, List[Any]]):
     for k, v in load_stat.items():
         for cls_name, import_stat, err_reason in v:
             if cls_name not in cached:
-                load_table.append('%-5s %-25s %-40s %s' % (
-                    colored('✓', 'green') if import_stat else colored('✗', 'red'),
-                    cls_name if cls_name else colored('Module load error', 'red'), k, str(err_reason)))
+                load_table.append(
+                    f'{colored("✓", "green") if import_stat else colored("✗", "red"):<5} {cls_name if cls_name else colored("Module load error", "red"):<25} {k:<40} {str(err_reason)}')
                 cached.add(cls_name)
     if load_table:
         load_table.sort()
@@ -91,9 +90,8 @@ def print_load_csv_table(load_stat: Dict[str, List[Any]]):
     load_table = []
     for k, v in load_stat.items():
         for cls_name, import_stat, err_reason in v:
-            load_table.append('%s %s %s %s' % (
-                colored('✓', 'green') if import_stat else colored('✗', 'red'),
-                cls_name if cls_name else colored('Module_load_error', 'red'), k, str(err_reason)))
+            load_table.append(
+                f'{colored("✓", "green") if import_stat else colored("✗", "red")} {cls_name if cls_name else colored("Module_load_error", "red")} {k} {str(err_reason)}')
     if load_table:
         default_logger.info('\n'.join(load_table))
 
@@ -254,7 +252,7 @@ class PathImporter:
     def add_modules(*paths) -> Optional[ModuleType]:
         for p in paths:
             if not os.path.exists(p):
-                raise FileNotFoundError('cannot import module from %s, file not exist', p)
+                raise FileNotFoundError(f'cannot import module from {p}, file not exist')
             module = PathImporter._path_import(p)
         return module
 
@@ -520,8 +518,8 @@ def get_local_config_source(path: str, to_stream: bool = False) -> Union[StringI
         _p = complete_path(path)
         return open(_p, encoding='utf8') if to_stream else _p
     elif path.startswith('_') and os.path.exists(
-            resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))):
-        return resource_filename('jina', '/'.join(('resources', 'executors.%s.yml' % path)))
+            resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
+        return resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
     elif path.startswith('!'):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
@@ -564,8 +562,8 @@ def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
                 f'they are ignored. if you are using them from a global args (e.g. Flow), '
                 f'then please ignore this message')
     except SystemExit:
-        raise ValueError('bad arguments "%s" with parser %r, '
-                         'you may want to double check your args ' % (args, parser))
+        raise ValueError(f'bad arguments "{args}" with parser {parser}, '
+                         'you may want to double check your args ')
     return args, p_args, unknown_args
 
 

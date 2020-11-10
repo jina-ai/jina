@@ -10,8 +10,8 @@ class MWUEncoder(BaseEncoder):
     def __init__(self, greetings: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._greetings = greetings
-        self.logger.success('look at me! %s' % greetings)
+        self.logger.success(f'look at me! {greetings}')
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
-        self.logger.info('%s %s' % (self._greetings, data))
+        self.logger.info(f'{self._greetings} {data}')
         return np.random.random([data.shape[0], 3])

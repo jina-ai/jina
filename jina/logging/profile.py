@@ -107,7 +107,7 @@ class TimeDict:
             self._pending_reset = False
 
     def __str__(self):
-        return ' '.join('%s: %3.1fs' % (k, v) for k, v in self.accum_time.items())
+        return ' '.join(f'{k}: {v:3.1f}s' for k, v in self.accum_time.items())
 
 
 class TimeContext:

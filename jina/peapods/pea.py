@@ -139,7 +139,7 @@ class BasePea(metaclass=PeaMeta):
             if self.args.name:
                 self.name = self.args.name
             if self.args.role == PeaRoleType.PARALLEL:
-                self.name = '%s-%d' % (self.name, self.args.pea_id)
+                self.name = f'{self.name}-{self.args.pea_id:d}'
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
             if self.args.name:
                 # everything in this Pea (process) will use the same name for display the log
@@ -223,7 +223,7 @@ class BasePea(metaclass=PeaMeta):
 
     def print_stats(self):
         self.logger.info(
-            ' '.join('%s: %.2f' % (k, v / self._timer.accum_time['loop']) for k, v in self._timer.accum_time.items()))
+            ' '.join(f'{k}: {v / self._timer.accum_time["loop"]:.2f}' for k, v in self._timer.accum_time.items()))
 
     def save_executor(self, dump_interval: int = 0):
         """Save the contained executor
