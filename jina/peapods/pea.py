@@ -134,7 +134,9 @@ class BasePea(metaclass=PeaMeta):
             if self.args.role == PeaRoleType.PARALLEL:
                 self.name = '%s-%d' % (self.name, self.args.pea_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
-            self.logger = JinaLogger(self.name, group_id=self.args.identity, log_config=self.args.log_config)
+            self.logger = JinaLogger(self.name,
+                                     group_id=self.args.flow_identity or self.args.identity,
+                                     log_config=self.args.log_config)
         else:
             self.logger = JinaLogger(self.name)
 
@@ -174,7 +176,7 @@ class BasePea(metaclass=PeaMeta):
 
     @property
     def request_type(self) -> str:
-        return self._message.envelope.request_typed
+        return self._message.envelope.request_type
 
     def load_executor(self):
         """Load the executor to this BasePea, specified by ``uses`` CLI argument.
@@ -332,7 +334,7 @@ class BasePea(metaclass=PeaMeta):
             # Every logger created in this process will be identified by the `Pod Id` and use the same name
             if self.args.name:
                 os.environ['JINA_POD_NAME'] = self.args.name
-            os.environ['JINA_LOG_ID'] = self.args.identity
+            os.environ['JINA_LOG_ID'] = self.args.flow_identity or self.args.identity
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:

@@ -138,10 +138,6 @@ class Flow(ExitStack):
         yaml.dump(self, stream)
         return stream.getvalue().strip()
 
-    @property
-    def pod_identities(self):
-        return [pod._args.identity for pod in self._pod_nodes.values()]
-
     @classmethod
     def load_config(cls: Type['Flow'], filename: Union[str, TextIO]) -> 'Flow':
         """Build an executor from a YAML file.
@@ -300,13 +296,14 @@ class Flow(ExitStack):
                 kwargs[key] = value
 
         kwargs['name'] = pod_name
+        kwargs['flow_identity'] = self.args.identity
 
         op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
         op_flow.last_pod = pod_name
 
         return op_flow
 
-    def _invoke_flowpod(self, kwargs, needs, pod_role):
+    def _invoke_flowpod(self, kwargs: Dict, needs: Set[str], pod_role: 'PodRoleType'):
         """This gets inherited in jinad"""
         return FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
 
@@ -477,9 +474,7 @@ class Flow(ExitStack):
                                                 target=start_sse_logger, daemon=True,
                                                 args=(self.args.logserver_config,
                                                       self.args.identity,
-                                                      self.pod_identities,
-                                                      self.yaml_spec,
-))
+                                                      self.yaml_spec))
             self._sse_logger.start()
             time.sleep(1)
             response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)

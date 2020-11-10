@@ -277,8 +277,11 @@ class FlowPod(BasePod):
 
     """
 
-    def __init__(self, kwargs: Dict,
-                 needs: Set[str] = None, parser: Callable = set_pod_parser, pod_role: 'PodRoleType' = PodRoleType.POD):
+    def __init__(self,
+                 kwargs: Dict,
+                 needs: Set[str] = None,
+                 parser: Callable = set_pod_parser,
+                 pod_role: 'PodRoleType' = PodRoleType.POD):
         """
 
         :param kwargs: unparsed argument in dict, if given the
@@ -384,6 +387,7 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
             _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
         _args.identity = args.identity if args.identity else get_random_identity()
+        _args.flow_identity = args.flow_identity
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:

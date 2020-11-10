@@ -40,7 +40,10 @@ class GatewayPea:
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
 
-        self.logger = JinaLogger(context=self.__class__.__name__, name='gateway', group_id=args.identity, log_config=args.log_config)
+        self.logger = JinaLogger(context=self.__class__.__name__,
+                                 name='gateway',
+                                 group_id=args.flow_identity or args.identity,
+                                 log_config=args.log_config)
         if args.allow_spawn:
             self.logger.critical('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')
         self._p_servicer = self._Pea(args)
