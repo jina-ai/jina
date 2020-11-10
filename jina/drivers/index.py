@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Sequence
 
 import numpy as np
 
@@ -24,7 +24,7 @@ class VectorIndexDriver(BaseIndexDriver):
     """Extract chunk-level embeddings and add it to the executor
     """
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         embed_vecs, docs_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
         if bad_doc_ids:
@@ -38,7 +38,7 @@ class KVIndexDriver(BaseIndexDriver):
     """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
     """
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         keys = [uid.id2hash(doc.id) for doc in docs]
         values = [doc.SerializeToString() for doc in docs]
         self.exec_fn(keys, values)

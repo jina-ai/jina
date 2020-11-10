@@ -1,4 +1,4 @@
-from typing import Iterable, List, Any, Union
+from typing import Sequence, List, Any, Union
 
 import numpy as np
 
@@ -31,7 +31,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Iterable['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document',
             field: str,
             *args,
@@ -146,7 +146,7 @@ class Prediction2DocBlobDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Iterable['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document',
             field: str,
             *args,

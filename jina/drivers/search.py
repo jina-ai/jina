@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Tuple
+from typing import Sequence, Tuple
 
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs
@@ -57,7 +57,7 @@ class KVSearchDriver(BaseSearchDriver):
         super().__init__(*args, **kwargs)
         self._is_merge = is_merge
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
             serialized_doc = self.exec_fn(self.id2hash(retrieved_doc.id))
@@ -85,7 +85,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
     def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         embeds = self.exec_fn([self.id2hash(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
             GenericNdArray(doc.embedding).value = embedding
@@ -109,7 +109,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
         if not doc_pts:

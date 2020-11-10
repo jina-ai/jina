@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Sequence
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
@@ -22,7 +22,7 @@ class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         contents, docs_pts, bad_doc_ids = extract_docs(docs, embedding=False)
 
         if bad_doc_ids:

@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import sys
-from typing import Iterable
+from typing import Sequence
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
@@ -46,7 +46,7 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
         else:
             self._end = int(end)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
             pass
         else:

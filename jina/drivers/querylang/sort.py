@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Tuple
+from typing import Sequence, Tuple
 
 from .queryset.dunderkey import dunder_get
 from .. import QuerySetReader, BaseRecursiveDriver
@@ -42,5 +42,5 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         self._reverse = reverse
         self._field = field
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         docs.sort(key=lambda x: dunder_get(x, self.field), reverse=self.reverse)

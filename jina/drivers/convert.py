@@ -7,7 +7,7 @@ import struct
 import urllib.parse
 import urllib.request
 import zlib
-from typing import Iterable
+from typing import Sequence
 
 import numpy as np
 
@@ -34,7 +34,7 @@ class BaseConvertDriver(BaseRecursiveDriver):
         self.override = override
         self.target = target
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
         for doc in docs:
             if getattr(doc, self.target) and not self.override:
                 pass

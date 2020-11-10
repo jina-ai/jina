@@ -31,7 +31,7 @@ import re
 
 from .dunderkey import dunder_get, dunder_partition, undunder_keys, dunder_truncate
 from .helper import *
-from typing import List, Dict, Iterable, Any
+from typing import Dict, Iterable, Any
 
 
 class QuerySet:
