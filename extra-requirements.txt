@@ -61,3 +61,4 @@ flaky:                      test
 mock:                       test
 requests:                   http
 prettytable:                devel, test
+sseclient-py:               test

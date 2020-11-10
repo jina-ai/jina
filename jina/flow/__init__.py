@@ -470,16 +470,21 @@ class Flow(ExitStack):
         try:
             import urllib.request
             import flask, flask_cors
-            self._sse_logger = threading.Thread(name='sentinel-sse-logger',
+            try:
+                with open(self.args.logserver_config) as fp:
+                    log_config = yaml.load(fp)
+                self._sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                 target=start_sse_logger, daemon=True,
-                                                args=(self.args.logserver_config,
+                                                args=(log_config,
                                                       self.args.identity,
                                                       self.yaml_spec))
-            self._sse_logger.start()
-            time.sleep(1)
-            response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
-            if response.status == 200:
-                self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
+                self._sse_logger.start()
+                time.sleep(1)
+                response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
+                if response.status == 200:
+                    self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
+            except Exception as ex:
+                self.logger.error(f'Could not start logserver because of {repr(ex)}')
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
