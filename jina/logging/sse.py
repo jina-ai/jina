@@ -62,8 +62,9 @@ def start_sse_logger(server_config_path: str, identity: str, pod_identities: Lis
     def _log_stream(base_path: str):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        lines = []
+        queue = asyncio.Queue()
 
+        # async generator
         async def gather_lines_from_file(path):
             import glob
             # fluentd creates files under this path with some tag based on day, so as temp solution,
@@ -77,16 +78,15 @@ def start_sse_logger(server_config_path: str, identity: str, pod_identities: Lis
                 while True:
                     line = fp.readline().strip()
                     if line:
-                        lines.append(f'data: {line}\n\n')
+                        #lines.append(f'data: {line}\n\n')
+                        await queue.put(f'data: {line}\n\n')
+                        #yield f'data: {line}\n\n'
                     else:
                         await asyncio.sleep(0.1)
 
         async def send_all():
             while True:
-                if not lines:
-                    await asyncio.sleep(0.1)
-                else:
-                    print(f'pop {lines.pop()}')
+                await queue.get()
 
         identities = pod_identities
         identities.extend(identity)
