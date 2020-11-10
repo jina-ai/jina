@@ -69,7 +69,7 @@ def test_text2datauri():
 
 
 def test_gateway_dataui():
-    f = (Flow().add(uses='_pass'))
+    f = (Flow().add())
 
     with f:
         f.index_lines(lines=['abc', '123', 'hello, world'])

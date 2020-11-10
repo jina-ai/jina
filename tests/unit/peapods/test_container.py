@@ -130,7 +130,7 @@ def test_flow_topo_mixed(docker_image_built):
 def test_flow_topo_parallel(docker_image_built):
     f = (Flow()
          .add(name='d7', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass', parallel=3)
-         .add(name='d8', uses='_pass', parallel=3)
+         .add(name='d8', parallel=3)
          .add(name='d9', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass',
               needs='d7')
          .join(['d9', 'd8']))
@@ -169,7 +169,7 @@ def test_container_ping(docker_image_built):
 def test_tail_host_docker2local_parallel(docker_image_built):
     f = (Flow()
          .add(name='d10', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass', parallel=3)
-         .add(name='d11', uses='_pass'))
+         .add(name='d11'))
     with f:
         assert getattr(f._pod_nodes['d10'].peas_args['tail'], 'host_out') == defaulthost
         f.dry_run()
@@ -178,7 +178,7 @@ def test_tail_host_docker2local_parallel(docker_image_built):
 def test_tail_host_docker2local(docker_image_built):
     f = (Flow()
          .add(name='d12', uses='jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass')
-         .add(name='d13', uses='_pass'))
+         .add(name='d13'))
     with f:
         assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == localhost
         f.dry_run()

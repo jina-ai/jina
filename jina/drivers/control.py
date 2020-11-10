@@ -44,7 +44,7 @@ class ControlReqDriver(BaseDriver):
             for k, v in vars(self.pea.args).items():
                 self.req.args[k] = str(v)
         else:
-            raise UnknownControlCommand('don\'t know how to handle %s' % self.req)
+            raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
 
 class RouteDriver(ControlReqDriver):
@@ -108,4 +108,8 @@ class RouteDriver(ControlReqDriver):
 
 
 class ForwardDriver(RouteDriver):
+    """Alias to :class:`RouteDriver`"""
+
+
+class ReduceDriver(RouteDriver):
     """Alias to :class:`RouteDriver`"""

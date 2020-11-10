@@ -16,7 +16,7 @@ from urllib.request import Request, urlopen
 import ruamel.yaml
 from ruamel.yaml import StringIO
 
-from .builder import build_required, _build_flow, _optimize_flow
+from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
@@ -239,18 +239,17 @@ class Flow(ExitStack):
         self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
 
     def needs(self, needs: Union[Tuple[str], List[str]],
-              uses: str = '_merge', name: str = 'joiner', *args, **kwargs) -> 'Flow':
+              name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
         :param needs: list of service names to wait
-        :param uses: the config of the executor, by default is ``_merge``
         :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return self.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
+        return self.add(name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
@@ -297,6 +296,7 @@ class Flow(ExitStack):
 
         kwargs['name'] = pod_name
         kwargs['flow_identity'] = self.args.identity
+        kwargs['num_part'] = len(needs)
 
         op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
         op_flow.last_pod = pod_name
@@ -338,7 +338,7 @@ class Flow(ExitStack):
         # now remove uses and add an auxiliary Pod
         if 'uses' in kwargs:
             kwargs.pop('uses')
-        op_flow = op_flow.add(name=f'_aux_{name}', uses='_pass', needs=_last_pod,
+        op_flow = op_flow.add(name=f'_aux_{name}', needs=_last_pod,
                               pod_role=PodRoleType.INSPECT_AUX_PASS, *args, **kwargs)
 
         # register any future connection to _last_pod by the auxiliary pod
@@ -357,7 +357,7 @@ class Flow(ExitStack):
             in general you don't need to manually call :meth:`gather_inspect`.
 
         :param name: the name of the gather pod
-        :param uses: the config of the executor, by default is ``_merge``
+        :param uses: the config of the executor, by default is ``_pass``
         :param include_last_pod: if to include the last modified pod in the flow
         :param args:
         :param kwargs:
@@ -440,6 +440,10 @@ class Flow(ExitStack):
 
         op_flow = _build_flow(op_flow, _outgoing_map)
         op_flow = _optimize_flow(op_flow, _outgoing_map, _pod_edges)
+        hanging_pods = _hanging_pods(op_flow)
+        if hanging_pods:
+            self.logger.warning(f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
+                                f'you may want to double check if it is intentional or some mistake')
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 

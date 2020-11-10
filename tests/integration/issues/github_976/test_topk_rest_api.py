@@ -16,7 +16,7 @@ def query_dict():
 
 
 def test_top_k_with_rest_api(query_dict):
-    with Flow(rest_api=True, port_expose=PORT).add(uses='_pass'):
+    with Flow(rest_api=True, port_expose=PORT).add():
         query = json.dumps(query_dict).encode('utf-8')
         req = request.Request(f'http://0.0.0.0:{PORT}/api/search', data=query,
                               headers={'content-type': 'application/json'})

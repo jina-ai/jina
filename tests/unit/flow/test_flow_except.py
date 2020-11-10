@@ -40,7 +40,7 @@ def test_bad_flow_customized():
         assert bad_routes[0].pod == 'r2'
         assert bad_routes[0].status.exception.name == 'ZeroDivisionError'
 
-    f = (Flow().add(name='r1', uses='_pass')
+    f = (Flow().add(name='r1')
          .add(name='r2', uses='!DummyCrafter')
          .add(name='r3', uses='!BaseEncoder'))
 
@@ -63,7 +63,7 @@ def test_except_with_parallel():
         assert err_routes[0].exception.name == 'ZeroDivisionError'
         assert err_routes[1].exception.name == 'NotImplementedError'
 
-    f = (Flow().add(name='r1', uses='_pass')
+    f = (Flow().add(name='r1')
          .add(name='r2', uses='!DummyCrafter', parallel=3)
          .add(name='r3', uses='!BaseEncoder'))
 
@@ -90,7 +90,7 @@ def test_on_error_callback():
         badones = [r for r in x if r.status.code == jina_pb2.Status.ERROR]
         assert badones[0].pod == 'r3'
 
-    f = (Flow().add(name='r1', uses='_pass')
+    f = (Flow().add(name='r1')
          .add(name='r3', uses='!BaseEncoder'))
 
     with f:
@@ -104,8 +104,8 @@ def test_no_error_callback():
     def validate1(x, *args):
         pass
 
-    f = (Flow().add(name='r1', uses='_pass')
-         .add(name='r3', uses='_pass'))
+    f = (Flow().add(name='r1')
+         .add(name='r3'))
 
     with f:
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate1, on_error=validate2)

@@ -324,8 +324,6 @@ class FlowPod(BasePod):
             second.head_args.host_in = __default_host__
             first.tail_args.port_out = second.head_args.port_in
         elif first_socket_type == SocketType.PUB_BIND:
-            if not second.role.is_inspect:
-                first.tail_args.num_part += 1
             first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
             second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
                                                      connect_args=second.head_args)  # the hostname of s_pod
@@ -430,16 +428,19 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
             if as_router:
-                _head_args.uses = args.uses_before or '_route'
+                _head_args.uses = args.uses_before or '_pass'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
-        _head_args.num_part = args.parallel
         if as_router:
             _head_args.uses = args.uses_before or '_pass'
 
     if as_router:
         _head_args.name = args.name or ''
         _head_args.role = PeaRoleType.HEAD
+
+    # in any case, if header is present, it represent this Pod to consume `num_part`
+    # the following peas inside the pod will have num_part=1
+    args.num_part = 1
 
     return _head_args
 
@@ -454,9 +455,10 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args.uses = None
 
     if as_router:
-        _tail_args.uses = args.uses_after or '_merge'
+        _tail_args.uses = args.uses_after or '_pass'
         _tail_args.name = args.name or ''
         _tail_args.role = PeaRoleType.TAIL
+        _tail_args.num_part = 1 if args.polling.is_push else args.parallel
 
     return _tail_args
 

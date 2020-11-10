@@ -1,15 +1,14 @@
-import os
 import multiprocessing as mp
+import os
 
-import pytest
 import numpy as np
+import pytest
 
-
-from jina.flow import Flow
-from jina.proto import jina_pb2
-from jina.parser import set_flow_parser
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector import NumpyIndexer
+from jina.flow import Flow
+from jina.parser import set_flow_parser
+from jina.proto import jina_pb2
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -66,10 +65,12 @@ def test_doc_iters():
     for doc in docs:
         assert isinstance(doc, jina_pb2.Document)
 
+
 def test_simple_route():
-    f = Flow().add(uses='_pass')
+    f = Flow().add()
     with f:
         f.index(input_fn=random_docs(10))
+
 
 def test_update_method(test_metas):
     with DummyIndexer(index_filename='testa.bin', metas=test_metas) as indexer:
@@ -94,8 +95,8 @@ def test_update_method(test_metas):
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
 def test_two_client_route_parallel():
     fa1 = set_flow_parser().parse_args(['--optimize-level', str(FlowOptimizeLevel.NONE)])
-    f1 = Flow(fa1).add(uses='_pass', parallel=3)
-    f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(uses='_pass', parallel=3)
+    f1 = Flow(fa1).add(parallel=3)
+    f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(parallel=3)
 
     def start_client(fl):
         fl.index(input_fn=random_docs(10))
@@ -127,7 +128,7 @@ def test_two_client_route():
     def start_client(fl):
         fl.index(input_fn=random_docs(10))
 
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         t1 = mp.Process(target=start_client, args=(f,))
         t1.daemon = True
         t2 = mp.Process(target=start_client, args=(f,))

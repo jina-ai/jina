@@ -19,6 +19,6 @@ pods:
   text_indexer:
     read_only: true
   join_all:
-    uses: _merge
+    uses: _pass
     needs: [image_vector_indexer, image_kv_indexer, text_indexer]
     read_only: true

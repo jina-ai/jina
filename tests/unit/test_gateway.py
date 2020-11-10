@@ -40,9 +40,7 @@ def test_rest_gateway_concurrency():
         durations[index] = resp.elapsed.total_seconds()
         status_codes[index] = resp.status_code
 
-    f = Flow(rest_api=True).add(
-        uses='_pass',
-        parallel=2)
+    f = Flow(rest_api=True).add(parallel=2)
     with f:
         concurrency = 50
         threads = []
@@ -96,9 +94,7 @@ def test_grpc_gateway_concurrency():
                 index=index
             ))
 
-    f = Flow().add(
-        uses='_pass',
-        parallel=2)
+    f = Flow().add(parallel=2)
     with f:
         threads = []
         status_codes = [None] * concurrency

@@ -65,7 +65,7 @@ Every part of Jina is configured with **YAML files**. YAML files offer customiza
 
 <img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-How do we break down a Document into Chunks, and what happens next? **Executors** do all of this hard work, and each represents an algorithmic unit. They do things like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each one has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They feature persistence, scheduling, chaining, grouping, and parallelization out of the box. The properties of an Executor are stored in a [YAML file](#configuring-jina-with-yaml). They always go hand in hand.
+How do we break down a Document into Chunks, and what happens next? **Executors** do all of this hard work, and each represents an algorithmic unit. They do things like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each one has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They handle feature persistence, scheduling, chaining, grouping, and parallelization out of the box. The properties of an Executor are stored in a [YAML file](#configuring-jina-with-yaml). They always go hand in hand.
 
 <br/><br/><br/>
 

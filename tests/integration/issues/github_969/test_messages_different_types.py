@@ -44,7 +44,7 @@ def test_message_docs_different_chunk_types():
         assert int(chunk2.tags['id']) == 30
         assert chunk2.buffer == buffer
 
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(input_fn=[input_doc()], output_fn=validate_fn)
 
 
@@ -83,7 +83,7 @@ def test_message_docs_different_chunk_types_without_optimization():
         assert int(chunk2.tags['id']) == 30
         assert chunk2.buffer == buffer
 
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(input_fn=[input_doc()], output_fn=validate_fn)
 
 
@@ -122,7 +122,7 @@ def test_message_docs_different_matches_types():
         assert int(match2.tags['id']) == 30
         assert match2.buffer == buffer
 
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(input_fn=[input_doc()], output_fn=validate_fn)
 
 
@@ -161,7 +161,7 @@ def test_message_docs_different_matches_types_without_optimization():
         assert int(match2.tags['id']) == 30
         assert match2.buffer == buffer
 
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(input_fn=[input_doc()], output_fn=validate_fn)
 
 
@@ -225,7 +225,7 @@ def test_message_docs_different_chunks_and_matches_types():
         assert int(match2.tags['id']) == 30
         assert match2.buffer == buffer
 
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(input_fn=[input_doc()], output_fn=validate_fn)
 
 
@@ -289,5 +289,5 @@ def test_message_docs_different_chunks_and_matches_types_without_optimization():
         assert int(match2.tags['id']) == 30
         assert match2.buffer == buffer
 
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(input_fn=[input_doc()], output_fn=validate_fn)

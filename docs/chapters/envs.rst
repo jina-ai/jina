@@ -156,6 +156,12 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: unset
 
+.. confval:: JINA_RAISE_ERROR_EARLY
+
+    Raise exception immedidately instead of passing it forward in the flow. Useful in debugging
+
+    :default: unset
+
 .. confval:: JINA_LOG_ID
 
     The identifier of a logger so that it can be used as group identifier by ``fluentd``. It is set when Pea starts a new process
