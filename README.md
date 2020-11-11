@@ -1,11 +1,11 @@
 <p align="center">
 <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
 </p>
-<h3 align="center">
-An easier way to build neural search in the cloud
-</h3>
 <p align="center">
-<strong><a href="quick-start">Quick Start</a></strong> | <strong><a href="#jina-hello-world-">Hello World</a></strong> | <strong><a href="#documentation">Learn</a></strong> | <strong><a href="#contributing">Contribute</a></strong> | <strong><a href="#join-us">Jobs</a></strong> | <strong><a href="http://jina.ai">Website</a></strong> | <strong><a href="http://slack.jina.ai">Slack</a></strong>
+An easier way to build neural search in the cloud
+</p>
+<p align="center">
+<a href="#quick-start">Quick Start</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#tutorials">Learn</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
 </p><p align=center>
 <a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8" title="Jina supports Python 3.7 and above"></a>
@@ -28,12 +28,8 @@ An easier way to build neural search in the cloud
 </sub>
 </p>
 
-Jina is a deep-learning-powered search framework for building **cross-/multi-modal search systems** (e.g. text, images, video, audio) in the cloud. 
-
-<p align='center'>
-<img width="350px" src="https://raw.githubusercontent.com/jina-ai/jinabox.js/master/.github/jinabox.gif" />
-<br>
-<sub>Jina running with Jinabox frontend</sub>
+<p align="center">
+Jina is a deep-learning-powered search framework for building <strong>cross-/multi-modal search systems</strong> (e.g. text, images, video, audio) in the cloud. 
 </p>
 
 ⏱️  **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
@@ -46,14 +42,13 @@ Jina is a deep-learning-powered search framework for building **cross-/multi-mod
 
 🧩 **Plug & Play** - Easily extendable with Pythonic interface.
 
-✔️ **Here to Stay** - Jina is supported long-term by a [full-time, venture-backed team](https://jina.ai).
+❤️  **Made with Love** - Quality first, with no code compromises, delivered by a [full-time, venture-backed team](https://jina.ai).
 
 ---
 
-
 ## Quick Start
 
-On Linux/MacOS with Python 3.7/3.8:
+On Linux/macOS with Python 3.7/3.8:
 
 ```bash
 pip install jina
@@ -79,7 +74,7 @@ docker run jinaai/jina --help
 
 ## Jina "Hello, World!" 👋🌍
 
-As a starter, you can try out our "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
+As a starter, you can try "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
 
 ```bash
 jina hello-world
@@ -88,7 +83,8 @@ jina hello-world
 ...or even easier for Docker users, **no install required**:
 
 ```bash
-docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
+docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  
+# replace "open" with "xdg-open" on Linux
 ```
 
 <details>
