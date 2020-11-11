@@ -44,26 +44,7 @@ Jina is a deep-learning-powered search framework for building <strong>cross-/mul
 ❤️  **Made with Love** - Quality first, with no code compromises, delivered by a [full-time, venture-backed team](https://jina.ai).
 
 
-## Contents
-
-<img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-- [Get Started](#get-started)
-- [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Tutorials](#tutorials)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Community](#community)
-- [Open Governance](#open-governance)
-- [Join Us](#join-us)
-- [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Install
+## Installation
 
 On Linux/macOS with Python 3.7/3.8:
 
@@ -75,7 +56,7 @@ To install Jina with extra dependencies, or install on Raspberry Pi [please refe
 
 #### In a Docker Container
 
-Our universal Docker image supports multiple architectures (including x64, x86, arm-64/v7/v6). No need to install anything, simply run:
+Our universal Docker image supports multiple architectures (including x64, x86, arm-64/v7/v6). They are ready-to-use, simply run:
 
 ```bash
 docker run jinaai/jina --help
@@ -107,113 +88,200 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 It downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and eventually opens a webpage and shows results like this:
 
 <p align="center">
-  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
+  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="80%">
 </p>
-
-The implementation behind it is simple:
-
-<table>
-<tr>
-<td> Python API </td>
-<td> or use <a href="https://github.com/jina-ai/jina/blob/master/jina/resources/helloworld.flow.index.yml">YAML</a></td>
-<td> or use <a href="https://github.com/jina-ai/dashboard">Dashboard</a></td>
-</tr>
-<tr>
-<td>
-
-
-```python
-from jina.flow import Flow
-
-f = (Flow()
-        .add(uses='encoder.yml', parallel=2)
-        .add(uses='indexer.yml', shards=2,
-             separated_workspace=True))
-
-with f:
-    f.index(fashion_mnist, batch_size=1024)
-```
-
-</td>
-<td>
-
-```yaml
-!Flow
-pods:
-  encode:
-    uses: encoder.yml
-    parallel: 2
-  index:
-    uses: indexer.yml
-    shards: 2
-    separated_workspace: true
-```
-
-</td>
-<td>
-
-![Flow in Dashboard](https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-flow.png?raw=true)
-
-</td>
-</tr>
-</table>
-
-<details>
-<summary><strong>Explore sharding, containerization, concatenating embeddings, and more</strong></summary>
-
-#### Adding Parallelism and Sharding
-
-```python
-from jina.flow import Flow
-
-f = (Flow().add(uses='encoder.yml', parallel=2)
-           .add(uses='indexer.yml', shards=2, separated_workspace=True))
-```
-
-#### [Distributing the Flow](https://docs.jina.ai/chapters/remote/index.html)
-
-```python
-from jina.flow import Flow
-
-f = Flow().add(uses='encoder.yml', host='192.168.0.99')
-```
-
-#### [Using a Docker Container](https://docs.jina.ai/chapters/hub/index.html)
-
-```python
-from jina.flow import Flow
-
-f = (Flow().add(uses='jinahub/cnn-encode:0.1')
-           .add(uses='jinahub/faiss-index:0.2', host='192.168.0.99'))
-```
-
-#### Concatenating Embeddings
-
-```python
-from jina.flow import Flow
-
-f = (Flow().add(name='eb1', uses='BiTImageEncoder')
-           .add(name='eb2', uses='KerasImageEncoder', needs='gateway')
-           .needs(['eb1', 'eb2'], uses='_concat'))
-```
-
-#### [Enabling Network Queries](https://docs.jina.ai/chapters/restapi/index.html)
-
-```python
-from jina.flow import Flow
-
-f = Flow(port_expose=45678, rest_api=True)
-
-with f:
-    f.block()
-```
 
 Intrigued? Play with different options:
 
 ```bash
 jina hello-world --help
 ```
-</details>
+
+## Get Started
+
+### Basic Usage of Flow API
+
+Jina provides a high-level [Flow](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) API to ease the build of search/index workflow. To create a new Flow,
+
+```python
+from jina.flow import Flow
+f = Flow().add()
+```
+
+This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). To visualize it, you can simply chain it with `.plot()`. If you are using Jupytner notebook, it will render a flowchart inline.
+
+
+<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyMzMkM4Q0QnLCAnZWRnZUxhYmVsQmFja2dyb3VuZCc6JyNmZmYnLCAnY2x1c3RlckJrZyc6ICcjRkZDQzY2J319fSUlCmdyYXBoIExSCmdhdGV3YXkoZ2F0ZXdheSk6OjpHQVRFV0FZIC0tPiB8UFVTSC1QVUxMfHBvZDAocG9kMCk6OjpQT0QKcG9kMChwb2QwKTo6OlBPRCAtLT4gfFBVU0gtUFVMTHxnYXRld2F5X0VORChnYXRld2F5KTo6OkdBVEVXQVkKY2xhc3NEZWYgUE9EIGZpbGw6IzMyQzhDRCxzdHJva2U6IzAwOTk5OQpjbGFzc0RlZiBJTlNQRUNUIGZpbGw6I2ZmNjY2Nixjb2xvcjojZmZmCmNsYXNzRGVmIEpPSU5fSU5TUEVDVCBmaWxsOiNmZjY2NjYsY29sb3I6I2ZmZgpjbGFzc0RlZiBHQVRFV0FZIGZpbGw6IzZFNzI3OCxjb2xvcjojZmZmCmNsYXNzRGVmIElOU1BFQ1RfQVVYX1BBU1MgZmlsbDojZmZmLGNvbG9yOiMwMDAsc3Ryb2tlLWRhc2hhcnJheTogNSA1CmNsYXNzRGVmIHBlYSBmaWxsOiMwMDk5OTksc3Ryb2tlOiMxRTZFNzM="/>
+
+
+`Gateway` is the entrypoint of the Flow. Let's try send some random data to it via index functions:
+
+```python
+import numpy as np
+with f:
+    f.index_ndarray(np.random.random[4,2], output_fn=print)  # index ndarray data, document sliced on first dimension
+    f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
+    f.index_files('/tmp/*.jpg')  # index files and wildcard globs, each file is a document
+    f.index((jina_pb2.Document() for _ in range(10)))  # index raw Jina Documents
+```
+
+To use a Flow, use `with` context manager to open it, like opening a file in Python. `output_fn` is the callback function invoked once a batch is done. In the example above, our Flow simply passes the message then prints the result. The whole data stream is async and efficient.
+
+To add a logic to the Pod, one can use `uses` keyword to attach Pod with an [Executor](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#executors). `uses` accepts multiple types of values including: class name, Docker image, (inline) YAML, built-in shortcut.
+
+
+```python
+f = (Flow().add(uses='MyBertEncoder')  # a class name of a Jina Executor
+           .add(uses='jinahub/pretrained-cnn:latest')  # a Dockerized Jina Pod
+           .add(uses='myencoder.yaml')  # a YAML serialization of a Jina Executor
+           .add(uses='!WaveletTransformer | {freq: 20}')  # an inline YAML config
+           .add(uses='_pass'))  # an built-in shortcut executor
+```
+
+The power of Jina lies in its decentralized architecture: each `add` creates a new Pod, these Pods can be at local thread/process, at remote process, inside a Docker container, or even inside a remote Docker container.
+
+
+```python
+f = (Flow().add(name='preproc').add(name='text_embed', parallel=3).inspect('check_embed')
+           .add(name='image_embed', needs='preproc', parallel=3)
+           .add(name='audio_embed', needs='preproc', parallel=3)
+           .needs(['text_embed', 'image_embed', 'audio_embed'], name='multimodal').inspect('check_embed')
+           .add(name='indexer', shards=3).add(name='ranker')).plot()
+```
+
+
+<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyMzMkM4Q0QnLCAnZWRnZUxhYmVsQmFja2dyb3VuZCc6JyNmZmYnLCAnY2x1c3RlckJrZyc6ICcjRkZDQzY2J319fSUlCmdyYXBoIExSCnN1YmdyYXBoIHN1Yl90ZXh0X2VtYmVkIFsidGV4dF9lbWJlZCAoMykiXQoJdGV4dF9lbWJlZF9IRUFEKChoZWFkKSk6OjpwZWEtLT50ZXh0X2VtYmVkXzBbW3RleHRfZW1iZWRfMF1dOjo6cGVhCgl0ZXh0X2VtYmVkXzBbW3RleHRfZW1iZWRfMF1dOjo6cGVhLS0+dGV4dF9lbWJlZF9UQUlMKCh0YWlsKSk6OjpwZWEKCXRleHRfZW1iZWRfSEVBRCgoaGVhZCkpOjo6cGVhLS0+dGV4dF9lbWJlZF8xW1t0ZXh0X2VtYmVkXzFdXTo6OnBlYQoJdGV4dF9lbWJlZF8xW1t0ZXh0X2VtYmVkXzFdXTo6OnBlYS0tPnRleHRfZW1iZWRfVEFJTCgodGFpbCkpOjo6cGVhCgl0ZXh0X2VtYmVkX0hFQUQoKGhlYWQpKTo6OnBlYS0tPnRleHRfZW1iZWRfMltbdGV4dF9lbWJlZF8yXV06OjpwZWEKCXRleHRfZW1iZWRfMltbdGV4dF9lbWJlZF8yXV06OjpwZWEtLT50ZXh0X2VtYmVkX1RBSUwoKHRhaWwpKTo6OnBlYQplbmQKc3ViZ3JhcGggc3ViX2ltYWdlX2VtYmVkIFsiaW1hZ2VfZW1iZWQgKDMpIl0KCWltYWdlX2VtYmVkX0hFQUQoKGhlYWQpKTo6OnBlYS0tPmltYWdlX2VtYmVkXzBbW2ltYWdlX2VtYmVkXzBdXTo6OnBlYQoJaW1hZ2VfZW1iZWRfMFtbaW1hZ2VfZW1iZWRfMF1dOjo6cGVhLS0+aW1hZ2VfZW1iZWRfVEFJTCgodGFpbCkpOjo6cGVhCglpbWFnZV9lbWJlZF9IRUFEKChoZWFkKSk6OjpwZWEtLT5pbWFnZV9lbWJlZF8xW1tpbWFnZV9lbWJlZF8xXV06OjpwZWEKCWltYWdlX2VtYmVkXzFbW2ltYWdlX2VtYmVkXzFdXTo6OnBlYS0tPmltYWdlX2VtYmVkX1RBSUwoKHRhaWwpKTo6OnBlYQoJaW1hZ2VfZW1iZWRfSEVBRCgoaGVhZCkpOjo6cGVhLS0+aW1hZ2VfZW1iZWRfMltbaW1hZ2VfZW1iZWRfMl1dOjo6cGVhCglpbWFnZV9lbWJlZF8yW1tpbWFnZV9lbWJlZF8yXV06OjpwZWEtLT5pbWFnZV9lbWJlZF9UQUlMKCh0YWlsKSk6OjpwZWEKZW5kCnN1YmdyYXBoIHN1Yl9hdWRpb19lbWJlZCBbImF1ZGlvX2VtYmVkICgzKSJdCglhdWRpb19lbWJlZF9IRUFEKChoZWFkKSk6OjpwZWEtLT5hdWRpb19lbWJlZF8wW1thdWRpb19lbWJlZF8wXV06OjpwZWEKCWF1ZGlvX2VtYmVkXzBbW2F1ZGlvX2VtYmVkXzBdXTo6OnBlYS0tPmF1ZGlvX2VtYmVkX1RBSUwoKHRhaWwpKTo6OnBlYQoJYXVkaW9fZW1iZWRfSEVBRCgoaGVhZCkpOjo6cGVhLS0+YXVkaW9fZW1iZWRfMVtbYXVkaW9fZW1iZWRfMV1dOjo6cGVhCglhdWRpb19lbWJlZF8xW1thdWRpb19lbWJlZF8xXV06OjpwZWEtLT5hdWRpb19lbWJlZF9UQUlMKCh0YWlsKSk6OjpwZWEKCWF1ZGlvX2VtYmVkX0hFQUQoKGhlYWQpKTo6OnBlYS0tPmF1ZGlvX2VtYmVkXzJbW2F1ZGlvX2VtYmVkXzJdXTo6OnBlYQoJYXVkaW9fZW1iZWRfMltbYXVkaW9fZW1iZWRfMl1dOjo6cGVhLS0+YXVkaW9fZW1iZWRfVEFJTCgodGFpbCkpOjo6cGVhCmVuZApzdWJncmFwaCBzdWJfaW5kZXhlciBbImluZGV4ZXIgKDMpIl0KCWluZGV4ZXJfSEVBRCgoaGVhZCkpOjo6cGVhLS0+aW5kZXhlcl8wW1tpbmRleGVyXzBdXTo6OnBlYQoJaW5kZXhlcl8wW1tpbmRleGVyXzBdXTo6OnBlYS0tPmluZGV4ZXJfVEFJTCgodGFpbCkpOjo6cGVhCglpbmRleGVyX0hFQUQoKGhlYWQpKTo6OnBlYS0tPmluZGV4ZXJfMVtbaW5kZXhlcl8xXV06OjpwZWEKCWluZGV4ZXJfMVtbaW5kZXhlcl8xXV06OjpwZWEtLT5pbmRleGVyX1RBSUwoKHRhaWwpKTo6OnBlYQoJaW5kZXhlcl9IRUFEKChoZWFkKSk6OjpwZWEtLT5pbmRleGVyXzJbW2luZGV4ZXJfMl1dOjo6cGVhCglpbmRleGVyXzJbW2luZGV4ZXJfMl1dOjo6cGVhLS0+aW5kZXhlcl9UQUlMKCh0YWlsKSk6OjpwZWEKZW5kCmdhdGV3YXkoZ2F0ZXdheSk6OjpHQVRFV0FZIC0tPiB8UFVTSC1QVUxMfHByZXByb2MocHJlcHJvYyk6OjpQT0QKcHJlcHJvYyhwcmVwcm9jKTo6OlBPRCAtLT4gfFBVQi1TVUJ8dGV4dF9lbWJlZF9IRUFEKChmYTpmYS1yYW5kb20pKTo6OlBPRAp0ZXh0X2VtYmVkX1RBSUwoKGZhOmZhLXJhbmRvbSkpOjo6UE9EIC0uLT4gfFBVQi1TVUJ8Y2hlY2tfZW1iZWR7e2NoZWNrX2VtYmVkfX06OjpJTlNQRUNUCnRleHRfZW1iZWRfVEFJTCgoZmE6ZmEtcmFuZG9tKSk6OjpQT0QgLS0+IHxQVUItU1VCfF9hdXhfY2hlY2tfZW1iZWQoX2F1eF9jaGVja19lbWJlZCk6OjpJTlNQRUNUX0FVWF9QQVNTCnByZXByb2MocHJlcHJvYyk6OjpQT0QgLS0+IHxQVUItU1VCfGltYWdlX2VtYmVkX0hFQUQoKGZhOmZhLXJhbmRvbSkpOjo6UE9ECnByZXByb2MocHJlcHJvYyk6OjpQT0QgLS0+IHxQVUItU1VCfGF1ZGlvX2VtYmVkX0hFQUQoKGZhOmZhLXJhbmRvbSkpOjo6UE9ECl9hdXhfY2hlY2tfZW1iZWQoX2F1eF9jaGVja19lbWJlZCk6OjpJTlNQRUNUX0FVWF9QQVNTIC0tPiB8UFVTSC1QVUxMfG11bHRpbW9kYWwobXVsdGltb2RhbCk6OjpKT0lOCmF1ZGlvX2VtYmVkX1RBSUwoKGZhOmZhLXJhbmRvbSkpOjo6UE9EIC0tPiB8UFVTSC1QVUxMfG11bHRpbW9kYWwobXVsdGltb2RhbCk6OjpKT0lOCmltYWdlX2VtYmVkX1RBSUwoKGZhOmZhLXJhbmRvbSkpOjo6UE9EIC0tPiB8UFVTSC1QVUxMfG11bHRpbW9kYWwobXVsdGltb2RhbCk6OjpKT0lOCm11bHRpbW9kYWwobXVsdGltb2RhbCk6OjpKT0lOIC0uLT4gfFBVQi1TVUJ8Y2hlY2tfZW1iZWQ3e3tjaGVja19lbWJlZDd9fTo6OklOU1BFQ1QKbXVsdGltb2RhbChtdWx0aW1vZGFsKTo6OkpPSU4gLS0+IHxQVUItU1VCfF9hdXhfY2hlY2tfZW1iZWQ4KF9hdXhfY2hlY2tfZW1iZWQ4KTo6OklOU1BFQ1RfQVVYX1BBU1MKX2F1eF9jaGVja19lbWJlZDgoX2F1eF9jaGVja19lbWJlZDgpOjo6SU5TUEVDVF9BVVhfUEFTUyAtLT4gfFBVU0gtUFVMTHxpbmRleGVyX0hFQUQoKGZhOmZhLXJhbmRvbSkpOjo6UE9ECmluZGV4ZXJfVEFJTCgoZmE6ZmEtcmFuZG9tKSk6OjpQT0QgLS0+IHxQVVNILVBVTEx8cmFua2VyKHJhbmtlcik6OjpQT0QKY2hlY2tfZW1iZWR7e2NoZWNrX2VtYmVkfX06OjpJTlNQRUNUIC0uLT4gfFBVU0gtUFVMTHxnYXRoZXJfaW5zcGVjdHt7Z2F0aGVyX2luc3BlY3R9fTo6OkpPSU5fSU5TUEVDVApjaGVja19lbWJlZDd7e2NoZWNrX2VtYmVkN319Ojo6SU5TUEVDVCAtLi0+IHxQVVNILVBVTEx8Z2F0aGVyX2luc3BlY3R7e2dhdGhlcl9pbnNwZWN0fX06OjpKT0lOX0lOU1BFQ1QKcmFua2VyKHJhbmtlcik6OjpQT0QgLS0+IHxQVVNILVBVTEx8Z2F0aGVyX2luc3BlY3R7e2dhdGhlcl9pbnNwZWN0fX06OjpKT0lOX0lOU1BFQ1QKZ2F0aGVyX2luc3BlY3R7e2dhdGhlcl9pbnNwZWN0fX06OjpKT0lOX0lOU1BFQ1QgLS0+IHxQVVNILVBVTEx8Z2F0ZXdheV9FTkQoZ2F0ZXdheSk6OjpHQVRFV0FZCmNsYXNzRGVmIFBPRCBmaWxsOiMzMkM4Q0Qsc3Ryb2tlOiMwMDk5OTkKY2xhc3NEZWYgSU5TUEVDVCBmaWxsOiNmZjY2NjYsY29sb3I6I2ZmZgpjbGFzc0RlZiBKT0lOX0lOU1BFQ1QgZmlsbDojZmY2NjY2LGNvbG9yOiNmZmYKY2xhc3NEZWYgR0FURVdBWSBmaWxsOiM2RTcyNzgsY29sb3I6I2ZmZgpjbGFzc0RlZiBJTlNQRUNUX0FVWF9QQVNTIGZpbGw6I2ZmZixjb2xvcjojMDAwLHN0cm9rZS1kYXNoYXJyYXk6IDUgNQpjbGFzc0RlZiBwZWEgZmlsbDojMDA5OTk5LHN0cm9rZTojMUU2RTcz"/>
+
+
+That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it.
+
+### Breakdown of `hello-world`
+
+Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do that, we simply inherit from `BaseImageEncoder`: a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
+
+
+```python
+import numpy as np
+from jina.executors.encoders import BaseImageEncoder
+
+class MyEncoder(BaseImageEncoder):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        np.random.seed(1337)
+        # generate a random orthogonal matrix
+        H = np.random.rand(784, 64)
+        u, s, vh = np.linalg.svd(H, full_matrices=False)
+        self.oth_mat = u @ vh
+        self.touch()
+
+    def encode(self, data: 'np.ndarray', *args, **kwargs):
+        return (data.reshape([-1, 784]) / 255) @ self.oth_mat
+```
+
+Jina provides [a family of `Executor` classes](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#the-executor-family), which summarizes frequently-used algorithmic components in the neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers; each has a well-designed interface. You can find the list of [all 107 built-in executors at here](https://docs.jina.ai/chapters/all_exec.html). If they do not meet your need, inheriting from one of them is the easiest way to bootstrap your own executor. Simply use our Jina Hub CLI via:
+
+
+```bash
+pip install jina[hub] && jina hub new
+```
+
+Let's test our encoder in the Flow with some synthetic data:
+
+
+```python
+def validate(docs):
+    assert len(docs) == 100
+    assert GenericNdArray(docs[0].embedding).value.shape == (64,)
+
+f = Flow().add(uses='MyEncoder')
+
+with f:
+    f.index_ndarray(np.random.random([100, 28, 28]), output_fn=validate, callback_on='docs')
+```
+
+All good! It means those one hundred 28x28 synthetic images have been embedded into 100x64 vectors. By setting the input bigger, you can play with `batch_size` and `parallel` a bit.
+
+
+```python
+f = Flow().add(uses='MyEncoder', parallel=10)
+
+with f:
+    f.index_ndarray(np.random.random([60000, 28, 28]), batch_size=1024)
+```
+
+Now we need to add an indexer to store all the embeddings and the picture for later retrieval. Jina has provided a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combining them together in a single YAML file.
+
+```yaml
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+metas:
+  workspace: ./
+```
+
+`!` tags structure with a class name; `with` keyword defines the arguments for initializing this class object. Essentially, the above YAML config equals to the following Python code:
+
+```python
+from jina.executors.indexers.vector import NumpyIndexer
+from jina.exeuctors.indexers.keyvalue import BinaryPbIndexer
+
+a = NumpyIndexer(index_filename='vec.gz')
+b = BinaryPbIndexer(index_filename='vec.gz')
+c = CompoundIndexer()
+c.components = lambda: [a, b]
+```
+
+Now adding our indexer YAML file to the flow by `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
+
+```python
+f = Flow().add(uses='MyEncoder', parallel=2).add(uses='myindexer.yml', shards=2, separated_workspace=True).plot()
+```
+
+
+<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyMzMkM4Q0QnLCAnZWRnZUxhYmVsQmFja2dyb3VuZCc6JyNmZmYnLCAnY2x1c3RlckJrZyc6ICcjRkZDQzY2J319fSUlCmdyYXBoIExSCnN1YmdyYXBoIHN1Yl9wb2QwIFsicG9kMCAoMikiXQoJcG9kMF9IRUFEKChoZWFkKSk6OjpwZWEtLT5wb2QwXzBbW3BvZDBfMF1dOjo6cGVhCglwb2QwXzBbW3BvZDBfMF1dOjo6cGVhLS0+cG9kMF9UQUlMKCh0YWlsKSk6OjpwZWEKCXBvZDBfSEVBRCgoaGVhZCkpOjo6cGVhLS0+cG9kMF8xW1twb2QwXzFdXTo6OnBlYQoJcG9kMF8xW1twb2QwXzFdXTo6OnBlYS0tPnBvZDBfVEFJTCgodGFpbCkpOjo6cGVhCmVuZApzdWJncmFwaCBzdWJfcG9kMSBbInBvZDEgKDIpIl0KCXBvZDFfSEVBRCgoaGVhZCkpOjo6cGVhLS0+cG9kMV8wW1twb2QxXzBdXTo6OnBlYQoJcG9kMV8wW1twb2QxXzBdXTo6OnBlYS0tPnBvZDFfVEFJTCgodGFpbCkpOjo6cGVhCglwb2QxX0hFQUQoKGhlYWQpKTo6OnBlYS0tPnBvZDFfMVtbcG9kMV8xXV06OjpwZWEKCXBvZDFfMVtbcG9kMV8xXV06OjpwZWEtLT5wb2QxX1RBSUwoKHRhaWwpKTo6OnBlYQplbmQKZ2F0ZXdheShnYXRld2F5KTo6OkdBVEVXQVkgLS0+IHxQVVNILVBVTEx8cG9kMF9IRUFEKChmYTpmYS1yYW5kb20pKTo6OlBPRApwb2QwX1RBSUwoKGZhOmZhLXJhbmRvbSkpOjo6UE9EIC0tPiB8UFVTSC1QVUxMfHBvZDFfSEVBRCgoZmE6ZmEtcmFuZG9tKSk6OjpQT0QKcG9kMV9UQUlMKChmYTpmYS1yYW5kb20pKTo6OlBPRCAtLT4gfFBVU0gtUFVMTHxnYXRld2F5X0VORChnYXRld2F5KTo6OkdBVEVXQVkKY2xhc3NEZWYgUE9EIGZpbGw6IzMyQzhDRCxzdHJva2U6IzAwOTk5OQpjbGFzc0RlZiBJTlNQRUNUIGZpbGw6I2ZmNjY2Nixjb2xvcjojZmZmCmNsYXNzRGVmIEpPSU5fSU5TUEVDVCBmaWxsOiNmZjY2NjYsY29sb3I6I2ZmZgpjbGFzc0RlZiBHQVRFV0FZIGZpbGw6IzZFNzI3OCxjb2xvcjojZmZmCmNsYXNzRGVmIElOU1BFQ1RfQVVYX1BBU1MgZmlsbDojZmZmLGNvbG9yOiMwMDAsc3Ryb2tlLWRhc2hhcnJheTogNSA1CmNsYXNzRGVmIHBlYSBmaWxsOiMwMDk5OTksc3Ryb2tlOiMxRTZFNzM="/>
+
+
+When the number of arguments become big, constructing Flow in Python could be cumbersome. One can simply move all arguments into one `flow.yml` as follows:
+
+```yaml
+!Flow
+pods:
+  encode:
+    uses: MyEncoder
+    parallel: 2
+  index:
+    uses: myindexer.yml
+    shards: 2
+    separated_workspace: true
+```
+
+And then load it in Python via:
+
+```python
+f = Flow.load_config('myflow.yml')
+```
+
+Querying a Flow is very similar to what we have seen in the indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top-50 documents that are most similar to your query and then plot them in a HTML:
+
+
+```python
+f = Flow.load_config('flows/query.yml')
+with f:
+    f.search_ndarray(shuffle=True, size=128, output_fn=plot_in_html, top_k=50)
+```
+
+That's it. That is the essense behind `jina hello-world`. It is just a taste of what Jina can do. We’re really excited to see what you do with it! You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
+
+```bash
+pip install jina[devel]
+jina hub new --type app
+```
 
 ## Tutorials
 
