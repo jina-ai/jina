@@ -22,6 +22,8 @@ def test_incremental_indexing_sequential_indexers(random_workspace):
 
     with f:
         f.index(duplicate_docs[:10])
+
+    with f:
         f.index(duplicate_docs)
 
     with BaseExecutor.load(random_workspace / 'vec_idx.bin') as vector_indexer:
@@ -46,6 +48,8 @@ def test_incremental_indexing_parallel_indexers(random_workspace):
          .add(needs=['inc_vec', 'inc_doc']))
     with f:
         f.index(duplicate_docs[:500])
+
+    with f:
         f.index(duplicate_docs)
 
     with BaseExecutor.load((random_workspace / 'vec_idx.bin')) as vector_indexer:
@@ -74,6 +78,8 @@ def test_incremental_indexing_sequential_indexers_with_shards(random_workspace):
 
     with f:
         f.index(duplicate_docs[:500])
+
+    with f:
         f.index(duplicate_docs)
 
     vect_idx_size = 0
@@ -116,6 +122,8 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace):
 
     with f:
         f.index(duplicate_docs[:500])
+
+    with f:
         f.index(duplicate_docs)
 
     vect_idx_size = 0
