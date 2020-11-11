@@ -14,7 +14,7 @@ from jina.proto import jina_pb2
                                            ])
 def test_diff_field(cb_on, x_type):
     def validate(x):
-        isinstance(x, x_type)
+        assert isinstance(x, x_type)
 
     f = Flow().add()
 
