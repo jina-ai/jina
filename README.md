@@ -43,7 +43,6 @@ Jina is a deep-learning-powered search framework for building <strong>cross-/mul
 
 ❤️  **Made with Love** - Quality first, with no code compromises, delivered by a [full-time, venture-backed team](https://jina.ai).
 
----
 
 ## Contents
 
