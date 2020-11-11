@@ -12,7 +12,6 @@ from ..proto import jina_pb2
 from .. import __ready_msg__, __unable_to_load_pretrained_model_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger
-from ..logging.queue import clear_queues
 
 
 class ContainerPea(BasePea):
@@ -119,6 +118,5 @@ class ContainerPea(BasePea):
     def close(self) -> None:
         self.send_terminate_signal()
         if not self.daemon:
-            clear_queues()
             self.logger.close()
             self.join()

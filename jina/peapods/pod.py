@@ -6,7 +6,6 @@ import copy
 import time
 from argparse import Namespace
 from contextlib import ExitStack
-from queue import Empty
 from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
@@ -226,26 +225,6 @@ class BasePod(ExitStack):
         return self
 
     @property
-    def log_iterator(self):
-        """Get the last log using iterator
-
-        The :class:`BasePod` log iterator goes through all peas :attr:`log_iterator` and
-        poll them sequentially. If non all them is active anymore, aka :attr:`is_event_loop`
-        is False, then the iterator ends.
-
-        .. warning::
-
-            The log may not strictly follow the time order given that we are polling the log
-            from all peas in the sequential manner.
-        """
-        from ..logging.queue import __log_queue__
-        while not self.is_shutdown:
-            try:
-                yield __log_queue__.get_nowait()
-            except Empty:
-                pass
-
-    @property
     def is_shutdown(self) -> bool:
         return all(not p.is_ready_event.is_set() for p in self.peas)
 
@@ -297,8 +276,11 @@ class FlowPod(BasePod):
 
     """
 
-    def __init__(self, kwargs: Dict,
-                 needs: Set[str] = None, parser: Callable = set_pod_parser, pod_role: 'PodRoleType' = PodRoleType.POD):
+    def __init__(self,
+                 kwargs: Dict,
+                 needs: Set[str] = None,
+                 parser: Callable = set_pod_parser,
+                 pod_role: 'PodRoleType' = PodRoleType.POD):
         """
 
         :param kwargs: unparsed argument in dict, if given the
@@ -402,6 +384,7 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
             _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
         _args.identity = get_random_identity()
+        _args.log_id = args.log_id
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:

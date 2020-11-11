@@ -19,7 +19,7 @@
 scipy>=1.4.1:               index, numeric, cicd
 flask:                      devel, cicd, http, sse
 flask_cors:                 devel, cicd, http, sse
-fluent-logger:              logging, http, sse, dashboard, devel, cicd
+fluent-logger:              logging, http, sse, dashboard, devel, cicd, test
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, test
 torch>=1.1.0:               framework, cicd
@@ -61,3 +61,4 @@ flaky:                      test
 mock:                       test
 requests:                   http
 prettytable:                devel, test
+sseclient-py:               test

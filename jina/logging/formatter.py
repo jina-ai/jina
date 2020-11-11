@@ -44,13 +44,13 @@ class JsonFormatter(Formatter):
 
     KEYS = {'created', 'filename', 'funcName', 'levelname', 'lineno', 'msg',
             'module', 'name', 'pathname', 'process', 'thread', 'processName',
-            'threadName'}  #: keys to extract from the log
+            'threadName', 'log_id'}  #: keys to extract from the log
 
     def format(self, record):
         cr = copy(record)
         cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))
         return json.dumps(
-            {k: getattr(cr, k) for k in self.KEYS},
+            {k: getattr(cr, k) for k in self.KEYS if hasattr(cr, k)},
             sort_keys=True)
 
 
