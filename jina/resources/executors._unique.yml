@@ -1,6 +1,8 @@
 !DocIDCache
 with:
   index_path: cache.tmp
+metas:
+  name: cache
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
