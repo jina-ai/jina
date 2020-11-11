@@ -65,7 +65,7 @@ Jina is a deep-learning-powered search framework for building <strong>cross-/mul
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Quick Start
+## Install
 
 On Linux/macOS with Python 3.7/3.8:
 
