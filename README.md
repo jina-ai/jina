@@ -140,18 +140,6 @@ f = (Flow().add(uses='MyBertEncoder')  # a class name of a Jina Executor
 The power of Jina lies in its decentralized architecture: each `add` creates a new Pod, these Pods can be at local thread/process, at remote process, inside a Docker container, or even inside a remote Docker container.
 
 
-```python
-f = (Flow().add(name='preproc')
-           .add(name='text_embed', parallel=3).inspect('check_embed')
-           .add(name='image_embed', needs='preproc', parallel=3)
-           .add(name='audio_embed', needs='preproc', parallel=3)
-           .needs(['text_embed', 'image_embed', 'audio_embed'], name='multimodal').inspect('check_embed')
-           .add(name='indexer', shards=3)
-           .add(name='ranker')).plot()
-```
-
-![](.github/simple-flow2.png)
-
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it.
 
 ### Breakdown of `hello-world`
