@@ -52,6 +52,6 @@ def test_shards_insufficient_data():
                    separated_workspace=True, polling='all', uses_after='_merge_all')
     with f:
         f.search(input_fn=random_queries(1, index_docs), override_doc_id=False,
-                 callback_on_body=True)
+                 callback_on='body')
     time.sleep(2)
     rm_files(['test-docshard-tmp'])

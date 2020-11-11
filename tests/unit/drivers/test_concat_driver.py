@@ -64,4 +64,4 @@ def test_concat_embed_driver():
             .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
 
     with flow:
-        flow.index(input_fn=input_fn, output_fn=validate, callback_on_body=True)
+        flow.index(input_fn=input_fn, output_fn=validate, callback_on='body')

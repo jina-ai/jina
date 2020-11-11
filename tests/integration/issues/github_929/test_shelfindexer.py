@@ -18,7 +18,7 @@ def test_shelf_in_flow(uses):
     # _dbm.error: cannot add item to database
     # HASH: Out of overflow pages.  Increase page size
     docs = random_docs(10000, embed_dim=1000)
-    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, uses))
+    f = Flow(callback_on='body').add(uses=os.path.join(cur_dir, uses))
 
     with f:
         f.index(docs)

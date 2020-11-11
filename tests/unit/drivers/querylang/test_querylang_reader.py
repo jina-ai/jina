@@ -47,7 +47,7 @@ def test_read_from_req():
     qs.parameters['start'] = 1
     qs.parameters['end'] = 4
 
-    f = Flow(callback_on_body=True).add(uses='- !SliceQL | {start: 0, end: 5}')
+    f = Flow(callback_on='body').add(uses='- !SliceQL | {start: 0, end: 5}')
 
     # without queryset
     with f:

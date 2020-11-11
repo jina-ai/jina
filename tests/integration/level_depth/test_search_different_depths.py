@@ -51,7 +51,7 @@ def test_index_depth_0_search_depth_1(tmpdir):
         search_flow.search(
             input_fn=search_data,
             output_fn=validate_granularity_1,
-            callback_on_body=True,
+            callback_on='body',
         )
 
     del os.environ['JINA_TEST_LEVEL_DEPTH_WORKSPACE']

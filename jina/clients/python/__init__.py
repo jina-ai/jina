@@ -7,7 +7,7 @@ from typing import Iterator, Callable, Union, Sequence, Optional
 from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar, pprint_routes
-from ...enums import ClientMode
+from ...enums import ClientMode, CallbackOnType
 from ...excepts import BadClient, BadClientCallback, DryRunException
 from ...logging import default_logger
 from ...logging.profile import TimeContext
@@ -120,6 +120,10 @@ class PyClient(GrpcClient):
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
 
+        callback_on = self.args.callback_on
+        if isinstance(callback_on, str):
+            callback_on = CallbackOnType.from_string(callback_on)
+
         req_iter = getattr(request, tname)(**_kwargs)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
@@ -128,12 +132,26 @@ class PyClient(GrpcClient):
                     on_error(resp.routes, resp.status)
                 elif callback:
                     try:
-                        if self.args.callback_on_body:
-                            resp = getattr(resp, resp.WhichOneof('body'))
+                        resp_body = getattr(resp, resp.WhichOneof('body'))
+
+                        if callback_on == CallbackOnType.BODY:
+                            resp = resp_body
+                        elif callback_on == CallbackOnType.DOCS:
+                            resp = resp_body.docs
+                        elif callback_on == CallbackOnType.GROUNDTRUTHS:
+                            resp = resp_body.groundtruths
+                        elif callback_on == CallbackOnType.REQUEST:
+                            pass
+                        else:
+                            raise ValueError(f'callback_on={self.args.callback_on} is not supported, '
+                                             f'must be one of {list(CallbackOnType)}')
                         callback(resp)
                     except Exception as ex:
-                        raise BadClientCallback(f'uncatched exception in callback '
-                                                f'"{callback.__name__}()": {repr(ex)}')
+                        err_msg = f'uncaught exception in callback "{callback.__name__}()": {repr(ex)}'
+                        if self.args.continue_on_error:
+                            self.logger.error(err_msg)
+                        else:
+                            raise BadClientCallback(err_msg)
                 p_bar.update(self.args.batch_size)
 
     @property
