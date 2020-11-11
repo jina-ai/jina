@@ -44,7 +44,7 @@ class JsonFormatter(Formatter):
 
     KEYS = {'created', 'filename', 'funcName', 'levelname', 'lineno', 'msg',
             'module', 'name', 'pathname', 'process', 'thread', 'processName',
-            'threadName', 'group_id'}  #: keys to extract from the log
+            'threadName', 'log_id'}  #: keys to extract from the log
 
     def format(self, record):
         cr = copy(record)

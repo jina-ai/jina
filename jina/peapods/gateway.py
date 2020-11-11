@@ -42,7 +42,7 @@ class GatewayPea:
 
         self.logger = JinaLogger(context=self.__class__.__name__,
                                  name='gateway',
-                                 group_id=args.flow_identity or args.identity,
+                                 log_id=args.log_id,
                                  log_config=args.log_config)
         if args.allow_spawn:
             self.logger.critical('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')

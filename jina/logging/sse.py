@@ -9,12 +9,12 @@ from .. import JINA_GLOBAL, __version__
 
 
 def start_sse_logger(log_config: Dict,
-                     identity: str,
+                     log_id: str,
                      flow_yaml: Optional[str] = None):
     """Start a logger that emits server-side event from the log queue, so that one can use a browser to monitor the logs
 
     :param log_config: configuration of the sse server
-    :param identity: identifies of `Flow`
+    :param log_id: log-id of `Flow`
     :param flow_yaml: Flow yaml description
 
     Example:
@@ -57,7 +57,7 @@ def start_sse_logger(log_config: Dict,
         import glob
         # fluentd creates files under this path with some tag based on day, so as temp solution,
         # just get the first file matching this patter once it appears
-        file = f'{path}/{identity}/log.log'
+        file = f'{path}/{log_id}/log.log'
         with open(file) as fp:
             fp.seek(0, 2)
             while True:

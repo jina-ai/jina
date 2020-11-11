@@ -6,7 +6,6 @@ import copy
 import time
 from argparse import Namespace
 from contextlib import ExitStack
-from queue import Empty
 from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
@@ -385,6 +384,7 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
             _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
         _args.identity = get_random_identity()
+        _args.log_id = args.log_id
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:

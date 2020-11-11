@@ -59,7 +59,7 @@ class Flow(ExitStack):
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
         if isinstance(self.args, argparse.Namespace):
-            self.logger = JinaLogger(self.__class__.__name__, group_id=self.args.identity, **vars(self.args))
+            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
             self.logger = JinaLogger(self.__class__.__name__)
 
@@ -295,7 +295,7 @@ class Flow(ExitStack):
                 kwargs[key] = value
 
         kwargs['name'] = pod_name
-        kwargs['flow_identity'] = self.args.identity
+        kwargs['log-id'] = self.args.log_id
         kwargs['num_part'] = len(needs)
 
         op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
@@ -480,7 +480,7 @@ class Flow(ExitStack):
                 self._sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                 target=start_sse_logger, daemon=True,
                                                 args=(log_config,
-                                                      self.args.identity,
+                                                      self.args.log_id,
                                                       self.yaml_spec))
                 self._sse_logger.start()
                 time.sleep(1)

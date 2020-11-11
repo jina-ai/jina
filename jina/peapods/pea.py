@@ -141,7 +141,7 @@ class BasePea(metaclass=PeaMeta):
                 self.name = '%s-%d' % (self.name, self.args.pea_id)
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
             self.logger = JinaLogger(self.name,
-                                     group_id=self.args.flow_identity or self.args.pod_identity,
+                                     log_id=self.args.log_id,
                                      log_config=self.args.log_config)
         else:
             self.logger = JinaLogger(self.name)
@@ -374,7 +374,7 @@ class BasePea(metaclass=PeaMeta):
             # Every logger created in this process will be identified by the `Pod Id` and use the same name
             if self.args.name:
                 os.environ['JINA_POD_NAME'] = self.args.name
-            os.environ['JINA_LOG_ID'] = self.args.flow_identity or self.args.pod_identity
+            os.environ['JINA_LOG_ID'] = self.args.log_id
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:

@@ -86,11 +86,11 @@ class JinaLogger:
                  context: str,
                  name: Optional[str] = None,
                  log_config: Optional[str] = None,
-                 group_id: Optional[str] = None, **kwargs):
+                 log_id: Optional[str] = None, **kwargs):
         """Build a logger for a context
         :param context: The context identifier of the class, module or method
         :param log_config: the configuration file for the logger
-        :param group_id: the id of the group the messages from this logger will belong, used by fluentd default configuration
+        :param log_id: the id of the group the messages from this logger will belong, used by fluentd default configuration
         to group logs by pod
         :return: an executor object
         """
@@ -101,8 +101,8 @@ class JinaLogger:
                                        ('resources', 'logging.default.yml'))))
         log_config = complete_path(log_config)
 
-        if group_id is None:
-            group_id = os.getenv('JINA_LOG_ID', None)
+        if log_id is None:
+            log_id = os.getenv('JINA_LOG_ID', None)
 
         if name is None:
             name = os.getenv('JINA_POD_NAME', context)
@@ -117,8 +117,8 @@ class JinaLogger:
         context_vars = {'name': name,
                         'uptime': __uptime__,
                         'context': context}
-        if group_id:
-            context_vars['group_id'] = group_id
+        if log_id:
+            context_vars['log_id'] = log_id
         self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there
