@@ -29,7 +29,7 @@ An easier way to build neural search in the cloud
 </p>
 
 
-Jina is a deep-learning-powered search framework for building <strong>cross-/multi-modal search systems</strong> (e.g. text, images, video, audio) in the cloud. 
+Jina is a deep learning-powered search framework for building <strong>cross-/multi-modal search systems</strong> (e.g. text, images, video, audio) in the cloud. 
 
 ⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
 
@@ -56,7 +56,7 @@ To install Jina with extra dependencies, or install on Raspberry Pi [please refe
 
 #### In a Docker Container
 
-Our universal Docker image supports multiple architectures (including x64, x86, arm-64/v7/v6). They are ready-to-use, simply run:
+Our universal Docker image supports multiple architectures (including x64, x86, arm-64/v7/v6). They are ready-to-use:
 
 ```bash
 docker run jinaai/jina --help
@@ -123,11 +123,10 @@ To visualize it, you can simply chain it with `.plot()`. If you are using Jupytn
 Let's try send some random data to it via index functions:
 
 ```python
-import numpy as np
 with f:
-    f.index_ndarray(np.random.random[4,2], output_fn=print)  # index ndarray data, document sliced on first dimension
+    f.index_ndarray(numpy.random.random[4,2], output_fn=print)  # index ndarray data, document sliced on first dimension
     f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
-    f.index_files('/tmp/*.jpg')  # index files and wildcard globs, each file is a document
+    f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])  # index files and wildcard globs, each file is a document
     f.index((jina_pb2.Document() for _ in range(10)))  # index raw Jina Documents
 ```
 
@@ -190,11 +189,9 @@ class MyEncoder(BaseImageEncoder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         np.random.seed(1337)
-        # generate a random orthogonal matrix
         H = np.random.rand(784, 64)
         u, s, vh = np.linalg.svd(H, full_matrices=False)
         self.oth_mat = u @ vh
-        self.touch()
 
     def encode(self, data: 'np.ndarray', *args, **kwargs):
         return (data.reshape([-1, 784]) / 255) @ self.oth_mat
@@ -308,7 +305,7 @@ with f:
 
 #### REST Interface of Query Flow
 
-In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use REST API instead of gRPC when querying. One can set `port_expose` to the public port and turn on REST support via `rest_api=True`:
+In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use REST API instead of gRPC when querying. One can set `port_expose` to the public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) via `rest_api=True`:
 
 ```python
 f = Flow(port_expose=45678, rest_api=True)
@@ -318,11 +315,13 @@ with f:
 ```
 
 
-That's it. That is the essense behind `jina hello-world`. It is just a taste of what Jina can do. We’re really excited to see what you do with it! You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
+That is the essense behind `jina hello-world`. It is just a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
 
 ```bash
 pip install jina[hub] && jina hub new --type app
 ```
+
+This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
 ## Tutorials
 
