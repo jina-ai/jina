@@ -4,9 +4,9 @@
 <p align="center">
 An easier way to build neural search in the cloud
 </p>
-<br>
-
 <p align="center">
+<a href="#quick-start">Quick Start</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#tutorials">Learn</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
+</p><p align=center>
 <a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8" title="Jina supports Python 3.7 and above"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
@@ -14,9 +14,8 @@ An easier way to build neural search in the cloud
 <a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACI"><img src="https://github.com/jina-ai/jina/workflows/CI/badge.svg" alt="CI"></a>
 <a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACD"><img src="https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master" alt="CD"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
-</p>
-
-<p align="center"><sub>
+<br>
+<sub>
   <a href="https://github.com/jina-ai/jina">English</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.zh.md">中文</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.fr.md">Français</a> •
@@ -26,11 +25,12 @@ An easier way to build neural search in the cloud
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">Português</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.ru.md">Русский язык</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">український</a>
-</sub></p>
+</sub>
+</p>
 
-
-
-Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) in the cloud. Jina is supported long-term by a [full-time, venture-backed team](https://jina.ai).
+<p align="center">
+Jina is a deep-learning-powered search framework for building <strong>cross-/multi-modal search systems</strong> (e.g. text, images, video, audio) in the cloud. 
+</p>
 
 ⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
 
@@ -38,22 +38,13 @@ Jina is an AI-powered search framework, empowering developers to create **cross-
 
 🌌 **Universal Search** - Large-scale indexing and querying of any kind of data on multiple platforms: video, image, long/short text, music, source code, etc.
 
-🚀 **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box: containerization, microservice, scaling, sharding, async IO, REST, gRPC.
+☁️  **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box: containerization, microservice, scaling, sharding, async IO, REST, gRPC.
 
 🧩 **Plug & Play** - Easily extendable with Pythonic interface.
 
----
-<p align="center">
-  <a href="https://jina.ai">Website</a> •
-  <a href="https://docs.jina.ai">Docs</a> •
-  <a href="https://learn.jina.ai">Examples</a> •
-  <a href="https://github.com/jina-ai/jina-hub">Hub</a> •
-  <a href="https://dashboard.jina.ai">Dashboard</a> •
-  <a href="https://github.com/jina-ai/jinabox.js/">Jinabox</a> •
-  <a href="http://www.twitter.com/JinaAI_">Twitter</a> •
-  <a href="https://jobs.jina.ai">We are Hiring</a>
-</p>
+❤️  **Made with Love** - Quality first, with no code compromises, delivered by a [full-time, venture-backed team](https://jina.ai).
 
+---
 
 ## Contents
 
@@ -76,7 +67,7 @@ Jina is an AI-powered search framework, empowering developers to create **cross-
 
 ## Install
 
-On Linux/MacOS with Python 3.7/3.8:
+On Linux/macOS with Python 3.7/3.8:
 
 ```bash
 pip install -U jina
@@ -86,7 +77,7 @@ To install Jina with extra dependencies, or install on Raspberry Pi [please refe
 
 #### In a Docker Container
 
-We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). No need to install anything, simply run:
+Our universal Docker image supports multiple architectures (including x64, x86, arm-64/v7/v6). No need to install anything, simply run:
 
 ```bash
 docker run jinaai/jina --help
@@ -94,7 +85,7 @@ docker run jinaai/jina --help
 
 ## Jina "Hello, World!" 👋🌍
 
-As a starter, you can try out our "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
+As a starter, you can try "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
 
 ```bash
 jina hello-world
@@ -103,7 +94,8 @@ jina hello-world
 ...or even easier for Docker users, **no install required**:
 
 ```bash
-docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
+docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  
+# replace "open" with "xdg-open" on Linux
 ```
 
 <details>
@@ -225,16 +217,6 @@ jina hello-world --help
 ```
 </details>
 
-### Create Your First Jina Project
-
-```bash
-pip install jina[devel]
-jina hub new --type app
-```
-
-You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
-
-
 ## Tutorials
 
 <table>
@@ -337,7 +319,7 @@ Search Pokemon with state-of-the-art visual representation
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release of the master branch.
+Documentation is built on every push, merge, and release of Jina's master branch.
 
 #### The Basics
 
