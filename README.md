@@ -110,7 +110,7 @@ f = Flow().add()
 
 This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). You can chain multiple `.add()` in a Flow.
 
-#### Visualization
+#### Visualize
 
 To visualize it, you can simply chain it with `.plot()`. If you are using Jupytner notebook, it will render a flowchart inline.
 
@@ -176,6 +176,8 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 ### Breakdown of `hello-world`
 
+#### Customize Encoder
+
 Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do that, we simply inherit from `BaseImageEncoder`: a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
 
 
@@ -205,6 +207,8 @@ Jina provides [a family of `Executor` classes](https://github.com/jina-ai/jina/t
 pip install jina[hub] && jina hub new
 ```
 
+#### Test Encoder in Flow
+
 Let's test our encoder in the Flow with some synthetic data:
 
 
@@ -219,7 +223,11 @@ with f:
     f.index_ndarray(np.random.random([100, 28, 28]), output_fn=validate, callback_on='docs')
 ```
 
-All good! It means those one hundred 28x28 synthetic images have been embedded into 100x64 vectors. By setting the input bigger, you can play with `batch_size` and `parallel` a bit.
+All good! Now our `validate` function confirms that all one hundred 28x28 synthetic images have been embedded into 100x64 vectors. 
+
+#### Parallelism & Batching
+
+By setting the input bigger, you can play with `batch_size` and `parallel` a bit.
 
 
 ```python
@@ -228,6 +236,8 @@ f = Flow().add(uses='MyEncoder', parallel=10)
 with f:
     f.index_ndarray(np.random.random([60000, 28, 28]), batch_size=1024)
 ```
+
+#### Add Data Indexer
 
 Now we need to add an indexer to store all the embeddings and the picture for later retrieval. Jina has provided a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combining them together in a single YAML file.
 
@@ -255,13 +265,13 @@ b = BinaryPbIndexer(index_filename='vec.gz')
 c = CompoundIndexer()
 c.components = lambda: [a, b]
 ```
+#### Compose Flow in Python/YAML
 
 Now adding our indexer YAML file to the flow by `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
 
 ```python
 f = Flow().add(uses='MyEncoder', parallel=2).add(uses='myindexer.yml', shards=2, separated_workspace=True).plot()
 ```
-
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow1.svg?raw=true"/>
 
@@ -285,6 +295,8 @@ And then load it in Python via:
 f = Flow.load_config('myflow.yml')
 ```
 
+#### Query Flow
+
 Querying a Flow is very similar to what we have seen in the indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top-50 documents that are most similar to your query and then plot them in a HTML:
 
 
@@ -297,8 +309,7 @@ with f:
 That's it. That is the essense behind `jina hello-world`. It is just a taste of what Jina can do. We’re really excited to see what you do with it! You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
 ```bash
-pip install jina[devel]
-jina hub new --type app
+pip install jina[hub] && jina hub new --type app
 ```
 
 ## Tutorials
