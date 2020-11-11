@@ -73,15 +73,7 @@ On Linux/macOS with Python 3.7/3.8:
 pip install -U jina
 ```
 
-You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile:
-
-```bash
-jina hub new --type app
-```
-
-To install with extra dependencies, or on Raspberry Pi [please see the documentation](https://docs.jina.ai/chapters/install/via-pip.html). 
-
-⚠️  Windows users can use Jina on their CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). [We welcome the community to help us with native Windows support](https://github.com/jina-ai/jina/issues/1252).
+To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). Windows users can use Jina via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 #### In a Docker Container
 
