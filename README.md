@@ -74,19 +74,17 @@ Jina is an AI-powered search framework, empowering developers to create **cross-
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Get Started
+## Install
 
 On Linux/MacOS with Python 3.7/3.8:
 
 ```bash
-pip install jina
+pip install -U jina
 ```
 
-To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). 
+To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). Windows users can use Jina via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
-⚠️ Windows users can use Jina on their CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). [We welcome the community to help us with native Windows support](https://github.com/jina-ai/jina/issues/1252).
-
-### In a Docker Container
+#### In a Docker Container
 
 We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). No need to install anything, simply run:
 
@@ -116,8 +114,7 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 </p>
 
 </details>
-
-The Docker image downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and eventually opens a webpage and shows results like this:
+It downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and eventually opens a webpage and shows results like this:
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
