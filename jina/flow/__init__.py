@@ -130,7 +130,7 @@ class Flow(ExitStack):
 
         with open(f, 'w', encoding='utf8') as fp:
             yaml.dump(self, fp)
-        self.logger.info(f'{self}\'s yaml config is save to %s' % f)
+        self.logger.info(f'{self}\'s yaml config is save to {f}')
         return True
 
     @property
@@ -838,9 +838,9 @@ class Flow(ExitStack):
                 for j in range(v._args.parallel):
                     r = node + (f'_{j}' if v._args.parallel > 1 else '')
                     if v.is_head_router:
-                        mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (head_router, p_r % 'head', r, p_e % r))
+                        mermaid_graph.append(f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea')
                     if v.is_tail_router:
-                        mermaid_graph.append('\t%s%s:::pea-->%s%s:::pea' % (r, p_e % r, tail_router, p_r % 'tail'))
+                        mermaid_graph.append(f'\t{r}{p_e % r}:::pea-->{tail_router}{p_r % "tail"}:::pea')
                 mermaid_graph.append('end')
 
         for node, v in op_flow._pod_nodes.items():

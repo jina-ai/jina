@@ -15,7 +15,7 @@ import sys
 # do some os-wise patches
 
 if sys.version_info < (3, 7, 0):
-    raise OSError('Jina requires Python 3.7 and above, but yours is %s' % sys.version_info)
+    raise OSError(f'Jina requires Python 3.7 and above, but yours is {sys.version_info}')
 
 if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
     # temporary fix for python 3.8 on macos where the default start is set to "spawn"

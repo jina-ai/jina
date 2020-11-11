@@ -73,7 +73,7 @@ def test_class_yaml():
     assert type(a) == DummyClass
 
     with open(resource_filename('jina',
-                                '/'.join(('resources', 'executors.requests.%s.yml' % 'BaseExecutor')))) as fp:
+                                '/'.join(('resources', 'executors.requests.BaseExecutor.yml')))) as fp:
         b = fp.read()
         print(b)
         c = yaml.load(b)

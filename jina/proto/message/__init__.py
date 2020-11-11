@@ -244,8 +244,8 @@ class ProtoMessage:
                                        'otherwise please check if gateway service set correct version')
             elif __version__ != self.envelope.version.jina:
                 raise MismatchedVersion('mismatched JINA version! '
-                                        'incoming message has JINA version %s, whereas local JINA version %s' % (
-                                            self.envelope.version.jina, __version__))
+                                        f'incoming message has JINA version {self.envelope.version.jina}, '
+                                        f'whereas local JINA version {__version__}')
 
             if not self.envelope.version.proto:
                 # only happen in unittest
@@ -254,8 +254,8 @@ class ProtoMessage:
                                        'otherwise please check if gateway service set correct version')
             elif __proto_version__ != self.envelope.version.proto:
                 raise MismatchedVersion('mismatched protobuf version! '
-                                        'incoming message has protobuf version %s, whereas local protobuf version %s' % (
-                                            self.envelope.version.proto, __proto_version__))
+                                        f'incoming message has protobuf version {self.envelope.version.proto}, '
+                                        f'whereas local protobuf version {__proto_version__}')
 
             if not self.envelope.version.vcs or not os.environ.get('JINA_VCS_VERSION'):
                 default_logger.warning('incoming message contains empty "version.vcs", '
@@ -264,9 +264,9 @@ class ProtoMessage:
                                        'otherwise please check if gateway service set correct version')
             elif os.environ.get('JINA_VCS_VERSION') != self.envelope.version.vcs:
                 raise MismatchedVersion('mismatched vcs version! '
-                                        'incoming message has vcs_version %s, '
-                                        'whereas local environment vcs_version is %s' % (
-                                            self.envelope.version.vcs, os.environ.get('JINA_VCS_VERSION')))
+                                        f'incoming message has vcs_version {self.envelope.version.vcs}, '
+                                        f'whereas local environment vcs_version is '
+                                        f'{os.environ.get("JINA_VCS_VERSION")}')
 
         else:
             raise MismatchedVersion('version_check=True locally, '

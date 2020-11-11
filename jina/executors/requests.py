@@ -21,7 +21,7 @@ def get_default_reqs(cls_mro: List[type]) -> Dict:
             if cls.__name__ not in _defaults:
                 from pkg_resources import resource_stream
                 with resource_stream('jina',
-                                     '/'.join(('resources', 'executors.requests.%s.yml' % cls.__name__))) as fp:
+                                     '/'.join(('resources', f'executors.requests.{cls.__name__}.yml'))) as fp:
                     _defaults[cls.__name__] = \
                         yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
