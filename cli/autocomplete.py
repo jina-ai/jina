@@ -75,5 +75,5 @@ ac_table = {
                 '--log-remote', '--ssh-server', '--ssh-keyfile', '--ssh-password', '--host', '--port-expose',
                 '--port-grpc', '--max-message-size', '--proxy'], 'log': ['--help', '--groupby-regex', '--refresh-time'],
         'client': ['--help', '--host', '--port-expose', '--port-grpc', '--max-message-size', '--proxy', '--batch-size',
-                   '--mode', '--top-k', '--mime-type', '--callback-on-body', '--timeout-ready', '--skip-dry-run'],
-        'export-api': ['--help', '--yaml-path', '--json-path']}}
+                   '--mode', '--top-k', '--mime-type', '--callback-on', '--timeout-ready', '--skip-dry-run',
+                   '--continue-on-error'], 'export-api': ['--help', '--yaml-path', '--json-path']}}
