@@ -533,9 +533,11 @@ Note that more than one `queryset` can be passed with any request.
 
 ## The Score Field
 
-In ranking document matches, Jina uses several algorithms to compute a `score` field. This field can mean either *distance* (with "smaller is better") or *similarity* (with "higher is better"). As, an example, the `NumpyIndexer` uses k-NN (with various distance metrics) to calculate a *distance*. On the other hand, the `MinRanker` uses a the function *1/(1+s)* (where *s* is the min. score from all `chunks`) in order to "bubble up" the score from child `chunks` to the parent, thus "larger is better".
+In ranking document matches, Jina uses several algorithms to compute the *relevance* of a document given a specific query. This is stored as a numeric value in the `score` field of a `match`, both at a `document` level and at the `chunk` level. This field can mean either "smaller is better" (*distance*) or "larger is better" (*similarity*, *relevance*).  
 
-This can pe problematic when deciding when sorting the vector of results. Fortunately, Jina provides the name of the operator that has performed the scoring in the field `"score"`:
+As, an example, the `NumpyIndexer` uses k-NN (with various distance metrics) to calculate a *distance*, thus "smaller is better". On the other hand, the `MinRanker` uses the function *1/(1+s)* (where *s* is the min. score from all `chunks`) in order to "bubble up" the score from child `chunks` to the parent, thus "larger is better". There can be other metrics too.
+
+This can pe problematic when deciding how to sort the results from a query. Fortunately, Jina provides the name of the operator that has performed the scoring:
 
 ```
 /**
@@ -548,7 +550,7 @@ message NamedScore {
 }
 ```
 
-In the above we can see `"op_name"`. As the comment suggests, this is the name of the operator that has performed the sorting. Based on this, the `"value"` field is either a *distance* ("smaller is better"), or a *similarity* ("higher is better"). 
+Notice the field `op_name` in the above. As the comment suggests, this is the name of the operator that has performed the sorting (e.g. `NumpyIndexer`, or `MinRanker`). Based on this, the `value` field is either of type "smaller is better" or of type "larger is better". 
 
 **Conclusion**: When sorting results, make sure you check the `document.score.op_name` in order to understand the direction of the score.
 
