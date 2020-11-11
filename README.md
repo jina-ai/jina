@@ -46,6 +46,25 @@ Jina is a deep-learning-powered search framework for building <strong>cross-/mul
 
 ---
 
+## Contents
+
+<img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Get Started](#get-started)
+- [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
+- [Tutorials](#tutorials)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [Community](#community)
+- [Open Governance](#open-governance)
+- [Join Us](#join-us)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Quick Start
 
 On Linux/macOS with Python 3.7/3.8:
