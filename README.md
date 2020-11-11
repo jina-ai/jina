@@ -41,7 +41,7 @@ Jina is a deep-learning-powered search framework for building <strong>cross-/mul
 
 🧩 **Plug & Play** - Easily extendable with Pythonic interface.
 
-❤️  **Made with Love** - Quality first, with no code compromises, delivered by a [full-time, venture-backed team](https://jina.ai).
+❤️  **Made with Love** - Quality first, never compromises, maintained by a [full-time, venture-backed team](https://jina.ai).
 
 
 ## Installation
@@ -99,7 +99,7 @@ jina hello-world --help
 
 ## Get Started
 
-### Create a Flow
+#### Create
 
 Jina provides a high-level [Flow](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) API to ease the build of search/index workflow. To create a new Flow,
 
@@ -108,9 +108,9 @@ from jina.flow import Flow
 f = Flow().add()
 ```
 
-This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). 
+This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). You can chain multiple `.add()` in a Flow.
 
-### Visualize a Flow
+#### Visualization
 
 To visualize it, you can simply chain it with `.plot()`. If you are using Jupytner notebook, it will render a flowchart inline.
 
@@ -118,7 +118,7 @@ To visualize it, you can simply chain it with `.plot()`. If you are using Jupytn
 
 `Gateway` is the entrypoint of the Flow. 
 
-### Feed Data to a Flow
+#### Feed Data
 
 Let's try send some random data to it via index functions:
 
@@ -133,7 +133,7 @@ with f:
 
 To use a Flow, use `with` context manager to open it, like opening a file in Python. `output_fn` is the callback function invoked once a batch is done. In the example above, our Flow simply passes the message then prints the result. The whole data stream is async and efficient.
 
-### Add Logic to a Flow
+#### Add Logic
 
 To add a logic to the Flow, one can use `uses` keyword to attach Pod with an [Executor](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#executors). `uses` accepts multiple types of values including: class name, Docker image, (inline) YAML, built-in shortcut.
 
@@ -147,6 +147,30 @@ f = (Flow().add(uses='MyBertEncoder')  # a class name of a Jina Executor
 ```
 
 The power of Jina lies in its decentralized architecture: each `add` creates a new Pod, these Pods can be at local thread/process, at remote process, inside a Docker container, or even inside a remote Docker container.
+
+#### Inter & Intra Parallelism
+
+Chaining `.add()` creates a sequential Flow. To introduce parallelism, specifiy `needs` parameter:
+
+```python
+f = (Flow().add(name='p1', needs='gateway')
+           .add(name='p2', needs='gateway')
+           .add(name='p3', needs='gateway')
+           .needs(['p1','p2', 'p3'], name='r1').plot())
+```
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot3.svg?raw=true"/>
+
+`p1`, `p2`, `p3` now subscribe to `Gateway` and conduct the work in parallel. The last `.needs()` block all Pods until they finish their work. Note, parallelism can be also archieved inside a Pod with `parallel`:
+
+```python
+f = (Flow().add(name='p1', needs='gateway')
+           .add(name='p2', needs='gateway')
+           .add(name='p3', parallel=3)
+           .needs(['p1','p3'], name='r1').plot())
+```
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
 
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it.
 
