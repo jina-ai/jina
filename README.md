@@ -111,8 +111,7 @@ f = Flow().add()
 This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). To visualize it, you can simply chain it with `.plot()`. If you are using Jupytner notebook, it will render a flowchart inline.
 
 
-<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyMzMkM4Q0QnLCAnZWRnZUxhYmVsQmFja2dyb3VuZCc6JyNmZmYnLCAnY2x1c3RlckJrZyc6ICcjRkZDQzY2J319fSUlCmdyYXBoIExSCmdhdGV3YXkoZ2F0ZXdheSk6OjpHQVRFV0FZIC0tPiB8UFVTSC1QVUxMfHBvZDAocG9kMCk6OjpQT0QKcG9kMChwb2QwKTo6OlBPRCAtLT4gfFBVU0gtUFVMTHxnYXRld2F5X0VORChnYXRld2F5KTo6OkdBVEVXQVkKY2xhc3NEZWYgUE9EIGZpbGw6IzMyQzhDRCxzdHJva2U6IzAwOTk5OQpjbGFzc0RlZiBJTlNQRUNUIGZpbGw6I2ZmNjY2Nixjb2xvcjojZmZmCmNsYXNzRGVmIEpPSU5fSU5TUEVDVCBmaWxsOiNmZjY2NjYsY29sb3I6I2ZmZgpjbGFzc0RlZiBHQVRFV0FZIGZpbGw6IzZFNzI3OCxjb2xvcjojZmZmCmNsYXNzRGVmIElOU1BFQ1RfQVVYX1BBU1MgZmlsbDojZmZmLGNvbG9yOiMwMDAsc3Ryb2tlLWRhc2hhcnJheTogNSA1CmNsYXNzRGVmIHBlYSBmaWxsOiMwMDk5OTksc3Ryb2tlOiMxRTZFNzM="/>
-
+<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
 
 `Gateway` is the entrypoint of the Flow. Let's try send some random data to it via index functions:
 
