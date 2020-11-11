@@ -530,3 +530,27 @@ Note that more than one `queryset` can be passed with any request.
     with Flow().load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=docs, output_fn=print_results, queryset=[top_k_queryset])
 ```
+
+## The Score Field
+
+In ranking document matches, Jina uses several algorithms to compute the *relevance* of a document given a specific query. This is stored as a numeric value in the `score` field of a `match`, both at a `document` level and at the `chunk` level. This field can mean either "smaller is better" (*distance*) or "larger is better" (*similarity*, *relevance*).  
+
+As, an example, the `NumpyIndexer` uses k-NN (with various distance metrics) to calculate a *distance*, thus "smaller is better". On the other hand, the `MinRanker` uses the function *1/(1+s)* (where *s* is the min. score from all `chunks`) in order to "bubble up" the score from child `chunks` to the parent, thus "larger is better". There can be other metrics too.
+
+This can pe problematic when deciding how to sort the results from a query. Fortunately, Jina provides the name of the operator that has performed the scoring:
+
+```
+/**
+ * Represents the relevance model to `ref_id`
+ */
+message NamedScore {
+    float value = 1; // value
+    string op_name = 2; // the name of the operator/score function
+    ...
+}
+```
+
+Notice the field `op_name` in the above. As the comment suggests, this is the name of the operator that has performed the sorting (e.g. `NumpyIndexer`, or `MinRanker`). Based on this, the `value` field is either of type "smaller is better" or of type "larger is better". 
+
+**Conclusion**: When sorting results, make sure you check the `document.score.op_name` in order to understand the direction of the score.
+
