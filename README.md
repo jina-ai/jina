@@ -295,7 +295,7 @@ And then load it in Python via:
 f = Flow.load_config('myflow.yml')
 ```
 
-#### Query Flow
+#### Search via Query Flow
 
 Querying a Flow is very similar to what we have seen in the indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top-50 documents that are most similar to your query and then plot them in a HTML:
 
@@ -305,6 +305,18 @@ f = Flow.load_config('flows/query.yml')
 with f:
     f.search_ndarray(shuffle=True, size=128, output_fn=plot_in_html, top_k=50)
 ```
+
+#### REST Interface of Query Flow
+
+In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use REST API instead of gRPC when querying. One can set `port_expose` to the public port and turn on REST support via `rest_api=True`:
+
+```python
+f = Flow(port_expose=45678, rest_api=True)
+
+with f:
+    f.block()
+```
+
 
 That's it. That is the essense behind `jina hello-world`. It is just a taste of what Jina can do. We’re really excited to see what you do with it! You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
