@@ -28,9 +28,8 @@ An easier way to build neural search in the cloud
 </sub>
 </p>
 
-<p align="center">
+
 Jina is a deep-learning-powered search framework for building <strong>cross-/multi-modal search systems</strong> (e.g. text, images, video, audio) in the cloud. 
-</p>
 
 ⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
 
