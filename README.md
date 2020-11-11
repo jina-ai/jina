@@ -148,10 +148,6 @@ f = (Flow().add(name='preproc').add(name='text_embed', parallel=3).inspect('chec
            .add(name='indexer', shards=3).add(name='ranker')).plot()
 ```
 
-
-<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow2.svg?raw=true"/>
-
-
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it.
 
 ### Breakdown of `hello-world`
