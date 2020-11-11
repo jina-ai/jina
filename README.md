@@ -1,12 +1,12 @@
 <p align="center">
 <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
 </p>
-<p align="center">
+<h3 align="center">
 An easier way to build neural search in the cloud
-</p>
-<br>
-
+</h3>
 <p align="center">
+<strong><a href="#get-started">Quick Start</a></strong> | <strong><a href="#jina-hello-world-">Hello World</a></strong> | <strong><a href="#documentation">Learn</a></strong> | <strong><a href="#contributing">Contribute</a></strong> | <strong><a href="#join-us">Jobs</a></strong> | <strong><a href="http://jina.ai">Website</a></strong> | <strong><a href="fgd">Slack</a>
+</p><p align=center>
 <a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8" title="Jina supports Python 3.7 and above"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
@@ -14,9 +14,8 @@ An easier way to build neural search in the cloud
 <a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACI"><img src="https://github.com/jina-ai/jina/workflows/CI/badge.svg" alt="CI"></a>
 <a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACD"><img src="https://github.com/jina-ai/jina/workflows/CD/badge.svg?branch=master" alt="CD"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
-</p>
-
-<p align="center"><sub>
+<br>
+<sub>
   <a href="https://github.com/jina-ai/jina">English</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.zh.md">中文</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.fr.md">Français</a> •
@@ -26,55 +25,33 @@ An easier way to build neural search in the cloud
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">Português</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.ru.md">Русский язык</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">український</a>
-</sub></p>
+</sub>
+</p>
 
+Jina is a deep-learning-powered search framework for building **cross-/multi-modal search systems** (e.g. text, images, video, audio) in the cloud. 
 
+<p align='center'>
+<img width="350px" src="https://raw.githubusercontent.com/jina-ai/jinabox.js/master/.github/jinabox.gif" />
+<br>
+<sub>Jina running with Jinabox frontend</sub>
+</p>
 
-Jina is an AI-powered search framework, empowering developers to create **cross-/multi-modal search systems** (e.g. text, images, video, audio) in the cloud. Jina is supported long-term by a [full-time, venture-backed team](https://jina.ai).
-
-⏱️ **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
+⏱️  **Time Saver** - Bootstrap an AI-powered system in just a few minutes.
 
 🧠 **First-Class AI Models** - *The* design pattern for neural search systems, with first-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
 
 🌌 **Universal Search** - Large-scale indexing and querying of any kind of data on multiple platforms: video, image, long/short text, music, source code, etc.
 
-🚀 **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box: containerization, microservice, scaling, sharding, async IO, REST, gRPC.
+☁️  **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box: containerization, microservice, scaling, sharding, async IO, REST, gRPC.
 
 🧩 **Plug & Play** - Easily extendable with Pythonic interface.
 
+✔️ **Here to Stay** - Jina is supported long-term by a [full-time, venture-backed team](https://jina.ai).
+
 ---
-<p align="center">
-  <a href="https://jina.ai">Website</a> •
-  <a href="https://docs.jina.ai">Docs</a> •
-  <a href="https://learn.jina.ai">Examples</a> •
-  <a href="https://github.com/jina-ai/jina-hub">Hub</a> •
-  <a href="https://dashboard.jina.ai">Dashboard</a> •
-  <a href="https://github.com/jina-ai/jinabox.js/">Jinabox</a> •
-  <a href="http://www.twitter.com/JinaAI_">Twitter</a> •
-  <a href="https://jobs.jina.ai">We are Hiring</a>
-</p>
 
 
-## Contents
-
-<img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/install.png?raw=true " />
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-- [Get Started](#get-started)
-- [Jina "Hello, World!" 👋🌍](#jina-hello-world-)
-- [Tutorials](#tutorials)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Community](#community)
-- [Open Governance](#open-governance)
-- [Join Us](#join-us)
-- [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Get Started
+## Quick Start
 
 On Linux/MacOS with Python 3.7/3.8:
 
@@ -82,13 +59,19 @@ On Linux/MacOS with Python 3.7/3.8:
 pip install jina
 ```
 
-To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). 
+You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile:
 
-⚠️ Windows users can use Jina on their CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). [We welcome the community to help us with native Windows support](https://github.com/jina-ai/jina/issues/1252).
+```bash
+jina hub new --type app
+```
+
+To install with extra dependencies, or on Raspberry Pi [please see the documentation](https://docs.jina.ai/chapters/install/via-pip.html). 
+
+⚠️  Windows users can use Jina on their CPU via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). [We welcome the community to help us with native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 ### In a Docker Container
 
-We provide a universal Docker image that supports multiple architectures (including x64, x86, arm-64/v7/v6). No need to install anything, simply run:
+Our universal Docker image supports multiple architectures (including x64, x86, arm-64/v7/v6). No need to install anything, simply run:
 
 ```bash
 docker run jinaai/jina --help
@@ -228,16 +211,6 @@ jina hello-world --help
 ```
 </details>
 
-### Create Your First Jina Project
-
-```bash
-pip install jina[devel]
-jina hub new --type app
-```
-
-You can easily create a Jina project from templates with one terminal command. This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
-
-
 ## Tutorials
 
 <table>
@@ -340,7 +313,7 @@ Search Pokemon with state-of-the-art visual representation
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-The best way to learn Jina in depth is to read our documentation. Documentation is built on every push, merge, and release of the master branch.
+Documentation is built on every push, merge, and release of Jina's master branch.
 
 #### The Basics
 
