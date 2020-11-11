@@ -70,13 +70,13 @@ def test_select_ql():
         uses='- !SelectQL | {fields: [uri, matches, chunks], traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+        f.index(random_docs(10), output_fn=validate, callback_on='body')
 
     f = (Flow().add(uses='DummySegmenter')
          .add(uses='- !ExcludeQL | {fields: [text], traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+        f.index(random_docs(10), output_fn=validate, callback_on='body')
 
 
 def test_sort_ql():
@@ -90,14 +90,14 @@ def test_sort_ql():
         uses='- !SortQL | {field: tags__id, reverse: true, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+        f.index(random_docs(10), output_fn=validate, callback_on='body')
 
     f = (Flow().add(uses='DummySegmenter')
          .add(uses='- !SortQL | {field: tags__id, reverse: false, traversal_paths: [r, c, m]}')
          .add(uses='- !ReverseQL | {traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+        f.index(random_docs(10), output_fn=validate, callback_on='body')
 
 
 def test_filter_ql():
@@ -112,7 +112,7 @@ def test_filter_ql():
         uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+        f.index(random_docs(10), output_fn=validate, callback_on='body')
 
 
 def test_filter_ql_in_tags():
@@ -125,7 +125,7 @@ def test_filter_ql_in_tags():
         uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs_with_tags(), output_fn=validate, callback_on_body=True)
+        f.index(random_docs_with_tags(), output_fn=validate, callback_on='body')
 
 
 def test_filter_ql_modality_wrong_depth():
@@ -138,7 +138,7 @@ def test_filter_ql_modality_wrong_depth():
         uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs_to_chunk(), output_fn=validate, callback_on_body=True)
+        f.index(random_docs_to_chunk(), output_fn=validate, callback_on='body')
 
 
 def test_filter_ql_modality():
@@ -153,7 +153,7 @@ def test_filter_ql_modality():
         uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [c]}'))
 
     with f:
-        f.index(random_docs_to_chunk(), output_fn=validate, callback_on_body=True)
+        f.index(random_docs_to_chunk(), output_fn=validate, callback_on='body')
 
 
 def test_filter_compose_ql():
@@ -167,4 +167,4 @@ def test_filter_compose_ql():
         uses='- !FilterQL | {lookups: {tags__id: 2, text__contains: hello}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=validate, callback_on_body=True)
+        f.index(random_docs(10), output_fn=validate, callback_on='body')

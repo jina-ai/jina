@@ -30,7 +30,7 @@ def test_binarypb_in_flow(test_metas):
             yield d
 
     docs = list(random_docs(10))
-    f = Flow(callback_on_body=True).add(uses='binarypb.yml')
+    f = Flow(callback_on='body').add(uses='binarypb.yml')
 
     with f:
         f.index(docs, override_doc_id=False)

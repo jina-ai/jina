@@ -91,6 +91,6 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
         evaluate_flow.search(
             input_fn=evaluate_docs,
             output_fn=validate_evaluation_response,
-            callback_on_body=True,
+            callback_on='body',
             override_doc_id=False
         )

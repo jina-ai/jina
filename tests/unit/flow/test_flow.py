@@ -483,7 +483,7 @@ def test_index_text_files():
     f = (Flow(read_only=True).add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
 
     with f:
-        f.index_files('*.py', output_fn=validate, callback_on_body=True)
+        f.index_files('*.py', output_fn=validate, callback_on='body')
 
     rm_files(['doc.gzip'])
 
@@ -499,7 +499,7 @@ def test_flow_with_publish_driver():
             assert d.embedding
 
     with f:
-        f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on_body=True)
+        f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on='body')
 
 
 def test_flow_with_modalitys_simple():

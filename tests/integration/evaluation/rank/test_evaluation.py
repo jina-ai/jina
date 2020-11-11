@@ -129,7 +129,7 @@ def test_evaluation(tmpdir):
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs(),
             output_fn=validate_evaluation_response,
-            callback_on_body=True,
+            callback_on='body',
             top_k=2
         )
 

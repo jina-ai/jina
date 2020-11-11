@@ -8,7 +8,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 # def test_high_order_matches():
-#     f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
+#     f = Flow(callback_on='body').add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
 #
 #     with f:
 #         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
@@ -19,7 +19,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def test_high_order_matches_integrated():
     # this is equivalent to the last test but with simplified YAML spec.
-    f = Flow(callback_on_body=True).add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
+    f = Flow(callback_on='body').add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
 
     with f:
         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
