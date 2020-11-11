@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from pkg_resources import resource_filename
 
@@ -73,7 +74,7 @@ def test_class_yaml():
     assert type(a) == DummyClass
 
     with open(resource_filename('jina',
-                                '/'.join(('resources', 'executors.requests.%s.yml' % 'BaseExecutor')))) as fp:
+                                '/'.join(('resources', 'executors.requests.BaseExecutor.yml')))) as fp:
         b = fp.read()
         print(b)
         c = yaml.load(b)
@@ -88,7 +89,9 @@ def test_class_yaml():
     assert _defaults is not None
 
 
-def test_joint_indexer():
+def test_joint_indexer(tmpdir):
+    os.environ['TEST_WORKDIR'] = str(tmpdir)
+
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
     print(b[0].name)
     print(type(b[0]))
@@ -97,3 +100,5 @@ def test_joint_indexer():
     b.attach(pea=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]
+
+    del os.environ['TEST_WORKDIR']

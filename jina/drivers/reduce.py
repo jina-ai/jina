@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Tuple, Dict, Any
+from typing import Sequence, Tuple, Dict, Any
 
 import numpy as np
 
@@ -29,7 +29,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
 
     def _apply_all(
             self,
-            docs: Iterable['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document',
             field: str,
             *args,
@@ -45,7 +45,7 @@ class CollectEvaluationDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Iterable['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document',
             field: str,
             *args,
@@ -68,7 +68,7 @@ class ConcatEmbedDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Iterable['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document',
             field: str,
             concatenate: bool = False,

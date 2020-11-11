@@ -45,14 +45,12 @@ class DummyIndexer2(NumpyIndexer):
                 (vectors.shape[0], vectors.shape[1], self.num_dim))
         elif self.dtype != vectors.dtype.name:
             raise TypeError(
-                "vectors' dtype %s does not match with indexers's dtype: %s" %
-                (vectors.dtype.name, self.dtype))
+                f"vectors' dtype {vectors.dtype.name} does not match with indexers's dtype: {self.dtype}")
         elif keys.shape[0] != vectors.shape[0]:
             raise ValueError('number of key %d not equal to number of vectors %d' % (keys.shape[0], vectors.shape[0]))
         elif self.key_dtype != keys.dtype.name:
             raise TypeError(
-                "keys' dtype %s does not match with indexers keys's dtype: %s" %
-                (keys.dtype.name, self.key_dtype))
+                f"keys' dtype {keys.dtype.name} does not match with indexers keys's dtype: {self.key_dtype}")
 
         self.write_handler.write(vectors.tobytes())
         self.key_bytes += keys.tobytes()
@@ -138,20 +136,26 @@ def test_two_client_route():
         t2.start()
 
 
-def test_index():
+def test_index(tmpdir):
+    os.environ['JINA_TEST_INDEX'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_INDEX']
     f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3, separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(1000))
 
     for j in range(3):
-        assert os.path.exists(f'test2-{j + 1}/test2.bin')
-        assert os.path.exists(f'test2-{j + 1}/tmp2')
+        path = os.path.join(workspace_path, f'test2-{j + 1}/test2.bin')
+        assert os.path.exists(path)
+        assert os.path.exists(os.path.join(workspace_path, f'test2-{j + 1}/tmp2'))
 
     with f:
         f.search(input_fn=random_docs(2), output_fn=get_result, top_k=50)
+    del os.environ['JINA_TEST_INDEX']
 
 
-def test_chunk_joint_idx():
+def test_chunk_joint_idx(tmpdir):
+    os.environ['TEST_WORKDIR'] = str(tmpdir)
+
     def validate(req, indexer_name):
         assert req.status.code < jina_pb2.Status.ERROR
         assert req.search.docs[0].matches[0].score.op_name == indexer_name
@@ -161,3 +165,5 @@ def test_chunk_joint_idx():
 
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as g:
         g.search(random_docs(10, chunks_per_doc=0), output_fn=lambda x: validate(x, 'NumpyIndexer'))
+
+    del os.environ['TEST_WORKDIR']

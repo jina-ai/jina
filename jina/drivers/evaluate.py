@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Any
+from typing import Sequence, Any
 
 from . import BaseExecutableDriver
 from .helper import DocGroundtruthPair
@@ -33,7 +33,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
 
     def _apply_all(
             self,
-            docs: Iterable['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.Document'],
             context_doc: 'jina_pb2.Document' = None,
             field: str = None,
             *args,

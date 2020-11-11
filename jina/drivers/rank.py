@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Sequence, List, Tuple
 
 import numpy as np
 
@@ -54,7 +54,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
                    **kwargs) -> None:
         """
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -124,7 +124,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
                    **kwargs) -> None:
         """
 
@@ -194,7 +194,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
                    **kwargs) -> None:
         """
 

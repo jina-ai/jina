@@ -441,7 +441,7 @@ class HubIO:
 
         self.logger.info(
             f'completeness check\n' +
-            '\n'.join('%4s %-20s %s' % (colored('✓', 'green') if v else colored('✗', 'red'), k, v) for k, v in
+            '\n'.join(f'{colored("✓", "green") if v else colored("✗", "red"):>4} {k:<20} {v}' for k, v in
                       completeness.items()) + '\n')
 
         if completeness['Dockerfile'] and completeness['manifest.yml']:

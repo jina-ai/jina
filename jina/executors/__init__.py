@@ -195,9 +195,9 @@ class BaseExecutor(metaclass=ExecutorType):
             _name = f'{self.__class__.__name__}-{_id}'
             if self.warn_unnamed:
                 self.logger.warning(
-                    'this executor is not named, i will call it "%s". '
+                    f'this executor is not named, i will call it "{_name}". '
                     'naming is important as it provides an unique identifier when '
-                    'persisting this executor on disk.' % _name)
+                    'persisting this executor on disk.')
             setattr(self, 'name', _name)
         if unresolved_attr:
             _tmp = vars(self)
@@ -300,7 +300,7 @@ class BaseExecutor(metaclass=ExecutorType):
             self._post_init_wrapper(fill_in_metas=False)
         except ImportError as ex:
             self.logger.warning('ImportError is often caused by a missing component, '
-                                'which often can be solved by "pip install" relevant package. %s' % ex, exc_info=True)
+                                f'which often can be solved by "pip install" relevant package. {ex}', exc_info=True)
 
     def train(self, *args, **kwargs) -> None:
         """
@@ -344,7 +344,7 @@ class BaseExecutor(metaclass=ExecutorType):
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
 
         if self.max_snapshot > 0 and os.path.exists(f):
-            bak_f = f + '.snapshot-%s' % (self._last_snapshot_ts.strftime('%Y%m%d%H%M%S') or 'NA')
+            bak_f = f + f'.snapshot-{self._last_snapshot_ts.strftime("%Y%m%d%H%M%S") or "NA"}'
             os.rename(f, bak_f)
             self._snapshot_files.append(bak_f)
             if len(self._snapshot_files) > self.max_snapshot:
@@ -372,7 +372,7 @@ class BaseExecutor(metaclass=ExecutorType):
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
         with open(f, 'w', encoding='utf8') as fp:
             yaml.dump(self, fp)
-        self.logger.info('executor\'s yaml config is save to %s' % f)
+        self.logger.info(f'executor\'s yaml config is save to {f}')
 
         self.is_updated = _updated
         return True

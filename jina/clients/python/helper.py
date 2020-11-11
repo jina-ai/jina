@@ -86,7 +86,7 @@ class ProgressBar(TimeContext):
             speed = self.num_docs / self.duration
         else:
             speed = self.num_reqs / self.duration
-        sys.stdout.write('\t%s\n' % colored(f'✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s', 'green'))
+        sys.stdout.write(f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s", "green")}\n')
 
 
 def pprint_routes(routes: Sequence['jina_pb2.Route'],
