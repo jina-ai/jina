@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Iterable, Set, Tuple
+from typing import Dict, Sequence, Set, Tuple
 
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
@@ -15,7 +15,7 @@ class CraftDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
         for doc in docs:
             ret = self.exec_fn(**pb_obj2dict(doc, self.exec.required_keys))
             if ret:
@@ -55,7 +55,7 @@ class SegmentDriver(CraftDriver):
 
         self._protected_fields = {'length', 'id', 'parent_id', 'granularity'}
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
         for doc in docs:
             _args_dict = pb_obj2dict(doc, self.exec.required_keys)
             ret = self.exec_fn(**_args_dict)

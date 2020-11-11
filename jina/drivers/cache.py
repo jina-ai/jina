@@ -1,4 +1,4 @@
-from typing import Iterable, Any, Dict
+from typing import Any, Dict, Sequence
 
 from .index import BaseIndexDriver
 
@@ -22,7 +22,7 @@ class BaseCacheDriver(BaseIndexDriver):
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
 
-    def _apply_all(self, docs: Iterable['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
         for d in docs:
             result = self.exec[d.id]
             if result is None:

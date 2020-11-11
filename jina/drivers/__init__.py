@@ -8,7 +8,6 @@ from typing import (
     Dict,
     Callable,
     Tuple,
-    Iterable,
     Iterator,
     Optional,
     Sequence,
@@ -261,7 +260,7 @@ class BaseRecursiveDriver(BaseDriver):
 
     def _apply_all(
         self,
-        docs: Iterable['jina_pb2.Document'],
+        docs: Sequence['jina_pb2.Document'],
         context_doc: 'jina_pb2.Document',
         field: str,
         *args,
@@ -285,7 +284,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(
-        self, docs: Iterable['jina_pb2.Document'], *args, **kwargs
+        self, docs: Sequence['jina_pb2.Document'], *args, **kwargs
     ) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':

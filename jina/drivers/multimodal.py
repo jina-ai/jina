@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Iterable, Tuple, Dict, List
+from typing import Sequence, Tuple, Dict, List
 
 import numpy as np
 
@@ -80,7 +80,7 @@ class MultiModalDriver(BaseEncodeDriver):
 
     def _apply_all(
             self,
-            docs: Iterable['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.Document'],
             *args, **kwargs
     ) -> None:
         """
