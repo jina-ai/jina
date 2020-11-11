@@ -116,18 +116,6 @@ class ContainerPea(BasePea):
         if getattr(self, '_client', None):
             self._client.close()
 
-    @property
-    def status(self):
-        """Send the control signal ``STATUS`` to itself and return the status """
-        if getattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                     timeout=self.args.timeout_ctrl)
-
-    @property
-    def is_ready(self) -> bool:
-        status = self.status
-        return status and status.envelope.status.code == jina_pb2.Status.READY
-
     def close(self) -> None:
         self.send_terminate_signal()
         if not self.daemon:
