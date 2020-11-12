@@ -299,3 +299,10 @@ class CallbackOnType(BetterEnum):
     BODY = 1  # the body of the request, `status`, `routes` and `queryset` are removed
     DOCS = 2  # the documents inside the request body
     GROUNDTRUTHS = 3  # the groundtruths inside the request body
+
+
+class RemoteAccessType(BetterEnum):
+    """Remote access type when connect to the host """
+
+    SSH = 0  # ssh connection
+    JINAD = 1  # using rest api via jinad

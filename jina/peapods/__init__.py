@@ -4,9 +4,9 @@ __license__ = "Apache-2.0"
 from typing import Dict, Union
 
 from .. import __default_host__
-from ..enums import PeaRoleType
-from ..logging import default_logger
+from ..enums import PeaRoleType, RemoteAccessType
 from ..helper import is_valid_local_config_source
+from ..logging import default_logger
 
 if False:
     import argparse
@@ -54,6 +54,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
     :param allow_remote: allow start a :class:`RemotePod`
     :param kwargs: all supported arguments from CLI
     """
+
     if args is None:
         from ..parser import set_pod_parser
         from ..helper import get_parsed_args
@@ -75,6 +76,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
                 from .pod import MutablePod
                 return MutablePod(args)
             else:
+                # TODO: this part needs to be refactored
                 from .remote import RemoteMutablePod
                 return RemoteMutablePod(args)
 
@@ -83,7 +85,12 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
         default_logger.warning(f'host is reset to {__default_host__} as allow_remote=False')
 
     if args.host != __default_host__:
-        from .remote import RemotePod
+        if args.remote == RemoteAccessType.JINAD:
+            from .remote import RemotePod
+        elif args.remote == RemoteAccessType.SSH:
+            from .ssh import RemotePod
+        else:
+            raise ValueError(f'{args.remote} is not supported')
         return RemotePod(args)
     else:
         from .pod import BasePod

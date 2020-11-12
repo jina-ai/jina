@@ -367,7 +367,13 @@ class FlowPod(BasePod):
         if self._args.host == __default_host__:
             return super().start()
         else:
-            from .remote import RemoteMutablePod
+            if self._args.remote_access == RemoteAccessType.JINAD:
+                from .remote import RemoteMutablePod
+            elif self._args.remote_access == RemoteAccessType.SSH:
+                from .ssh import RemoteMutablePod
+            else:
+                raise ValueError(f'{self._args.remote_access} is unsupported')
+
             _remote_pod = RemoteMutablePod(self.peas_args)
             self.enter_context(_remote_pod)
             self.start_sentinels()

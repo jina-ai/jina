@@ -8,7 +8,6 @@ import threading
 import time
 from collections import defaultdict
 from multiprocessing.synchronize import Event
-from queue import Empty
 from typing import Dict, Optional, Union, List
 
 import zmq
@@ -352,6 +351,8 @@ class BasePea(metaclass=PeaMeta):
             Class inherited from :class:`BasePea` must override this function. And add
             :meth:`set_ready` when your loop body is started
         """
+        os.environ['JINA_POD_NAME'] = self.name
+        os.environ['JINA_LOG_ID'] = self.args.log_id
         self.load_plugins()
         self.load_executor()
         self.zmqlet = ZmqStreamlet(self.args, logger=self.logger)
@@ -372,9 +373,6 @@ class BasePea(metaclass=PeaMeta):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             # Every logger created in this process will be identified by the `Pod Id` and use the same name
-            if self.args.name:
-                os.environ['JINA_POD_NAME'] = self.args.name
-            os.environ['JINA_LOG_ID'] = self.args.log_id
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:
