@@ -114,6 +114,10 @@ This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/m
 
 To visualize the Flow, simply chain it with `.plot()`. If you are using a Jupyter notebook, it will render a flowchart inline:
 
+```python
+f.plot()
+```
+
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
 
 `Gateway` is the entrypoint of the Flow. 
