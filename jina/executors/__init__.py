@@ -233,6 +233,9 @@ class BaseExecutor(metaclass=ExecutorType):
         """
         pass
 
+    def reset(self):
+        pass
+
     @classmethod
     def pre_init(cls):
         """This function is called before the object initiating (i.e. :func:`__call__`)

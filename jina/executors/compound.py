@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Dict, List, Callable, Union
+from typing import Dict, List, Callable, Union, Any
 
 from . import BaseExecutor, AnyExecutor
 
@@ -300,6 +300,7 @@ class CompoundExecutor(BaseExecutor):
 
     def _set_routes(self) -> None:
         import inspect
+
         # add all existing routes
         r = defaultdict(list)
         common = {}  # set(dir(BaseExecutor()))
@@ -308,6 +309,7 @@ class CompoundExecutor(BaseExecutor):
             for m, _ in inspect.getmembers(c, predicate=inspect.ismethod):
                 if not m.startswith('_') and m not in common:
                     r[m].append((c.name, getattr(c, m)))
+            c.reset()
 
         new_routes = []
         bad_routes = []
