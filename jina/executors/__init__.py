@@ -118,6 +118,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
+    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -231,9 +232,6 @@ class BaseExecutor(metaclass=ExecutorType):
             All class members created here will NOT be serialized when calling :func:`save`. Therefore if you
             want to store them, please override the :func:`__getstate__`.
         """
-        pass
-
-    def reset(self):
         pass
 
     @classmethod

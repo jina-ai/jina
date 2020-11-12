@@ -18,6 +18,7 @@ from google.protobuf.struct_pb2 import Struct
 
 from ..enums import SkipOnErrorType
 from ..executors.compound import CompoundExecutor
+from ..executors import BaseExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml
 from ..proto import jina_pb2
@@ -376,6 +377,10 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             self._exec = executor
 
         if self._method_name:
+            if self._method_name not in BaseExecutor.exec_methods:
+                self.logger.warning(f'Using method {self._method_name} as driver execution function which is not registered'
+                                    f'as a potential `exec_method` of an Executor. It won\'t work if used inside a CompoundExecutor')
+
             self._exec_fn = getattr(self.exec, self._method_name)
 
     def __getstate__(self) -> Dict[str, Any]:

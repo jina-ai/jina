@@ -1,0 +1,18 @@
+!DocIDCache
+with:
+  index_path: cache.tmp
+metas:
+  name: cache-vec
+  workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE/vec_cache
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+      - !RouteDriver {}
+    IndexRequest:
+      - !TaggingCacheDriver
+        with:
+          tags:
+            is_indexed: true
+      - !FilterQL
+        with:
+          lookups: {tags__is_indexed__neq: true}

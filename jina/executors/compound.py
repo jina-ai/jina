@@ -299,17 +299,13 @@ class CompoundExecutor(BaseExecutor):
             raise AttributeError(f'bad names: {comp_name} and {comp_fn_name}')
 
     def _set_routes(self) -> None:
-        import inspect
-
         # add all existing routes
         r = defaultdict(list)
-        common = {}  # set(dir(BaseExecutor()))
 
         for c in self.components:
-            for m, _ in inspect.getmembers(c, predicate=inspect.ismethod):
-                if not m.startswith('_') and m not in common:
-                    r[m].append((c.name, getattr(c, m)))
-            c.reset()
+            for method in BaseExecutor.exec_methods:
+                if hasattr(c, method):
+                    r[method].append((c.name, getattr(c, method)))
 
         new_routes = []
         bad_routes = []

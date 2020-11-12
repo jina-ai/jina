@@ -61,9 +61,6 @@ class BaseIndexer(BaseExecutor):
         self.handler_mutex = True  #: only one handler at a time by default
         self.is_handler_loaded = False
 
-    def reset(self):
-        self.is_handler_loaded = False
-
     def query(self, *args, **kwargs):
         raise NotImplementedError
 

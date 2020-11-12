@@ -66,13 +66,14 @@ def test_incremental_indexing_sequential_indexers_with_shards(random_workspace):
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     num_shards = 4
+    # can't use plain _unique in uses_before because workspace will conflict with other
     f = (Flow()
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
-              uses_before='_unique',
+              uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
               shards=num_shards,
               separated_workspace=True)
          .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
-              uses_before='_unique',
+              uses_before=os.path.join(cur_dir, '_unique_doc.yml'),
               shards=num_shards,
               separated_workspace=True))
 
@@ -104,15 +105,16 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace):
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     num_shards = 4
-
+    
+    # can't use plain _unique in uses_before because workspace will conflict with other
     f = (Flow()
         .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
-             uses_before='_unique',
+             uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
              shards=num_shards,
              name='inc_vec',
              separated_workspace=True)
         .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
-             uses_before='_unique',
+             uses_before=os.path.join(cur_dir, '_unique_doc.yml'),
              shards=num_shards,
              name='inc_doc',
              needs=['gateway'],
