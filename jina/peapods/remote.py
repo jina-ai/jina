@@ -1,12 +1,17 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from abc import ABC
+
 from argparse import Namespace
 from typing import Dict, Union, Type, Optional, Any
 
-from .jinad import PeaAPI, PodAPI, JinadAPI
+from .jinad import PeaAPI, PodAPI
 from .pea import BasePea
 from ..helper import colored, cached_property
+
+if False:
+    from .jinad import JinadAPI
 
 
 def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
@@ -25,13 +30,7 @@ def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[
         return pea_args
 
 
-class RemotePea(BasePea):
-    """REST based Pea for remote Pea management
-
-    # TODO: This shouldn't inherit BasePea, Needs to change to a runtime
-    """
-
-    APIClass = PeaAPI  # type: Type['JinadAPI']
+class RemoteConnection(ABC):
 
     @cached_property
     def remote_id(self) -> str:
@@ -45,6 +44,12 @@ class RemotePea(BasePea):
             if self.api.upload(pea_args, **kwargs):
                 return self.api.create(pea_args, **kwargs)
 
+    def delete_remote(self):
+        if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
+            self.api.delete(self.remote_id)
+
+
+class RemoteSupport(ABC):
     def loop_body(self):
         if self.remote_id:
             self.logger.success(f'created remote {self.api.kind} with id {colored(self.remote_id, "cyan")}')
@@ -54,18 +59,28 @@ class RemotePea(BasePea):
             self.logger.error(f'fail to create {self.__class__.__name__} remotely')
             self.is_shutdown.set()
 
-    def delete_remote(self):
-        if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
-            self.api.delete(self.remote_id)
-
     def close(self):
         self.delete_remote()
         self.join()
 
 
-class RemotePod(RemotePea):
+class RemotePea(BasePea, RemoteSupport, RemoteConnection):
+    """REST based Pea for remote Pea management
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.api = None
+
+    APIClass = PeaAPI  # type: Type['JinadAPI']
+
+
+class RemotePod(BasePod, RemoteSupport, RemoteConnection):
     """REST based pod to be used while invoking remote Pod
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.api = None
 
     APIClass = PodAPI  # type: Type['JinadAPI']
 
@@ -73,7 +88,7 @@ class RemotePod(RemotePea):
         return super().spawn_remote(host, port, pod_type=pod_type)
 
 
-class RemoteMutablePod(RemotePod):
+class RemoteMutablePod(BasePod, RemoteSupport, RemoteConnection):
     """REST based Mutable pod to be used while invoking remote Pod via Flow API
     """
 
