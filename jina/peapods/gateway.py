@@ -73,7 +73,6 @@ class GatewayPea:
 
     def close(self):
         self._ae.shutdown()
-        self._p_servicer.close()
         self._server.stop(None)
         self._stop_event.set()
         self.logger.success(__stop_msg__)
