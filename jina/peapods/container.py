@@ -2,13 +2,9 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-import asyncio
-
 from pathlib import Path
 
 from .pea import BasePea
-from .zmq import send_ctrl_message
-from ..proto import jina_pb2
 from .. import __ready_msg__, __unable_to_load_pretrained_model_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger

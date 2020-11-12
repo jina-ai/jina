@@ -214,7 +214,7 @@ def set_flow_parser(parser=None):
                                               '/'.join(('resources', 'logserver.default.yml'))),
                     help='the yaml config of the log server')
     gp.add_argument('--log-id', type=str, default=get_random_identity(),
-                     help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+                    help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                     help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \
                             and hence not allow multiple clients connected to the gateway at the same time.'
@@ -243,8 +243,6 @@ def set_pea_parser(parser=None):
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string (Important for load balancing messages')
-    gp0.add_argument('--log-id', type=str, default=get_random_identity(),
-                     help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp0.add_argument('--uses', type=str, default='_pass',
                      help='the config of the executor, it could be '
                           '> a YAML file path, '
@@ -344,6 +342,8 @@ def set_pea_parser(parser=None):
     gp7.add_argument('--log-remote', action='store_true', default=False,
                      help='turn on remote logging, this should not be set manually'
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+    gp7.add_argument('--log-id', type=str, default=get_random_identity(),
+                     help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp8 = add_arg_group(parser, 'ssh tunneling arguments')
     gp8.add_argument('--ssh-server', type=str, default=None,
@@ -431,6 +431,7 @@ def _set_grpc_parser(parser=None):
         parser = set_base_parser()
     from .helper import random_port
     from . import __default_host__
+    from .enums import RemoteAccessType
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
     gp1.add_argument('--host', type=str, default=__default_host__,
                      help=f'host address of the pea/gateway, by default it is {__default_host__}.')
@@ -444,6 +445,10 @@ def _set_grpc_parser(parser=None):
                      help='respect the http_proxy and https_proxy environment variables. '
                           'otherwise, it will unset these proxy variables before start. '
                           'gRPC seems to prefer no proxy')
+    gp1.add_argument('--remote-access', choices=list(RemoteAccessType),
+                     default=RemoteAccessType.SSH,
+                     type=RemoteAccessType.from_string,
+                     help=f'host address of the pea/gateway, by default it is {__default_host__}.')
     return parser
 
 
