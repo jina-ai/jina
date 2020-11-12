@@ -106,7 +106,7 @@ jobs:
     steps:
       - name: handle jina hub
         run: |
-          git clone git@github.com:jina-ai/jina-hub.git --depth=1
+          git clone https://github.com/jina-ai/jina-hub.git --depth=1
           python scripts/jina-hub-update.py
 
 

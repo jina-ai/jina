@@ -1,0 +1,14 @@
+name: Update hub
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-jina-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: handle jina hub
+        run: |
+          git clone https://github.com/jina-ai/jina-hub.git --depth=1
+          python scripts/jina-hub-update.py
+
