@@ -12,7 +12,6 @@ from typing import Dict, Optional, Union, List
 
 import zmq
 
-from jina import __unable_to_load_pretrained_model_msg__
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..enums import PeaRoleType, SkipOnErrorType
@@ -114,10 +113,8 @@ class BasePea(metaclass=PeaMeta):
 
         self.is_ready_event = _get_event(self)
         self.is_shutdown = _get_event(self)
-        self.is_pretrained_model_exception = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready_event, self.is_shutdown)
         self.is_shutdown.clear()
-        self.is_pretrained_model_exception.clear()
 
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
@@ -193,20 +190,17 @@ class BasePea(metaclass=PeaMeta):
         """Load the executor to this BasePea, specified by ``uses`` CLI argument.
 
         """
-        if self.args.uses:
-            try:
-                self.executor = BaseExecutor.load_config(
-                    self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
-                    self.args.separated_workspace, self.args.pea_id)
-                self.executor.attach(pea=self)
-            except FileNotFoundError:
-                raise ExecutorFailToLoad
-            except ModelCheckpointNotExist as exception:
-                self.is_pretrained_model_exception.set()
-                raise exception
-        else:
-            self.logger.warning('this BasePea has no executor attached, you may want to double-check '
-                                'if it is a mistake or on purpose (using this BasePea as router/map-reduce)')
+        try:
+            self.executor = BaseExecutor.load_config(
+                self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
+                self.args.separated_workspace, self.args.pea_id)
+            self.executor.attach(pea=self)
+        except FileNotFoundError as ex:
+            self.logger.error(f'fail to load dependent: {repr(ex)}')
+            if not isinstance(ex, ModelCheckpointNotExist):
+                raise ExecutorFailToLoad from ex
+        except Exception as ex:
+            raise ExecutorFailToLoad from ex
 
     def print_stats(self):
         self.logger.info(
@@ -385,9 +379,6 @@ class BasePea(metaclass=PeaMeta):
             self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
         except zmq.error.ZMQError:
             self.logger.critical('zmqlet can not be initiated')
-        except ModelCheckpointNotExist:
-            self.logger.critical(__unable_to_load_pretrained_model_msg__)
-            self.is_pretrained_model_exception.set()
         except Exception as ex:
             # this captures the general exception from the following places:
             # - self.zmqlet.recv_message
@@ -441,10 +432,7 @@ class BasePea(metaclass=PeaMeta):
                 # return too early and the shutdown is set, means something fails!!
                 self.logger.critical(f'fail to start {self.__class__} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
-                if self.is_pretrained_model_exception.is_set():
-                    raise ModelCheckpointNotExist
-                else:
-                    raise PeaFailToStart
+                raise PeaFailToStart
             return self
         else:
             raise TimeoutError(

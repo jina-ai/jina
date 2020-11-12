@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from .pea import BasePea
-from .. import __ready_msg__, __unable_to_load_pretrained_model_msg__
+from .. import __ready_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger
 
@@ -87,15 +87,9 @@ class ContainerPea(BasePea):
                 for line in self._container.logs(stream=True):
                     msg = line.strip().decode()
                     logger.info(msg)
-                    # this is shabby, but it seems the only easy way to detect is_pretrained_model_exception signal,
-                    # so that it can be raised during an executor hub build (hub --test-uses). This exception
-                    # is raised during executor load and before the `ZMQ` is configured and ready to get requests
-                    # and communicate
                     if __ready_msg__ in msg:
                         self.is_ready_event.set()
                         self.logger.success(__ready_msg__)
-                    if __unable_to_load_pretrained_model_msg__ in msg:
-                        self.is_pretrained_model_exception.set()
             except docker.errors.NotFound:
                 self.logger.error('the container can not be started, check your arguments, entrypoint')
 

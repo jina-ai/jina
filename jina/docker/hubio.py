@@ -348,9 +348,6 @@ class HubIO:
                             self._raw_client.stop(p_name)
                         self._raw_client.prune_containers()
                         is_build_success = True
-                    except ModelCheckpointNotExist:
-                        self.logger.warning(f' Pretrained Model File Does not Exist is considered as a test passing')
-                        is_build_success = True
                     except PeaFailToStart:
                         self.logger.error(f'can not use it in the Flow, please check your file bundle')
                     except Exception as ex:
