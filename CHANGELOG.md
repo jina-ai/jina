@@ -94,6 +94,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5425,4 +5426,64 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```bc326a34```](https://github.com/jina-ai/jina/commit/bc326a346449280bcc33f89184febe82bc743a62)] __-__ hotfix reduce driver (*Han Xiao*)
  - [[```ba476532```](https://github.com/jina-ai/jina/commit/ba476532f41c6d0b3ec2ff2e8636811169e99f16)] __-__ __version__: the next version will be 0.7.7 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-8></a>
+## Release Note (`0.7.8`)
+
+> Release time: 2020-11-12 11:37:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  Alex Cureton-Griffiths,  Maximilian Werk,  cristian,  Wang Bo,  Pratik Bhavsar,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1f1a3be9```](https://github.com/jina-ai/jina/commit/1f1a3be903b63faec206610056d10628421b5f56)] __-__ add id to logger via os env (#1232) (*Joan Fontanals*)
+ - [[```23ea49e4```](https://github.com/jina-ai/jina/commit/23ea49e484bad817de341d2c4d821ce2cc9b3afc)] __-__ __client__: add callback_on and continue_on_error (#1265) (*Han Xiao*)
+ - [[```ca20e5c7```](https://github.com/jina-ai/jina/commit/ca20e5c7affeb4df43d91078e27d6f18508a03ba)] __-__ replace iterable with sequence as hints (#1259) (*Wang Bo*)
+
+### 🐞 Bug fixes
+
+ - [[```b0709006```](https://github.com/jina-ai/jina/commit/b070900604469e6ba614709573e7e08ecc6036d4)] __-__ __remote__: fix remote close context (#1254) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```73b337f6```](https://github.com/jina-ai/jina/commit/73b337f6109308f2fc64284160a9b58e82b0fb53)] __-__ __proto__: remove num_part from envelope (*Han Xiao*)
+ - [[```7a2593ad```](https://github.com/jina-ai/jina/commit/7a2593adccd963c0ce8edd53c819094403cea210)] __-__ remove unused code (#1266) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```6c4c60a3```](https://github.com/jina-ai/jina/commit/6c4c60a396f74ab6fafe6655536aebdef2be4c76)] __-__ __readme__: overhaul 2020-11 (#1264) (*Alex Cureton-Griffiths*)
+ - [[```6a84ca2f```](https://github.com/jina-ai/jina/commit/6a84ca2f143e61e64d21978bc01671e97d551524)] __-__ add note on &#39;score&#39; field (#1260) (*cristian*)
+ - [[```25d7b8a7```](https://github.com/jina-ai/jina/commit/25d7b8a73f545ef253c1de7e6f0e3d77d7a63ea3)] __-__ __readme__: small grammar fixes (#1257) (*Alex Cureton-Griffiths*)
+ - [[```38fcb909```](https://github.com/jina-ai/jina/commit/38fcb90924a50ce10a0b87d3d3dea9b66c3c0f75)] __-__ add queryset usage info (#1245) (*Pratik Bhavsar*)
+ - [[```aec6c5aa```](https://github.com/jina-ai/jina/commit/aec6c5aa842556749a3e32c36345596e2e492215)] __-__ add missing word (#1249) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```5a87b637```](https://github.com/jina-ai/jina/commit/5a87b63784332636cb0ac64f09d58c1e48ead062)] __-__ change incremental indexing (#1267) (*Joan Fontanals*)
+ - [[```be3bcf80```](https://github.com/jina-ai/jina/commit/be3bcf80b8ea89b572ddef679369c982e9c91bb3)] __-__ helloworld without JinaTestCase and local directories (#1263) (*Maximilian Werk*)
+ - [[```e1de62a0```](https://github.com/jina-ai/jina/commit/e1de62a07596b93df4909392b2adb32dd370b779)] __-__ refactor test index test (#1258) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```2ccbb6c5```](https://github.com/jina-ai/jina/commit/2ccbb6c519b19b5749c4835848131fcd2da60582)] __-__ hotfix logid (*Han Xiao*)
+ - [[```47914c21```](https://github.com/jina-ai/jina/commit/47914c21dae537029fb214f24eb01e9d844fdad4)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```20b53cbe```](https://github.com/jina-ai/jina/commit/20b53cbe9833f226b9fbf83728b200ffaa31367b)] __-__ update readme (*Han Xiao*)
+ - [[```bbbb2281```](https://github.com/jina-ai/jina/commit/bbbb2281558ac1d56f2c44c264900515b27bbc3d)] __-__ add readme images (*Han Xiao*)
+ - [[```eed61683```](https://github.com/jina-ai/jina/commit/eed616837bd273cabd48815e3124a784e879e098)] __-__ __readme__: update README.md (*Han Xiao*)
+ - [[```2daa0e67```](https://github.com/jina-ai/jina/commit/2daa0e677fc758d2efc1de970f62f49c354764ff)] __-__ __readme__: fix pics in readme (*Han Xiao*)
+ - [[```95b5bb53```](https://github.com/jina-ai/jina/commit/95b5bb539f5c40d389519dbe2d000aae818c8e58)] __-__ __readme__: update readme pics (*Han Xiao*)
+ - [[```499b2310```](https://github.com/jina-ai/jina/commit/499b2310f1d5a424b7974f741fae6da662bf2a40)] __-__ use f-strings instead of %s-formatting (#1256) (*cristian*)
+ - [[```df2e6aab```](https://github.com/jina-ai/jina/commit/df2e6aabcd326af21f5662c6fb5c15a40fab8243)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
+ - [[```89b564c0```](https://github.com/jina-ai/jina/commit/89b564c0475b5c6f1597eb549a83b8c5289d6999)] __-__ add link to windows support (*Han Xiao*)
+ - [[```4094f7f2```](https://github.com/jina-ai/jina/commit/4094f7f24c620c547dc869fefcb134b25c7618e1)] __-__ update windows support ticket (*Han Xiao*)
+ - [[```7e706e16```](https://github.com/jina-ai/jina/commit/7e706e16655e30c925aec86b4c9e5f544929acdc)] __-__ update readme lang font (*Han Xiao*)
+ - [[```316e38ef```](https://github.com/jina-ai/jina/commit/316e38ef4a6ebbfbc0d830822d47864dee123bfd)] __-__ update readme language link (*Han Xiao*)
+ - [[```19ea8ed3```](https://github.com/jina-ai/jina/commit/19ea8ed38b46f3917ba40a9c93449183319970e9)] __-__ fix typo in readme (*Han Xiao*)
+ - [[```ad8c48e4```](https://github.com/jina-ai/jina/commit/ad8c48e401907ad91c3498e39dbc8288e8e2402c)] __-__ fix test example (*Han Xiao*)
+ - [[```8d225a02```](https://github.com/jina-ai/jina/commit/8d225a024c04a6347ce5cdbadb1c35adbfbf6cfa)] __-__ move badges to release.md (*Han Xiao*)
+ - [[```8aefca2d```](https://github.com/jina-ai/jina/commit/8aefca2d7dc63d8dd8a7ac1b3b430a2bb4b55c62)] __-__ __version__: the next version will be 0.7.8 (*Jina Dev Bot*)
 
