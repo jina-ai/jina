@@ -50,7 +50,6 @@ class BaseIndexer(BaseExecutor):
         """
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
-        self.handler_mutex = True  #: only one handler at a time by default
         self._size = 0
 
     def add(self, *args, **kwargs):
@@ -59,6 +58,7 @@ class BaseIndexer(BaseExecutor):
     def post_init(self):
         """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
         self.index_filename = self.index_filename or self.name
+        self.handler_mutex = True  #: only one handler at a time by default
         self.is_handler_loaded = False
 
     def query(self, *args, **kwargs):

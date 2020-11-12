@@ -3,6 +3,7 @@ components:
   - !DocIDCache
     metas:
       workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+      name: cache
   - !BinaryPbIndexer
     with:
       index_filename: doc.gz

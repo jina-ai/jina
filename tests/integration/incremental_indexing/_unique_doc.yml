@@ -2,7 +2,8 @@
 with:
   index_path: cache.tmp
 metas:
-  name: cache
+  name: cache-doc
+  workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE/doc_cache
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
