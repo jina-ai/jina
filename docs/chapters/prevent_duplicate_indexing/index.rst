@@ -30,7 +30,7 @@ To prevent indexing duplicates, one needs to add ``_unique`` for the ``uses_befo
                 [doc_0, doc_0, doc_1],
                 output_fn=lambda rsp: assert_num_docs(rsp, num_docs=2))
 
-Under the hood, the configuration yaml file, :file:``executors._unique.yml``, under the :file:``jina/resrouces`` is used. The yaml file is defined as below
+Under the hood, the configuration yaml file, :file:``executors._unique.yml``, under the :file:``jina/resources`` is used. The yaml file is defined as below
 
 
 .. confval:: YAML spec
@@ -67,4 +67,19 @@ In Jina, the document ID is by default generated a new hexdigest based on the co
 
     - it has an even length
 
+.. warning::
+    Be careful when using `_unique` keyword as a cache executor, it will not set any `workspace` where to store actual data
+    and it will use as `workspace` the folder where it runs, which may not be where the actual `indexers` store their data which
+    can be inconvenient. If you want to store the cache in a specific workspace while keeping the same functionality,
+    just copy the yaml description under `jina/resources/executors._unique.yml` and add the desired `workspace` under metas.
 
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        !DocIDCache
+        with:
+          index_path: cache.tmp
+        metas:
+          name: cache
+          workspace: $WORKSPACE
+          ...
