@@ -53,15 +53,15 @@ class Flow(ExitStack):
 
         """
         super().__init__()
-        if isinstance(args, argparse.Namespace):
-            self.logger = JinaLogger(self.__class__.__name__, **vars(args))
-        else:
-            self.logger = JinaLogger(self.__class__.__name__)
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
+        if isinstance(self.args, argparse.Namespace):
+            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
+        else:
+            self.logger = JinaLogger(self.__class__.__name__)
 
     def _update_args(self, args, **kwargs):
         from ..parser import set_flow_parser
@@ -125,8 +125,6 @@ class Flow(ExitStack):
         if not f:
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
         yaml.register_class(Flow)
-        # yaml.sort_base_mapping_type_on_output = False
-        # yaml.representer.add_representer(OrderedDict, yaml.Representer.represent_dict)
 
         with open(f, 'w', encoding='utf8') as fp:
             yaml.dump(self, fp)
@@ -297,6 +295,7 @@ class Flow(ExitStack):
                 kwargs[key] = value
 
         kwargs['name'] = pod_name
+        kwargs['log-id'] = self.args.log_id
         kwargs['num_part'] = len(needs)
 
         op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
@@ -304,7 +303,7 @@ class Flow(ExitStack):
 
         return op_flow
 
-    def _invoke_flowpod(self, kwargs, needs, pod_role):
+    def _invoke_flowpod(self, kwargs: Dict, needs: Set[str], pod_role: 'PodRoleType'):
         """This gets inherited in jinad"""
         return FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
 
@@ -475,15 +474,21 @@ class Flow(ExitStack):
         try:
             import urllib.request
             import flask, flask_cors
-            self._sse_logger = threading.Thread(name='sentinel-sse-logger',
+            try:
+                with open(self.args.logserver_config) as fp:
+                    log_config = yaml.load(fp)
+                self._sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                 target=start_sse_logger, daemon=True,
-                                                args=(self.args.logserver_config,
+                                                args=(log_config,
+                                                      self.args.log_id,
                                                       self.yaml_spec))
-            self._sse_logger.start()
-            time.sleep(1)
-            response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
-            if response.status == 200:
-                self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
+                self._sse_logger.start()
+                time.sleep(1)
+                response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
+                if response.status == 200:
+                    self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
+            except Exception as ex:
+                self.logger.error(f'Could not start logserver because of {repr(ex)}')
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '

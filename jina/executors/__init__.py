@@ -118,7 +118,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict']
+    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:

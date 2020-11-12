@@ -1,7 +1,10 @@
 import os
 
+import pytest
 from jina import __uptime__
 from jina.logging import JinaLogger
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def log(logger):
@@ -17,7 +20,7 @@ def log(logger):
 
 
 def test_logging_syslog():
-    with JinaLogger('test_logger', log_config='yaml/syslog.yml') as logger:
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/syslog.yml')) as logger:
         log(logger)
         assert len(logger.handlers) == 1
 
@@ -37,9 +40,25 @@ def test_logging_file():
     fn = f'jina-{__uptime__}.log'
     if os.path.exists(fn):
         os.remove(fn)
-    with JinaLogger('test_logger', log_config='yaml/file.yml') as logger:
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
         log(logger)
     assert os.path.exists(fn)
     with open(fn) as fp:
         assert len(fp.readlines()) == 7
     os.remove(fn)
+
+
+@pytest.mark.parametrize('log_config', ['yaml/fluent.yml', None])
+def test_logging_fluentd(monkeypatch, log_config):
+    from fluent import asynchandler as fluentasynchandler
+    with JinaLogger('test_logger', log_config=log_config, log_id='test_log_id') as logger:
+        def mock_emit(obj, record):
+            msg = obj.format(record)
+            assert msg['log_id'] == 'test_log_id'
+            assert msg['context'] == 'test_logger'
+            assert msg['name'] == 'test_logger'
+            assert msg['type'] == 'INFO'
+            assert msg['message'] == 'logging progress'
+
+        monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
+        logger.info('logging progress')

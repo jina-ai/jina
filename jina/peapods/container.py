@@ -12,7 +12,6 @@ from ..proto import jina_pb2
 from .. import __ready_msg__, __unable_to_load_pretrained_model_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger
-from ..logging.queue import clear_queues
 
 
 class ContainerPea(BasePea):
@@ -116,21 +115,8 @@ class ContainerPea(BasePea):
         if getattr(self, '_client', None):
             self._client.close()
 
-    @property
-    def status(self):
-        """Send the control signal ``STATUS`` to itself and return the status """
-        if getattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
-                                     timeout=self.args.timeout_ctrl)
-
-    @property
-    def is_ready(self) -> bool:
-        status = self.status
-        return status and status.envelope.status.code == jina_pb2.Status.READY
-
     def close(self) -> None:
         self.send_terminate_signal()
         if not self.daemon:
-            clear_queues()
             self.logger.close()
             self.join()

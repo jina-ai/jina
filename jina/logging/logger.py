@@ -82,15 +82,30 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
 class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
-    def __init__(self, context: str, log_config: Optional[str] = None, **kwargs):
+    def __init__(self,
+                 context: str,
+                 name: Optional[str] = None,
+                 log_config: Optional[str] = None,
+                 log_id: Optional[str] = None, **kwargs):
+        """Build a logger for a context
+        :param context: The context identifier of the class, module or method
+        :param log_config: the configuration file for the logger
+        :param log_id: the id of the group the messages from this logger will belong, used by fluentd default configuration
+        to group logs by pod
+        :return: an executor object
+        """
         from .. import __uptime__
-
-        if not log_config:
-            # when not exist check if there is some os environ
+        if log_config is None:
             log_config = os.getenv('JINA_LOG_CONFIG',
-                                   resource_filename('jina', '/'.join(('resources', 'logging.default.yml'))))
-
+                                   resource_filename('jina', '/'.join(
+                                       ('resources', 'logging.default.yml'))))
         log_config = complete_path(log_config)
+
+        if log_id is None:
+            log_id = os.getenv('JINA_LOG_ID', None)
+
+        if name is None:
+            name = os.getenv('JINA_POD_NAME', context)
 
         # Remove all handlers associated with the root logger object.
         for handler in logging.root.handlers[:]:
@@ -99,9 +114,11 @@ class JinaLogger:
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
 
-        context_vars = {'name': os.environ.get('JINA_POD_NAME', context),
+        context_vars = {'name': name,
                         'uptime': __uptime__,
                         'context': context}
+        if log_id:
+            context_vars['log_id'] = log_id
         self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there
@@ -159,7 +176,7 @@ class JinaLogger:
                 if handler:
                     handler.ident = cfg.get('ident', '')
                     handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
-                    
+
                 try:
                     handler._connect_unixsocket(handler.address)
                 except OSError:

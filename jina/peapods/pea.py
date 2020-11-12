@@ -23,7 +23,6 @@ from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
-from ..logging.queue import clear_queues
 from ..proto import jina_pb2
 from ..proto.message import ProtoMessage, LazyRequest
 
@@ -141,10 +140,9 @@ class BasePea(metaclass=PeaMeta):
             if self.args.role == PeaRoleType.PARALLEL:
                 self.name = f'{self.name}-{self.args.pea_id}'
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
-            if self.args.name:
-                # everything in this Pea (process) will use the same name for display the log
-                os.environ['JINA_POD_NAME'] = self.args.name
-            self.logger = JinaLogger(self.name, **vars(self.args))
+            self.logger = JinaLogger(self.name,
+                                     log_id=self.args.log_id,
+                                     log_config=self.args.log_config)
         else:
             self.logger = JinaLogger(self.name)
 
@@ -192,16 +190,6 @@ class BasePea(metaclass=PeaMeta):
     def request_type(self) -> str:
         return self._message.envelope.request_type
 
-    @property
-    def log_iterator(self):
-        """Get the last log using iterator """
-        from ..logging.queue import __log_queue__
-        while self.is_ready_event.is_set():
-            try:
-                yield __log_queue__.get_nowait()
-            except Empty:
-                pass
-
     def load_executor(self):
         """Load the executor to this BasePea, specified by ``uses`` CLI argument.
 
@@ -230,7 +218,6 @@ class BasePea(metaclass=PeaMeta):
 
         :param dump_interval: the time interval for saving
         """
-
         if ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
             if self.args.read_only:
                 self.logger.debug('executor is not saved as "read_only" is set to true for this BasePea')
@@ -384,6 +371,10 @@ class BasePea(metaclass=PeaMeta):
     def run(self):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
+            # Every logger created in this process will be identified by the `Pod Id` and use the same name
+            if self.args.name:
+                os.environ['JINA_POD_NAME'] = self.args.name
+            os.environ['JINA_LOG_ID'] = self.args.log_id
             self.post_init()
             self.loop_body()
         except ExecutorFailToLoad:
@@ -468,7 +459,6 @@ class BasePea(metaclass=PeaMeta):
         self.send_terminate_signal()
         self.is_shutdown.wait()
         if not self.daemon:
-            clear_queues()
             self.logger.close()
             self.join()
 

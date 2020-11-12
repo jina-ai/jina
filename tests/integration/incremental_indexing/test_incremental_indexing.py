@@ -105,7 +105,7 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace):
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     num_shards = 4
-    
+
     # can't use plain _unique in uses_before because workspace will conflict with other
     f = (Flow()
         .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),

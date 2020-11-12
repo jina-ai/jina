@@ -19,7 +19,8 @@ class DummyB(BaseExecutor):
         return 'b'
 
 
-def test_compositional_route():
+def test_compositional_route(monkeypatch):
+    monkeypatch.setattr(BaseExecutor, 'exec_methods', ['say'])
     da = DummyA()
     db = DummyB()
     a = CompoundExecutor()

@@ -49,7 +49,7 @@ def test_unique_indexing_vecindexers_before(random_workspace):
     # can't use plain _unique because workspace will conflict with other tests
     f = (Flow()
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
-              uses_before='_unique_vec.yml'))
+              uses_before=os.path.join(cur_dir, '_unique_vec.yml')))
 
     with f:
         f.index(duplicate_docs)
@@ -66,7 +66,7 @@ def test_unique_indexing_docindexers_before(random_workspace):
     # can't use plain _unique because workspace will conflict with other tests
     f = (Flow()
          .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
-              uses_before='_unique_doc.yml'))
+              uses_before=os.path.join(cur_dir, '_unique_doc.yml')))
 
     with f:
         f.index(duplicate_docs)
