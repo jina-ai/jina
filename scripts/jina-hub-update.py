@@ -1,3 +1,6 @@
+"""
+updates all modules from JinaHub with latest version of Jina
+"""
 import os
 from glob import glob
 
