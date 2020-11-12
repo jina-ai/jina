@@ -64,7 +64,7 @@ docker run jinaai/jina --help
 
 ## Jina "Hello, World!" 👋🌍
 
-As a starter, you can try "Hello, World" - a simple demo of image neural search for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, just run:
+Just starting out? Try Jina's "Hello, World" - a simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply run:
 
 ```bash
 jina hello-world
@@ -85,7 +85,7 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 </p>
 
 </details>
-It downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and eventually opens a webpage and shows results like this:
+This downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and after running opens a webpage and shows results:
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="80%">
@@ -101,18 +101,18 @@ jina hello-world --help
 
 #### Create
 
-Jina provides a high-level [Flow](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) API to ease the build of search/index workflow. To create a new Flow,
+Jina provides a high-level [Flow API](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) to simplify building search/index workflows. To create a new Flow:
 
 ```python
 from jina.flow import Flow
 f = Flow().add()
 ```
 
-This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). You can chain multiple `.add()` in a Flow.
+This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). You can chain multiple `.add()`s in a single Flow.
 
 #### Visualize
 
-To visualize it, you can simply chain it with `.plot()`. If you are using Jupytner notebook, it will render a flowchart inline.
+To visualize the Flow, simply chain it with `.plot()`. If you are using a Jupyter notebook, it will render a flowchart inline:
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
 
@@ -120,7 +120,7 @@ To visualize it, you can simply chain it with `.plot()`. If you are using Jupytn
 
 #### Feed Data
 
-Let's try send some random data to it via index functions:
+Let's create some random data and index it:
 
 ```python
 with f:
@@ -130,26 +130,26 @@ with f:
     f.index((jina_pb2.Document() for _ in range(10)))  # index raw Jina Documents
 ```
 
-To use a Flow, use `with` context manager to open it, like opening a file in Python. `output_fn` is the callback function invoked once a batch is done. In the example above, our Flow simply passes the message then prints the result. The whole data stream is async and efficient.
+To use a Flow, open it using the `with` context manager, like you would a file in Python. Once a batch is indexed, the callback function `output_fn` is invoked. In the example above, our Flow simply passes the message then prints the result. The whole data stream is asynchronous and efficient.
 
 #### Add Logic
 
-To add a logic to the Flow, one can use `uses` keyword to attach Pod with an [Executor](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#executors). `uses` accepts multiple types of values including: class name, Docker image, (inline) YAML, built-in shortcut.
+To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#executors). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
 
 
 ```python
-f = (Flow().add(uses='MyBertEncoder')  # a class name of a Jina Executor
-           .add(uses='jinahub/pretrained-cnn:latest')  # a Dockerized Jina Pod
-           .add(uses='myencoder.yaml')  # a YAML serialization of a Jina Executor
-           .add(uses='!WaveletTransformer | {freq: 20}')  # an inline YAML config
-           .add(uses='_pass'))  # an built-in shortcut executor
+f = (Flow().add(uses='MyBertEncoder')  # class name of a Jina Executor
+           .add(uses='jinahub/pretrained-cnn:latest')  # Dockerized Jina Pod
+           .add(uses='myencoder.yaml')  # YAML serialization of a Jina Executor
+           .add(uses='!WaveletTransformer | {freq: 20}')  # inline YAML config
+           .add(uses='_pass'))  # built-in shortcut executor
 ```
 
-The power of Jina lies in its decentralized architecture: each `add` creates a new Pod, these Pods can be at local thread/process, at remote process, inside a Docker container, or even inside a remote Docker container.
+The power of Jina lies in its decentralized architecture: each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
 
 #### Inter & Intra Parallelism
 
-Chaining `.add()` creates a sequential Flow. To introduce parallelism, specifiy `needs` parameter:
+Chaining `.add()`s creates a sequential Flow. For parallelism, use the `needs` parameter:
 
 ```python
 f = (Flow().add(name='p1', needs='gateway')
@@ -160,7 +160,7 @@ f = (Flow().add(name='p1', needs='gateway')
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot3.svg?raw=true"/>
 
-`p1`, `p2`, `p3` now subscribe to `Gateway` and conduct the work in parallel. The last `.needs()` block all Pods until they finish their work. Note, parallelism can be also archieved inside a Pod with `parallel`:
+`p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Pods until they finish their work. Note: parallelism can also be performed inside a Pod using `parallel`:
 
 ```python
 f = (Flow().add(name='p1', needs='gateway')
@@ -171,13 +171,13 @@ f = (Flow().add(name='p1', needs='gateway')
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
 
-That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it.
+That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it!
 
 ### Breakdown of `hello-world`
 
 #### Customize Encoder
 
-Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do that, we simply inherit from `BaseImageEncoder`: a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
+Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do this, we simply inherit from `BaseImageEncoder`: a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
 
 
 ```python
@@ -197,7 +197,7 @@ class MyEncoder(BaseImageEncoder):
         return (data.reshape([-1, 784]) / 255) @ self.oth_mat
 ```
 
-Jina provides [a family of `Executor` classes](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#the-executor-family), which summarizes frequently-used algorithmic components in the neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers; each has a well-designed interface. You can find the list of [all 107 built-in executors at here](https://docs.jina.ai/chapters/all_exec.html). If they do not meet your need, inheriting from one of them is the easiest way to bootstrap your own executor. Simply use our Jina Hub CLI via:
+Jina provides [a family of `Executor` classes](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#the-executor-family), which summarize frequently-used algorithmic components in neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers, each with a well-designed interface. You can find the list of [all 107 built-in executors here](https://docs.jina.ai/chapters/all_exec.html). If they don't meet your needs, inheriting from one of them is the easiest way to bootstrap your own Executor. Simply use our Jina Hub CLI:
 
 
 ```bash
@@ -220,11 +220,12 @@ with f:
     f.index_ndarray(np.random.random([100, 28, 28]), output_fn=validate, callback_on='docs')
 ```
 
+
 All good! Now our `validate` function confirms that all one hundred 28x28 synthetic images have been embedded into 100x64 vectors. 
 
 #### Parallelism & Batching
 
-By setting the input bigger, you can play with `batch_size` and `parallel` a bit.
+By setting a larger input, you can play with `batch_size` and `parallel`:
 
 
 ```python
@@ -236,7 +237,7 @@ with f:
 
 #### Add Data Indexer
 
-Now we need to add an indexer to store all the embeddings and the picture for later retrieval. Jina has provided a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combining them together in a single YAML file.
+Now we need to add an indexer to store all the embeddings and the image for later retrieval. Jina provides a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combine them in a single YAML file:
 
 ```yaml
 !CompoundIndexer
@@ -251,7 +252,10 @@ metas:
   workspace: ./
 ```
 
-`!` tags structure with a class name; `with` keyword defines the arguments for initializing this class object. Essentially, the above YAML config equals to the following Python code:
+- `!` tags a structure with a class name
+- `with` defines arguments for initializing this class object.
+ 
+Essentially, the above YAML config is equivalent to the following Python code:
 
 ```python
 from jina.executors.indexers.vector import NumpyIndexer
@@ -262,9 +266,10 @@ b = BinaryPbIndexer(index_filename='vec.gz')
 c = CompoundIndexer()
 c.components = lambda: [a, b]
 ```
+
 #### Compose Flow in Python/YAML
 
-Now adding our indexer YAML file to the flow by `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
+Now let's add our indexer YAML file to the Flow with `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
 
 ```python
 f = Flow().add(uses='MyEncoder', parallel=2).add(uses='myindexer.yml', shards=2, separated_workspace=True).plot()
@@ -272,7 +277,7 @@ f = Flow().add(uses='MyEncoder', parallel=2).add(uses='myindexer.yml', shards=2,
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow1.svg?raw=true"/>
 
-When the number of arguments become big, constructing Flow in Python could be cumbersome. One can simply move all arguments into one `flow.yml` as follows:
+When you have many arguments, constructing a Flow in Python can get cumbersome. In that case, you can simply move all arguments into one `flow.yml`:
 
 ```yaml
 !Flow
@@ -286,15 +291,15 @@ pods:
     separated_workspace: true
 ```
 
-And then load it in Python via:
+And then load it in Python:
 
 ```python
-f = Flow.load_config('myflow.yml')
+f = Flow.load_config('flow.yml')
 ```
 
 #### Search via Query Flow
 
-Querying a Flow is very similar to what we have seen in the indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top-50 documents that are most similar to your query and then plot them in a HTML:
+Querying a Flow is similar to what we did with indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top 50 documents that are similar to your query and then plot them in HTML:
 
 
 ```python
@@ -305,7 +310,7 @@ with f:
 
 #### REST Interface of Query Flow
 
-In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use REST API instead of gRPC when querying. One can set `port_expose` to the public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) via `rest_api=True`:
+In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `rest_api=True`:
 
 ```python
 f = Flow(port_expose=45678, rest_api=True)
@@ -315,7 +320,7 @@ with f:
 ```
 
 
-That is the essense behind `jina hello-world`. It is just a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
+That is the essense behind `jina hello-world`. It is merely a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
 
 ```bash
 pip install jina[hub] && jina hub new --type app
