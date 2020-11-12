@@ -120,7 +120,7 @@ class DockerLoginFailed(Exception):
     """ Exception to raise for docker hub login failures """
 
 
-class ModelCheckpointNotExist(Exception):
+class ModelCheckpointNotExist(FileNotFoundError):
     """ Exception to raise for executors depending on pretrained model files when they do not exist """
 
 
