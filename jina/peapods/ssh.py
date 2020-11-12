@@ -6,13 +6,18 @@ from ..logging import JinaLogger
 from ..peapods.pea import BasePea
 
 
-class RemotePea(BasePea):
-    """Simple SSH based RemotePea for remote Pea management
+class RemoteSSHPea(BasePea):
+    """Simple SSH based RemoteSSHPea for remote Pea management
 
     .. note::
         It requires one to upload host public key to the remote
         1. ssh-keygen -b 4096
         2. scp ~/.ssh/id_rsa.pub username@hostname:~/.ssh/authorized_keys
+
+    .. note::
+        As the terminal signal is sent via :meth:`send_terminate_signal` from
+        :class:`BasePea`, there is no need to override/implement :meth:`close`
+        method. Lifecycle is handled by :class:`BasePea`.
     """
 
     @property
@@ -45,7 +50,7 @@ class RemotePea(BasePea):
         self.is_shutdown.set()
 
 
-class RemotePod(RemotePea):
+class RemoteSSHPod(RemoteSSHPea):
     """SSH based pod to be used while invoking remote Pod
     """
 
@@ -57,7 +62,7 @@ class RemotePod(RemotePea):
         return f'jina pod {" ".join(_args)}'
 
 
-class RemoteMutablePod(RemotePod):
+class RemoteSSHMutablePod(RemoteSSHPod):
     """
     SSH based mutable pod, internally it has to maintain the context of multiple separated peas.
     Subprocess-based simple ssh session is probably no good for that, but simple ssh remotepod is

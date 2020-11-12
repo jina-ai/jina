@@ -13,10 +13,10 @@ if False:
 
 
 def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
-    """Initialize a :class:`BasePea`, :class:`RemotePea` or :class:`ContainerPea`
+    """Initialize a :class:`BasePea`, :class:`RemoteSSHPea` or :class:`ContainerPea`
 
     :param args: arguments from CLI
-    :param allow_remote: allow start a :class:`RemotePea`
+    :param allow_remote: allow start a :class:`RemoteSSHPea`
     :param kwargs: all supported arguments from CLI
 
     """
@@ -48,10 +48,10 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
 
 
 def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = True, **kwargs):
-    """Initialize a :class:`BasePod`, :class:`RemotePod`, :class:`MutablePod` or :class:`RemoteMutablePod`
+    """Initialize a :class:`BasePod`, :class:`RemoteSSHPod`, :class:`MutablePod` or :class:`RemoteSSHMutablePod`
 
     :param args: arguments from CLI
-    :param allow_remote: allow start a :class:`RemotePod`
+    :param allow_remote: allow start a :class:`RemoteSSHPod`
     :param kwargs: all supported arguments from CLI
     """
 
@@ -87,11 +87,13 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
     if args.host != __default_host__:
         if args.remote == RemoteAccessType.JINAD:
             from .remote import RemotePod
+            return RemotePod(args)
         elif args.remote == RemoteAccessType.SSH:
-            from .ssh import RemotePod
+            from .ssh import RemoteSSHPod
+            return RemoteSSHPod(args)
         else:
             raise ValueError(f'{args.remote} is not supported')
-        return RemotePod(args)
+
     else:
         from .pod import BasePod
         return BasePod(args)
