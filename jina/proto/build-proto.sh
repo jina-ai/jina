@@ -31,9 +31,9 @@ printf "\e[1;33mfixing grpc import\e[0m\n"
 printf "using linux sed syntax, if you are running this on mac, you may want to comment out the sed for linux"
 # fix import bug in google generator
 # for mac
-# sed -i '' -e 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
+ sed -i '' -e 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
 # for linux
-sed -i 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
+#sed -i 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
 
 OLDVER=$(sed -n 's/^__proto_version__ = '\''\(.*\)'\''$/\1/p' $VER_FILE)
 printf "current proto version:\t\e[1;33m$OLDVER\e[0m\n"
@@ -42,9 +42,9 @@ NEWVER=$(echo $OLDVER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("
 printf "bump proto version to:\t\e[1;32m$NEWVER\e[0m\n"
 
 # for mac
-# sed -i '' -e 's/^__proto_version__ = '\''\(.*\)'\''/__proto_version__ = '\'"$NEWVER"\''/' $VER_FILE
+ sed -i '' -e 's/^__proto_version__ = '\''\(.*\)'\''/__proto_version__ = '\'"$NEWVER"\''/' $VER_FILE
 # for linux
-sed -i 's/^__proto_version__ = '\''\(.*\)'\''/__proto_version__ = '\'"$NEWVER"\''/' $VER_FILE
+#sed -i 's/^__proto_version__ = '\''\(.*\)'\''/__proto_version__ = '\'"$NEWVER"\''/' $VER_FILE
 
 printf "\e[1;32mAll done!\e[0m\n"
 printf "if you are running this inside Docker container, you may manually bump proto version to:\t\e[1;32m$NEWVER\e[0m\n"

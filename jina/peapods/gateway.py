@@ -13,11 +13,9 @@ from .pea import BasePea
 from .zmq import AsyncZmqlet
 from .. import __stop_msg__
 from ..enums import ClientMode
-from ..excepts import BadRequestType, GatewayPartialMessage
 from ..helper import use_uvloop
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
-from ..parser import set_pea_parser, set_pod_parser
 from ..proto import jina_pb2_grpc, jina_pb2
 from ..proto.message import ProtoMessage
 
@@ -44,8 +42,6 @@ class GatewayPea:
                                  name='gateway',
                                  log_id=args.log_id,
                                  log_config=args.log_config)
-        if args.allow_spawn:
-            self.logger.critical('SECURITY ALERT! this gateway allows SpawnRequest from remote Jina')
         self._p_servicer = self._Pea(args)
         self._stop_event = threading.Event()
         self.is_ready = threading.Event()
@@ -96,7 +92,6 @@ class GatewayPea:
             self.args = args
             self.name = args.name or self.__class__.__name__
             self.logger = JinaLogger(self.name, **vars(args))
-            self.peapods = []
 
         def handle(self, msg: 'ProtoMessage') -> 'jina_pb2.Request':
             """ Note gRPC accepts :class:`jina_pb2.Request` only, so no more :class:`LazyRequest`.
@@ -152,45 +147,6 @@ class GatewayPea:
                         is_req_empty = prefetch_req(self.args.prefetch_on_recv, onrecv_task)
                     prefetch_task.clear()
                     prefetch_task = [j for j in onrecv_task]
-
-        async def Spawn(self, request, context):
-            _req = getattr(request, request.WhichOneof('body'))
-            if self.args.allow_spawn:
-                from . import Pea, Pod
-                _req_type = type(_req)
-                if _req_type == jina_pb2.SpawnRequest.PeaSpawnRequest:
-                    _args = set_pea_parser().parse_known_args(_req.args)[0]
-                    self.logger.info('starting a BasePea from a remote request')
-                    # we do not allow remote spawn request to spawn a "remote-remote" pea/pod
-                    p = Pea(_args, allow_remote=False)
-                elif _req_type == jina_pb2.SpawnRequest.PodSpawnRequest:
-                    _args = set_pod_parser().parse_known_args(_req.args)[0]
-                    self.logger.info('starting a BasePod from a remote request')
-                    # need to return the new port and host ip number back
-                    # we do not allow remote spawn request to spawn a "remote-remote" pea/pod
-                    p = Pod(_args, allow_remote=False)
-                elif _req_type == jina_pb2.SpawnRequest.MutablepodSpawnRequest:
-                    from .remote import mutable_pod_req2peas_args
-                    p = Pod(mutable_pod_req2peas_args(_req), allow_remote=False)
-                else:
-                    raise BadRequestType('don\'t know how to handle %r' % _req_type)
-
-                with p:
-                    self.peapods.append(p)
-                self.peapods.remove(p)
-            else:
-                warn_msg = f'the gateway at {self.args.host}:{self.args.port_expose} ' \
-                           f'does not support remote spawn, please restart it with --allow-spawn'
-                request.log_record = warn_msg
-                request.status.code = jina_pb2.Status.ERROR_NOTALLOWED
-                request.status.description = warn_msg
-                self.logger.warning(warn_msg)
-                for j in range(1):
-                    yield request
-
-        def close(self):
-            for p in self.peapods:
-                p.close()
 
 
 class RESTGatewayPea(BasePea):
