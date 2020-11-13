@@ -2,13 +2,14 @@ import os
 import time
 import threading
 
-from jina.helper import yaml
+from jina.helper import yaml, random_port
 from jina.logging.sse import start_sse_logger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 GROUP_ID = 'flow_id'
 LOG_MESSAGE = 'log message'
 
+RANDOM_PORT = random_port()
 
 def feed_path_logs(path, threading_event):
     while True:
@@ -30,7 +31,7 @@ def sse_client(wrap):
         import requests
         return requests.get(url, stream=True)
 
-    url = 'http://0.0.0.0:5000/stream/log'
+    url = f'http://0.0.0.0:{RANDOM_PORT}/stream/log'
     response = with_requests(url)
     client = SSEClient(response)
     events = client.events()
@@ -41,7 +42,7 @@ def sse_client(wrap):
 
 def stop_log_server():
     import urllib.request
-    urllib.request.urlopen('http://0.0.0.0:5000/action/shutdown', timeout=5)
+    urllib.request.urlopen(f'http://0.0.0.0:{RANDOM_PORT}/action/shutdown', timeout=5)
 
 
 def test_sse_client(tmpdir):
@@ -59,8 +60,8 @@ def test_sse_client(tmpdir):
 
     with open(os.path.join(cur_dir, 'logserver_config.yml')) as fp:
         log_config = yaml.load(fp)
-
-    log_config['files']['log'] = conf_path
+        log_config['files']['log'] = conf_path
+        log_config['port'] = RANDOM_PORT
 
     sse_server_thread = threading.Thread(name='sentinel-sse-logger',
                                          target=start_sse_logger, daemon=False,
