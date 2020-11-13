@@ -19,17 +19,17 @@ __all__ = ['Message', 'ControlMessage']
 
 class Message:
     """
-    A container class for :class:`jina_pb2.Message`. Note, the Protobuf version of :class:`jina_pb2.Message`
+    A container class for :class:`jina_pb2.MessageProto`. Note, the Protobuf version of :class:`jina_pb2.MessageProto`
     contains a :class:`jina_pb2.EnvelopeProto` and :class:`jina_pb2.RequestProto`. Here, it contains:
         - a :class:`jina_pb2.EnvelopeProto` object
         - and one of:
             - a :class:`Request` object wrapping :class:`jina_pb2.RequestProto`
             - a :class:`jina_pb2.RequestProto` object
 
-    It provide a generic view of as :class:`jina_pb2.Message`, allowing one to access its member, request
-    and envelope as if using :class:`jina_pb2.Message` object directly.
+    It provide a generic view of as :class:`jina_pb2.MessageProto`, allowing one to access its member, request
+    and envelope as if using :class:`jina_pb2.MessageProto` object directly.
 
-    This class also collected all helper functions related to :class:`jina_pb2.Message` into one place.
+    This class also collected all helper functions related to :class:`jina_pb2.MessageProto` into one place.
     """
 
     def __init__(self, envelope: Union[bytes, 'jina_pb2.EnvelopeProto', None],
@@ -63,8 +63,8 @@ class Message:
             self._check_version()
 
     @property
-    def as_pb_object(self) -> 'jina_pb2.Message':
-        r = jina_pb2.Message()
+    def as_pb_object(self) -> 'jina_pb2.MessageProto':
+        r = jina_pb2.MessageProto()
         r.envelope.CopyFrom(self.envelope)
         if isinstance(self.request, jina_pb2.RequestProto):
             req = self.request

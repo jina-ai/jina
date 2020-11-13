@@ -18,7 +18,7 @@ def test_all_in_one_request():
             # mimic receive
             recv.clear()
             for m in sent:
-                msg = jina_pb2.Message()
+                msg = jina_pb2.MessageProto()
                 msg.ParseFromString(m)
                 msg.envelope.request_id += 'r'
                 recv.append(msg)

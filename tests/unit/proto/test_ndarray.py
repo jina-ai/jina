@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from jina.types.ndarray.dense import DenseNdArray
+from jina.types.ndarray.dense.numpy import DenseNdArray
 
 
 def test_empty_ndarray():
@@ -12,15 +12,15 @@ def test_empty_ndarray():
     a = sp1()
     assert a.value is None
 
-    from jina.types.ndarray.sparse import SparseNdArray as sp2
+    from jina.types.ndarray.sparse.numpy import SparseNdArray as sp2
     a = sp2()
     assert a.value is None
 
-    from jina.types.ndarray.sparse import SparseNdArray as sp2
+    from jina.types.ndarray.sparse.tensorflow import SparseNdArray as sp2
     a = sp2()
     assert a.value is None
 
-    from jina.types.ndarray.sparse import SparseNdArray as sp2
+    from jina.types.ndarray.sparse.pytorch import SparseNdArray as sp2
     a = sp2()
     assert a.value is None
 
@@ -32,7 +32,7 @@ def test_empty_ndarray():
 @pytest.mark.parametrize('sp_format', ['coo'])
 def test_scipy_sparse(sp_format):
     from scipy.sparse import coo_matrix
-    from jina.types.ndarray.sparse import SparseNdArray
+    from jina.types.ndarray.sparse.scipy import SparseNdArray
     row = np.array([0, 3, 1, 0])
     col = np.array([0, 3, 1, 2])
     data = np.array([4, 5, 7, 9])
@@ -65,7 +65,7 @@ def test_numpy_dense(dtype):
 def test_tf_sparse(idx_shape):
     import tensorflow as tf
     from tensorflow import SparseTensor
-    from jina.types.ndarray.sparse import SparseNdArray
+    from jina.types.ndarray.sparse.tensorflow import SparseNdArray
     a = SparseTensor(indices=idx_shape[0], values=[1, 2, 3], dense_shape=idx_shape[1])
     b = SparseNdArray()
     b.value = a
@@ -135,7 +135,7 @@ def test_dummy_numpy_sparse(shape):
     a = np.random.random(shape)
     a[a > 0.5] = 1
 
-    from jina.types.ndarray.sparse import SparseNdArray
+    from jina.types.ndarray.sparse.numpy import SparseNdArray
     b = SparseNdArray()
     b.value = a
 
