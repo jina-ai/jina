@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 
 from . import BaseSparseNdArray
-from ... import jina_pb2
+from ....proto import jina_pb2
 
 if False:
     import scipy.sparse

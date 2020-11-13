@@ -4,7 +4,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 if False:
     from ..proto import jina_pb2

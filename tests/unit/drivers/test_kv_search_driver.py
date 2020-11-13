@@ -5,7 +5,7 @@ import numpy as np
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class MockIndexer(BaseKVIndexer):

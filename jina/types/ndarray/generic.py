@@ -5,7 +5,7 @@ from .dense import BaseDenseNdArray
 from .dense.numpy import DenseNdArray
 from .sparse import BaseSparseNdArray
 from .sparse.scipy import SparseNdArray
-from .. import jina_pb2
+from ...proto import jina_pb2
 
 
 class GenericNdArray(BaseNdArray):

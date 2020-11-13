@@ -6,7 +6,7 @@ import pytest
 from jina.drivers.craft import CraftDriver
 from jina.executors.crafters import BaseCrafter
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class MockCrafter(BaseCrafter):

@@ -9,7 +9,7 @@ from typing import Dict, Any, Iterable, Tuple
 import numpy as np
 
 from ..proto import jina_pb2
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:

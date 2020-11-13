@@ -2,7 +2,7 @@ from typing import List, TypeVar, Union, Dict
 
 from .. import BaseNdArray
 from ..dense.numpy import DenseNdArray
-from ... import jina_pb2
+from ....proto import jina_pb2
 
 AnySparseNdArray = TypeVar('AnySparseNdArray')
 
@@ -17,6 +17,7 @@ class BaseSparseNdArray(BaseNdArray):
     Do not use this class directly. Subclass should be used.
 
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_sparse = True

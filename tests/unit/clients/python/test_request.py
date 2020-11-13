@@ -2,7 +2,7 @@ import numpy as np
 
 from jina.clients.python.request import _generate
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 def test_request_generate_lines():

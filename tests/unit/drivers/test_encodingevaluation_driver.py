@@ -5,7 +5,7 @@ from jina.drivers.evaluate import NDArrayEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class MockDiffEvaluator(BaseEmbeddingEvaluator):

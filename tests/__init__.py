@@ -7,7 +7,7 @@ from os.path import dirname
 import numpy as np
 
 from jina.proto import jina_pb2, uid
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class JinaTestCase(unittest.TestCase):

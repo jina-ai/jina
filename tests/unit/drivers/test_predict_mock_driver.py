@@ -3,7 +3,7 @@ from google.protobuf.struct_pb2 import ListValue
 
 from jina.drivers.predict import BinaryPredictDriver, MultiLabelPredictDriver, OneHotPredictDriver, \
     Prediction2DocBlobDriver
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 from tests import random_docs
 
 

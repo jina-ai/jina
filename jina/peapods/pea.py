@@ -22,7 +22,7 @@ from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
-from ..proto.message import ProtoMessage, LazyRequest
+from jina.types.message import ProtoMessage, LazyRequest
 
 __all__ = ['PeaMeta', 'BasePea']
 

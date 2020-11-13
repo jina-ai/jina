@@ -6,7 +6,7 @@ from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
-from jina.proto.message import ProtoMessage
+from jina.types.message import ProtoMessage
 from tests import random_docs
 
 

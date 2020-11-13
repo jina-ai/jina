@@ -22,7 +22,7 @@ from ..executors import BaseExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml
 from ..proto import jina_pb2
-from ..proto.message import ProtoMessage, LazyRequest
+from jina.types.message import ProtoMessage, LazyRequest
 
 if False:
     # fix type-hint complain for sphinx and flake

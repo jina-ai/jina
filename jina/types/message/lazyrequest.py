@@ -1,8 +1,8 @@
 from typing import Optional
 
-from .. import jina_pb2
 from ...enums import CompressAlgo
 from ...helper import cached_property
+from ...proto import jina_pb2
 
 _trigger_body_fields = set(kk
                            for v in [jina_pb2.Request.IndexRequest,

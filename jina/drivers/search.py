@@ -6,7 +6,7 @@ from typing import Sequence, Tuple
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs
 from ..proto import uid, jina_pb2
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class BaseSearchDriver(BaseExecutableDriver):

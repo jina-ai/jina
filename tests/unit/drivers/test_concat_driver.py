@@ -5,7 +5,7 @@ import numpy as np
 from jina.flow import Flow
 from jina.proto import uid
 from jina.proto.jina_pb2 import Document
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

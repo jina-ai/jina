@@ -4,12 +4,12 @@ import traceback
 from typing import Union, List, Optional
 
 from .lazyrequest import LazyRequest
-from .. import jina_pb2
-from ... import __version__, __proto_version__
-from ...enums import CompressAlgo
-from ...excepts import MismatchedVersion
-from ...helper import colored
-from ...logging import default_logger
+from jina.proto import jina_pb2
+from jina import __version__, __proto_version__
+from jina.enums import CompressAlgo
+from jina.excepts import MismatchedVersion
+from jina.helper import colored
+from jina.logging import default_logger
 
 if False:
     from ...executors import BaseExecutor

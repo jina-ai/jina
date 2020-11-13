@@ -14,7 +14,7 @@ from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
 from ...logging import default_logger
 from ...proto import jina_pb2, uid
-from ...proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 def _fill_document(document: 'jina_pb2.Document',

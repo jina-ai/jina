@@ -2,7 +2,7 @@ import numpy as np
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 random_np_array = np.random.randint(10, size=(50, 10))
 buffer = 'text_buffer'.encode()

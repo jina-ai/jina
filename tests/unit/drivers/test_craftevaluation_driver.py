@@ -7,7 +7,7 @@ from jina.drivers.evaluate import FieldEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class MockDiffEvaluator(BaseEvaluator):

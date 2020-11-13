@@ -7,7 +7,7 @@ import numpy as np
 
 from . import BaseRecursiveDriver
 from ..proto import jina_pb2
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class ReduceAllDriver(BaseRecursiveDriver):

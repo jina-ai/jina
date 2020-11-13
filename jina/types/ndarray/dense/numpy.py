@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 from . import BaseDenseNdArray
-from ... import jina_pb2
+from ...proto import jina_pb2
 
 
 class DenseNdArray(BaseDenseNdArray):
@@ -40,9 +40,9 @@ class DenseNdArray(BaseDenseNdArray):
         if blob.buffer:
             x = np.frombuffer(blob.buffer, dtype=blob.dtype)
 
-            if blob.quantization == jina_pb2.DenseNdArray.FP16:
+            if blob.quantization == jina_pb2.DenseNdArrayProto.FP16:
                 x = x.astype(blob.original_dtype)
-            elif blob.quantization == jina_pb2.DenseNdArray.UINT8:
+            elif blob.quantization == jina_pb2.DenseNdArrayProto.UINT8:
                 x = x.astype(blob.original_dtype) * blob.scale + blob.min_val
 
             return x.reshape(blob.shape)
@@ -53,17 +53,17 @@ class DenseNdArray(BaseDenseNdArray):
         x = value
 
         if self.quantize == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):
-            blob.quantization = jina_pb2.DenseNdArray.FP16
+            blob.quantization = jina_pb2.DenseNdArrayProto.FP16
             blob.original_dtype = x.dtype.name
             x = x.astype(np.float16)
         elif self.quantize == 'uint8' and (x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16):
-            blob.quantization = jina_pb2.DenseNdArray.UINT8
+            blob.quantization = jina_pb2.DenseNdArrayProto.UINT8
             blob.max_val, blob.min_val = x.max(), x.min()
             blob.original_dtype = x.dtype.name
             blob.scale = (blob.max_val - blob.min_val) / 256
             x = ((x - blob.min_val) / blob.scale).astype(np.uint8)
         else:
-            blob.quantization = jina_pb2.DenseNdArray.NONE
+            blob.quantization = jina_pb2.DenseNdArrayProto.NONE
 
         blob.buffer = x.tobytes()
         blob.ClearField('shape')

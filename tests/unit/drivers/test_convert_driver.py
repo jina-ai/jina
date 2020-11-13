@@ -4,7 +4,7 @@ from PIL import Image
 
 from jina.drivers.convert import Blob2PngURI
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 def create_document(arr_size):

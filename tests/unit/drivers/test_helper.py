@@ -5,8 +5,8 @@ import pytest
 
 from jina.drivers.helper import pb_obj2dict, extract_docs, DocGroundtruthPair
 from jina.proto import jina_pb2
-from jina.proto.message import ProtoMessage
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.message import ProtoMessage
+from jina.types.ndarray.generic import GenericNdArray
 
 
 @pytest.mark.parametrize(

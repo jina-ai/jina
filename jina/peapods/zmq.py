@@ -17,7 +17,7 @@ from ..enums import SocketType
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..logging import default_logger, profile_logger, JinaLogger
 from ..proto import jina_pb2
-from ..proto.message import ProtoMessage, ControlMessage
+from jina.types.message import ProtoMessage, ControlMessage
 
 if False:
     import argparse

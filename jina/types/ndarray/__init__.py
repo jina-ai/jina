@@ -3,7 +3,7 @@ from typing import TypeVar
 AnyNdArray = TypeVar('AnyNdArray')
 
 if False:
-    from .. import jina_pb2
+    from ...proto import jina_pb2
 
 
 class BaseNdArray:

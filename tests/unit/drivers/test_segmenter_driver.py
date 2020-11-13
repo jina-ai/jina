@@ -6,7 +6,7 @@ import pytest
 from jina.drivers.craft import SegmentDriver
 from jina.executors.crafters import BaseSegmenter
 from jina.proto import jina_pb2, uid
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class MockSegmenter(BaseSegmenter):

@@ -8,7 +8,7 @@ from .helper import DocGroundtruthPair
 from .querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
 from ..proto import jina_pb2
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import GenericNdArray
 
 
 class BaseEvaluateDriver(BaseExecutableDriver):
