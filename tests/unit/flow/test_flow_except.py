@@ -1,6 +1,4 @@
-from jina.excepts import ModelCheckpointNotExist
 from jina.executors.crafters import BaseCrafter
-from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 from jina.proto import jina_pb2
 
@@ -8,11 +6,6 @@ from jina.proto import jina_pb2
 class DummyCrafter(BaseCrafter):
     def craft(self, *args, **kwargs):
         return 1 / 0
-
-
-class PretrainedModelEncoder(BaseEncoder):
-    def post_init(self):
-        raise ModelCheckpointNotExist
 
 
 def test_bad_flow():
