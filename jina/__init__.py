@@ -290,9 +290,16 @@ from jina.types.message import Message
 # Flow
 from jina.flow import Flow
 
-# Executors
+# Base Executors
 from jina.executors import BaseExecutor
 from jina.executors.compound import CompoundExecutor
+from jina.executors.encoders import BaseEncoder
+from jina.executors.crafters import BaseCrafter
+from jina.executors.evaluators import BaseEvaluator
+from jina.executors.indexers import BaseIndexer
+from jina.executors.indexers.keyvalue import BaseKVIndexer
+from jina.executors.indexers.vector import BaseVectorIndexer
+from jina.executors.rankers import BaseRanker
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])
