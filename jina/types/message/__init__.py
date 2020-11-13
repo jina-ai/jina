@@ -83,7 +83,7 @@ class Message:
         """
         return self.envelope.request_type != 'ControlRequest'
 
-    def _add_envelope(self, pod_name, identity, num_part=1, check_version=False,
+    def _add_envelope(self, pod_name, identity, check_version=False,
                       request_id: str = None, request_type: str = None,
                       compress: str = 'NONE', compress_hwm: int = 0, compress_lwm: float = 1., *args,
                       **kwargs) -> 'jina_pb2.EnvelopeProto':
@@ -95,8 +95,7 @@ class Message:
 
         :param pod_name: the name of the current pod
         :param identity: the identity of the current pod
-        :param num_part: the total parts of the message, 0 and 1 means single part
-        :param check_version: turn on check_version 
+        :param check_version: turn on check_version
         :return: the resulted protobuf message
         """
         envelope = jina_pb2.EnvelopeProto()
@@ -106,7 +105,13 @@ class Message:
             # triggering the deserialization
             envelope.request_id = request_id or self.request.request_id
             envelope.request_type = request_type or \
-                                    getattr(self.request, self.request.WhichOneof('body')).__class__.__name__
+                                    getattr(self.request,
+                                            self.request.WhichOneof('body')).__class__.__name__
+
+            # for compatibility
+            if envelope.request_type.endswith('Proto'):
+                envelope.request_type = envelope.request_type.replace('Proto', '')
+
         elif isinstance(self.request, Request):
             raise TypeError('can add envelope to a Request object, '
                             'as it will trigger the deserialization.'

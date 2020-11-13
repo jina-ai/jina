@@ -12,6 +12,7 @@ from typing import Dict, Optional, Union, List
 
 import zmq
 
+from jina.types.message import Message, Request
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..enums import PeaRoleType, SkipOnErrorType
@@ -22,7 +23,6 @@ from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
-from jina.types.message import Message, Request
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -125,7 +125,7 @@ class BasePea(metaclass=PeaMeta):
         self._message = None
 
         # all pending messages collected so far, key is the request id
-        self._pending_msgs = defaultdict(list)  # type: Dict[str, List['ProtoMessage']]
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List['Message']]
         self._partial_requests = None
         self._partial_messages = None
 

@@ -509,7 +509,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
 
 def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
     """
-    Build :class:`ProtoMessage` from a list of frames.
+    Build :class:`Message` from a list of frames.
 
     The list of frames (has length >=3) has the following structure:
 
@@ -519,7 +519,7 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
 
     :param sock_type: the recv socket type
     :param frames: list of bytes to parse from
-    :return: a :class:`ProtoMessage` object
+    :return: a :class:`Message` object
     """
     if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
