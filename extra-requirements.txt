@@ -46,7 +46,7 @@ ngt:                        index, py37
 librosa>=0.7.2:             audio
 uvloop:                     devel, cicd, perf
 numpy:                      core
-pyzmq<20.0.0:               core
+pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
 grpcio:                     core
 ruamel.yaml>=0.15.89:       core
