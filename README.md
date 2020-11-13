@@ -216,7 +216,7 @@ Let's test our encoder in the Flow with some synthetic data:
 ```python
 def validate(docs):
     assert len(docs) == 100
-    assert GenericNdArray(docs[0].embedding).value.shape == (64,)
+    assert NdArray(docs[0].embedding).value.shape == (64,)
 
 f = Flow().add(uses='MyEncoder')
 

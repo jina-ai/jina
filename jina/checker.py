@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import os
 
-from . import __jina_env__, import_classes
+from . import __jina_env__, _import_classes
 from .helper import colored, print_dep_tree_rst
 from .logging import default_logger
 
@@ -18,7 +18,7 @@ class ImportChecker:
     def __init__(self, args: 'argparse.Namespace'):
         default_logger.info('\navailable core executors\n'.upper())
 
-        _r = import_classes('jina.executors', show_import_table=True, import_once=False)
+        _r = _import_classes('jina.executors', show_import_table=True, import_once=False)
 
         if args.summary_exec:
             with open(args.summary_exec, 'w') as fp:
@@ -26,14 +26,14 @@ class ImportChecker:
 
         default_logger.info('\navailable hub executors\n'.upper())
 
-        _r = import_classes('jina.hub', show_import_table=True, import_once=False)
+        _r = _import_classes('jina.hub', show_import_table=True, import_once=False)
 
         if args.summary_exec:
             with open(args.summary_exec, 'w') as fp:
                 print_dep_tree_rst(fp, _r, 'Executor')
 
         default_logger.info('\navailable drivers\n'.upper())
-        _r = import_classes('jina.drivers', show_import_table=True, import_once=False)
+        _r = _import_classes('jina.drivers', show_import_table=True, import_once=False)
 
         if args.summary_driver:
             with open(args.summary_driver, 'w') as fp:
