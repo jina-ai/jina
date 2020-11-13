@@ -7,8 +7,21 @@ jobs:
   update-jina-hub:
     runs-on: ubuntu-latest
     steps:
-      - name: handle jina hub
-        run: |
-          git clone https://github.com/jina-ai/jina-hub.git --depth=1
-          python scripts/jina-hub-update.py
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: |
+          apt-get update -y
+          apt-get install python3.7 python3-distutils git -y
+          curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+          python3.7 get-pip.py
+          pip install gitpython ruamel.yaml
+          echo "works!!!!"
+          echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
+          output=$(python3.7 jina/hub/bump_version.py)
+          echo "JINA_VERSION = ${JINA_VERSION}"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=changelog::$output"
 
