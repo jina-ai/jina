@@ -5,9 +5,11 @@ import mimetypes
 import os
 import urllib.parse
 import uuid
-from typing import Iterator, Union, Tuple
+import json
+from typing import Iterator, Union, Tuple, Dict
 
 import numpy as np
+from google.protobuf import json_format
 
 from ...drivers.helper import guess_mime
 from ...enums import ClientMode
@@ -40,19 +42,24 @@ def _fill_document(document: 'jina_pb2.Document',
                 default_logger.warning(
                     f'can not sniff the MIME type due to the exception {repr(ex)}'
                 )
+    elif isinstance(content, Dict):
+        json_format.ParseDict(content, document)
     elif isinstance(content, str):
-        scheme = urllib.parse.urlparse(content).scheme
-        if (
+        try:
+            json_format.Parse(content, document)
+        except Exception:
+            scheme = urllib.parse.urlparse(content).scheme
+            if (
                 (scheme in {'http', 'https'} and is_url(content))
                 or (scheme in {'data'})
                 or os.path.exists(content)
                 or os.access(os.path.dirname(content), os.W_OK)
-        ):
-            document.uri = content
-            mime_type = guess_mime(content)
-        else:
-            document.text = content
-            mime_type = 'text/plain'
+            ):
+                document.uri = content
+                mime_type = guess_mime(content)
+            else:
+                document.text = content
+                mime_type = 'text/plain'
     else:
         raise TypeError(f'{type(content)} type of input is not supported')
 
@@ -70,7 +77,7 @@ def _fill_document(document: 'jina_pb2.Document',
 
 def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
     Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Iterator['np.ndarray'], Iterator[
-                              str], 'np.ndarray',],
+                              str], 'np.ndarray', Iterator[Dict]],
               batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None,
               override_doc_id: bool = True,
@@ -118,7 +125,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
             d = _req.docs.add()
             if isinstance(content, tuple) and len(content) == 2:
                 default_logger.debug('content comes in pair, '
-                                     'will take the first as the input and the scond as the groundtruth')
+                                     'will take the first as the input and the second as the groundtruth')
                 gt = _req.groundtruths.add()
                 _fill(d, content[0])
                 _fill(gt, content[1])
