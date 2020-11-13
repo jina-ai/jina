@@ -7,8 +7,6 @@ sub-modules, as described below.
 
 """
 
-
-
 # DO SOME OS-WISE PATCHES
 
 import datetime as _datetime
@@ -284,11 +282,17 @@ def _set_nofile(nofile_atleast=4096):
 
 _set_nofile()
 
-
-from jina.flow import Flow
+# Primitive data type
 from jina.types.ndarray.generic import NdArray
 from jina.types.message.request import Request
 from jina.types.message import Message
+
+# Flow
+from jina.flow import Flow
+
+# Executors
+from jina.executors import BaseExecutor
+from jina.executors.compound import CompoundExecutor
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])
