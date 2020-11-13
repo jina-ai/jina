@@ -29,8 +29,6 @@ if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
-# ADD GLOBAL NAMESPACE VARIABLES
-
 
 # Underscore variables shared globally
 
@@ -86,6 +84,8 @@ _names_with_underscore = ['__version__', '__copyright__', '__license__',
                           '__proto_version__', '__default_host__', '__ready_msg__',
                           '__stop_msg__', '__binary_delimiter__', '__jina_env__',
                           '__uptime__']
+
+# ADD GLOBAL NAMESPACE VARIABLES
 
 JINA_GLOBAL = _types.SimpleNamespace()
 JINA_GLOBAL.imported = _types.SimpleNamespace()
@@ -289,17 +289,6 @@ from jina.types.message import Message
 
 # Flow
 from jina.flow import Flow
-
-# Base Executors
-from jina.executors import BaseExecutor
-from jina.executors.compound import CompoundExecutor
-from jina.executors.encoders import BaseEncoder
-from jina.executors.crafters import BaseCrafter
-from jina.executors.evaluators import BaseEvaluator
-from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.keyvalue import BaseKVIndexer
-from jina.executors.indexers.vector import BaseVectorIndexer
-from jina.executors.rankers import BaseRanker
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])

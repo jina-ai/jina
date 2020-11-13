@@ -7,6 +7,7 @@ from ....proto import jina_pb2
 
 __all__ = ['BaseDenseNdArray']
 
+
 class DenseNdArray(BaseDenseNdArray):
     """
     Dense NdArray powered by numpy, supports quantization method.
