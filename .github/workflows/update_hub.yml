@@ -7,8 +7,18 @@ jobs:
   update-jina-hub:
     runs-on: ubuntu-latest
     steps:
-      - name: handle jina hub
-        run: |
-          git clone https://github.com/jina-ai/jina-hub.git --depth=1
-          python scripts/jina-hub-update.py
+      - uses: actions/checkout@v2.0.0
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2.0.0
+        with:
+          python-version: 3.7
+      - run: |
+          echo "works!!!!"
+          output=$(python scripts/jina-hub-update.py )
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=output::$output"
+        id: step1
 

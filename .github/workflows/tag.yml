@@ -99,14 +99,3 @@ jobs:
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
           tags: "latest, ${{env.JINA_VERSION}}"
-
-  update-jina-hub:
-    needs: update-docker
-    runs-on: ubuntu-latest
-    steps:
-      - name: handle jina hub
-        run: |
-          git clone https://github.com/jina-ai/jina-hub.git --depth=1
-          python scripts/jina-hub-update.py
-
-

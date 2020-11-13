@@ -11,7 +11,7 @@ def handle_module_update(module_dir):
 
 
 def main():
-    manifest_ymls = glob('**/manifest.yml')
+    manifest_ymls = glob('jina/hub/**/manifest.yml', recursive=True)
     print(f'Got {len(manifest_ymls)} manifests/modules to handle')
     # TODO limited to 1 for dev/testing
     manifest_ymls = manifest_ymls[:1]

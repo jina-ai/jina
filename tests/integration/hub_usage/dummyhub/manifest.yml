@@ -7,6 +7,6 @@ author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 vendor: Jina AI Limited
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.0
+version: 0.0.3
 license: apache-2.0
 keywords: [Some keywords to describe the executor, separated by commas]
