@@ -1,8 +1,4 @@
-import pytest
-
-from jina.excepts import ModelCheckpointNotExist
 from jina.executors.crafters import BaseCrafter
-from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 from jina.proto import jina_pb2
 
@@ -10,11 +6,6 @@ from jina.proto import jina_pb2
 class DummyCrafter(BaseCrafter):
     def craft(self, *args, **kwargs):
         return 1 / 0
-
-
-class PretrainedModelEncoder(BaseEncoder):
-    def post_init(self):
-        raise ModelCheckpointNotExist
 
 
 def test_bad_flow():
@@ -73,12 +64,6 @@ def test_except_with_parallel():
     with f:
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
-
-
-def test_except_pretrained_model_file():
-    with pytest.raises(ModelCheckpointNotExist):
-        with Flow().add(name='r2', uses='!PretrainedModelEncoder', parallel=1):
-            pass
 
 
 def test_on_error_callback():

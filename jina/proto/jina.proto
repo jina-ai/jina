@@ -187,22 +187,24 @@ message Envelope {
 
     bool check_version = 10; // check local Protobuf version on every Pod that this message flows to
 
+    /**
+     * Represents a config for the compression algorithm
+     */
+    message CompressConfig {
+        string algorithm = 1;  // compress algorithm used for request
+
+        uint64 high_watermark = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
+
+        float low_watermark = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
+
+        google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
+    }
+
     CompressConfig compression = 11; // compress configuration used for request
 
 }
 
-/**
- * Represents a config for the compression algorithm
- */
-message CompressConfig {
-    string algorithm = 1;  // compress algorithm used for request
 
-    uint64 high_watermark = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
-
-    float low_watermark = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
-
-    google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
-}
 
 message Status {
 
@@ -324,34 +326,6 @@ message QueryLang {
     int32 priority = 4; // when query lang is set on both driver and request levels, higher priority query lang is applied, lower priority is dropped
 }
 
-message SpawnRequest {
-
-    // Spawn a pea remotely, requires args of a pea
-    message PeaSpawnRequest {
-        repeated string args = 1; // a list of args string for BasePea
-    }
-
-    // Spawn a pod remotely, requires args of a pea
-    message PodSpawnRequest {
-        repeated string args = 1; // a list of args string for BasePod
-    }
-
-    // Spawn a parsed pod remotely, requires parsed pod structure
-    message MutablepodSpawnRequest {
-        PeaSpawnRequest head = 1; // a list of args string for the head BasePea
-        PeaSpawnRequest tail = 2; // a list of args string for the tail BasePea
-        repeated PeaSpawnRequest peas = 3; // a list of args string for the Peas
-    }
-
-    oneof body {
-        PeaSpawnRequest pea = 1;
-        PodSpawnRequest pod = 2; // send a PodSpawnRequest and it will switch to PodDictSpawnRequest as returns
-        MutablepodSpawnRequest mutable_pod = 3;
-    }
-
-    string log_record = 4; // one line of the log record
-    Status status = 5; // status info
-}
 
 /**
  * jina gRPC service.
@@ -362,10 +336,6 @@ service JinaRPC {
     }
 
     rpc CallUnary (Request) returns (Request) {
-    }
-
-    // Pass in a Request and a filled Request will be returned.
-    rpc Spawn (SpawnRequest) returns (stream SpawnRequest) {
     }
 }
 
