@@ -344,15 +344,24 @@ class HubIO:
 
             if is_build_success:
                 if self.args.test_uses:
+                    p_names = []
                     try:
                         is_build_success = False
-                        self._test_build(image)
+                        p_names = self._test_build(image)
                         is_build_success = True
                     except Exception as ex:
                         self.logger.error(f'something wrong while testing the build: {repr(ex)}')
                         ex = HubBuilderTestError(ex)
                         _except_strs.append(repr(ex))
                         _excepts.append(ex)
+                    finally:
+                        if self.args.daemon:
+                            try:
+                                for p in p_names:
+                                    self._raw_client.stop(p)
+                            except:
+                                pass  # suppress on purpose
+                        self._raw_client.prune_containers()
 
                 _version = self.manifest['version'] if 'version' in self.manifest else '0.0.1'
                 info, env_info = get_full_version()
@@ -409,23 +418,23 @@ class HubIO:
             with Pod(set_pod_parser().parse_args(['--uses', self.config_yaml_path])):
                 pass
 
+        p_names = []
         # test uses at Pod level (with docker)
         if self.args.test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
-            with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name])):
+            with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name] +
+                                                 ['--daemon'] if self.args.daemon else [])):
                 pass
-            if self.args.daemon:
-                self._raw_client.stop(p_name)
-            self._raw_client.prune_containers()
+            p_names.append(p_name)
 
         # test uses at Flow level
         if self.args.test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
             with Flow().add(name=random_name(), uses=image.tags[0], daemon=self.args.daemon):
                 pass
-            if self.args.daemon:
-                self._raw_client.stop(p_name)
-            self._raw_client.prune_containers()
+            p_names.append(p_name)
+
+        return p_names
 
     def dry_run(self) -> Dict:
         try:
