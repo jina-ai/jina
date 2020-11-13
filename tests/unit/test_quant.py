@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina.flow import Flow
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 from tests import random_docs
 
 parallel = 10
@@ -20,11 +20,11 @@ def get_output(req):
 
     err = 0
     for d in req.docs:
-        recv = GenericNdArray(d.embedding).value
+        recv = NdArray(d.embedding).value
         send = np.random.random([embed_dim])
         err += np.sum(np.abs(recv - send)) / embed_dim
         for c in d.chunks:
-            recv = GenericNdArray(c.embedding).value
+            recv = NdArray(c.embedding).value
             send = np.random.random([embed_dim])
             err += np.sum(np.abs(recv - send)) / embed_dim
 

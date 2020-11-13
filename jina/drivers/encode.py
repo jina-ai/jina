@@ -5,7 +5,7 @@ from typing import Sequence
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 if False:
     from ..proto import jina_pb2
@@ -22,7 +22,7 @@ class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         contents, docs_pts, bad_doc_ids = extract_docs(docs, embedding=False)
 
         if bad_doc_ids:
@@ -36,4 +36,4 @@ class EncodeDriver(BaseEncodeDriver):
                     f'mismatched {len(docs_pts)} docs from level {docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(docs_pts, embeds):
-                GenericNdArray(doc.embedding).value = embedding
+                NdArray(doc.embedding).value = embedding

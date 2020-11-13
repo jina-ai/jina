@@ -42,5 +42,5 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         self._reverse = reverse
         self._field = field
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         docs.sort(key=lambda x: dunder_get(x, self.field), reverse=self.reverse)

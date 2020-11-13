@@ -17,7 +17,7 @@ from ..enums import SocketType
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..logging import default_logger, profile_logger, JinaLogger
 from ..proto import jina_pb2
-from ..proto.message import ProtoMessage, ControlMessage
+from jina.types.message import Message, ControlMessage
 
 if False:
     import argparse
@@ -191,7 +191,7 @@ class Zmqlet:
                              'bytes_sent': self.bytes_sent,
                              'bytes_recv': self.bytes_recv})
 
-    def send_message(self, msg: 'ProtoMessage'):
+    def send_message(self, msg: 'Message'):
         """Send a message via the output socket
 
         :param msg: the protobuf message to send
@@ -211,13 +211,13 @@ class Zmqlet:
 
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        msg = ControlMessage(jina_pb2.Request.ControlRequest.IDLE,
+        msg = ControlMessage(jina_pb2.RequestProto.ControlRequestProto.IDLE,
                              pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
 
-    def recv_message(self, callback: Callable[['ProtoMessage'], 'ProtoMessage'] = None) -> 'ProtoMessage':
+    def recv_message(self, callback: Callable[['Message'], 'Message'] = None) -> 'Message':
         """Receive a protobuf message from the input socket
 
         :param callback: the callback function, which modifies the recevied message inplace.
@@ -247,7 +247,7 @@ class AsyncZmqlet(Zmqlet):
     def _get_zmq_ctx(self):
         return zmq.asyncio.Context()
 
-    async def send_message(self, msg: 'ProtoMessage', sleep: float = 0, **kwargs):
+    async def send_message(self, msg: 'Message', sleep: float = 0, **kwargs):
         """Send a protobuf message in async via the output socket
 
         :param msg: the protobuf message to send
@@ -262,7 +262,7 @@ class AsyncZmqlet(Zmqlet):
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'sending message error: {repr(ex)}, gateway cancelled?')
 
-    async def recv_message(self, callback: Callable[['ProtoMessage'], 'ProtoMessage'] = None) -> 'ProtoMessage':
+    async def recv_message(self, callback: Callable[['Message'], 'Message'] = None) -> 'Message':
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
             self.bytes_recv += msg.size
@@ -332,7 +332,7 @@ class ZmqStreamlet(Zmqlet):
         """Put :attr:`in_sock` back to the poller """
         self.in_sock.on_recv(self._in_sock_callback)
 
-    def start(self, callback: Callable[['ProtoMessage'], 'ProtoMessage']):
+    def start(self, callback: Callable[['Message'], 'Message']):
         def _callback(msg, sock_type):
             msg = _parse_from_frames(sock_type, msg)
             self.bytes_recv += msg.size
@@ -353,7 +353,7 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int) -> 'ProtoMessage':
+def send_ctrl_message(address: str, cmd: 'jina_pb2.RequestProto.ControlRequestProto', timeout: int) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
@@ -376,7 +376,7 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', time
         return r
 
 
-def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'ProtoMessage', timeout: int = -1, **kwargs) -> int:
+def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'Message', timeout: int = -1, **kwargs) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
@@ -418,7 +418,7 @@ def _prep_recv_socket(sock, timeout):
         sock.setsockopt(zmq.RCVTIMEO, -1)
 
 
-async def send_message_async(sock: 'zmq.Socket', msg: 'ProtoMessage', timeout: int = -1,
+async def send_message_async(sock: 'zmq.Socket', msg: 'Message', timeout: int = -1,
                              **kwargs) -> int:
     """Send a protobuf message to a socket in async manner
 
@@ -448,7 +448,7 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'ProtoMessage', timeout: i
             pass
 
 
-def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'ProtoMessage':
+def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
     """ Receive a protobuf message from a socket
 
     :param sock: the socket to pull from
@@ -474,7 +474,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'ProtoMessa
 
 
 async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
-                             **kwargs) -> 'ProtoMessage':
+                             **kwargs) -> 'Message':
     """ Receive a protobuf message from a socket in async manner
 
     :param sock: the socket to pull from
@@ -507,9 +507,9 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
             pass
 
 
-def _parse_from_frames(sock_type, frames: List[bytes]) -> 'ProtoMessage':
+def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
     """
-    Build :class:`ProtoMessage` from a list of frames.
+    Build :class:`Message` from a list of frames.
 
     The list of frames (has length >=3) has the following structure:
 
@@ -519,7 +519,7 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'ProtoMessage':
 
     :param sock_type: the recv socket type
     :param frames: list of bytes to parse from
-    :return: a :class:`ProtoMessage` object
+    :return: a :class:`Message` object
     """
     if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
@@ -528,7 +528,7 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'ProtoMessage':
         # the router appends dealer id when receive it, we need to remove it
         frames.pop(0)
 
-    return ProtoMessage(frames[1], frames[2])
+    return Message(frames[1], frames[2])
 
 
 def _get_random_ipc() -> str:

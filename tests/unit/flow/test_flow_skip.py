@@ -11,14 +11,14 @@ class DummyCrafter(BaseCrafter):
 
 def test_bad_flow_skip_handle():
     def validate(req):
-        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.Status.ERROR]
+        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 3
-        assert req.status.code == jina_pb2.Status.ERROR
+        assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
         assert bad_routes[1].pod == 'r2'
-        assert bad_routes[1].status.code == jina_pb2.Status.ERROR_CHAINED
+        assert bad_routes[1].status.code == jina_pb2.StatusProto.ERROR_CHAINED
         assert bad_routes[2].pod == 'r3'
-        assert bad_routes[2].status.code == jina_pb2.Status.ERROR_CHAINED
+        assert bad_routes[2].status.code == jina_pb2.StatusProto.ERROR_CHAINED
 
     f = (Flow(skip_on_error=SkipOnErrorType.HANDLE).add(name='r1', uses='DummyCrafter')
          .add(name='r2')
@@ -33,7 +33,7 @@ def test_bad_flow_skip_handle_join():
     """When skipmode is set to handle, reduce driver wont work anymore"""
 
     def validate(req):
-        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.Status.ERROR]
+        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         # NOTE: tricky one:
         # the bad pods should be r1, either r2 or r3, joiner, gateway
         # the reason here is when skip strategy set to handle, then
@@ -43,10 +43,10 @@ def test_bad_flow_skip_handle_join():
         # finally, as joiner does not to reduce anymore, gateway will receive a
         # num_part=[1,2] message and raise an error
         assert len(bad_routes) == 4
-        assert req.status.code == jina_pb2.Status.ERROR
+        assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
         assert bad_routes[-1].pod == 'gateway'
-        assert bad_routes[-1].status.code == jina_pb2.Status.ERROR
+        assert bad_routes[-1].status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[-1].status.exception.name == 'GatewayPartialMessage'
 
     f = (Flow(skip_on_error=SkipOnErrorType.HANDLE).add(name='r1', uses='DummyCrafter')
@@ -61,9 +61,9 @@ def test_bad_flow_skip_handle_join():
 
 def test_bad_flow_skip_exec():
     def validate(req):
-        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.Status.ERROR]
+        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 1
-        assert req.status.code == jina_pb2.Status.ERROR
+        assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
 
     f = (Flow(skip_on_error=SkipOnErrorType.EXECUTOR).add(name='r1', uses='DummyCrafter')
@@ -79,9 +79,9 @@ def test_bad_flow_skip_exec_join():
     """Make sure the exception wont affect the gather/reduce ops"""
 
     def validate(req):
-        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.Status.ERROR]
+        bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 1
-        assert req.status.code == jina_pb2.Status.ERROR
+        assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
 
     f = (Flow(skip_on_error=SkipOnErrorType.EXECUTOR).add(name='r1', uses='DummyCrafter')

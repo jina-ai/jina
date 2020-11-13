@@ -9,8 +9,8 @@ from jina.proto import jina_pb2
 
 @pytest.mark.parametrize('cb_on, x_type', [('DOCS', RepeatedCompositeContainer),
                                            ('GROUNDTRUTHS', RepeatedCompositeContainer),
-                                           ('REQUEST', jina_pb2.Request),
-                                           ('BODY', jina_pb2.Request.IndexRequest),
+                                           ('REQUEST', jina_pb2.RequestProto),
+                                           ('BODY', jina_pb2.RequestProto.IndexRequestProto),
                                            ])
 def test_diff_field(cb_on, x_type):
     def validate(x):

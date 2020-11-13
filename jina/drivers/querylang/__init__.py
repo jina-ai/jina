@@ -45,8 +45,8 @@ class BaseQueryLangDriver(BaseDriver):
     def parse(self, raw_filter):
         raise NotImplementedError
 
-    def execute(self, docs: Iterator['jina_pb2.Document'], driver_query, req_query) -> Optional[
-        Iterator['jina_pb2.Document']]:
+    def execute(self, docs: Iterator['jina_pb2.DocumentProto'], driver_query, req_query) -> Optional[
+        Iterator['jina_pb2.DocumentProto']]:
         """
 
         :param docs: the document to be filtered

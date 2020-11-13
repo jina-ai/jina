@@ -131,16 +131,16 @@ def test_wrap_func():
 
 def test_pprint_routes(capfd):
     result = []
-    r = jina_pb2.Route()
-    r.status.code = jina_pb2.Status.ERROR
+    r = jina_pb2.RouteProto()
+    r.status.code = jina_pb2.StatusProto.ERROR
     r.status.exception.stacks.extend(['r1\nline1', 'r2\nline2'])
     result.append(r)
-    r = jina_pb2.Route()
-    r.status.code = jina_pb2.Status.ERROR_CHAINED
+    r = jina_pb2.RouteProto()
+    r.status.code = jina_pb2.StatusProto.ERROR_CHAINED
     r.status.exception.stacks.extend(['line1', 'line2'])
     result.append(r)
-    r = jina_pb2.Route()
-    r.status.code = jina_pb2.Status.SUCCESS
+    r = jina_pb2.RouteProto()
+    r.status.code = jina_pb2.StatusProto.SUCCESS
     result.append(r)
     pprint_routes(result)
     out, err = capfd.readouterr()

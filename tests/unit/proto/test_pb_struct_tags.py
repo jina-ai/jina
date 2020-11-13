@@ -1,12 +1,12 @@
 import pytest
 from google.protobuf.json_format import MessageToJson, Parse
 
-from jina.proto.jina_pb2 import Document
+from jina.proto.jina_pb2 import DocumentProto
 
 
 @pytest.fixture(scope='function')
 def document():
-    d = Document()
+    d = DocumentProto()
     d.tags['int'] = 1  # will convert to float!!!
     d.tags['str'] = 'blah'
     d.tags['float'] = 0.1234
@@ -17,7 +17,7 @@ def document():
 
 def test_tags(document):
     jd = MessageToJson(document)
-    d2 = Parse(jd, Document())
+    d2 = Parse(jd, DocumentProto())
     assert isinstance(d2.tags['int'], float)
     assert isinstance(d2.tags['str'], str)
     assert isinstance(d2.tags['float'], float)

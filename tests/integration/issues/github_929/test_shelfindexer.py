@@ -24,7 +24,7 @@ def test_shelf_in_flow(uses):
         f.index(docs)
 
     m2 = used_memory()
-    d = jina_pb2.Document()
+    d = jina_pb2.DocumentProto()
 
     def validate(req):
         m4 = used_memory()

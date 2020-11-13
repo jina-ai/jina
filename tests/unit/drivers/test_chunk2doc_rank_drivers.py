@@ -47,7 +47,7 @@ def create_document_to_score():
     # |- chunk: 3
     #    |- matches: (id: 6, parent_id: 60, score.value: 6),
     #    |- matches: (id: 7, parent_id: 70, score.value: 7)
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = '1'
     for c in range(2):
         chunk = doc.chunks.add()
@@ -71,7 +71,7 @@ def create_chunk_matches_to_score():
     # |- chunks: (id: 20)
     #    |- matches: (id: 21, parent_id: 2, score.value: 4),
     #    |- matches: (id: 22, parent_id: 2, score.value: 5)
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = '100'
     doc.granularity = 0
     num_matches = 2
@@ -99,7 +99,7 @@ def create_chunk_chunk_matches_to_score():
     #       |- chunks: (id: 20)
     #           |- matches: (id: 21, parent_id: 2, score.value: 4),
     #           |- matches: (id: 22, parent_id: 2, score.value: 5)
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = '100'
     doc.granularity = 0
     chunk = doc.chunks.add()

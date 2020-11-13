@@ -5,7 +5,7 @@ import numpy as np
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class MockIndexer(BaseKVIndexer):
@@ -13,7 +13,7 @@ class MockIndexer(BaseKVIndexer):
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         pass
 
-    def query(self, key: int) -> Optional['jina_pb2.Document']:
+    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
         if key in self.db.keys():
             return self.db[key]
         else:
@@ -30,18 +30,18 @@ class MockIndexer(BaseKVIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        doc1 = jina_pb2.Document()
+        doc1 = jina_pb2.DocumentProto()
         doc1.id = '1'
-        GenericNdArray(doc1.embedding).value = np.array([int(doc1.id)])
-        doc2 = jina_pb2.Document()
+        NdArray(doc1.embedding).value = np.array([int(doc1.id)])
+        doc2 = jina_pb2.DocumentProto()
         doc2.id = '2'
-        GenericNdArray(doc2.embedding).value = np.array([int(doc2.id)])
-        doc3 = jina_pb2.Document()
+        NdArray(doc2.embedding).value = np.array([int(doc2.id)])
+        doc3 = jina_pb2.DocumentProto()
         doc3.id = '3'
-        GenericNdArray(doc3.embedding).value = np.array([int(doc3.id)])
-        doc4 = jina_pb2.Document()
+        NdArray(doc3.embedding).value = np.array([int(doc3.id)])
+        doc4 = jina_pb2.DocumentProto()
         doc4.id = '4'
-        GenericNdArray(doc4.embedding).value = np.array([int(doc4.id)])
+        NdArray(doc4.embedding).value = np.array([int(doc4.id)])
         self.db = {
             1: doc1.SerializeToString(),
             2: doc2.SerializeToString(),
@@ -71,7 +71,7 @@ def create_document_to_search():
     #   - chunk: 3
     #   - chunk: 4
     #   - chunk: 5 - will be missing from KV indexer
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.granularity = 0
     doc.id = '0'
     for c in range(5):
@@ -90,7 +90,7 @@ def create_document_to_search_with_matches_on_chunks():
     #     - match: 4
     #     - match: 5 - will be missing from KV indexer
     #     - match: 6 - will be missing from KV indexer
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = '0'
     doc.granularity = 0
     chunk = doc.chunks.add()
@@ -111,15 +111,15 @@ def test_vectorsearch_driver_mock_indexer_apply_all():
 
     assert len(doc.chunks) == 5
     for chunk in doc.chunks:
-        assert GenericNdArray(chunk.embedding).value is None
+        assert NdArray(chunk.embedding).value is None
 
     driver._apply_all(doc.chunks)
 
     # chunk idx: 5 had no matched and is removed as missing idx
     assert len(doc.chunks) == 4
     for chunk in doc.chunks:
-        assert GenericNdArray(chunk.embedding).value is not None
-        embedding_array = GenericNdArray(chunk.embedding).value
+        assert NdArray(chunk.embedding).value is not None
+        embedding_array = NdArray(chunk.embedding).value
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
@@ -132,15 +132,15 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply():
 
     assert len(doc.chunks) == 5
     for chunk in doc.chunks:
-        assert GenericNdArray(chunk.embedding).value is None
+        assert NdArray(chunk.embedding).value is None
 
     driver._traverse_apply(doc.chunks)
 
     # chunk idx: 5 had no matched and is removed as missing idx
     assert len(doc.chunks) == 4
     for chunk in doc.chunks:
-        assert GenericNdArray(chunk.embedding).value is not None
-        embedding_array = GenericNdArray(chunk.embedding).value
+        assert NdArray(chunk.embedding).value is not None
+        embedding_array = NdArray(chunk.embedding).value
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
@@ -156,6 +156,6 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
     chunk = doc.chunks[0]
     assert len(chunk.matches) == 3
     for match in chunk.matches:
-        assert GenericNdArray(match.embedding).value is not None
-        embedding_array = GenericNdArray(match.embedding).value
+        assert NdArray(match.embedding).value is not None
+        embedding_array = NdArray(match.embedding).value
         np.testing.assert_equal(embedding_array, np.array([int(match.id)]))

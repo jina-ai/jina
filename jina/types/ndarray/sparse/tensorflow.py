@@ -7,6 +7,8 @@ from . import BaseSparseNdArray
 if False:
     import numpy as np
 
+__all__ = ['SparseNdArray']
+
 
 class SparseNdArray(BaseSparseNdArray):
     """Tensorflow powered sparse ndarray, i.e. SparseTensor

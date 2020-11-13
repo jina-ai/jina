@@ -4,12 +4,12 @@ from PIL import Image
 
 from jina.drivers.convert import Blob2PngURI
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 def create_document(arr_size):
-    doc = jina_pb2.Document()
-    GenericNdArray(doc.blob).value = np.random.randint(0, 255, arr_size)
+    doc = jina_pb2.DocumentProto()
+    NdArray(doc.blob).value = np.random.randint(0, 255, arr_size)
     return doc
 
 

@@ -1,3 +1,37 @@
+"""
+Top-level module of Jina.
+
+The primary function of this module is to import all of the public Jina
+interfaces into a single place. The interfaces themselves are located in
+sub-modules, as described below.
+
+"""
+
+# DO SOME OS-WISE PATCHES
+
+import datetime as _datetime
+import os as _os
+import platform as _platform
+import signal as _signal
+import sys as _sys
+import types as _types
+
+if _sys.version_info < (3, 7, 0):
+    raise OSError(f'Jina requires Python 3.7 and above, but yours is {_sys.version_info}')
+
+if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
+    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
+    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+    from multiprocessing import set_start_method as _set_start_method
+
+    _set_start_method('fork')
+
+# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
+_os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
+
+
+# Underscore variables shared globally
+
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
@@ -9,29 +43,7 @@ __version__ = '0.7.9'
 # this is managed by proto/build-proto.sh and updated on every execution
 __proto_version__ = '0.0.76'
 
-import platform
-import sys
-
-# do some os-wise patches
-
-if sys.version_info < (3, 7, 0):
-    raise OSError(f'Jina requires Python 3.7 and above, but yours is {sys.version_info}')
-
-if sys.version_info >= (3, 8, 0) and platform.system() == 'Darwin':
-    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
-    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
-    from multiprocessing import set_start_method
-
-    set_start_method('fork')
-
-from datetime import datetime
-from types import SimpleNamespace
-import os
-
-# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
-os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
-
-__uptime__ = datetime.now().strftime('%Y%m%d%H%M%S')
+__uptime__ = _datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
 # update on MacOS
 # 1. clean this tuple,
@@ -63,21 +75,28 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_VCS_VERSION',
                 'JINA_WARN_UNNAMED')
 
-__default_host__ = os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
+__default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
-__binary_delimiter__ = os.environ.get('JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57').encode()
+__binary_delimiter__ = _os.environ.get('JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57').encode()
 
-JINA_GLOBAL = SimpleNamespace()
-JINA_GLOBAL.imported = SimpleNamespace()
+_names_with_underscore = ['__version__', '__copyright__', '__license__',
+                          '__proto_version__', '__default_host__', '__ready_msg__',
+                          '__stop_msg__', '__binary_delimiter__', '__jina_env__',
+                          '__uptime__']
+
+# ADD GLOBAL NAMESPACE VARIABLES
+
+JINA_GLOBAL = _types.SimpleNamespace()
+JINA_GLOBAL.imported = _types.SimpleNamespace()
 JINA_GLOBAL.imported.executors = False
 JINA_GLOBAL.imported.drivers = False
 JINA_GLOBAL.imported.hub = False
-JINA_GLOBAL.logserver = SimpleNamespace()
+JINA_GLOBAL.logserver = _types.SimpleNamespace()
 
 
-def import_classes(namespace: str, targets=None,
-                   show_import_table: bool = False, import_once: bool = False):
+def _import_classes(namespace: str, targets=None,
+                    show_import_table: bool = False, import_once: bool = False):
     """
     Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML
     constructor beforehand. It can be also used to import third-part or external executors.
@@ -214,17 +233,14 @@ def import_classes(namespace: str, targets=None,
 
 
 # driver first, as executor may contain driver
-import_classes('jina.drivers', show_import_table=False, import_once=True)
-import_classes('jina.executors', show_import_table=False, import_once=True)
-import_classes('jina.hub', show_import_table=False, import_once=True)
+_import_classes('jina.drivers', show_import_table=False, import_once=True)
+_import_classes('jina.executors', show_import_table=False, import_once=True)
+_import_classes('jina.hub', show_import_table=False, import_once=True)
 
-# manually install the default signal handler
-import signal
-
-signal.signal(signal.SIGINT, signal.default_int_handler)
+_signal.signal(_signal.SIGINT, _signal.default_int_handler)
 
 
-def set_nofile(nofile_atleast=4096):
+def _set_nofile(nofile_atleast=4096):
     """
     sets nofile soft limit to at least 4096, useful for running matlplotlib/seaborn on
     parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256
@@ -264,4 +280,15 @@ def set_nofile(nofile_atleast=4096):
     return soft, hard
 
 
-set_nofile()
+_set_nofile()
+
+# Primitive data type
+from jina.types.ndarray.generic import NdArray
+from jina.types.message.request import Request
+from jina.types.message import Message
+
+# Flow
+from jina.flow import Flow
+
+__all__ = [_s for _s in dir() if not _s.startswith('_')]
+__all__.extend([_s for _s in _names_with_underscore])

@@ -6,7 +6,7 @@ from typing import Sequence, Tuple
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs
 from ..proto import uid, jina_pb2
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -57,12 +57,12 @@ class KVSearchDriver(BaseSearchDriver):
         super().__init__(*args, **kwargs)
         self._is_merge = is_merge
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
             serialized_doc = self.exec_fn(self.id2hash(retrieved_doc.id))
             if serialized_doc:
-                r = jina_pb2.Document()
+                r = jina_pb2.DocumentProto()
                 r.ParseFromString(serialized_doc)
 
                 # TODO: this isn't perfect though, merge applies recursively on all children
@@ -85,10 +85,10 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
     def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         embeds = self.exec_fn([self.id2hash(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
-            GenericNdArray(doc.embedding).value = embedding
+            NdArray(doc.embedding).value = embedding
 
 
 class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
@@ -109,7 +109,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
         if not doc_pts:
@@ -135,4 +135,4 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
                 r.score.value = score
                 r.score.op_name = op_name
                 if vec is not None:
-                    GenericNdArray(r.embedding).value = vec
+                    NdArray(r.embedding).value = vec

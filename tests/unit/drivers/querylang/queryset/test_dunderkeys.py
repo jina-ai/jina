@@ -6,7 +6,7 @@ from jina.drivers.querylang.queryset.dunderkey import (
     undunder_keys,
     dunder_truncate,
 )
-from jina.proto.jina_pb2 import Document
+from jina.proto.jina_pb2 import DocumentProto
 
 
 def test_dunder_get():
@@ -22,7 +22,7 @@ def test_dunder_get():
 
     assert dunder_get(A, 'b__c') == 5
 
-    d = Document()
+    d = DocumentProto()
     d.tags['a'] = 'hello'
     assert dunder_get(d, 'tags__a') == 'hello'
 

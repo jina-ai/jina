@@ -89,13 +89,13 @@ class ProgressBar(TimeContext):
         sys.stdout.write(f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s", "green")}\n')
 
 
-def pprint_routes(routes: Sequence['jina_pb2.Route'],
-                  status: 'jina_pb2.Status' = None,
+def pprint_routes(routes: Sequence['jina_pb2.RouteProto'],
+                  status: 'jina_pb2.StatusProto' = None,
                   stack_limit: int = 3):
     """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`
 
-    :param routes: list of :class:`jina_pb2.Route` objects from Envelop
-    :param status: the :class:`jina_pb2.Status` object
+    :param routes: list of :class:`jina_pb2.RouteProto` objects from Envelop
+    :param status: the :class:`jina_pb2.StatusProto` object
     :param stack_limit: traceback limit
     :return:
     """
@@ -123,9 +123,9 @@ def pprint_routes(routes: Sequence['jina_pb2.Route'],
 
     for route in routes:
         status_icon = '🟢'
-        if route.status.code == jina_pb2.Status.ERROR:
+        if route.status.code == jina_pb2.StatusProto.ERROR:
             status_icon = '🔴'
-        elif route.status.code == jina_pb2.Status.ERROR_CHAINED:
+        elif route.status.code == jina_pb2.StatusProto.ERROR_CHAINED:
             status_icon = '⚪'
 
         add_row([f'{status_icon} {route.pod}',

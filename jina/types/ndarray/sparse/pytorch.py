@@ -8,6 +8,8 @@ from . import BaseSparseNdArray
 if False:
     import numpy as np
 
+__all__ = ['SparseNdArray']
+
 
 class SparseNdArray(BaseSparseNdArray):
     """Pytorch powered sparse ndarray, i.e. FloatTensor

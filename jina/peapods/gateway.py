@@ -17,7 +17,7 @@ from ..helper import use_uvloop
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 from ..proto import jina_pb2_grpc, jina_pb2
-from ..proto.message import ProtoMessage
+from jina.types.message import Message
 
 use_uvloop()
 
@@ -92,8 +92,8 @@ class GatewayPea:
             self.name = args.name or self.__class__.__name__
             self.logger = JinaLogger(self.name, **vars(args))
 
-        def handle(self, msg: 'ProtoMessage') -> 'jina_pb2.Request':
-            """ Note gRPC accepts :class:`jina_pb2.Request` only, so no more :class:`LazyRequest`.
+        def handle(self, msg: 'Message') -> 'jina_pb2.RequestProto':
+            """ Note gRPC accepts :class:`jina_pb2.RequestProto` only, so no more :class:`Request`.
 
             :param msg:
             :return:
@@ -103,8 +103,8 @@ class GatewayPea:
 
         async def CallUnary(self, request, context):
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
-                await zmqlet.send_message(ProtoMessage(None, request, 'gateway',
-                                                       **vars(self.args)))
+                await zmqlet.send_message(Message(None, request, 'gateway',
+                                                  **vars(self.args)))
                 return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
@@ -119,8 +119,8 @@ class GatewayPea:
                         try:
                             asyncio.create_task(
                                 zmqlet.send_message(
-                                    ProtoMessage(None, next(request_iterator), 'gateway',
-                                                 **vars(self.args))))
+                                    Message(None, next(request_iterator), 'gateway',
+                                            **vars(self.args))))
                             fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                         except StopIteration:
                             return True

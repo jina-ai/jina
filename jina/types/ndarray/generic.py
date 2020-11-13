@@ -5,10 +5,12 @@ from .dense import BaseDenseNdArray
 from .dense.numpy import DenseNdArray
 from .sparse import BaseSparseNdArray
 from .sparse.scipy import SparseNdArray
-from .. import jina_pb2
+from ...proto import jina_pb2
+
+__all__ = ['NdArray']
 
 
-class GenericNdArray(BaseNdArray):
+class NdArray(BaseNdArray):
     """A generic view of the Protobuf NdArray, unifying the view of DenseNdArray and SparseNdArray
 
     This class should be used in nearly all the Jina context.
@@ -19,10 +21,10 @@ class GenericNdArray(BaseNdArray):
     .. code-block:: python
 
         # start from empty proto
-        a = GenericNdArray()
+        a = NdArray()
 
         # start from an existig proto
-        a = GenericNdArray(doc.embedding)
+        a = NdArray(doc.embedding)
 
         # set value
         a.value = np.random.random([10, 5])
@@ -37,7 +39,7 @@ class GenericNdArray(BaseNdArray):
 
     Advanced usage:
 
-    :class:`GenericNdArray` also takes a dense NdArray and a sparse NdArray constructor
+    :class:`NdArray` also takes a dense NdArray and a sparse NdArray constructor
     as arguments. You can consider them as the backend for dense and sparse NdArray. The combination
     is your choice, it could be:
 
@@ -47,25 +49,25 @@ class GenericNdArray(BaseNdArray):
         # numpy (dense) + scipy (sparse)
         from .dense.numpy import DenseNdArray
         from .sparse.scipy import SparseNdArray
-        GenericNdArray(dense_cls=DenseNdArray, sparse_cls=SparseNdArray)
+        NdArray(dense_cls=DenseNdArray, sparse_cls=SparseNdArray)
 
         # numpy (dense) + pytorch (sparse)
         from .dense.numpy import DenseNdArray
         from .sparse.pytorch import SparseNdArray
-        GenericNdArray(dense_cls=DenseNdArray, sparse_cls=SparseNdArray)
+        NdArray(dense_cls=DenseNdArray, sparse_cls=SparseNdArray)
 
         # numpy (dense) + tensorflow (sparse)
         from .dense.numpy import DenseNdArray
         from .sparse.tensorflow import SparseNdArray
-        GenericNdArray(dense_cls=DenseNdArray, sparse_cls=SparseNdArray)
+        NdArray(dense_cls=DenseNdArray, sparse_cls=SparseNdArray)
 
     Once you set `sparse_cls`, it will only accept the data type in that particular type.
-    That is, you can not use a :class:`GenericNdArray` equipped with Tensorflow sparse to
+    That is, you can not use a :class:`NdArray` equipped with Tensorflow sparse to
     set/get Pytorch or Scipy sparse matrices.
 
     """
 
-    def __init__(self, proto: 'jina_pb2.NdArray' = None,
+    def __init__(self, proto: 'jina_pb2.NdArrayProto' = None,
                  is_sparse: bool = False,
                  dense_cls: Type['BaseDenseNdArray'] = DenseNdArray,
                  sparse_cls: Type['BaseSparseNdArray'] = SparseNdArray,
@@ -87,7 +89,7 @@ class GenericNdArray(BaseNdArray):
         self._kwargs = kwargs
 
     def null_proto(self):
-        return jina_pb2.NdArray()
+        return jina_pb2.NdArrayProto()
 
     @property
     def value(self):

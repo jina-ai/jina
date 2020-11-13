@@ -6,7 +6,7 @@ from typing import Dict, Sequence, Set, Tuple
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
 from ..proto import jina_pb2, uid
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class CraftDriver(BaseExecutableDriver):
@@ -15,19 +15,19 @@ class CraftDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs):
         for doc in docs:
             ret = self.exec_fn(**pb_obj2dict(doc, self.exec.required_keys))
             if ret:
                 self.set_doc_attr(doc, ret)
 
-    def set_doc_attr(self, doc: 'jina_pb2.Document', doc_info: Dict, protected_keys: Set = None):
+    def set_doc_attr(self, doc: 'jina_pb2.DocumentProto', doc_info: Dict, protected_keys: Set = None):
         for k, v in doc_info.items():
             if k == 'blob':
-                if isinstance(v, jina_pb2.NdArray):
+                if isinstance(v, jina_pb2.NdArrayProto):
                     doc.blob.CopyFrom(v)
                 else:
-                    GenericNdArray(doc.blob).value = v
+                    NdArray(doc.blob).value = v
             elif isinstance(protected_keys, dict) and k in protected_keys:
                 self.logger.warning(f'you are assigning a {k} in {self.exec.__class__}, '
                                     f'is it intentional? {k} will be overwritten by {self.__class__} '
@@ -55,7 +55,7 @@ class SegmentDriver(CraftDriver):
 
         self._protected_fields = {'length', 'id', 'parent_id', 'granularity'}
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs):
         for doc in docs:
             _args_dict = pb_obj2dict(doc, self.exec.required_keys)
             ret = self.exec_fn(**_args_dict)

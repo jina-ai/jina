@@ -4,7 +4,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 if False:
     from ..proto import jina_pb2
@@ -31,8 +31,8 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             *args,
             **kwargs,
@@ -146,8 +146,8 @@ class Prediction2DocBlobDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             *args,
             **kwargs,
@@ -160,4 +160,4 @@ class Prediction2DocBlobDriver(BasePredictDriver):
         if docs_pts:
             prediction = self.exec_fn(np.stack(embed_vecs))
             for doc, pred in zip(docs_pts, prediction):
-                GenericNdArray(doc.blob).value = pred
+                NdArray(doc.blob).value = pred

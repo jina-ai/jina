@@ -3,10 +3,12 @@ from typing import List
 import numpy as np
 
 from . import BaseSparseNdArray
-from ... import jina_pb2
+from ....proto import jina_pb2
 
 if False:
     import scipy.sparse
+
+__all__ = ['SparseNdArray']
 
 
 class SparseNdArray(BaseSparseNdArray):
@@ -19,7 +21,7 @@ class SparseNdArray(BaseSparseNdArray):
         https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
 
-    def __init__(self, proto: 'jina_pb2.SparseNdArray' = None, sp_format: str = 'coo', *args, **kwargs):
+    def __init__(self, proto: 'jina_pb2.SparseNdArrayProto' = None, sp_format: str = 'coo', *args, **kwargs):
         """
 
         :param sp_format: the sparse format of the scipy matrix. one of 'coo', 'bsr', 'csc', 'csr'
