@@ -16,7 +16,7 @@ from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..enums import PeaRoleType, SkipOnErrorType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
-    ModelCheckpointNotExist, ChainedPodException
+    ChainedPodException
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
@@ -196,9 +196,8 @@ class BasePea(metaclass=PeaMeta):
                 self.args.separated_workspace, self.args.pea_id)
             self.executor.attach(pea=self)
         except FileNotFoundError as ex:
-            self.logger.error(f'fail to load dependent: {repr(ex)}')
-            if not isinstance(ex, ModelCheckpointNotExist):
-                raise ExecutorFailToLoad from ex
+            self.logger.error(f'fail to load file dependency: {repr(ex)}')
+            raise ExecutorFailToLoad from ex
         except Exception as ex:
             raise ExecutorFailToLoad from ex
 

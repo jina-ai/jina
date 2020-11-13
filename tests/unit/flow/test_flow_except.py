@@ -1,5 +1,3 @@
-import pytest
-
 from jina.excepts import ModelCheckpointNotExist
 from jina.executors.crafters import BaseCrafter
 from jina.executors.encoders import BaseEncoder
@@ -73,12 +71,6 @@ def test_except_with_parallel():
     with f:
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
-
-
-def test_except_pretrained_model_file():
-    with pytest.raises(ModelCheckpointNotExist):
-        with Flow().add(name='r2', uses='!PretrainedModelEncoder', parallel=1):
-            pass
 
 
 def test_on_error_callback():

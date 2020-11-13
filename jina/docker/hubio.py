@@ -336,7 +336,6 @@ class HubIO:
 
             if is_build_success:
                 if self.args.test_uses:
-                    from jina.excepts import ModelCheckpointNotExist
                     try:
                         is_build_success = False
                         from jina.flow import Flow
