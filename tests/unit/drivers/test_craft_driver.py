@@ -51,4 +51,4 @@ def test_craft_driver():
     assert docs[0].weight == 10
     with pytest.raises(AttributeError) as error:
         driver._apply_all(docs[1:2])
-    assert error.value.__str__() == '\'Document\' object has no attribute \'non_existing_key\''
+    assert error.value.__str__() == '\'DocumentProto\' object has no attribute \'non_existing_key\''

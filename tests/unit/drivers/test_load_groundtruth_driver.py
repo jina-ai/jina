@@ -73,7 +73,7 @@ def mock_groundtruth_indexer():
 
 @pytest.fixture(scope='function')
 def eval_request():
-    req = jina_pb2.RequestProto.SearchRequest()
+    req = jina_pb2.RequestProto.SearchRequestProto()
     # doc: 1
     # doc: 2
     # doc: 3

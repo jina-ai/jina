@@ -119,7 +119,7 @@ def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_drive
     simple_multimodal_driver._apply_all([doc_with_multimodal_chunks_wrong])
     doc = doc_with_multimodal_chunks_wrong
     assert len(doc.chunks) == 3
-    # Document consider invalid to be encoded by the driver
+    # DocumentProto consider invalid to be encoded by the driver
     assert NdArray(doc.embedding).value is None
 
 

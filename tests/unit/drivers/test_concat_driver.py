@@ -4,7 +4,7 @@ import numpy as np
 
 from jina.flow import Flow
 from jina.proto import uid
-from jina.proto.jina_pb2 import Document
+from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,12 +16,12 @@ e4 = np.random.random([9])
 
 
 def input_fn():
-    doc1 = Document()
+    doc1 = DocumentProto()
     NdArray(doc1.embedding).value = e1
     c = doc1.chunks.add()
     NdArray(c.embedding).value = e2
     c.id = uid.new_doc_id(c)
-    doc2 = Document()
+    doc2 = DocumentProto()
     NdArray(doc2.embedding).value = e3
     d = doc2.chunks.add()
     d.id = uid.new_doc_id(d)

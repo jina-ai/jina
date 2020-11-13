@@ -325,7 +325,7 @@ class Message:
 
 
 class ControlMessage(Message):
-    def __init__(self, command: 'jina_pb2.RequestProto.ControlRequest',
+    def __init__(self, command: 'jina_pb2.RequestProto.ControlRequestProto',
                  *args, **kwargs):
         req = jina_pb2.RequestProto()
         req.control.command = command

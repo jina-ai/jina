@@ -1,10 +1,10 @@
 from jina.flow import Flow
-from jina.proto.jina_pb2 import Document
+from jina.proto.jina_pb2 import DocumentProto
 
 
 def input_fn():
-    doc1 = Document()
-    doc2 = Document()
+    doc1 = DocumentProto()
+    doc2 = DocumentProto()
     ev1 = doc1.evaluations.add()
     ev1.value = 1
     ev1.op_name = 'op1'

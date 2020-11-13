@@ -91,7 +91,7 @@ class PyClient(GrpcClient):
         you should not use it in a for-loop. Use :meth:`call` instead.
         Nonetheless, you can use it for testing one query and check the result.
 
-        :param data: the binary data of the document or the ``Document`` in protobuf
+        :param data: the binary data of the document or the ``DocumentProto`` in protobuf
         :param mode: request will be sent in this mode, available ``train``, ``index``, ``query``
         """
         self.mode = mode
@@ -184,13 +184,13 @@ class PyClient(GrpcClient):
         def req_gen():
             req = jina_pb2.RequestProto()
             if as_request == 'train':
-                req.train.CopyFrom(jina_pb2.RequestProto.TrainRequest())
+                req.train.CopyFrom(jina_pb2.RequestProto.TrainRequestProto())
             elif as_request == 'index':
-                req.index.CopyFrom(jina_pb2.RequestProto.IndexRequest())
+                req.index.CopyFrom(jina_pb2.RequestProto.IndexRequestProto())
             elif as_request == 'search':
-                req.search.CopyFrom(jina_pb2.RequestProto.SearchRequest())
+                req.search.CopyFrom(jina_pb2.RequestProto.SearchRequestProto())
             elif as_request == 'control':
-                req.control.CopyFrom(jina_pb2.RequestProto.ControlRequest())
+                req.control.CopyFrom(jina_pb2.RequestProto.ControlRequestProto())
             else:
                 raise ValueError(
                     f'as_request={as_request} is not supported, must be one of "train", "search", "index", "control"')

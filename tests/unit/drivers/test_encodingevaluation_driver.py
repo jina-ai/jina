@@ -91,7 +91,7 @@ def simple_chunk_evaluate_driver():
 @pytest.fixture
 def eval_request():
     num_docs = 10
-    req = jina_pb2.RequestProto.IndexRequest()
+    req = jina_pb2.RequestProto.IndexRequestProto()
     for idx in range(num_docs):
         doc = req.docs.add()
         gt = req.groundtruths.add()

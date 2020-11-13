@@ -51,7 +51,7 @@ def test_pb_obj2dict():
 
 def test_add_route():
     r = jina_pb2.RequestProto()
-    r.control.command = jina_pb2.RequestProto.ControlRequest.IDLE
+    r.control.command = jina_pb2.RequestProto.ControlRequestProto.IDLE
     msg = Message(None, r, pod_name='test1', identity='sda')
     msg.add_route('name', 'identity')
     assert len(msg.envelope.routes) == 2

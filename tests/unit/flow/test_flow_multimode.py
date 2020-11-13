@@ -9,7 +9,7 @@ from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
 from jina.proto import jina_pb2, uid
 
-# import Document
+# import DocumentProto
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

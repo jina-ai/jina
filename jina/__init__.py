@@ -7,6 +7,8 @@ sub-modules, as described below.
 
 """
 
+
+
 # DO SOME OS-WISE PATCHES
 
 import datetime as _datetime
@@ -30,6 +32,62 @@ if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 # ADD GLOBAL NAMESPACE VARIABLES
+
+
+# Underscore variables shared globally
+
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
+# do not change this line manually
+# this is managed by git tag and updated on every release
+__version__ = '0.7.9'
+
+# do not change this line manually
+# this is managed by proto/build-proto.sh and updated on every execution
+__proto_version__ = '0.0.76'
+
+__uptime__ = _datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+
+# update on MacOS
+# 1. clean this tuple,
+# 2. grep -ohE "\'JINA_.*?\'" **/*.py | sort -u | sed "s/$/,/g"
+# 3. copy all lines EXCEPT the first (which is the grep command in the last line)
+__jina_env__ = ('JINA_ARRAY_QUANT',
+                'JINA_BINARY_DELIMITER',
+                'JINA_CONTRIB_MODULE',
+                'JINA_CONTRIB_MODULE_IS_LOADING',
+                'JINA_CONTROL_PORT',
+                'JINA_DB_COLLECTION',
+                'JINA_DB_HOSTNAME',
+                'JINA_DB_NAME',
+                'JINA_DB_PASSWORD',
+                'JINA_DB_USERNAME',
+                'JINA_DEFAULT_HOST',
+                'JINA_DISABLE_UVLOOP',
+                'JINA_EXECUTOR_WORKDIR',
+                'JINA_FULL_CLI',
+                'JINA_IPC_SOCK_TMP',
+                'JINA_LOG_CONFIG',
+                'JINA_LOG_NO_COLOR',
+                'JINA_POD_NAME',
+                'JINA_PROFILING',
+                'JINA_RANDOM_PORTS',
+                'JINA_SOCKET_HWM',
+                'JINA_TEST_GPU',
+                'JINA_TEST_PRETRAINED',
+                'JINA_VCS_VERSION',
+                'JINA_WARN_UNNAMED')
+
+__default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
+__ready_msg__ = 'ready and listening'
+__stop_msg__ = 'terminated'
+__binary_delimiter__ = _os.environ.get('JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57').encode()
+
+_names_with_underscore = ['__version__', '__copyright__', '__license__',
+                          '__proto_version__', '__default_host__', '__ready_msg__',
+                          '__stop_msg__', '__binary_delimiter__', '__jina_env__',
+                          '__uptime__']
 
 JINA_GLOBAL = _types.SimpleNamespace()
 JINA_GLOBAL.imported = _types.SimpleNamespace()
@@ -226,60 +284,6 @@ def _set_nofile(nofile_atleast=4096):
 
 _set_nofile()
 
-# Underscore variables shared globally
-
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
-# do not change this line manually
-# this is managed by git tag and updated on every release
-__version__ = '0.7.9'
-
-# do not change this line manually
-# this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.76'
-
-__uptime__ = _datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-
-# update on MacOS
-# 1. clean this tuple,
-# 2. grep -ohE "\'JINA_.*?\'" **/*.py | sort -u | sed "s/$/,/g"
-# 3. copy all lines EXCEPT the first (which is the grep command in the last line)
-__jina_env__ = ('JINA_ARRAY_QUANT',
-                'JINA_BINARY_DELIMITER',
-                'JINA_CONTRIB_MODULE',
-                'JINA_CONTRIB_MODULE_IS_LOADING',
-                'JINA_CONTROL_PORT',
-                'JINA_DB_COLLECTION',
-                'JINA_DB_HOSTNAME',
-                'JINA_DB_NAME',
-                'JINA_DB_PASSWORD',
-                'JINA_DB_USERNAME',
-                'JINA_DEFAULT_HOST',
-                'JINA_DISABLE_UVLOOP',
-                'JINA_EXECUTOR_WORKDIR',
-                'JINA_FULL_CLI',
-                'JINA_IPC_SOCK_TMP',
-                'JINA_LOG_CONFIG',
-                'JINA_LOG_NO_COLOR',
-                'JINA_POD_NAME',
-                'JINA_PROFILING',
-                'JINA_RANDOM_PORTS',
-                'JINA_SOCKET_HWM',
-                'JINA_TEST_GPU',
-                'JINA_TEST_PRETRAINED',
-                'JINA_VCS_VERSION',
-                'JINA_WARN_UNNAMED')
-
-__default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
-__ready_msg__ = 'ready and listening'
-__stop_msg__ = 'terminated'
-__binary_delimiter__ = _os.environ.get('JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57').encode()
-
-_names_with_underscore = ['__version__', '__copyright__', '__license__',
-                          '__proto_version__', '__default_host__', '__ready_msg__',
-                          '__stop_msg__', '__binary_delimiter__', '__jina_env__',
-                          '__uptime__']
 
 from jina.flow import Flow
 from jina.types.ndarray.generic import NdArray

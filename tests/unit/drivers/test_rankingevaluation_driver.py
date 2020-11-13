@@ -85,7 +85,7 @@ def eval_request():
             match = doc.matches.add()
             match.tags['id'] = idx
 
-    req = jina_pb2.RequestProto.IndexRequest()
+    req = jina_pb2.RequestProto.IndexRequestProto()
     for idx in range(num_docs):
         doc = req.docs.add()
         gt = req.groundtruths.add()
@@ -127,7 +127,7 @@ def eval_request_with_unmatching_struct():
             match = doc.matches.add()
             match.tags['id'] = idx
 
-    req = jina_pb2.RequestProto.SearchRequest()
+    req = jina_pb2.RequestProto.SearchRequestProto()
     for idx in range(num_docs):
         doc = req.docs.add()
         gt = req.groundtruths.add()

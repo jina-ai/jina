@@ -5,10 +5,10 @@ from ...helper import cached_property
 from ...proto import jina_pb2
 
 _trigger_body_fields = set(kk
-                           for v in [jina_pb2.RequestProto.IndexRequest,
-                                     jina_pb2.RequestProto.SearchRequest,
-                                     jina_pb2.RequestProto.TrainRequest,
-                                     jina_pb2.RequestProto.ControlRequest]
+                           for v in [jina_pb2.RequestProto.IndexRequestProto,
+                                     jina_pb2.RequestProto.SearchRequestProto,
+                                     jina_pb2.RequestProto.TrainRequestProto,
+                                     jina_pb2.RequestProto.ControlRequestProto]
                            for kk in v.DESCRIPTOR.fields_by_name.keys())
 _trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()).difference(
     {'train', 'index', 'search', 'control'})
