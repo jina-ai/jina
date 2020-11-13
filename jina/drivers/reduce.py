@@ -29,8 +29,8 @@ class ReduceAllDriver(BaseRecursiveDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             *args,
             **kwargs) -> None:
@@ -45,8 +45,8 @@ class CollectEvaluationDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             *args,
             **kwargs) -> None:
@@ -68,8 +68,8 @@ class ConcatEmbedDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             concatenate: bool = False,
             *args,

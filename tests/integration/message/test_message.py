@@ -42,7 +42,7 @@ def test_envelope_in_sep_request():
             # mimic receive
             recv.clear()
             for m in sent:
-                msg = jina_pb2.Envelope()
+                msg = jina_pb2.EnvelopeProto()
                 msg.ParseFromString(m[0])
                 msg.request_id += 'r'
                 recv.append((msg, m[1]))

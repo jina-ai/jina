@@ -8,7 +8,7 @@ from jina.types.ndarray.generic import GenericNdArray
 
 
 def create_document(arr_size):
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     GenericNdArray(doc.blob).value = np.random.randint(0, 255, arr_size)
     return doc
 

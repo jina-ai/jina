@@ -211,7 +211,7 @@ class Zmqlet:
 
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        msg = ControlMessage(jina_pb2.Request.ControlRequest.IDLE,
+        msg = ControlMessage(jina_pb2.RequestProto.ControlRequest.IDLE,
                              pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
@@ -353,7 +353,7 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: 'jina_pb2.Request.ControlRequest', timeout: int) -> 'ProtoMessage':
+def send_ctrl_message(address: str, cmd: 'jina_pb2.RequestProto.ControlRequest', timeout: int) -> 'ProtoMessage':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send

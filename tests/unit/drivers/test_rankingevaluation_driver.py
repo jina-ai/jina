@@ -25,7 +25,7 @@ def simple_rank_evaluate_driver(field):
 def ground_truth_pairs():
     num_docs = 10
 
-    def add_matches(doc: jina_pb2.Document, num_matches):
+    def add_matches(doc: jina_pb2.DocumentProto, num_matches):
         for idx in range(num_matches):
             match = doc.matches.add()
             match.tags['id'] = idx
@@ -33,8 +33,8 @@ def ground_truth_pairs():
 
     pairs = []
     for idx in range(num_docs):
-        doc = jina_pb2.Document()
-        gt = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
+        gt = jina_pb2.DocumentProto()
         add_matches(doc, num_docs)
         add_matches(gt, num_docs)
         pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
@@ -65,7 +65,7 @@ class SimpleChunkRankEvaluateDriver(RankEvaluateDriver):
         return self._exec_fn
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
@@ -80,12 +80,12 @@ def eval_request():
     num_docs = 10
     num_matches = 1
 
-    def add_matches(doc: jina_pb2.Document):
+    def add_matches(doc: jina_pb2.DocumentProto):
         for idx in range(num_matches):
             match = doc.matches.add()
             match.tags['id'] = idx
 
-    req = jina_pb2.Request.IndexRequest()
+    req = jina_pb2.RequestProto.IndexRequest()
     for idx in range(num_docs):
         doc = req.docs.add()
         gt = req.groundtruths.add()
@@ -122,12 +122,12 @@ def eval_request_with_unmatching_struct():
     num_docs = 10
     num_matches = 1
 
-    def add_matches(doc: jina_pb2.Document):
+    def add_matches(doc: jina_pb2.DocumentProto):
         for idx in range(num_matches):
             match = doc.matches.add()
             match.tags['id'] = idx
 
-    req = jina_pb2.Request.SearchRequest()
+    req = jina_pb2.RequestProto.SearchRequest()
     for idx in range(num_docs):
         doc = req.docs.add()
         gt = req.groundtruths.add()

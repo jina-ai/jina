@@ -54,7 +54,7 @@ args3 = set_pea_parser().parse_args([
 
 def test_read_zmqlet():
     with MockBasePeaRead(args2), Zmqlet(args1, default_logger) as z:
-        req = jina_pb2.Request()
+        req = jina_pb2.RequestProto()
         req.request_id = uuid.uuid1().hex
         d = req.index.docs.add()
         d.tags['id'] = 2
@@ -64,7 +64,7 @@ def test_read_zmqlet():
 
 def test_not_read_zmqlet():
     with MockBasePeaNotRead(args3), Zmqlet(args1, default_logger) as z:
-        req = jina_pb2.Request()
+        req = jina_pb2.RequestProto()
         req.request_id = uuid.uuid1().hex
         d = req.index.docs.add()
         d.tags['id'] = 2

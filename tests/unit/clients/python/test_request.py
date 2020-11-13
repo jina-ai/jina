@@ -67,7 +67,7 @@ def test_request_generate_bytes():
 def test_request_generate_docs():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
-            doc = jina_pb2.Document()
+            doc = jina_pb2.DocumentProto()
             doc.text = f'i\'m dummy doc {j}'
             doc.offset = 1000
             doc.tags['id'] = 1000  # this will be ignored

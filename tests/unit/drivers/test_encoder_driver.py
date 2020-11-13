@@ -30,7 +30,7 @@ class SimpleEncoderDriver(EncodeDriver):
 def create_documents_to_encode(num_docs):
     docs = []
     for idx in range(num_docs):
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         GenericNdArray(doc.blob).value = np.array([idx])
         docs.append(doc)
     return docs

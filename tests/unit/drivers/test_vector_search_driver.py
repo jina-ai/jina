@@ -43,7 +43,7 @@ class SimpleVectorSearchDriver(VectorSearchDriver):
 
     @property
     def queryset(self):
-        q = jina_pb2.QueryLang()
+        q = jina_pb2.QueryLangProto()
         q.name = 'SimpleVectorSearchDriver'
         q.priority = 1
         q.parameters['top_k'] = 4
@@ -61,7 +61,7 @@ def create_document_to_search():
     #        - chunk: 4 - embedding(4.0)
     #        - chunk: 5 - embedding(5.0)
     # ....
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = '1'
     for c in range(10):
         chunk = doc.chunks.add()

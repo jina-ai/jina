@@ -11,7 +11,7 @@ from ..proto import jina_pb2
 from jina.types.ndarray.generic import GenericNdArray
 
 
-def _extract_doc_content(doc: 'jina_pb2.Document'):
+def _extract_doc_content(doc: 'jina_pb2.DocumentProto'):
     """Returns the content of the document with the following priority:
     If the document has an embedding, return it, otherwise return its content.
     """
@@ -24,7 +24,7 @@ def _extract_doc_content(doc: 'jina_pb2.Document'):
         return GenericNdArray(doc.blob).value
 
 
-def _extract_modalities_from_document(doc: 'jina_pb2.Document'):
+def _extract_modalities_from_document(doc: 'jina_pb2.DocumentProto'):
     """Returns a dictionary of document content (embedding, text, blob or buffer) with `modality` as its key
     """
     doc_content = {}
@@ -80,7 +80,7 @@ class MultiModalDriver(BaseEncodeDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.DocumentProto'],
             *args, **kwargs
     ) -> None:
         """

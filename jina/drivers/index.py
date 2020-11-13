@@ -24,7 +24,7 @@ class VectorIndexDriver(BaseIndexDriver):
     """Extract chunk-level embeddings and add it to the executor
     """
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         embed_vecs, docs_pts, bad_doc_ids = extract_docs(docs, embedding=True)
 
         if bad_doc_ids:
@@ -38,7 +38,7 @@ class KVIndexDriver(BaseIndexDriver):
     """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
     """
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         keys = [uid.id2hash(doc.id) for doc in docs]
         values = [doc.SerializeToString() for doc in docs]
         self.exec_fn(keys, values)

@@ -13,7 +13,7 @@ class MockGroundTruthIndexer(BaseKVIndexer):
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         pass
 
-    def query(self, key: int) -> Optional['jina_pb2.Document']:
+    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
         if key in self.db.keys():
             return self.db[key]
         else:
@@ -30,13 +30,13 @@ class MockGroundTruthIndexer(BaseKVIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        doc1 = jina_pb2.Document()
+        doc1 = jina_pb2.DocumentProto()
         doc1.id = '01'
         doc1.tags['groundtruth'] = True
-        doc2 = jina_pb2.Document()
+        doc2 = jina_pb2.DocumentProto()
         doc2.id = '02'
         doc2.tags['groundtruth'] = True
-        doc4 = jina_pb2.Document()
+        doc4 = jina_pb2.DocumentProto()
         doc4.id = '04'
         doc4.tags['groundtruth'] = True
         self.db = {
@@ -56,7 +56,7 @@ class SimpleLoadGroundTruthDriver(LoadGroundTruthDriver):
         return self._exec_fn
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
@@ -73,7 +73,7 @@ def mock_groundtruth_indexer():
 
 @pytest.fixture(scope='function')
 def eval_request():
-    req = jina_pb2.Request.SearchRequest()
+    req = jina_pb2.RequestProto.SearchRequest()
     # doc: 1
     # doc: 2
     # doc: 3

@@ -19,7 +19,7 @@ class SparseNdArray(BaseSparseNdArray):
         https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
 
-    def __init__(self, proto: 'jina_pb2.SparseNdArray' = None, sp_format: str = 'coo', *args, **kwargs):
+    def __init__(self, proto: 'jina_pb2.SparseNdArrayProto' = None, sp_format: str = 'coo', *args, **kwargs):
         """
 
         :param sp_format: the sparse format of the scipy matrix. one of 'coo', 'bsr', 'csc', 'csr'

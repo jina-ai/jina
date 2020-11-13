@@ -33,8 +33,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document' = None,
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto' = None,
             field: str = None,
             *args,
             **kwargs
@@ -47,7 +47,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
 
-    def extract(self, doc: 'jina_pb2.Document') -> Any:
+    def extract(self, doc: 'jina_pb2.DocumentProto') -> Any:
         """Extracting the to-be-evaluated field from the document.
         Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
 
@@ -74,9 +74,9 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
         super().__init__(*args, **kwargs)
         self.field = field
 
-    def extract(self, doc: 'jina_pb2.Document') -> Any:
+    def extract(self, doc: 'jina_pb2.DocumentProto') -> Any:
         r = dunder_get(doc, self.field)
-        if isinstance(r, jina_pb2.NdArray):
+        if isinstance(r, jina_pb2.NdArrayProto):
             r = GenericNdArray(r).value
         return r
 
@@ -98,7 +98,7 @@ class RankEvaluateDriver(FieldEvaluateDriver):
         """
         super().__init__(field, *args, **kwargs)
 
-    def extract(self, doc: 'jina_pb2.Document'):
+    def extract(self, doc: 'jina_pb2.DocumentProto'):
         return [dunder_get(x, self.field) for x in doc.matches]
 
 

@@ -46,8 +46,8 @@ def ground_truth_pairs():
     num_docs = 10
     pairs = []
     for idx in range(num_docs):
-        doc = jina_pb2.Document()
-        gt = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
+        gt = jina_pb2.DocumentProto()
         GenericNdArray(doc.embedding).value = np.array([1, 1])
         GenericNdArray(gt.embedding).value = np.array([2, 2])
         pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
@@ -78,7 +78,7 @@ class SimpleChunkEvaluateDriver(NDArrayEvaluateDriver):
         return self._exec_fn
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
@@ -91,7 +91,7 @@ def simple_chunk_evaluate_driver():
 @pytest.fixture
 def eval_request():
     num_docs = 10
-    req = jina_pb2.Request.IndexRequest()
+    req = jina_pb2.RequestProto.IndexRequest()
     for idx in range(num_docs):
         doc = req.docs.add()
         gt = req.groundtruths.add()

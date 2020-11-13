@@ -12,7 +12,7 @@ from ..proto import jina_pb2
 from jina.types.ndarray.generic import GenericNdArray
 
 
-def extract_docs(docs: Iterable['jina_pb2.Document'], embedding: bool) -> Tuple:
+def extract_docs(docs: Iterable['jina_pb2.DocumentProto'], embedding: bool) -> Tuple:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents
@@ -78,7 +78,7 @@ class DocGroundtruthPair:
     This does not imply that you can't compare at the end a document with 10 matches with a groundtruth with 20 matches
     """
 
-    def __init__(self, doc: 'jina_pb2.Document', groundtruth: 'jina_pb2.Document'):
+    def __init__(self, doc: 'jina_pb2.DocumentProto', groundtruth: 'jina_pb2.DocumentProto'):
         self.doc = doc
         self.groundtruth = groundtruth
 

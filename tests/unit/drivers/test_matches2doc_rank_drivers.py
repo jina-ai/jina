@@ -41,7 +41,7 @@ def create_document_to_score():
     # |- matches: (id: 4, parent_id: 1, score.value: 4),
     # |- matches: (id: 5, parent_id: 1, score.value: 5),
 
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = '1'
     doc.length = 5
     for match_id, match_score in [(2, 3), (3, 6), (4, 1), (5, 8)]:

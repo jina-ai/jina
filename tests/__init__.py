@@ -35,7 +35,7 @@ sys.path.append(dirname(file_dir))
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
     c_id = 3 * num_docs  # avoid collision with docs
     for j in range(num_docs):
-        d = jina_pb2.Document()
+        d = jina_pb2.DocumentProto()
         d.tags['id'] = j
         d.text = b'hello world'
         GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])

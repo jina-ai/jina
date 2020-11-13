@@ -65,7 +65,7 @@ class GenericNdArray(BaseNdArray):
 
     """
 
-    def __init__(self, proto: 'jina_pb2.NdArray' = None,
+    def __init__(self, proto: 'jina_pb2.NdArrayProto' = None,
                  is_sparse: bool = False,
                  dense_cls: Type['BaseDenseNdArray'] = DenseNdArray,
                  sparse_cls: Type['BaseSparseNdArray'] = SparseNdArray,
@@ -87,7 +87,7 @@ class GenericNdArray(BaseNdArray):
         self._kwargs = kwargs
 
     def null_proto(self):
-        return jina_pb2.NdArray()
+        return jina_pb2.NdArrayProto()
 
     @property
     def value(self):

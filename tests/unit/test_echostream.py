@@ -33,7 +33,7 @@ def test_simple_zmqlet():
 
     logger = logging.getLogger('zmq-test')
     with BasePea(args2) as z1, Zmqlet(args, logger) as z:
-        req = jina_pb2.Request()
+        req = jina_pb2.RequestProto()
         req.request_id = uuid.uuid1().hex
         d = req.index.docs.add()
         d.tags['id'] = 2

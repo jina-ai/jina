@@ -22,7 +22,7 @@ class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         contents, docs_pts, bad_doc_ids = extract_docs(docs, embedding=False)
 
         if bad_doc_ids:

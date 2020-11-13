@@ -33,7 +33,7 @@ class SimpleSegmentDriver(SegmentDriver):
 
 
 def test_segment_driver():
-    valid_doc = jina_pb2.Document()
+    valid_doc = jina_pb2.DocumentProto()
     valid_doc.id = uid.new_doc_id(valid_doc)
     valid_doc.text = 'valid'
     valid_doc.length = 2
@@ -73,7 +73,7 @@ def test_broken_document():
     executor = MockSegmenter()
     driver.attach(executor=executor, pea=None)
 
-    invalid_doc = jina_pb2.Document()
+    invalid_doc = jina_pb2.DocumentProto()
     invalid_doc.id = uid.new_doc_id(invalid_doc)
     invalid_doc.text = 'invalid'
     invalid_doc.length = 2

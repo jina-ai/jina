@@ -22,15 +22,15 @@ def test_evaluation(tmpdir):
                  tag__dummy_score = -2
                  embedding = 2
         """
-        doc0 = jina_pb2.Document()
+        doc0 = jina_pb2.DocumentProto()
         doc0.tags['id'] = '0'
         doc0.tags['dummy_score'] = 0
         GenericNdArray(doc0.embedding).value = np.array([0])
-        doc1 = jina_pb2.Document()
+        doc1 = jina_pb2.DocumentProto()
         doc1.tags['id'] = '1'
         doc1.tags['dummy_score'] = -1
         GenericNdArray(doc1.embedding).value = np.array([1])
-        doc2 = jina_pb2.Document()
+        doc2 = jina_pb2.DocumentProto()
         doc2.tags['id'] = '2'
         doc2.tags['dummy_score'] = -2
         GenericNdArray(doc2.embedding).value = np.array([2])
@@ -84,9 +84,9 @@ def test_evaluation(tmpdir):
         assert doc.evaluations[7].value == 1.0
 
     def doc_groundtruth_evaluation_pairs():
-        doc0 = jina_pb2.Document()
+        doc0 = jina_pb2.DocumentProto()
         GenericNdArray(doc0.embedding).value = np.array([0])  # it will match 0 and 1
-        groundtruth0 = jina_pb2.Document()
+        groundtruth0 = jina_pb2.DocumentProto()
         match0 = groundtruth0.matches.add()
         match0.tags['id'] = '0'
         match1 = groundtruth0.matches.add()
@@ -104,9 +104,9 @@ def test_evaluation(tmpdir):
         # Recall@1 = 100%
         # Recall@2 = 50%
 
-        doc1 = jina_pb2.Document()
+        doc1 = jina_pb2.DocumentProto()
         GenericNdArray(doc1.embedding).value = np.array([2])  # it will match 2 and 1
-        groundtruth1 = jina_pb2.Document()
+        groundtruth1 = jina_pb2.DocumentProto()
         match0 = groundtruth1.matches.add()
         match0.tags['id'] = '1'
         match1 = groundtruth1.matches.add()

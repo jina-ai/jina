@@ -23,7 +23,7 @@ class BaseSparseNdArray(BaseNdArray):
         self.is_sparse = True
 
     def null_proto(self):
-        return jina_pb2.SparseNdArray()
+        return jina_pb2.SparseNdArrayProto()
 
     def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> AnySparseNdArray:
         """ Sparse NdArray constructor, must be implemented by subclass

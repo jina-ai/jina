@@ -13,7 +13,7 @@ class DenseNdArray(BaseDenseNdArray):
     Most of the cases you don't want use this class directly, use :class:`GenericNdArray` instead.
     """
 
-    def __init__(self, proto: 'jina_pb2.NdArray' = None, quantize: str = None, *args, **kwargs):
+    def __init__(self, proto: 'jina_pb2.NdArrayProto' = None, quantize: str = None, *args, **kwargs):
         """
 
         :param proto: the protobuf message, when not given then create a new one

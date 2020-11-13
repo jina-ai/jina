@@ -29,7 +29,7 @@ def embeddings(embedding):
 
 @pytest.fixture(scope='function')
 def doc_with_multimodal_chunks(embeddings):
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     chunk1 = doc.chunks.add()
     chunk2 = doc.chunks.add()
     chunk3 = doc.chunks.add()
@@ -97,7 +97,7 @@ def test_multimodal_driver(simple_multimodal_driver, mock_multimodal_encoder, do
 
 @pytest.fixture(scope='function')
 def doc_with_multimodal_chunks_wrong(embeddings):
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     chunk1 = doc.chunks.add()
     chunk2 = doc.chunks.add()
     chunk3 = doc.chunks.add()

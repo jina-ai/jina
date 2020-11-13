@@ -11,7 +11,7 @@ text = 'text_content'
 
 def test_message_docs_different_chunk_types():
     def input_doc():
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.tags['id'] = 1
         chunk0 = doc.chunks.add()
         chunk0.tags['id'] = 10
@@ -50,7 +50,7 @@ def test_message_docs_different_chunk_types():
 
 def test_message_docs_different_chunk_types_without_optimization():
     def input_doc():
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.tags['id'] = 1
         chunk0 = doc.chunks.add()
         chunk0.tags['id'] = 10
@@ -89,7 +89,7 @@ def test_message_docs_different_chunk_types_without_optimization():
 
 def test_message_docs_different_matches_types():
     def input_doc():
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.tags['id'] = 1
         match0 = doc.matches.add()
         match0.tags['id'] = 10
@@ -128,7 +128,7 @@ def test_message_docs_different_matches_types():
 
 def test_message_docs_different_matches_types_without_optimization():
     def input_doc():
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.tags['id'] = 1
         match0 = doc.matches.add()
         match0.tags['id'] = 10
@@ -167,7 +167,7 @@ def test_message_docs_different_matches_types_without_optimization():
 
 def test_message_docs_different_chunks_and_matches_types():
     def input_doc():
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.tags['id'] = 1
         chunk0 = doc.chunks.add()
         chunk0.tags['id'] = 10
@@ -231,7 +231,7 @@ def test_message_docs_different_chunks_and_matches_types():
 
 def test_message_docs_different_chunks_and_matches_types_without_optimization():
     def input_doc():
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.tags['id'] = 1
         chunk0 = doc.chunks.add()
         chunk0.tags['id'] = 10

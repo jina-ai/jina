@@ -32,7 +32,7 @@ def test_array_protobuf_conversions_with_quantize(quantize, type):
 
 
 def test_pb_obj2dict():
-    document = jina_pb2.Document()
+    document = jina_pb2.DocumentProto()
     document.text = 'this is text'
     document.tags['id'] = 'id in tags'
     document.tags['inner_dict'] = {'id': 'id in inner_dict'}
@@ -44,14 +44,14 @@ def test_pb_obj2dict():
     assert res['tags']['id'] == 'id in tags'
     assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
     assert len(res['chunks']) == 1
-    assert isinstance(res['chunks'][0], jina_pb2.Document)
+    assert isinstance(res['chunks'][0], jina_pb2.DocumentProto)
     assert res['chunks'][0].text == 'text in chunk'
     assert res['chunks'][0].tags['id'] == 'id in chunk tags'
 
 
 def test_add_route():
-    r = jina_pb2.Request()
-    r.control.command = jina_pb2.Request.ControlRequest.IDLE
+    r = jina_pb2.RequestProto()
+    r.control.command = jina_pb2.RequestProto.ControlRequest.IDLE
     msg = ProtoMessage(None, r, pod_name='test1', identity='sda')
     msg.add_route('name', 'identity')
     assert len(msg.envelope.routes) == 2
@@ -60,7 +60,7 @@ def test_add_route():
 
 
 def test_extract_docs():
-    d = jina_pb2.Document()
+    d = jina_pb2.DocumentProto()
 
     contents, docs_pts, bad_doc_ids = extract_docs([d], embedding=True)
     assert len(bad_doc_ids) > 0
@@ -74,18 +74,18 @@ def test_extract_docs():
 
 
 def test_docgroundtruth_pair():
-    def add_matches(doc: jina_pb2.Document, num_matches):
+    def add_matches(doc: jina_pb2.DocumentProto, num_matches):
         for idx in range(num_matches):
             match = doc.matches.add()
             match.adjacency = doc.adjacency + 1
 
-    def add_chunks(doc: jina_pb2.Document, num_chunks):
+    def add_chunks(doc: jina_pb2.DocumentProto, num_chunks):
         for idx in range(num_chunks):
             chunk = doc.chunks.add()
             chunk.granularity = doc.granularity + 1
 
-    doc = jina_pb2.Document()
-    gt = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
+    gt = jina_pb2.DocumentProto()
     add_matches(doc, 3)
     add_matches(gt, 3)
     add_chunks(doc, 3)

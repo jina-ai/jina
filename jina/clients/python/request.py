@@ -19,15 +19,15 @@ from ...proto import jina_pb2, uid
 from jina.types.ndarray.generic import GenericNdArray
 
 
-def _fill_document(document: 'jina_pb2.Document',
-                   content: Union['jina_pb2.Document', 'np.ndarray', bytes, str, Tuple[
-                       Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]],
+def _fill_document(document: 'jina_pb2.DocumentProto',
+                   content: Union['jina_pb2.DocumentProto', 'np.ndarray', bytes, str, Tuple[
+                       Union['jina_pb2.DocumentProto', bytes], Union['jina_pb2.DocumentProto', bytes]]],
                    docs_in_same_batch: int,
                    mime_type: str,
                    buffer_sniff: bool,
                    override_doc_id: bool = True
                    ):
-    if isinstance(content, jina_pb2.Document):
+    if isinstance(content, jina_pb2.DocumentProto):
         document.CopyFrom(content)
     elif isinstance(content, np.ndarray):
         GenericNdArray(document.blob).value = content
@@ -75,16 +75,16 @@ def _fill_document(document: 'jina_pb2.Document',
         document.id = uid.new_doc_id(document)
 
 
-def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
-    Tuple[Union['jina_pb2.Document', bytes], Union['jina_pb2.Document', bytes]]], Iterator['np.ndarray'], Iterator[
+def _generate(data: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Iterator[
+    Tuple[Union['jina_pb2.DocumentProto', bytes], Union['jina_pb2.DocumentProto', bytes]]], Iterator['np.ndarray'], Iterator[
                               str], 'np.ndarray', Iterator[Dict]],
               batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None,
               override_doc_id: bool = True,
-              queryset: Iterator['jina_pb2.QueryLang'] = None,
+              queryset: Iterator['jina_pb2.QueryLangProto'] = None,
               *args,
               **kwargs,
-              ) -> Iterator['jina_pb2.Request']:
+              ) -> Iterator['jina_pb2.RequestProto']:
     buffer_sniff = False
 
     try:
@@ -113,10 +113,10 @@ def _generate(data: Union[Iterator[Union['jina_pb2.Document', bytes]], Iterator[
                                         )
 
     for batch in batch_iterator(data, batch_size):
-        req = jina_pb2.Request()
+        req = jina_pb2.RequestProto()
         req.request_id = uuid.uuid1().hex
         if queryset:
-            if isinstance(queryset, jina_pb2.QueryLang):
+            if isinstance(queryset, jina_pb2.QueryLangProto):
                 queryset = [queryset]
             req.queryset.extend(queryset)
 
@@ -142,7 +142,7 @@ def index(*args, **kwargs):
 def train(*args, **kwargs):
     """Generate a training request """
     yield from _generate(*args, **kwargs)
-    req = jina_pb2.Request()
+    req = jina_pb2.RequestProto()
     req.request_id = uuid.uuid1().hex
     req.train.flush = True
     yield req
@@ -151,7 +151,7 @@ def train(*args, **kwargs):
 def search(*args, **kwargs):
     """Generate a searching request """
     if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
-        top_k_queryset = jina_pb2.QueryLang()
+        top_k_queryset = jina_pb2.QueryLangProto()
         top_k_queryset.name = 'VectorSearchDriver'
         top_k_queryset.priority = 1
         top_k_queryset.parameters['top_k'] = kwargs['top_k']

@@ -18,7 +18,7 @@ def config(tmpdir):
 
 def random_docs(num_docs, embed_dim=10, jitter=1):
     for j in range(num_docs):
-        d = jina_pb2.Document()
+        d = jina_pb2.DocumentProto()
         d.tags['id'] = j
         d.text = b'hello'
         GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
@@ -47,7 +47,7 @@ def validate_override_results(resp):
 
 def test_topk_override(config):
     # Making queryset
-    top_k_queryset = jina_pb2.QueryLang()
+    top_k_queryset = jina_pb2.QueryLangProto()
     top_k_queryset.name = 'VectorSearchDriver'
     top_k_queryset.priority = 1
     top_k_queryset.parameters['top_k'] = os.environ['JINA_TOPK_OVERRIDE']

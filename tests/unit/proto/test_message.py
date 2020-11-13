@@ -52,7 +52,7 @@ def test_lazy_change_message_type():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.control.command = jina_pb2.Request.ControlRequest.IDLE
+        r.control.command = jina_pb2.RequestProto.ControlRequest.IDLE
         # now it is read
         assert r.is_used
         assert len(r.index.docs) == 0
@@ -63,7 +63,7 @@ def test_lazy_append_access():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.docs.append(jina_pb2.Document())
+        r.docs.append(jina_pb2.DocumentProto())
         # now it is read
         assert r.is_used
 

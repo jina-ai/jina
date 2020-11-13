@@ -23,7 +23,7 @@ def multimodal_documents():
         Result:
             doc - idx - embedding [idx, idx, idx, idx, idx]
         """
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.text = f'{idx}'
 
         for modality in ['modality1', 'modality2']:
@@ -62,7 +62,7 @@ def multimodal_all_types_documents():
         Result:
             doc - idx - embedding [idx, idx, idx, idx, idx, 3, 3, 4, 4]
         """
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.text = f'{idx}'
 
         for modality in ['modality1', 'modality2', 'modality3', 'modality4']:

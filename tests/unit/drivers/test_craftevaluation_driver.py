@@ -29,7 +29,7 @@ def field_type(request):
 def doc_with_field_type(field_type):
     class DocCreator(object):
         def create(self):
-            doc = jina_pb2.Document()
+            doc = jina_pb2.DocumentProto()
             if field_type == 'text':
                 doc.text = 'aaa'
             elif field_type == 'buffer':
@@ -45,7 +45,7 @@ def doc_with_field_type(field_type):
 def groundtruth_with_field_type(field_type):
     class GTCreator(object):
         def create(self):
-            gt = jina_pb2.Document()
+            gt = jina_pb2.DocumentProto()
             if field_type == 'text':
                 gt.text = 'aaaa'
             elif field_type == 'buffer':
@@ -117,7 +117,7 @@ class SimpleChunkEvaluateDriver(FieldEvaluateDriver):
         return self._exec_fn
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
@@ -156,7 +156,7 @@ def simple_chunk_evaluate_driver():
 def eval_request():
     def request(field_type):
         num_docs = 10
-        req = jina_pb2.Request.IndexRequest()
+        req = jina_pb2.RequestProto.IndexRequest()
         for idx in range(num_docs):
             doc = req.docs.add()
             gt = req.groundtruths.add()

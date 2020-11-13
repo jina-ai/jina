@@ -6,7 +6,7 @@ from jina.proto import jina_pb2
 
 def random_docs(num_docs):
     for j in range(num_docs):
-        d = jina_pb2.Document()
+        d = jina_pb2.DocumentProto()
         d.tags['id'] = j
         d.text = 'hello world'
         d.uri = 'doc://'
@@ -43,7 +43,7 @@ def test_read_from_req():
     def validate2(req):
         assert len(req.docs) == 3
 
-    qs = jina_pb2.QueryLang(name='SliceQL', priority=1)
+    qs = jina_pb2.QueryLangProto(name='SliceQL', priority=1)
     qs.parameters['start'] = 1
     qs.parameters['end'] = 4
 

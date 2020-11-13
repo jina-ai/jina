@@ -32,10 +32,10 @@ class SimpleCraftDriver(CraftDriver):
 
 
 def create_documents_to_craft():
-    doc1 = jina_pb2.Document()
+    doc1 = jina_pb2.DocumentProto()
     # doc1.id = 1
     doc1.text = 'valid'
-    doc2 = jina_pb2.Document()
+    doc2 = jina_pb2.DocumentProto()
     # doc2.id = 2
     doc2.text = 'invalid'
     return [doc1, doc2]

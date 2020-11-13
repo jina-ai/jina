@@ -190,14 +190,14 @@ class BaseDriver(metaclass=DriverType):
         return self.pea.message
 
     @property
-    def queryset(self) -> Iterator['jina_pb2.QueryLang']:
+    def queryset(self) -> Iterator['jina_pb2.QueryLangProto']:
         if self.msg:
             return self.msg.request.queryset
         else:
             return []
 
     @property
-    def envelope(self) -> 'jina_pb2.Envelope':
+    def envelope(self) -> 'jina_pb2.EnvelopeProto':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.msg.envelope
 
@@ -261,15 +261,15 @@ class BaseRecursiveDriver(BaseDriver):
 
     def _apply_all(
         self,
-        docs: Sequence['jina_pb2.Document'],
-        context_doc: 'jina_pb2.Document',
+        docs: Sequence['jina_pb2.DocumentProto'],
+        context_doc: 'jina_pb2.DocumentProto',
         field: str,
         *args,
         **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
-        :param docs: a list of :class:`jina_pb2.Document` objects to work on; they could come from ``matches``/``chunks``.
+        :param docs: a list of :class:`jina_pb2.DocumentProto` objects to work on; they could come from ``matches``/``chunks``.
         :param context_doc: the owner of ``docs``
         :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
         """
@@ -285,7 +285,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(
-        self, docs: Sequence['jina_pb2.Document'], *args, **kwargs
+        self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs
     ) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
@@ -348,7 +348,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
-            self.envelope.status.code != jina_pb2.Status.ERROR
+            self.envelope.status.code != jina_pb2.StatusProto.ERROR
             or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
         ):
             return self._exec_fn

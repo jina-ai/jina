@@ -44,7 +44,7 @@ def create_document_to_score_same_depth_level():
     # |  matches: (id: 4, parent_id: 30, score.value: 20, length: 2),
     # |  matches: (id: 5, parent_id: 30, score.value: 10, length: 1),
 
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = str(1)
 
     match2 = doc.matches.add()

@@ -13,7 +13,7 @@ class MockIndexer(BaseKVIndexer):
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         pass
 
-    def query(self, key: int) -> Optional['jina_pb2.Document']:
+    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
         if key in self.db.keys():
             return self.db[key]
         else:
@@ -30,16 +30,16 @@ class MockIndexer(BaseKVIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        doc1 = jina_pb2.Document()
+        doc1 = jina_pb2.DocumentProto()
         doc1.id = '1'
         GenericNdArray(doc1.embedding).value = np.array([int(doc1.id)])
-        doc2 = jina_pb2.Document()
+        doc2 = jina_pb2.DocumentProto()
         doc2.id = '2'
         GenericNdArray(doc2.embedding).value = np.array([int(doc2.id)])
-        doc3 = jina_pb2.Document()
+        doc3 = jina_pb2.DocumentProto()
         doc3.id = '3'
         GenericNdArray(doc3.embedding).value = np.array([int(doc3.id)])
-        doc4 = jina_pb2.Document()
+        doc4 = jina_pb2.DocumentProto()
         doc4.id = '4'
         GenericNdArray(doc4.embedding).value = np.array([int(doc4.id)])
         self.db = {
@@ -71,7 +71,7 @@ def create_document_to_search():
     #   - chunk: 3
     #   - chunk: 4
     #   - chunk: 5 - will be missing from KV indexer
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.granularity = 0
     doc.id = '0'
     for c in range(5):
@@ -90,7 +90,7 @@ def create_document_to_search_with_matches_on_chunks():
     #     - match: 4
     #     - match: 5 - will be missing from KV indexer
     #     - match: 6 - will be missing from KV indexer
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.id = '0'
     doc.granularity = 0
     chunk = doc.chunks.add()

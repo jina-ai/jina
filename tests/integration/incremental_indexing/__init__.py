@@ -18,7 +18,7 @@ def get_duplicate_docs(num_docs=10):
     result = []
     unique_set = set()
     for idx in range(num_docs):
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         content = int(idx / 2)
         GenericNdArray(doc.embedding).value = np.array([content])
         doc.text = f'I am doc{content}'

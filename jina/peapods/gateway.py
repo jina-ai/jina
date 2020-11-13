@@ -92,8 +92,8 @@ class GatewayPea:
             self.name = args.name or self.__class__.__name__
             self.logger = JinaLogger(self.name, **vars(args))
 
-        def handle(self, msg: 'ProtoMessage') -> 'jina_pb2.Request':
-            """ Note gRPC accepts :class:`jina_pb2.Request` only, so no more :class:`LazyRequest`.
+        def handle(self, msg: 'ProtoMessage') -> 'jina_pb2.RequestProto':
+            """ Note gRPC accepts :class:`jina_pb2.RequestProto` only, so no more :class:`LazyRequest`.
 
             :param msg:
             :return:
