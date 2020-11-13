@@ -93,6 +93,7 @@ def set_hub_build_parser(parser=None):
         parser = set_base_parser()
 
     set_hub_base_parser(parser)
+    from .enums import BuildTestLevel
 
     parser.add_argument('path', type=str, help='path to the directory containing '
                                                'Dockerfile, manifest.yml, README.md '
@@ -110,7 +111,10 @@ def set_hub_build_parser(parser=None):
     parser.add_argument('--raise-error', action='store_true', default=False,
                         help='raise any error and exit with code 1')
     parser.add_argument('--test-uses', action='store_true', default=False,
-                        help='after the build, test the image in "uses" with Flow API')
+                        help='after the build, test the image in "uses" with different level')
+    parser.add_argument('--test-level', type=BuildTestLevel.from_string,
+                        choices=list(BuildTestLevel), default=BuildTestLevel.FLOW,
+                        help='the test level when "test-uses" is set, "NONE" means no test')
     parser.add_argument('--host-info', action='store_true', default=False,
                         help='store the host information during bookkeeping')
     parser.add_argument('--daemon', action='store_true', default=False,

@@ -4,7 +4,7 @@ import subprocess
 import pytest
 
 from jina.docker.hubio import HubIO
-from jina.excepts import PeaFailToStart
+from jina.excepts import PeaFailToStart, HubBuilderError
 from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.parser import set_pod_parser, set_hub_build_parser
@@ -59,7 +59,9 @@ def test_use_from_local_dir_flow_container_level():
 def test_use_executor_pretrained_model_except():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub_pretrained'), '--test-uses', '--raise-error'])
-    assert HubIO(args).build()['is_build_success']
+
+    with pytest.raises(HubBuilderError):
+        HubIO(args).build()
 
 
 def test_use_from_cli_level():

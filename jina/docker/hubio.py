@@ -12,11 +12,16 @@ from .checker import *
 from .helper import credentials_file
 from .hubapi import _list, _register_to_mongodb, _list_local
 from ..clients.python import ProgressBar
-from ..excepts import PeaFailToStart, DockerLoginFailed
+from ..enums import BuildTestLevel
+from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError
+from ..executors import BaseExecutor
+from ..flow import Flow
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
     countdown
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
+from ..parser import set_pod_parser
+from ..peapods import Pod
 
 if False:
     import argparse
@@ -279,6 +284,7 @@ class HubIO:
         else:
             is_build_success, is_push_success = True, False
             _logs = []
+            _except_strs = []
             _excepts = []
 
             with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
@@ -299,7 +305,7 @@ class HubIO:
                             for line in chunk['stream'].splitlines():
                                 if is_error_message(line):
                                     self.logger.critical(line)
-                                    _excepts.append(line)
+                                    _except_strs.append(line)
                                 elif 'warning' in line.lower():
                                     self.logger.warning(line)
                                 else:
@@ -308,7 +314,9 @@ class HubIO:
                 except Exception as ex:
                     # if pytest fails it should end up here as well
                     is_build_success = False
-                    _excepts.append(str(ex))
+                    ex = HubBuilderBuildError(ex)
+                    _except_strs.append(repr(ex))
+                    _excepts.append(ex)
 
             if is_build_success:
                 # compile it again, but this time don't show the log
@@ -338,19 +346,13 @@ class HubIO:
                 if self.args.test_uses:
                     try:
                         is_build_success = False
-                        from jina.flow import Flow
-                        p_name = random_name()
-                        with Flow().add(name=p_name, uses=image.tags[0], daemon=self.args.daemon):
-                            pass
-
-                        if self.args.daemon:
-                            self._raw_client.stop(p_name)
-                        self._raw_client.prune_containers()
+                        self._test_build(image)
                         is_build_success = True
-                    except PeaFailToStart:
-                        self.logger.error(f'can not use it in the Flow, please check your file bundle')
                     except Exception as ex:
-                        self.logger.error(f'something wrong but it is probably not your fault. {repr(ex)}')
+                        self.logger.error(f'something wrong while testing the build: {repr(ex)}')
+                        ex = HubBuilderTestError(ex)
+                        _except_strs.append(repr(ex))
+                        _excepts.append(ex)
 
                 _version = self.manifest['version'] if 'version' in self.manifest else '0.0.1'
                 info, env_info = get_full_version()
@@ -366,7 +368,7 @@ class HubIO:
                 'host_info': _host_info if is_build_success and self.args.host_info else '',
                 'duration': tc.readable_duration,
                 'logs': _logs,
-                'exception': _excepts
+                'exception': _except_strs
             }
 
             if self.args.prune_images:
@@ -392,9 +394,38 @@ class HubIO:
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
             result['build_history'].pop('logs')
-            raise RuntimeError(result)
+            raise HubBuilderError(_excepts)
 
         return result
+
+    def _test_build(self, image):
+        # test uses at executor level
+        if self.args.test_level >= BuildTestLevel.EXECUTOR:
+            with BaseExecutor.load_config(self.config_yaml_path):
+                pass
+
+        # test uses at Pod level (no docker)
+        if self.args.test_level >= BuildTestLevel.POD_NONDOCKER:
+            with Pod(set_pod_parser().parse_args(['--uses', self.config_yaml_path])):
+                pass
+
+        # test uses at Pod level (with docker)
+        if self.args.test_level >= BuildTestLevel.POD_DOCKER:
+            p_name = random_name()
+            with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name])):
+                pass
+            if self.args.daemon:
+                self._raw_client.stop(p_name)
+            self._raw_client.prune_containers()
+
+        # test uses at Flow level
+        if self.args.test_level >= BuildTestLevel.FLOW:
+            p_name = random_name()
+            with Flow().add(name=random_name(), uses=image.tags[0], daemon=self.args.daemon):
+                pass
+            if self.args.daemon:
+                self._raw_client.stop(p_name)
+            self._raw_client.prune_containers()
 
     def dry_run(self) -> Dict:
         try:
@@ -414,12 +445,14 @@ class HubIO:
     def _check_completeness(self) -> Dict:
         self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')
+        self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
         self.requirements_path = get_exist_path(self.args.path, 'requirements.txt')
 
         yaml_glob = glob.glob(os.path.join(self.args.path, '*.yml'))
         if yaml_glob:
             yaml_glob.remove(self.manifest_path)
+            yaml_glob.remove(self.config_yaml_path)
 
         py_glob = glob.glob(os.path.join(self.args.path, '*.py'))
 
@@ -428,6 +461,7 @@ class HubIO:
         completeness = {
             'Dockerfile': self.dockerfile_path,
             'manifest.yml': self.manifest_path,
+            'config.yaml': self.config_yaml_path,
             'README.md': self.readme_path,
             'requirements.txt': self.requirements_path,
             '*.yml': yaml_glob,

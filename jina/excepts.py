@@ -131,10 +131,20 @@ class PretrainedModelFileDoesNotExist(ModelCheckpointNotExist):
     """
 
 
-class CompressionRateTooLow(Exception):
-    """ Compression rate is too low, no need to compression
+class HubBuilderError(Exception):
+    """ Base exception to raise when :command:`jina hub build` fails"""
 
-    """
+
+class HubBuilderBuildError(HubBuilderError):
+    """ Exception to raise when :command:`jina hub build` fails to build image"""
+
+
+class HubBuilderTestError(HubBuilderError):
+    """ Exception to raise when :command:`jina hub build` fails to test image"""
+
+
+class CompressionRateTooLow(Exception):
+    """ Compression rate is too low, no need to compression"""
 
 
 class DryRunException(Exception):

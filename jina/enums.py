@@ -306,3 +306,13 @@ class RemoteAccessType(BetterEnum):
 
     SSH = 0  # ssh connection
     JINAD = 1  # using rest api via jinad
+
+
+class BuildTestLevel(BetterEnum):
+    """Test level in :command:`jina hub build`, higher level includes lower levels """
+
+    NONE = 0  # no build test
+    EXECUTOR = 1  # test at executor level, directly use the config yaml
+    POD_NONDOCKER = 2  # test at pod level, directly use the config yaml
+    POD_DOCKER = 3  # test at pod level but pod --uses the built image
+    FLOW = 4  # test at a simple flow
