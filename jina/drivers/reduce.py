@@ -7,7 +7,7 @@ import numpy as np
 
 from . import BaseRecursiveDriver
 from ..proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class ReduceAllDriver(BaseRecursiveDriver):
@@ -76,9 +76,9 @@ class ConcatEmbedDriver(ReduceAllDriver):
             **kwargs):
         doc = context_doc
         if concatenate:
-            GenericNdArray(doc.embedding).value = np.concatenate(self.doc_pointers[doc.id], axis=0)
+            NdArray(doc.embedding).value = np.concatenate(self.doc_pointers[doc.id], axis=0)
         else:
             if doc.id not in self.doc_pointers:
-                self.doc_pointers[doc.id] = [GenericNdArray(doc.embedding).value]
+                self.doc_pointers[doc.id] = [NdArray(doc.embedding).value]
             else:
-                self.doc_pointers[doc.id].append(GenericNdArray(doc.embedding).value)
+                self.doc_pointers[doc.id].append(NdArray(doc.embedding).value)

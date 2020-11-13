@@ -5,7 +5,7 @@ from typing import Sequence
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 if False:
     from ..proto import jina_pb2
@@ -36,4 +36,4 @@ class EncodeDriver(BaseEncodeDriver):
                     f'mismatched {len(docs_pts)} docs from level {docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(docs_pts, embeds):
-                GenericNdArray(doc.embedding).value = embedding
+                NdArray(doc.embedding).value = embedding

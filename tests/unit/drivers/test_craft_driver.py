@@ -6,7 +6,7 @@ import pytest
 from jina.drivers.craft import CraftDriver
 from jina.executors.crafters import BaseCrafter
 from jina.proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class MockCrafter(BaseCrafter):
@@ -47,7 +47,7 @@ def test_craft_driver():
     executor = MockCrafter()
     driver.attach(executor=executor, pea=None)
     driver._apply_all(docs[:1])
-    np.testing.assert_equal(GenericNdArray(docs[0].blob).value, np.array([0.0, 0.0, 0.0]))
+    np.testing.assert_equal(NdArray(docs[0].blob).value, np.array([0.0, 0.0, 0.0]))
     assert docs[0].weight == 10
     with pytest.raises(AttributeError) as error:
         driver._apply_all(docs[1:2])

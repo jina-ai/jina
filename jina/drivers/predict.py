@@ -4,7 +4,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 if False:
     from ..proto import jina_pb2
@@ -160,4 +160,4 @@ class Prediction2DocBlobDriver(BasePredictDriver):
         if docs_pts:
             prediction = self.exec_fn(np.stack(embed_vecs))
             for doc, pred in zip(docs_pts, prediction):
-                GenericNdArray(doc.blob).value = pred
+                NdArray(doc.blob).value = pred

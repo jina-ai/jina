@@ -5,7 +5,7 @@ import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,7 +23,7 @@ def test_queryset_with_struct(random_workspace):
     for doc_id in range(total_docs):
         doc = jina_pb2.DocumentProto()
         doc.text = f'I am doc{doc_id}'
-        GenericNdArray(doc.embedding).value = np.array([doc_id])
+        NdArray(doc.embedding).value = np.array([doc_id])
         doc.tags['label'] = f'label{doc_id % 2 + 1}'
         docs.append(doc)
 

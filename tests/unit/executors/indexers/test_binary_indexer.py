@@ -5,7 +5,7 @@ import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2, uid
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_WORKSPACE_BINARY_PB'])
@@ -16,12 +16,12 @@ def test_binarypb_in_flow(test_metas):
             d = jina_pb2.DocumentProto()
             d.tags['id'] = j
             d.text = b'hello world'
-            GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
+            NdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
             d.id = uid.new_doc_id(d)
             for k in range(chunks_per_doc):
                 c = d.chunks.add()
                 c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-                GenericNdArray(c.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
+                NdArray(c.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
                 c.tags['id'] = c_id
                 c.tags['parent_id'] = j
                 c_id += 1
@@ -38,8 +38,8 @@ def test_binarypb_in_flow(test_metas):
     def validate(req):
         assert len(docs) == len(req.docs)
         for d, d0 in zip(req.docs, docs):
-            np.testing.assert_almost_equal(GenericNdArray(d.embedding).value,
-                                           GenericNdArray(d0.embedding).value)
+            np.testing.assert_almost_equal(NdArray(d.embedding).value,
+                                           NdArray(d0.embedding).value)
 
     docs_no_embedding = copy.deepcopy(docs)
     for d in docs_no_embedding:

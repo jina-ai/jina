@@ -8,7 +8,7 @@ from .helper import DocGroundtruthPair
 from .querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
 from ..proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class BaseEvaluateDriver(BaseExecutableDriver):
@@ -77,7 +77,7 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
     def extract(self, doc: 'jina_pb2.DocumentProto') -> Any:
         r = dunder_get(doc, self.field)
         if isinstance(r, jina_pb2.NdArrayProto):
-            r = GenericNdArray(r).value
+            r = NdArray(r).value
         return r
 
 

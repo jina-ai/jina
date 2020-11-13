@@ -2,7 +2,7 @@ import numpy as np
 
 from jina.clients.python.request import _generate
 from jina.proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 def test_request_generate_lines():
@@ -170,13 +170,13 @@ def test_request_generate_numpy_arrays():
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
-        assert GenericNdArray(doc.blob).value.shape == (10,)
+        assert NdArray(doc.blob).value.shape == (10,)
 
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
-        assert GenericNdArray(doc.blob).value.shape == (10,)
+        assert NdArray(doc.blob).value.shape == (10,)
 
 
 def test_request_generate_numpy_arrays_iterator():
@@ -192,10 +192,10 @@ def test_request_generate_numpy_arrays_iterator():
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
-        assert GenericNdArray(doc.blob).value.shape == (10,)
+        assert NdArray(doc.blob).value.shape == (10,)
 
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
         assert doc.length == 5
-        assert GenericNdArray(doc.blob).value.shape == (10,)
+        assert NdArray(doc.blob).value.shape == (10,)

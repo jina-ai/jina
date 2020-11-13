@@ -3,25 +3,27 @@ import sys
 import traceback
 from typing import Union, List, Optional
 
-from .lazyrequest import LazyRequest
-from jina.proto import jina_pb2
-from jina import __version__, __proto_version__
-from jina.enums import CompressAlgo
-from jina.excepts import MismatchedVersion
-from jina.helper import colored
-from jina.logging import default_logger
+from .request import Request
+from ... import __version__, __proto_version__
+from ...enums import CompressAlgo
+from ...excepts import MismatchedVersion
+from ...helper import colored
+from ...logging import default_logger
+from ...proto import jina_pb2
 
 if False:
     from ...executors import BaseExecutor
 
+__all__ = ['Message', 'ControlMessage']
 
-class ProtoMessage:
+
+class Message:
     """
     A container class for :class:`jina_pb2.Message`. Note, the Protobuf version of :class:`jina_pb2.Message`
     contains a :class:`jina_pb2.EnvelopeProto` and :class:`jina_pb2.RequestProto`. Here, it contains:
         - a :class:`jina_pb2.EnvelopeProto` object
         - and one of:
-            - a :class:`LazyRequest` object wrapping :class:`jina_pb2.RequestProto`
+            - a :class:`Request` object wrapping :class:`jina_pb2.RequestProto`
             - a :class:`jina_pb2.RequestProto` object
 
     It provide a generic view of as :class:`jina_pb2.Message`, allowing one to access its member, request
@@ -44,17 +46,17 @@ class ProtoMessage:
             self.envelope = None
 
         if isinstance(request, bytes):
-            self.request = LazyRequest(request, self.envelope)
+            self.request = Request(request, self.envelope)
             self._size += sys.getsizeof(request)
         elif isinstance(request, jina_pb2.RequestProto):
-            self.request = request  # type: Union['LazyRequest', 'jina_pb2.RequestProto']
+            self.request = request  # type: Union['Request', 'jina_pb2.RequestProto']
         else:
             raise TypeError(f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(request)}')
 
         if envelope is None:
             self.envelope = self._add_envelope(*args, **kwargs)
             # delayed assignment, now binding envelope to request
-            if isinstance(self.request, LazyRequest):
+            if isinstance(self.request, Request):
                 self.request._envelope = self.envelope
 
         if self.envelope.check_version:
@@ -105,8 +107,8 @@ class ProtoMessage:
             envelope.request_id = request_id or self.request.request_id
             envelope.request_type = request_type or \
                                     getattr(self.request, self.request.WhichOneof('body')).__class__.__name__
-        elif isinstance(self.request, LazyRequest):
-            raise TypeError('can add envelope to a LazyRequest object, '
+        elif isinstance(self.request, Request):
+            raise TypeError('can add envelope to a Request object, '
                             'as it will trigger the deserialization.'
                             'in general, this invoke should not exist, '
                             'as add_envelope() is only called at the gateway')
@@ -134,7 +136,7 @@ class ProtoMessage:
 
     def _compress(self, data: bytes) -> bytes:
         # no further compression or post processing is required
-        if isinstance(self.request, LazyRequest) and not self.request.is_used:
+        if isinstance(self.request, Request) and not self.request.is_used:
             return data
 
         # otherwise there are two cases
@@ -295,7 +297,7 @@ class ProtoMessage:
         request.routes.extend(self.envelope.routes)
         return request
 
-    def merge_envelope_from(self, msgs: List['ProtoMessage']):
+    def merge_envelope_from(self, msgs: List['Message']):
         routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}
         self.envelope.ClearField('routes')
         self.envelope.routes.extend(
@@ -322,7 +324,7 @@ class ProtoMessage:
             d.code = jina_pb2.StatusProto.ERROR_CHAINED
 
 
-class ControlMessage(ProtoMessage):
+class ControlMessage(Message):
     def __init__(self, command: 'jina_pb2.RequestProto.ControlRequest',
                  *args, **kwargs):
         req = jina_pb2.RequestProto()

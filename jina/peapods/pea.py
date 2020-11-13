@@ -22,7 +22,7 @@ from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
-from jina.types.message import ProtoMessage, LazyRequest
+from jina.types.message import Message, Request
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -148,7 +148,7 @@ class BasePea(metaclass=PeaMeta):
             r += f'({str(self.executor)})'
         return r
 
-    def handle(self, msg: 'ProtoMessage') -> 'BasePea':
+    def handle(self, msg: 'Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
@@ -173,12 +173,12 @@ class BasePea(metaclass=PeaMeta):
         return (time.perf_counter() - self.last_active_time) > self.args.max_idle_time
 
     @property
-    def request(self) -> 'LazyRequest':
+    def request(self) -> 'Request':
         """Get the current request body inside the protobuf message"""
         return self._request
 
     @property
-    def message(self) -> 'ProtoMessage':
+    def message(self) -> 'Message':
         """Get the current protobuf message to be processed"""
         return self._message
 
@@ -230,16 +230,16 @@ class BasePea(metaclass=PeaMeta):
         return self.args.num_part if self.message.is_data_request else 1
 
     @property
-    def partial_requests(self) -> List['LazyRequest']:
+    def partial_requests(self) -> List['Request']:
         """The collected partial requests under the current ``request_id`` """
         return self._partial_requests
 
     @property
-    def partial_messages(self) -> List['ProtoMessage']:
+    def partial_messages(self) -> List['Message']:
         """The collected partial messages under the current ``request_id`` """
         return self._partial_messages
 
-    def pre_hook(self, msg: 'ProtoMessage') -> 'BasePea':
+    def pre_hook(self, msg: 'Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
         msg.add_route(self.name, self.args.identity)
         self._request = msg.request
@@ -256,7 +256,7 @@ class BasePea(metaclass=PeaMeta):
         self.logger.info(f'recv {msg.envelope.request_type}{part_str}from {msg.colored_route}')
         return self
 
-    def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
+    def post_hook(self, msg: 'Message') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
@@ -280,7 +280,7 @@ class BasePea(metaclass=PeaMeta):
         self.is_ready_event.clear()
         self.logger.success(__stop_msg__)
 
-    def _callback(self, msg: 'ProtoMessage'):
+    def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
         self.pre_hook(msg).handle(msg).post_hook(msg)
         self.is_post_hook_done = True
@@ -301,7 +301,7 @@ class BasePea(metaclass=PeaMeta):
         self.loop_teardown()
         self.is_shutdown.set()
 
-    def msg_callback(self, msg: 'ProtoMessage') -> Optional['ProtoMessage']:
+    def msg_callback(self, msg: 'Message') -> Optional['Message']:
         """Callback function after receiving the message
 
         When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.

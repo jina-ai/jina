@@ -12,7 +12,7 @@ from jina.parser import set_pea_parser, set_ping_parser
 from jina.peapods.container import ContainerPea
 from jina.peapods.pea import BasePea
 from jina.proto import jina_pb2, uid
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,12 +28,12 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
         d = jina_pb2.DocumentProto()
         d.tags['id'] = j
         d.text = b'hello world'
-        GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
+        NdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
         d.id = uid.new_doc_id(d)
         for k in range(chunks_per_doc):
             c = d.chunks.add()
             c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            GenericNdArray(c.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
+            NdArray(c.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
             c.tags['id'] = c_id
             c.tags['parent_id'] = j
             c_id += 1

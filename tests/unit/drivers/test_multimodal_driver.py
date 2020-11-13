@@ -5,7 +5,7 @@ from jina.drivers.multimodal import MultiModalDriver
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 from jina.proto import jina_pb2
 from jina.proto import uid
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 @pytest.fixture(scope='function')
@@ -39,9 +39,9 @@ def doc_with_multimodal_chunks(embeddings):
     chunk1.id = uid.new_doc_id(chunk1)
     chunk2.id = uid.new_doc_id(chunk2)
     chunk3.id = uid.new_doc_id(chunk3)
-    GenericNdArray(chunk1.embedding).value = embeddings[0]
-    GenericNdArray(chunk2.embedding).value = embeddings[1]
-    GenericNdArray(chunk3.embedding).value = embeddings[2]
+    NdArray(chunk1.embedding).value = embeddings[0]
+    NdArray(chunk2.embedding).value = embeddings[1]
+    NdArray(chunk3.embedding).value = embeddings[2]
     return doc
 
 
@@ -91,8 +91,8 @@ def test_multimodal_driver(simple_multimodal_driver, mock_multimodal_encoder, do
     visual1 = doc.chunks[0]
     visual2 = doc.chunks[1]
     textual = doc.chunks[2]
-    assert GenericNdArray(doc.embedding).value.shape[0] == GenericNdArray(visual1.embedding).value.shape[0] + \
-           GenericNdArray(visual2.embedding).value.shape[0] + GenericNdArray(textual.embedding).value.shape[0]
+    assert NdArray(doc.embedding).value.shape[0] == NdArray(visual1.embedding).value.shape[0] + \
+           NdArray(visual2.embedding).value.shape[0] + NdArray(textual.embedding).value.shape[0]
 
 
 @pytest.fixture(scope='function')
@@ -107,9 +107,9 @@ def doc_with_multimodal_chunks_wrong(embeddings):
     chunk1.id = uid.new_doc_id(chunk1)
     chunk2.id = uid.new_doc_id(chunk2)
     chunk3.id = uid.new_doc_id(chunk3)
-    GenericNdArray(chunk1.embedding).value = embeddings[0]
-    GenericNdArray(chunk2.embedding).value = embeddings[1]
-    GenericNdArray(chunk3.embedding).value = embeddings[2]
+    NdArray(chunk1.embedding).value = embeddings[0]
+    NdArray(chunk2.embedding).value = embeddings[1]
+    NdArray(chunk3.embedding).value = embeddings[2]
     return doc
 
 
@@ -120,7 +120,7 @@ def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_drive
     doc = doc_with_multimodal_chunks_wrong
     assert len(doc.chunks) == 3
     # Document consider invalid to be encoded by the driver
-    assert GenericNdArray(doc.embedding).value is None
+    assert NdArray(doc.embedding).value is None
 
 
 @pytest.fixture
@@ -137,7 +137,7 @@ def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_mu
     visual1 = doc.chunks[2]
     visual2 = doc.chunks[0]
     textual = doc.chunks[1]
-    control = np.concatenate([GenericNdArray(visual2.embedding).value, GenericNdArray(textual.embedding).value,
-                              GenericNdArray(visual1.embedding).value])
-    test = GenericNdArray(doc.embedding).value
+    control = np.concatenate([NdArray(visual2.embedding).value, NdArray(textual.embedding).value,
+                              NdArray(visual1.embedding).value])
+    test = NdArray(doc.embedding).value
     np.testing.assert_array_equal(control, test)

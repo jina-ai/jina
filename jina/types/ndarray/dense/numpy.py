@@ -3,14 +3,15 @@ import os
 import numpy as np
 
 from . import BaseDenseNdArray
-from ...proto import jina_pb2
+from ....proto import jina_pb2
 
+__all__ = ['BaseDenseNdArray']
 
 class DenseNdArray(BaseDenseNdArray):
     """
     Dense NdArray powered by numpy, supports quantization method.
 
-    Most of the cases you don't want use this class directly, use :class:`GenericNdArray` instead.
+    Most of the cases you don't want use this class directly, use :class:`NdArray` instead.
     """
 
     def __init__(self, proto: 'jina_pb2.NdArrayProto' = None, quantize: str = None, *args, **kwargs):

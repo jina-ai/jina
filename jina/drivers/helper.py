@@ -9,7 +9,7 @@ from typing import Dict, Any, Iterable, Tuple
 import numpy as np
 
 from ..proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 def extract_docs(docs: Iterable['jina_pb2.DocumentProto'], embedding: bool) -> Tuple:
@@ -30,9 +30,9 @@ def extract_docs(docs: Iterable['jina_pb2.DocumentProto'], embedding: bool) -> T
     bad_doc_ids = []
 
     if embedding:
-        _extract_fn = lambda doc: GenericNdArray(doc.embedding).value
+        _extract_fn = lambda doc: NdArray(doc.embedding).value
     else:
-        _extract_fn = lambda doc: doc.text or doc.buffer or GenericNdArray(doc.blob).value
+        _extract_fn = lambda doc: doc.text or doc.buffer or NdArray(doc.blob).value
 
     for doc in docs:
         content = _extract_fn(doc)
@@ -55,7 +55,7 @@ def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     """
     ret = {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
     if 'blob' in ret:
-        ret['blob'] = GenericNdArray(obj.blob).value
+        ret['blob'] = NdArray(obj.blob).value
     return ret
 
 

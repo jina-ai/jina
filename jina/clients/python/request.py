@@ -16,7 +16,7 @@ from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
 from ...logging import default_logger
 from ...proto import jina_pb2, uid
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 def _fill_document(document: 'jina_pb2.DocumentProto',
@@ -30,7 +30,7 @@ def _fill_document(document: 'jina_pb2.DocumentProto',
     if isinstance(content, jina_pb2.DocumentProto):
         document.CopyFrom(content)
     elif isinstance(content, np.ndarray):
-        GenericNdArray(document.blob).value = content
+        NdArray(document.blob).value = content
     elif isinstance(content, bytes):
         document.buffer = content
         if not mime_type and buffer_sniff:

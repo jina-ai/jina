@@ -6,7 +6,7 @@ from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
-from jina.types.message import ProtoMessage
+from jina.types.message import Message
 from tests import random_docs
 
 
@@ -37,7 +37,7 @@ def test_simple_zmqlet():
         req.request_id = uuid.uuid1().hex
         d = req.index.docs.add()
         d.tags['id'] = 2
-        msg = ProtoMessage(None, req, 'tmp', '')
+        msg = Message(None, req, 'tmp', '')
         z.send_message(msg)
 
 

@@ -6,7 +6,7 @@ import pytest
 from jina.drivers.search import VectorSearchDriver
 from jina.executors.indexers import BaseVectorIndexer
 from jina.proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class MockIndexer(BaseVectorIndexer):
@@ -66,7 +66,7 @@ def create_document_to_search():
     for c in range(10):
         chunk = doc.chunks.add()
         chunk.id = str(c + 2)
-        GenericNdArray(chunk.embedding).value = np.array([int(chunk.id)])
+        NdArray(chunk.embedding).value = np.array([int(chunk.id)])
     return doc
 
 
@@ -95,7 +95,7 @@ def test_vectorsearch_driver_mock_indexer():
         assert chunk.matches[1].score.ref_id == str(chunk.id)
         assert chunk.matches[0].score.value == pytest.approx(int(chunk.id) * 0.01, 0.0001)
         assert chunk.matches[1].score.value == pytest.approx(int(chunk.id) * 0.1, 0.0001)
-        assert GenericNdArray(chunk.matches[-1].embedding).value is None
+        assert NdArray(chunk.matches[-1].embedding).value is None
 
 
 def test_vectorsearch_driver_mock_indexer_with_fill():
@@ -106,6 +106,6 @@ def test_vectorsearch_driver_mock_indexer_with_fill():
     driver._apply_all(doc.chunks)
 
     for chunk in doc.chunks:
-        assert GenericNdArray(chunk.matches[0].embedding).value.shape == (7,)
-        assert GenericNdArray(chunk.matches[-1].embedding).value.shape == (7,)
-        assert GenericNdArray(chunk.matches[-1].embedding).value is not None
+        assert NdArray(chunk.matches[0].embedding).value.shape == (7,)
+        assert NdArray(chunk.matches[-1].embedding).value.shape == (7,)
+        assert NdArray(chunk.matches[-1].embedding).value is not None

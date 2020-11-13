@@ -24,7 +24,7 @@ def test_empty_ndarray():
     a = sp2()
     assert a.value is None
 
-    from jina.types.ndarray.generic import GenericNdArray as sp2
+    from jina.types.ndarray.generic import NdArray as sp2
     a = sp2()
     assert a.value is None
 
@@ -103,7 +103,7 @@ def test_torch_sparse(idx_shape, transpose=False):
 
 
 def test_generic():
-    from jina.types.ndarray.generic import GenericNdArray
+    from jina.types.ndarray.generic import NdArray
     from scipy.sparse import coo_matrix
 
     row = np.array([0, 3, 1, 0])
@@ -112,7 +112,7 @@ def test_generic():
     a = coo_matrix((data, (row, col)), shape=(4, 4))
     dense_a = a.toarray()
 
-    b = GenericNdArray(is_sparse=True)
+    b = NdArray(is_sparse=True)
 
     b.value = a
 

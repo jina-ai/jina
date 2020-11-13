@@ -8,6 +8,8 @@ from ....proto import jina_pb2
 if False:
     import scipy.sparse
 
+__all__ = ['SparseNdArray']
+
 
 class SparseNdArray(BaseSparseNdArray):
     """Scipy powered sparse ndarray

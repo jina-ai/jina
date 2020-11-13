@@ -3,7 +3,7 @@ from google.protobuf.struct_pb2 import ListValue
 
 from jina.drivers.predict import BinaryPredictDriver, MultiLabelPredictDriver, OneHotPredictDriver, \
     Prediction2DocBlobDriver
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 from tests import random_docs
 
 
@@ -80,4 +80,4 @@ def test_as_blob_driver():
     driver._traverse_apply(docs)
 
     for d in docs:
-        assert GenericNdArray(d.blob).value.shape == (3,)
+        assert NdArray(d.blob).value.shape == (3,)

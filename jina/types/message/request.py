@@ -15,8 +15,10 @@ _trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
 _empty_request = jina_pb2.RequestProto()
 
+__all__ = ['Request']
 
-class LazyRequest:
+
+class Request:
     """
     A container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization
     and decompression when receives the first read access to its member.

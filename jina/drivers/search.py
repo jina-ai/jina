@@ -6,7 +6,7 @@ from typing import Sequence, Tuple
 from . import BaseExecutableDriver, QuerySetReader
 from .helper import extract_docs
 from ..proto import uid, jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -88,7 +88,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
     def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         embeds = self.exec_fn([self.id2hash(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
-            GenericNdArray(doc.embedding).value = embedding
+            NdArray(doc.embedding).value = embedding
 
 
 class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
@@ -135,4 +135,4 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
                 r.score.value = score
                 r.score.op_name = op_name
                 if vec is not None:
-                    GenericNdArray(r.embedding).value = vec
+                    NdArray(r.embedding).value = vec

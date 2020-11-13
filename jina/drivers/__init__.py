@@ -22,7 +22,7 @@ from ..executors import BaseExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml
 from ..proto import jina_pb2
-from jina.types.message import ProtoMessage, LazyRequest
+from jina.types.message import Message, Request
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -164,12 +164,12 @@ class BaseDriver(metaclass=DriverType):
         self.attached = True
 
     @property
-    def req(self) -> 'LazyRequest':
+    def req(self) -> 'Request':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.pea.request
 
     @property
-    def partial_reqs(self) -> Sequence['LazyRequest']:
+    def partial_reqs(self) -> Sequence['Request']:
         """The collected partial requests under the current ``request_id`` """
         if self.expect_parts > 1:
             return self.pea.partial_requests
@@ -185,7 +185,7 @@ class BaseDriver(metaclass=DriverType):
         return self.pea.expect_parts
 
     @property
-    def msg(self) -> 'ProtoMessage':
+    def msg(self) -> 'Message':
         """Get the current request, shortcut to ``self.pea.message``"""
         return self.pea.message
 

@@ -4,7 +4,7 @@ import numpy as np
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 def test_evaluation(tmpdir):
@@ -25,15 +25,15 @@ def test_evaluation(tmpdir):
         doc0 = jina_pb2.DocumentProto()
         doc0.tags['id'] = '0'
         doc0.tags['dummy_score'] = 0
-        GenericNdArray(doc0.embedding).value = np.array([0])
+        NdArray(doc0.embedding).value = np.array([0])
         doc1 = jina_pb2.DocumentProto()
         doc1.tags['id'] = '1'
         doc1.tags['dummy_score'] = -1
-        GenericNdArray(doc1.embedding).value = np.array([1])
+        NdArray(doc1.embedding).value = np.array([1])
         doc2 = jina_pb2.DocumentProto()
         doc2.tags['id'] = '2'
         doc2.tags['dummy_score'] = -2
-        GenericNdArray(doc2.embedding).value = np.array([2])
+        NdArray(doc2.embedding).value = np.array([2])
         return [doc0, doc1, doc2]
 
     with Flow().load_config('flow-index.yml') as index_flow:
@@ -85,7 +85,7 @@ def test_evaluation(tmpdir):
 
     def doc_groundtruth_evaluation_pairs():
         doc0 = jina_pb2.DocumentProto()
-        GenericNdArray(doc0.embedding).value = np.array([0])  # it will match 0 and 1
+        NdArray(doc0.embedding).value = np.array([0])  # it will match 0 and 1
         groundtruth0 = jina_pb2.DocumentProto()
         match0 = groundtruth0.matches.add()
         match0.tags['id'] = '0'
@@ -105,7 +105,7 @@ def test_evaluation(tmpdir):
         # Recall@2 = 50%
 
         doc1 = jina_pb2.DocumentProto()
-        GenericNdArray(doc1.embedding).value = np.array([2])  # it will match 2 and 1
+        NdArray(doc1.embedding).value = np.array([2])  # it will match 2 and 1
         groundtruth1 = jina_pb2.DocumentProto()
         match0 = groundtruth1.matches.add()
         match0.tags['id'] = '1'

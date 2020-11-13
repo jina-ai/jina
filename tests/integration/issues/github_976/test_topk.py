@@ -5,7 +5,7 @@ import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.types.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def random_docs(num_docs, embed_dim=10, jitter=1):
         d = jina_pb2.DocumentProto()
         d.tags['id'] = j
         d.text = b'hello'
-        GenericNdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
+        NdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
         yield d
 
 

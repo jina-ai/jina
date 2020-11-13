@@ -5,6 +5,8 @@ AnyNdArray = TypeVar('AnyNdArray')
 if False:
     from ...proto import jina_pb2
 
+__all__ = ['BaseNdArray']
+
 
 class BaseNdArray:
     """A base class for containing the protobuf message of NdArray. It defines interfaces
