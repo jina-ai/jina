@@ -449,10 +449,11 @@ class HubIO:
         self.readme_path = get_exist_path(self.args.path, 'README.md')
         self.requirements_path = get_exist_path(self.args.path, 'requirements.txt')
 
-        yaml_glob = glob.glob(os.path.join(self.args.path, '*.yml'))
-        if yaml_glob:
-            yaml_glob.remove(self.manifest_path)
-            yaml_glob.remove(self.config_yaml_path)
+        yaml_glob = set(glob.glob(os.path.join(self.args.path, '*.yml')))
+        yaml_glob.difference_update({self.manifest_path, self.config_yaml_path})
+
+        if not self.config_yaml_path:
+            self.config_yaml_path = yaml_glob.pop()
 
         py_glob = glob.glob(os.path.join(self.args.path, '*.py'))
 
@@ -461,7 +462,7 @@ class HubIO:
         completeness = {
             'Dockerfile': self.dockerfile_path,
             'manifest.yml': self.manifest_path,
-            'config.yaml': self.config_yaml_path,
+            'config.yml': self.config_yaml_path,
             'README.md': self.readme_path,
             'requirements.txt': self.requirements_path,
             '*.yml': yaml_glob,
