@@ -5,6 +5,7 @@ from typing import Dict, Sequence, Set, Tuple
 
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
+from ..helper import typename
 from ..proto import jina_pb2, uid
 from jina.types.ndarray.generic import NdArray
 
@@ -29,8 +30,8 @@ class CraftDriver(BaseExecutableDriver):
                 else:
                     NdArray(doc.blob).value = v
             elif isinstance(protected_keys, dict) and k in protected_keys:
-                self.logger.warning(f'you are assigning a {k} in {self.exec.__class__}, '
-                                    f'is it intentional? {k} will be overwritten by {self.__class__} '
+                self.logger.warning(f'you are assigning a {k} in {typename(self.exec)}, '
+                                    f'is it intentional? {k} will be overwritten by {typename(self)} '
                                     f'anyway.')
             elif isinstance(v, list) or isinstance(v, tuple):
                 doc.ClearField(k)

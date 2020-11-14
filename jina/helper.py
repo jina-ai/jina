@@ -18,15 +18,13 @@ from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextI
 
 from ruamel.yaml import YAML, nodes
 
-if False:
-    from uvloop import Loop
 
 __all__ = ['batch_iterator', 'yaml',
            'load_contrib_module',
            'parse_arg',
            'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
-           'cached_property', 'is_url', 'complete_path']
+           'cached_property', 'is_url', 'complete_path', 'typename']
 
 
 def deprecated_alias(**aliases):
@@ -633,12 +631,13 @@ def use_uvloop():
                 'you did not install uvloop. Try "pip install uvloop"')
 
 
-def show_ioloop_backend(loop: Optional['Loop'] = None) -> None:
-    if loop is None:
-        import asyncio
-        loop = asyncio.get_event_loop()
-    from .logging import default_logger
-    default_logger.info(f'using {loop.__class__} as event loop')
+def typename(obj):
+    if not isinstance(obj, type):
+        obj = obj.__class__
+    try:
+        return f'{obj.__module__}.{obj.__name__}'
+    except AttributeError:
+        return str(obj)
 
 
 def rsetattr(obj, attr: str, val):

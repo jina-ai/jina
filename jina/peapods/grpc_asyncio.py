@@ -9,7 +9,8 @@ from concurrent import futures
 
 from grpc import _server
 
-from ..helper import show_ioloop_backend, use_uvloop
+from ..helper import use_uvloop, typename
+from ..logging import default_logger
 
 use_uvloop()
 
@@ -30,17 +31,17 @@ def _loop_mgr(loop: 'asyncio.AbstractEventLoop'):
 
 class AsyncioExecutor(futures.Executor):
 
-    def __init__(self, *, loop=None):
+    def __init__(self):
 
         super().__init__()
         self._shutdown = False
         try:
-            self._loop = loop or asyncio.get_event_loop()
+            self._loop = asyncio.get_running_loop()
             if self._loop.is_closed():
                 raise RuntimeError
         except RuntimeError:
             self._loop = asyncio.new_event_loop()
-        show_ioloop_backend(self._loop)
+        default_logger.info(f'using {typename(self._loop)} as event loop')
         self._thread = threading.Thread(target=_loop_mgr, args=(self._loop,))
         self._thread.start()
 

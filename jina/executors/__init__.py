@@ -18,7 +18,7 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source
+from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source, typename
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -193,7 +193,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
             _id = str(uuid.uuid4()).split('-')[0]
-            _name = f'{self.__class__.__name__}-{_id}'
+            _name = f'{typename(self)}-{_id}'
             if self.warn_unnamed:
                 self.logger.warning(
                     f'this executor is not named, i will call it "{_name}". '

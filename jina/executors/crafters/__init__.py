@@ -5,6 +5,7 @@ import inspect
 from typing import Dict, List
 
 from .. import BaseExecutor
+from ...helper import typename
 
 
 class BaseCrafter(BaseExecutor):
@@ -18,7 +19,7 @@ class BaseCrafter(BaseExecutor):
         super().__init__(*args, **kwargs)
         self.required_keys = {k for k in inspect.getfullargspec(self.craft).args if k != 'self'}
         if not self.required_keys:
-            self.logger.warning(f'{self.__class__.__name__} works on keys, but no keys are specified')
+            self.logger.warning(f'{typename(self)} works on keys, but no keys are specified')
 
     def craft(self, *args, **kwargs) -> Dict:
         """The apply function of this executor.
