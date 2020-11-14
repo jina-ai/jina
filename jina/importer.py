@@ -134,7 +134,8 @@ def import_classes(namespace: str, targets=None,
                     f'You can use `jina check` to list all executors and drivers')
             else:
                 warnings.warn(
-                    f'due to the missing dependencies or bad implementations, {bad_imports} can not be imported '
+                    f'due to the missing dependencies or bad implementations, '
+                    f'{bad_imports} can not be imported '
                     f'if you are using these executors/drivers, they wont work. '
                     f'You can use `jina check` to list all executors and drivers')
 
@@ -161,8 +162,8 @@ class ImportExtensions:
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type == ModuleNotFoundError:
             missing_module = exc_val.name
-            from . import __root_dir__
-            with open(os.path.join(os.path.dirname(__root_dir__), 'extra-requirements.txt')) as fp:
+            from pkg_resources import resource_filename
+            with open(resource_filename('jina', '/'.join(('resources', 'extra-requirements.txt')))) as fp:
                 for v in fp:
                     if (v.strip()
                             and not v.startswith('#')
