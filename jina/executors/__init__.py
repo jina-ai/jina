@@ -18,7 +18,8 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, PathImporter, expand_dict, expand_env_var, get_local_config_source, typename
+from ..helper import yaml, expand_dict, expand_env_var, get_local_config_source, typename
+from ..importer import PathImporter
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -299,9 +300,10 @@ class BaseExecutor(metaclass=ExecutorType):
         self.logger = JinaLogger(self.__class__.__name__)
         try:
             self._post_init_wrapper(fill_in_metas=False)
-        except ImportError as ex:
-            self.logger.warning('ImportError is often caused by a missing component, '
-                                f'which often can be solved by "pip install" relevant package. {ex}', exc_info=True)
+        except ModuleNotFoundError as ex:
+            self.logger.warning(f'{typename(ex)} is often caused by a missing component, '
+                                f'which often can be solved by "pip install" relevant package: {repr(ex)}',
+                                exc_info=True)
 
     def train(self, *args, **kwargs) -> None:
         """

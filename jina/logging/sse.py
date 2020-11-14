@@ -6,6 +6,7 @@ from typing import Optional, Dict
 
 from . import default_logger
 from .. import JINA_GLOBAL, __version__
+from ..importer import ImportExtensions
 
 
 def start_sse_logger(log_config: Dict,
@@ -32,15 +33,11 @@ def start_sse_logger(log_config: Dict,
         };
 
     """
-    try:
+    with ImportExtensions(required=True):
         from flask import Flask, Response, jsonify
         from flask_cors import CORS
         from gevent.pywsgi import WSGIServer
         import gevent
-    except ImportError:
-        raise ImportError('Flask or its dependencies are not fully installed, '
-                          'they are required for serving HTTP requests.'
-                          'Please use pip install "jina[http]" to install it.')
 
     JINA_GLOBAL.logserver.address = f'http://{log_config["host"]}:{log_config["port"]}'
 

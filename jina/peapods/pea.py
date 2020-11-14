@@ -354,7 +354,7 @@ class BasePea(metaclass=PeaMeta):
 
     def load_plugins(self):
         if self.args.py_modules:
-            from ..helper import PathImporter
+            from ..importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
     def loop_teardown(self):

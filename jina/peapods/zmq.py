@@ -15,6 +15,7 @@ from zmq.ssh import tunnel_connection
 from .. import __default_host__
 from ..enums import SocketType
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
+from ..importer import ImportExtensions
 from ..logging import default_logger, profile_logger, JinaLogger
 from ..proto import jina_pb2
 from jina.types.message import Message, ControlMessage
@@ -290,14 +291,9 @@ class ZmqStreamlet(Zmqlet):
         use_uvloop()
         import asyncio
         asyncio.set_event_loop(asyncio.new_event_loop())
-        try:
+        with ImportExtensions(required=True):
             import tornado.ioloop
             self.io_loop = tornado.ioloop.IOLoop.current()
-        except (ModuleNotFoundError, ImportError):
-            self.logger.error('Since v0.3.6 Jina requires "tornado" as a base dependency, '
-                              'we use its I/O event loop for non-blocking sockets. '
-                              'Please try reinstall via "pip install -U jina" to include this dependency')
-            raise
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)

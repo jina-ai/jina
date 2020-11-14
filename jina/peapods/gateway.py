@@ -14,6 +14,7 @@ from .zmq import AsyncZmqlet
 from .. import __stop_msg__
 from ..enums import ClientMode
 from ..helper import use_uvloop
+from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 from ..proto import jina_pb2_grpc, jina_pb2
@@ -166,14 +167,11 @@ class RESTGatewayPea(BasePea):
         self.logger.close()
 
     def get_http_server(self):
-        try:
+        with ImportExtensions(required=True):
             from flask import Flask, Response, jsonify, request
             from flask_cors import CORS, cross_origin
             from gevent.pywsgi import WSGIServer
-        except ImportError:
-            raise ImportError('Flask or its dependencies are not fully installed, '
-                              'they are required for serving HTTP requests.'
-                              'Please use pip install "jina[http]" to install it.')
+
         app = Flask(__name__)
         app.config['CORS_HEADERS'] = 'Content-Type'
         CORS(app)

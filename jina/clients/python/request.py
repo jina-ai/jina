@@ -14,6 +14,7 @@ from google.protobuf import json_format
 from ...drivers.helper import guess_mime
 from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
+from ...importer import ImportExtensions
 from ...logging import default_logger
 from ...proto import jina_pb2, uid
 from jina.types.ndarray.generic import NdArray
@@ -87,16 +88,11 @@ def _generate(data: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Iter
               ) -> Iterator['jina_pb2.RequestProto']:
     buffer_sniff = False
 
-    try:
+    with ImportExtensions(required=False,
+                          help_text=f'can not sniff the MIME type '
+                                    f'MIME sniffing requires brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
         import magic
-
         buffer_sniff = True
-    except (ImportError, ModuleNotFoundError):
-        default_logger.warning(
-            f'can not sniff the MIME type '
-            f'MIME sniffing requires pip install "jina[http]" '
-            f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)'
-        )
 
     if mime_type and (mime_type not in mimetypes.types_map.values()):
         mime_type = mimetypes.guess_type(f'*.{mime_type}')[0]

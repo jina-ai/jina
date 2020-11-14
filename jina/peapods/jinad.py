@@ -4,6 +4,7 @@ from typing import Dict, Tuple, Set, List, Optional
 
 import ruamel.yaml
 
+from ..importer import ImportExtensions
 from ..logging import JinaLogger
 
 
@@ -93,19 +94,14 @@ class JinadAPI:
         self.pod_url = f'{self.base_url}/pod'
         self.log_url = f'{self.base_url}/log'
 
-        try:
-            import requests
-        except (ImportError, ModuleNotFoundError):
-            self.logger.critical('missing "requests" dependency, please do pip install "jina[http]"'
-                                 'to enable remote Pea/Pod invocation')
-
     @property
     def is_alive(self) -> bool:
         """ Return True if ``jinad`` is alive at remote
 
         :return:
         """
-        import requests
+        with ImportExtensions(required=True):
+            import requests
 
         try:
             r = requests.get(url=self.alive_url, timeout=self.timeout)
@@ -151,7 +147,9 @@ class JinadAPI:
         :param pod_type: two types of pod, can be ``cli``, ``flow`` TODO: need clarify this
         :return: the identity of the spawned pea/pod
         """
-        import requests
+        with ImportExtensions(required=True):
+            import requests
+
         try:
             url = self.pea_url if self.kind == 'pea' else f'{self.pod_url}/{pod_type}'
             r = requests.put(url=url, json=args, timeout=self.timeout)
@@ -167,7 +165,9 @@ class JinadAPI:
         :return:
         """
 
-        import requests
+        with ImportExtensions(required=True):
+            import requests
+
         try:
             url = f'{self.log_url}/?{self.kind}_id={remote_id}'
             r = requests.get(url=url, stream=True)
@@ -186,7 +186,9 @@ class JinadAPI:
         :param remote_id: the identity of that pea/pod
         :return: True if the deletion is successful
         """
-        import requests
+        with ImportExtensions(required=True):
+            import requests
+
         try:
             url = f'{self.pea_url}/?pea_id={remote_id}' if self.kind == 'pea' else f'{self.pod_url}/?pod_id={remote_id}'
             r = requests.delete(url=url, timeout=self.timeout)
