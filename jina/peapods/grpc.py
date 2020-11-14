@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import grpc
 
 from .pea import BasePea
-from ..helper import PathImporter
+from ..importer import PathImporter
 
 
 class GRPCService(BasePea):

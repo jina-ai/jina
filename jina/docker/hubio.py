@@ -18,6 +18,7 @@ from ..executors import BaseExecutor
 from ..flow import Flow
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
     countdown
+from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 from ..parser import set_pod_parser
@@ -49,7 +50,9 @@ class HubIO:
         self._load_docker_client()
 
     def _load_docker_client(self):
-        try:
+        with ImportExtensions(required=False,
+                              help_text='missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
+                                        'to enable full CLI, please do pip install "jina[docker]"'):
             import docker
             from docker import APIClient
 
@@ -57,20 +60,13 @@ class HubIO:
 
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
-        except (ImportError, ModuleNotFoundError):
-            self.logger.warning('missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
-                                'to enable full CLI, please do pip install "jina[docker]"')
 
     def new(self) -> None:
         """Create a new executor using cookiecutter template """
-        try:
+        with ImportExtensions(required=True):
             from cookiecutter.main import cookiecutter
-        except (ImportError, ModuleNotFoundError):
-            self.logger.critical('"jina hub new" requires "cookiecutter" dependency, '
-                                 'please install it via pip install "jina[cookiecutter]"')
-            raise
+            import click  # part of cookiecutter
 
-        import click  # part of cookiecutter
         cookiecutter_template = self.args.template
         if self.args.type == 'app':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina.git'

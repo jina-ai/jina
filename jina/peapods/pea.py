@@ -19,7 +19,7 @@ from ..enums import PeaRoleType, SkipOnErrorType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
     ChainedPodException
 from ..executors import BaseExecutor
-from ..helper import is_valid_local_config_source
+from ..helper import is_valid_local_config_source, typename
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
@@ -354,7 +354,7 @@ class BasePea(metaclass=PeaMeta):
 
     def load_plugins(self):
         if self.args.py_modules:
-            from ..helper import PathImporter
+            from ..importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
     def loop_teardown(self):
@@ -429,13 +429,13 @@ class BasePea(metaclass=PeaMeta):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {self.__class__} with name {self.name}, '
+                self.logger.critical(f'fail to start {typename(self)} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
                 raise PeaFailToStart
             return self
         else:
             raise TimeoutError(
-                f'{self.__class__} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
+                f'{typename(self)} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
 
     def __enter__(self) -> 'BasePea':
         return self.start()

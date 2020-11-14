@@ -6,7 +6,8 @@ import time
 from typing import Sequence
 
 from ...helper import colored
-from ...logging import profile_logger, default_logger
+from ...importer import ImportExtensions
+from ...logging import profile_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
 
@@ -103,23 +104,21 @@ def pprint_routes(routes: Sequence['jina_pb2.RouteProto'],
 
     header = [colored(v, attrs=['bold']) for v in ('Pod', 'Time', 'Exception')]
 
-    try:
+    # poorman solution
+    table = []
+
+    def add_row(x):
+        for h, y in zip(header, x):
+            table.append(f'{h}\n{y}\n{"-" * 10}')
+
+    def visualize(x):
+        print('\n'.join(x))
+
+    with ImportExtensions(required=False):
         from prettytable import PrettyTable, ALL
         table = PrettyTable(field_names=header, align='l', hrules=ALL)
         add_row = table.add_row
         visualize = print
-    except (ModuleNotFoundError, ImportError):
-        default_logger.warning('you may want to pip install "jina[prettytable]" for '
-                               'better visualization')
-        # poorman solution
-        table = []
-
-        def add_row(x):
-            for h, y in zip(header, x):
-                table.append(f'{h}\n{y}\n{"-" * 10}')
-
-        def visualize(x):
-            print('\n'.join(x))
 
     for route in routes:
         status_icon = '🟢'

@@ -4,6 +4,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
+from ..helper import typename
 from jina.types.ndarray.generic import NdArray
 
 if False:
@@ -86,7 +87,7 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
         """
         p = np.squeeze(prediction)
         if p.ndim > 1:
-            raise ValueError(f'{self.__class__} expects prediction has ndim=1, but receiving ndim={p.ndim}')
+            raise ValueError(f'{typename(self)} expects prediction has ndim=1, but receiving ndim={p.ndim}')
 
         return [self.one_label if v else self.zero_label for v in p.astype(bool)]
 
@@ -106,10 +107,10 @@ class OneHotPredictDriver(BaseLabelPredictDriver):
 
     def validate_labels(self, prediction: 'np.ndarray'):
         if prediction.ndim != 2:
-            raise ValueError(f'{self.__class__} expects prediction has ndim=2, but receiving {prediction.ndim}')
+            raise ValueError(f'{typename(self)} expects prediction has ndim=2, but receiving {prediction.ndim}')
         if prediction.shape[1] != len(self.labels):
             raise ValueError(
-                f'{self.__class__} expects prediction.shape[1]==len(self.labels), but receiving {prediction.shape}')
+                f'{typename(self)} expects prediction.shape[1]==len(self.labels), but receiving {prediction.shape}')
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[str]:
         """

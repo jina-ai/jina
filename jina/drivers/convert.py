@@ -11,9 +11,10 @@ from typing import Sequence
 
 import numpy as np
 
+from jina.types.ndarray.generic import NdArray
 from . import BaseRecursiveDriver
 from .helper import guess_mime
-from jina.types.ndarray.generic import NdArray
+from ..importer import ImportExtensions
 
 if False:
     from ..proto import jina_pb2
@@ -60,13 +61,12 @@ class MIMEDriver(BaseConvertDriver):
         super().__init__(target, *args, **kwargs)
         self.default_mime = default_mime
         self.buffer_sniff = False
-        try:
-            import magic
+        with ImportExtensions(required=False,
+                              logger=self.logger,
+                              help_text=f'can not sniff the MIME type '
+                                        f'MIME sniffing requires pip install "jina[http]" '
+                                        f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
             self.buffer_sniff = True
-        except (ImportError, ModuleNotFoundError):
-            self.logger.warning(f'can not sniff the MIME type '
-                                f'MIME sniffing requires pip install "jina[http]" '
-                                f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
 
     def convert(self, d):
         import mimetypes
