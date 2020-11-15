@@ -89,8 +89,10 @@ def _generate(data: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Iter
     buffer_sniff = False
 
     with ImportExtensions(required=False,
+                          pkg_name='python-magic',
                           help_text=f'can not sniff the MIME type '
-                                    f'MIME sniffing requires brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
+                                    f'MIME sniffing requires brew install '
+                                    f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
         import magic
         buffer_sniff = True
 
