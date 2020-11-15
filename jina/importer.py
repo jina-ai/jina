@@ -4,8 +4,6 @@ import warnings
 from types import SimpleNamespace, ModuleType
 from typing import Optional, List, Any, Dict
 
-
-
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
 IMPORTED.executors = False
@@ -150,18 +148,34 @@ def import_classes(namespace: str, targets=None,
 
 
 class ImportExtensions:
-    def __init__(self, required: bool, logger=None, help_text: str = None):
+    """
+    A context manager for wrapping extension import and fallback.
+    It guides the user to pip install correct package by looking up
+    extra-requirements.txt
+    """
+
+    def __init__(self, required: bool, logger=None,
+                 help_text: str = None, pkg_name: str = None):
+        """
+
+        :param required: set to True if you want to raise the ModuleNotFound error
+        :param logger: when not given, built-in warnings.warn will be used
+        :param help_text: the help text followed after
+        :param pkg_name: the package name to find in extra_requirements.txt, when not given
+                the ModuleNotFound exec_val will be used as the best guess
+        """
         self._required = required
         self._tags = []
         self._help_text = help_text
         self._logger = logger
+        self._pkg_name = pkg_name
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type == ModuleNotFoundError:
-            missing_module = exc_val.name
+            missing_module = self._pkg_name or exc_val.name
             from pkg_resources import resource_filename
             with open(resource_filename('jina', '/'.join(('resources', 'extra-requirements.txt')))) as fp:
                 for v in fp:
