@@ -5,7 +5,6 @@ import mimetypes
 import os
 import urllib.parse
 import uuid
-import json
 from typing import Iterator, Union, Tuple, Dict
 
 import numpy as np
@@ -16,7 +15,8 @@ from ...enums import ClientMode
 from ...helper import batch_iterator, is_url
 from ...importer import ImportExtensions
 from ...logging import default_logger
-from ...proto import jina_pb2, uid
+from ...proto import jina_pb2
+from ...types.document import uid
 from jina.types.ndarray.generic import NdArray
 
 
@@ -93,7 +93,6 @@ def _generate(data: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Iter
                           help_text=f'can not sniff the MIME type '
                                     f'MIME sniffing requires brew install '
                                     f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
-        import magic
         buffer_sniff = True
 
     if mime_type and (mime_type not in mimetypes.types_map.values()):

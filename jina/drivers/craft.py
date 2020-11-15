@@ -6,7 +6,8 @@ from typing import Dict, Sequence, Set, Tuple
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
 from ..helper import typename
-from ..proto import jina_pb2, uid
+from ..proto import jina_pb2
+from ..types.document import uid
 from jina.types.ndarray.generic import NdArray
 
 

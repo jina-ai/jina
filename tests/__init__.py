@@ -6,7 +6,8 @@ from os.path import dirname
 
 import numpy as np
 
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
 
 

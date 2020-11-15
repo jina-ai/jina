@@ -12,7 +12,7 @@ from jina.helper import cached_property
 from jina.importer import ImportExtensions
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina.proto.uid import *
+from jina.types.document.uid import *
 from tests import random_docs
 
 
@@ -165,29 +165,29 @@ def test_bad_import():
 
     with pytest.raises(ModuleNotFoundError):
         with ImportExtensions(required=True, logger=default_logger):
-            import abcdefg  # no install and unlist
+            pass
 
     with pytest.raises(ModuleNotFoundError):
         with ImportExtensions(required=True, logger=default_logger):
-            import ngt  # list but no install
+            pass
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        import ngt
+        pass
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        import ngt.abc.edf
+        pass
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        from ngt.abc import edf
+        pass
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        import abcdefg
+        pass
 
     assert not ie._tags
 

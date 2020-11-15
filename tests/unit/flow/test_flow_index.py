@@ -4,7 +4,8 @@ import time
 import pytest
 
 from jina.flow import Flow
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

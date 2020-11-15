@@ -1,21 +1,26 @@
+import os
+import urllib.parse
 from typing import Union, Dict, Iterator
 
 from google.protobuf import json_format
 
 from .uid import *
 from ... import NdArray
-from ...helper import cached_property
+from ...drivers.helper import guess_mime
+from ...helper import cached_property, is_url
 from ...proto import jina_pb2
 
 if False:
     import numpy as np
 
 _empty_doc = jina_pb2.DocumentProto()
+_buffer_sniff = False
 
 
 class Document:
     def __init__(self, document: Union[bytes, Dict, 'jina_pb2.DocumentProto', None] = None,
-                 copy: bool = False):
+                 mime_type: str = None,
+                 copy: bool = False, **kwargs):
         self._document = jina_pb2.DocumentProto()
         if isinstance(document, jina_pb2.DocumentProto):
             if copy:
@@ -29,12 +34,21 @@ class Document:
         elif isinstance(document, bytes):
             self._document.ParseFromString(document)
 
+        if mime_type:
+            self._document.mime_type = mime_type
+
+        for k, v in kwargs.items():
+            if hasattr(self._document, k):
+                setattr(self._document, k, v)
+
     def __getattr__(self, name: str):
-        # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
         if hasattr(_empty_doc, name):
             return getattr(self._document, name)
         else:
             raise AttributeError
+
+    def update_id(self):
+        self._document.id = uid.new_doc_id(self._document)
 
     @property
     def blob(self) -> 'np.ndarray':
@@ -86,3 +100,33 @@ class Document:
     @cached_property
     def as_pb_object(self) -> 'jina_pb2.DocumentProto':
         return self._document
+
+    @property
+    def buffer(self) -> bytes:
+        return self._document.buffer
+
+    @buffer.setter
+    def buffer(self, value: bytes):
+        self._document.buffer = value
+        if not self._document.mime_type and _buffer_sniff:
+            try:
+                import magic
+                self._document.mime_type = magic.from_buffer(value, mime=True)
+            except Exception as ex:
+                default_logger.warning(f'can not sniff the MIME type: {repr(ex)}')
+
+    @property
+    def uri(self) -> str:
+        return self._document.uri
+
+    @uri.setter
+    def uri(self, value: str):
+        scheme = urllib.parse.urlparse(value).scheme
+        if ((scheme in {'http', 'https'} and is_url(value))
+                or (scheme in {'data'})
+                or os.path.exists(value)
+                or os.access(os.path.dirname(value), os.W_OK)):
+            self._document.uri = value
+            self._document.mime_type = guess_mime(value)
+        else:
+            raise ValueError(f'{value} is not a valid URI')

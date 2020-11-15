@@ -7,7 +7,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from .helper import extract_docs
-from ..proto import uid
+from ..types.document import uid
 
 if False:
     from ..proto import jina_pb2

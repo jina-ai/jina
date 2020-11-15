@@ -11,7 +11,8 @@ from jina.helper import random_name
 from jina.parser import set_pea_parser, set_ping_parser
 from jina.peapods.container import ContainerPea
 from jina.peapods.pea import BasePea
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
