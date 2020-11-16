@@ -1,7 +1,7 @@
 import mimetypes
 import os
 import urllib.parse
-from typing import Union, Dict, Iterator, Optional
+from typing import Union, Dict, Iterator, Optional, TypeVar
 
 import numpy as np
 from google.protobuf import json_format
@@ -20,6 +20,8 @@ with ImportExtensions(required=False,
                                 f'MIME sniffing requires brew install '
                                 f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
     _buffer_sniff = True
+
+DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
 
 __all__ = ['Document']
 
@@ -135,6 +137,10 @@ class Document:
         return Document(r)
 
     def add_chunk(self, document: Optional['Document'] = None, **kwargs) -> 'Document':
+        """Add a sub-document (i.e chunk) to the current Document
+
+        :return: the newly added sub-document in :class:`Document` view
+        """
         c = self._document.chunks.add()
         if document is not None:
             c.CopyFrom(document.as_pb_object)
@@ -236,3 +242,18 @@ class Document:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.update_id()
+
+    @property
+    def content(self) -> DocumentContentType:
+        attr = self._document.WhichOneof('content')
+        if attr:
+            return getattr(self, attr)
+
+    @content.setter
+    def content(self, value: DocumentContentType):
+        if isinstance(value, bytes):
+            self.buffer = value
+        elif isinstance(value, str):
+            self.text = value
+        elif isinstance(value, np.ndarray):
+            self.blob = value

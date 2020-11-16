@@ -22,28 +22,46 @@ def _generate(data: Union[Iterator[DocumentSourceType],
               mime_type: str = None,
               override_doc_id: bool = True,
               queryset: Sequence['QueryLang'] = None,
+              is_doc_generator: bool = True,
               ) -> Iterator['jina_pb2.RequestProto']:
+    """
+    :param is_doc_generator: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
+            or an interator over possible Document content (set to text, blob and buffer).
+    :return:
+    """
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
+
+    _kwargs = dict(mime_type=mime_type, length=batch_size, weight=1.0)
 
     for batch in batch_iterator(data, batch_size):
         req = Request()
         for content in batch:
-            _kwargs = dict(mime_type=mime_type, length=batch_size, weight=1.0)
             if isinstance(content, tuple) and len(content) == 2:
                 default_logger.debug('content comes in pair, '
                                      'will take the first as the input and the second as the groundtruth')
-                d = Document(content[0], **_kwargs)
-                gt = Document(content[1], **_kwargs)
-                if override_doc_id:
-                    d.update_id()
-                    gt.update_id()
+                if is_doc_generator:
+                    d = Document(content[0], **_kwargs)
+                    gt = Document(content[1], **_kwargs)
+                    if override_doc_id:
+                        d.update_id()
+                        gt.update_id()
+                else:
+                    with Document(**_kwargs) as d, Document(**_kwargs) as gt:
+                        d.content = content[0]
+                        gt.content = content[1]
+                    # note that there is no point to check override_doc_id here
+                    # as no doc_id is given when use _generate in this way
                 req.add_document(d, mode)
                 req.add_groundtruth(gt, mode)
             else:
-                d = Document(content, **_kwargs)
-                if override_doc_id:
-                    d.update_id()
+                if is_doc_generator:
+                    d = Document(content, **_kwargs)
+                    if override_doc_id:
+                        d.update_id()
+                else:
+                    with Document(**_kwargs) as d:
+                        d.content = content
                 req.add_document(d, mode)
 
         for q in queryset:

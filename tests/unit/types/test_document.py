@@ -87,3 +87,15 @@ def test_id_context():
         assert not d.id
         d.buffer = b'123'
     assert d.id
+
+
+def test_doc_content():
+    d = Document()
+    assert d.content is None
+    d.text = 'abc'
+    assert d.content == 'abc'
+    c = np.random.random([10, 10])
+    d.blob = c
+    np.testing.assert_equal(d.content, c)
+    d.buffer = b'123'
+    assert d.buffer == b'123'
