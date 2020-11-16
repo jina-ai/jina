@@ -8,12 +8,16 @@ from ...enums import ClientMode
 from ...helper import batch_iterator
 from ...logging import default_logger
 from ...proto import jina_pb2
-from ...types.document import Document, DocumentSourceType
+from ...types.document import Document, DocumentSourceType, DocumentContentType
 from ...types.querylang import QueryLang
 
+GeneratorSourceType = Union[Iterator[DocumentContentType,
+                                     DocumentSourceType,
+                                     Tuple[DocumentContentType, DocumentContentType],
+                                     Tuple[DocumentSourceType, DocumentSourceType]]]
 
-def _generate(data: Union[Iterator[DocumentSourceType],
-                          Iterator[Tuple[DocumentSourceType, DocumentSourceType]]],
+
+def _generate(data: GeneratorSourceType,
               batch_size: int = 0,
               mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None,

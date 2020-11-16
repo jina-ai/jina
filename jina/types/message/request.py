@@ -17,7 +17,8 @@ _trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
 _empty_request = jina_pb2.RequestProto()
 
-__all__ = ['Request']
+__all__ = ['Request', 'EmptyTrainRequest', 'EmptyIndexRequest',
+           'EmptySearchRequest', 'EmptyControlRequest', 'DryRunRequest']
 
 
 class Request:
@@ -131,3 +132,39 @@ class Request:
 
     def add_querylang(self, querylang: 'QueryLang'):
         self.as_pb_object.queryset.append(querylang.as_pb_object)
+
+
+class DryRunRequest(Request):
+    """Base empty request for dry run"""
+
+
+class EmptyTrainRequest(DryRunRequest):
+    """Empty train request for dry run"""
+
+    def __init__(self):
+        super().__init__()
+        self.as_pb_object.train.CopyFrom(jina_pb2.RequestProto.TrainRequestProto())
+
+
+class EmptyIndexRequest(DryRunRequest):
+    """Empty index request for dry run"""
+
+    def __init__(self):
+        super().__init__()
+        self.as_pb_object.index.CopyFrom(jina_pb2.RequestProto.IndexRequestProto())
+
+
+class EmptySearchRequest(DryRunRequest):
+    """Empty search request for dry run"""
+
+    def __init__(self):
+        super().__init__()
+        self.as_pb_object.search.CopyFrom(jina_pb2.RequestProto.SearchRequestProto())
+
+
+class EmptyControlRequest(DryRunRequest):
+    """Empty control request for dry run"""
+
+    def __init__(self):
+        super().__init__()
+        self.as_pb_object.control.CopyFrom(jina_pb2.RequestProto.EmptyControlRequest())
