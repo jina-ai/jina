@@ -14,15 +14,7 @@ from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
 _empty_doc = jina_pb2.DocumentProto()
-_buffer_sniff = False
 _id_regex = re.compile(r'[0-9a-fA-F]{16}')
-with ImportExtensions(required=False,
-                      pkg_name='python-magic',
-                      help_text=f'can not sniff the MIME type '
-                                f'MIME sniffing requires brew install '
-                                f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
-    _buffer_sniff = True
-
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray, jina_pb2.NdArrayProto, NdArray)
@@ -284,12 +276,14 @@ class Document:
     @buffer.setter
     def buffer(self, value: bytes):
         self._document.buffer = value
-        if not self._document.mime_type and _buffer_sniff:
-            try:
+        if self._document.buffer:
+            with ImportExtensions(required=False,
+                                  pkg_name='python-magic',
+                                  help_text=f'can not sniff the MIME type '
+                                            f'MIME sniffing requires brew install '
+                                            f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
                 import magic
                 self._document.mime_type = magic.from_buffer(value, mime=True)
-            except Exception as ex:
-                default_logger.warning(f'can not sniff the MIME type: {repr(ex)}')
 
     @property
     def text(self):

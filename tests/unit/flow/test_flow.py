@@ -113,15 +113,19 @@ def test_simple_flow():
     f = (Flow()
          .add())
 
-    with f:
-        f.index(input_fn=bytes_gen)
+    # PyClient.check_input(bytes_gen, is_input_doc=False)
+
+    # return
 
     with f:
-        f.index(input_fn=bytes_fn)
+        f.index(input_fn=bytes_gen, is_input_doc=False)
 
     with f:
-        f.index(input_fn=bytes_fn)
-        f.index(input_fn=bytes_fn)
+        f.index(input_fn=bytes_fn, is_input_doc=False)
+
+    with f:
+        f.index(input_fn=bytes_fn, is_input_doc=False)
+        f.index(input_fn=bytes_fn, is_input_doc=False)
 
     node = f._pod_nodes['gateway']
     assert node.head_args.socket_in == SocketType.PULL_CONNECT

@@ -196,8 +196,9 @@ class ImportExtensions:
                           f'You are trying to use an extension feature not enabled by the ' \
                           'current installation.\n' \
                           'This feature is available in: '
-                err_msg += ' '.join(f'[{tag}]' for tag in self._tags)
-                err_msg += '\nUse pip install "jina[TAG]" to enable it'
+                from .helper import colored
+                err_msg += ' '.join(colored(f'[{tag}]', attrs='bold') for tag in self._tags)
+                err_msg += f'\nUse {colored("pip install jina[TAG]", attrs="bold")} to enable it'
 
             else:
                 err_msg = f'{exc_val.msg}'

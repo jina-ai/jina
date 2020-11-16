@@ -69,7 +69,7 @@ class PyClient(GrpcClient):
             raise ValueError(f'{value} must be one of {ClientMode}')
 
     @staticmethod
-    def check_input(input_fn: Optional[InputFnType] = None) -> None:
+    def check_input(input_fn: Optional[InputFnType] = None, **kwargs) -> None:
         """Validate the input_fn and print the first request if success
 
         :param input_fn: the input function
@@ -77,7 +77,7 @@ class PyClient(GrpcClient):
         if hasattr(input_fn, '__call__'):
             input_fn = input_fn()
 
-        kwargs = {'data': input_fn}
+        kwargs['data'] = input_fn
 
         try:
             r = next(getattr(request, 'index')(**kwargs))
@@ -156,7 +156,7 @@ class PyClient(GrpcClient):
                         if self.args.continue_on_error:
                             self.logger.error(err_msg)
                         else:
-                            raise BadClientCallback(err_msg)
+                            raise BadClientCallback(err_msg) from ex
                 p_bar.update(self.args.batch_size)
 
     @property

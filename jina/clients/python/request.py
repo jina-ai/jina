@@ -23,10 +23,11 @@ def _generate(data: GeneratorSourceType,
               mime_type: str = None,
               override_doc_id: bool = True,
               queryset: Sequence['QueryLang'] = None,
-              is_doc_generator: bool = True,
+              is_input_doc: bool = True,
+              **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
               ) -> Iterator['jina_pb2.RequestProto']:
     """
-    :param is_doc_generator: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
+    :param is_input_doc: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an interator over possible Document content (set to text, blob and buffer).
     :return:
     """
@@ -41,7 +42,7 @@ def _generate(data: GeneratorSourceType,
             if isinstance(content, tuple) and len(content) == 2:
                 default_logger.debug('content comes in pair, '
                                      'will take the first as the input and the second as the groundtruth')
-                if is_doc_generator:
+                if is_input_doc:
                     d = Document(content[0], **_kwargs)
                     gt = Document(content[1], **_kwargs)
                     if override_doc_id:
@@ -56,7 +57,7 @@ def _generate(data: GeneratorSourceType,
                 req.add_document(d, mode)
                 req.add_groundtruth(gt, mode)
             else:
-                if is_doc_generator:
+                if is_input_doc:
                     d = Document(content, **_kwargs)
                     if override_doc_id:
                         d.update_id()

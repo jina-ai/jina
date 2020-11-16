@@ -88,6 +88,10 @@ class BadClientCallback(BadClient):
     """Error in the callback function on the client side"""
 
 
+class BadClientRequestGenerator(BadClient):
+    """Error in the request generator function on the client side"""
+
+
 class BadPersistantFile(Exception):
     """Bad or broken dump file that can not be deserialized with ``pickle.load``"""
 
