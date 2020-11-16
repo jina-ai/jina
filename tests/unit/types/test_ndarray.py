@@ -142,12 +142,15 @@ def test_dummy_numpy_sparse(shape):
     np.testing.assert_almost_equal(a, b.value)
 
 
-def test_direct_casting():
+def test_direct_dense_casting():
     from jina.types.ndarray.generic import NdArray
-    from scipy.sparse import coo_matrix
     a = np.random.random([5, 4])
     np.testing.assert_equal(NdArray(a).value, a)
 
+
+def test_direct_sparse_casting():
+    from jina.types.ndarray.generic import NdArray
+    from scipy.sparse import coo_matrix
     row = np.array([0, 3, 1, 0])
     col = np.array([0, 3, 1, 2])
     data = np.array([4, 5, 7, 9])

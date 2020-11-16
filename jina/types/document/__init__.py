@@ -8,7 +8,7 @@ import numpy as np
 from google.protobuf import json_format
 
 from .uid import *
-from ... import NdArray
+from ..ndarray.generic import NdArray
 from ...helper import is_url, typename, guess_mime
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
