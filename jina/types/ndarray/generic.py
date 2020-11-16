@@ -81,10 +81,10 @@ class NdArray(BaseNdArray):
         :param args:
         :param kwargs:
         """
-        super().__init__(proto, *args, **kwargs)
         self.is_sparse = is_sparse
         self.dense_cls = dense_cls
         self.sparse_cls = sparse_cls
+        super().__init__(proto, *args, **kwargs)
         self._args = args
         self._kwargs = kwargs
 

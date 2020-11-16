@@ -10,10 +10,17 @@ from .uid import *
 from ... import NdArray
 from ...drivers.helper import guess_mime
 from ...helper import cached_property, is_url, typename
+from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
 _empty_doc = jina_pb2.DocumentProto()
 _buffer_sniff = False
+with ImportExtensions(required=False,
+                      pkg_name='python-magic',
+                      help_text=f'can not sniff the MIME type '
+                                f'MIME sniffing requires brew install '
+                                f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
+    _buffer_sniff = True
 
 __all__ = ['Document']
 
@@ -37,7 +44,7 @@ class Document:
                 it builds a view or a copy from it.
         :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
                 view (i.e. weak reference) from it or a deep copy from it.
-        :param kwargs:
+        :param kwargs: other parameters to be set
         """
         self._document = jina_pb2.DocumentProto()
         if isinstance(document, jina_pb2.DocumentProto):
@@ -52,9 +59,7 @@ class Document:
         elif isinstance(document, bytes):
             self._document.ParseFromString(document)
 
-        for k, v in kwargs.items():
-            if hasattr(self._document, k):
-                setattr(self._document, k, v)
+        self.update(**kwargs)
 
     def __getattr__(self, name: str):
         if hasattr(_empty_doc, name):
@@ -171,6 +176,15 @@ class Document:
                 self._document.mime_type = magic.from_buffer(value, mime=True)
             except Exception as ex:
                 default_logger.warning(f'can not sniff the MIME type: {repr(ex)}')
+
+    @property
+    def text(self):
+        return self._document.text
+
+    @text.setter
+    def text(self, value: str):
+        self._document.text = value
+        self.mime_type = 'text/plain'
 
     @property
     def uri(self) -> str:

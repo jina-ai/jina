@@ -76,27 +76,21 @@ def _fill_document(document: 'jina_pb2.DocumentProto',
         document.id = uid.new_doc_id(document)
 
 
-def _generate(data: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Iterator[
-    Tuple[Union['jina_pb2.DocumentProto', bytes], Union['jina_pb2.DocumentProto', bytes]]], Iterator['np.ndarray'], Iterator[
-                              str], 'np.ndarray', Iterator[Dict]],
-              batch_size: int = 0, mode: ClientMode = ClientMode.INDEX,
+def _generate(data: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]],
+                          Iterator[Tuple[Union['jina_pb2.DocumentProto', bytes],
+                                         Union['jina_pb2.DocumentProto', bytes]]],
+                          Iterator['np.ndarray'],
+                          Iterator[str],
+                          'np.ndarray',
+                          Iterator[Dict]],
+              batch_size: int = 0,
+              mode: ClientMode = ClientMode.INDEX,
               mime_type: str = None,
               override_doc_id: bool = True,
               queryset: Iterator['jina_pb2.QueryLangProto'] = None,
               *args,
               **kwargs,
               ) -> Iterator['jina_pb2.RequestProto']:
-    buffer_sniff = False
-
-    with ImportExtensions(required=False,
-                          pkg_name='python-magic',
-                          help_text=f'can not sniff the MIME type '
-                                    f'MIME sniffing requires brew install '
-                                    f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
-        buffer_sniff = True
-
-    if mime_type and (mime_type not in mimetypes.types_map.values()):
-        mime_type = mimetypes.guess_type(f'*.{mime_type}')[0]
 
     if isinstance(mode, str):
         mode = ClientMode.from_string(mode)
@@ -105,7 +99,7 @@ def _generate(data: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Iter
                                         content=y,
                                         docs_in_same_batch=batch_size,
                                         mime_type=mime_type,
-                                        buffer_sniff=buffer_sniff,
+                                        buffer_sniff=False,
                                         override_doc_id=override_doc_id
                                         )
 

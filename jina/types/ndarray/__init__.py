@@ -1,9 +1,8 @@
-from typing import TypeVar
+from typing import TypeVar, Union
 
 AnyNdArray = TypeVar('AnyNdArray')
 
-if False:
-    from ...proto import jina_pb2
+from ...proto import jina_pb2
 
 __all__ = ['BaseNdArray']
 
@@ -15,15 +14,19 @@ class BaseNdArray:
     Do not use this class directly. Subclass should be used.
     """
 
-    def __init__(self, proto: 'jina_pb2._reflection.GeneratedProtocolMessageType' = None, *args, **kwargs):
+    def __init__(self, proto: Union['jina_pb2._reflection.GeneratedProtocolMessageType', AnyNdArray] = None, *args,
+                 **kwargs):
         """
 
         :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
         """
-        if proto:
+        if proto is not None and isinstance(type(proto), jina_pb2._reflection.GeneratedProtocolMessageType):
             self.proto = proto  # a weak ref/copy
         else:
             self.proto = self.null_proto()
+            if proto is not None:
+                # casting using the subclass :attr:`value` interface
+                self.value = proto
 
         self.is_sparse = False  # set to true if the ndarray is sparse
 

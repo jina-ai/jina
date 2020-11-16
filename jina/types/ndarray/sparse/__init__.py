@@ -19,8 +19,9 @@ class BaseSparseNdArray(BaseNdArray):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.is_sparse = True
+        super().__init__(*args, **kwargs)
+
 
     def null_proto(self):
         return jina_pb2.SparseNdArrayProto()

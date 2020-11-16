@@ -1,7 +1,6 @@
-from typing import Optional
+from typing import Optional, Union
 
 from ...enums import CompressAlgo
-from ...helper import cached_property
 from ...proto import jina_pb2
 
 _trigger_body_fields = set(kk
@@ -28,8 +27,21 @@ class Request:
 
     """
 
-    def __init__(self, request: bytes, envelope: Optional['jina_pb2.EnvelopeProto'] = None):
-        self._buffer = request
+    def __init__(self, request: Union[bytes, 'jina_pb2.RequestProto', None],
+                 envelope: Optional['jina_pb2.EnvelopeProto'] = None,
+                 copy: bool = False):
+
+        self._buffer = None
+        self._request = None  # type: 'jina_pb2.RequestProto'
+
+        if isinstance(request, bytes):
+            self._buffer = request
+        elif isinstance(request, jina_pb2.RequestProto):
+            if copy:
+                self._request.CopyFrom(request)
+            else:
+                self._request = request
+
         self._envelope = envelope
         self.is_used = False  #: Return True when request has been r/w at least once
 
@@ -43,11 +55,12 @@ class Request:
         else:
             raise AttributeError
 
-    def _decompress(self, data: bytes) -> bytes:
-        if not self._envelope.compression.algorithm:
+    @staticmethod
+    def _decompress(data: bytes, algorithm: str) -> bytes:
+        if not algorithm:
             return data
 
-        ctag = CompressAlgo.from_string(self._envelope.compression.algorithm)
+        ctag = CompressAlgo.from_string(algorithm)
         if ctag == CompressAlgo.LZ4:
             import lz4.frame
             data = lz4.frame.decompress(data)
@@ -65,21 +78,32 @@ class Request:
             data = gzip.decompress(data)
         return data
 
-    @cached_property
+    @property
     def as_pb_object(self) -> 'jina_pb2.RequestProto':
-        r = jina_pb2.RequestProto()
-        _buffer = self._decompress(self._buffer)
-        r.ParseFromString(_buffer)
-        self.is_used = True
-
-        # # Though I can modify back the envelope, not sure if it is a good design:
-        # # My intuition is: if the content is changed dramatically, e.g. from index to control request,
-        # # then whatever writes on the envelope should be dropped
-        # # depreciated. The only reason to reuse the envelope is saving cost on Envelope(), which is
-        # # really a minor minor (and evil) optimization.
-        # if self._envelope:
-        #     self._envelope.request_type = getattr(r, r.WhichOneof('body')).__class__.__name__
-        return r
+        """
+        Cast ``self`` to a :class:`jina_pb2.RequestProto`. This will trigger
+         :attr:`is_used`. Laziness will be broken and serialization will be recomputed when calling
+         :meth:`SerializeToString`.
+        """
+        if self._request:
+            # if request is already given while init
+            self.is_used = True
+            return self._request
+        else:
+            # if not then build one from buffer
+            r = jina_pb2.RequestProto()
+            _buffer = self._decompress(self._buffer, self._envelope.compression.algorithm)
+            r.ParseFromString(_buffer)
+            self.is_used = True
+            self._request = r
+            # # Though I can modify back the envelope, not sure if it is a good design:
+            # # My intuition is: if the content is changed dramatically, e.g. from index to control request,
+            # # then whatever writes on the envelope should be dropped
+            # # depreciated. The only reason to reuse the envelope is saving cost on Envelope(), which is
+            # # really a minor minor (and evil) optimization.
+            # if self._envelope:
+            #     self._envelope.request_type = getattr(r, r.WhichOneof('body')).__class__.__name__
+            return r
 
     def SerializeToString(self):
         if self.is_used:
