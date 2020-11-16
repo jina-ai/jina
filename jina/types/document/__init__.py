@@ -1,6 +1,6 @@
 import os
 import urllib.parse
-from typing import Union, Dict, Iterator
+from typing import Union, Dict, Iterator, Optional
 
 from google.protobuf import json_format
 
@@ -16,11 +16,30 @@ if False:
 _empty_doc = jina_pb2.DocumentProto()
 _buffer_sniff = False
 
+__all__ = ['Document']
+
 
 class Document:
-    def __init__(self, document: Union[bytes, Dict, 'jina_pb2.DocumentProto', None] = None,
-                 mime_type: str = None,
+    """Document is a basic data type in Jina. It offers a Pythonic interface to allow users
+    access and manipulate :class:`jina_pb2.DocumentProto` without working with Protobuf itself.
+
+
+    """
+
+    def __init__(self, document: Union[bytes, str, Dict, 'jina_pb2.DocumentProto', None] = None,
                  copy: bool = False, **kwargs):
+        """
+
+        :param document: the document to construct from. If ``bytes`` is given
+                then deserialize a :class:`DocumentProto`; ``dict`` is given then
+                parse a :class:`DocumentProto` from it; ``str`` is given, then consider
+                it as a JSON string and parse a :class:`DocumentProto` from it; finally,
+                one can also give `DocumentProto` directly, then depending on the ``copy``,
+                it builds a view or a copy from it.
+        :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
+                view (i.e. weak reference) from it or a deep copy from it.
+        :param kwargs:
+        """
         self._document = jina_pb2.DocumentProto()
         if isinstance(document, jina_pb2.DocumentProto):
             if copy:
@@ -34,9 +53,6 @@ class Document:
         elif isinstance(document, bytes):
             self._document.ParseFromString(document)
 
-        if mime_type:
-            self._document.mime_type = mime_type
-
         for k, v in kwargs.items():
             if hasattr(self._document, k):
                 setattr(self._document, k, v)
@@ -48,7 +64,23 @@ class Document:
             raise AttributeError
 
     def update_id(self):
-        self._document.id = uid.new_doc_id(self._document)
+        self._document.id = new_doc_id(self._document)
+
+    @property
+    def id_in_hash(self) -> int:
+        return id2hash(self._document.id)
+
+    @property
+    def id_in_bytes(self) -> bytes:
+        return id2bytes(self._document.id)
+
+    @property
+    def id(self) -> bytes:
+        return self._document.id
+
+    @id.setter
+    def id(self, value: str):
+        pass
 
     @property
     def blob(self) -> 'np.ndarray':
@@ -88,13 +120,19 @@ class Document:
                 setattr(r.score, k, v)
         return Document(r)
 
-    def add_chunk(self) -> 'Document':
+    def add_chunk(self, document: Optional['Document'] = None, **kwargs) -> 'Document':
         c = self._document.chunks.add()
+        if document is not None:
+            c.CopyFrom(document.as_pb_object)
+        else:
+            for k, v in kwargs.items():
+                if hasattr(c, k):
+                    setattr(c, k, v)
         c.parent_id = self._document.id
         c.granularity = self._document.granularity + 1
         if not c.mime_type:
             c.mime_type = self._document.mime_type
-        c.id = uid.new_doc_id(c)
+        c.id = new_doc_id(c)
         return Document(c)
 
     @cached_property
@@ -130,3 +168,9 @@ class Document:
             self._document.mime_type = guess_mime(value)
         else:
             raise ValueError(f'{value} is not a valid URI')
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.update_id()

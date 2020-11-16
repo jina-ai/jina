@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
 
 
@@ -23,3 +24,30 @@ def test_uri_get_set():
 
     with pytest.raises(ValueError):
         a.uri = 'abcdefg'
+
+
+def test_no_copy_construct():
+    a = DocumentProto()
+    b = Document(a, copy=False)
+    a.id = '123'
+    assert b.id == '123'
+
+    b.id = '456'
+    assert b.id == '456'
+
+
+def test_copy_construct():
+    a = DocumentProto()
+    b = Document(a, copy=True)
+    a.id = '123'
+    assert b.id != '123'
+
+    b.id = '456'
+    assert a.id == '123'
+
+
+def test_id_context():
+    with Document() as d:
+        assert not d.id
+        d.buffer = b'123'
+    assert d.id
