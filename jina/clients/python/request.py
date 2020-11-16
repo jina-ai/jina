@@ -11,7 +11,7 @@ from ...proto import jina_pb2
 from ...types.document import Document, DocumentSourceType, DocumentContentType
 from ...types.querylang import QueryLang
 
-GeneratorSourceType = Union[Iterator[DocumentContentType,
+GeneratorSourceType = Iterator[Union[DocumentContentType,
                                      DocumentSourceType,
                                      Tuple[DocumentContentType, DocumentContentType],
                                      Tuple[DocumentSourceType, DocumentSourceType]]]

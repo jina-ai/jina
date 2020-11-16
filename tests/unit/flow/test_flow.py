@@ -11,6 +11,7 @@ from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_po
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto.jina_pb2 import DocumentProto
+from jina.types.message.request import IndexDryRunRequest
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -298,7 +299,7 @@ def test_py_client():
     with f:
         f.dry_run()
         from jina.clients import py_client
-        py_client(port_expose=f.port_expose, host=f.host).dry_run(as_request='index')
+        py_client(port_expose=f.port_expose, host=f.host).dry_run(IndexDryRunRequest())
 
     with f:
         node = f._pod_nodes['gateway']

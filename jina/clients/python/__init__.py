@@ -187,7 +187,7 @@ class PyClient(GrpcClient):
         """
 
         def req_gen():
-            yield req
+            yield req.as_pb_object
 
         before = time.perf_counter()
         for resp in self._stub.Call(req_gen()):
