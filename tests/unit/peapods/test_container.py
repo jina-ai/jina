@@ -2,7 +2,6 @@ import os
 import time
 from sys import platform
 
-import numpy as np
 import pytest
 
 from jina.checker import NetworkChecker
@@ -15,32 +14,15 @@ from jina.proto import jina_pb2
 from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
 
+from tests import random_docs
+
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 img_name = 'jina/mwu-encoder'
 
 defaulthost = '0.0.0.0'
 localhost = defaulthost if (platform == "linux" or platform == "linux2") else 'host.docker.internal'
-
-
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1):
-    c_id = 3 * num_docs  # avoid collision with docs
-    for j in range(num_docs):
-        d = jina_pb2.DocumentProto()
-        d.tags['id'] = j
-        d.text = b'hello world'
-        NdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
-        d.id = uid.new_doc_id(d)
-        for k in range(chunks_per_doc):
-            c = d.chunks.add()
-            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-            NdArray(c.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
-            c.tags['id'] = c_id
-            c.tags['parent_id'] = j
-            c_id += 1
-            c.parent_id = d.id
-            c.id = uid.new_doc_id(c)
-        yield d
 
 
 @pytest.fixture(scope='module')

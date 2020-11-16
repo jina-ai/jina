@@ -95,6 +95,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5486,4 +5487,42 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ad8c48e4```](https://github.com/jina-ai/jina/commit/ad8c48e401907ad91c3498e39dbc8288e8e2402c)] __-__ fix test example (*Han Xiao*)
  - [[```8d225a02```](https://github.com/jina-ai/jina/commit/8d225a024c04a6347ce5cdbadb1c35adbfbf6cfa)] __-__ move badges to release.md (*Han Xiao*)
  - [[```8aefca2d```](https://github.com/jina-ai/jina/commit/8aefca2d7dc63d8dd8a7ac1b3b430a2bb4b55c62)] __-__ __version__: the next version will be 0.7.8 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-10></a>
+## Release Note (`0.7.10`)
+
+> Release time: 2020-11-16 06:54:46
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  Alex Cureton-Griffiths,  🙇
+
+
+### 🆕 New Features
+
+ - [[```be0acfb4```](https://github.com/jina-ai/jina/commit/be0acfb4d7f3232d009fd66f984621eeac448543)] __-__ parse dict as document (#1282) (*Joan Fontanals*)
+ - [[```f94408f5```](https://github.com/jina-ai/jina/commit/f94408f596f352251373d0590728dd195707aedc)] __-__ __remote__: add ssh remote peapod (#1275) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```436a23e4```](https://github.com/jina-ai/jina/commit/436a23e40916a4823edade56ff99d99bcc2fab92)] __-__ standardize typename (#1284) (*Han Xiao*)
+ - [[```0737b580```](https://github.com/jina-ai/jina/commit/0737b580b1cc991146b7bf717cb887de7a9379df)] __-__ introduce jina primitive data type (#1283) (*Han Xiao*)
+ - [[```7f66f46b```](https://github.com/jina-ai/jina/commit/7f66f46b90a5f35137ce8a1b8374e4a5d1a93043)] __-__ __proto__: remove spawn request (#1276) (*Han Xiao*)
+ - [[```9cc10aa2```](https://github.com/jina-ai/jina/commit/9cc10aa2b3039c91fe4b884279958d85fb8def14)] __-__ __except__: fix ModelCheckpointNotExist (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```a4ca3492```](https://github.com/jina-ai/jina/commit/a4ca34924a5d16c1369d1e73bdb91184e7333a92)] __-__ __helper__: add helper text for import ext (#1286) (*Han Xiao*)
+ - [[```c820a25d```](https://github.com/jina-ai/jina/commit/c820a25db0494b5ebba7a966f5e0751864fed7c7)] __-__ add warning about _unique (#1272) (*Joan Fontanals*)
+ - [[```f78686ad```](https://github.com/jina-ai/jina/commit/f78686adc162fa96a606623c1df611571bb7c75d)] __-__ __readme__: wordsmithing (#1271) (*Alex Cureton-Griffiths*)
+
+### 🍹 Other Improvements
+
+ - [[```cc56bd0b```](https://github.com/jina-ai/jina/commit/cc56bd0bdf9138b9e51842cca8e4ae272f22115e)] __-__ hotfix sunday release (*Han Xiao*)
+ - [[```1d87843e```](https://github.com/jina-ai/jina/commit/1d87843e59234614c0c9d5e0f42c5663cf2a7d5b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f86e036b```](https://github.com/jina-ai/jina/commit/f86e036bcf451b5fd1ebf511f5fc7a22506990e6)] __-__ hotfix release (*Han Xiao*)
+ - [[```6e1c7e65```](https://github.com/jina-ai/jina/commit/6e1c7e65850c022b52446eac005bddd0c8b8d823)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
+ - [[```b456802b```](https://github.com/jina-ai/jina/commit/b456802bf81087295f199f8fb6a690e0a5250846)] __-__ style helloworld html (#1270) (*Alex Cureton-Griffiths*)
+ - [[```98c43ac8```](https://github.com/jina-ai/jina/commit/98c43ac83b63820d7f072cf1ecf53593d3f3aa39)] __-__ __version__: the next version will be 0.7.9 (*Jina Dev Bot*)
 
