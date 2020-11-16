@@ -35,13 +35,13 @@ def test_img_2():
 def test_client(flow):
     with flow:
         py_client(port_expose=flow.port_expose).call_unary(
-            b'a1234', mode=ClientMode.INDEX
+            b'a1234', mode=ClientMode.INDEX, is_input_doc=False
         )
 
 
 @pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
 def test_check_input_success(input_fn):
-    PyClient.check_input(input_fn)
+    PyClient.check_input(input_fn, is_input_doc=False)
 
 
 @pytest.mark.parametrize('input_fn', [iter([b'1234', '45467', [12, 2, 3]]), iter([DocumentProto(), None])])

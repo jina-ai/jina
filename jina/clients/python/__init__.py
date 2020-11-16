@@ -89,7 +89,7 @@ class PyClient(GrpcClient):
             default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call_unary(self, data: Union[GeneratorSourceType], mode: ClientMode) -> None:
+    def call_unary(self, data: Union[GeneratorSourceType], mode: ClientMode, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
 
         This function should not be used in production due to its low-efficiency. For example,
@@ -100,10 +100,13 @@ class PyClient(GrpcClient):
         :param mode: request will be sent in this mode, available ``train``, ``index``, ``query``
         """
         self.mode = mode
-        kwargs = vars(self.args)
-        kwargs['data'] = [data]
+        # take the default args from client
+        _kwargs = vars(self.args)
+        _kwargs['data'] = data
+        # override by the caller-specific kwargs
+        _kwargs.update(kwargs)
 
-        req_iter = getattr(request, str(self.mode).lower())(**kwargs)
+        req_iter = getattr(request, str(self.mode).lower())(**_kwargs)
         return self._stub.CallUnary(next(req_iter))
 
     def call(self, callback: Callable[['jina_pb2.RequestProto'], None] = None,
