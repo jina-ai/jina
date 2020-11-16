@@ -390,7 +390,7 @@ Want to build your first Search App? Here are some nice resources for you to get
       Use SouthparkData to build a Semantic Search with a closer look at Flows and Pods
     </td>
     <td>
-      <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Using Flow API to Copose Your Jina Worldflow</a></h4>
+      <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Using Flow API to Compose Your Jina Worldflow</a></h4>
       Use Flow API in Python, YAML, or in Dashboard
       <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
       Understand how Input and Output Functions work in Jina
@@ -425,6 +425,8 @@ More tips about how to improve performance and scalability of your search applic
     </td>
   </tr>
 </table>
+
+Up for more readings about Jina? Check out our Founder [Han Xiao's blog](https://hanxiao.io) and [our official Blog](https://jina.ai/blog). 
 
 <!-- 
 
@@ -502,13 +504,13 @@ Search Pokemon with state-of-the-art visual representation
 
 ## Documentation
 
-Apart from the learning resources we provided above, it's highly recommended to go through our [__documentation__](https://docs.jina.ai) to master Jina!
+Apart from the learning resources we provided above, it's highly recommended to go through our [__documentation__](https://docs.jina.ai) to master Jina.
 
 <a href="https://docs.jina.ai/">
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-Our Documentation is built on every push, merge, and release of Jina's master branch.
+Our Documentation is built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
 
 <!--
 
@@ -531,9 +533,9 @@ Our Documentation is built on every push, merge, and release of Jina's master br
 
 -->
 
-Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
 
-Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
+
+Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
 
 ## Contributing
 
