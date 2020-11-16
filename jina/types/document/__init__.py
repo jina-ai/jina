@@ -23,7 +23,7 @@ with ImportExtensions(required=False,
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
+DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray, jina_pb2.NdArrayProto, NdArray)
 DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
 
