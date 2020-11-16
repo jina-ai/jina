@@ -323,12 +323,12 @@ pip install jina[hub] && jina hub new --type app
 
 This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
-## Tutorials
+## Learn
 
 
 ### Jina 101
 
-Understand the basic components of Jina!
+Understand the basic components of Jina.
 
 <table>
   <tr>
@@ -365,8 +365,8 @@ Want to build your first Search App? Here are some nice resources for you to get
   <tr>
     <td>🐣</td>
     <td>
-      <h4><a href="https://docs.jina.ai/chapters/flow/index.html">My First Jina App</a></h4>
-      Get hands-up and build your first text-to-text search
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Search App</a></h4>
+      Get hands-on and build your first text-to-text search using StarTrek data
       <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">PokéDex Search with BiT</a></h4>
       An image-to-image search with Pokemon sprites
       <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Audio Search</a></h4>
@@ -386,14 +386,14 @@ Want to build your first Search App? Here are some nice resources for you to get
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Search Hello-World with QueryLanguage</a></h4>
       Use QueryLanguage to create an index per category and with that to filter by category
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build an NLP Semantic Search with Transformers</a></h4>
-      Use SouthparkData to build a Semantic Search and deep dive into Flows and Pods
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search with Transformers</a></h4>
+      Use SouthparkData to build a Semantic Search with a closer look at Flows and Pods
     </td>
     <td>
       <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Using Flow API to Copose Your Jina Worldflow</a></h4>
       Use Flow API in Python, YAML, or in Dashboard
       <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
-      Understand how Input and Output Functions work in Jina.
+      Understand how Input and Output Functions work in Jina
     </td>
   </tr>
 </table>
@@ -412,16 +412,16 @@ More tips about how to improve performance and scalability of your search applic
     <td>🐥</td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Revisit "Hello, World" in a Client-Server Architecture</a></h4>
-      description ...
+      Refactor the hello-world example into a client-server architecture
       <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Search Flower Images with TorchVision</a></h4>
-      In this example we show you about parallel and how to add a customized executor
+      Scale up the Pods to speed up the whole procedure and add a customized executor
       <h4><a href="https://github.com/jina-ai/dashboard">Use Dashboard to Get Insight of Jina Workflow</a></h4>Deep dive into Jina Dashboard
     </td>
     <td>
       <h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
-      description...
+      Run a Jina Pod remotely via console, Jina Gateway, or Flow API
       <h4><a href="https://docs.jina.ai/chapters/hub/index.html">Rund Jina Pod via Docker Container</a></h4>
-      description
+      Build your Pod into a Docker image, why would you do it, and how
     </td>
   </tr>
 </table>
