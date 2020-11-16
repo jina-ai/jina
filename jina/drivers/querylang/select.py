@@ -32,7 +32,7 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
         else:
             self._fields = set(fields)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs):
         for doc in docs:
             for k in self.fields:
                 doc.ClearField(k)
@@ -51,7 +51,7 @@ class SelectQL(ExcludeQL):
         SelectQL will ensure that the `outgoing` documents only contain the field `matches`
     """
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs):
         for doc in docs:
             for k in doc.DESCRIPTOR.fields_by_name.keys():
                 if k not in self.fields:

@@ -7,7 +7,7 @@ import numpy as np
 
 from . import BaseRecursiveDriver
 from ..proto import jina_pb2
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class ReduceAllDriver(BaseRecursiveDriver):
@@ -29,8 +29,8 @@ class ReduceAllDriver(BaseRecursiveDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             *args,
             **kwargs) -> None:
@@ -45,8 +45,8 @@ class CollectEvaluationDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             *args,
             **kwargs) -> None:
@@ -68,17 +68,17 @@ class ConcatEmbedDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
-            context_doc: 'jina_pb2.Document',
+            docs: Sequence['jina_pb2.DocumentProto'],
+            context_doc: 'jina_pb2.DocumentProto',
             field: str,
             concatenate: bool = False,
             *args,
             **kwargs):
         doc = context_doc
         if concatenate:
-            GenericNdArray(doc.embedding).value = np.concatenate(self.doc_pointers[doc.id], axis=0)
+            NdArray(doc.embedding).value = np.concatenate(self.doc_pointers[doc.id], axis=0)
         else:
             if doc.id not in self.doc_pointers:
-                self.doc_pointers[doc.id] = [GenericNdArray(doc.embedding).value]
+                self.doc_pointers[doc.id] = [NdArray(doc.embedding).value]
             else:
-                self.doc_pointers[doc.id].append(GenericNdArray(doc.embedding).value)
+                self.doc_pointers[doc.id].append(NdArray(doc.embedding).value)

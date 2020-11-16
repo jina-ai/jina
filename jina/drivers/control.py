@@ -36,13 +36,12 @@ class ControlReqDriver(BaseDriver):
     """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
 
     def __call__(self, *args, **kwargs):
-        if self.req.command == jina_pb2.Request.ControlRequest.TERMINATE:
-            self.envelope.status.code = jina_pb2.Status.SUCCESS
+        if self.req.command == jina_pb2.RequestProto.ControlRequestProto.TERMINATE:
+            self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RequestLoopEnd
-        elif self.req.command == jina_pb2.Request.ControlRequest.STATUS:
-            self.envelope.status.code = jina_pb2.Status.READY
-            for k, v in vars(self.pea.args).items():
-                self.req.args[k] = str(v)
+        elif self.req.command == jina_pb2.RequestProto.ControlRequestProto.STATUS:
+            self.envelope.status.code = jina_pb2.StatusProto.READY
+            self.req.args = vars(self.pea.args)
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
@@ -96,7 +95,7 @@ class RouteDriver(ControlReqDriver):
             # all the time
             # (2) this driver is used in a ROUTER-DEALER fan-out setting,
             # where some dealer is broken/fails to start, so `idle_dealer_ids` is empty
-        elif self.req.command == jina_pb2.Request.ControlRequest.IDLE:
+        elif self.req.command == jina_pb2.RequestProto.ControlRequestProto.IDLE:
             self.idle_dealer_ids.add(self.envelope.receiver_id)
             self.logger.debug(f'{self.envelope.receiver_id} is idle')
             if self.is_pollin_paused:

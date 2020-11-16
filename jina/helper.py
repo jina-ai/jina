@@ -13,21 +13,16 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from io import StringIO
 from itertools import islice
-from types import SimpleNamespace, ModuleType
+from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
 
 from ruamel.yaml import YAML, nodes
 
-if False:
-    from uvloop import Loop
-
 __all__ = ['batch_iterator', 'yaml',
-           'load_contrib_module',
            'parse_arg',
-           'PathImporter', 'random_port', 'get_random_identity', 'expand_env_var',
+           'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
-           'cached_property', 'is_url', 'complete_path']
-
+           'cached_property', 'is_url', 'complete_path', 'typename']
 
 def deprecated_alias(**aliases):
     def deco(f):
@@ -63,60 +58,6 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
         return f'{num_bytes / (1024 ** 2):.1f} MB'
     else:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
-
-
-def print_load_table(load_stat: Dict[str, List[Any]]):
-    from .logging import default_logger
-
-    load_table = []
-    cached = set()
-
-    for k, v in load_stat.items():
-        for cls_name, import_stat, err_reason in v:
-            if cls_name not in cached:
-                load_table.append(
-                    f'{colored("✓", "green") if import_stat else colored("✗", "red"):<5} {cls_name if cls_name else colored("Module load error", "red"):<25} {k:<40} {str(err_reason)}')
-                cached.add(cls_name)
-    if load_table:
-        load_table.sort()
-        load_table = ['', '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
-                      '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10)] + load_table
-        default_logger.info('\n'.join(load_table))
-
-
-def print_load_csv_table(load_stat: Dict[str, List[Any]]):
-    from .logging import default_logger
-
-    load_table = []
-    for k, v in load_stat.items():
-        for cls_name, import_stat, err_reason in v:
-            load_table.append(
-                f'{colored("✓", "green") if import_stat else colored("✗", "red")} {cls_name if cls_name else colored("Module_load_error", "red")} {k} {str(err_reason)}')
-    if load_table:
-        default_logger.info('\n'.join(load_table))
-
-
-def print_dep_tree_rst(fp, dep_tree, title='Executor'):
-    tableview = set()
-    treeview = []
-
-    def _iter(d, depth):
-        for k, v in d.items():
-            if k != 'module':
-                treeview.append('   ' * depth + f'- `{k}`')
-                tableview.add(f'| `{k}` | ' + (f'`{d["module"]}`' if 'module' in d else ' ') + ' |')
-                _iter(v, depth + 1)
-
-    _iter(dep_tree, 0)
-
-    fp.write(f'# List of {len(tableview)} {title}s in Jina\n\n'
-             f'This version of Jina includes {len(tableview)} {title}s.\n\n'
-             f'## Inheritances in a Tree View\n')
-    fp.write('\n'.join(treeview))
-
-    fp.write(f'\n\n## Modules in a Table View \n\n| Class | Module |\n')
-    fp.write('| --- | --- |\n')
-    fp.write('\n'.join(sorted(tableview)))
 
 
 def call_obj_fn(obj, fn: str):
@@ -214,63 +155,6 @@ def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
         sys.stdout.flush()
     except KeyboardInterrupt:
         sys.stdout.write('no more patience? good bye!')
-
-
-def load_contrib_module() -> Optional[List[Any]]:
-    if 'JINA_CONTRIB_MODULE_IS_LOADING' not in os.environ:
-
-        contrib = os.getenv('JINA_CONTRIB_MODULE')
-        os.environ['JINA_CONTRIB_MODULE_IS_LOADING'] = 'true'
-
-        modules = []
-
-        if contrib:
-            from .logging import default_logger
-            default_logger.info(
-                f'find a value in $JINA_CONTRIB_MODULE={contrib}, will load them as external modules')
-            for p in contrib.split(','):
-                m = PathImporter.add_modules(p)
-                modules.append(m)
-                default_logger.info(f'successfully registered {m} class, you can now use it via yaml.')
-    else:
-        modules = None
-
-    return modules
-
-
-class PathImporter:
-
-    @staticmethod
-    def _get_module_name(path: str, use_abspath: bool = False, use_basename: bool = True) -> str:
-        module_name = os.path.dirname(os.path.abspath(path) if use_abspath else path)
-        if use_basename:
-            module_name = os.path.basename(module_name)
-        module_name = module_name.replace('/', '.').strip('.')
-        return module_name
-
-    @staticmethod
-    def add_modules(*paths) -> Optional[ModuleType]:
-        for p in paths:
-            if not os.path.exists(p):
-                raise FileNotFoundError(f'cannot import module from {p}, file not exist')
-            module = PathImporter._path_import(p)
-        return module
-
-    @staticmethod
-    def _path_import(absolute_path: str) -> Optional[ModuleType]:
-        import importlib.util
-        try:
-            # module_name = (PathImporter._get_module_name(absolute_path) or
-            #                PathImporter._get_module_name(absolute_path, use_abspath=True) or 'jinahub')
-
-            # I dont want to trust user path based on directory structure, "jinahub", period
-            spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
-            module = importlib.util.module_from_spec(spec)
-            sys.modules[spec.name] = module  # add this line
-            spec.loader.exec_module(module)
-        except ModuleNotFoundError:
-            module = None
-        return module
 
 
 _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young', 'early', 'major', 'clear', 'black',
@@ -622,23 +506,22 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
 
 def use_uvloop():
     if 'JINA_DISABLE_UVLOOP' not in os.environ:
-        try:
+        from .importer import ImportExtensions
+        with ImportExtensions(required=False,
+                              help_text='Jina uses uvloop to manage events and sockets, '
+                                        'it often yields better performance than builtin asyncio'):
             import asyncio
             import uvloop
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-        except (ModuleNotFoundError, ImportError):
-            from .logging import default_logger
-            default_logger.error(
-                'Since v0.3.6 jina uses uvloop to manage events and sockets, it often yields 20% speedup'
-                'you did not install uvloop. Try "pip install uvloop"')
 
 
-def show_ioloop_backend(loop: Optional['Loop'] = None) -> None:
-    if loop is None:
-        import asyncio
-        loop = asyncio.get_event_loop()
-    from .logging import default_logger
-    default_logger.info(f'using {loop.__class__} as event loop')
+def typename(obj):
+    if not isinstance(obj, type):
+        obj = obj.__class__
+    try:
+        return f'{obj.__module__}.{obj.__name__}'
+    except AttributeError:
+        return str(obj)
 
 
 def rsetattr(obj, attr: str, val):

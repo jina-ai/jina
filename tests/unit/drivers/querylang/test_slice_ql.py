@@ -5,7 +5,7 @@ from jina.proto import jina_pb2
 def random_docs_with_chunks(num_docs):
     docs = []
     for j in range(num_docs):
-        d = jina_pb2.Document()
+        d = jina_pb2.DocumentProto()
         d.granularity = 0
         d.tags['id'] = j
         d.text = 'hello world'
@@ -38,7 +38,7 @@ def random_docs_with_chunks_and_matches(num_docs):
     #              | - chunk
     docs = []
     for j in range(num_docs):
-        d = jina_pb2.Document()
+        d = jina_pb2.DocumentProto()
         d.granularity = 0
         d.tags['id'] = j
         d.text = 'hello world'

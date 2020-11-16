@@ -48,7 +48,7 @@ def build_docs():
 
     docs = []
     for base_id in range(DOCUMENTS_PER_LEVEL):
-        document = jina_pb2.Document()
+        document = jina_pb2.DocumentProto()
         document.granularity = 0
         document.adjacency = 0
         docs.append(document)

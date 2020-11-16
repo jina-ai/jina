@@ -17,7 +17,7 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def query(self, key: int) -> Optional['jina_pb2.Document']:
+    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
         pass
 
     def get_query_handler(self):
@@ -58,7 +58,7 @@ def documents():
     # doc: 4
     # doc: 5
     for idx in range(5):
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.text = str(idx + 1)
         doc.id = uid.new_doc_id(doc)
         docs.append(doc)

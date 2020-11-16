@@ -574,8 +574,8 @@ class Flow(ExitStack):
         return py_client(**kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def train(self, input_fn: Union[Iterator['jina_pb2.Document'], Iterator[bytes], Callable] = None,
-              output_fn: Callable[['jina_pb2.Request'], None] = None,
+    def train(self, input_fn: Union[Iterator['jina_pb2.DocumentProto'], Iterator[bytes], Callable] = None,
+              output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
               **kwargs):
         """Do training on the current flow
 
@@ -614,7 +614,7 @@ class Flow(ExitStack):
         self._get_client(**kwargs).train(input_fn, output_fn, **kwargs)
 
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                      output_fn: Callable[['jina_pb2.Request'], None] = None,
+                      output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                       **kwargs):
         """Using numpy ndarray as the index source for the current flow
 
@@ -629,7 +629,7 @@ class Flow(ExitStack):
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn, **kwargs)
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                       output_fn: Callable[['jina_pb2.Request'], None] = None,
+                       output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                        **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow
 
@@ -645,7 +645,7 @@ class Flow(ExitStack):
 
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
-                    output_fn: Callable[['jina_pb2.Request'], None] = None,
+                    output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                     **kwargs):
         """ Use a list of lines as the index source for indexing on the current flow
 
@@ -664,7 +664,7 @@ class Flow(ExitStack):
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
-                    output_fn: Callable[['jina_pb2.Request'], None] = None,
+                    output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                     **kwargs):
         """ Use a set of files as the index source for indexing on the current flow
 
@@ -684,7 +684,7 @@ class Flow(ExitStack):
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
-                     output_fn: Callable[['jina_pb2.Request'], None] = None,
+                     output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                      **kwargs):
         """ Use a set of files as the query source for searching on the current flow
 
@@ -704,7 +704,7 @@ class Flow(ExitStack):
 
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
-                     output_fn: Callable[['jina_pb2.Request'], None] = None,
+                     output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                      **kwargs):
         """ Use a list of files as the query source for searching on the current flow
 
@@ -722,8 +722,8 @@ class Flow(ExitStack):
                                           **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def index(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
-              output_fn: Callable[['jina_pb2.Request'], None] = None,
+    def index(self, input_fn: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Callable] = None,
+              output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
               **kwargs):
         """Do indexing on the current flow
 
@@ -762,8 +762,8 @@ class Flow(ExitStack):
         self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def search(self, input_fn: Union[Iterator[Union['jina_pb2.Document', bytes]], Callable] = None,
-               output_fn: Callable[['jina_pb2.Request'], None] = None,
+    def search(self, input_fn: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Callable] = None,
+               output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                **kwargs):
         """Do searching on the current flow
 

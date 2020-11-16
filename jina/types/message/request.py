@@ -1,32 +1,34 @@
 from typing import Optional
 
-from .. import jina_pb2
 from ...enums import CompressAlgo
 from ...helper import cached_property
+from ...proto import jina_pb2
 
 _trigger_body_fields = set(kk
-                           for v in [jina_pb2.Request.IndexRequest,
-                                     jina_pb2.Request.SearchRequest,
-                                     jina_pb2.Request.TrainRequest,
-                                     jina_pb2.Request.ControlRequest]
+                           for v in [jina_pb2.RequestProto.IndexRequestProto,
+                                     jina_pb2.RequestProto.SearchRequestProto,
+                                     jina_pb2.RequestProto.TrainRequestProto,
+                                     jina_pb2.RequestProto.ControlRequestProto]
                            for kk in v.DESCRIPTOR.fields_by_name.keys())
-_trigger_req_fields = set(jina_pb2.Request.DESCRIPTOR.fields_by_name.keys()).difference(
+_trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()).difference(
     {'train', 'index', 'search', 'control'})
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
-_empty_request = jina_pb2.Request()
+_empty_request = jina_pb2.RequestProto()
+
+__all__ = ['Request']
 
 
-class LazyRequest:
+class Request:
     """
-    A container for serialized :class:`jina_pb2.Request` that only triggers deserialization
+    A container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization
     and decompression when receives the first read access to its member.
 
     It overrides :meth:`__getattr__` to provide the same get/set interface as an
-    :class:`jina_pb2.Request` object.
+    :class:`jina_pb2.RequestProto` object.
 
     """
 
-    def __init__(self, request: bytes, envelope: Optional['jina_pb2.Envelope'] = None):
+    def __init__(self, request: bytes, envelope: Optional['jina_pb2.EnvelopeProto'] = None):
         self._buffer = request
         self._envelope = envelope
         self.is_used = False  #: Return True when request has been r/w at least once
@@ -64,8 +66,8 @@ class LazyRequest:
         return data
 
     @cached_property
-    def as_pb_object(self) -> 'jina_pb2.Request':
-        r = jina_pb2.Request()
+    def as_pb_object(self) -> 'jina_pb2.RequestProto':
+        r = jina_pb2.RequestProto()
         _buffer = self._decompress(self._buffer)
         r.ParseFromString(_buffer)
         self.is_used = True

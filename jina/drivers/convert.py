@@ -11,9 +11,10 @@ from typing import Sequence
 
 import numpy as np
 
+from jina.types.ndarray.generic import NdArray
 from . import BaseRecursiveDriver
 from .helper import guess_mime
-from ..proto.ndarray.generic import GenericNdArray
+from ..importer import ImportExtensions
 
 if False:
     from ..proto import jina_pb2
@@ -34,7 +35,7 @@ class BaseConvertDriver(BaseRecursiveDriver):
         self.override = override
         self.target = target
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs):
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs):
         for doc in docs:
             if getattr(doc, self.target) and not self.override:
                 pass
@@ -60,13 +61,12 @@ class MIMEDriver(BaseConvertDriver):
         super().__init__(target, *args, **kwargs)
         self.default_mime = default_mime
         self.buffer_sniff = False
-        try:
-            import magic
+        with ImportExtensions(required=False,
+                              logger=self.logger,
+                              help_text=f'can not sniff the MIME type '
+                                        f'MIME sniffing requires pip install "jina[http]" '
+                                        f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
             self.buffer_sniff = True
-        except (ImportError, ModuleNotFoundError):
-            self.logger.warning(f'can not sniff the MIME type '
-                                f'MIME sniffing requires pip install "jina[http]" '
-                                f'and brew install libmagic (Mac)/ apt-get install libmagic1 (Linux)')
 
     def convert(self, d):
         import mimetypes
@@ -101,7 +101,7 @@ class Buffer2NdArray(BaseConvertDriver):
         super().__init__(target, *args, **kwargs)
 
     def convert(self, d):
-        GenericNdArray(d.blob).value = np.frombuffer(d.buffer)
+        NdArray(d.blob).value = np.frombuffer(d.buffer)
 
 
 class NdArray2PngURI(BaseConvertDriver):
@@ -181,7 +181,7 @@ class Blob2PngURI(NdArray2PngURI):
         super().__init__(target, width, height, *args, **kwargs)
 
     def convert(self, d):
-        arr = GenericNdArray(d.blob).value
+        arr = NdArray(d.blob).value
         d.uri = self.png_convertor(arr)
 
 

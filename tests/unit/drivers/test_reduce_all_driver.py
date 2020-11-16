@@ -6,7 +6,7 @@ import numpy as np
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
-from jina.proto.jina_pb2 import Document
+from jina.proto.jina_pb2 import DocumentProto
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,11 +35,11 @@ class MockEncoderReduce(BaseEncoder):
 
 def test_merge_chunks_with_different_modality():
     def input_fn():
-        doc1 = Document()
+        doc1 = DocumentProto()
         doc1.text = 'title: this is mode1 from doc1, body: this is mode2 from doc1'
-        doc2 = Document()
+        doc2 = DocumentProto()
         doc2.text = 'title: this is mode1 from doc2, body: this is mode2 from doc2'
-        doc3 = Document()
+        doc3 = DocumentProto()
         doc3.text = 'title: this is mode1 from doc3, body: this is mode2 from doc3'
         return [doc1, doc2, doc3]
 

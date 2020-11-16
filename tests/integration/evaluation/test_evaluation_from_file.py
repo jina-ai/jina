@@ -22,7 +22,7 @@ def index_groundtruth():
     """
     docs = []
     for idx in range(0, 100):
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.id = f'{idx}'
         # Invalid ids if odd length https://github.com/jina-ai/jina/issues/1125
         if len(doc.id) % 2 != 0:
@@ -50,7 +50,7 @@ def evaluate_docs():
     """
     docs = []
     for idx in range(0, 100):
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.id = f'{idx}'
         # Invalid ids if odd length https://github.com/jina-ai/jina/issues/1125
         if len(doc.id) % 2 != 0:

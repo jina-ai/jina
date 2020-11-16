@@ -1,30 +1,30 @@
 import numpy as np
 import pytest
 
-from jina.proto.ndarray.dense.numpy import DenseNdArray
+from jina.types.ndarray.dense.numpy import DenseNdArray
 
 
 def test_empty_ndarray():
     a = DenseNdArray()
     assert a.value is None
 
-    from jina.proto.ndarray.sparse.pytorch import SparseNdArray as sp1
+    from jina.types.ndarray.sparse.pytorch import SparseNdArray as sp1
     a = sp1()
     assert a.value is None
 
-    from jina.proto.ndarray.sparse.scipy import SparseNdArray as sp2
+    from jina.types.ndarray.sparse.numpy import SparseNdArray as sp2
     a = sp2()
     assert a.value is None
 
-    from jina.proto.ndarray.sparse.tensorflow import SparseNdArray as sp2
+    from jina.types.ndarray.sparse.tensorflow import SparseNdArray as sp2
     a = sp2()
     assert a.value is None
 
-    from jina.proto.ndarray.sparse.numpy import SparseNdArray as sp2
+    from jina.types.ndarray.sparse.pytorch import SparseNdArray as sp2
     a = sp2()
     assert a.value is None
 
-    from jina.proto.ndarray.generic import GenericNdArray as sp2
+    from jina.types.ndarray.generic import NdArray as sp2
     a = sp2()
     assert a.value is None
 
@@ -32,7 +32,7 @@ def test_empty_ndarray():
 @pytest.mark.parametrize('sp_format', ['coo'])
 def test_scipy_sparse(sp_format):
     from scipy.sparse import coo_matrix
-    from jina.proto.ndarray.sparse.scipy import SparseNdArray
+    from jina.types.ndarray.sparse.scipy import SparseNdArray
     row = np.array([0, 3, 1, 0])
     col = np.array([0, 3, 1, 2])
     data = np.array([4, 5, 7, 9])
@@ -65,7 +65,7 @@ def test_numpy_dense(dtype):
 def test_tf_sparse(idx_shape):
     import tensorflow as tf
     from tensorflow import SparseTensor
-    from jina.proto.ndarray.sparse.tensorflow import SparseNdArray
+    from jina.types.ndarray.sparse.tensorflow import SparseNdArray
     a = SparseTensor(indices=idx_shape[0], values=[1, 2, 3], dense_shape=idx_shape[1])
     b = SparseNdArray()
     b.value = a
@@ -76,7 +76,7 @@ def test_tf_sparse(idx_shape):
                                        ([[0, 2], [1, 0], [1, 2]], [2, 3]),
                                        ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3])])
 def test_torch_sparse_with_transpose(idx_shape, transpose=True):
-    from jina.proto.ndarray.sparse.pytorch import SparseNdArray
+    from jina.types.ndarray.sparse.pytorch import SparseNdArray
     import torch
     i = torch.LongTensor(idx_shape[0])
     v = torch.FloatTensor([3, 4, 5])
@@ -91,7 +91,7 @@ def test_torch_sparse_with_transpose(idx_shape, transpose=True):
                                        ([[0, 2, 1], [1, 0, 2]], [3, 3]),
                                        ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3])])
 def test_torch_sparse(idx_shape, transpose=False):
-    from jina.proto.ndarray.sparse.pytorch import SparseNdArray
+    from jina.types.ndarray.sparse.pytorch import SparseNdArray
     import torch
     i = torch.LongTensor(idx_shape[0])
     v = torch.FloatTensor([3, 4, 5])
@@ -103,7 +103,7 @@ def test_torch_sparse(idx_shape, transpose=False):
 
 
 def test_generic():
-    from jina.proto.ndarray.generic import GenericNdArray
+    from jina.types.ndarray.generic import NdArray
     from scipy.sparse import coo_matrix
 
     row = np.array([0, 3, 1, 0])
@@ -112,7 +112,7 @@ def test_generic():
     a = coo_matrix((data, (row, col)), shape=(4, 4))
     dense_a = a.toarray()
 
-    b = GenericNdArray(is_sparse=True)
+    b = NdArray(is_sparse=True)
 
     b.value = a
 
@@ -135,7 +135,7 @@ def test_dummy_numpy_sparse(shape):
     a = np.random.random(shape)
     a[a > 0.5] = 1
 
-    from jina.proto.ndarray.sparse.numpy import SparseNdArray
+    from jina.types.ndarray.sparse.numpy import SparseNdArray
     b = SparseNdArray()
     b.value = a
 

@@ -6,7 +6,7 @@ import pytest
 from jina.drivers.craft import SegmentDriver
 from jina.executors.crafters import BaseSegmenter
 from jina.proto import jina_pb2, uid
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class MockSegmenter(BaseSegmenter):
@@ -33,7 +33,7 @@ class SimpleSegmentDriver(SegmentDriver):
 
 
 def test_segment_driver():
-    valid_doc = jina_pb2.Document()
+    valid_doc = jina_pb2.DocumentProto()
     valid_doc.id = uid.new_doc_id(valid_doc)
     valid_doc.text = 'valid'
     valid_doc.length = 2
@@ -48,21 +48,21 @@ def test_segment_driver():
 
     assert valid_doc.chunks[0].tags['id'] == 3
     assert valid_doc.chunks[0].parent_id == valid_doc.id
-    np.testing.assert_equal(GenericNdArray(valid_doc.chunks[0].blob).value, np.array([0.0, 0.0, 0.0]))
+    np.testing.assert_equal(NdArray(valid_doc.chunks[0].blob).value, np.array([0.0, 0.0, 0.0]))
     assert valid_doc.chunks[0].weight == 0
     assert valid_doc.chunks[0].length == 3
     assert valid_doc.chunks[0].mime_type == 'text/plain'
 
     assert valid_doc.chunks[1].tags['id'] == 4
     assert valid_doc.chunks[1].parent_id == valid_doc.id
-    np.testing.assert_equal(GenericNdArray(valid_doc.chunks[1].blob).value, np.array([1.0, 1.0, 1.0]))
+    np.testing.assert_equal(NdArray(valid_doc.chunks[1].blob).value, np.array([1.0, 1.0, 1.0]))
     assert valid_doc.chunks[1].weight == 1
     assert valid_doc.chunks[1].length == 3
     assert valid_doc.chunks[1].mime_type == 'image/png'
 
     assert valid_doc.chunks[2].tags['id'] == 5
     assert valid_doc.chunks[2].parent_id == valid_doc.id
-    np.testing.assert_equal(GenericNdArray(valid_doc.chunks[2].blob).value, np.array([2.0, 2.0, 2.0]))
+    np.testing.assert_equal(NdArray(valid_doc.chunks[2].blob).value, np.array([2.0, 2.0, 2.0]))
     assert valid_doc.chunks[2].weight == 2
     assert valid_doc.chunks[2].length == 3
     assert valid_doc.chunks[2].mime_type == 'image/png'
@@ -73,7 +73,7 @@ def test_broken_document():
     executor = MockSegmenter()
     driver.attach(executor=executor, pea=None)
 
-    invalid_doc = jina_pb2.Document()
+    invalid_doc = jina_pb2.DocumentProto()
     invalid_doc.id = uid.new_doc_id(invalid_doc)
     invalid_doc.text = 'invalid'
     invalid_doc.length = 2

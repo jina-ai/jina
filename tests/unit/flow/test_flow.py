@@ -10,7 +10,7 @@ from jina.flow import Flow
 from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
-from jina.proto.jina_pb2 import Document
+from jina.proto.jina_pb2 import DocumentProto
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -508,11 +508,11 @@ def test_flow_with_modalitys_simple():
             assert d.modality in ['mode1', 'mode2']
 
     def input_fn():
-        doc1 = Document()
+        doc1 = DocumentProto()
         doc1.modality = 'mode1'
-        doc2 = Document()
+        doc2 = DocumentProto()
         doc2.modality = 'mode2'
-        doc3 = Document()
+        doc3 = DocumentProto()
         doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 

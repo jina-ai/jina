@@ -24,7 +24,7 @@ class ReverseQL(QuerySetReader, BaseRecursiveDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         prev_len = len(docs)
         for d in reversed(docs):
             dd = docs.add()

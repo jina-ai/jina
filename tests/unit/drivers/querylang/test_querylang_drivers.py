@@ -7,7 +7,7 @@ from jina.proto import jina_pb2
 
 def random_docs(num_docs):
     for j in range(num_docs):
-        d = jina_pb2.Document()
+        d = jina_pb2.DocumentProto()
         d.text = 'hello world'
         d.uri = 'doc://'
         d.tags['id'] = j
@@ -20,23 +20,23 @@ def random_docs(num_docs):
 
 
 def random_docs_to_chunk():
-    d1 = jina_pb2.Document()
+    d1 = jina_pb2.DocumentProto()
     d1.tags['id'] = 1
     d1.text = 'chunk1 chunk2'
     yield d1
-    d2 = jina_pb2.Document()
+    d2 = jina_pb2.DocumentProto()
     d2.tags['id'] = 1
     d2.text = 'chunk3'
     yield d2
 
 
 def random_docs_with_tags():
-    d1 = jina_pb2.Document()
+    d1 = jina_pb2.DocumentProto()
     d1.tags['id'] = 1
     d1.text = 'a'
     d1.tags.update({'id': 1})
     yield d1
-    d2 = jina_pb2.Document()
+    d2 = jina_pb2.DocumentProto()
     d2.tags['id'] = 2
     d2.tags.update({'id': 2})
     d2.text = 'b'

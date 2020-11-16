@@ -10,7 +10,7 @@ from typing import Callable, Any, Union, Iterator, List, Optional
 import numpy as np
 
 from .metas import get_default_metas
-from ..helper import batch_iterator
+from ..helper import batch_iterator, typename
 from ..logging import default_logger
 
 
@@ -51,7 +51,7 @@ def as_train_method(func: Callable) -> Callable:
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
         if self.is_trained:
-            self.logger.warning(f'"{self.__class__.__name__}" has been trained already, '
+            self.logger.warning(f'"{typename(self)}" has been trained already, '
                                 'training it again will override the previous training')
         f = func(self, *args, **kwargs)
         self.is_trained = True

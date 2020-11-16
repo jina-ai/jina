@@ -26,7 +26,7 @@ def test_lookup_leaf_exact():
 
 
 def test_lookup_leaf_exact_document_tags():
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.tags.update({'label': 'jina'})
     leaf = LookupLeaf(tags__label='jina')
     assert leaf.evaluate(doc)
@@ -35,7 +35,7 @@ def test_lookup_leaf_exact_document_tags():
 
 
 def test_lookup_leaf_exact_document_tags_complex():
-    doc = jina_pb2.Document()
+    doc = jina_pb2.DocumentProto()
     doc.tags.update({'key1': {'key2': 'jina'}})
     leaf = LookupLeaf(tags__key1__key2='jina')
     assert leaf.evaluate(doc)
