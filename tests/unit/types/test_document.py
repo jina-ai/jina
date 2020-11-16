@@ -65,21 +65,31 @@ def test_set_get_mime():
 def test_no_copy_construct():
     a = DocumentProto()
     b = Document(a, copy=False)
-    a.id = '123'
-    assert b.id == '123'
+    a.id = '1' * 16
+    assert b.id == '1' * 16
 
-    b.id = '456'
-    assert b.id == '456'
+    b.id = '2' * 16
+    assert a.id == '2' * 16
 
 
 def test_copy_construct():
     a = DocumentProto()
     b = Document(a, copy=True)
-    a.id = '123'
-    assert b.id != '123'
+    a.id = '1' * 16
+    assert b.id != '1' * 16
 
-    b.id = '456'
-    assert a.id == '123'
+    b.id = '2' * 16
+    assert a.id == '1' * 16
+
+
+def test_bad_good_doc_id():
+    b = Document()
+    with pytest.raises(ValueError):
+        b.id = 'hello'
+    b.id = 'abcd' * 4
+    b.id = 'de09' * 4
+    b.id = 'af54' * 4
+    b.id = 'abcdef0123456789'
 
 
 def test_id_context():

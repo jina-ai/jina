@@ -12,8 +12,10 @@ from ...helper import is_url, typename, guess_mime
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
+import re
 _empty_doc = jina_pb2.DocumentProto()
 _buffer_sniff = False
+_id_regex = re.compile(r'[0-9a-fA-F]{16}')
 with ImportExtensions(required=False,
                       pkg_name='python-magic',
                       help_text=f'can not sniff the MIME type '
@@ -87,7 +89,13 @@ class Document:
 
     @id.setter
     def id(self, value: str):
-        pass
+        if not isinstance(value, str) or not _id_regex.match(value):
+            raise ValueError('Customized ``id`` is only acceptable when: \
+            - it only contains chars "0"–"9" to represent values 0 to 9, \
+            and "A"–"F" (or alternatively "a"–"f"). \
+            - it has 16 chars described above.')
+        else:
+            self._document.id = value
 
     @property
     def blob(self) -> 'np.ndarray':
