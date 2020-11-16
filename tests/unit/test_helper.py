@@ -165,29 +165,29 @@ def test_bad_import():
 
     with pytest.raises(ModuleNotFoundError):
         with ImportExtensions(required=True, logger=default_logger):
-            pass
+            import abcdefg  # no install and unlist
 
     with pytest.raises(ModuleNotFoundError):
         with ImportExtensions(required=True, logger=default_logger):
-            pass
+            import ngt  # list but no install
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        pass
+        import ngt
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        pass
+        import ngt.abc.edf
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        pass
+        from ngt.abc import edf
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        pass
+        import abcdefg
 
     assert not ie._tags
 
