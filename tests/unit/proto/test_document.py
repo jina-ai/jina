@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from google.protobuf.json_format import MessageToDict
 
 from jina import NdArray
 from jina.proto.jina_pb2 import DocumentProto
@@ -24,6 +25,19 @@ def test_ndarray_get_set(field):
     c.value = b
     setattr(a, field, c.proto)
     np.testing.assert_equal(getattr(a, field), b)
+
+
+def test_doc_update_fields():
+    a = Document()
+    b = np.random.random([10, 10])
+    c = {'tags': 'string', 'tag-tag': {'tags': 123.45}}
+    d = [12, 34, 56]
+    e = 'text-mod'
+    a.update(embedding=b, tags=c, location=d, modality=e)
+    np.testing.assert_equal(a.embedding, b)
+    assert list(a.location) == d
+    assert a.modality == e
+    assert MessageToDict(a.tags) == c
 
 
 def test_uri_get_set():
