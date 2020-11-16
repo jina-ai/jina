@@ -1,6 +1,9 @@
+import uuid
 from typing import Optional, Union
 
-from ...enums import CompressAlgo
+from ..document import Document
+from ..querylang import QueryLang
+from ...enums import CompressAlgo, ClientMode
 from ...proto import jina_pb2
 
 _trigger_body_fields = set(kk
@@ -27,7 +30,7 @@ class Request:
 
     """
 
-    def __init__(self, request: Union[bytes, 'jina_pb2.RequestProto', None],
+    def __init__(self, request: Union[bytes, 'jina_pb2.RequestProto', None] = None,
                  envelope: Optional['jina_pb2.EnvelopeProto'] = None,
                  copy: bool = False):
 
@@ -41,6 +44,10 @@ class Request:
                 self._request.CopyFrom(request)
             else:
                 self._request = request
+        elif request is None:
+            self._request = jina_pb2.RequestProto()
+            # make sure every new request has a request id
+            self._request.request_id = uuid.uuid1().hex
 
         self._envelope = envelope
         self.is_used = False  #: Return True when request has been r/w at least once
@@ -111,3 +118,16 @@ class Request:
         else:
             # no touch, skip serialization, return original
             return self._buffer
+
+    def add_document(self, document: 'Document', mode: 'ClientMode'):
+        _req = getattr(self.as_pb_object, str(mode).lower())
+        d = _req.docs.add()
+        d.CopyFrom(document.as_pb_object)
+
+    def add_groundtruth(self, document: 'Document', mode: 'ClientMode'):
+        _req = getattr(self.as_pb_object, str(mode).lower())
+        d = _req.groundtruths.add()
+        d.CopyFrom(document.as_pb_object)
+
+    def add_querylang(self, querylang: 'QueryLang'):
+        self.as_pb_object.queryset.append(querylang.as_pb_object)

@@ -13,7 +13,7 @@ import numpy as np
 
 from jina.types.ndarray.generic import NdArray
 from . import BaseRecursiveDriver
-from .helper import guess_mime
+from ..helper import guess_mime
 from ..importer import ImportExtensions
 
 if False:

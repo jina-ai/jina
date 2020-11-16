@@ -8,8 +8,7 @@ from google.protobuf import json_format
 
 from .uid import *
 from ... import NdArray
-from ...drivers.helper import guess_mime
-from ...helper import cached_property, is_url, typename
+from ...helper import is_url, typename, guess_mime
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
@@ -159,7 +158,7 @@ class Document:
             else:
                 setattr(self, k, v)
 
-    @cached_property
+    @property
     def as_pb_object(self) -> 'jina_pb2.DocumentProto':
         return self._document
 

@@ -3,11 +3,14 @@ __license__ = "Apache-2.0"
 
 import functools
 import math
+import mimetypes
 import os
 import random
 import re
 import sys
 import time
+import urllib.parse
+import urllib.request
 import uuid
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
@@ -599,3 +602,14 @@ def get_readable_time(*args, **kwargs):
                 n = int(secs)
             parts.append(f'{n} {unit}' + ('' if n == 1 else 's'))
     return ' and '.join(parts)
+
+
+def guess_mime(uri):
+    # guess when uri points to a local file
+    m_type = mimetypes.guess_type(uri)[0]
+    # guess when uri points to a remote file
+    if not m_type and urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
+        page = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
+        tmp = urllib.request.urlopen(page)
+        m_type = tmp.info().get_content_type()
+    return m_type
