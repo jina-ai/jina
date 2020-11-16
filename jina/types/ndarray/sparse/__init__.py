@@ -2,7 +2,7 @@ from typing import List, TypeVar, Union, Dict
 
 from .. import BaseNdArray
 from ..dense.numpy import DenseNdArray
-from ... import jina_pb2
+from ....proto import jina_pb2
 
 AnySparseNdArray = TypeVar('AnySparseNdArray')
 
@@ -17,12 +17,13 @@ class BaseSparseNdArray(BaseNdArray):
     Do not use this class directly. Subclass should be used.
 
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_sparse = True
 
     def null_proto(self):
-        return jina_pb2.SparseNdArray()
+        return jina_pb2.SparseNdArrayProto()
 
     def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> AnySparseNdArray:
         """ Sparse NdArray constructor, must be implemented by subclass

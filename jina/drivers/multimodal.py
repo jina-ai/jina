@@ -8,23 +8,23 @@ import numpy as np
 
 from .encode import BaseEncodeDriver
 from ..proto import jina_pb2
-from ..proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
-def _extract_doc_content(doc: 'jina_pb2.Document'):
+def _extract_doc_content(doc: 'jina_pb2.DocumentProto'):
     """Returns the content of the document with the following priority:
     If the document has an embedding, return it, otherwise return its content.
     """
-    r = GenericNdArray(doc.embedding).value
+    r = NdArray(doc.embedding).value
     if r is not None:
         return r
     elif doc.text or doc.buffer:
         return doc.text or doc.buffer
     else:
-        return GenericNdArray(doc.blob).value
+        return NdArray(doc.blob).value
 
 
-def _extract_modalities_from_document(doc: 'jina_pb2.Document'):
+def _extract_modalities_from_document(doc: 'jina_pb2.DocumentProto'):
     """Returns a dictionary of document content (embedding, text, blob or buffer) with `modality` as its key
     """
     doc_content = {}
@@ -80,7 +80,7 @@ class MultiModalDriver(BaseEncodeDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.Document'],
+            docs: Sequence['jina_pb2.DocumentProto'],
             *args, **kwargs
     ) -> None:
         """
@@ -113,4 +113,4 @@ class MultiModalDriver(BaseEncodeDriver):
                     f'mismatched {len(valid_docs)} docs from level {docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(valid_docs, embeds):
-                GenericNdArray(doc.embedding).value = embedding
+                NdArray(doc.embedding).value = embedding

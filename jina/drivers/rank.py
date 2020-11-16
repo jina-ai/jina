@@ -54,7 +54,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], context_doc: 'jina_pb2.DocumentProto', *args,
                    **kwargs) -> None:
         """
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -124,7 +124,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], context_doc: 'jina_pb2.DocumentProto', *args,
                    **kwargs) -> None:
         """
 
@@ -194,7 +194,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], context_doc: 'jina_pb2.Document', *args,
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], context_doc: 'jina_pb2.DocumentProto', *args,
                    **kwargs) -> None:
         """
 
@@ -219,7 +219,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         new_match_scores = self.exec_fn(query_meta, old_match_scores, match_meta)
         self._sort_matches_in_place(context_doc, new_match_scores)
 
-    def _sort_matches_in_place(self, context_doc: 'jina_pb2.Document', match_scores: 'np.ndarray') -> None:
+    def _sort_matches_in_place(self, context_doc: 'jina_pb2.DocumentProto', match_scores: 'np.ndarray') -> None:
         sorted_scores = self._sort(match_scores)
         old_matches = {match.id: match for match in context_doc.matches}
         context_doc.ClearField('matches')

@@ -5,7 +5,7 @@ from jina.drivers.evaluate import NDArrayEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class MockDiffEvaluator(BaseEmbeddingEvaluator):
@@ -46,10 +46,10 @@ def ground_truth_pairs():
     num_docs = 10
     pairs = []
     for idx in range(num_docs):
-        doc = jina_pb2.Document()
-        gt = jina_pb2.Document()
-        GenericNdArray(doc.embedding).value = np.array([1, 1])
-        GenericNdArray(gt.embedding).value = np.array([2, 2])
+        doc = jina_pb2.DocumentProto()
+        gt = jina_pb2.DocumentProto()
+        NdArray(doc.embedding).value = np.array([1, 1])
+        NdArray(gt.embedding).value = np.array([2, 2])
         pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
     return pairs
 
@@ -78,7 +78,7 @@ class SimpleChunkEvaluateDriver(NDArrayEvaluateDriver):
         return self._exec_fn
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
@@ -91,7 +91,7 @@ def simple_chunk_evaluate_driver():
 @pytest.fixture
 def eval_request():
     num_docs = 10
-    req = jina_pb2.Request.IndexRequest()
+    req = jina_pb2.RequestProto.IndexRequestProto()
     for idx in range(num_docs):
         doc = req.docs.add()
         gt = req.groundtruths.add()
@@ -99,8 +99,8 @@ def eval_request():
         chunk_gt = gt.chunks.add()
         chunk_doc.granularity = 1
         chunk_gt.granularity = 1
-        GenericNdArray(chunk_doc.embedding).value = np.array([1, 1])
-        GenericNdArray(chunk_gt.embedding).value = np.array([2, 2])
+        NdArray(chunk_doc.embedding).value = np.array([1, 1])
+        NdArray(chunk_gt.embedding).value = np.array([2, 2])
     return req
 
 

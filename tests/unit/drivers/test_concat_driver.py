@@ -4,8 +4,8 @@ import numpy as np
 
 from jina.flow import Flow
 from jina.proto import uid
-from jina.proto.jina_pb2 import Document
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.proto.jina_pb2 import DocumentProto
+from jina.types.ndarray.generic import NdArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,16 +16,16 @@ e4 = np.random.random([9])
 
 
 def input_fn():
-    doc1 = Document()
-    GenericNdArray(doc1.embedding).value = e1
+    doc1 = DocumentProto()
+    NdArray(doc1.embedding).value = e1
     c = doc1.chunks.add()
-    GenericNdArray(c.embedding).value = e2
+    NdArray(c.embedding).value = e2
     c.id = uid.new_doc_id(c)
-    doc2 = Document()
-    GenericNdArray(doc2.embedding).value = e3
+    doc2 = DocumentProto()
+    NdArray(doc2.embedding).value = e3
     d = doc2.chunks.add()
     d.id = uid.new_doc_id(d)
-    GenericNdArray(d.embedding).value = e4
+    NdArray(d.embedding).value = e4
     return [doc1, doc2]
 
 
@@ -36,7 +36,7 @@ def test_array2pb():
         print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
         del os.environ['JINA_ARRAY_QUANT']
 
-    d = GenericNdArray()
+    d = NdArray()
     d.value = e4
     np.testing.assert_almost_equal(d.value, e4)
 
@@ -48,13 +48,13 @@ def test_concat_embed_driver():
 
     def validate(req):
         assert len(req.docs) == 2
-        assert GenericNdArray(req.docs[0].embedding).value.shape == (e1.shape[0] * 2,)
-        assert GenericNdArray(req.docs[1].embedding).value.shape == (e3.shape[0] * 2,)
-        # assert GenericNdArray(req.docs[0].chunks[0].embedding).value.shape == (e2.shape[0] * 2,)
-        # assert GenericNdArray(req.docs[1].chunks[0].embedding).value.shape == (e4.shape[0] * 2,)
-        np.testing.assert_almost_equal(GenericNdArray(req.docs[0].embedding).value, np.concatenate([e1, e1], axis=0),
+        assert NdArray(req.docs[0].embedding).value.shape == (e1.shape[0] * 2,)
+        assert NdArray(req.docs[1].embedding).value.shape == (e3.shape[0] * 2,)
+        # assert NdArray(req.docs[0].chunks[0].embedding).value.shape == (e2.shape[0] * 2,)
+        # assert NdArray(req.docs[1].chunks[0].embedding).value.shape == (e4.shape[0] * 2,)
+        np.testing.assert_almost_equal(NdArray(req.docs[0].embedding).value, np.concatenate([e1, e1], axis=0),
                                        decimal=4)
-        # np.testing.assert_almost_equal(GenericNdArray(req.docs[0].chunks[0].embedding).value,
+        # np.testing.assert_almost_equal(NdArray(req.docs[0].chunks[0].embedding).value,
         #                                np.concatenate([e2, e2], axis=0),
         #                                decimal=4)
 

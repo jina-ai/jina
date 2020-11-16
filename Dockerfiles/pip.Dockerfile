@@ -1,6 +1,6 @@
 FROM python:3.7.6-slim
 
-RUN apt-get update && apt-get install --no-install-recommends -y
+RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev
 
 WORKDIR /jina/
 

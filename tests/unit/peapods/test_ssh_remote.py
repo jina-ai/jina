@@ -13,7 +13,7 @@ def test_ssh_pea():
     p = set_pea_parser().parse_args(['--host', 'pi@172.16.1.110', '--timeout', '5000'])
 
     with RemoteSSHPea(p) as pp:
-        assert pp.status.envelope.status.code == jina_pb2.Status.READY
+        assert pp.status.envelope.status.code == jina_pb2.StatusProto.READY
 
     assert pp.status is None
 
@@ -22,7 +22,7 @@ def test_ssh_pea():
 def test_ssh_pod():
     p = set_pod_parser().parse_args(['--host', 'pi@172.16.1.110', '--timeout', '5000'])
     with RemoteSSHPod(p) as pp:
-        assert pp.status.envelope.status.code == jina_pb2.Status.READY
+        assert pp.status.envelope.status.code == jina_pb2.StatusProto.READY
 
     assert pp.status is None
 
@@ -32,7 +32,7 @@ def test_ssh_mutable_pod():
     p = set_pod_parser().parse_args(['--host', 'pi@172.16.1.110', '--timeout', '5000'])
     p = BasePod(p)
     with RemoteSSHMutablePod(p.peas_args) as pp:
-        assert pp.status.envelope.status.code == jina_pb2.Status.READY
+        assert pp.status.envelope.status.code == jina_pb2.StatusProto.READY
 
     assert pp.status is None
 

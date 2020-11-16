@@ -7,17 +7,17 @@ import os
 import platform
 import re
 import sys
-
 from typing import Optional
+
 from pkg_resources import resource_filename
 
 from . import formatter
 from ..enums import LogVerbosity
-from ..helper import yaml, complete_path
+from ..helper import yaml, complete_path, typename
 
 
 class NTLogger:
-    def __init__(self, context: str, log_level: 'LogVerbosity'):
+    def __init__(self, context: str, log_level: 'LogVerbosity'=LogVerbosity.INFO):
         """A compatible logger for Windows system, colors are all removed to keep compat.
 
         :param context: the name prefix of each log
@@ -33,32 +33,39 @@ class NTLogger:
     def info(self, msg: str, **kwargs):
         """log info-level message"""
         if self.log_level <= LogVerbosity.INFO:
-            sys.stdout.write(f'I:{self.context}:{self._planify(msg)}')
+            sys.stdout.write(f'{self.context}[I]:{self._planify(msg)}')
 
     def critical(self, msg: str, **kwargs):
         """log critical-level message"""
         if self.log_level <= LogVerbosity.CRITICAL:
-            sys.stdout.write(f'C:{self.context}:{self._planify(msg)}')
+            sys.stdout.write(f'{self.context}[C]:{self._planify(msg)}')
 
     def debug(self, msg: str, **kwargs):
         """log debug-level message"""
         if self.log_level <= LogVerbosity.DEBUG:
-            sys.stdout.write(f'D:{self.context}:{self._planify(msg)}')
+            sys.stdout.write(f'{self.context}[D]:{self._planify(msg)}')
 
     def error(self, msg: str, **kwargs):
         """log error-level message"""
         if self.log_level <= LogVerbosity.ERROR:
-            sys.stdout.write(f'E:{self.context}:{self._planify(msg)}')
+            sys.stdout.write(f'{self.context}[E]:{self._planify(msg)}')
 
     def warning(self, msg: str, **kwargs):
         """log warn-level message"""
         if self.log_level <= LogVerbosity.WARNING:
-            sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
+            sys.stdout.write(f'{self.context}[W]:{self._planify(msg)}')
 
     def success(self, msg: str, **kwargs):
         """log success-level message"""
         if self.log_level <= LogVerbosity.SUCCESS:
-            sys.stdout.write(f'W:{self.context}:{self._planify(msg)}')
+            sys.stdout.write(f'{self.context}[S]:{self._planify(msg)}')
+
+
+class PrintLogger(NTLogger):
+
+    @staticmethod
+    def _planify(msg):
+        return msg
 
 
 class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
@@ -186,7 +193,8 @@ class JinaLogger:
                 handler = logging.FileHandler(cfg['output'].format_map(kwargs), delay=True)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
             elif h == 'FluentHandler':
-                try:
+                from ..importer import ImportExtensions
+                with ImportExtensions(required=False):
                     from fluent import asynchandler as fluentasynchandler
                     from fluent.handler import FluentRecordFormatter
 
@@ -197,8 +205,6 @@ class JinaLogger:
                     cfg['format'].update(kwargs)
                     fmt = FluentRecordFormatter(cfg['format'])
                     handler.setFormatter(fmt)
-                except (ModuleNotFoundError, ImportError):
-                    pass
 
             if handler:
                 self.logger.addHandler(handler)

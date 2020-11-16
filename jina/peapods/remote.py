@@ -6,7 +6,7 @@ from typing import Dict, Union, Type, Optional, Any
 
 from .jinad import PeaAPI, PodAPI, JinadAPI
 from .pea import BasePea
-from ..helper import colored, cached_property
+from ..helper import colored, cached_property, typename
 
 
 def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
@@ -51,7 +51,7 @@ class RemotePea(BasePea):
             self.set_ready()
             self.api.log(self.remote_id)
         else:
-            self.logger.error(f'fail to create {self.__class__.__name__} remotely')
+            self.logger.error(f'fail to create {typename(self)} remotely')
             self.is_shutdown.set()
 
     def delete_remote(self):

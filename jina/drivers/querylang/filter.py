@@ -36,7 +36,7 @@ class FilterQL(QuerySetReader, BaseRecursiveDriver):
         """
         self._lookups = lookups
 
-    def _apply_all(self, docs: Sequence['jina_pb2.Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
         if self.lookups:
             _lookups = Q(**self.lookups)
             miss_idx = []

@@ -4,15 +4,15 @@ import pytest
 
 from jina.clients.python.request import _generate
 from jina.proto import jina_pb2
-from jina.proto.jina_pb2 import Envelope
-from jina.proto.message import LazyRequest, ProtoMessage
-from jina.proto.message.lazyrequest import _trigger_fields
+from jina.proto.jina_pb2 import EnvelopeProto
+from jina.types.message import Request, Message
+from jina.types.message.request import _trigger_fields
 from tests import random_docs
 
 
 @pytest.mark.parametrize('field', _trigger_fields.difference({'command', 'args', 'flush'}))
 def test_lazy_access(field):
-    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
 
@@ -24,7 +24,7 @@ def test_lazy_access(field):
 
 
 def test_multiple_access():
-    reqs = [LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10))]
+    reqs = [Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10))]
     for r in reqs:
         assert not r.is_used
         assert r
@@ -37,7 +37,7 @@ def test_multiple_access():
 
 
 def test_lazy_nest_access():
-    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -48,28 +48,28 @@ def test_lazy_nest_access():
 
 
 def test_lazy_change_message_type():
-    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.control.command = jina_pb2.Request.ControlRequest.IDLE
+        r.control.command = jina_pb2.RequestProto.ControlRequestProto.IDLE
         # now it is read
         assert r.is_used
         assert len(r.index.docs) == 0
 
 
 def test_lazy_append_access():
-    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.docs.append(jina_pb2.Document())
+        r.docs.append(jina_pb2.DocumentProto())
         # now it is read
         assert r.is_used
 
 
 def test_lazy_clear_access():
-    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -79,7 +79,7 @@ def test_lazy_clear_access():
 
 
 def test_lazy_nested_clear_access():
-    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -89,8 +89,8 @@ def test_lazy_nested_clear_access():
 
 
 def test_lazy_msg_access():
-    reqs = [ProtoMessage(None, r.SerializeToString(), 'test', '123',
-                         request_id='123', request_type='IndexRequest') for r in _generate(random_docs(10))]
+    reqs = [Message(None, r.SerializeToString(), 'test', '123',
+                    request_id='123', request_type='IndexRequest') for r in _generate(random_docs(10))]
     for r in reqs:
         assert not r.request.is_used
         assert r.envelope
@@ -111,7 +111,7 @@ def test_lazy_msg_access():
 
 
 def test_message_size():
-    reqs = [ProtoMessage(None, r, 'test', '123') for r in _generate(random_docs(10))]
+    reqs = [Message(None, r, 'test', '123') for r in _generate(random_docs(10))]
     for r in reqs:
         assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())
@@ -122,6 +122,6 @@ def test_message_size():
 
 
 def test_lazy_request_fields():
-    reqs = (LazyRequest(r.SerializeToString(), Envelope()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())

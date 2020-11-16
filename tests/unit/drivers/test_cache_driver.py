@@ -16,7 +16,7 @@ class MockCacheDriver(BaseCacheDriver):
     def exec_fn(self):
         return self._exec_fn
 
-    def on_hit(self, req_doc: 'jina_pb2.Document', hit_result: Any) -> None:
+    def on_hit(self, req_doc: 'jina_pb2.DocumentProto', hit_result: Any) -> None:
         raise NotImplementedError
 
 

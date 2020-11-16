@@ -7,7 +7,7 @@ from jina.drivers.evaluate import FieldEvaluateDriver
 from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 
 class MockDiffEvaluator(BaseEvaluator):
@@ -29,13 +29,13 @@ def field_type(request):
 def doc_with_field_type(field_type):
     class DocCreator(object):
         def create(self):
-            doc = jina_pb2.Document()
+            doc = jina_pb2.DocumentProto()
             if field_type == 'text':
                 doc.text = 'aaa'
             elif field_type == 'buffer':
                 doc.buffer = b'\x01\x02\x03'
             elif field_type == 'blob':
-                GenericNdArray(doc.blob).value = np.array([1, 1, 1])
+                NdArray(doc.blob).value = np.array([1, 1, 1])
             return doc
 
     return DocCreator()
@@ -45,13 +45,13 @@ def doc_with_field_type(field_type):
 def groundtruth_with_field_type(field_type):
     class GTCreator(object):
         def create(self):
-            gt = jina_pb2.Document()
+            gt = jina_pb2.DocumentProto()
             if field_type == 'text':
                 gt.text = 'aaaa'
             elif field_type == 'buffer':
                 gt.buffer = b'\x01\x02\x03\04'
             elif field_type == 'blob':
-                GenericNdArray(gt.blob).value = np.array([1, 1, 1, 1])
+                NdArray(gt.blob).value = np.array([1, 1, 1, 1])
             return gt
 
     return GTCreator()
@@ -117,7 +117,7 @@ class SimpleChunkEvaluateDriver(FieldEvaluateDriver):
         return self._exec_fn
 
     @property
-    def req(self) -> 'jina_pb2.Request':
+    def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
@@ -156,7 +156,7 @@ def simple_chunk_evaluate_driver():
 def eval_request():
     def request(field_type):
         num_docs = 10
-        req = jina_pb2.Request.IndexRequest()
+        req = jina_pb2.RequestProto.IndexRequestProto()
         for idx in range(num_docs):
             doc = req.docs.add()
             gt = req.groundtruths.add()
@@ -171,8 +171,8 @@ def eval_request():
                 chunk_doc.buffer = b'\x01\x02\x03'
                 chunk_gt.buffer = b'\x01\x02\x03\x04'
             elif field_type == 'blob':
-                GenericNdArray(chunk_doc.blob).value = np.array([1, 1, 1])
-                GenericNdArray(chunk_gt.blob).value = np.array([1, 1, 1, 1])
+                NdArray(chunk_doc.blob).value = np.array([1, 1, 1])
+                NdArray(chunk_gt.blob).value = np.array([1, 1, 1, 1])
         return req
 
     return request

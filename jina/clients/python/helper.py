@@ -6,7 +6,8 @@ import time
 from typing import Sequence
 
 from ...helper import colored
-from ...logging import profile_logger, default_logger
+from ...importer import ImportExtensions
+from ...logging import profile_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
 
@@ -89,13 +90,13 @@ class ProgressBar(TimeContext):
         sys.stdout.write(f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s", "green")}\n')
 
 
-def pprint_routes(routes: Sequence['jina_pb2.Route'],
-                  status: 'jina_pb2.Status' = None,
+def pprint_routes(routes: Sequence['jina_pb2.RouteProto'],
+                  status: 'jina_pb2.StatusProto' = None,
                   stack_limit: int = 3):
     """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`
 
-    :param routes: list of :class:`jina_pb2.Route` objects from Envelop
-    :param status: the :class:`jina_pb2.Status` object
+    :param routes: list of :class:`jina_pb2.RouteProto` objects from Envelop
+    :param status: the :class:`jina_pb2.StatusProto` object
     :param stack_limit: traceback limit
     :return:
     """
@@ -103,29 +104,27 @@ def pprint_routes(routes: Sequence['jina_pb2.Route'],
 
     header = [colored(v, attrs=['bold']) for v in ('Pod', 'Time', 'Exception')]
 
-    try:
+    # poorman solution
+    table = []
+
+    def add_row(x):
+        for h, y in zip(header, x):
+            table.append(f'{h}\n{y}\n{"-" * 10}')
+
+    def visualize(x):
+        print('\n'.join(x))
+
+    with ImportExtensions(required=False):
         from prettytable import PrettyTable, ALL
         table = PrettyTable(field_names=header, align='l', hrules=ALL)
         add_row = table.add_row
         visualize = print
-    except (ModuleNotFoundError, ImportError):
-        default_logger.warning('you may want to pip install "jina[prettytable]" for '
-                               'better visualization')
-        # poorman solution
-        table = []
-
-        def add_row(x):
-            for h, y in zip(header, x):
-                table.append(f'{h}\n{y}\n{"-" * 10}')
-
-        def visualize(x):
-            print('\n'.join(x))
 
     for route in routes:
         status_icon = '🟢'
-        if route.status.code == jina_pb2.Status.ERROR:
+        if route.status.code == jina_pb2.StatusProto.ERROR:
             status_icon = '🔴'
-        elif route.status.code == jina_pb2.Status.ERROR_CHAINED:
+        elif route.status.code == jina_pb2.StatusProto.ERROR_CHAINED:
             status_icon = '⚪'
 
         add_row([f'{status_icon} {route.pod}',

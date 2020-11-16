@@ -21,7 +21,7 @@ import sys
 from binascii import unhexlify
 from hashlib import blake2b
 
-from .jina_pb2 import Document
+from .jina_pb2 import DocumentProto
 from ..excepts import BadDocID
 from ..logging import default_logger
 
@@ -29,11 +29,11 @@ _doc_field_mask = None
 _digest_size = 8
 
 
-def new_doc_hash(doc: 'Document') -> int:
+def new_doc_hash(doc: 'DocumentProto') -> int:
     return id2hash(new_doc_id(doc))
 
 
-def new_doc_id(doc: 'Document') -> str:
+def new_doc_id(doc: 'DocumentProto') -> str:
     """ Generate a new hexdigest based on the content of the document.
 
     .. note::
@@ -44,12 +44,12 @@ def new_doc_id(doc: 'Document') -> str:
     """
     d = doc
     if _doc_field_mask:
-        d = Document()
+        d = DocumentProto()
         _doc_field_mask.MergeMessage(doc, d)
     return blake2b(d.SerializeToString(), digest_size=_digest_size).hexdigest()
 
 
-def new_doc_bytes(doc: 'Document') -> bytes:
+def new_doc_bytes(doc: 'DocumentProto') -> bytes:
     return id2bytes(new_doc_id(doc))
 
 
@@ -69,7 +69,7 @@ def id2bytes(value: str) -> bytes:
             - it only contains the symbols "0"–"9" to represent values 0 to 9, \
             and "A"–"F" (or alternatively "a"–"f"). \
             - it has an even length.')
-        raise BadDocID(f'{value} is not a valid id for Document')
+        raise BadDocID(f'{value} is not a valid id for DocumentProto')
 
 
 def bytes2id(value: bytes) -> str:

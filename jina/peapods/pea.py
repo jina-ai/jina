@@ -12,17 +12,17 @@ from typing import Dict, Optional, Union, List
 
 import zmq
 
+from jina.types.message import Message, Request
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__
 from ..enums import PeaRoleType, SkipOnErrorType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
-    ModelCheckpointNotExist, ChainedPodException
+    ChainedPodException
 from ..executors import BaseExecutor
-from ..helper import is_valid_local_config_source
+from ..helper import is_valid_local_config_source, typename
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
-from ..proto.message import ProtoMessage, LazyRequest
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -125,7 +125,7 @@ class BasePea(metaclass=PeaMeta):
         self._message = None
 
         # all pending messages collected so far, key is the request id
-        self._pending_msgs = defaultdict(list)  # type: Dict[str, List['ProtoMessage']]
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List['Message']]
         self._partial_requests = None
         self._partial_messages = None
 
@@ -148,7 +148,7 @@ class BasePea(metaclass=PeaMeta):
             r += f'({str(self.executor)})'
         return r
 
-    def handle(self, msg: 'ProtoMessage') -> 'BasePea':
+    def handle(self, msg: 'Message') -> 'BasePea':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
@@ -161,7 +161,7 @@ class BasePea(metaclass=PeaMeta):
             # otherwise a reducer will lose its function when eailier pods raise exception
             raise NoExplicitMessage
 
-        if msg.envelope.status.code != jina_pb2.Status.ERROR or self.args.skip_on_error < SkipOnErrorType.HANDLE:
+        if msg.envelope.status.code != jina_pb2.StatusProto.ERROR or self.args.skip_on_error < SkipOnErrorType.HANDLE:
             self.executor(self.request_type)
         else:
             raise ChainedPodException
@@ -173,12 +173,12 @@ class BasePea(metaclass=PeaMeta):
         return (time.perf_counter() - self.last_active_time) > self.args.max_idle_time
 
     @property
-    def request(self) -> 'LazyRequest':
+    def request(self) -> 'Request':
         """Get the current request body inside the protobuf message"""
         return self._request
 
     @property
-    def message(self) -> 'ProtoMessage':
+    def message(self) -> 'Message':
         """Get the current protobuf message to be processed"""
         return self._message
 
@@ -196,9 +196,8 @@ class BasePea(metaclass=PeaMeta):
                 self.args.separated_workspace, self.args.pea_id)
             self.executor.attach(pea=self)
         except FileNotFoundError as ex:
-            self.logger.error(f'fail to load dependent: {repr(ex)}')
-            if not isinstance(ex, ModelCheckpointNotExist):
-                raise ExecutorFailToLoad from ex
+            self.logger.error(f'fail to load file dependency: {repr(ex)}')
+            raise ExecutorFailToLoad from ex
         except Exception as ex:
             raise ExecutorFailToLoad from ex
 
@@ -231,16 +230,16 @@ class BasePea(metaclass=PeaMeta):
         return self.args.num_part if self.message.is_data_request else 1
 
     @property
-    def partial_requests(self) -> List['LazyRequest']:
+    def partial_requests(self) -> List['Request']:
         """The collected partial requests under the current ``request_id`` """
         return self._partial_requests
 
     @property
-    def partial_messages(self) -> List['ProtoMessage']:
+    def partial_messages(self) -> List['Message']:
         """The collected partial messages under the current ``request_id`` """
         return self._partial_messages
 
-    def pre_hook(self, msg: 'ProtoMessage') -> 'BasePea':
+    def pre_hook(self, msg: 'Message') -> 'BasePea':
         """Pre-hook function, what to do after first receiving the message """
         msg.add_route(self.name, self.args.identity)
         self._request = msg.request
@@ -257,7 +256,7 @@ class BasePea(metaclass=PeaMeta):
         self.logger.info(f'recv {msg.envelope.request_type}{part_str}from {msg.colored_route}')
         return self
 
-    def post_hook(self, msg: 'ProtoMessage') -> 'BasePea':
+    def post_hook(self, msg: 'Message') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
@@ -281,7 +280,7 @@ class BasePea(metaclass=PeaMeta):
         self.is_ready_event.clear()
         self.logger.success(__stop_msg__)
 
-    def _callback(self, msg: 'ProtoMessage'):
+    def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
         self.pre_hook(msg).handle(msg).post_hook(msg)
         self.is_post_hook_done = True
@@ -302,7 +301,7 @@ class BasePea(metaclass=PeaMeta):
         self.loop_teardown()
         self.is_shutdown.set()
 
-    def msg_callback(self, msg: 'ProtoMessage') -> Optional['ProtoMessage']:
+    def msg_callback(self, msg: 'Message') -> Optional['Message']:
         """Callback function after receiving the message
 
         When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.
@@ -355,7 +354,7 @@ class BasePea(metaclass=PeaMeta):
 
     def load_plugins(self):
         if self.args.py_modules:
-            from ..helper import PathImporter
+            from ..importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
     def loop_teardown(self):
@@ -405,14 +404,14 @@ class BasePea(metaclass=PeaMeta):
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.TERMINATE,
+            send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.TERMINATE,
                               timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
         if self.is_ready_event.is_set() and getattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.Request.ControlRequest.STATUS,
+            return send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.STATUS,
                                      timeout=self.args.timeout_ctrl)
 
     def start(self) -> 'BasePea':
@@ -430,13 +429,13 @@ class BasePea(metaclass=PeaMeta):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {self.__class__} with name {self.name}, '
+                self.logger.critical(f'fail to start {typename(self)} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
                 raise PeaFailToStart
             return self
         else:
             raise TimeoutError(
-                f'{self.__class__} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
+                f'{typename(self)} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
 
     def __enter__(self) -> 'BasePea':
         return self.start()

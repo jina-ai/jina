@@ -4,6 +4,8 @@ import numpy as np
 
 from . import BaseSparseNdArray
 
+__all__ = ['SparseNdArray']
+
 
 class SparseNdArray(BaseSparseNdArray):
     """Numpy powered sparse ndarray, it uses nonzero.

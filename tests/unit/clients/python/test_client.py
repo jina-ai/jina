@@ -9,7 +9,7 @@ from jina.flow import Flow
 from jina.helper import random_port
 from jina.parser import set_gateway_parser
 from jina.peapods.gateway import RESTGatewayPea
-from jina.proto.jina_pb2 import Document
+from jina.proto.jina_pb2 import DocumentProto
 
 
 @pytest.fixture(scope='function')
@@ -39,12 +39,12 @@ def test_client(flow):
         )
 
 
-@pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([Document(), Document()])])
+@pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
 def test_check_input_success(input_fn):
     PyClient.check_input(input_fn)
 
 
-@pytest.mark.parametrize('input_fn', [iter([b'1234', '45467', [12, 2, 3]]), iter([Document(), None])])
+@pytest.mark.parametrize('input_fn', [iter([b'1234', '45467', [12, 2, 3]]), iter([DocumentProto(), None])])
 def test_check_input_fail(input_fn):
     with pytest.raises(TypeError):
         PyClient.check_input(input_fn)

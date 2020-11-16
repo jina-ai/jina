@@ -61,7 +61,7 @@ class DummyIndexer2(NumpyIndexer):
 def test_doc_iters():
     docs = random_docs(3, 5)
     for doc in docs:
-        assert isinstance(doc, jina_pb2.Document)
+        assert isinstance(doc, jina_pb2.DocumentProto)
 
 
 def test_simple_route():
@@ -157,7 +157,7 @@ def test_chunk_joint_idx(tmpdir):
     os.environ['TEST_WORKDIR'] = str(tmpdir)
 
     def validate(req, indexer_name):
-        assert req.status.code < jina_pb2.Status.ERROR
+        assert req.status.code < jina_pb2.StatusProto.ERROR
         assert req.search.docs[0].matches[0].score.op_name == indexer_name
 
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as f:

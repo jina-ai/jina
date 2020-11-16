@@ -5,7 +5,7 @@ import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.proto.ndarray.generic import GenericNdArray
+from jina.types.ndarray.generic import NdArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,9 +21,9 @@ def test_queryset_with_struct(random_workspace):
     total_docs = 4
     docs = []
     for doc_id in range(total_docs):
-        doc = jina_pb2.Document()
+        doc = jina_pb2.DocumentProto()
         doc.text = f'I am doc{doc_id}'
-        GenericNdArray(doc.embedding).value = np.array([doc_id])
+        NdArray(doc.embedding).value = np.array([doc_id])
         doc.tags['label'] = f'label{doc_id % 2 + 1}'
         docs.append(doc)
 
@@ -41,7 +41,7 @@ def test_queryset_with_struct(random_workspace):
         f.index(docs, output_fn=validate_all_docs, callback_on='body')
 
         # keep only the docs with label2
-        qs = jina_pb2.QueryLang(name='FilterQL', priority=1)
+        qs = jina_pb2.QueryLangProto(name='FilterQL', priority=1)
         qs.parameters['lookups'] = {'tags__label': 'label2'}
         qs.parameters['traversal_paths'] = ['r']
         f.index(docs, queryset=qs, output_fn=validate_label2_docs, callback_on='body')
