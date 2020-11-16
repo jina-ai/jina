@@ -124,7 +124,7 @@ class Zmqlet:
         ctx = self._get_zmq_ctx()
         ctx.setsockopt(zmq.LINGER, 0)
 
-        self.logger.info('setting up sockets...')
+        self.logger.debug('setting up sockets...')
         try:
             if self.ctrl_with_ipc:
                 ctrl_sock, ctrl_addr = _init_socket(ctx, self.ctrl_addr, None, SocketType.PAIR_BIND,
@@ -149,8 +149,8 @@ class Zmqlet:
             self.logger.debug(f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}')
 
             self.logger.info(
-                f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) \t '
-                f'output {colored(out_addr, "yellow")} ({self.args.socket_out.name})\t '
+                f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) '
+                f'output {colored(out_addr, "yellow")} ({self.args.socket_out.name}) '
                 f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})')
 
             self.in_sock_type = in_sock.type
