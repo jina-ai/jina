@@ -8,7 +8,7 @@ import pytest
 from cli import _is_latest_version
 from jina.clients.python import PyClient, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
-from jina.helper import cached_property
+from jina.helper import cached_property, get_internal_ip, get_public_ip
 from jina.importer import ImportExtensions
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
@@ -165,29 +165,29 @@ def test_bad_import():
 
     with pytest.raises(ModuleNotFoundError):
         with ImportExtensions(required=True, logger=default_logger):
-            import abcdefg  # no install and unlist
+            pass
 
     with pytest.raises(ModuleNotFoundError):
         with ImportExtensions(required=True, logger=default_logger):
-            import ngt  # list but no install
+            pass
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        import ngt
+        pass
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        import ngt.abc.edf
+        pass
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        from ngt.abc import edf
+        pass
 
     assert ie._tags == ['ngt', 'index', 'py37']
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
-        import abcdefg
+        pass
 
     assert not ie._tags
 
@@ -200,3 +200,8 @@ def test_no_suppress_other_exception():
     with pytest.raises(Exception):
         with ImportExtensions(required=True, logger=default_logger):
             raise Exception
+
+
+def test_get_ip():
+    assert get_internal_ip() != '127.0.0.1'
+    assert get_public_ip() != '127.0.0.1'

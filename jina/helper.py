@@ -25,7 +25,8 @@ __all__ = ['batch_iterator', 'yaml',
            'parse_arg',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
-           'cached_property', 'is_url', 'complete_path', 'typename']
+           'cached_property', 'is_url', 'complete_path', 'typename', 'get_public_ip', 'get_internal_ip']
+
 
 def deprecated_alias(**aliases):
     def deco(f):
@@ -613,3 +614,34 @@ def guess_mime(uri):
         tmp = urllib.request.urlopen(page)
         m_type = tmp.info().get_content_type()
     return m_type
+
+
+def get_internal_ip():
+    import socket
+    ip = '127.0.0.1'
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            # doesn't even have to be reachable
+            s.connect(('10.255.255.255', 1))
+            ip = s.getsockname()[0]
+    except Exception:
+        pass
+    return ip
+
+
+def get_public_ip():
+    # 'https://api.ipify.org'
+    # https://ident.me
+    # ipinfo.io/ip
+    import urllib.request
+
+    def _get_ip(url):
+        try:
+            with urllib.request.urlopen(url, timeout=1) as fp:
+                return fp.read().decode('utf8')
+        except:
+            pass
+
+    ip = _get_ip('https://api.ipify.org') or _get_ip('https://ident.me') or _get_ip('https://ipinfo.io/ip')
+
+    return ip
