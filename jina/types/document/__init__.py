@@ -2,16 +2,14 @@ import os
 import urllib.parse
 from typing import Union, Dict, Iterator, Optional
 
+import numpy as np
 from google.protobuf import json_format
 
 from .uid import *
 from ... import NdArray
 from ...drivers.helper import guess_mime
-from ...helper import cached_property, is_url
+from ...helper import cached_property, is_url, typename
 from ...proto import jina_pb2
-
-if False:
-    import numpy as np
 
 _empty_doc = jina_pb2.DocumentProto()
 _buffer_sniff = False
@@ -87,16 +85,27 @@ class Document:
         return NdArray(self._document.blob).value
 
     @blob.setter
-    def blob(self, value: 'np.ndarray'):
-        NdArray(self._document.blob).value = value
+    def blob(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+        self._update_ndarray('blob', value)
 
     @property
     def embedding(self) -> 'np.ndarray':
-        return NdArray(self._document.blob).value
+        return NdArray(self._document.embedding).value
 
     @embedding.setter
     def embedding(self, value: 'np.ndarray'):
-        NdArray(self._document.blob).value = value
+        self._update_ndarray('embedding', value)
+
+    def _update_ndarray(self, k, v):
+        if isinstance(v, jina_pb2.NdArrayProto):
+            getattr(self._document, k).CopyFrom(v)
+        elif isinstance(v, np.ndarray):
+            NdArray(getattr(self._document, k)).value = v
+        elif isinstance(v, NdArray):
+            NdArray(getattr(self._document, k)).is_sparse = v.is_sparse
+            NdArray(getattr(self._document, k)).value = v.value
+        else:
+            raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
     def matches(self) -> Iterator['Document']:
@@ -124,16 +133,25 @@ class Document:
         c = self._document.chunks.add()
         if document is not None:
             c.CopyFrom(document.as_pb_object)
-        else:
-            for k, v in kwargs.items():
-                if hasattr(c, k):
-                    setattr(c, k, v)
-        c.parent_id = self._document.id
-        c.granularity = self._document.granularity + 1
-        if not c.mime_type:
-            c.mime_type = self._document.mime_type
-        c.id = new_doc_id(c)
-        return Document(c)
+
+        with Document(c) as chunk:
+            chunk.update(parent_id=self._document.id,
+                         granularity=self._document.granularity + 1,
+                         mime_type=self._document.mime_type,
+                         **kwargs)
+            return chunk
+
+    def update(self, **kwargs):
+        """Bulk update Document fields with key-value specified in kwargs """
+        for k, v in kwargs.items():
+            if isinstance(v, list) or isinstance(v, tuple):
+                self._document.ClearField(k)
+                getattr(self._document, k).extend(v)
+            elif isinstance(v, dict):
+                self._document.ClearField(k)
+                getattr(self._document, k).update(v)
+            else:
+                setattr(self, k, v)
 
     @cached_property
     def as_pb_object(self) -> 'jina_pb2.DocumentProto':

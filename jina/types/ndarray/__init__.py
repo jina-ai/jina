@@ -45,4 +45,4 @@ class BaseNdArray:
     def copy_to(self, proto: 'jina_pb2._reflection.GeneratedProtocolMessageType') -> 'BaseNdArray':
         """Copy itself to another protobuf message, return a view of the copied message"""
         proto.CopyFrom(self.proto)
-        return BaseNdArray(proto)
+        return self.__class__(proto)

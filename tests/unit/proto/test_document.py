@@ -1,19 +1,29 @@
 import numpy as np
 import pytest
 
+from jina import NdArray
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
 
 
-def test_ndarray_get_set():
+@pytest.mark.parametrize('field', ['blob', 'embedding'])
+def test_ndarray_get_set(field):
     a = Document()
     b = np.random.random([10, 10])
-    a.blob = b
-    np.testing.assert_equal(a.blob, b)
+    setattr(a, field, b)
+    np.testing.assert_equal(getattr(a, field), b)
 
-    c = np.random.random([10, 10])
-    a.embedding = c
-    np.testing.assert_equal(a.embedding, c)
+    b = np.random.random([10, 10])
+    c = NdArray()
+    c.value = b
+    setattr(a, field, c)
+    np.testing.assert_equal(getattr(a, field), b)
+
+    b = np.random.random([10, 10])
+    c = NdArray()
+    c.value = b
+    setattr(a, field, c.proto)
+    np.testing.assert_equal(getattr(a, field), b)
 
 
 def test_uri_get_set():
