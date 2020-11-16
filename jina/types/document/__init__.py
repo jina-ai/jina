@@ -21,9 +21,11 @@ with ImportExtensions(required=False,
                                 f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
     _buffer_sniff = True
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
+__all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
-__all__ = ['Document']
+DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
+DocumentSourceType = TypeVar('DocumentSourceType',
+                             jina_pb2.DocumentProto, bytes, str, Dict)
 
 
 class Document:
@@ -33,7 +35,7 @@ class Document:
 
     """
 
-    def __init__(self, document: Union[bytes, str, Dict, 'jina_pb2.DocumentProto', None] = None,
+    def __init__(self, document: Optional[DocumentSourceType] = None,
                  copy: bool = False, **kwargs):
         """
 

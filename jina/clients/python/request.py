@@ -1,18 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple, Dict, TypeVar, Sequence
+from typing import Iterator, Union, Tuple, Sequence
 
 from ... import Request
 from ...enums import ClientMode
 from ...helper import batch_iterator
 from ...logging import default_logger
 from ...proto import jina_pb2
-from ...types.document import Document
+from ...types.document import Document, DocumentSourceType
 from ...types.querylang import QueryLang
-
-DocumentSourceType = TypeVar('DocumentSourceType',
-                             jina_pb2.DocumentProto, bytes, str, Dict)
 
 
 def _generate(data: Union[Iterator[DocumentSourceType],
@@ -64,8 +61,9 @@ def _generate(data: Union[Iterator[DocumentSourceType],
                         d.content = content
                 req.add_document(d, mode)
 
-        for q in queryset:
-            req.add_querylang(q)
+        if queryset:
+            for q in queryset:
+                req.add_querylang(q)
 
         yield req.as_pb_object
 
