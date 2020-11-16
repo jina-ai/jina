@@ -104,7 +104,7 @@ jina hello-world --help
 Jina provides a high-level [Flow API](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) to simplify building search/index workflows. To create a new Flow:
 
 ```python
-from jina.flow import Flow
+from jina import Flow
 f = Flow().add()
 ```
 
