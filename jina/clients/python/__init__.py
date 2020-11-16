@@ -14,7 +14,7 @@ from ...helper import typename
 from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
-from ...types.message.request import EmptyTrainRequest, DryRunRequest, EmptySearchRequest, EmptyIndexRequest
+from ...types.message.request import TrainDryRunRequest, DryRunRequest, SearchDryRunRequest, IndexDryRunRequest
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 
@@ -202,7 +202,7 @@ class PyClient(GrpcClient):
         self.mode = ClientMode.TRAIN
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(EmptyTrainRequest())
+            self.dry_run(TrainDryRunRequest())
         self.start(output_fn, **kwargs)
 
     def search(self, input_fn: Optional[InputFnType] = None,
@@ -210,7 +210,7 @@ class PyClient(GrpcClient):
         self.mode = ClientMode.SEARCH
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(EmptySearchRequest())
+            self.dry_run(SearchDryRunRequest())
         self.start(output_fn, **kwargs)
 
     def index(self, input_fn: Optional[InputFnType] = None,
@@ -218,5 +218,5 @@ class PyClient(GrpcClient):
         self.mode = ClientMode.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(EmptyIndexRequest())
+            self.dry_run(IndexDryRunRequest())
         self.start(output_fn, **kwargs)
