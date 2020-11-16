@@ -50,6 +50,18 @@ def test_uri_get_set():
         a.uri = 'abcdefg'
 
 
+def test_set_get_mime():
+    a = Document()
+    a.mime_type = 'jpg'
+    assert a.mime_type == 'image/jpeg'
+    b = Document()
+    b.mime_type = 'jpeg'
+    assert b.mime_type == 'image/jpeg'
+    c = Document()
+    c.mime_type = '.jpg'
+    assert c.mime_type == 'image/jpeg'
+
+
 def test_no_copy_construct():
     a = DocumentProto()
     b = Document(a, copy=False)

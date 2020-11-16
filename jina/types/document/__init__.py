@@ -1,3 +1,4 @@
+import mimetypes
 import os
 import urllib.parse
 from typing import Union, Dict, Iterator, Optional
@@ -93,7 +94,7 @@ class Document:
         return NdArray(self._document.embedding).value
 
     @embedding.setter
-    def embedding(self, value: 'np.ndarray'):
+    def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
         self._update_ndarray('embedding', value)
 
     def _update_ndarray(self, k, v):
@@ -137,8 +138,8 @@ class Document:
         with Document(c) as chunk:
             chunk.update(parent_id=self._document.id,
                          granularity=self._document.granularity + 1,
-                         mime_type=self._document.mime_type,
                          **kwargs)
+            chunk.mime_type = self._document.mime_type
             return chunk
 
     def update(self, **kwargs):
@@ -177,15 +178,45 @@ class Document:
 
     @uri.setter
     def uri(self, value: str):
+        """Set the URI of the document
+
+        .. note::
+            :attr:`mime_type` will be updated accordingly
+
+        :param value: acceptable URI/URL, raise ``ValueError`` when it is not a valid URI
+        :return:
+        """
         scheme = urllib.parse.urlparse(value).scheme
         if ((scheme in {'http', 'https'} and is_url(value))
                 or (scheme in {'data'})
                 or os.path.exists(value)
                 or os.access(os.path.dirname(value), os.W_OK)):
             self._document.uri = value
-            self._document.mime_type = guess_mime(value)
+            self.mime_type = guess_mime(value)
         else:
             raise ValueError(f'{value} is not a valid URI')
+
+    @property
+    def mime_type(self) -> str:
+        """Get MIME type of the document"""
+        return self._document.mime_type
+
+    @mime_type.setter
+    def mime_type(self, value: str):
+        """Set MIME type of the document
+
+        :param value: the acceptable MIME type, raise ``ValueError`` when MIME type is not
+                recognizable.
+        """
+        if value in mimetypes.types_map.values():
+            self._document.mime_type = value
+        elif value:
+            # given but not recognizable, do best guess
+            r = mimetypes.guess_type(f'*.{value}')[0]
+            if r:
+                self._document.mime_type = r
+            else:
+                raise ValueError(f'{value} is not a valid MIME type')
 
     def __enter__(self):
         return self
