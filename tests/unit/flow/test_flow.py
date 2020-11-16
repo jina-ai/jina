@@ -559,3 +559,17 @@ def test_flow_arbitrary_needs():
 
     with f:
         f.index_lines(['abc', 'def'])
+
+
+def test_flow_needs_all():
+    f = (Flow().add(name='p1', needs='gateway')
+         .add(name='p2', needs='gateway')
+         .add(name='p3', needs='gateway')
+         .needs(needs=['p1', 'p2'], name='r1')
+         .needs_all(name='r2')
+         )
+
+    all_needs = {v for p in f._pod_nodes.values() for v in p.needs}
+    all_names = {p for p in f._pod_nodes.keys()}
+
+    assert list(all_names.difference(all_needs)) == ['r2']
