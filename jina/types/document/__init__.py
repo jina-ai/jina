@@ -1,5 +1,6 @@
 import mimetypes
 import os
+import re
 import urllib.parse
 from typing import Union, Dict, Iterator, Optional, TypeVar
 
@@ -12,7 +13,6 @@ from ...helper import is_url, typename, guess_mime
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
-import re
 _empty_doc = jina_pb2.DocumentProto()
 _buffer_sniff = False
 _id_regex = re.compile(r'[0-9a-fA-F]{16}')
@@ -34,6 +34,52 @@ class Document:
     """Document is a basic data type in Jina. It offers a Pythonic interface to allow users
     access and manipulate :class:`jina_pb2.DocumentProto` without working with Protobuf itself.
 
+    To create a :class:`Document` object, simply:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            from jina import Document
+            d = Document()
+            d.text = 'abc'
+
+    Jina requires each Document to have a string id. You can use :meth:`update_id` or simply
+    use :class:`Document` as a context manager:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            with Document() as d:
+                d.text = 'hello'
+
+            assert d.id  # now `id` has value
+
+    To access and modify the content of the document, you can use :attr:`text`, :attr:`blob`, and :attr:`buffer`.
+    Each property is implemented with proper setter, to improve the integrity and user experience. For example,
+    assigning ``doc.blob`` or ``doc.embedding`` can be simply done via:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            import numpy as np
+
+            # to set as content
+            d.content = np.random.random([10, 5])
+
+            # to set as embedding
+            d.embedding = np.random.random([10, 5])
+
+    It also provides multiple way to extract from existing Document. You can build :class:`Document`
+    from ``jina_pb2.DocumentProto``, ``bytes``, ``str``, and ``Dict``. You can also use it as view (i.e.
+    weak reference when building from an existing ``jina_pb2.DocumentProto``). For example,
+
+        .. highlight:: python
+        .. code-block:: python
+
+            a = DocumentProto()
+            b = Document(a, copy=False)
+            a.text = 'hello'
+            assert b.text == 'hello'
 
     """
 
@@ -73,22 +119,63 @@ class Document:
             raise AttributeError
 
     def update_id(self):
+        """Update the document id according to its content.
+
+        .. warning::
+            To fully consider the content in this document, please use this function after
+            you have fully modified the Document, not right way after create the Document.
+
+            If you are using Document as context manager, then no need to call this function manually.
+            Simply
+
+            .. highlight:: python
+            .. code-block:: python
+
+                with Document() as d:
+                    d.text = 'hello'
+
+                assert d.id  # now `id` has value
+
+        """
         self._document.id = new_doc_id(self._document)
 
     @property
     def id_in_hash(self) -> int:
+        """The document id in the integer form of bytes, as 8 bytes map to int64.
+        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
+        such as ranker and Numpyindexer
+        """
         return id2hash(self._document.id)
 
     @property
     def id_in_bytes(self) -> bytes:
+        """The document id in the binary format of str, it has 8 bytes fixed length,
+        so it can be used in the dense file storage, e.g. BinaryPbIndexer,
+        as it requires the key has to be fixed length.
+        """
         return id2bytes(self._document.id)
 
     @property
-    def id(self) -> bytes:
+    def id(self) -> str:
+        """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
+        it will be used as the major view.
+        """
         return self._document.id
 
     @id.setter
     def id(self, value: str):
+        """Set document id to a string value
+
+        .. note:
+
+            Customized ``id`` is acceptable as long as
+            - it only contains the symbols "0"–"9" to represent values 0 to 9,
+            and "A"–"F" (or alternatively "a"–"f").
+            - it has 16 chars described above.
+
+        :param value: restricted string value
+        :return:
+        """
         if not isinstance(value, str) or not _id_regex.match(value):
             raise ValueError('Customized ``id`` is only acceptable when: \
             - it only contains chars "0"–"9" to represent values 0 to 9, \
@@ -99,6 +186,11 @@ class Document:
 
     @property
     def blob(self) -> 'np.ndarray':
+        """Return ``blob``, one of the content form of a Document.
+
+        .. note::
+            Use :attr:`content` to return the content of a Document
+        """
         return NdArray(self._document.blob).value
 
     @blob.setter
@@ -107,6 +199,8 @@ class Document:
 
     @property
     def embedding(self) -> 'np.ndarray':
+        """Return ``embedding`` of the content of a Document.
+        """
         return NdArray(self._document.embedding).value
 
     @embedding.setter
@@ -180,6 +274,11 @@ class Document:
 
     @property
     def buffer(self) -> bytes:
+        """Return ``buffer``, one of the content form of a Document.
+
+        .. note::
+            Use :attr:`content` to return the content of a Document
+        """
         return self._document.buffer
 
     @buffer.setter
@@ -194,6 +293,11 @@ class Document:
 
     @property
     def text(self):
+        """Return ``text``, one of the content form of a Document.
+
+        .. note::
+            Use :attr:`content` to return the content of a Document
+        """
         return self._document.text
 
     @text.setter
@@ -255,12 +359,23 @@ class Document:
 
     @property
     def content(self) -> DocumentContentType:
+        """Return the content of the document. It checks whichever field among :attr:`blob`, :attr:`text`,
+        :attr:`buffer` has value and return it.
+
+        .. seealso::
+            :attr:`blob`, :attr:`buffer`, :attr:`text`
+        """
         attr = self._document.WhichOneof('content')
         if attr:
             return getattr(self, attr)
 
     @content.setter
     def content(self, value: DocumentContentType):
+        """Set the content of the document. It assigns the value to field with the right type.
+
+        .. seealso::
+            :attr:`blob`, :attr:`buffer`, :attr:`text`
+        """
         if isinstance(value, bytes):
             self.buffer = value
         elif isinstance(value, str):
