@@ -6,10 +6,10 @@ import numpy as np
 import pytest
 
 from cli import _is_latest_version
-from jina.clients.python import PyClient, pprint_routes
+from jina.clients.python import PyClient, pprint_routes, safe_callback
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
+from jina.excepts import BadClientCallback
 from jina.helper import cached_property, convert_tuple_to_list
-from jina.importer import ImportExtensions
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.document.uid import *
@@ -164,3 +164,15 @@ def test_convert_tuple_to_list():
     d = {'1': (1, 2), 2: {'a': (3, 4)}}
     convert_tuple_to_list(d)
     assert d == {'1': [1, 2], 2: {'a': [3, 4]}}
+
+
+def test_safe_callback():
+    def t1():
+        raise NotImplementedError
+
+    st1 = safe_callback(t1, continue_on_error=True, logger=default_logger)
+    st1()
+
+    st1 = safe_callback(t1, continue_on_error=False, logger=default_logger)
+    with pytest.raises(BadClientCallback):
+        st1()

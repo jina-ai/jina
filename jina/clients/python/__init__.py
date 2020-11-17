@@ -6,10 +6,10 @@ from typing import Callable, Union, Sequence, Optional
 
 from . import request
 from .grpc import GrpcClient
-from .helper import ProgressBar, pprint_routes
+from .helper import ProgressBar, pprint_routes, safe_callback, extract_field
 from .request import GeneratorSourceType
 from ...enums import ClientMode, CallbackOnType
-from ...excepts import BadClient, BadClientCallback, DryRunException
+from ...excepts import BadClient, DryRunException
 from ...helper import typename
 from ...logging import default_logger
 from ...logging.profile import TimeContext
@@ -109,14 +109,17 @@ class PyClient(GrpcClient):
         req_iter = getattr(request, str(self.mode).lower())(**_kwargs)
         return self._stub.CallUnary(next(req_iter))
 
-    def call(self, callback: Callable[['jina_pb2.RequestProto'], None] = None,
+    def call(self,
+             on_done: Callable[['jina_pb2.RequestProto'], None] = None,
              on_error: Callable[[Sequence['jina_pb2.RouteProto'],
                                  Optional['jina_pb2.StatusProto']], None] = pprint_routes,
+             on_always: Callable[['jina_pb2.RequestProto'], None] = None,
              **kwargs) -> None:
-        """ Calling the server, better use :func:`start` instead.
+        """ Calling the server with promise callbacks, better use :func:`start` instead.
 
-        :param callback: a callback function, invoke after every success response is received
+        :param on_done: a callback function, invoke after every success response is received
         :param on_error: a callback function on error, invoke on every error response
+        :param on_always: a callback function when a request is complete
         """
         # take the default args from client
         _kwargs = vars(self.args)
@@ -132,34 +135,25 @@ class PyClient(GrpcClient):
         if isinstance(callback_on, str):
             callback_on = CallbackOnType.from_string(callback_on)
 
+        if on_error:
+            safe_on_error = safe_callback(on_error, self.args.continue_on_error, self.logger)
+
+        if on_done:
+            safe_on_done = safe_callback(on_done, self.args.continue_on_error, self.logger)
+
+        if on_always:
+            safe_on_always = safe_callback(on_always, self.args.continue_on_error, self.logger)
+
         req_iter = getattr(request, tname)(**_kwargs)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             for resp in self._stub.Call(req_iter):
-                if resp.status.code >= jina_pb2.StatusProto.ERROR:
-                    on_error(resp.routes, resp.status)
-                elif callback:
-                    try:
-                        resp_body = getattr(resp, resp.WhichOneof('body'))
-
-                        if callback_on == CallbackOnType.BODY:
-                            resp = resp_body
-                        elif callback_on == CallbackOnType.DOCS:
-                            resp = resp_body.docs
-                        elif callback_on == CallbackOnType.GROUNDTRUTHS:
-                            resp = resp_body.groundtruths
-                        elif callback_on == CallbackOnType.REQUEST:
-                            pass
-                        else:
-                            raise ValueError(f'callback_on={self.args.callback_on} is not supported, '
-                                             f'must be one of {list(CallbackOnType)}')
-                        callback(resp)
-                    except Exception as ex:
-                        err_msg = f'uncaught exception in callback "{callback.__name__}()": {repr(ex)}'
-                        if self.args.continue_on_error:
-                            self.logger.error(err_msg)
-                        else:
-                            raise BadClientCallback(err_msg) from ex
+                if resp.status.code >= jina_pb2.StatusProto.ERROR and on_error:
+                    safe_on_error(resp.routes, resp.status)
+                elif on_done:
+                    safe_on_done(extract_field(resp, callback_on))
+                if on_always:
+                    safe_on_always(extract_field(resp, callback_on))
                 p_bar.update(self.args.batch_size)
 
     @property
