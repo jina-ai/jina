@@ -121,16 +121,19 @@ class Request:
             return self._buffer
 
     def add_document(self, document: 'Document', mode: 'ClientMode'):
+        """Add a document to the request """
         _req = getattr(self.as_pb_object, str(mode).lower())
         d = _req.docs.add()
         d.CopyFrom(document.as_pb_object)
 
     def add_groundtruth(self, document: 'Document', mode: 'ClientMode'):
+        """Add a groundtruth document to the request """
         _req = getattr(self.as_pb_object, str(mode).lower())
         d = _req.groundtruths.add()
         d.CopyFrom(document.as_pb_object)
 
-    def add_queryset(self, queryset: Union['QueryLang', Sequence['QueryLang']]):
+    def extend_queryset(self, queryset: Union['QueryLang', Sequence['QueryLang']]):
+        """Extend the queryset of the request """
         if isinstance(queryset, QueryLang):
             queryset = [queryset]
         for q in queryset:

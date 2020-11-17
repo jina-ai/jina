@@ -76,7 +76,7 @@ def _generate(data: GeneratorSourceType,
                 req.add_document(d, mode)
 
         if queryset:
-            req.add_queryset(queryset)
+            req.extend_queryset(queryset)
 
         yield req.as_pb_object
 
