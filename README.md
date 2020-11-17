@@ -325,11 +325,6 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 
 ## Learn
 
-
-### Jina 101
-
-Understand the basic components of Jina.
-
 <table>
   <tr>
     <td width="30%">
