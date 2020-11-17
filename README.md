@@ -369,25 +369,25 @@ Get started with neural search, inputs, outputs, and Flows
     </td>
     <td>
       <h4><a href="https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html">What is Neural Search?</a></h4>
-      High-level overview of neural search, how it works, and how it's different
-      <h4><a href="https://hanxiao.io/2020/08/02/Layer-of-Abstraction-when-Building-Tensorflow-for-Search/">Layer of Abstraction when Builing Jina</a></h4>
+      What it is, how it works, and how it's different
+      <h4><a href="https://hanxiao.io/2020/08/02/Layer-of-Abstraction-when-Building-Tensorflow-for-Search/">Jina's Layers of Abstraction</a></h4>
       Why do we build Jina and for whom?
-      <h4><a href="https://hanxiao.io/2020/10/19/A-Curated-List-of-Neural-Search-and-Jina-Framework-Designs/">A Curated List of Neural Search and Jina</a></h4>
-      Curated content list about neural search and Jina
+      <h4><a href="https://hanxiao.io/2020/10/19/A-Curated-List-of-Neural-Search-and-Jina-Framework-Designs/">Curated List of Neural Search and Jina</a></h4>
+      Comprehensive round-up on Jina's tech
     </td>
   <tr>
     <td>🐥</td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Search Hello-World with QueryLanguage</a></h4>
-      Use QueryLanguage to filter search results by category
+      Filter search results by category
       <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search with Transformers</a></h4>
-      Dig into Flows and Pods in a semantic text search
+      Dig into Flows and Pods
     </td>
     <td>
       <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Using Flow API to Compose Your Jina Worldflow</a></h4>
-      Build your Flow with Python, YAML, or graphical Dashboard
+      With Python, YAML, or graphical Dashboard
       <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
-      Data goes in, data comes out. Here's how that works
+      Data goes in, data comes out. Here's how
     </td>
   </tr>
 </table>
@@ -407,13 +407,13 @@ Client-server, scaling, containerization, Docker, and more
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Revisit "Hello, World" in a Client-Server Architecture</a></h4>
       Refactor hello-world into client-server architecture
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Search Flower Images with TorchVision</a></h4>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Scale Up and Speed Up</a></h4>
       Scale up Pods to speed up your search and add a customized executor
       <h4><a href="https://github.com/jina-ai/dashboard">Jina Workflow Insights in Dashboard</a></h4>Log and monitor with Jina's graphical Dashboard
     </td>
     <td>
       <h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
-      Run a Jina Pod remotely via console, Jina Gateway, or Flow API
+      Run Pods remotely via console, Jina Gateway, or Flow API
       <h4><a href="https://docs.jina.ai/chapters/hub/index.html">Rund Jina Pod via Docker Container</a></h4>
       Build your Pod into a Docker image: How and why
     </td>
@@ -498,13 +498,13 @@ Search Pokemon with state-of-the-art visual representation
 
 ## Documentation
 
-Apart from the learning resources we provided above, it's highly recommended to go through our [__documentation__](https://docs.jina.ai) to master Jina.
+Apart from the learning resources we provided above, We highly recommended you go through our [**documentation**](https://docs.jina.ai) to master Jina.
 
 <a href="https://docs.jina.ai/">
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-Our Documentation is built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
+Our docs are built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
 
 <!--
 
