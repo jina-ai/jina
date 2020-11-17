@@ -1,8 +1,62 @@
 import numpy as np
+import pytest
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
-from jina.clients.python.request import _generate
+from jina.clients.python.request import _generate, _build_doc
+from jina.enums import DataInputType
+from jina.excepts import BadDocType
 from jina.proto import jina_pb2
+from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
+
+
+def test_data_type_builder_doc():
+    a = DocumentProto()
+    a.id = 'a236cbb0eda62d58'
+    d, t = _build_doc(a.SerializeToString(), DataInputType.DOCUMENT, override_doc_id=False)
+    assert d.id == a.id
+    assert t == DataInputType.DOCUMENT
+
+    d, t = _build_doc(MessageToJson(a), DataInputType.DOCUMENT, override_doc_id=False)
+    assert d.id == a.id
+    assert t == DataInputType.DOCUMENT
+
+    d, t = _build_doc(MessageToDict(a), DataInputType.DOCUMENT, override_doc_id=False)
+    assert d.id == a.id
+    assert t == DataInputType.DOCUMENT
+
+
+def test_data_type_builder_doc_bad():
+    a = DocumentProto()
+    a.id = 'a236cbb0eda62d58'
+    with pytest.raises(BadDocType):
+        _build_doc(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT, override_doc_id=False)
+
+    with pytest.raises(BadDocType):
+        _build_doc(MessageToJson(a) + '🍔', DataInputType.DOCUMENT, override_doc_id=False)
+
+    with pytest.raises(BadDocType):
+        _build_doc({'🍔': '🍔'}, DataInputType.DOCUMENT, override_doc_id=False)
+
+
+@pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
+def test_data_type_builder_auto(input_type):
+    d, t = _build_doc('123', input_type, override_doc_id=True)
+    assert d.text == '123'
+    assert t == DataInputType.CONTENT
+
+    d, t = _build_doc(b'45678', input_type, override_doc_id=True)
+    assert t == DataInputType.CONTENT
+    assert d.buffer == b'45678'
+
+    d, t = _build_doc(b'123', input_type, override_doc_id=True)
+    assert t == DataInputType.CONTENT
+    assert d.buffer == b'123'
+
+    c = np.ndarray([10, 10])
+    d, t = _build_doc(c, input_type, override_doc_id=True)
+    np.testing.assert_equal(d.blob, c)
+    assert t == DataInputType.CONTENT
 
 
 def test_request_generate_lines():

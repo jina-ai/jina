@@ -2,6 +2,7 @@ import mimetypes
 import os
 import re
 import urllib.parse
+import warnings
 from typing import Union, Dict, Iterator, Optional, TypeVar
 
 import numpy as np
@@ -9,6 +10,7 @@ from google.protobuf import json_format
 
 from .uid import *
 from ..ndarray.generic import NdArray
+from ...excepts import BadDocType
 from ...helper import is_url, typename, guess_mime
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
@@ -90,17 +92,33 @@ class Document:
         :param kwargs: other parameters to be set
         """
         self._document = jina_pb2.DocumentProto()
-        if isinstance(document, jina_pb2.DocumentProto):
-            if copy:
-                self._document.CopyFrom(document)
-            else:
-                self._document = document
-        elif isinstance(document, dict):
-            json_format.ParseDict(document, self._document)
-        elif isinstance(document, str):
-            json_format.Parse(document, self._document)
-        elif isinstance(document, bytes):
-            self._document.ParseFromString(document)
+        try:
+            if isinstance(document, jina_pb2.DocumentProto):
+                if copy:
+                    self._document.CopyFrom(document)
+                else:
+                    self._document = document
+            elif isinstance(document, dict):
+                json_format.ParseDict(document, self._document)
+            elif isinstance(document, str):
+                json_format.Parse(document, self._document)
+            elif isinstance(document, bytes):
+                # directly parsing from binary string gives large false-positive
+                # fortunately protobuf throws a warning when the parsing seems go wrong
+                # the context manager below converts this warning into exception and throw it
+                # properly
+                with warnings.catch_warnings():
+                    warnings.filterwarnings('error',
+                                            'Unexpected end-group tag',
+                                            category=RuntimeWarning)
+                    try:
+                        self._document.ParseFromString(document)
+                    except RuntimeWarning as ex:
+                        raise BadDocType('fail to construct the document') from ex
+            elif document is not None:
+                raise ValueError(f'{typename(document)} is not recognizable')
+        except Exception as ex:
+            raise BadDocType('fail to construct the document') from ex
 
         self.update(**kwargs)
 
@@ -373,6 +391,13 @@ class Document:
         if isinstance(value, bytes):
             self.buffer = value
         elif isinstance(value, str):
-            self.text = value
+            # TODO(Han): this implicit fallback is too much but that's
+            #  how the original _generate function implement. And a lot of
+            #  tests depend on this logic. Stay in this
+            #  way to keep all tests passing until I got time to refactor this part
+            try:
+                self.uri = value
+            except ValueError:
+                self.text = value
         elif isinstance(value, np.ndarray):
             self.blob = value

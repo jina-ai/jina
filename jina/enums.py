@@ -316,3 +316,11 @@ class BuildTestLevel(BetterEnum):
     POD_NONDOCKER = 2  # test at pod level, directly use the config yaml
     POD_DOCKER = 3  # test at pod level but pod --uses the built image
     FLOW = 4  # test at a simple flow
+
+
+class DataInputType(BetterEnum):
+    """Data input type in the request generator """
+
+    AUTO = 0  # auto inference the input type from data (!WARN: could be slow as it relies on try-execept)
+    DOCUMENT = 1  # the input is a full document
+    CONTENT = 2  # the input is just the content of the document

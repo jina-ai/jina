@@ -157,3 +157,7 @@ class DryRunException(Exception):
 
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """
+
+
+class BadDocType(TypeError):
+    """ Exeception when can not construct a document from the given data """
