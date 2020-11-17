@@ -167,6 +167,15 @@ class Document:
         return id2bytes(self._document.id)
 
     @property
+    def length(self) -> int:
+        # TODO(Han): rename this to siblings as this shadows the built-in `length`
+        return self._document.length
+
+    @length.setter
+    def length(self, value: int):
+        self._document.length = value
+
+    @property
     def id(self) -> str:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
