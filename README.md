@@ -362,7 +362,7 @@ Get started with neural search, inputs, outputs, and Flows
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Search App</a></h4>
       Beginners tutorial: Search Star Trek script data
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Image search</a></h4>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Image Search</a></h4>
       Image to image search Pokémon sprites with Google's BiT model
       <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Audio Search</a></h4>
       Audio to audio search with Vggish model
@@ -380,7 +380,7 @@ Get started with neural search, inputs, outputs, and Flows
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Search with QueryLanguage</a></h4>
       Filter search results by category
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build NLP Semantic Search with Transformers</a></h4>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">NLP Semantic Search with Transformers</a></h4>
       Dig into Flows and Pods
     </td>
     <td>
