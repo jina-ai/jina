@@ -26,6 +26,9 @@ def _build_doc(data, data_type: DataInputType, override_doc_id, **kwargs) -> Tup
         return d, DataInputType.CONTENT
 
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
+        if isinstance(data, Document):
+            # if incoming is already primitive type Document, then all good, best practice!
+            return data, DataInputType.DOCUMENT
         try:
             d = Document(data, **kwargs)
             if override_doc_id:

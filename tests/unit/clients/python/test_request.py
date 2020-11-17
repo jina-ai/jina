@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
+from jina import Document
 from jina.clients.python.request import _generate, _build_doc
 from jina.enums import DataInputType
 from jina.excepts import BadDocType
@@ -12,18 +13,14 @@ from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
 
-def test_data_type_builder_doc():
+@pytest.mark.parametrize('builder', [lambda x: x.SerializeToString(),
+                                     lambda x: MessageToJson(x),
+                                     lambda x: MessageToDict(x),
+                                     lambda x: Document(x)])
+def test_data_type_builder_doc(builder):
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
-    d, t = _build_doc(a.SerializeToString(), DataInputType.DOCUMENT, override_doc_id=False)
-    assert d.id == a.id
-    assert t == DataInputType.DOCUMENT
-
-    d, t = _build_doc(MessageToJson(a), DataInputType.DOCUMENT, override_doc_id=False)
-    assert d.id == a.id
-    assert t == DataInputType.DOCUMENT
-
-    d, t = _build_doc(MessageToDict(a), DataInputType.DOCUMENT, override_doc_id=False)
+    d, t = _build_doc(builder(a), DataInputType.DOCUMENT, override_doc_id=False)
     assert d.id == a.id
     assert t == DataInputType.DOCUMENT
 
