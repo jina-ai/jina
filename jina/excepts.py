@@ -160,4 +160,8 @@ class BadDocID(Exception):
 
 
 class BadDocType(TypeError):
-    """ Exeception when can not construct a document from the given data """
+    """ Exception when can not construct a document from the given data """
+
+
+class BadQueryLangType(TypeError):
+    """ Exception when can not construct a query language from the given data """

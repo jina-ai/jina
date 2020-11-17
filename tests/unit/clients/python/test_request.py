@@ -53,7 +53,7 @@ def test_data_type_builder_auto(input_type):
     assert t == DataInputType.CONTENT
     assert d.buffer == b'123'
 
-    c = np.ndarray([10, 10])
+    c = np.random.random([10, 10])
     d, t = _build_doc(c, input_type, override_doc_id=True)
     np.testing.assert_equal(d.blob, c)
     assert t == DataInputType.CONTENT

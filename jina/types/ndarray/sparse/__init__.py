@@ -19,8 +19,8 @@ class BaseSparseNdArray(BaseNdArray):
     """
 
     def __init__(self, *args, **kwargs):
-        self.is_sparse = True
         super().__init__(*args, **kwargs)
+        self.is_sparse = True
 
 
     def null_proto(self):

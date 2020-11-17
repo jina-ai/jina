@@ -645,3 +645,11 @@ def get_public_ip():
     ip = _get_ip('https://api.ipify.org') or _get_ip('https://ident.me') or _get_ip('https://ipinfo.io/ip')
 
     return ip
+
+
+def convert_tuple_to_list(d: Dict):
+    for k, v in d.items():
+        if isinstance(v, tuple):
+            d[k] = list(v)
+        elif isinstance(v, dict):
+            convert_tuple_to_list(v)

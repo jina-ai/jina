@@ -8,7 +8,7 @@ import pytest
 from cli import _is_latest_version
 from jina.clients.python import PyClient, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
-from jina.helper import cached_property
+from jina.helper import cached_property, convert_tuple_to_list
 from jina.importer import ImportExtensions
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
@@ -158,3 +158,9 @@ def test_pprint_routes(capfd):
 | 🟢  | 0ms  |            |
 +-----+------+------------+
 '''
+
+
+def test_convert_tuple_to_list():
+    d = {'1': (1, 2), 2: {'a': (3, 4)}}
+    convert_tuple_to_list(d)
+    assert d == {'1': [1, 2], 2: {'a': [3, 4]}}

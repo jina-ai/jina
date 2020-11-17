@@ -114,12 +114,12 @@ class Document:
                     try:
                         self._document.ParseFromString(document)
                     except RuntimeWarning as ex:
-                        raise BadDocType('fail to construct the document') from ex
+                        raise BadDocType('fail to construct a document') from ex
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
         except Exception as ex:
-            raise BadDocType('fail to construct the document') from ex
+            raise BadDocType('fail to construct a document') from ex
 
         self.update(**kwargs)
 

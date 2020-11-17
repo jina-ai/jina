@@ -103,7 +103,7 @@ def import_classes(namespace: str, targets=None,
                         if k in targets:
                             targets.remove(k)
                             if not targets:
-                                return  # target execs are all found and loaded, return
+                                return getattr(mod, k) # target execs are all found and loaded, return
                         try:
                             # load the default request for this executor if possible
                             from .executors.requests import get_default_reqs
