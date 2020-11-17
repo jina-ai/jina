@@ -362,8 +362,8 @@ Get started with neural search, inputs, outputs, and Flows
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Search App</a></h4>
       Beginners tutorial: Search Star Trek script data
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">PokéDex Search with BiT</a></h4>
-      Image to image search: Pokémon sprites
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Image search</a></h4>
+      Image to image search Pokémon sprites with Google's BiT model
       <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Audio Search</a></h4>
       Audio to audio search with Vggish model
     </td>
@@ -378,15 +378,15 @@ Get started with neural search, inputs, outputs, and Flows
   <tr>
     <td>🐥</td>
     <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Search Hello-World with QueryLanguage</a></h4>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Search with QueryLanguage</a></h4>
       Filter search results by category
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search with Transformers</a></h4>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build NLP Semantic Search with Transformers</a></h4>
       Dig into Flows and Pods
     </td>
     <td>
-      <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Using Flow API to Compose Your Jina Worldflow</a></h4>
+      <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Flow API: Compose Your Jina Workflow</a></h4>
       With Python, YAML, or graphical Dashboard
-      <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
+      <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions</a></h4>
       Data goes in, data comes out. Here's how
     </td>
   </tr>
@@ -405,16 +405,16 @@ Client-server, scaling, containerization, Docker, and more
   <tr>
     <td>🐥</td>
     <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Revisit "Hello, World" in a Client-Server Architecture</a></h4>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Client-Server Architecture</a></h4>
       Refactor hello-world into client-server architecture
       <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Scale Up and Speed Up</a></h4>
       Scale up Pods to speed up your search and add a customized executor
-      <h4><a href="https://github.com/jina-ai/dashboard">Jina Workflow Insights in Dashboard</a></h4>Log and monitor with Jina's graphical Dashboard
+      <h4><a href="https://github.com/jina-ai/dashboard">Workflow Insights in Dashboard</a></h4>Log and monitor with Jina's graphical Dashboard
     </td>
     <td>
       <h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
       Run Pods remotely via console, Jina Gateway, or Flow API
-      <h4><a href="https://docs.jina.ai/chapters/hub/index.html">Rund Jina Pod via Docker Container</a></h4>
+      <h4><a href="https://docs.jina.ai/chapters/hub/index.html">Jina in Docker</a></h4>
       Build your Pod into a Docker image: How and why
     </td>
   </tr>
