@@ -12,7 +12,7 @@ from github import Github
 from ruamel.yaml import YAML
 
 # this one has PR push access
-g = Github(os.environ["DEV_BOT_TOKEN"])
+g = Github(os.environ["GITHUB_TOKEN"])
 
 yaml = YAML()
 
@@ -21,13 +21,15 @@ def main():
     hub_repo = git.Repo('jina-hub')
     hub_origin = hub_repo.remote(name='origin')
     hub_origin_url = list(hub_origin.urls)[0]
-    assert 'jina-hub' in hub_origin_url, f'hub repo was not initialized correctly'
+    assert 'jina-ai/jina-hub' in hub_origin_url, f'hub repo was not initialized correctly'
     gh_hub_repo = g.get_repo('jina-ai/jina-hub')
 
     jina_core_repo = git.Repo('.')
     core_origin_url = list(jina_core_repo.remote(name='origin').urls)[0]
-    assert 'jina.git' in core_origin_url, f'core repo was not initialized correctly'
+    assert 'jina-ai/jina' in core_origin_url, f'core repo was not initialized correctly'
 
+    print(f'tags = {jina_core_repo.tags}')
+    print(f'latest tag = {jina_core_repo.tags[-1].tag.tag}')
     jina_core_version = jina_core_repo.tags[-1].tag.tag[1:]  # remove leading 'v'
 
     print(f'cur. dir. is "{os.getcwd()}"')
