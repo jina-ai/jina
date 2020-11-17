@@ -373,7 +373,7 @@ Get started with neural search, inputs, outputs, and Flows
       <h4><a href="https://hanxiao.io/2020/08/02/Layer-of-Abstraction-when-Building-Tensorflow-for-Search/">Jina's Layers of Abstraction</a></h4>
       Why do we build Jina and for whom?
       <h4><a href="https://hanxiao.io/2020/10/19/A-Curated-List-of-Neural-Search-and-Jina-Framework-Designs/">Curated List of Neural Search and Jina</a></h4>
-      Comprehensive round-up on Jina's tech
+      Comprehensive round-up on Jina tech, concepts
     </td>
   <tr>
     <td>🐥</td>
