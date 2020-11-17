@@ -375,7 +375,6 @@ Get started with neural search, inputs, outputs, and Flows
       <h4><a href="https://hanxiao.io/2020/10/19/A-Curated-List-of-Neural-Search-and-Jina-Framework-Designs/">A Curated List of Neural Search and Jina</a></h4>
       Curated content list about neural search and Jina
     </td>
-  <[tr](/tr)>
   <tr>
     <td>🐥</td>
     <td>
