@@ -4,7 +4,7 @@ import pytest
 from jina.drivers.multimodal import MultiModalDriver
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 from jina.proto import jina_pb2
-from jina.proto import uid
+from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
 
 

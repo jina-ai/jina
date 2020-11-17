@@ -88,6 +88,10 @@ class BadClientCallback(BadClient):
     """Error in the callback function on the client side"""
 
 
+class BadClientRequestGenerator(BadClient):
+    """Error in the request generator function on the client side"""
+
+
 class BadPersistantFile(Exception):
     """Bad or broken dump file that can not be deserialized with ``pickle.load``"""
 
@@ -153,3 +157,11 @@ class DryRunException(Exception):
 
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """
+
+
+class BadDocType(TypeError):
+    """ Exception when can not construct a document from the given data """
+
+
+class BadQueryLangType(TypeError):
+    """ Exception when can not construct a query language from the given data """

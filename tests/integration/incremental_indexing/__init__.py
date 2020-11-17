@@ -3,8 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina.proto import jina_pb2
-from jina.types.ndarray.generic import NdArray
+from jina import Document
 
 
 @pytest.fixture(scope='function')
@@ -16,12 +15,11 @@ def random_workspace(tmp_path):
 
 def get_duplicate_docs(num_docs=10):
     result = []
-    unique_set = set()
     for idx in range(num_docs):
-        doc = jina_pb2.DocumentProto()
-        content = int(idx / 2)
-        NdArray(doc.embedding).value = np.array([content])
-        doc.text = f'I am doc{content}'
-        result.append(doc)
-        unique_set.add(content)
-    return result, len(unique_set)
+        with Document() as doc:
+            content = int(idx / 2)
+            doc.embedding = np.array([content])
+            doc.text = f'I am doc{content}'
+            result.append(doc)
+    num_uniques = len(set(d.id for d in result))
+    return result, num_uniques

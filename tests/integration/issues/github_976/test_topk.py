@@ -3,6 +3,8 @@ import os
 import numpy as np
 import pytest
 
+from jina import QueryLang
+from jina.drivers.search import VectorSearchDriver
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
@@ -47,10 +49,7 @@ def validate_override_results(resp):
 
 def test_topk_override(config):
     # Making queryset
-    top_k_queryset = jina_pb2.QueryLangProto()
-    top_k_queryset.name = 'VectorSearchDriver'
-    top_k_queryset.priority = 1
-    top_k_queryset.parameters['top_k'] = os.environ['JINA_TOPK_OVERRIDE']
+    top_k_queryset = QueryLang(VectorSearchDriver(top_k=int(os.environ['JINA_TOPK_OVERRIDE']), priority=1))
 
     with Flow().load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))

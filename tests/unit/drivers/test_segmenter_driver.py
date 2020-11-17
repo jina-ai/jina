@@ -5,7 +5,8 @@ import pytest
 
 from jina.drivers.craft import SegmentDriver
 from jina.executors.crafters import BaseSegmenter
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
 
 

@@ -10,7 +10,7 @@ from typing import Callable, Any, Union, Iterator, List, Optional
 import numpy as np
 
 from .metas import get_default_metas
-from ..helper import batch_iterator, typename
+from ..helper import batch_iterator, typename, convert_tuple_to_list
 from ..logging import default_logger
 
 
@@ -149,6 +149,7 @@ def store_init_kwargs(func: Callable) -> Callable:
             self._init_kwargs_dict.update(tmp)
         else:
             self._init_kwargs_dict = tmp
+        convert_tuple_to_list(self._init_kwargs_dict)
         f = func(self, *args, **kwargs)
         return f
 

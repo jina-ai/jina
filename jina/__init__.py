@@ -145,8 +145,10 @@ _set_nofile()
 
 # Primitive data type
 from jina.types.ndarray.generic import NdArray
-from jina.types.message.request import Request
+from jina.types.request import Request
 from jina.types.message import Message
+from jina.types.querylang import QueryLang
+from jina.types.document import Document
 
 # Flow
 from jina.flow import Flow

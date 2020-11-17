@@ -5,7 +5,7 @@ import numpy as np
 
 from . import BaseKVIndexer
 from ...helper import cached_property
-from ...proto import uid
+from ...types.document import uid
 
 
 class BaseCache(BaseKVIndexer):

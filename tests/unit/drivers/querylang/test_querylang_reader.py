@@ -1,7 +1,9 @@
 from jina.clients.python import PyClient
 from jina.drivers import QuerySetReader, BaseDriver
+from jina.drivers.querylang.slice import SliceQL
 from jina.flow import Flow
 from jina.proto import jina_pb2
+from jina.types.querylang import QueryLang
 
 
 def random_docs(num_docs):
@@ -25,15 +27,17 @@ def random_docs(num_docs):
         yield d
 
 
-PyClient.check_input(random_docs(10))
-
-
 class DummyDriver(QuerySetReader, BaseDriver):
 
     def __init__(self, arg1='hello', arg2=456, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._arg1 = arg1
         self._arg2 = arg2
+
+
+def test_querylang_request():
+    qs = QueryLang(SliceQL(start=1, end=4, priority=1))
+    PyClient.check_input(random_docs(10), queryset=qs)
 
 
 def test_read_from_req():
@@ -43,9 +47,7 @@ def test_read_from_req():
     def validate2(req):
         assert len(req.docs) == 3
 
-    qs = jina_pb2.QueryLangProto(name='SliceQL', priority=1)
-    qs.parameters['start'] = 1
-    qs.parameters['end'] = 4
+    qs = QueryLang(SliceQL(start=1, end=4, priority=1))
 
     f = Flow(callback_on='body').add(uses='- !SliceQL | {start: 0, end: 5}')
 

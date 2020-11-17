@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 from jina.flow import Flow
-from jina.proto import uid
+from jina.types.document import uid
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 

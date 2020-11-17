@@ -21,9 +21,9 @@ import sys
 from binascii import unhexlify
 from hashlib import blake2b
 
-from .jina_pb2 import DocumentProto
-from ..excepts import BadDocID
-from ..logging import default_logger
+from jina.proto.jina_pb2 import DocumentProto
+from jina.excepts import BadDocID
+from jina.logging import default_logger
 
 _doc_field_mask = None
 _digest_size = 8

@@ -1,9 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import mimetypes
-import urllib.parse
-import urllib.request
 from typing import Dict, Any, Iterable, Tuple
 
 import numpy as np
@@ -57,17 +54,6 @@ def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
     if 'blob' in ret:
         ret['blob'] = NdArray(obj.blob).value
     return ret
-
-
-def guess_mime(uri):
-    # guess when uri points to a local file
-    m_type = mimetypes.guess_type(uri)[0]
-    # guess when uri points to a remote file
-    if not m_type and urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
-        page = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
-        tmp = urllib.request.urlopen(page)
-        m_type = tmp.info().get_content_type()
-    return m_type
 
 
 class DocGroundtruthPair:

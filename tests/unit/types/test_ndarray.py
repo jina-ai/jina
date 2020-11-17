@@ -1,10 +1,9 @@
 import numpy as np
 import pytest
 
-from jina.types.ndarray.dense.numpy import DenseNdArray
-
 
 def test_empty_ndarray():
+    from jina.types.ndarray.dense.numpy import DenseNdArray
     a = DenseNdArray()
     assert a.value is None
 
@@ -50,6 +49,7 @@ def test_scipy_sparse(sp_format):
                                    'int64', 'int32', 'int16',
                                    'uint32', 'uint8'])
 def test_numpy_dense(dtype):
+    from jina.types.ndarray.dense.numpy import DenseNdArray
     a = (100 * np.random.random([10, 6, 8, 2])).astype(dtype)
     b = DenseNdArray()
     # set
@@ -112,11 +112,10 @@ def test_generic():
     a = coo_matrix((data, (row, col)), shape=(4, 4))
     dense_a = a.toarray()
 
-    b = NdArray(is_sparse=True)
-
-    b.value = a
-
+    b = NdArray(a, is_sparse=True)
+    assert b.is_sparse
     dense_b = b.value.toarray()
+    assert b.is_sparse
     np.testing.assert_equal(dense_b, dense_a)
 
     c = np.random.random([10, 3, 4])
@@ -140,3 +139,21 @@ def test_dummy_numpy_sparse(shape):
     b.value = a
 
     np.testing.assert_almost_equal(a, b.value)
+
+
+def test_direct_dense_casting():
+    from jina.types.ndarray.generic import NdArray
+    a = np.random.random([5, 4])
+    np.testing.assert_equal(NdArray(a).value, a)
+
+
+def test_direct_sparse_casting():
+    from jina.types.ndarray.generic import NdArray
+    from scipy.sparse import coo_matrix
+    row = np.array([0, 3, 1, 0])
+    col = np.array([0, 3, 1, 2])
+    data = np.array([4, 5, 7, 9])
+    a = coo_matrix((data, (row, col)), shape=(4, 4))
+    dense_a = a.toarray()
+
+    np.testing.assert_equal(NdArray(a, is_sparse=True).value.toarray(), dense_a)

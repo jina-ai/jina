@@ -103,7 +103,7 @@ def import_classes(namespace: str, targets=None,
                         if k in targets:
                             targets.remove(k)
                             if not targets:
-                                return  # target execs are all found and loaded, return
+                                return getattr(mod, k) # target execs are all found and loaded, return
                         try:
                             # load the default request for this executor if possible
                             from .executors.requests import get_default_reqs
@@ -196,8 +196,9 @@ class ImportExtensions:
                           f'You are trying to use an extension feature not enabled by the ' \
                           'current installation.\n' \
                           'This feature is available in: '
-                err_msg += ' '.join(f'[{tag}]' for tag in self._tags)
-                err_msg += '\nUse pip install "jina[TAG]" to enable it'
+                from .helper import colored
+                err_msg += ' '.join(colored(f'[{tag}]', attrs='bold') for tag in self._tags)
+                err_msg += f'\nUse {colored("pip install jina[TAG]", attrs="bold")} to enable it'
 
             else:
                 err_msg = f'{exc_val.msg}'

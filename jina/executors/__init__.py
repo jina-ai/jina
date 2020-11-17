@@ -144,7 +144,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 self.on_gpu = False
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True) -> None:
-        with TimeContext('post initiating, this may take some time', self.logger):
+        with TimeContext('post_init may take some time', self.logger):
             if fill_in_metas:
                 if not _metas:
                     _metas = get_default_metas()
@@ -156,8 +156,8 @@ class BaseExecutor(metaclass=ExecutorType):
                 self._fill_metas(_metas)
                 self._fill_requests(_requests)
 
-            _before = set(list(vars(self).keys()))
             self._check_on_gpu()
+            _before = set(list(vars(self).keys()))
             self.post_init()
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 

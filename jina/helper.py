@@ -3,11 +3,14 @@ __license__ = "Apache-2.0"
 
 import functools
 import math
+import mimetypes
 import os
 import random
 import re
 import sys
 import time
+import urllib.parse
+import urllib.request
 import uuid
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
@@ -22,7 +25,9 @@ __all__ = ['batch_iterator', 'yaml',
            'parse_arg',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
-           'cached_property', 'is_url', 'complete_path', 'typename']
+           'cached_property', 'is_url', 'complete_path',
+           'typename', 'get_public_ip', 'get_internal_ip', 'guess_mime']
+
 
 def deprecated_alias(**aliases):
     def deco(f):
@@ -599,3 +604,53 @@ def get_readable_time(*args, **kwargs):
                 n = int(secs)
             parts.append(f'{n} {unit}' + ('' if n == 1 else 's'))
     return ' and '.join(parts)
+
+
+def guess_mime(uri):
+    # guess when uri points to a local file
+    m_type = mimetypes.guess_type(uri)[0]
+    # guess when uri points to a remote file
+    if not m_type and urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
+        page = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
+        tmp = urllib.request.urlopen(page)
+        m_type = tmp.info().get_content_type()
+    return m_type
+
+
+def get_internal_ip():
+    import socket
+    ip = '127.0.0.1'
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            # doesn't even have to be reachable
+            s.connect(('10.255.255.255', 1))
+            ip = s.getsockname()[0]
+    except Exception:
+        pass
+    return ip
+
+
+def get_public_ip():
+    # 'https://api.ipify.org'
+    # https://ident.me
+    # ipinfo.io/ip
+    import urllib.request
+
+    def _get_ip(url):
+        try:
+            with urllib.request.urlopen(url, timeout=1) as fp:
+                return fp.read().decode('utf8')
+        except:
+            pass
+
+    ip = _get_ip('https://api.ipify.org') or _get_ip('https://ident.me') or _get_ip('https://ipinfo.io/ip')
+
+    return ip
+
+
+def convert_tuple_to_list(d: Dict):
+    for k, v in d.items():
+        if isinstance(v, tuple):
+            d[k] = list(v)
+        elif isinstance(v, dict):
+            convert_tuple_to_list(v)

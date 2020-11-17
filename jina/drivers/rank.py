@@ -8,7 +8,7 @@ import numpy as np
 from . import BaseExecutableDriver
 from .helper import pb_obj2dict
 from ..executors.rankers import Chunk2DocRanker, Match2DocRanker
-from ..proto import uid
+from ..types.document import uid
 
 if False:
     from ..proto import jina_pb2

@@ -11,7 +11,13 @@ __all__ = ['NdArray']
 
 
 class NdArray(BaseNdArray):
-    """A generic view of the Protobuf NdArray, unifying the view of DenseNdArray and SparseNdArray
+    """
+    :class:`NdArray` is one of the **primitive data type** in Jina.
+
+    It offers a Pythonic interface to allow users access and manipulate
+    :class:`jina.jina_pb2.NdArrayProto` object without working with Protobuf itself.
+
+    A generic view of the Protobuf NdArray, unifying the view of DenseNdArray and SparseNdArray
 
     This class should be used in nearly all the Jina context.
 
@@ -81,10 +87,10 @@ class NdArray(BaseNdArray):
         :param args:
         :param kwargs:
         """
-        super().__init__(proto, *args, **kwargs)
         self.is_sparse = is_sparse
         self.dense_cls = dense_cls
         self.sparse_cls = sparse_cls
+        super().__init__(proto, *args, **kwargs)
         self._args = args
         self._kwargs = kwargs
 

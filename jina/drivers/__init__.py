@@ -20,15 +20,17 @@ from ..enums import SkipOnErrorType
 from ..executors.compound import CompoundExecutor
 from ..executors import BaseExecutor
 from ..executors.decorators import wrap_func
-from ..helper import yaml
+from ..helper import yaml, convert_tuple_to_list
 from ..proto import jina_pb2
-from jina.types.message import Message, Request
+
 
 if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.pea import BasePea
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
+    from ..types.message import Message
+    from .. import Request
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -62,6 +64,7 @@ def store_init_kwargs(func: Callable) -> Callable:
             self._init_kwargs_dict.update(tmp)
         else:
             self._init_kwargs_dict = tmp
+        convert_tuple_to_list(self._init_kwargs_dict)
         f = func(self, *args, **kwargs)
         return f
 
