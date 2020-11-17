@@ -99,3 +99,24 @@ jobs:
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
           tags: "latest, ${{env.JINA_VERSION}}"
+
+  update-jina-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          apt-get update -y
+          apt-get install python3.7 git python3-distutils -y
+          curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+          python3.7 get-pip.py
+          pip install gitpython ruamel.yaml PyGithub semver
+          git clone git@github.com:jina-ai/jina-hub.git --depth=1
+          output=$(python3.7 scripts/jina-hub-update.py)
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=changelog::$output"
+        id: step1
