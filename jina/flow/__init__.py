@@ -262,7 +262,7 @@ class Flow(ExitStack):
         if len(needs) == 1:
             return self.add(name=name, needs=needs, *args, **kwargs)
 
-        return self.needs(needs=needs, name=name, *args, **kwargs)
+        return self.needs(name=name, needs=needs, *args, **kwargs)
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
