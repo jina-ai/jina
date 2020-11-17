@@ -85,14 +85,14 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
         default_logger.warning(f'host is reset to {__default_host__} as allow_remote=False')
 
     if args.host != __default_host__:
-        if args.remote == RemoteAccessType.JINAD:
+        if args.remote_access == RemoteAccessType.JINAD:
             from .remote import RemotePod
             return RemotePod(args)
-        elif args.remote == RemoteAccessType.SSH:
+        elif args.remote_access == RemoteAccessType.SSH:
             from .ssh import RemoteSSHPod
             return RemoteSSHPod(args)
         else:
-            raise ValueError(f'{args.remote} is not supported')
+            raise ValueError(f'{args.remote_access} is not supported')
 
     else:
         from .pod import BasePod
