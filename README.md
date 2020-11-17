@@ -352,9 +352,9 @@ Understand the basic components of Jina.
   </tr>
 </table>
 
-### Build Your Search
+### Build Your Search App
 
-Want to build your first Search App? Here are some nice resources for you to get started.
+Get started with neural search, inputs, outputs, and Flows
 
 <table>
   <tr>
@@ -366,41 +366,41 @@ Want to build your first Search App? Here are some nice resources for you to get
     <td>🐣</td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Search App</a></h4>
-      Get hands-on and build your first text-to-text search using StarTrek data
+      Beginners tutorial: Search Star Trek script data
       <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">PokéDex Search with BiT</a></h4>
-      An image-to-image search with Pokemon sprites
+      Image to image search: Pokémon sprites
       <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Audio Search</a></h4>
-      An example of neural search for audio data based Vggish model
+      Audio to audio search with Vggish model
     </td>
     <td>
       <h4><a href="https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html">What is Neural Search?</a></h4>
-      If you are new to neural search, this article will give you more insights
+      High-level overview of neural search, how it works, and how it's different
       <h4><a href="https://hanxiao.io/2020/08/02/Layer-of-Abstraction-when-Building-Tensorflow-for-Search/">Layer of Abstraction when Builing Jina</a></h4>
       Why do we build Jina and for whom?
       <h4><a href="https://hanxiao.io/2020/10/19/A-Curated-List-of-Neural-Search-and-Jina-Framework-Designs/">A Curated List of Neural Search and Jina</a></h4>
-      A consolidated list of the most featured content for neural search and Jina
+      Curated content list about neural search and Jina
     </td>
-  </tr>
+  <[tr](/tr)>
   <tr>
     <td>🐥</td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Search Hello-World with QueryLanguage</a></h4>
-      Use QueryLanguage to create an index per category and with that to filter by category
+      Use QueryLanguage to filter search results by category
       <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search with Transformers</a></h4>
-      Use SouthparkData to build a Semantic Search with a closer look at Flows and Pods
+      Dig into Flows and Pods in a semantic text search
     </td>
     <td>
       <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Using Flow API to Compose Your Jina Worldflow</a></h4>
-      Use Flow API in Python, YAML, or in Dashboard
+      Build your Flow with Python, YAML, or graphical Dashboard
       <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions in Jina</a></h4>
-      Understand how Input and Output Functions work in Jina
+      Data goes in, data comes out. Here's how that works
     </td>
   </tr>
 </table>
 
-### Level up Your Search
+### Level Up Your Search App
 
-More tips about how to improve performance and scalability of your search application. 
+Client-server, scaling, containerization, Docker, and more
 
 <table>
   <tr>
@@ -412,21 +412,21 @@ More tips about how to improve performance and scalability of your search applic
     <td>🐥</td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Revisit "Hello, World" in a Client-Server Architecture</a></h4>
-      Refactor the hello-world example into a client-server architecture
+      Refactor hello-world into client-server architecture
       <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Search Flower Images with TorchVision</a></h4>
-      Scale up the Pods to speed up the whole procedure and add a customized executor
-      <h4><a href="https://github.com/jina-ai/dashboard">Use Dashboard to Get Insight of Jina Workflow</a></h4>Deep dive into Jina Dashboard
+      Scale up Pods to speed up your search and add a customized executor
+      <h4><a href="https://github.com/jina-ai/dashboard">Jina Workflow Insights in Dashboard</a></h4>Log and monitor with Jina's graphical Dashboard
     </td>
     <td>
       <h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
       Run a Jina Pod remotely via console, Jina Gateway, or Flow API
       <h4><a href="https://docs.jina.ai/chapters/hub/index.html">Rund Jina Pod via Docker Container</a></h4>
-      Build your Pod into a Docker image, why would you do it, and how
+      Build your Pod into a Docker image: How and why
     </td>
   </tr>
 </table>
 
-Up for more readings about Jina? Check out our Founder [Han Xiao's blog](https://hanxiao.io) and [our official Blog](https://jina.ai/blog). 
+Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [our official blog](https://jina.ai/blog). 
 
 <!-- 
 
