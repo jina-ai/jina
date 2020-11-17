@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, Union, Sequence
+from typing import Union, Optional, Sequence
 
 from ..document import Document
 from ..querylang import QueryLang
@@ -17,12 +17,14 @@ _trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
 _empty_request = jina_pb2.RequestProto()
 
-__all__ = ['Request', 'TrainDryRunRequest', 'IndexDryRunRequest',
-           'SearchDryRunRequest', 'ControlDryRunRequest', 'DryRunRequest']
-
 
 class Request:
     """
+    :class:`Request` is one of the **primitive data type** in Jina.
+
+    It offers a Pythonic interface to allow users access and manipulate
+    :class:`jina.jina_pb2.RequestProto` object without working with Protobuf itself.
+
     A container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization
     and decompression when receives the first read access to its member.
 
@@ -139,39 +141,3 @@ class Request:
         for q in queryset:
             q_pb = self.as_pb_object.queryset.add()
             q_pb.CopyFrom(q.as_pb_object)
-
-
-class DryRunRequest(Request):
-    """Base empty request for dry run"""
-
-
-class TrainDryRunRequest(DryRunRequest):
-    """Empty train request for dry run"""
-
-    def __init__(self):
-        super().__init__()
-        self.as_pb_object.train.CopyFrom(jina_pb2.RequestProto.TrainRequestProto())
-
-
-class IndexDryRunRequest(DryRunRequest):
-    """Empty index request for dry run"""
-
-    def __init__(self):
-        super().__init__()
-        self.as_pb_object.index.CopyFrom(jina_pb2.RequestProto.IndexRequestProto())
-
-
-class SearchDryRunRequest(DryRunRequest):
-    """Empty search request for dry run"""
-
-    def __init__(self):
-        super().__init__()
-        self.as_pb_object.search.CopyFrom(jina_pb2.RequestProto.SearchRequestProto())
-
-
-class ControlDryRunRequest(DryRunRequest):
-    """Empty control request for dry run"""
-
-    def __init__(self):
-        super().__init__()
-        self.as_pb_object.control.CopyFrom(jina_pb2.RequestProto.ControlRequestProto())

@@ -25,8 +25,11 @@ DocumentSourceType = TypeVar('DocumentSourceType',
 
 
 class Document:
-    """Document is a basic data type in Jina. It offers a Pythonic interface to allow users
-    access and manipulate :class:`jina_pb2.DocumentProto` without working with Protobuf itself.
+    """
+    :class:`Document` is one of the **primitive data type** in Jina.
+
+    It offers a Pythonic interface to allow users access and manipulate
+    :class:`jina.jina_pb2.DocumentProto` object without working with Protobuf itself.
 
     To create a :class:`Document` object, simply:
 

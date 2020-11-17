@@ -14,7 +14,7 @@ from ...helper import typename
 from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
-from ...types.message.request import TrainDryRunRequest, DryRunRequest, SearchDryRunRequest, IndexDryRunRequest
+from ...types.request.common import DryRunRequest, TrainDryRunRequest, IndexDryRunRequest, SearchDryRunRequest
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 

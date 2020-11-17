@@ -29,7 +29,8 @@ if False:
     from ..peapods.pea import BasePea
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
-    from ..types.message import Message, Request
+    from ..types.message import Message
+    from .. import Request
 
 
 def store_init_kwargs(func: Callable) -> Callable:

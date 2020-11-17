@@ -16,6 +16,13 @@ QueryLangSourceType = TypeVar('QueryLangSourceType',
 
 
 class QueryLang:
+    """
+    :class:`QueryLang` is one of the **primitive data type** in Jina.
+
+    It offers a Pythonic interface to allow users access and manipulate
+    :class:`jina.jina_pb2.QueryLangProto` object without working with Protobuf itself.
+
+    """
     def __init__(self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False, **kwargs):
         self._querylang = jina_pb2.QueryLangProto()
         try:

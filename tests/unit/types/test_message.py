@@ -5,8 +5,9 @@ import pytest
 from jina.clients.python.request import _generate
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto
-from jina.types.message import Request, Message
-from jina.types.message.request import _trigger_fields
+from jina.types.message import Message
+from jina import Request
+from jina.types.request import _trigger_fields
 from tests import random_docs
 
 

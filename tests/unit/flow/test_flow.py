@@ -11,7 +11,7 @@ from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_po
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.message.request import IndexDryRunRequest
+from jina.types.request.common import IndexDryRunRequest
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
