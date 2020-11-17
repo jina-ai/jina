@@ -450,7 +450,7 @@ def _set_grpc_parser(parser=None):
                           'otherwise, it will unset these proxy variables before start. '
                           'gRPC seems to prefer no proxy')
     gp1.add_argument('--remote-access', choices=list(RemoteAccessType),
-                     default=RemoteAccessType.SSH,
+                     default=RemoteAccessType.JINAD,
                      type=RemoteAccessType.from_string,
                      help=f'host address of the pea/gateway, by default it is {__default_host__}.')
     return parser
