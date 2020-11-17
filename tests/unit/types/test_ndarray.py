@@ -112,11 +112,10 @@ def test_generic():
     a = coo_matrix((data, (row, col)), shape=(4, 4))
     dense_a = a.toarray()
 
-    b = NdArray(is_sparse=True)
-
-    b.value = a
-
+    b = NdArray(a, is_sparse=True)
+    assert b.is_sparse
     dense_b = b.value.toarray()
+    assert b.is_sparse
     np.testing.assert_equal(dense_b, dense_a)
 
     c = np.random.random([10, 3, 4])

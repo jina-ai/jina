@@ -116,6 +116,7 @@ class Document:
                     except RuntimeWarning as ex:
                         raise BadDocType('fail to construct the document') from ex
             elif document is not None:
+                # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
         except Exception as ex:
             raise BadDocType('fail to construct the document') from ex
@@ -401,3 +402,6 @@ class Document:
                 self.text = value
         elif isinstance(value, np.ndarray):
             self.blob = value
+        else:
+            # ``None`` is also considered as bad type
+            raise TypeError(f'{typename(value)} is not recognizable')

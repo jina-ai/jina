@@ -30,8 +30,6 @@ class BaseNdArray:
                 # casting using the subclass :attr:`value` interface
                 self.value = proto
 
-        self.is_sparse = False  # set to true if the ndarray is sparse
-
     @property
     def null_proto(self) -> 'PbMessageType':
         """Get the new protobuf representation"""
