@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, Union
+from typing import Optional, Union, Sequence
 
 from ..document import Document
 from ..querylang import QueryLang
@@ -130,8 +130,12 @@ class Request:
         d = _req.groundtruths.add()
         d.CopyFrom(document.as_pb_object)
 
-    def add_querylang(self, querylang: 'QueryLang'):
-        self.as_pb_object.queryset.append(querylang.as_pb_object)
+    def add_queryset(self, queryset: Union['QueryLang', Sequence['QueryLang']]):
+        if isinstance(queryset, QueryLang):
+            queryset = [queryset]
+        for q in queryset:
+            q_pb = self.as_pb_object.queryset.add()
+            q_pb.CopyFrom(q.as_pb_object)
 
 
 class DryRunRequest(Request):

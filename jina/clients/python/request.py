@@ -76,8 +76,7 @@ def _generate(data: GeneratorSourceType,
                 req.add_document(d, mode)
 
         if queryset:
-            for q in queryset:
-                req.add_querylang(q)
+            req.add_queryset(queryset)
 
         yield req.as_pb_object
 
