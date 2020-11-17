@@ -3,7 +3,9 @@ from typing import Union, Optional, Sequence
 
 from ..document import Document
 from ..querylang import QueryLang
+from ...drivers import BaseDriver
 from ...enums import CompressAlgo, ClientMode
+from ...helper import typename
 from ...proto import jina_pb2
 
 _trigger_body_fields = set(kk
@@ -16,6 +18,10 @@ _trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()
     {'train', 'index', 'search', 'control'})
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
 _empty_request = jina_pb2.RequestProto()
+
+AcceptQuerySetType = Union[QueryLang, BaseDriver, jina_pb2.QueryLangProto,
+                           Sequence[QueryLang], Sequence[BaseDriver],
+                           Sequence[jina_pb2.QueryLangProto]]
 
 
 class Request:
@@ -134,10 +140,17 @@ class Request:
         d = _req.groundtruths.add()
         d.CopyFrom(document.as_pb_object)
 
-    def extend_queryset(self, queryset: Union['QueryLang', Sequence['QueryLang']]):
+    def extend_queryset(self, queryset: AcceptQuerySetType):
         """Extend the queryset of the request """
-        if isinstance(queryset, QueryLang):
+        if not isinstance(queryset, Sequence):
             queryset = [queryset]
         for q in queryset:
             q_pb = self.as_pb_object.queryset.add()
-            q_pb.CopyFrom(q.as_pb_object)
+            if isinstance(q, BaseDriver):
+                q_pb.CopyFrom(QueryLang(q).as_pb_object)
+            elif isinstance(q, jina_pb2.QueryLangProto):
+                q_pb.CopyFrom(q)
+            elif isinstance(q, QueryLang):
+                q_pb.CopyFrom(q.as_pb_object)
+            else:
+                raise TypeError(f'unknown type {typename(q)}')

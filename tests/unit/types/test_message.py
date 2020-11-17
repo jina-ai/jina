@@ -2,11 +2,12 @@ import sys
 
 import pytest
 
+from jina import Request, QueryLang
 from jina.clients.python.request import _generate
+from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto
 from jina.types.message import Message
-from jina import Request
 from jina.types.request import _trigger_fields
 from tests import random_docs
 
@@ -126,3 +127,31 @@ def test_lazy_request_fields():
     reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())
+
+
+def test_request_extend_queryset():
+    q1 = SliceQL(start=3, end=4)
+    q2 = QueryLang(SliceQL(start=3, end=4, priority=1))
+    q3 = jina_pb2.QueryLangProto()
+    q3.name = 'SliceQL'
+    q3.parameters['start'] = 3
+    q3.parameters['end'] = 4
+    q3.priority = 2
+    r = Request()
+    r.extend_queryset([q1, q2, q3])
+    for idx, q in enumerate(r.queryset):
+        assert q.priority == idx
+        assert q.parameters['start'] == 3
+        assert q.parameters['end'] == 4
+
+    r = Request()
+    r.extend_queryset(q1)
+    r.extend_queryset(q2)
+    r.extend_queryset(q3)
+    for idx, q in enumerate(r.queryset):
+        assert q.priority == idx
+        assert q.parameters['start'] == 3
+        assert q.parameters['end'] == 4
+
+    with pytest.raises(TypeError):
+        r.extend_queryset(1)

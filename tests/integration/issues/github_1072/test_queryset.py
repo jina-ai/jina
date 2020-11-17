@@ -3,6 +3,8 @@ import os
 import numpy as np
 import pytest
 
+from jina import QueryLang
+from jina.drivers.querylang.filter import FilterQL
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
@@ -39,9 +41,6 @@ def test_queryset_with_struct(random_workspace):
     with f:
         # keep all the docs
         f.index(docs, output_fn=validate_all_docs, callback_on='body')
-
         # keep only the docs with label2
-        qs = jina_pb2.QueryLangProto(name='FilterQL', priority=1)
-        qs.parameters['lookups'] = {'tags__label': 'label2'}
-        qs.parameters['traversal_paths'] = ['r']
+        qs = QueryLang(FilterQL(priority=1, lookups={'tags__label': 'label2'}, traversal_paths=['r']))
         f.index(docs, queryset=qs, output_fn=validate_label2_docs, callback_on='body')
