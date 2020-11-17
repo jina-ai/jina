@@ -154,7 +154,7 @@ def extract_field(resp, callback_on: 'CallbackOnType'):
                          f'must be one of {list(CallbackOnType)}')
 
 
-def safe_callback(func: Callable, logger, continue_on_error: bool) -> Callable:
+def safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
         try:

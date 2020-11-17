@@ -192,7 +192,7 @@ class ImportExtensions:
                 req_msg = 'fallback to default behavior'
                 if self._required:
                     req_msg = 'and it is required'
-                err_msg = f'Module "{missing_module}" is not installed, {req_msg}.\n' \
+                err_msg = f'Module "{missing_module}" is not installed, {req_msg}. ' \
                           f'You are trying to use an extension feature not enabled by the ' \
                           'current installation.\n' \
                           'This feature is available in: '
