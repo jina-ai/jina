@@ -996,7 +996,7 @@ class Flow(ExitStack):
             address_table.append(
                 f'\t🌐 Public address:\t' + colored(f'{header}{public_ip}:{self.port_expose}',
                                                   'cyan', attrs='underline'))
-        self.logger.success(f'🎉 Flow is ready to use, client can now send {colored(protocol + " request", attrs="bold")}')
+        self.logger.success(f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}')
         self.logger.info('\n'+'\n'.join(address_table))
 
     def block(self):

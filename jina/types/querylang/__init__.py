@@ -22,8 +22,43 @@ class QueryLang:
     It offers a Pythonic interface to allow users access and manipulate
     :class:`jina.jina_pb2.QueryLangProto` object without working with Protobuf itself.
 
+    To create a :class:`QueryLang` object from a :class:`BaseDriver` object, simply:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            from jina import QueryLang
+            from jina.drivers.querylang.slice import SliceQL
+
+            s = SliceQL(start=3, end=4)
+            ql = QueryLang(s)
+
+    One can also build a :class`QueryLang` from JSON string, bytes, dict or directly from a protobuf object.
+
+    A :class:`QueryLang` object (no matter how it is constructed) can be converted to
+    protobuf object or back to driver object by using:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            # to protobuf object
+            s.as_pb_object
+
+            # to driver object
+            s.as_driver_object
+
+    To get the class name of the associated driver, one can use :attr:`driver`.
+
     """
-    def __init__(self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False, **kwargs):
+
+    def __init__(self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False):
+        """
+
+        :param querylang: the query language source to construct from, acceptable types include:
+            :class:`jina_pb2.QueryLangProto`, :class:`bytes`, :class:`str`, :class:`Dict`, :class:`BaseDriver`.
+        :param copy: when ``querylang`` is given as a :class:`QueryLangProto` object, build a
+                view (i.e. weak reference) from it or a deep copy from it.
+        """
         self._querylang = jina_pb2.QueryLangProto()
         try:
             if isinstance(querylang, jina_pb2.QueryLangProto):
