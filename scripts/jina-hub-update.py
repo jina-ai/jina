@@ -11,8 +11,8 @@ import semver
 from github import Github
 from ruamel.yaml import YAML
 
-# TODO what env var do we export?
-g = Github(os.environ["GIT_TOKEN"])
+# this one has PR push access
+g = Github(os.environ["DEV_BOT_TOKEN"])
 
 yaml = YAML()
 
