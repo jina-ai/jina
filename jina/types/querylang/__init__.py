@@ -43,12 +43,23 @@ class QueryLang:
                         raise BadQueryLangType('fail to construct a query language') from ex
             elif isinstance(querylang, BaseDriver):
                 self.driver = querylang
+                self.priority = querylang._priority
                 self._querylang.parameters.update(querylang._init_kwargs_dict)
             elif querylang is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(querylang)} is not recognizable')
         except Exception as ex:
             raise BadQueryLangType('fail to construct a query language') from ex
+
+    @property
+    def priority(self) -> int:
+        """Get the priority of this query language. The query language only takes
+        effect when if it has a higher priority than the internal one with the same name"""
+        return self._querylang.priority
+
+    @priority.setter
+    def priority(self, value: int):
+        self._querylang.priority = value
 
     @property
     def name(self) -> str:

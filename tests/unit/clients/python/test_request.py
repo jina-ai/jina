@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
@@ -41,6 +43,10 @@ def test_data_type_builder_doc_bad():
 
 @pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
 def test_data_type_builder_auto(input_type):
+    if 'JINA_ARRAY_QUANT' in os.environ:
+        print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
+        del os.environ['JINA_ARRAY_QUANT']
+
     d, t = _build_doc('123', input_type, override_doc_id=True)
     assert d.text == '123'
     assert t == DataInputType.CONTENT
