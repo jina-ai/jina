@@ -127,14 +127,32 @@ f.plot()
 Let's create some random data and index it:
 
 ```python
-with f:
+from jina import Document
+
+with Flow().add() as f:
     f.index_ndarray(numpy.random.random[4,2], output_fn=print)  # index ndarray data, document sliced on first dimension
     f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
     f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])  # index files and wildcard globs, each file is a document
-    f.index((jina_pb2.Document() for _ in range(10)))  # index raw Jina Documents
+    f.index((Document() for _ in range(10)))  # index raw Jina Documents
 ```
 
-To use a Flow, open it using the `with` context manager, like you would a file in Python. Once a batch is indexed, the callback function `output_fn` is invoked. In the example above, our Flow simply passes the message then prints the result. The whole data stream is asynchronous and efficient.
+To use a Flow, open it using the `with` context manager, like you would a file in Python. You can call `index` and `search` with nearly all types of data. The whole data stream is asynchronous and efficient.
+
+#### Fetch Result
+
+Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback function on different events. In the example below, our Flow simply passes the message then prints the result. If something wrong, it makes a beep sound. The result is either way written `output.txt`.
+
+```python
+def beep(*args):
+    # make a beep sound
+    import os
+    os.system('echo -n "\a";')
+
+with Flow().add() as f, open('output.txt', 'w') as fp:
+    f.index(numpy.random.random([4,5,2]),
+            output_fn=print,
+            on_error=beep, on_always=fp.write)
+```
 
 #### Add Logic
 

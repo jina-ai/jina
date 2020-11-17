@@ -1,3 +1,5 @@
+import numpy as np
+
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -94,3 +96,52 @@ def test_no_error_callback():
 
     with f:
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate1, on_error=validate2)
+
+
+
+def test_flow_on_callback():
+    f = Flow().add()
+    hit = []
+
+    def f1(*args):
+        hit.append('done')
+
+    def f2(*args):
+        hit.append('error')
+
+    def f3(*args):
+        hit.append('always')
+
+    with f:
+        f.index(np.random.random([10, 10]),
+                output_fn=f1, on_error=f2, on_always=f3)
+
+    assert hit == ['done', 'always']
+
+    hit.clear()
+
+def test_flow_on_error_callback():
+
+    class DummyCrafter(BaseCrafter):
+        def craft(self, *args, **kwargs):
+            raise NotImplementedError
+
+    f = Flow().add(uses='DummyCrafter')
+    hit = []
+
+    def f1(*args):
+        hit.append('done')
+
+    def f2(*args):
+        hit.append('error')
+
+    def f3(*args):
+        hit.append('always')
+
+    with f:
+        f.index(np.random.random([10, 10]),
+                output_fn=f1, on_error=f2, on_always=f3)
+
+    assert hit == ['error', 'always']
+
+    hit.clear()

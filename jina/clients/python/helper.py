@@ -3,8 +3,11 @@ __license__ = "Apache-2.0"
 
 import sys
 import time
-from typing import Sequence
+from functools import wraps
+from typing import Sequence, Callable
 
+from ...enums import CallbackOnType
+from ...excepts import BadClientCallback
 from ...helper import colored
 from ...importer import ImportExtensions
 from ...logging import profile_logger
@@ -133,3 +136,34 @@ def pprint_routes(routes: Sequence['jina_pb2.RouteProto'],
                       break_long_words=False, replace_whitespace=False)])
 
     visualize(table)
+
+
+def extract_field(resp, callback_on: 'CallbackOnType'):
+    resp_body = getattr(resp, resp.WhichOneof('body'))
+
+    if callback_on == CallbackOnType.BODY:
+        return resp_body
+    elif callback_on == CallbackOnType.DOCS:
+        return resp_body.docs
+    elif callback_on == CallbackOnType.GROUNDTRUTHS:
+        return resp_body.groundtruths
+    elif callback_on == CallbackOnType.REQUEST:
+        return resp
+    else:
+        raise ValueError(f'callback_on={callback_on} is not supported, '
+                         f'must be one of {list(CallbackOnType)}')
+
+
+def safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
+    @wraps(func)
+    def arg_wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as ex:
+            err_msg = f'uncaught exception in callback {func.__name__}(): {repr(ex)}'
+            if continue_on_error:
+                logger.error(err_msg)
+            else:
+                raise BadClientCallback(err_msg) from ex
+
+    return arg_wrapper
