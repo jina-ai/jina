@@ -13,8 +13,27 @@ from jina.parser import set_hw_parser
 
 
 @pytest.mark.timeout(360)
-def test_helloworld(tmpdir):
+def test_helloworld_call(tmpdir):
     subprocess.check_call(['jina', 'hello-world', '--workdir', str(tmpdir)])
+
+
+@pytest.mark.timeout(360)
+def test_helloworld(tmpdir):
+    cmd = ['jina', 'hello-world', '--workdir', str(tmpdir)]
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                             universal_newlines=True)
+    is_hello_world = False
+    for stdout_line in iter(popen.stdout.readline, ""):
+        #  'cli = hello-world' is in stdoutput of hello-world script
+        #  this should be an indicator that hello-world script is executed
+        if 'cli = hello-world' in stdout_line:
+            is_hello_world = True
+            popen.terminate()
+            break
+    popen.stdout.close()
+    popen.wait()
+    assert is_hello_world, 'No cli = hello-world in stdoutput,' \
+                           'probably hello-world wasnt executed'
 
 
 @pytest.mark.timeout(360)
