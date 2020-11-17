@@ -92,7 +92,7 @@ class JinadAPI:
         self.upload_url = f'{self.base_url}/upload'
         self.pea_url = f'{self.base_url}/pea'
         self.pod_url = f'{self.base_url}/pod'
-        self.log_url = f'{self.base_url}/log'
+        self.log_url = f'{self.base_url}/logs'
 
     @property
     def is_alive(self) -> bool:
@@ -169,7 +169,7 @@ class JinadAPI:
             import requests
 
         try:
-            url = f'{self.log_url}/?{self.kind}_id={remote_id}'
+            url = f'{self.log_url}/{remote_id}'
             r = requests.get(url=url, stream=True)
             for log_line in r.iter_content():
                 if log_line:
