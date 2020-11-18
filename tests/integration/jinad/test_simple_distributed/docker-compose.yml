@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  flow:
+    image: jinaai/jinad
+    build:
+      context: .
+      dockerfile: tests/integration/jinad/test_simple_distributed/Dockerfile
+    ports:
+      - "8000:8000"
+      - "45678:45678"
+    env_file:
+      - tests/integration/jinad/test_simple_distributed/.env
+    expose:
+      - 10000-60000
+  encoder:
+    image: jinaai/jinad
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_simple_distributed/.env
+  index:
+    image: jinaai/jinad
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_simple_distributed/.env
