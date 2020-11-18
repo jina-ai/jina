@@ -333,6 +333,10 @@ class Message:
         else:
             d.code = jina_pb2.StatusProto.ERROR_CHAINED
 
+    @property
+    def is_error(self) -> bool:
+        return self.envelope.status.code >= jina_pb2.StatusProto.ERROR
+
 
 class ControlMessage(Message):
     def __init__(self, command: 'jina_pb2.RequestProto.ControlRequestProto',

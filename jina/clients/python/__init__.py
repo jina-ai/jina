@@ -96,7 +96,7 @@ class PyClient(GrpcClient):
         you should not use it in a for-loop. Use :meth:`call` instead.
         Nonetheless, you can use it for testing one query and check the result.
 
-        :param data: the binary data of the document or the ``DocumentProto`` in protobuf
+        :param data: the binary data of the document in protobuf
         :param mode: request will be sent in this mode, available ``train``, ``index``, ``query``
         """
         self.mode = mode

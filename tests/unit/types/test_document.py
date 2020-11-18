@@ -2,9 +2,11 @@ import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToDict
 
-from jina import NdArray
+from jina import NdArray, Request
+from jina.enums import ClientMode
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
+from tests import random_docs_new_api
 
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
@@ -109,3 +111,37 @@ def test_doc_content():
     np.testing.assert_equal(d.content, c)
     d.buffer = b'123'
     assert d.buffer == b'123'
+
+
+def test_request_docs_mutable_iterator():
+    """To test the weak reference work in docs"""
+    r = Request()
+    for d in random_docs_new_api(10):
+        r.add_document(d, ClientMode.INDEX)
+
+    for idx, d in enumerate(r.docs):
+        assert isinstance(d, Document)
+        d.text = f'look I changed it! {idx}'
+
+    # iterate it again should see the change
+    doc_pointers = []
+    for idx, d in enumerate(r.docs):
+        assert isinstance(d, Document)
+        assert d.text == f'look I changed it! {idx}'
+        doc_pointers.append(d)
+
+    # pb-lize it should see the change
+    rpb = r.as_pb_object
+
+    for idx, d in enumerate(rpb.index.docs):
+        assert isinstance(d, DocumentProto)
+        assert d.text == f'look I changed it! {idx}'
+
+    # change again by following the pointers
+    for d in doc_pointers:
+        d.text = 'now i change it back'
+
+    # iterate it again should see the change
+    for idx, d in enumerate(rpb.index.docs):
+        assert isinstance(d, DocumentProto)
+        assert d.text == 'now i change it back'

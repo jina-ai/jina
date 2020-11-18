@@ -1,5 +1,5 @@
 import uuid
-from typing import Union, Optional, Sequence
+from typing import Union, Optional, Sequence, List, Iterator
 
 from ..document import Document
 from ..querylang import QueryLang
@@ -70,6 +70,18 @@ class Request:
             return getattr(self.as_pb_object, name)
         else:
             raise AttributeError
+
+    @property
+    def docs(self) -> Iterator['Document']:
+        req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
+        for d in req.docs:
+            yield Document(d)
+
+    @property
+    def groundtruths(self) -> Iterator['Document']:
+        req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
+        for d in req.groundtruths:
+            yield Document(d)
 
     @staticmethod
     def _decompress(data: bytes, algorithm: str) -> bytes:
@@ -154,3 +166,7 @@ class Request:
                 q_pb.CopyFrom(q.as_pb_object)
             else:
                 raise TypeError(f'unknown type {typename(q)}')
+
+    @property
+    def queryset(self) -> Sequence[QueryLang]:
+        return [QueryLang(p) for p in self.as_pb_object.queryset]
