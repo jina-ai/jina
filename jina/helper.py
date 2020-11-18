@@ -12,6 +12,7 @@ import time
 import urllib.parse
 import urllib.request
 import uuid
+import warnings
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from io import StringIO
@@ -42,14 +43,13 @@ def deprecated_alias(**aliases):
 
 
 def rename_kwargs(func_name: str, kwargs, aliases):
-    from .logging import default_logger
     for alias, new in aliases.items():
         if alias in kwargs:
             if new in kwargs:
                 raise TypeError(f'{func_name} received both {alias} and {new}')
-            default_logger.warning(
+            warnings.warn(
                 f'"{alias}" is deprecated in "{func_name}()" '
-                f'and will be removed in the next version; please use "{new}" instead')
+                f'and will be removed in the next version; please use "{new}" instead', DeprecationWarning)
             kwargs[new] = kwargs.pop(alias)
 
 

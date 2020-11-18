@@ -1,17 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Sequence, List, Tuple
+from typing import Dict, List, Tuple, Iterator
 
 import numpy as np
 
 from . import BaseExecutableDriver
-from .helper import pb_obj2dict
 from ..executors.rankers import Chunk2DocRanker, Match2DocRanker
-from ..types.document import uid
-
-if False:
-    from ..proto import jina_pb2
+from ..types.document import uid, Document
 
 
 class BaseRankDriver(BaseExecutableDriver):
@@ -54,7 +50,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], context_doc: 'jina_pb2.DocumentProto', *args,
+    def _apply_all(self, docs: Iterator['Document'], context_doc: 'Document', *args,
                    **kwargs) -> None:
         """
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
@@ -66,6 +62,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}  # type: Dict[int, Dict]
         match_chunk_meta = {}  # type: Dict[int, Dict]
         for chunk in docs:
+            query_chunk_meta[chunk.id_in_hash] = chunk.get_attrs(*self.exec.required_keys)
             for match in chunk.matches:
                 match_idx.append(
                     (self.id2hash(match.parent_id),
@@ -73,8 +70,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
                      self.id2hash(chunk.id),
                      match.score.value)
                 )
-                query_chunk_meta[self.id2hash(chunk.id)] = pb_obj2dict(chunk, self.exec.required_keys)
-                match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
+                match_chunk_meta[match.id_in_hash] = match.get_attrs(*self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(
@@ -89,13 +85,9 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             for doc_hash, score in docs_scores:
-                r = context_doc.matches.add()
-                r.id = self.hash2id(doc_hash)
-                r.granularity = context_doc.granularity
-                r.adjacency = context_doc.adjacency + 1
-                r.score.ref_id = context_doc.id  # label the score is computed against doc
-                r.score.value = score
-                r.score.op_name = exec.__class__.__name__
+                context_doc.add_match(doc_id=self.hash2id(doc_hash),
+                                      score_value=score,
+                                      op_name=exec.__class__.__name__)
 
 
 class CollectMatches2DocRankDriver(BaseRankDriver):
@@ -124,7 +116,7 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], context_doc: 'jina_pb2.DocumentProto', *args,
+    def _apply_all(self, docs: Iterator['Document'], context_doc: 'Document', *args,
                    **kwargs) -> None:
         """
 
@@ -147,14 +139,14 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}
         match_chunk_meta = {}
         for match in docs:
+            query_chunk_meta[context_doc.id_in_hash] = context_doc.get_attrs(*self.exec.required_keys)
             match_idx.append((
                 self.id2hash(match.parent_id),
                 self.id2hash(match.id),
                 self.id2hash(context_doc.id),
                 match.score.value
             ))
-            query_chunk_meta[self.id2hash(context_doc.id)] = pb_obj2dict(context_doc, self.exec.required_keys)
-            match_chunk_meta[self.id2hash(match.id)] = pb_obj2dict(match, self.exec.required_keys)
+            match_chunk_meta[match.id_in_hash] = match.get_attrs(*self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(match_idx,
@@ -194,7 +186,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
-    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], context_doc: 'jina_pb2.DocumentProto', *args,
+    def _apply_all(self, docs: Iterator['Document'], context_doc: 'Document', *args,
                    **kwargs) -> None:
         """
 
@@ -208,10 +200,10 @@ class Matches2DocRankDriver(BaseRankDriver):
         """
 
         # if at the top-level already, no need to aggregate further
-        query_meta = pb_obj2dict(context_doc, self.exec.required_keys)
+        query_meta = context_doc.get_attrs(*self.exec.required_keys)
 
-        old_match_scores = {self.id2hash(match.id): match.score.value for match in docs}
-        match_meta = {self.id2hash(match.id): pb_obj2dict(match, self.exec.required_keys) for match in docs}
+        old_match_scores = {match.id_in_hash: match.score.value for match in docs}
+        match_meta = {match.id_in_hash: match.get_attrs(*self.exec.required_keys) for match in docs}
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return
@@ -219,15 +211,15 @@ class Matches2DocRankDriver(BaseRankDriver):
         new_match_scores = self.exec_fn(query_meta, old_match_scores, match_meta)
         self._sort_matches_in_place(context_doc, new_match_scores)
 
-    def _sort_matches_in_place(self, context_doc: 'jina_pb2.DocumentProto', match_scores: 'np.ndarray') -> None:
+    def _sort_matches_in_place(self, context_doc: 'Document', match_scores: 'np.ndarray') -> None:
         sorted_scores = self._sort(match_scores)
         old_matches = {match.id: match for match in context_doc.matches}
         context_doc.ClearField('matches')
         for match_hash, score in sorted_scores:
-            new_match = context_doc.matches.add()
-            new_match.CopyFrom(old_matches[self.hash2id(match_hash)])
-            new_match.score.value = score
-            new_match.score.op_name = exec.__class__.__name__
+            new_match = context_doc.add_match(doc_id=self.hash2id(match_hash),
+                                              score_value=score,
+                                              op_name=exec.__class__.__name__)
+            new_match.MergeFrom(old_matches[self.hash2id(match_hash)])
 
     def _sort(self, docs_scores: 'np.ndarray') -> 'np.ndarray':
         return np.sort(docs_scores, order=Match2DocRanker.COL_SCORE)[::-1]

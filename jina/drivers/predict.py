@@ -1,14 +1,11 @@
-from typing import Sequence, List, Any, Union
+from typing import List, Any, Union, Iterator
 
 import numpy as np
 
 from . import BaseExecutableDriver
-from .helper import extract_docs
 from ..helper import typename
-from jina.types.ndarray.generic import NdArray
-
-if False:
-    from ..proto import jina_pb2
+from ..types.document import Document
+from ..types.document.helper import extract_docs
 
 
 class BasePredictDriver(BaseExecutableDriver):
@@ -32,8 +29,8 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.DocumentProto'],
-            context_doc: 'jina_pb2.DocumentProto',
+            docs: Iterator['Document'],
+            context_doc: 'Document',
             field: str,
             *args,
             **kwargs,
@@ -44,7 +41,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
             self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
         if docs_pts:
-            prediction = self.exec_fn(np.stack(embed_vecs))
+            prediction = self.exec_fn(embed_vecs)
             labels = self.prediction2label(prediction)  # type: List[Union[str, List[str]]]
             for doc, label in zip(docs_pts, labels):
                 doc.tags[self.output_tag] = label
@@ -147,8 +144,8 @@ class Prediction2DocBlobDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.DocumentProto'],
-            context_doc: 'jina_pb2.DocumentProto',
+            docs: Iterator['Document'],
+            context_doc: 'Document',
             field: str,
             *args,
             **kwargs,
@@ -159,6 +156,6 @@ class Prediction2DocBlobDriver(BasePredictDriver):
             self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
 
         if docs_pts:
-            prediction = self.exec_fn(np.stack(embed_vecs))
+            prediction = self.exec_fn(embed_vecs)
             for doc, pred in zip(docs_pts, prediction):
-                NdArray(doc.blob).value = pred
+                doc.blob = pred

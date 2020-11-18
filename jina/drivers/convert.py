@@ -7,18 +7,17 @@ import struct
 import urllib.parse
 import urllib.request
 import zlib
-from typing import Sequence
+from typing import Iterator
 
 import numpy as np
 
-from jina.types.ndarray.generic import NdArray
 from . import BaseRecursiveDriver
 from ..helper import guess_mime
 from ..importer import ImportExtensions
 
 if False:
-    from ..proto import jina_pb2
     from PIL import Image
+    from ..types.document import Document
 
 
 class BaseConvertDriver(BaseRecursiveDriver):
@@ -35,7 +34,7 @@ class BaseConvertDriver(BaseRecursiveDriver):
         self.override = override
         self.target = target
 
-    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs):
+    def _apply_all(self, docs: Iterator['Document'], *args, **kwargs):
         for doc in docs:
             if getattr(doc, self.target) and not self.override:
                 pass
@@ -101,7 +100,7 @@ class Buffer2NdArray(BaseConvertDriver):
         super().__init__(target, *args, **kwargs)
 
     def convert(self, d):
-        NdArray(d.blob).value = np.frombuffer(d.buffer)
+        d.blob = np.frombuffer(d.buffer)
 
 
 class NdArray2PngURI(BaseConvertDriver):
@@ -181,7 +180,7 @@ class Blob2PngURI(NdArray2PngURI):
         super().__init__(target, width, height, *args, **kwargs)
 
     def convert(self, d):
-        arr = NdArray(d.blob).value
+        arr = d.blob
         d.uri = self.png_convertor(arr)
 
 

@@ -18,6 +18,7 @@ from ruamel.yaml import StringIO
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
+from ..clients.python import InputFnType
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path, colored, \
@@ -576,7 +577,7 @@ class Flow(ExitStack):
         return py_client(**kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def train(self, input_fn: Union[Iterator['jina_pb2.DocumentProto'], Iterator[bytes], Callable] = None,
+    def train(self, input_fn: InputFnType = None,
               output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
               **kwargs):
         """Do training on the current flow
@@ -730,7 +731,7 @@ class Flow(ExitStack):
                                           **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def index(self, input_fn: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Callable] = None,
+    def index(self, input_fn: InputFnType = None,
               output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
               **kwargs):
         """Do indexing on the current flow
@@ -770,7 +771,7 @@ class Flow(ExitStack):
         self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
-    def search(self, input_fn: Union[Iterator[Union['jina_pb2.DocumentProto', bytes]], Callable] = None,
+    def search(self, input_fn: InputFnType = None,
                output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
                **kwargs):
         """Do searching on the current flow

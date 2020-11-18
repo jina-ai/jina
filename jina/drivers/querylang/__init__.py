@@ -4,7 +4,9 @@ __license__ = "Apache-2.0"
 from typing import Iterator, Optional
 
 from .. import BaseDriver
-from ...proto import jina_pb2
+
+if False:
+    from ...types.document import Document
 
 
 class BaseQueryLangDriver(BaseDriver):
@@ -45,8 +47,8 @@ class BaseQueryLangDriver(BaseDriver):
     def parse(self, raw_filter):
         raise NotImplementedError
 
-    def execute(self, docs: Iterator['jina_pb2.DocumentProto'], driver_query, req_query) -> Optional[
-        Iterator['jina_pb2.DocumentProto']]:
+    def execute(self, docs: Iterator['Document'], driver_query, req_query) -> Optional[
+        Iterator['Document']]:
         """
 
         :param docs: the document to be filtered

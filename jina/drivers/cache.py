@@ -1,9 +1,9 @@
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Iterator
 
 from .index import BaseIndexDriver
 
 if False:
-    from ..proto import jina_pb2
+    from .. import Document
 
 
 class BaseCacheDriver(BaseIndexDriver):
@@ -22,7 +22,7 @@ class BaseCacheDriver(BaseIndexDriver):
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
         for d in docs:
             result = self.exec[d.id]
             if result is None:
@@ -30,7 +30,7 @@ class BaseCacheDriver(BaseIndexDriver):
             else:
                 self.on_hit(d, result)
 
-    def on_miss(self, doc: 'jina_pb2.DocumentProto') -> None:
+    def on_miss(self, doc: 'Document') -> None:
         """Function to call when doc is missing, the default behavior is add to cache when miss
 
         :param doc: the document in the request but missed in the cache
@@ -40,7 +40,7 @@ class BaseCacheDriver(BaseIndexDriver):
         else:
             self.exec_fn(doc.id)
 
-    def on_hit(self, req_doc: 'jina_pb2.DocumentProto', hit_result: Any) -> None:
+    def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         """ Function to call when doc is hit
 
         :param req_doc: the document in the request and hitted in the cache
@@ -60,5 +60,5 @@ class TaggingCacheDriver(BaseCacheDriver):
         super().__init__(*args, **kwargs)
         self._tags = tags
 
-    def on_hit(self, req_doc: 'jina_pb2.DocumentProto', hit_result: Any) -> None:
+    def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         req_doc.tags.update(self._tags)

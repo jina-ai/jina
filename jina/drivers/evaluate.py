@@ -1,14 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Sequence, Any
+from typing import Any, Iterator
 
 from . import BaseExecutableDriver
-from .helper import DocGroundtruthPair
 from .querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
-from ..proto import jina_pb2
-from jina.types.ndarray.generic import NdArray
+from ..types.document.helper import DocGroundtruthPair
+
+if False:
+    from ..types.document import Document
 
 
 class BaseEvaluateDriver(BaseExecutableDriver):
@@ -19,7 +20,6 @@ class BaseEvaluateDriver(BaseExecutableDriver):
         super().__init__(executor, method, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        assert len(self.req.docs) == len(self.req.groundtruths)
         docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
                              zip(self.req.docs, self.req.groundtruths)]
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
@@ -33,8 +33,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.DocumentProto'],
-            context_doc: 'jina_pb2.DocumentProto' = None,
+            docs: Iterator['DocGroundtruthPair'],
+            context_doc: 'DocGroundtruthPair' = None,
             field: str = None,
             *args,
             **kwargs
@@ -47,7 +47,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             evaluation.op_name = f'{self.metric}-{self.exec.metric}'
             evaluation.ref_id = groundtruth.id
 
-    def extract(self, doc: 'jina_pb2.DocumentProto') -> Any:
+    def extract(self, doc: 'Document') -> Any:
         """Extracting the to-be-evaluated field from the document.
         Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
 
@@ -74,11 +74,8 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
         super().__init__(*args, **kwargs)
         self.field = field
 
-    def extract(self, doc: 'jina_pb2.DocumentProto') -> Any:
-        r = dunder_get(doc, self.field)
-        if isinstance(r, jina_pb2.NdArrayProto):
-            r = NdArray(r).value
-        return r
+    def extract(self, doc: 'Document') -> Any:
+        return dunder_get(doc, self.field)
 
 
 class RankEvaluateDriver(FieldEvaluateDriver):
@@ -98,7 +95,7 @@ class RankEvaluateDriver(FieldEvaluateDriver):
         """
         super().__init__(field, *args, **kwargs)
 
-    def extract(self, doc: 'jina_pb2.DocumentProto'):
+    def extract(self, doc: 'Document'):
         return [dunder_get(x, self.field) for x in doc.matches]
 
 
@@ -143,13 +140,11 @@ class LoadGroundTruthDriver(KVSearchDriver):
     """
 
     def __call__(self, *args, **kwargs):
-        assert len(self.req.groundtruths) == 0
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
         for idx, doc in enumerate(self.req.docs):
             serialized_groundtruth = self.exec_fn(self.id2hash(doc.id))
             if serialized_groundtruth:
-                gt = self.req.groundtruths.add()
-                gt.ParseFromString(serialized_groundtruth)
+                self.req.add_groundtruth(Document(serialized_groundtruth))
             else:
                 miss_idx.append(idx)
         # delete non-existed matches in reverse

@@ -170,5 +170,6 @@ class Request:
                 raise TypeError(f'unknown type {typename(q)}')
 
     @property
-    def queryset(self) -> Sequence[QueryLang]:
-        return [QueryLang(p) for p in self.as_pb_object.queryset]
+    def queryset(self) -> Iterator[QueryLang]:
+        for p in self.as_pb_object.queryset:
+            yield QueryLang(p)

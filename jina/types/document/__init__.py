@@ -3,7 +3,7 @@ import os
 import re
 import urllib.parse
 import warnings
-from typing import Union, Dict, Iterator, Optional, TypeVar
+from typing import Union, Dict, Iterator, Optional, TypeVar, Any
 
 import numpy as np
 from google.protobuf import json_format
@@ -124,7 +124,7 @@ class Document:
         except Exception as ex:
             raise BadDocType('fail to construct a document') from ex
 
-        self.update(**kwargs)
+        self.set_attrs(**kwargs)
 
     def __getattr__(self, name: str):
         if hasattr(_empty_doc, name):
@@ -279,8 +279,13 @@ class Document:
             chunk.mime_type = self._document.mime_type
             return chunk
 
-    def update(self, **kwargs):
-        """Bulk update Document fields with key-value specified in kwargs """
+    def set_attrs(self, **kwargs):
+        """Bulk update Document fields with key-value specified in kwargs
+
+        .. seealso::
+            :meth:`get_attrs` for bulk get attributes
+
+        """
         for k, v in kwargs.items():
             if isinstance(v, list) or isinstance(v, tuple):
                 self._document.ClearField(k)
@@ -290,6 +295,15 @@ class Document:
                 getattr(self._document, k).update(v)
             else:
                 setattr(self, k, v)
+
+    def get_attrs(self, *args) -> Dict[str, Any]:
+        """Bulk fetch Document fields and return a dict of the key-value pairs
+
+        .. seealso::
+            :meth:`update` for bulk set/update attributes
+
+        """
+        return {k: getattr(self, k) for k in args if hasattr(self, k)}
 
     @property
     def as_pb_object(self) -> 'jina_pb2.DocumentProto':
