@@ -70,7 +70,7 @@ def test_local_pod_remote_pod_remote_pod_local_gateway(local_ip, on_public):
     assert f['pod0'].host_in == __default_host__
     assert f['pod0'].host_out == remote1
     assert f['pod1'].host_in == __default_host__
-    assert f['pod1'].host_out is None
+    assert f['pod1'].host_out == remote2
     assert f['pod2'].host_in == __default_host__
     assert f['pod2'].host_out == __default_host__
     assert f['gateway'].host_in == remote2
