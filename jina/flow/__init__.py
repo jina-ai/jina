@@ -21,7 +21,7 @@ from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path, colored, \
-    get_public_ip, get_internal_ip
+    get_public_ip, get_internal_ip, typename
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import FlowPod, GatewayFlowPod
@@ -981,16 +981,30 @@ class Flow(ExitStack):
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def port_expose(self):
+    def port_expose(self) -> int:
+        """Return the exposed port of the gateway"""
         return self._pod_nodes['gateway'].port_expose
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def host(self):
+    def host(self) -> str:
+        """Return the local address of the gateway """
         return self._pod_nodes['gateway'].host
 
+    @property
+    @build_required(FlowBuildLevel.GRAPH)
+    def address_private(self) -> str:
+        """Return the private IP address of the gateway for connecting from other machine in the same network """
+        return get_internal_ip()
+
+    @property
+    @build_required(FlowBuildLevel.GRAPH)
+    def address_public(self) -> str:
+        """Return the public IP address of the gateway for connecting from other machine in the public network """
+        return get_public_ip()
+
     def __iter__(self):
-        return self._pod_nodes.values().__iter__()
+        return self._pod_nodes.items().__iter__()
 
     def _show_success_message(self):
         if self._pod_nodes['gateway']._args.rest_api:
@@ -1002,12 +1016,11 @@ class Flow(ExitStack):
 
         address_table = [f'\t🖥️ Local access:\t' + colored(f'{header}{self.host}:{self.port_expose}',
                                                            'cyan', attrs='underline'),
-                         f'\t🔒 Private network:\t' + colored(f'{header}{get_internal_ip()}:{self.port_expose}',
+                         f'\t🔒 Private network:\t' + colored(f'{header}{self.address_private}:{self.port_expose}',
                                                             'cyan', attrs='underline')]
-        public_ip = get_public_ip()
-        if public_ip:
+        if self.address_public:
             address_table.append(
-                f'\t🌐 Public address:\t' + colored(f'{header}{public_ip}:{self.port_expose}',
+                f'\t🌐 Public address:\t' + colored(f'{header}{self.address_public}:{self.port_expose}',
                                                   'cyan', attrs='underline'))
         self.logger.success(f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}')
         self.logger.info('\n'+'\n'.join(address_table))
@@ -1027,6 +1040,14 @@ class Flow(ExitStack):
     def use_rest_gateway(self):
         """Change to use REST gateway for IO """
         self._common_kwargs['rest_api'] = True
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            return self._pod_nodes[item]
+        elif isinstance(item, int):
+            return list(self._pod_nodes.values())[item]
+        else:
+            raise TypeError(f'{typename(item)} is not supported')
 
     # for backward support
     join = needs

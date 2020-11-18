@@ -140,7 +140,7 @@ To use a Flow, open it using the `with` context manager, like you would a file i
 
 #### Fetch Result
 
-Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback function on different events. In the example below, our Flow simply passes the message then prints the result. If something wrong, it makes a beep sound. The result is either way written `output.txt`.
+Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_error`, `on_always` to hook different event. In the example below, our Flow passes the message then prints the result when success. If something wrong, it beeps. Finally, the result is written to `output.txt`.
 
 ```python
 def beep(*args):
