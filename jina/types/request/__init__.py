@@ -1,5 +1,5 @@
 import uuid
-from typing import Union, Optional, Sequence, List, Iterator
+from typing import Union, Optional, Sequence, Iterator
 
 from ..document import Document
 from ..querylang import QueryLang
@@ -22,6 +22,8 @@ _empty_request = jina_pb2.RequestProto()
 AcceptQuerySetType = Union[QueryLang, BaseDriver, jina_pb2.QueryLangProto,
                            Sequence[QueryLang], Sequence[BaseDriver],
                            Sequence[jina_pb2.QueryLangProto]]
+
+__all__ = ['Request']
 
 
 class Request:

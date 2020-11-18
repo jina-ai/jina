@@ -145,3 +145,43 @@ def test_request_docs_mutable_iterator():
     for idx, d in enumerate(rpb.index.docs):
         assert isinstance(d, DocumentProto)
         assert d.text == 'now i change it back'
+
+
+def test_request_docs_chunks_mutable_iterator():
+    """Test if weak reference work in nested docs"""
+    r = Request()
+    for d in random_docs_new_api(10):
+        r.add_document(d, ClientMode.INDEX)
+
+    for d in r.docs:
+        assert isinstance(d, Document)
+        for idx, c in enumerate(d.chunks):
+            assert isinstance(d, Document)
+            c.text = f'look I changed it! {idx}'
+
+    # iterate it again should see the change
+    doc_pointers = []
+    for d in r.docs:
+        assert isinstance(d, Document)
+        for idx, c in enumerate(d.chunks):
+            assert c.text == f'look I changed it! {idx}'
+            doc_pointers.append(c)
+
+    # pb-lize it should see the change
+    rpb = r.as_pb_object
+
+    for d in rpb.index.docs:
+        assert isinstance(d, DocumentProto)
+        for idx, c in enumerate(d.chunks):
+            assert isinstance(c, DocumentProto)
+            assert c.text == f'look I changed it! {idx}'
+
+    # change again by following the pointers
+    for d in doc_pointers:
+        d.text = 'now i change it back'
+
+    # iterate it again should see the change
+    for d in rpb.index.docs:
+        assert isinstance(d, DocumentProto)
+        for c in d.chunks:
+            assert c.text == 'now i change it back'

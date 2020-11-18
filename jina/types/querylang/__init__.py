@@ -14,6 +14,8 @@ _empty_querylang = jina_pb2.QueryLangProto()
 QueryLangSourceType = TypeVar('QueryLangSourceType',
                               jina_pb2.QueryLangProto, bytes, str, Dict, BaseDriver)
 
+__all__ = ['QueryLang']
+
 
 class QueryLang:
     """

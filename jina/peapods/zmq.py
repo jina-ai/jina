@@ -18,7 +18,8 @@ from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..importer import ImportExtensions
 from ..logging import default_logger, profile_logger, JinaLogger
 from ..proto import jina_pb2
-from jina.types.message import Message, ControlMessage
+from ..types.message import Message
+from ..types.message.common import ControlMessage
 
 if False:
     import argparse

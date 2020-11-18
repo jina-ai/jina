@@ -14,7 +14,7 @@ from ...proto import jina_pb2
 if False:
     from ...executors import BaseExecutor
 
-__all__ = ['Message', 'ControlMessage']
+__all__ = ['Message']
 
 
 class Message:
@@ -338,9 +338,3 @@ class Message:
         return self.envelope.status.code >= jina_pb2.StatusProto.ERROR
 
 
-class ControlMessage(Message):
-    def __init__(self, command: 'jina_pb2.RequestProto.ControlRequestProto',
-                 *args, **kwargs):
-        req = jina_pb2.RequestProto()
-        req.control.command = command
-        super().__init__(None, req, *args, **kwargs)
