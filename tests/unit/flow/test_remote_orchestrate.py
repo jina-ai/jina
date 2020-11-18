@@ -54,3 +54,27 @@ def test_remote_pod_local_pod_remote_pod_local_gateway(local_ip, on_public):
     assert f['pod2'].host_out == __default_host__
     assert f['gateway'].host_in == remote2
     assert f['gateway'].host_out == remote1
+
+
+@pytest.mark.parametrize('local_ip, on_public', [(get_internal_ip(), False),
+                                                 (get_public_ip(), True)])
+def test_local_pod_remote_pod_remote_pod_local_gateway(local_ip, on_public):
+    remote1 = '111.111.111.111'
+    remote2 = '222.222.222.222'
+
+    f = Flow(expose_public=on_public).add().add(host=remote1).add(host=remote2)
+    f.build()
+
+    for k, v in f._pod_nodes.items():
+        print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
+    assert f['pod0'].host_in == __default_host__
+    assert f['pod0'].host_out == remote1
+    assert f['pod1'].host_in == __default_host__
+    assert f['pod1'].host_out is None
+    assert f['pod2'].host_in == __default_host__
+    assert f['pod2'].host_out == __default_host__
+    assert f['gateway'].host_in == remote2
+    assert f['gateway'].host_out == __default_host__
+
+
+
