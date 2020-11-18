@@ -2,6 +2,7 @@ import os
 
 import pytest
 import requests
+import numpy as np
 
 from jina import JINA_GLOBAL
 from jina.checker import NetworkChecker
@@ -560,3 +561,31 @@ def test_flow_arbitrary_needs():
 
     with f:
         f.index_lines(['abc', 'def'])
+
+
+def test_flow_needs_all():
+    f = (Flow().add(name='p1', needs='gateway')
+         .needs_all(name='r1'))
+    assert f._pod_nodes['r1'].needs == {'p1'}
+
+    f = (Flow().add(name='p1', needs='gateway')
+         .add(name='p2', needs='gateway')
+         .add(name='p3', needs='gateway')
+         .needs(needs=['p1', 'p2'], name='r1')
+         .needs_all(name='r2'))
+    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
+
+    with f:
+        f.index_ndarray(np.random.random([10, 10]))
+
+    f = (Flow().add(name='p1', needs='gateway')
+         .add(name='p2', needs='gateway')
+         .add(name='p3', needs='gateway')
+         .needs(needs=['p1', 'p2'], name='r1')
+         .needs_all(name='r2')
+         .add(name='p4', needs='r2'))
+    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
+    assert f._pod_nodes['p4'].needs == {'r2'}
+
+    with f:
+        f.index_ndarray(np.random.random([10, 10]))

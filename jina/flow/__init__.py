@@ -252,6 +252,19 @@ class Flow(ExitStack):
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
         return self.add(name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
 
+    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
+        """
+        Collect all hanging Pod so far and add a blocker to the flow, wait until all handing peas completed.
+        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param name: the name of this joiner, by default is ``joiner``
+        :return: the modified flow
+        """
+        needs = _hanging_pods(self)
+        if len(needs) == 1:
+            return self.add(name=name, needs=needs, *args, **kwargs)
+
+        return self.needs(name=name, needs=needs, *args, **kwargs)
+
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
             copy_flow: bool = True,
