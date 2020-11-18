@@ -1,9 +1,9 @@
 name: Test Examples
 
 on:
-  push:
-    branches:
-      - master
+ push:
+   branches-ignore:
+     - '**'  # temporally ignore all
 
 jobs:
   examples-test:
