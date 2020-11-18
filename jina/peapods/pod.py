@@ -538,8 +538,7 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
             return get_public_ip()
         else:
             return get_internal_ip()
-
-    if not bind_local and conn_local:
+    else:
         # in this case we (at local) need to know about remote the BIND address
         return bind_args.host
 
