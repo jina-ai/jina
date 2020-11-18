@@ -59,7 +59,7 @@ class RemotePea(BasePea):
             self.api.delete(self.remote_id)
 
     def close(self):
-        self.delete_remote()
+        self.send_terminate_signal()
         self.join()
 
 
