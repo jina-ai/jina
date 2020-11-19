@@ -2,6 +2,7 @@ from typing import Optional
 
 import numpy as np
 
+from jina import Document
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
@@ -30,18 +31,18 @@ class MockIndexer(BaseKVIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        doc1 = jina_pb2.DocumentProto()
-        doc1.id = '1'
-        NdArray(doc1.embedding).value = np.array([int(doc1.id)])
-        doc2 = jina_pb2.DocumentProto()
-        doc2.id = '2'
-        NdArray(doc2.embedding).value = np.array([int(doc2.id)])
-        doc3 = jina_pb2.DocumentProto()
-        doc3.id = '3'
-        NdArray(doc3.embedding).value = np.array([int(doc3.id)])
-        doc4 = jina_pb2.DocumentProto()
-        doc4.id = '4'
-        NdArray(doc4.embedding).value = np.array([int(doc4.id)])
+        doc1 = Document()
+        doc1.id = '1' * 16
+        doc1.embedding = np.array([int(doc1.id)])
+        doc2 = Document()
+        doc2.id = '2' * 16
+        doc2.embedding = np.array([int(doc2.id)])
+        doc3 = Document()
+        doc3.id = '3' * 16
+        doc3.embedding = np.array([int(doc3.id)])
+        doc4 = Document()
+        doc4.id = '4' * 16
+        doc4.embedding = np.array([int(doc4.id)])
         self.db = {
             1: doc1.SerializeToString(),
             2: doc2.SerializeToString(),
@@ -71,13 +72,11 @@ def create_document_to_search():
     #   - chunk: 3
     #   - chunk: 4
     #   - chunk: 5 - will be missing from KV indexer
-    doc = jina_pb2.DocumentProto()
-    doc.granularity = 0
-    doc.id = '0'
+    doc = Document()
+    doc.id = '0' * 16
     for c in range(5):
-        chunk = doc.chunks.add()
-        chunk.granularity = doc.granularity + 1
-        chunk.id = str(c + 1)
+        chunk = doc.add_chunk()
+        chunk.id = str(c + 1) * 16
     return doc
 
 
@@ -90,15 +89,12 @@ def create_document_to_search_with_matches_on_chunks():
     #     - match: 4
     #     - match: 5 - will be missing from KV indexer
     #     - match: 6 - will be missing from KV indexer
-    doc = jina_pb2.DocumentProto()
-    doc.id = '0'
-    doc.granularity = 0
-    chunk = doc.chunks.add()
-    chunk.id = '1'
-    chunk.granularity = doc.granularity + 1
+    doc = Document()
+    doc.id = '0' * 16
+    chunk = doc.add_chunk()
+    chunk.id = '1' * 16
     for m in range(5):
-        match = chunk.matches.add()
-        match.id = str(m + 2)
+        match = chunk.add_match(doc_id=str(m + 2) * 16, score_value=1.)
     return doc
 
 
@@ -109,17 +105,20 @@ def test_vectorsearch_driver_mock_indexer_apply_all():
     executor = MockIndexer()
     driver.attach(executor=executor, pea=None)
 
-    assert len(doc.chunks) == 5
-    for chunk in doc.chunks:
-        assert NdArray(chunk.embedding).value is None
+    dcs = list(doc.chunks)
+    assert len(dcs) == 5
+    for chunk in dcs:
+        assert chunk.embedding is None
 
     driver._apply_all(doc.chunks)
 
+    dcs = list(doc.chunks)
+
     # chunk idx: 5 had no matched and is removed as missing idx
-    assert len(doc.chunks) == 4
-    for chunk in doc.chunks:
-        assert NdArray(chunk.embedding).value is not None
-        embedding_array = NdArray(chunk.embedding).value
+    assert len(dcs) == 4
+    for chunk in dcs:
+        assert chunk.embedding is not None
+        embedding_array = chunk.embedding
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
@@ -130,17 +129,19 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply():
     executor = MockIndexer()
     driver.attach(executor=executor, pea=None)
 
-    assert len(doc.chunks) == 5
-    for chunk in doc.chunks:
-        assert NdArray(chunk.embedding).value is None
+    dcs = list(doc.chunks)
+    assert len(dcs) == 5
+    for chunk in dcs:
+        assert chunk.embedding is None
 
     driver._traverse_apply(doc.chunks)
 
     # chunk idx: 5 had no matched and is removed as missing idx
-    assert len(doc.chunks) == 4
-    for chunk in doc.chunks:
-        assert NdArray(chunk.embedding).value is not None
-        embedding_array = NdArray(chunk.embedding).value
+    dcs = list(doc.chunks)
+    assert len(dcs) == 4
+    for chunk in dcs:
+        assert chunk.embedding is not None
+        embedding_array = chunk.embedding
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
@@ -152,9 +153,10 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
 
     driver._traverse_apply([doc])
 
-    assert len(doc.chunks) == 1
-    chunk = doc.chunks[0]
-    assert len(chunk.matches) == 3
+    dcs = list(doc.chunks)
+    assert len(dcs) == 1
+    chunk = dcs[0]
+    assert len(dcs) == 3
     for match in chunk.matches:
         assert NdArray(match.embedding).value is not None
         embedding_array = NdArray(match.embedding).value

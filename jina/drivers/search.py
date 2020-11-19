@@ -59,7 +59,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            serialized_doc = self.exec_fn(self.id2hash(retrieved_doc.id))
+            serialized_doc = self.exec_fn(retrieved_doc.id_in_hash)
             if serialized_doc:
                 r = Document(serialized_doc)
 
