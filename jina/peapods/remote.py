@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from argparse import Namespace
-from typing import Dict, Union, Type, Optional, Any
+from typing import Dict, Union, Optional, Any
 from .zmq import Zmqlet, send_ctrl_message
 from .jinad import PeaAPI, PodAPI
 from .pea import BasePea
@@ -32,9 +32,9 @@ class RemotePea(BasePea):
 
     # TODO: This shouldn't inherit BasePea, Needs to change to a runtime
     """
-    APIClass = PeaAPI  # type: Type['JinadAPI']
+    APIClass = PeaAPI
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['Namespace', Dict]):
         super().__init__(args)
 
     @cached_property
@@ -51,15 +51,11 @@ class RemotePea(BasePea):
 
     def loop_body(self):
         if self.remote_id:
-            try:
-                self.logger.success(f'created remote {self.api.kind} with id {colored(self.remote_id, "cyan")}')
-                self.set_ready()
-                self.api.log(self.remote_id)
-            finally:
-                self.is_shutdown.set()
+            self.logger.success(f'created remote {self.api.kind} with id {colored(self.remote_id, "cyan")}')
+            self.set_ready()
+            self.api.log(self.remote_id, self.is_shutdown)
         else:
             self.logger.error(f'fail to create {typename(self)} remotely')
-            self.is_shutdown.set()
 
     def delete_remote(self):
         if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
@@ -67,6 +63,7 @@ class RemotePea(BasePea):
 
     def close(self) -> None:
         self.send_terminate_signal()
+        self.is_shutdown.set()
         # TODO: I would rather wait for loop_body to finish but it seems to go on forever
 
 
@@ -74,9 +71,9 @@ class RemotePod(RemotePea):
     """REST based pod to be used while invoking remote Pod
     """
 
-    APIClass = PodAPI  # type: Type['JinadAPI']
+    APIClass = PodAPI
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['Namespace', Dict]):
         super().__init__(args)
 
         if isinstance(self.args, Dict):
