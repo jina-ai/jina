@@ -64,15 +64,14 @@ def random_docs_new_api(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> I
             d.tags['id'] = j
             d.text = b'hello world'
             d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
-            for k in range(chunks_per_doc):
-                with Document() as c:
-                    c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
-                    c.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
-                    c.tags['id'] = c_id
-                    c.tags['parent_id'] = j
-                    c_id += 1
-                    c.parent_id = d.id
-                d.add_chunk(c)
+        for k in range(chunks_per_doc):
+            with Document() as c:
+                c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+                c.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
+                c.tags['id'] = c_id
+                c.tags['parent_id'] = j
+                c_id += 1
+            d.add_chunk(c)
         yield d
 
 
