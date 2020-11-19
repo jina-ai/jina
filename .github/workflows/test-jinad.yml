@@ -1,7 +1,7 @@
 name: Test jinad
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -16,7 +16,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.7]
-        path: [jinad]
 
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +36,6 @@ jobs:
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Test jinad
         run: |
-          cd jinad/${{ matrix.path }}
           ./tests/integration/jinad/test_simple_distributed/test_integration.sh
         timeout-minutes: 30
         env:

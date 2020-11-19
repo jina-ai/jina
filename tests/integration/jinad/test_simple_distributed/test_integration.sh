@@ -32,8 +32,11 @@ curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accep
 
 docker-compose -f tests/integration/jinad/test_simple_distributed/docker-compose.yml --project-directory . down
 
-if [ ${TEXT_BACK} -ne "hey, dude" ]; then
+EXPECTED_TEXT='"text:hey, dude how are you"'
+
+if [ "$EXPECTED_TEXT" = "$TEXT_BACK" ]; then
         echo "Success"
 else
         echo "Fail"
+        exit 1
 fi
