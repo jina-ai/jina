@@ -3,11 +3,11 @@ from typing import Any
 import numpy as np
 import pytest
 
+from jina import Document, Request
 from jina.drivers.evaluate import FieldEvaluateDriver
 from jina.executors.evaluators import BaseEvaluator
 from jina.proto import jina_pb2
 from jina.types.document.helper import DocGroundtruthPair
-from jina.types.ndarray.generic import NdArray
 
 
 class MockDiffEvaluator(BaseEvaluator):
@@ -29,13 +29,13 @@ def field_type(request):
 def doc_with_field_type(field_type):
     class DocCreator(object):
         def create(self):
-            doc = jina_pb2.DocumentProto()
+            doc = Document()
             if field_type == 'text':
                 doc.text = 'aaa'
             elif field_type == 'buffer':
                 doc.buffer = b'\x01\x02\x03'
             elif field_type == 'blob':
-                NdArray(doc.blob).value = np.array([1, 1, 1])
+                doc.blob = np.array([1, 1, 1])
             return doc
 
     return DocCreator()
@@ -45,13 +45,13 @@ def doc_with_field_type(field_type):
 def groundtruth_with_field_type(field_type):
     class GTCreator(object):
         def create(self):
-            gt = jina_pb2.DocumentProto()
+            gt = Document()
             if field_type == 'text':
                 gt.text = 'aaaa'
             elif field_type == 'buffer':
                 gt.buffer = b'\x01\x02\x03\04'
             elif field_type == 'blob':
-                NdArray(gt.blob).value = np.array([1, 1, 1, 1])
+                gt.blob = np.array([1, 1, 1, 1])
             return gt
 
     return GTCreator()
@@ -156,12 +156,12 @@ def simple_chunk_evaluate_driver():
 def eval_request():
     def request(field_type):
         num_docs = 10
-        req = jina_pb2.RequestProto.IndexRequestProto()
+        req = jina_pb2.RequestProto()
         for idx in range(num_docs):
-            doc = req.docs.add()
-            gt = req.groundtruths.add()
-            chunk_doc = doc.chunks.add()
-            chunk_gt = gt.chunks.add()
+            doc = req.index.docs.add()
+            gt = req.index.groundtruths.add()
+            chunk_doc = Document(doc.chunks.add())
+            chunk_gt = Document(gt.chunks.add())
             chunk_doc.granularity = 1
             chunk_gt.granularity = 1
             if field_type == 'text':
@@ -171,9 +171,9 @@ def eval_request():
                 chunk_doc.buffer = b'\x01\x02\x03'
                 chunk_gt.buffer = b'\x01\x02\x03\x04'
             elif field_type == 'blob':
-                NdArray(chunk_doc.blob).value = np.array([1, 1, 1])
-                NdArray(chunk_gt.blob).value = np.array([1, 1, 1, 1])
-        return req
+                chunk_doc.blob = np.array([1, 1, 1])
+                chunk_gt.blob = np.array([1, 1, 1, 1])
+        return Request(req)
 
     return request
 
@@ -194,12 +194,15 @@ def test_crafter_evaluate_driver_in_chunks(field_type,
     driver.eval_request = req
     driver()
 
-    assert len(req.docs) == len(req.groundtruths)
-    assert len(req.docs) == 10
-    for doc in req.docs:
+    rd = list(req.docs)
+    rg = list(req.groundtruths)
+    assert len(rd) == len(rg)
+    assert len(rd) == 10
+    for doc in rd:
         assert len(doc.evaluations) == 0  # evaluation done at chunk level
-        assert len(doc.chunks) == 1
-        chunk = doc.chunks[0]
+        rdc = list(doc.chunks)
+        assert len(rdc) == 1
+        chunk = rdc[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
         assert chunk.evaluations[0].op_name == 'SimpleChunkEvaluateDriver-MockDiffEvaluator'
         assert chunk.evaluations[0].value == 1.0
