@@ -12,14 +12,14 @@ services:
       - tests/integration/jinad/test_simple_distributed/.env
     expose:
       - 10000-60000
-  encoder:
+  pod1:
     image: jinaai/jinad
     expose:
       - 8000
       - 10000-60000
     env_file:
       - tests/integration/jinad/test_simple_distributed/.env
-  index:
+  pod2:
     image: jinaai/jinad
     expose:
       - 8000

@@ -6,14 +6,9 @@ with:
 pods:
   pod1:
     uses: _pass
+    host: $JINA_POD1_HOST
+    port_expose: 8000
   pod2:
     uses: _pass
     host: $JINA_POD2_HOST
     port_expose: 8000
-    timeout_ready: 60000
-  pod3:
-    uses: _pass
-    host: $JINA_POD3_HOST
-    port_expose: 8000
-    polling: all
-    uses_reducing: _merge_all
