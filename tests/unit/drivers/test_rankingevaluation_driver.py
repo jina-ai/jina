@@ -1,9 +1,9 @@
 import pytest
 
 from jina.drivers.evaluate import RankEvaluateDriver
-from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators.rank.precision import PrecisionEvaluator
 from jina.proto import jina_pb2
+from jina.types.document.helper import DocGroundtruthPair
 
 
 class SimpleRankEvaluateDriver(RankEvaluateDriver):

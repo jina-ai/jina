@@ -1,5 +1,6 @@
 import pytest
 
+from jina import Document
 from jina.drivers.rank import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
 from jina.proto import jina_pb2
@@ -60,7 +61,7 @@ def create_document_to_score():
             # to be used by MaxRanker and MinRanker
             match.score.ref_id = chunk.id
             match.score.value = int(match.id)
-    return doc
+    return Document(doc)
 
 
 def create_chunk_matches_to_score():
@@ -87,7 +88,7 @@ def create_chunk_matches_to_score():
             match.score.ref_id = str(chunk.id)
             match.id = str(10 * int(parent_id) + score_value)
             match.length = 4
-    return doc
+    return Document(doc)
 
 
 def create_chunk_chunk_matches_to_score():

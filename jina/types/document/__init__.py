@@ -368,7 +368,7 @@ class Document:
     @buffer.setter
     def buffer(self, value: bytes):
         self._document.buffer = value
-        if self._document.buffer:
+        if value:
             with ImportExtensions(required=False,
                                   pkg_name='python-magic',
                                   help_text=f'can not sniff the MIME type '
@@ -444,6 +444,11 @@ class Document:
         self.update_id()
 
     @property
+    def content_type(self) -> str:
+        """Return the content type of the document, possible values: text, blob, buffer"""
+        return self._document.WhichOneof('content')
+
+    @property
     def content(self) -> DocumentContentType:
         """Return the content of the document. It checks whichever field among :attr:`blob`, :attr:`text`,
         :attr:`buffer` has value and return it.
@@ -451,7 +456,7 @@ class Document:
         .. seealso::
             :attr:`blob`, :attr:`buffer`, :attr:`text`
         """
-        attr = self._document.WhichOneof('content')
+        attr = self.content_type
         if attr:
             return getattr(self, attr)
 
@@ -482,6 +487,9 @@ class Document:
     def convert_buffer_to_blob(self):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
         set :attr:`blob` accordingly.
+
+        .. note::
+            One can only recover values not shape information from pure buffer.
         """
         self.blob = np.frombuffer(self.buffer)
 
@@ -535,8 +543,8 @@ class Document:
     def convert_content_to_uri(self):
         """Convert content in URI with best effort"""
         if self.text:
-            self.convert_text_to_data_uri()
+            self.convert_text_to_uri()
         elif self.buffer:
-            self.convert_buffer_to_data_uri()
-        else:
+            self.convert_buffer_to_uri()
+        elif self.content_type:
             raise NotImplementedError

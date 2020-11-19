@@ -3,7 +3,7 @@ import random
 import numpy as np
 import pytest
 
-from jina.drivers.helper import pb_obj2dict, extract_docs, DocGroundtruthPair
+from jina import Document
 from jina.proto import jina_pb2
 from jina.types.message import Message
 from jina.types.ndarray.generic import NdArray
@@ -39,7 +39,8 @@ def test_pb_obj2dict():
     chunk = document.chunks.add()
     chunk.text = 'text in chunk'
     chunk.tags['id'] = 'id in chunk tags'
-    res = pb_obj2dict(document, ['text', 'tags', 'chunks'])
+    document = Document(document)
+    res = document.get_attrs('text', 'tags', 'chunks')
     assert res['text'] == 'this is text'
     assert res['tags']['id'] == 'id in tags'
     assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
