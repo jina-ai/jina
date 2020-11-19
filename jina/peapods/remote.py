@@ -3,10 +3,12 @@ __license__ = "Apache-2.0"
 
 from argparse import Namespace
 from typing import Dict, Union, Type, Optional, Any
-
-from .jinad import PeaAPI, PodAPI, JinadAPI
+from .zmq import Zmqlet, send_ctrl_message
+from .jinad import PeaAPI, PodAPI
 from .pea import BasePea
 from ..helper import colored, cached_property, typename
+from ..enums import PeaRoleType
+from ..proto import jina_pb2
 
 
 def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
@@ -30,8 +32,10 @@ class RemotePea(BasePea):
 
     # TODO: This shouldn't inherit BasePea, Needs to change to a runtime
     """
-
     APIClass = PeaAPI  # type: Type['JinadAPI']
+
+    def __init__(self, args: Union['argparse.Namespace', Dict]):
+        super().__init__(args)
 
     @cached_property
     def remote_id(self) -> str:
@@ -68,8 +72,28 @@ class RemotePod(RemotePea):
 
     APIClass = PodAPI  # type: Type['JinadAPI']
 
+    def __init__(self, args: Union['argparse.Namespace', Dict]):
+        super().__init__(args)
+
+        if isinstance(self.args, Dict):
+            first_pea_args = self.args['peas'][0]
+            self.daemon = first_pea_args.daemon
+            if first_pea_args.name:
+                self.name = first_pea_args.name
+            if first_pea_args.role == PeaRoleType.PARALLEL:
+                self.name = f'{self.name}-{first_pea_args.pea_id}'
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(first_pea_args.host, first_pea_args.port_ctrl, first_pea_args.ctrl_with_ipc)
+
     def spawn_remote(self, host: str, port: int, pod_type: str = 'cli', **kwargs) -> Optional[str]:
         return super().spawn_remote(host, port, pod_type=pod_type)
+
+    def send_terminate_signal(self) -> None:
+        """Gracefully close this pea and release all resources """
+        self.logger.success(f' REMOTE POD SEND_TERMINATE_SIGNAL? {hasattr(self, "ctrl_addr")}')
+        if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
+            self.logger.success(f' REMOTE POD SEND_TERMINATE_SIGNAL to {self.ctrl_addr}')
+            send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.TERMINATE,
+                              timeout=self.args['peas'][0].timeout_ctrl)
 
 
 class RemoteMutablePod(RemotePod):

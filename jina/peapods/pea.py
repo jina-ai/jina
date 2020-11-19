@@ -129,13 +129,16 @@ class BasePea(metaclass=PeaMeta):
         self._partial_requests = None
         self._partial_messages = None
 
+        print(f' Hey self.args type {type(self.args)}')
+        print(f' Hey self.args type {self.args}')
+
         if isinstance(self.args, argparse.Namespace):
             self.daemon = args.daemon
             if self.args.name:
                 self.name = self.args.name
             if self.args.role == PeaRoleType.PARALLEL:
                 self.name = f'{self.name}-{self.args.pea_id}'
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc)
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)
@@ -403,6 +406,7 @@ class BasePea(metaclass=PeaMeta):
 
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
+        self.logger.success(f' SEND_TERMINATE_SIGNAL? {hasattr(self, "ctrl_addr")}')
         if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
             send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.TERMINATE,
                               timeout=self.args.timeout_ctrl)

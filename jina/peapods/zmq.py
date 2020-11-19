@@ -45,7 +45,7 @@ class Zmqlet:
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
-        self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
+        self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0
@@ -75,26 +75,29 @@ class Zmqlet:
         self.poller.register(self.in_sock)
 
     @staticmethod
-    def get_ctrl_address(args: 'argparse.Namespace') -> Tuple[str, bool]:
+    def get_ctrl_address(host: str, port_ctrl: str, ctrl_with_ipc: bool) -> Tuple[str, bool]:
         """Get the address of the control socket
 
-        :param args: the parsed arguments from the CLI
+        :param host: the host int he arguments
+        :param port_ctrl: the control port
+        :param ctrl_with_ipc: a bool of whether using IPC protocol for controlling
         :return: A tuple of two pieces:
 
             - a string of control address
             - a bool of whether using IPC protocol for controlling
 
         """
-        ctrl_with_ipc = (os.name != 'nt') and args.ctrl_with_ipc
+        host_out = host
+        ctrl_with_ipc = (os.name != 'nt') and ctrl_with_ipc
         if ctrl_with_ipc:
             return _get_random_ipc(), ctrl_with_ipc
         else:
-            if '@' in args.host:
+            if '@' in host_out:
                 # user@hostname
-                host = args.host.split('@')[-1]
+                host_out = host_out.split('@')[-1]
             else:
-                host = args.host
-            return f'tcp://{host}:{args.port_ctrl}', ctrl_with_ipc
+                host_out = host_out
+            return f'tcp://{host_out}:{port_ctrl}', ctrl_with_ipc
 
     def _pull(self, interval: int = 1):
         socks = dict(self.poller.poll(interval))
