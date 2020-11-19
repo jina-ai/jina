@@ -57,14 +57,12 @@ class RemotePea(BasePea):
         else:
             self.logger.error(f'fail to create {typename(self)} remotely')
 
-    def delete_remote(self):
-        if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
-            self.api.delete(self.remote_id)
-
     def close(self) -> None:
         self.send_terminate_signal()
         self.is_shutdown.set()
-        # TODO: I would rather wait for loop_body to finish but it seems to go on forever
+        self.logger.close()
+        if not self.daemon:
+            self.join()
 
 
 class RemotePod(RemotePea):

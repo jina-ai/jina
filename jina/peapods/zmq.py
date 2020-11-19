@@ -78,7 +78,7 @@ class Zmqlet:
     def get_ctrl_address(host: str, port_ctrl: str, ctrl_with_ipc: bool) -> Tuple[str, bool]:
         """Get the address of the control socket
 
-        :param host: the host int he arguments
+        :param host: the host in he arguments
         :param port_ctrl: the control port
         :param ctrl_with_ipc: a bool of whether using IPC protocol for controlling
         :return: A tuple of two pieces:
