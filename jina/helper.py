@@ -9,6 +9,7 @@ import re
 import sys
 import time
 import uuid
+import numpy as np
 import warnings
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
@@ -189,11 +190,13 @@ def random_port() -> Optional[int]:
 
     _port = None
     if 'JINA_RANDOM_PORTS' in os.environ:
-        min_port, max_port = 49152, 65535
-        while True:
-            _port = random.randrange(min_port, max_port)
+        min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '49153'))
+        max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', '65535'))
+        for _port in np.random.permutation(range(min_port, max_port + 1)):
             if _get_port(_port) is not None:
                 break
+        else:
+            raise OSError(f'Couldn\'t find an available port in [{min_port}, {max_port}].')
     else:
         _port = _get_port()
     return _port
