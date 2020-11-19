@@ -320,9 +320,9 @@ class Document:
             c.CopyFrom(document.as_pb_object)
 
         with Document(c) as chunk:
-            chunk.update(parent_id=self._document.id,
-                         granularity=self._document.granularity + 1,
-                         **kwargs)
+            chunk.set_attrs(parent_id=self._document.id,
+                            granularity=self._document.granularity + 1,
+                            **kwargs)
             chunk.mime_type = self._document.mime_type
             return chunk
 

@@ -6,7 +6,7 @@ from typing import Iterator
 import numpy as np
 
 from . import BaseExecutableDriver
-from ..types.document.helper import extract_docs
+from ..types.document.helper import extract_embedding
 
 if False:
     from ..types.document import Document
@@ -24,7 +24,7 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
-        embed_vecs, docs_pts, bad_doc_ids = extract_docs(docs, embedding=True)
+        embed_vecs, docs_pts, bad_doc_ids = extract_embedding(docs)
 
         if bad_doc_ids:
             self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')

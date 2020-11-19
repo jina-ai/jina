@@ -5,7 +5,7 @@ from typing import Tuple, Iterator
 
 from . import BaseExecutableDriver, QuerySetReader
 from ..types.document import uid, Document
-from ..types.document.helper import extract_docs
+from ..types.document.helper import extract_embedding
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -108,7 +108,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._fill_embedding = fill_embedding
 
     def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
-        embed_vecs, doc_pts, bad_doc_ids = extract_docs(docs, embedding=True)
+        embed_vecs, doc_pts, bad_doc_ids = extract_embedding(docs)
 
         if not doc_pts:
             return

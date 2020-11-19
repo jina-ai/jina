@@ -1,11 +1,11 @@
 import numpy as np
 import pytest
 
+from jina import Document, Request
 from jina.drivers.evaluate import NDArrayEvaluateDriver
 from jina.executors.evaluators.embedding import BaseEmbeddingEvaluator
 from jina.proto import jina_pb2
 from jina.types.document.helper import DocGroundtruthPair
-from jina.types.ndarray.generic import NdArray
 
 
 class MockDiffEvaluator(BaseEmbeddingEvaluator):
@@ -46,10 +46,8 @@ def ground_truth_pairs():
     num_docs = 10
     pairs = []
     for idx in range(num_docs):
-        doc = jina_pb2.DocumentProto()
-        gt = jina_pb2.DocumentProto()
-        NdArray(doc.embedding).value = np.array([1, 1])
-        NdArray(gt.embedding).value = np.array([2, 2])
+        doc = Document(embedding=np.array([1, 1]))
+        gt = Document(embedding=np.array([2, 2]))
         pairs.append(DocGroundtruthPair(doc=doc, groundtruth=gt))
     return pairs
 
@@ -91,17 +89,17 @@ def simple_chunk_evaluate_driver():
 @pytest.fixture
 def eval_request():
     num_docs = 10
-    req = jina_pb2.RequestProto.IndexRequestProto()
+    req = jina_pb2.RequestProto()
     for idx in range(num_docs):
-        doc = req.docs.add()
-        gt = req.groundtruths.add()
-        chunk_doc = doc.chunks.add()
-        chunk_gt = gt.chunks.add()
-        chunk_doc.granularity = 1
-        chunk_gt.granularity = 1
-        NdArray(chunk_doc.embedding).value = np.array([1, 1])
-        NdArray(chunk_gt.embedding).value = np.array([2, 2])
-    return req
+        doc = Document(req.index.docs.add())
+        gt = Document(req.index.groundtruths.add())
+        doc.update_id()
+        gt.update_id()
+        chunk_doc = doc.add_chunk()
+        chunk_gt = gt.add_chunk()
+        chunk_doc.embedding = np.array([1, 1])
+        chunk_gt.embedding = np.array([2, 2])
+    return Request(req)
 
 
 def test_encoding_evaluate_driver_embedding_in_chunks(simple_chunk_evaluate_driver,
@@ -113,12 +111,15 @@ def test_encoding_evaluate_driver_embedding_in_chunks(simple_chunk_evaluate_driv
     simple_chunk_evaluate_driver.eval_request = eval_request
     simple_chunk_evaluate_driver()
 
-    assert len(eval_request.docs) == len(eval_request.groundtruths)
-    assert len(eval_request.docs) == 10
-    for doc in eval_request.docs:
+    ed = list(eval_request.docs)
+    eg = list(eval_request.groundtruths)
+    assert len(ed) == len(eg)
+    assert len(ed) == 10
+    for doc in ed:
         assert len(doc.evaluations) == 0  # evaluation done at chunk level
-        assert len(doc.chunks) == 1
-        chunk = doc.chunks[0]
+        dc = list(doc.chunks)
+        assert len(dc) == 1
+        chunk = dc[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
         assert chunk.evaluations[0].op_name == 'SimpleChunkEvaluateDriver-MockDiffEvaluator'
         assert chunk.evaluations[0].value == 1.0

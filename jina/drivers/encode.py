@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterator
 
 from . import BaseExecutableDriver
-from ..types.document.helper import extract_docs
+from ..types.document.helper import extract_content
 
 if False:
     from ..types.document import Document
@@ -22,7 +22,7 @@ class EncodeDriver(BaseEncodeDriver):
     """
 
     def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
-        contents, docs_pts, bad_doc_ids = extract_docs(docs, embedding=False)
+        contents, docs_pts, bad_doc_ids = extract_content(docs)
 
         if bad_doc_ids:
             self.logger.warning(f'these bad docs can not be added: {bad_doc_ids} '
