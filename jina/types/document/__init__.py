@@ -173,6 +173,22 @@ class Document:
         return id2bytes(self._document.id)
 
     @property
+    def parent_id_in_hash(self) -> int:
+        """The document id in the integer form of bytes, as 8 bytes map to int64.
+        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
+        such as ranker and Numpyindexer
+        """
+        return id2hash(self._document.parent_id)
+
+    @property
+    def parent_id_in_bytes(self) -> bytes:
+        """The document id in the binary format of str, it has 8 bytes fixed length,
+        so it can be used in the dense file storage, e.g. BinaryPbIndexer,
+        as it requires the key has to be fixed length.
+        """
+        return id2bytes(self._document.parent_id)
+
+    @property
     def length(self) -> int:
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
         return self._document.length

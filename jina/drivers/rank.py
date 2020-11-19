@@ -62,9 +62,9 @@ class Chunk2DocRankDriver(BaseRankDriver):
             query_chunk_meta[chunk.id_in_hash] = chunk.get_attrs(*self.exec.required_keys)
             for match in chunk.matches:
                 match_idx.append(
-                    (uid.id2hash(match.parent_id),
-                     uid.id2hash(match.id),
-                     uid.id2hash(chunk.id),
+                    (match.parent_id_in_hash,
+                     match.id_in_hash,
+                     chunk.id_in_hash,
                      match.score.value)
                 )
                 match_chunk_meta[match.id_in_hash] = match.get_attrs(*self.exec.required_keys)
@@ -210,13 +210,13 @@ class Matches2DocRankDriver(BaseRankDriver):
 
     def _sort_matches_in_place(self, context_doc: 'Document', match_scores: 'np.ndarray') -> None:
         sorted_scores = self._sort(match_scores)
-        old_matches = {match.id: match for match in context_doc.matches}
+        old_matches = {match.id_in_hash: match for match in context_doc.matches}
         context_doc.ClearField('matches')
         for match_hash, score in sorted_scores:
             new_match = context_doc.add_match(doc_id=match_hash,
                                               score_value=score,
                                               op_name=exec.__class__.__name__)
-            new_match.MergeFrom(old_matches[self.hash2id(match_hash)])
+            new_match.MergeFrom(old_matches[match_hash])
 
     def _sort(self, docs_scores: 'np.ndarray') -> 'np.ndarray':
         return np.sort(docs_scores, order=Match2DocRanker.COL_SCORE)[::-1]
