@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   flow:
-    image: jinaai/jinad
+    image: test_simple_distributed
     build:
       context: .
       dockerfile: tests/integration/jinad/test_simple_distributed/Dockerfile
@@ -13,14 +13,14 @@ services:
     expose:
       - 10000-60000
   pod1:
-    image: jinaai/jinad
+    image: test_simple_distributed
     expose:
       - 8000
       - 10000-60000
     env_file:
       - tests/integration/jinad/test_simple_distributed/.env
   pod2:
-    image: jinaai/jinad
+    image: test_simple_distributed
     expose:
       - 8000
       - 10000-60000
