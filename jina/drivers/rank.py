@@ -159,11 +159,9 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
             # These ranker will change the current matches
             context_doc.ClearField('matches')
             for doc_hash, score in docs_scores:
-                r = context_doc.matches.add()
-                r.id = self.hash2id(doc_hash)
-                r.score.ref_id = context_doc.id  # label the score is computed against doc
-                r.score.value = score
-                r.score.op_name = exec.__class__.__name__
+                context_doc.add_match(doc_hash,
+                                      score_value=score,
+                                      op_name=exec.__class__.__name__)
 
 
 class Matches2DocRankDriver(BaseRankDriver):

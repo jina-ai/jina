@@ -100,7 +100,7 @@ class MultiModalDriver(BaseEncodeDriver):
             embeds = self.exec_fn(*input_args)
             if len(valid_docs) != embeds.shape[0]:
                 self.logger.error(
-                    f'mismatched {len(valid_docs)} docs from level {docs[0].granularity} '
+                    f'mismatched {len(valid_docs)} docs from level {valid_docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(valid_docs, embeds):
                 doc.embedding = embedding
