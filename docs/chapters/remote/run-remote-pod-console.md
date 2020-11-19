@@ -3,7 +3,7 @@
 
 This tutorial guides you to run a Jina Pod remotely and communicate with it via console.
 
-Before the start, make sure to read ["Understanding Pea and Pod in Jina"](/tba). 
+Before the start, make sure to read ["Understanding Pea and Pod in Jina"](https://docs.jina.ai/chapters/101/.sphinx.html#pea). 
 
 ## Terminologies
 

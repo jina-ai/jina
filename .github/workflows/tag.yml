@@ -22,8 +22,8 @@ jobs:
         with:
           python-version: 3.7
       - run: |
-          echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-env name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+          echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+          echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           pip install .  --no-cache-dir
       - run: |
           cd schema
@@ -74,12 +74,12 @@ jobs:
       - name: Set envs and versions
         run: |
           echo ${{ steps.buildx.outputs.platforms }}
-          echo ::set-env name=VCS_REF::$(git rev-parse --short HEAD)
-          echo ::set-env name=BUILD_DATE::$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
       - id: get_version
         run: |
-          echo ::set-env name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-env name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+          echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+          echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
       - name: Run Buildx and Upload to Docker Cloud
         run: |
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}

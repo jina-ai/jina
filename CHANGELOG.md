@@ -96,6 +96,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5525,4 +5526,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```6e1c7e65```](https://github.com/jina-ai/jina/commit/6e1c7e65850c022b52446eac005bddd0c8b8d823)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
  - [[```b456802b```](https://github.com/jina-ai/jina/commit/b456802bf81087295f199f8fb6a690e0a5250846)] __-__ style helloworld html (#1270) (*Alex Cureton-Griffiths*)
  - [[```98c43ac8```](https://github.com/jina-ai/jina/commit/98c43ac83b63820d7f072cf1ecf53593d3f3aa39)] __-__ __version__: the next version will be 0.7.9 (*Jina Dev Bot*)
+
+<a name=release-note-0-7-11></a>
+## Release Note (`0.7.11`)
+
+> Release time: 2020-11-17 20:52:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Deepankar Mahapatro,  Joan Fontanals,  cristian,  pswu11,  Jina Dev Bot,  Nan Wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f0809e32```](https://github.com/jina-ai/jina/commit/f0809e32db805401b2768aef7e8eec9c4ebae83d)] __-__ __types__: Document as new primitive type (#1289) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```5b902aad```](https://github.com/jina-ai/jina/commit/5b902aadfd55849499fbdfe36ede34b8304ce539)] __-__ remote args for cli (#1299) (*Deepankar Mahapatro*)
+ - [[```45698b33```](https://github.com/jina-ai/jina/commit/45698b33c497f9851b6557bcc0c0a5ae86f8b753)] __-__ ci hub update missing python3-setuptools (#1296) (*cristian*)
+ - [[```796cd904```](https://github.com/jina-ai/jina/commit/796cd90412d13c25f188ffbd7acb3d79c4775772)] __-__ use &#39;sudo&#39; for update hub flow (#1292) (*cristian*)
+
+### 🚧 Code Refactoring
+
+ - [[```e06013d8```](https://github.com/jina-ai/jina/commit/e06013d83bbc7267a5a3eeee82142eda3884e5c3)] __-__ __client__: wrap callback with try except (#1303) (*Han Xiao*)
+ - [[```262eb691```](https://github.com/jina-ai/jina/commit/262eb691ab31a49a8e93dadd8ab6e88ecce224ad)] __-__ remote default should be jinad (#1297) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```153eb19f```](https://github.com/jina-ai/jina/commit/153eb19f6109a04baf949f24415c4ccce4e535c6)] __-__ changing env vars for gh action (#1301) (*Deepankar Mahapatro*)
+ - [[```799d3dcb```](https://github.com/jina-ai/jina/commit/799d3dcb2ffe03ee7a3088bef5cf95b7df5f1441)] __-__ allow for logging; remove unnecessary id field (#1294) (*cristian*)
+ - [[```8524b225```](https://github.com/jina-ai/jina/commit/8524b2252712204b5627acd17e1564c3c72e0daa)] __-__ handling updating jina hub modules (#1274) (*cristian*)
+ - [[```d8d0062a```](https://github.com/jina-ai/jina/commit/d8d0062afacac18d66ff59c193188185f867f2a6)] __-__ remove duplicated random_docs (#1291) (*Nan Wang*)
+
+### 🍹 Other Improvements
+
+ - [[```091bc1b3```](https://github.com/jina-ai/jina/commit/091bc1b308301a30c61301e8d3f3130184f8c1cc)] __-__ hotfix release (*Han Xiao*)
+ - [[```cd489275```](https://github.com/jina-ai/jina/commit/cd489275963de8062f3751cccabec71fe78b736f)] __-__ docs readme learn revamp (#1293) (*pswu11*)
+ - [[```bcd5b781```](https://github.com/jina-ai/jina/commit/bcd5b781fabfafc7edc551bbc9ad60ad176c3715)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b6f2bc71```](https://github.com/jina-ai/jina/commit/b6f2bc71f50d171b243885c53c4104b00cfae38c)] __-__ update readme (*Han Xiao*)
+ - [[```6db44505```](https://github.com/jina-ai/jina/commit/6db445058d0ac6c7819390f9e3ebe9bf379de9bd)] __-__ __version__: the next version will be 0.7.11 (*Jina Dev Bot*)
 

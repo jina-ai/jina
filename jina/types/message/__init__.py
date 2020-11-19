@@ -3,7 +3,7 @@ import sys
 import traceback
 from typing import Union, List, Optional
 
-from .request import Request
+from ..request import Request
 from ... import __version__, __proto_version__
 from ...enums import CompressAlgo
 from ...excepts import MismatchedVersion
@@ -19,6 +19,11 @@ __all__ = ['Message', 'ControlMessage']
 
 class Message:
     """
+    :class:`Message` is one of the **primitive data type** in Jina.
+
+    It offers a Pythonic interface to allow users access and manipulate
+    :class:`jina.jina_pb2.MessageProto` object without working with Protobuf itself.
+
     A container class for :class:`jina_pb2.MessageProto`. Note, the Protobuf version of :class:`jina_pb2.MessageProto`
     contains a :class:`jina_pb2.EnvelopeProto` and :class:`jina_pb2.RequestProto`. Here, it contains:
         - a :class:`jina_pb2.EnvelopeProto` object

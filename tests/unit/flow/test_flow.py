@@ -2,6 +2,7 @@ import os
 
 import pytest
 import requests
+import numpy as np
 
 from jina import JINA_GLOBAL
 from jina.checker import NetworkChecker
@@ -11,6 +12,7 @@ from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_po
 from jina.peapods.pea import BasePea
 from jina.peapods.pod import BasePod
 from jina.proto.jina_pb2 import DocumentProto
+from jina.types.request.common import IndexDryRunRequest
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -298,7 +300,7 @@ def test_py_client():
     with f:
         f.dry_run()
         from jina.clients import py_client
-        py_client(port_expose=f.port_expose, host=f.host).dry_run(as_request='index')
+        py_client(port_expose=f.port_expose, host=f.host).dry_run(IndexDryRunRequest())
 
     with f:
         node = f._pod_nodes['gateway']
@@ -559,3 +561,31 @@ def test_flow_arbitrary_needs():
 
     with f:
         f.index_lines(['abc', 'def'])
+
+
+def test_flow_needs_all():
+    f = (Flow().add(name='p1', needs='gateway')
+         .needs_all(name='r1'))
+    assert f._pod_nodes['r1'].needs == {'p1'}
+
+    f = (Flow().add(name='p1', needs='gateway')
+         .add(name='p2', needs='gateway')
+         .add(name='p3', needs='gateway')
+         .needs(needs=['p1', 'p2'], name='r1')
+         .needs_all(name='r2'))
+    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
+
+    with f:
+        f.index_ndarray(np.random.random([10, 10]))
+
+    f = (Flow().add(name='p1', needs='gateway')
+         .add(name='p2', needs='gateway')
+         .add(name='p3', needs='gateway')
+         .needs(needs=['p1', 'p2'], name='r1')
+         .needs_all(name='r2')
+         .add(name='p4', needs='r2'))
+    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
+    assert f._pod_nodes['p4'].needs == {'r2'}
+
+    with f:
+        f.index_ndarray(np.random.random([10, 10]))

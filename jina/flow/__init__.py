@@ -20,7 +20,8 @@ from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path
+from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path, colored, \
+    get_public_ip, get_internal_ip, typename
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..peapods.pod import FlowPod, GatewayFlowPod
@@ -251,6 +252,19 @@ class Flow(ExitStack):
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
         return self.add(name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
 
+    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
+        """
+        Collect all hanging Pod so far and add a blocker to the flow, wait until all handing peas completed.
+        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param name: the name of this joiner, by default is ``joiner``
+        :return: the modified flow
+        """
+        needs = _hanging_pods(self)
+        if len(needs) == 1:
+            return self.add(name=name, needs=needs, *args, **kwargs)
+
+        return self.needs(name=name, needs=needs, *args, **kwargs)
+
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
             copy_flow: bool = True,
@@ -478,10 +492,10 @@ class Flow(ExitStack):
                 with open(self.args.logserver_config) as fp:
                     log_config = yaml.load(fp)
                 self._sse_logger = threading.Thread(name='sentinel-sse-logger',
-                                                target=start_sse_logger, daemon=True,
-                                                args=(log_config,
-                                                      self.args.log_id,
-                                                      self.yaml_spec))
+                                                    target=start_sse_logger, daemon=True,
+                                                    args=(log_config,
+                                                          self.args.log_id,
+                                                          self.yaml_spec))
                 self._sse_logger.start()
                 time.sleep(1)
                 response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
@@ -516,7 +530,8 @@ class Flow(ExitStack):
             self.enter_context(v)
 
         self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
-        self.logger.success(f'flow is now ready for use, current build_level is {self._build_level}')
+
+        self._show_success_message()
 
         return self
 
@@ -613,7 +628,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_numpy
-        self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle), output_fn, **kwargs)
+        self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle),
+                                         output_fn, **kwargs)
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        output_fn: Callable[['jina_pb2.RequestProto'], None] = None,
@@ -628,7 +644,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_numpy
-        self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle), output_fn, **kwargs)
+        self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle),
+                                          output_fn, **kwargs)
 
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
@@ -646,7 +663,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn,
+        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode),
+                                         output_fn,
                                          **kwargs)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
@@ -666,7 +684,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn,
+        self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode),
+                                         output_fn,
                                          **kwargs)
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
@@ -686,7 +705,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode), output_fn,
+        self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode),
+                                          output_fn,
                                           **kwargs)
 
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
@@ -705,7 +725,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode), output_fn,
+        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode),
+                                          output_fn,
                                           **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
@@ -960,22 +981,54 @@ class Flow(ExitStack):
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def port_expose(self):
+    def port_expose(self) -> int:
+        """Return the exposed port of the gateway"""
         return self._pod_nodes['gateway'].port_expose
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def host(self):
+    def host(self) -> str:
+        """Return the local address of the gateway """
         return self._pod_nodes['gateway'].host
 
+    @property
+    @build_required(FlowBuildLevel.GRAPH)
+    def address_private(self) -> str:
+        """Return the private IP address of the gateway for connecting from other machine in the same network """
+        return get_internal_ip()
+
+    @property
+    @build_required(FlowBuildLevel.GRAPH)
+    def address_public(self) -> str:
+        """Return the public IP address of the gateway for connecting from other machine in the public network """
+        return get_public_ip()
+
     def __iter__(self):
-        return self._pod_nodes.values().__iter__()
+        return self._pod_nodes.items().__iter__()
+
+    def _show_success_message(self):
+        if self._pod_nodes['gateway']._args.rest_api:
+            header = 'http://'
+            protocol = 'REST'
+        else:
+            header = 'tcp://'
+            protocol = 'gRPC'
+
+        address_table = [f'\t🖥️ Local access:\t' + colored(f'{header}{self.host}:{self.port_expose}',
+                                                           'cyan', attrs='underline'),
+                         f'\t🔒 Private network:\t' + colored(f'{header}{self.address_private}:{self.port_expose}',
+                                                            'cyan', attrs='underline')]
+        if self.address_public:
+            address_table.append(
+                f'\t🌐 Public address:\t' + colored(f'{header}{self.address_public}:{self.port_expose}',
+                                                  'cyan', attrs='underline'))
+        self.logger.success(f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}')
+        self.logger.info('\n'+'\n'.join(address_table))
 
     def block(self):
         """Block the process until user hits KeyboardInterrupt """
         try:
-            self.logger.success(f'flow is started at {self.host}:{self.port_expose}, '
-                                f'you can now use client to send request!')
+            self._show_success_message()
             threading.Event().wait()
         except KeyboardInterrupt:
             pass
@@ -987,6 +1040,14 @@ class Flow(ExitStack):
     def use_rest_gateway(self):
         """Change to use REST gateway for IO """
         self._common_kwargs['rest_api'] = True
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            return self._pod_nodes[item]
+        elif isinstance(item, int):
+            return list(self._pod_nodes.values())[item]
+        else:
+            raise TypeError(f'{typename(item)} is not supported')
 
     # for backward support
     join = needs

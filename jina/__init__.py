@@ -37,7 +37,7 @@ __license__ = "Apache-2.0"
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '0.7.11'
+__version__ = '0.7.12'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -145,8 +145,10 @@ _set_nofile()
 
 # Primitive data type
 from jina.types.ndarray.generic import NdArray
-from jina.types.message.request import Request
+from jina.types.request import Request
 from jina.types.message import Message
+from jina.types.querylang import QueryLang
+from jina.types.document import Document
 
 # Flow
 from jina.flow import Flow

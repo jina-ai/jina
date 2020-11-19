@@ -12,9 +12,9 @@ from typing import Dict, Optional, Union, List
 
 import zmq
 
-from jina.types.message import Message, Request
+from jina.types.message import Message
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
-from .. import __ready_msg__, __stop_msg__
+from .. import __ready_msg__, __stop_msg__, Request
 from ..enums import PeaRoleType, SkipOnErrorType
 from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
     ChainedPodException

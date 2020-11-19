@@ -297,6 +297,9 @@ def set_pea_parser(parser=None):
                      help='timeout (ms) of the control request, -1 for waiting forever')
     gp2.add_argument('--timeout-ready', type=int, default=10000,
                      help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
+    gp2.add_argument('--expose-public', action='store_true', default=False,
+                     help='expose the public IP address to remote when necessary, by default it exposes'
+                          'private IP address, which only allows accessing under the same network/subnet')
 
     gp3 = add_arg_group(parser, 'pea IO arguments')
     gp3.add_argument('--dump-interval', type=int, default=240,

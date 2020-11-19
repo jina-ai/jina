@@ -6,7 +6,7 @@ import os
 import grpc
 
 from ... import __stop_msg__
-from ...excepts import BadClient, GRPCServerError
+from ...excepts import GRPCServerError, BadClientRequestGenerator, BadClient
 from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc
 
@@ -72,17 +72,24 @@ class GrpcClient:
             self.call(*args, **kwargs)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
-        except grpc.RpcError as rpc_error_call:  # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
-            my_code = rpc_error_call.code()
-            my_details = rpc_error_call.details()
+        except grpc.RpcError as rpc_ex:
+            # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
+            my_code = rpc_ex.code()
+            my_details = rpc_ex.details()
+            msg = f'gRPC error: {my_code} {my_details}'
             if my_code == grpc.StatusCode.UNAVAILABLE:
-                self.logger.error('the ongoing request is terminated as the server is not available or closed already')
+                self.logger.error(
+                    f'{msg}\nthe ongoing request is terminated as the server is not available or closed already')
+                raise rpc_ex
             elif my_code == grpc.StatusCode.INTERNAL:
-                self.logger.error('internal error on the server side')
+                self.logger.error(f'{msg}\ninternal error on the server side')
+                raise rpc_ex
+            elif my_code == grpc.StatusCode.UNKNOWN and my_details == 'Exception iterating requests!':
+                raise BadClientRequestGenerator(f'{msg}\n'
+                                                'often the case is that you define/send a bad input iterator to jina, '
+                                                'please double check your input iterator') from rpc_ex
             else:
-                raise BadClient(f'{my_code} error in grpc: {my_details} '
-                                'often the case is that you define/send a bad input iterator to jina, '
-                                'please double check your input iterator')
+                raise BadClient(msg) from rpc_ex
         finally:
             self.close()
 

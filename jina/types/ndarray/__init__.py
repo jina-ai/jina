@@ -1,9 +1,10 @@
-from typing import TypeVar
+from typing import TypeVar, Union
+
+from ...proto import jina_pb2
+
+PbMessageType = jina_pb2._reflection.GeneratedProtocolMessageType
 
 AnyNdArray = TypeVar('AnyNdArray')
-
-if False:
-    from ...proto import jina_pb2
 
 __all__ = ['BaseNdArray']
 
@@ -15,20 +16,22 @@ class BaseNdArray:
     Do not use this class directly. Subclass should be used.
     """
 
-    def __init__(self, proto: 'jina_pb2._reflection.GeneratedProtocolMessageType' = None, *args, **kwargs):
+    def __init__(self, proto: Union['PbMessageType', AnyNdArray] = None,
+                 *args, **kwargs):
         """
 
         :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
         """
-        if proto:
+        if proto is not None and isinstance(type(proto), PbMessageType):
             self.proto = proto  # a weak ref/copy
         else:
             self.proto = self.null_proto()
-
-        self.is_sparse = False  # set to true if the ndarray is sparse
+            if proto is not None:
+                # casting using the subclass :attr:`value` interface
+                self.value = proto
 
     @property
-    def null_proto(self) -> 'jina_pb2._reflection.GeneratedProtocolMessageType':
+    def null_proto(self) -> 'PbMessageType':
         """Get the new protobuf representation"""
         raise NotImplementedError
 
@@ -42,7 +45,7 @@ class BaseNdArray:
         """Set the value from numpy, scipy, tensorflow, pytorch type to protobuf"""
         raise NotImplementedError
 
-    def copy_to(self, proto: 'jina_pb2._reflection.GeneratedProtocolMessageType') -> 'BaseNdArray':
+    def copy_to(self, proto: 'PbMessageType') -> 'BaseNdArray':
         """Copy itself to another protobuf message, return a view of the copied message"""
         proto.CopyFrom(self.proto)
-        return BaseNdArray(proto)
+        return self.__class__(proto)

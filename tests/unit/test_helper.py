@@ -6,13 +6,13 @@ import numpy as np
 import pytest
 
 from cli import _is_latest_version
-from jina.clients.python import PyClient, pprint_routes
+from jina.clients.python import PyClient, pprint_routes, safe_callback
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
-from jina.helper import cached_property
-from jina.importer import ImportExtensions
+from jina.excepts import BadClientCallback
+from jina.helper import cached_property, convert_tuple_to_list
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina.proto.uid import *
+from jina.types.document.uid import *
 from tests import random_docs
 
 
@@ -160,43 +160,19 @@ def test_pprint_routes(capfd):
 '''
 
 
-def test_bad_import():
-    from jina.logging import default_logger
-
-    with pytest.raises(ModuleNotFoundError):
-        with ImportExtensions(required=True, logger=default_logger):
-            import abcdefg  # no install and unlist
-
-    with pytest.raises(ModuleNotFoundError):
-        with ImportExtensions(required=True, logger=default_logger):
-            import ngt  # list but no install
-
-    with ImportExtensions(required=False, logger=default_logger) as ie:
-        import ngt
-
-    assert ie._tags == ['ngt', 'index', 'py37']
-
-    with ImportExtensions(required=False, logger=default_logger) as ie:
-        import ngt.abc.edf
-
-    assert ie._tags == ['ngt', 'index', 'py37']
-
-    with ImportExtensions(required=False, logger=default_logger) as ie:
-        from ngt.abc import edf
-
-    assert ie._tags == ['ngt', 'index', 'py37']
-
-    with ImportExtensions(required=False, logger=default_logger) as ie:
-        import abcdefg
-
-    assert not ie._tags
+def test_convert_tuple_to_list():
+    d = {'1': (1, 2), 2: {'a': (3, 4)}}
+    convert_tuple_to_list(d)
+    assert d == {'1': [1, 2], 2: {'a': [3, 4]}}
 
 
-def test_no_suppress_other_exception():
-    with pytest.raises(Exception):
-        with ImportExtensions(required=False, logger=default_logger):
-            raise Exception
+def test_safe_callback():
+    def t1():
+        raise NotImplementedError
 
-    with pytest.raises(Exception):
-        with ImportExtensions(required=True, logger=default_logger):
-            raise Exception
+    st1 = safe_callback(t1, continue_on_error=True, logger=default_logger)
+    st1()
+
+    st1 = safe_callback(t1, continue_on_error=False, logger=default_logger)
+    with pytest.raises(BadClientCallback):
+        st1()

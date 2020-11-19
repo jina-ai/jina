@@ -6,7 +6,8 @@ import pytest
 
 from jina.drivers.cache import BaseCacheDriver
 from jina.executors.indexers.cache import DocIDCache
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 from tests import random_docs
 
 

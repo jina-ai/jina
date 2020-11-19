@@ -7,7 +7,8 @@ from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
-from jina.proto import jina_pb2, uid
+from jina.proto import jina_pb2
+from jina.types.document import uid
 
 # import DocumentProto
 

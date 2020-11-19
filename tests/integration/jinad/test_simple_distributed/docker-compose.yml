@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  flow:
+    image: test_simple_distributed
+    build:
+      context: .
+      dockerfile: tests/integration/jinad/test_simple_distributed/Dockerfile
+    ports:
+      - "8000:8000"
+      - "45678:45678"
+    env_file:
+      - tests/integration/jinad/test_simple_distributed/.env
+    expose:
+      - 10000-60000
+  pod1:
+    image: test_simple_distributed
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_simple_distributed/.env
+  pod2:
+    image: test_simple_distributed
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_simple_distributed/.env

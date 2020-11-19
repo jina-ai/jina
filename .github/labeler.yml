@@ -39,6 +39,12 @@ area/docker:
   - Dockerfiles/**/*
   - ./.dockerignore
 
+area/cli:
+  - cli/**/*
+
+area/script:
+  - script/**/*
+
 component/client:
   - jina/clients/**/*
 
@@ -80,6 +86,9 @@ component/peapod:
 
 component/proto:
   - jina/proto/**/*
+
+component/type:
+  - jina/types/**/*
 
 component/resource:
   - jina/resources/**/*
