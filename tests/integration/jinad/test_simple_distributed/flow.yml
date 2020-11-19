@@ -1,0 +1,14 @@
+!Flow
+with:
+  read_only: true
+  rest_api: true
+  port_expose: $JINA_GATEWAY_REST_PORT
+pods:
+  pod1:
+    uses: _pass
+    host: $JINA_POD1_HOST
+    port_expose: 8000
+  pod2:
+    uses: _pass
+    host: $JINA_POD2_HOST
+    port_expose: 8000
