@@ -64,7 +64,11 @@ class RemotePea(BasePea):
     def delete_remote(self):
         if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
             self.api.delete(self.remote_id)
-            
+
+    def close(self) -> None:
+        self.send_terminate_signal()
+        # TODO: I would rather wait for loop_body to finish but it seems to go on forever
+
 
 class RemotePod(RemotePea):
     """REST based pod to be used while invoking remote Pod
@@ -82,16 +86,15 @@ class RemotePod(RemotePea):
                 self.name = first_pea_args.name
             if first_pea_args.role == PeaRoleType.PARALLEL:
                 self.name = f'{self.name}-{first_pea_args.pea_id}'
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(first_pea_args.host, first_pea_args.port_ctrl, first_pea_args.ctrl_with_ipc)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(first_pea_args.host, first_pea_args.port_ctrl,
+                                                                         first_pea_args.ctrl_with_ipc)
 
     def spawn_remote(self, host: str, port: int, pod_type: str = 'cli', **kwargs) -> Optional[str]:
         return super().spawn_remote(host, port, pod_type=pod_type)
 
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
-        self.logger.success(f' REMOTE POD SEND_TERMINATE_SIGNAL? {hasattr(self, "ctrl_addr")}')
         if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            self.logger.success(f' REMOTE POD SEND_TERMINATE_SIGNAL to {self.ctrl_addr}')
             send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.TERMINATE,
                               timeout=self.args['peas'][0].timeout_ctrl)
 
