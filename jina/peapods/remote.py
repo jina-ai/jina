@@ -47,9 +47,12 @@ class RemotePea(BasePea):
 
     def loop_body(self):
         if self.remote_id:
-            self.logger.success(f'created remote {self.api.kind} with id {colored(self.remote_id, "cyan")}')
-            self.set_ready()
-            self.api.log(self.remote_id)
+            try:
+                self.logger.success(f'created remote {self.api.kind} with id {colored(self.remote_id, "cyan")}')
+                self.set_ready()
+                self.api.log(self.remote_id)
+            finally:
+                self.is_shutdown.set()
         else:
             self.logger.error(f'fail to create {typename(self)} remotely')
             self.is_shutdown.set()
@@ -57,11 +60,7 @@ class RemotePea(BasePea):
     def delete_remote(self):
         if hasattr(self, 'api') and self.api.is_alive and self.remote_id:
             self.api.delete(self.remote_id)
-
-    def close(self):
-        self.send_terminate_signal()
-        self.join()
-
+            
 
 class RemotePod(RemotePea):
     """REST based pod to be used while invoking remote Pod
