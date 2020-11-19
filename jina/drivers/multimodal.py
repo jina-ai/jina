@@ -14,6 +14,8 @@ if False:
 
 def _extract_modalities_from_document(doc: 'Document'):
     """Returns a dictionary of document content (embedding, text, blob or buffer) with `modality` as its key
+
+    TODO: this should be part of the Document class, but this logic looks really specific @Joan
     """
     doc_content = {}
     for chunk in doc.chunks:

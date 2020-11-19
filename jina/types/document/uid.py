@@ -17,16 +17,17 @@ Remarks on the ``id``, we have three views for it
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import re
 import sys
 from binascii import unhexlify
 from hashlib import blake2b
 
-from jina.proto.jina_pb2 import DocumentProto
-from jina.excepts import BadDocID
-from jina.logging import default_logger
+from ...excepts import BadDocID
+from ...proto.jina_pb2 import DocumentProto
 
 _doc_field_mask = None
 _digest_size = 8
+_id_regex = re.compile(r'[0-9a-fA-F]{16}')
 
 
 def new_doc_hash(doc: 'DocumentProto') -> int:
@@ -65,11 +66,7 @@ def id2bytes(value: str) -> bytes:
     try:
         return unhexlify(value)
     except:
-        default_logger.critical('Customized ``id`` is only acceptable when: \
-            - it only contains the symbols "0"–"9" to represent values 0 to 9, \
-            and "A"–"F" (or alternatively "a"–"f"). \
-            - it has an even length.')
-        raise BadDocID(f'{value} is not a valid id for DocumentProto')
+        is_valid_id(value)
 
 
 def bytes2id(value: bytes) -> str:
@@ -82,3 +79,12 @@ def hash2id(value: int) -> str:
 
 def id2hash(value: str) -> int:
     return bytes2hash(id2bytes(value))
+
+
+def is_valid_id(value: str) -> bool:
+    if not isinstance(value, str) or not _id_regex.match(value):
+        raise BadDocID(f'{value} is not a valid id. Customized ``id`` is only acceptable when: \
+        - it only contains chars "0"–"9" to represent values 0 to 9, \
+        and "A"–"F" (or alternatively "a"–"f"). \
+        - it has 16 chars described above.')
+    return True

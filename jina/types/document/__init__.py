@@ -1,22 +1,21 @@
-import mimetypes
+import base64
 import os
-import re
 import urllib.parse
+import urllib.request
 import warnings
 from typing import Union, Dict, Iterator, Optional, TypeVar, Any
 
-import numpy as np
 from google.protobuf import json_format
 
+from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
 from ...excepts import BadDocType
-from ...helper import is_url, typename, guess_mime
+from ...helper import is_url, typename
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
 _empty_doc = jina_pb2.DocumentProto()
-_id_regex = re.compile(r'[0-9a-fA-F]{16}')
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray, jina_pb2.NdArrayProto, NdArray)
@@ -66,7 +65,9 @@ class Document:
             # to set as embedding
             d.embedding = np.random.random([10, 5])
 
-    It also provides multiple way to extract from existing Document. You can build :class:`Document`
+    MIME type is auto set/guessed when setting :attr:`content` and :attr:`uri`
+
+    :class:`Document` also provides multiple way to build from existing Document. You can build :class:`Document`
     from ``jina_pb2.DocumentProto``, ``bytes``, ``str``, and ``Dict``. You can also use it as view (i.e.
     weak reference when building from an existing ``jina_pb2.DocumentProto``). For example,
 
@@ -77,6 +78,8 @@ class Document:
             b = Document(a, copy=False)
             a.text = 'hello'
             assert b.text == 'hello'
+
+    You can leverage the :meth:`convert_a_to_b` interface to convert between content forms.
 
     """
 
@@ -185,6 +188,13 @@ class Document:
         """
         return self._document.id
 
+    @property
+    def parent_id(self) -> str:
+        """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
+        it will be used as the major view.
+        """
+        return self._document.parent_id
+
     @id.setter
     def id(self, value: str):
         """Set document id to a string value
@@ -199,13 +209,25 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        if not isinstance(value, str) or not _id_regex.match(value):
-            raise ValueError('Customized ``id`` is only acceptable when: \
-            - it only contains chars "0"–"9" to represent values 0 to 9, \
-            and "A"–"F" (or alternatively "a"–"f"). \
-            - it has 16 chars described above.')
-        else:
+        if is_valid_id(value):
             self._document.id = value
+
+    @parent_id.setter
+    def parent_id(self, value: str):
+        """Set document's parent id to a string value
+
+        .. note:
+
+            Customized ``id`` is acceptable as long as
+            - it only contains the symbols "0"–"9" to represent values 0 to 9,
+            and "A"–"F" (or alternatively "a"–"f").
+            - it has 16 chars described above.
+
+        :param value: restricted string value
+        :return:
+        """
+        if is_valid_id(value):
+            self._document.parent_id = value
 
     @property
     def blob(self) -> 'np.ndarray':
@@ -251,9 +273,18 @@ class Document:
         for d in self._document.chunks:
             yield Document(d)
 
-    def add_match(self, doc_id: str, score_value: float, **kwargs) -> 'Document':
+    def add_match(self, doc_id: Union[str, int], score_value: float, **kwargs) -> 'Document':
+        """Add a match document to the current document
+
+        :param doc_id: the document id in hash or hex string
+        :param score_value: the value of the score
+        :param kwargs: other key-value parameters written to the ``score`` object
+        """
         r = self._document.matches.add()
-        r.id = doc_id
+        if isinstance(doc_id, int):
+            r.id = uid.hash2id(doc_id)
+        elif isinstance(doc_id, str):
+            r.id = doc_id
         r.granularity = self._document.granularity
         r.adjacency = self._document.adjacency + 1
         r.score.ref_id = self._document.id
@@ -431,3 +462,65 @@ class Document:
         else:
             # ``None`` is also considered as bad type
             raise TypeError(f'{typename(value)} is not recognizable')
+
+    def convert_buffer_to_blob(self):
+        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
+        set :attr:`blob` accordingly.
+        """
+        self.blob = np.frombuffer(self.buffer)
+
+    def convert_blob_to_uri(self, width: int, height: int, resize_method: str = 'BILINEAR'):
+        """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly"""
+        png_bytes = png_to_buffer(self.blob, width, height, resize_method)
+        self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+
+    def convert_uri_to_buffer(self):
+        """Convert uri to buffer
+        Internally it downloads from the URI and set :attr:`buffer`.
+
+        """
+        if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
+            req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as fp:
+                self.buffer = fp.read()
+        elif os.path.exists(self.uri):
+            with open(self.uri, 'rb') as fp:
+                self.buffer = fp.read()
+        else:
+            raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
+
+    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+        """ Convert uri to data uri.
+        Internally it first reads into buffer and then converts it to data URI.
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        """
+
+        if not self.mime_type:
+            raise ValueError(f'{self.mime_type} is unset, can not convert it to data uri')
+
+        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+
+    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+        """ Convert text to data uri.
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        """
+
+        self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
+
+    def convert_uri_to_text(self):
+        """Assuming URI is text, convert it to text """
+        self.convert_uri_to_buffer()
+        self.text = self.buffer.decode()
+
+    def convert_content_to_uri(self):
+        """Convert content in URI with best effort"""
+        if self.text:
+            self.convert_text_to_data_uri()
+        elif self.buffer:
+            self.convert_buffer_to_data_uri()
+        else:
+            raise NotImplementedError

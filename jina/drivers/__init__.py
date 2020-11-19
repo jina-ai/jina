@@ -21,7 +21,6 @@ from ..executors import BaseExecutor
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml, convert_tuple_to_list
-from ..proto import jina_pb2
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -199,11 +198,6 @@ class BaseDriver(metaclass=DriverType):
             return self.msg.request.queryset
         else:
             return []
-
-    @property
-    def envelope(self) -> 'jina_pb2.EnvelopeProto':
-        """Get the current request, shortcut to ``self.pea.message``"""
-        return self.msg.envelope
 
     @property
     def logger(self) -> 'JinaLogger':

@@ -7,7 +7,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from ..executors.rankers import Chunk2DocRanker, Match2DocRanker
-from ..types.document import uid, Document
+from ..types.document import Document
 
 
 class BaseRankDriver(BaseExecutableDriver):
@@ -15,9 +15,6 @@ class BaseRankDriver(BaseExecutableDriver):
 
     def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
-
-        self.hash2id = uid.hash2id
-        self.id2hash = uid.id2hash
 
 
 class Chunk2DocRankDriver(BaseRankDriver):
@@ -65,9 +62,9 @@ class Chunk2DocRankDriver(BaseRankDriver):
             query_chunk_meta[chunk.id_in_hash] = chunk.get_attrs(*self.exec.required_keys)
             for match in chunk.matches:
                 match_idx.append(
-                    (self.id2hash(match.parent_id),
-                     self.id2hash(match.id),
-                     self.id2hash(chunk.id),
+                    (uid.id2hash(match.parent_id),
+                     uid.id2hash(match.id),
+                     uid.id2hash(chunk.id),
                      match.score.value)
                 )
                 match_chunk_meta[match.id_in_hash] = match.get_attrs(*self.exec.required_keys)
@@ -85,7 +82,7 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             for doc_hash, score in docs_scores:
-                context_doc.add_match(doc_id=self.hash2id(doc_hash),
+                context_doc.add_match(doc_id=doc_hash,
                                       score_value=score,
                                       op_name=exec.__class__.__name__)
 
@@ -141,9 +138,9 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         for match in docs:
             query_chunk_meta[context_doc.id_in_hash] = context_doc.get_attrs(*self.exec.required_keys)
             match_idx.append((
-                self.id2hash(match.parent_id),
-                self.id2hash(match.id),
-                self.id2hash(context_doc.id),
+                match.parent_id_in_hash,
+                match.id_in_hash,
+                context_doc.id_in_hash,
                 match.score.value
             ))
             match_chunk_meta[match.id_in_hash] = match.get_attrs(*self.exec.required_keys)
@@ -216,7 +213,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         old_matches = {match.id: match for match in context_doc.matches}
         context_doc.ClearField('matches')
         for match_hash, score in sorted_scores:
-            new_match = context_doc.add_match(doc_id=self.hash2id(match_hash),
+            new_match = context_doc.add_match(doc_id=match_hash,
                                               score_value=score,
                                               op_name=exec.__class__.__name__)
             new_match.MergeFrom(old_matches[self.hash2id(match_hash)])

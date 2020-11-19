@@ -9,7 +9,17 @@ from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
 from ..proto import jina_pb2
 
 
-class LogInfoDriver(BaseDriver):
+class BaseControlDriver(BaseDriver):
+    """Control driver does not have access to the executor and it
+    often works directly with protobuf layer instead Jina primitive types"""
+
+    @property
+    def envelope(self) -> 'jina_pb2.EnvelopeProto':
+        """Get the current request, shortcut to ``self.pea.message``"""
+        return self.msg.envelope
+
+
+class LogInfoDriver(BaseControlDriver):
     """Log output the request info"""
 
     def __init__(self, key: str = 'request', *args, **kwargs):
@@ -25,14 +35,14 @@ class LogInfoDriver(BaseDriver):
         self.logger.info(dunder_get(self.msg.as_pb_object, self.key))
 
 
-class WaitDriver(BaseDriver):
-    """Wait for some seconds"""
+class WaitDriver(BaseControlDriver):
+    """Wait for some seconds, mainly for demo purpose"""
 
     def __call__(self, *args, **kwargs):
         time.sleep(5)
 
 
-class ControlReqDriver(BaseDriver):
+class ControlReqDriver(BaseControlDriver):
     """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
 
     def __call__(self, *args, **kwargs):
