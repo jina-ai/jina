@@ -45,10 +45,11 @@ def test_pb_obj2dict():
     assert res['text'] == 'this is text'
     assert res['tags']['id'] == 'id in tags'
     assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
-    assert len(res['chunks']) == 1
-    assert isinstance(res['chunks'][0], jina_pb2.DocumentProto)
-    assert res['chunks'][0].text == 'text in chunk'
-    assert res['chunks'][0].tags['id'] == 'id in chunk tags'
+    rcs = list(res['chunks'])
+    assert len(rcs) == 1
+    assert isinstance(rcs[0], Document)
+    assert rcs[0].text == 'text in chunk'
+    assert rcs[0].tags['id'] == 'id in chunk tags'
 
 
 def test_add_route():
@@ -62,14 +63,14 @@ def test_add_route():
 
 
 def test_extract_docs():
-    d = jina_pb2.DocumentProto()
+    d = Document()
 
     contents, docs_pts, bad_doc_ids = extract_embedding([d])
     assert len(bad_doc_ids) > 0
     assert contents is None
 
     vec = np.random.random([2, 2])
-    NdArray(d.embedding).value = vec
+    d.embedding = vec
     contents, docs_pts, bad_doc_ids = extract_embedding([d])
     assert len(bad_doc_ids) == 0
     np.testing.assert_equal(contents[0], vec)
