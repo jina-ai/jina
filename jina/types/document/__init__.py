@@ -341,7 +341,10 @@ class Document:
                 self._document.ClearField(k)
                 getattr(self._document, k).update(v)
             else:
-                setattr(self, k, v)
+                if hasattr(self, k):
+                    setattr(self, k, v)
+                else:
+                    raise AttributeError(f'{k} is not recognized')
 
     def get_attrs(self, *args) -> Dict[str, Any]:
         """Bulk fetch Document fields and return a dict of the key-value pairs
