@@ -31,21 +31,10 @@ jobs:
         with:
           repository: jina-ai/jinad
           path: jinad
-      - name: Install dependencies
+      - name: Build jina test-pip
         run: |
-          python -m pip install --upgrade pip
-          pip install .[cicd,test,http] requests --no-cache-dir
-      - name: Test jinad
-        run: |
-          jina check
-          export JINA_LOG_VERBOSITY="ERROR"
-          cd jinad/${{ matrix.path }}
-          pip install -r requirements.txt --no-cache-dir
-          pytest -s -v .
-        timeout-minutes: 30
-        env:
-          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Test jinad
         run: |
           cd jinad/${{ matrix.path }}

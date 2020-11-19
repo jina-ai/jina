@@ -1,1 +1,0 @@
--e git+git://github.com/jina-ai/jina.git#egg=jina[scipy]
