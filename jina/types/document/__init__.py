@@ -10,6 +10,7 @@ from google.protobuf import json_format
 from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
+from ..sets import DocumentSet
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
@@ -22,9 +23,6 @@ DocumentContentType = TypeVar('DocumentContentType', bytes, str,
                               np.ndarray, jina_pb2.NdArrayProto, NdArray)
 DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
-
-if False:
-    from jina.types.sets import DocumentSet
 
 
 class Document:

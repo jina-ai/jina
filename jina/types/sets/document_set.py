@@ -1,9 +1,12 @@
 from collections.abc import MutableSequence
 from typing import Iterable
+
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 
-from ..document import Document
 from ...proto.jina_pb2 import DocumentProto
+
+if False:
+    from ..document import Document
 
 __all__ = ['DocumentSet']
 
@@ -37,10 +40,12 @@ class DocumentSet(MutableSequence):
         return len(self._docs_proto)
 
     def __iter__(self):
+        from ..document import Document
         for d in self._docs_proto:
             yield Document(d)
 
     def __getitem__(self, item):
+        from ..document import Document
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
