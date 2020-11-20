@@ -31,7 +31,7 @@ jobs:
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Test jinad
         run: |
-          ./tests/integration/jinad/test_simple_distributed/test_integration.sh
+          ./tests/integration/jinad/exec_tests.sh
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}

@@ -6,6 +6,9 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
+#JUST TO TEST THE GENERAL EXEC TESTS
+exit 1
+
 # Setting env variables locals for this script
 export $(grep -v '^#' tests/integration/jinad/test_index_query/.env | xargs -d '\n')
 
