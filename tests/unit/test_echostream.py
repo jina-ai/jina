@@ -1,5 +1,4 @@
 import logging
-import uuid
 
 from jina.flow import Flow
 from jina.parser import set_pea_parser
@@ -7,6 +6,7 @@ from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
 from jina.types.message import Message
+from jina.helper import get_random_identity
 from tests import random_docs
 
 
@@ -34,7 +34,7 @@ def test_simple_zmqlet():
     logger = logging.getLogger('zmq-test')
     with BasePea(args2) as z1, Zmqlet(args, logger) as z:
         req = jina_pb2.RequestProto()
-        req.request_id = uuid.uuid1().hex
+        req.request_id = get_random_identity()
         d = req.index.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
