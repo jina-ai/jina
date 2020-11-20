@@ -7,6 +7,7 @@ from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
+from jina.types.document.uid import id2hash
 
 
 class MockIndexer(BaseKVIndexer):
@@ -32,22 +33,22 @@ class MockIndexer(BaseKVIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         doc1 = Document()
-        doc1.id = '1' * 16
+        doc1.id = str(1) * 16
         doc1.embedding = np.array([int(doc1.id)])
         doc2 = Document()
-        doc2.id = '2' * 16
+        doc2.id = str(2) * 16
         doc2.embedding = np.array([int(doc2.id)])
         doc3 = Document()
-        doc3.id = '3' * 16
+        doc3.id = str(3) * 16
         doc3.embedding = np.array([int(doc3.id)])
         doc4 = Document()
-        doc4.id = '4' * 16
+        doc4.id = str(4) * 16
         doc4.embedding = np.array([int(doc4.id)])
         self.db = {
-            1: doc1.SerializeToString(),
-            2: doc2.SerializeToString(),
-            3: doc3.SerializeToString(),
-            4: doc4.SerializeToString()
+            id2hash(doc1.id): doc1.SerializeToString(),
+            id2hash(doc2.id): doc2.SerializeToString(),
+            id2hash(doc3.id): doc3.SerializeToString(),
+            id2hash(doc4.id): doc4.SerializeToString()
         }
 
 
@@ -156,8 +157,9 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
     dcs = list(doc.chunks)
     assert len(dcs) == 1
     chunk = dcs[0]
-    assert len(dcs) == 3
-    for match in chunk.matches:
+    matches = list(chunk.matches)
+    assert len(matches) == 3
+    for match in matches:
         assert NdArray(match.embedding).value is not None
         embedding_array = NdArray(match.embedding).value
         np.testing.assert_equal(embedding_array, np.array([int(match.id)]))
