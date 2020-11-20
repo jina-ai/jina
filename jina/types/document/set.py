@@ -11,9 +11,11 @@ class DocumentSet(MutableSequence):
     it gives an efficient view of a list of Document. One can iterate over it like
     a generator but also modify it.
     """
+
     def __init__(self, docs_proto: 'RepeatedCompositeContainer'):
         super().__init__()
         self._docs_proto = docs_proto
+        self._docs_map = {}
 
     def insert(self, index: int, doc: 'Document') -> None:
         self._docs_proto.insert(index, doc.as_pb_object)
@@ -32,7 +34,12 @@ class DocumentSet(MutableSequence):
             yield Document(d)
 
     def __getitem__(self, item):
-        return Document(self._docs_proto[item])
+        if isinstance(item, int):
+            return Document(self._docs_proto[item])
+        elif isinstance(item, str):
+            return Document(self._docs_map[item])
+        else:
+            raise IndexError(f'do not support this index {item}')
 
     def append(self, doc: 'Document'):
         self._docs_proto.append(doc.as_pb_object)
@@ -44,11 +51,17 @@ class DocumentSet(MutableSequence):
         del self._docs_proto[:]
 
     def reverse(self):
-        size = len(self._docs_proto)  # Get the length of the sequence
+        size = len(self._docs_proto)
         hi_idx = size - 1
-        for i in range(int(size / 2)):  # i is the low index pointer
-            temp = DocumentProto()
-            temp.CopyFrom(self._docs_proto[hi_idx])
+        for i in range(int(size / 2)):
+            tmp = DocumentProto()
+            tmp.CopyFrom(self._docs_proto[hi_idx])
             self._docs_proto[hi_idx].CopyFrom(self._docs_proto[i])
-            self._docs_proto[i].CopyFrom(temp)
+            self._docs_proto[i].CopyFrom(tmp)
             hi_idx -= 1
+
+    def build(self):
+        """Build a doc_id to doc mapping so one can later index a Document using
+        doc_id as string key
+        """
+        self._docs_map = {d.id: d for d in self._docs_proto}
