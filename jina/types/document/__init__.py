@@ -490,23 +490,27 @@ class Document:
             # ``None`` is also considered as bad type
             raise TypeError(f'{typename(value)} is not recognizable')
 
-    def convert_buffer_to_blob(self):
+    def convert_buffer_to_blob(self, **kwargs):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
         set :attr:`blob` accordingly.
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
 
         .. note::
             One can only recover values not shape information from pure buffer.
         """
         self.blob = np.frombuffer(self.buffer)
 
-    def convert_blob_to_uri(self, width: int, height: int, resize_method: str = 'BILINEAR'):
+    def convert_blob_to_uri(self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly"""
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    def convert_uri_to_buffer(self):
+    def convert_uri_to_buffer(self, **kwargs):
         """Convert uri to buffer
         Internally it downloads from the URI and set :attr:`buffer`.
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
 
         """
         if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
@@ -519,35 +523,58 @@ class Document:
         else:
             raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
 
-    def convert_buffer_to_uri(self, charset: str = 'utf-8', in_base64: bool = False):
+    def convert_uri_to_data_uri(self, charset: str = 'utf-8', base64: bool = False, **kwargs):
         """ Convert uri to data uri.
+        Internally it reads uri into buffer and convert it to data uri
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        self.convert_uri_to_buffer()
+        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+
+    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False, **kwargs):
+        """ Convert buffer to data uri.
         Internally it first reads into buffer and then converts it to data URI.
 
         :param charset: charset may be any character set registered with IANA
-        :param in_base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
+         Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
+         frequently uses non-US-ASCII characters.
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
         if not self.mime_type:
             raise ValueError(f'{self.mime_type} is unset, can not convert it to data uri')
 
-        self.uri = to_datauri(self.mime_type, self.buffer, charset, in_base64, binary=True)
+        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
 
-    def convert_text_to_uri(self, charset: str = 'utf-8', in_base64: bool = False):
+    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False, **kwargs):
         """ Convert text to data uri.
 
         :param charset: charset may be any character set registered with IANA
-        :param in_base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
+        Designed to be efficient for non-text 8 bit and binary data.
+        Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
-        self.uri = to_datauri(self.mime_type, self.text, charset, in_base64, binary=False)
+        self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
 
-    def convert_uri_to_text(self):
-        """Assuming URI is text, convert it to text """
+    def convert_uri_to_text(self, **kwargs):
+        """Assuming URI is text, convert it to text
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
         self.convert_uri_to_buffer()
         self.text = self.buffer.decode()
 
-    def convert_content_to_uri(self):
-        """Convert content in URI with best effort"""
+    def convert_content_to_uri(self, **kwargs):
+        """Convert content in URI with best effort
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
         if self.text:
             self.convert_text_to_uri()
         elif self.buffer:
