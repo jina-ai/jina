@@ -8,6 +8,7 @@ from jina.executors.crafters import BaseSegmenter
 from jina.proto import jina_pb2
 from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
+from jina.types.sets import DocumentSet
 
 
 class MockSegmenter(BaseSegmenter):
@@ -20,8 +21,7 @@ class MockSegmenter(BaseSegmenter):
             # length, parent_id and id are protected keys that won't affect the segments
             return [{'blob': np.array([0.0, 0.0, 0.0]), 'weight': 0, 'mime_type': 'text/plain', 'tags': {'id': 3}},
                     {'blob': np.array([1.0, 1.0, 1.0]), 'weight': 1, 'tags': {'id': 4}},
-                    {'blob': np.array([2.0, 2.0, 2.0]), 'weight': 2, 'length': 10, 'parent_id': '50', 'id': '10',
-                     'tags': {'id': 5}}]
+                    {'blob': np.array([2.0, 2.0, 2.0]), 'weight': 2, 'tags': {'id': 5}}]
         else:
             return [{'non_existing_key': 1}]
 
@@ -43,7 +43,7 @@ def test_segment_driver():
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
     driver.attach(executor=executor, pea=None)
-    driver._apply_all([valid_doc])
+    driver._apply_all(DocumentSet([valid_doc]))
 
     assert valid_doc.length == 2
 

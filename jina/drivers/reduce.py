@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Dict, Any, Iterator
+from typing import Tuple, Dict, Any
 
 import numpy as np
 
@@ -9,6 +9,7 @@ from . import BaseRecursiveDriver
 
 if False:
     from ..types.document import Document
+    from ..types.sets import DocumentSet
 
 
 class ReduceAllDriver(BaseRecursiveDriver):
@@ -30,7 +31,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
 
     def _apply_all(
             self,
-            docs: Iterator['Document'],
+            docs: 'DocumentSet',
             context_doc: 'Document',
             field: str,
             *args,
@@ -46,7 +47,7 @@ class CollectEvaluationDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Iterator['Document'],
+            docs: 'DocumentSet',
             context_doc: 'Document',
             field: str,
             *args,
@@ -69,7 +70,7 @@ class ConcatEmbedDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Iterator['Document'],
+            docs: 'DocumentSet',
             context_doc: 'Document',
             field: str,
             concatenate: bool = False,

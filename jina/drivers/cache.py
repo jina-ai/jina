@@ -1,9 +1,10 @@
-from typing import Any, Dict, Iterator
+from typing import Any, Dict
 
 from .index import BaseIndexDriver
 
 if False:
     from .. import Document
+    from ..types.sets import DocumentSet
 
 
 class BaseCacheDriver(BaseIndexDriver):
@@ -22,7 +23,7 @@ class BaseCacheDriver(BaseIndexDriver):
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
 
-    def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for d in docs:
             result = self.exec[d.id]
             if result is None:

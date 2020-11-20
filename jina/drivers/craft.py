@@ -1,12 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Iterator
+from typing import Tuple
 
 from . import BaseExecutableDriver
+from ..types.document import Document
 
 if False:
-    from ..types.document import Document
+    from ..types.document import DocumentSet
 
 
 class CraftDriver(BaseExecutableDriver):
@@ -15,7 +16,7 @@ class CraftDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: Iterator['Document'], *args, **kwargs):
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
         for doc in docs:
             _args_dict = doc.get_attrs(*self.exec.required_keys)
             ret = self.exec_fn(**_args_dict)

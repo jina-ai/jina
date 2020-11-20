@@ -1,4 +1,4 @@
-from typing import List, Any, Union, Iterator
+from typing import List, Any, Union
 
 import numpy as np
 
@@ -6,6 +6,9 @@ from . import BaseExecutableDriver
 from ..helper import typename
 from ..types.document import Document
 from ..types.document.helper import extract_embedding
+
+if False:
+    from ..types.sets import DocumentSet
 
 
 class BasePredictDriver(BaseExecutableDriver):
@@ -29,7 +32,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Iterator['Document'],
+            docs: 'DocumentSet',
             context_doc: 'Document',
             field: str,
             *args,
@@ -144,7 +147,7 @@ class Prediction2DocBlobDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: Iterator['Document'],
+            docs: 'DocumentSet',
             context_doc: 'Document',
             field: str,
             *args,

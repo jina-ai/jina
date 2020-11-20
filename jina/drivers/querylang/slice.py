@@ -2,12 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import sys
-from typing import Iterator
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
-    from ...types.document import Document
+    from ...types.document import DocumentSet
 
 
 class SliceQL(QuerySetReader, BaseRecursiveDriver):
@@ -46,7 +45,7 @@ class SliceQL(QuerySetReader, BaseRecursiveDriver):
         else:
             self._end = int(end)
 
-    def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         if self.start <= 0 and (self.end is None or self.end >= len(docs)):
             pass
         else:

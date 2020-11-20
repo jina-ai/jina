@@ -73,7 +73,7 @@ def create_chunk_matches_to_score():
     #    |- matches: (id: 21, parent_id: 2, score.value: 4),
     #    |- matches: (id: 22, parent_id: 2, score.value: 5)
     doc = jina_pb2.DocumentProto()
-    doc.id = '100'
+    doc.id = '1'
     doc.granularity = 0
     num_matches = 2
     for parent_id in range(1, 3):

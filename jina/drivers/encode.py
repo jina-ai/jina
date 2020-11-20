@@ -1,13 +1,11 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator
-
 from . import BaseExecutableDriver
 from ..types.document.helper import extract_content
 
 if False:
-    from ..types.document import Document
+    from ..types.sets import DocumentSet
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
@@ -21,7 +19,7 @@ class EncodeDriver(BaseEncodeDriver):
     """Extract the chunk-level content from documents and call executor and do encoding
     """
 
-    def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         contents, docs_pts, bad_doc_ids = extract_content(docs)
 
         if bad_doc_ids:

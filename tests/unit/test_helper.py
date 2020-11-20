@@ -11,6 +11,7 @@ from jina.clients.python import PyClient, pprint_routes, safe_callback
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
 from jina.helper import cached_property, convert_tuple_to_list
+from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.document.uid import *
@@ -192,4 +193,3 @@ def test_random_docs_new_api():
             np.testing.assert_almost_equal(c2.embedding, NdArray(c1.embedding).value)
             assert c2.text == c1.text
             assert c2.tags['id'] == c1.tags['id']
-            assert c2.parent_id == c1.parent_id

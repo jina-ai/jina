@@ -323,7 +323,8 @@ class Document:
             chunk.set_attrs(parent_id=self._document.id,
                             granularity=self._document.granularity + 1,
                             **kwargs)
-            chunk.mime_type = self._document.mime_type
+            if not chunk.mime_type:
+                chunk.mime_type = self._document.mime_type
             return chunk
 
     def set_attrs(self, **kwargs):

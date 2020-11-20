@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Tuple, Dict, List, Iterator
+from typing import Tuple, Dict, List
 
 import numpy as np
 
@@ -10,6 +10,7 @@ from .encode import BaseEncodeDriver
 
 if False:
     from ..types.document import Document
+    from ..types.sets import DocumentSet
 
 
 def _extract_modalities_from_document(doc: 'Document'):
@@ -70,7 +71,7 @@ class MultiModalDriver(BaseEncodeDriver):
 
     def _apply_all(
             self,
-            docs: Iterator['Document'],
+            docs: 'DocumentSet',
             *args, **kwargs
     ) -> None:
         """

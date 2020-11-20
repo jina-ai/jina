@@ -1,13 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator, Tuple
+from typing import Tuple
 
 from .queryset.dunderkey import dunder_get
 from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
-    from ...types.document import Document
+    from ...types.document import DocumentSet
 
 
 class SortQL(QuerySetReader, BaseRecursiveDriver):
@@ -42,5 +42,5 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         self._reverse = reverse
         self._field = field
 
-    def _apply_all(self, docs: Iterator['Document'], *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         docs.sort(key=lambda x: dunder_get(x, self.field), reverse=self.reverse)

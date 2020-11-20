@@ -8,7 +8,6 @@ from typing import (
     Dict,
     Callable,
     Tuple,
-    Iterator,
     Optional,
     Sequence,
 )
@@ -30,7 +29,7 @@ if False:
     from ..types.message import Message
     from ..types.request import Request
     from ..types.document import Document
-    from ..types.querylang import QueryLang
+    from ..types.sets import QueryLangSet, DocumentSet
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -193,7 +192,7 @@ class BaseDriver(metaclass=DriverType):
         return self.pea.message
 
     @property
-    def queryset(self) -> Iterator['QueryLang']:
+    def queryset(self) -> 'QueryLangSet':
         if self.msg:
             return self.msg.request.queryset
         else:
@@ -259,7 +258,7 @@ class BaseRecursiveDriver(BaseDriver):
 
     def _apply_all(
             self,
-            docs: Iterator['Document'],
+            docs: 'DocumentSet',
             context_doc: 'Document',
             field: str,
             *args,
@@ -283,7 +282,7 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(
-            self, docs: Iterator['Document'], *args, **kwargs
+            self, docs: 'DocumentSet', *args, **kwargs
     ) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':

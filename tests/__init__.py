@@ -44,6 +44,7 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> Iterator[
         d.tags['id'] = j
         d.text = b'hello world'
         NdArray(d.embedding).value = np.random.random([embed_dim + np.random.randint(0, jitter)])
+        d.id = uid.new_doc_id(d)
         for k in range(chunks_per_doc):
             c = d.chunks.add()
             c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
@@ -53,7 +54,6 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> Iterator[
             c_id += 1
             c.parent_id = d.id
             c.id = uid.new_doc_id(c)
-        d.id = uid.new_doc_id(d)
         yield d
 
 
