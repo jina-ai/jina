@@ -155,7 +155,7 @@ class Request:
         """
         if not self.request_type and request_type is None:
             raise TypeError(f'request_type must be specified as one of {list(ClientMode)}')
-        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type else self.request_type)
+        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type is not None else self.request_type)
         d = _req.docs.add()
         d.CopyFrom(document.as_pb_object)
 
@@ -167,7 +167,7 @@ class Request:
         """
         if not self.request_type and request_type is None:
             raise TypeError(f'request_type must be specified as one of {list(ClientMode)}')
-        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type else self.request_type)
+        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type is not None else self.request_type)
         d = _req.groundtruths.add()
         d.CopyFrom(document.as_pb_object)
 
