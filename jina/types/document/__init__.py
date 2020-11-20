@@ -122,12 +122,14 @@ class Document:
                     try:
                         self._document.ParseFromString(document)
                     except RuntimeWarning as ex:
-                        raise BadDocType('fail to construct a document') from ex
+                        raise BadDocType(f'fail to construct a document from {document}') from ex
+            elif isinstance(document, Document):
+                self._document = document.as_pb_object
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
         except Exception as ex:
-            raise BadDocType('fail to construct a document') from ex
+            raise BadDocType(f'fail to construct a document from {document}') from ex
 
         self.set_attrs(**kwargs)
 
@@ -552,3 +554,9 @@ class Document:
             self.convert_buffer_to_uri()
         elif self.content_type:
             raise NotImplementedError
+
+    def MergeFrom(self, doc: 'Document'):
+        self._document.MergeFrom(doc.as_pb_object)
+
+    def CopyFrom(self, doc: 'Document'):
+        self._document.CopyFrom(doc.as_pb_object)

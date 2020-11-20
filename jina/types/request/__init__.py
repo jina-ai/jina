@@ -67,7 +67,7 @@ class Request:
     def __getattr__(self, name: str):
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
         if name in _trigger_body_fields:
-            req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
+            req = getattr(self.as_pb_object, self.request_type)
             return getattr(req, name)
         elif hasattr(_empty_request, name):
             return getattr(self.as_pb_object, name)
@@ -75,15 +75,19 @@ class Request:
             raise AttributeError
 
     @property
+    def request_type(self) -> str:
+        return self.as_pb_object.WhichOneof('body')
+
+    @property
     def docs(self) -> 'DocumentSet':
         self.is_used = True
-        req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
+        req = getattr(self.as_pb_object, self.request_type)
         return DocumentSet(req.docs)
 
     @property
     def groundtruths(self) -> 'DocumentSet':
         self.is_used = True
-        req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
+        req = getattr(self.as_pb_object, self.request_type)
         return DocumentSet(req.groundtruths)
 
     @staticmethod
@@ -143,15 +147,27 @@ class Request:
             # no touch, skip serialization, return original
             return self._buffer
 
-    def add_document(self, document: 'Document', mode: 'ClientMode'):
-        """Add a document to the request """
-        _req = getattr(self.as_pb_object, str(mode).lower())
+    def add_document(self, document: 'Document', request_type: Optional['ClientMode'] = None):
+        """Add a document to the request
+
+        :param document: document to add
+        :param request_type: the type of request to add to, when not given then will always add to existing type
+        """
+        if not self.request_type and request_type is None:
+            raise TypeError(f'request_type must be specified as one of {list(ClientMode)}')
+        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type else self.request_type)
         d = _req.docs.add()
         d.CopyFrom(document.as_pb_object)
 
-    def add_groundtruth(self, document: 'Document', mode: 'ClientMode'):
-        """Add a groundtruth document to the request """
-        _req = getattr(self.as_pb_object, str(mode).lower())
+    def add_groundtruth(self, document: 'Document', request_type: Optional['ClientMode'] = None):
+        """Add a groundtruth document to the request
+
+        :param groundtruth: groundtruth to add
+        :param request_type: the type of request to add to, when not given then will always add to existing type
+        """
+        if not self.request_type and request_type is None:
+            raise TypeError(f'request_type must be specified as one of {list(ClientMode)}')
+        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type else self.request_type)
         d = _req.groundtruths.add()
         d.CopyFrom(document.as_pb_object)
 

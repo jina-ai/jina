@@ -7,7 +7,7 @@ from .queryset.dunderkey import dunder_get
 from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
-    from ...types.document import DocumentSet
+    from ...types.sets import DocumentSet
 
 
 class SortQL(QuerySetReader, BaseRecursiveDriver):

@@ -4,6 +4,7 @@ from jina import Document
 from jina.drivers.rank import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
 from jina.proto import jina_pb2
+from jina.types.sets import DocumentSet
 
 
 class MockMaxRanker(Chunk2DocRanker):
@@ -120,7 +121,7 @@ def create_chunk_chunk_matches_to_score():
             match.score.ref_id = chunk_chunk.id
             match.id = str(10 * parent_id + score_value)
             match.length = 4
-    return doc
+    return Document(doc)
 
 
 def test_chunk2doc_ranker_driver_mock_exec():
@@ -128,7 +129,7 @@ def test_chunk2doc_ranker_driver_mock_exec():
     driver = SimpleChunk2DocRankDriver()
     executor = MockLengthRanker()
     driver.attach(executor=executor, pea=None)
-    driver._traverse_apply([doc, ])
+    driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '70'
     assert doc.matches[0].score.value == 7
@@ -148,7 +149,7 @@ def test_chunk2doc_ranker_driver_max_ranker():
     driver = SimpleChunk2DocRankDriver()
     executor = MockMaxRanker()
     driver.attach(executor=executor, pea=None)
-    driver._traverse_apply([doc, ])
+    driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '70'
     assert doc.matches[0].score.value == 7
@@ -168,7 +169,7 @@ def test_chunk2doc_ranker_driver_min_ranker():
     driver = SimpleChunk2DocRankDriver()
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
-    driver._traverse_apply([doc, ])
+    driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '40'
     assert doc.matches[0].score.value == pytest.approx(1 / (1 + 4), 0.0001)
@@ -188,7 +189,7 @@ def test_chunk2doc_ranker_driver_traverse_apply():
     driver = SimpleChunk2DocRankDriver()
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
-    driver._traverse_apply(docs)
+    driver._traverse_apply(DocumentSet(docs))
     for doc in docs:
         assert len(doc.matches) == 2
         for idx, m in enumerate(doc.matches):
@@ -202,7 +203,7 @@ def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
     driver = SimpleChunk2DocRankDriver(traversal_paths=('cc', 'c'))
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
-    driver._traverse_apply(docs)
+    driver._traverse_apply(DocumentSet(docs))
     for doc in docs:
         assert len(doc.matches) == 1
         assert len(doc.chunks) == 1

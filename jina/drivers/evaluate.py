@@ -6,10 +6,8 @@ from typing import Any, Iterator
 from . import BaseExecutableDriver
 from .querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
+from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair
-
-if False:
-    from ..types.document import Document
 
 
 class BaseEvaluateDriver(BaseExecutableDriver):
