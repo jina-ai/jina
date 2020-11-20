@@ -292,7 +292,7 @@ class BaseRecursiveDriver(BaseDriver):
                 self._traverse_rec(docs, None, None, [], *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(
-                    DocumentSet([doc]),
+                    [doc],
                     None,
                     None,
                     path,
