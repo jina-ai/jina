@@ -135,7 +135,7 @@ class BasePea(metaclass=PeaMeta):
                 self.name = self.args.name
             if self.args.role == PeaRoleType.PARALLEL:
                 self.name = f'{self.name}-{self.args.pea_id}'
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc)
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)
