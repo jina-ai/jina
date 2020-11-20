@@ -162,7 +162,7 @@ class Request:
     def add_groundtruth(self, document: 'Document', request_type: Optional['ClientMode'] = None):
         """Add a groundtruth document to the request
 
-        :param groundtruth: groundtruth to add
+        :param document: groundtruth document to add
         :param request_type: the type of request to add to, when not given then will always add to existing type
         """
         if not self.request_type and request_type is None:
