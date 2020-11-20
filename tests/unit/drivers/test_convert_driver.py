@@ -29,7 +29,8 @@ def test_blob2pnguri_driver(data):
                     doc.uri.encode())  # just to check if the data is enough for the image recreation
 
 
-uris = ['https://jina.ai/', 'http://jina.ai/', f'./{os.path.basename(__file__)}',]
+uris = ['https://jina.ai/', 'http://jina.ai/',
+        f'./{os.path.basename(__file__)}']
 @pytest.mark.parametrize('data', uris)
 def test_uri2buffer_driver(data):
     doc = jina_pb2.DocumentProto()
