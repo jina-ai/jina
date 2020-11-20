@@ -3,15 +3,13 @@ from typing import Iterable
 
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 
-from . import Document
+from . import Document, DocumentProto
 
 
 class DocumentSet(MutableSequence):
     """:class:`DocumentSet` is a mutable sequence of :class:`Document`,
     it gives an efficient view of a list of Document. One can iterate over it like
     a generator but also modify it.
-
-
     """
     def __init__(self, docs_proto: 'RepeatedCompositeContainer'):
         super().__init__()
@@ -48,5 +46,9 @@ class DocumentSet(MutableSequence):
     def reverse(self):
         size = len(self._docs_proto)  # Get the length of the sequence
         hi_idx = size - 1
-        its = size / 2  # Number of iterations required
-
+        for i in range(int(size / 2)):  # i is the low index pointer
+            temp = DocumentProto()
+            temp.CopyFrom(self._docs_proto[hi_idx])
+            self._docs_proto[hi_idx].CopyFrom(self._docs_proto[i])
+            self._docs_proto[i].CopyFrom(temp)
+            hi_idx -= 1

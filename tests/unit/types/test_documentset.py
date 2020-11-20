@@ -42,6 +42,7 @@ def test_docset_iterate_twice():
             j += 1
     assert j == len(ds) ** 2
 
+
 def test_docset_reverse():
     docs = list(random_docs(10))[0].chunks
     ids = [d.id for d in docs]
@@ -50,4 +51,9 @@ def test_docset_reverse():
     ids2 = [d.id for d in ds]
     assert list(reversed(ids)) == ids2
 
-
+    docs = list(random_docs(10, chunks_per_doc=7))[0].chunks
+    ids = [d.id for d in docs]
+    ds = DocumentSet(docs)
+    ds.reverse()
+    ids2 = [d.id for d in ds]
+    assert list(reversed(ids)) == ids2
