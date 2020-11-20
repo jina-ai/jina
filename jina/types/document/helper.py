@@ -62,10 +62,12 @@ class DocGroundtruthPair:
 
     @property
     def matches(self) -> Iterable['DocGroundtruthPair']:
+        assert len(self.doc.matches) == len(self.groundtruth.matches)
         for doc, groundtruth in zip(self.doc.matches, self.groundtruth.matches):
             yield DocGroundtruthPair(doc, groundtruth)
 
     @property
     def chunks(self) -> Iterable['DocGroundtruthPair']:
+        assert len(self.doc.chunks) == len(self.groundtruth.chunks)
         for doc, groundtruth in zip(self.doc.chunks, self.groundtruth.chunks):
             yield DocGroundtruthPair(doc, groundtruth)
