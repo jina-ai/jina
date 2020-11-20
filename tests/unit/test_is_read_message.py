@@ -1,11 +1,10 @@
-import uuid
-
 from jina.logging import default_logger
 from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
 from jina.types.message import Message
+from jina.helper import get_random_identity
 
 
 class MockBasePeaNotRead(BasePea):
@@ -55,7 +54,7 @@ args3 = set_pea_parser().parse_args([
 def test_read_zmqlet():
     with MockBasePeaRead(args2), Zmqlet(args1, default_logger) as z:
         req = jina_pb2.RequestProto()
-        req.request_id = uuid.uuid1().hex
+        req.request_id = get_random_identity()
         d = req.index.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
@@ -65,7 +64,7 @@ def test_read_zmqlet():
 def test_not_read_zmqlet():
     with MockBasePeaNotRead(args3), Zmqlet(args1, default_logger) as z:
         req = jina_pb2.RequestProto()
-        req.request_id = uuid.uuid1().hex
+        req.request_id = get_random_identity()
         d = req.index.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')

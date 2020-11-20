@@ -1,11 +1,10 @@
-import uuid
 from typing import Union, Optional, Sequence
 
 from ..document import Document
 from ..querylang import QueryLang
 from ...drivers import BaseDriver
 from ...enums import CompressAlgo, ClientMode
-from ...helper import typename
+from ...helper import typename, get_random_identity
 from ...proto import jina_pb2
 
 _trigger_body_fields = set(kk
@@ -56,7 +55,7 @@ class Request:
         elif request is None:
             self._request = jina_pb2.RequestProto()
             # make sure every new request has a request id
-            self._request.request_id = uuid.uuid1().hex
+            self._request.request_id = get_random_identity()
 
         self._envelope = envelope
         self.is_used = False  #: Return True when request has been r/w at least once
