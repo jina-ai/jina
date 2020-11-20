@@ -6,7 +6,6 @@ import pickle
 import re
 import subprocess
 import tempfile
-import uuid
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -18,7 +17,7 @@ from ruamel.yaml import StringIO
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, expand_dict, expand_env_var, get_local_config_source, typename
+from ..helper import yaml, expand_dict, expand_env_var, get_local_config_source, typename, get_random_identity
 from ..importer import PathImporter
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -193,7 +192,7 @@ class BaseExecutor(metaclass=ExecutorType):
             elif type(getattr(self, k)) == type(v):
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
-            _id = str(uuid.uuid4()).split('-')[0]
+            _id = get_random_identity().split('-')[0]
             _name = f'{typename(self)}-{_id}'
             if self.warn_unnamed:
                 self.logger.warning(

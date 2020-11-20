@@ -206,7 +206,7 @@ def random_port() -> Optional[int]:
 
 
 def get_random_identity() -> str:
-    return uuid.uuid1().hex
+    return str(uuid.uuid1())
 
 
 yaml = _get_yaml()
