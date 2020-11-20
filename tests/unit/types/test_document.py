@@ -35,11 +35,13 @@ def test_doc_update_fields():
     c = {'tags': 'string', 'tag-tag': {'tags': 123.45}}
     d = [12, 34, 56]
     e = 'text-mod'
-    a.set_attrs(embedding=b, tags=c, location=d, modality=e)
+    w = 2.0
+    a.set_attrs(embedding=b, tags=c, location=d, modality=e, weight=w)
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e
     assert MessageToDict(a.tags) == c
+    assert a.weight == w
 
 
 def test_uri_get_set():

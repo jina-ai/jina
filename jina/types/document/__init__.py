@@ -202,6 +202,14 @@ class Document:
         self._document.length = value
 
     @property
+    def weight(self) -> float:
+        return self._document.weight
+
+    @weight.setter
+    def weight(self, value: float):
+        self._document.weight = value
+
+    @property
     def id(self) -> str:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
