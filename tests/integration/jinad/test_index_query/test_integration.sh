@@ -6,28 +6,24 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
-#JUST TO TEST THE GENERAL EXEC TESTS
-exit 1
-
 # Setting env variables locals for this script
 export $(grep -v '^#' tests/integration/jinad/test_index_query/.env | xargs -d '\n')
 
 docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . up  --build -d
 
 sleep 5
-
 #Indexing part
 FLOW_ID=$(curl -s --request PUT "http://localhost:8000/v1/flow/yaml" \
     -H  "accept: application/json" \
     -H  "Content-Type: multipart/form-data" \
-    -F "uses_files=@pods/index.yml" \
-    -F "uses_files=@pods/encode.yml" \
-    -F "pymodules_files=@pods/dummy-encoder.py" \
+    -F "uses_files=@tests/integration/jinad/test_index_query/pods/index.yml" \
+    -F "uses_files=@tests/integration/jinad/test_index_query/pods/encode.yml" \
+    -F "pymodules_files=@tests/integration/jinad/test_index_query/pods/dummy-encoder.py" \
     -F "yamlspec=@tests/integration/jinad/test_index_query/flow.yml"\
     | jq -r .flow_id)
 echo "Successfully started the flow: ${FLOW_ID}. Let's index some data"
 
-TEXT_INDEXED=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search' | \
+TEXT_INDEXED=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/index' | \
     jq -e ".search.docs[] | .text")
 echo "Indexed document has the text: ${TEXT_INDEXED}"
 curl --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"

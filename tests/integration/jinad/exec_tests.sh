@@ -1,4 +1,4 @@
-#
+#!/bin/bash
 ##############################################################################
 #
 # @file exec_tests.sh
@@ -12,27 +12,27 @@
 #
 ##############################################################################
 
-set -e
-
 if [ "${PWD##*/}" != "jina" ]
   then
     echo "exec_tests.sh should only be run from the jina base directory"
     exit 1
 fi
 
-LIST_TEST_SCRIPTS=$(find "./tests/integration/jinad/" -name "test*sh")
+LIST_TEST_SCRIPTS=( $(find "./tests/integration/jinad/" -name "test*sh") )
 
-echo "Have detected the following tests scripts to run: ${LIST_TEST_SCRIPTS}"
+echo "Have detected ${#LIST_TEST_SCRIPTS[@]} the following tests scripts to run: ${LIST_TEST_SCRIPTS}"
 
 FAILED_TESTS=()
-for script in ${LIST_TEST_SCRIPTS};
+for script in "${LIST_TEST_SCRIPTS[@]}";
   do
-    echo "Executing test with ${script}"
-    exec ${script}
-    if [ $? -eq 0 ]; then
-      echo "${script} test successfully finished"
+    echo "Executing test with ${script}\n"
+    eval ${script}
+    status=$?
+    echo "Status ${status}"
+    if [ $status -eq 0 ]; then
+      echo "${script} test successfully finished\n"
     else
-      echo "${script} test failed"
+      echo "${script} test failed\n"
       FAILED_TESTS+=(${script})
     fi
   done
@@ -41,12 +41,12 @@ for script in ${LIST_TEST_SCRIPTS};
 NUMBER_FAILED_TESTS=${#FAILED_TESTS[@]}
 
 if [ "${NUMBER_FAILED_TESTS}" = 0 ]; then
-        echo "Success"
+  echo "Success"
 else
-        echo "Failed tests summary:"
-        for failed in ${FAILED_TESTS};
-          do
-            echo "${failed} run failed"
-          done
-        exit 1
+  echo "Detected ${NUMBER_FAILED_TESTS} failed tests. Failed tests summary: \n"
+    for failed in "${FAILED_TESTS[@]}";
+      do
+        echo "${failed} run failed"
+      done
+      exit 1
 fi

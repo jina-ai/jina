@@ -12,14 +12,14 @@ services:
       - tests/integration/jinad/test_index_query/.env
     expose:
       - 10000-60000
-  pod1:
+  encoder:
     image: test_index_query
     expose:
       - 8000
       - 10000-60000
     env_file:
       - tests/integration/jinad/test_index_query/.env
-  pod2:
+  indexer:
     image: test_index_query
     expose:
       - 8000
