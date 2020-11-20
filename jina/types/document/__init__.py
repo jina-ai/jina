@@ -3,7 +3,7 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-from typing import Union, Dict, Iterator, Optional, TypeVar, Any
+from typing import Union, Dict, Optional, TypeVar, Any
 
 from google.protobuf import json_format
 
@@ -18,9 +18,13 @@ from ...proto import jina_pb2
 _empty_doc = jina_pb2.DocumentProto()
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray, jina_pb2.NdArrayProto, NdArray)
+DocumentContentType = TypeVar('DocumentContentType', bytes, str,
+                              np.ndarray, jina_pb2.NdArrayProto, NdArray)
 DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
+
+if False:
+    from jina.types.sets import DocumentSet
 
 
 class Document:
@@ -280,14 +284,12 @@ class Document:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
-    def matches(self) -> Iterator['Document']:
-        for d in self._document.matches:
-            yield Document(d)
+    def matches(self) -> 'DocumentSet':
+        return DocumentSet(self._document.matches)
 
     @property
-    def chunks(self) -> Iterator['Document']:
-        for d in self._document.chunks:
-            yield Document(d)
+    def chunks(self) -> 'DocumentSet':
+        return DocumentSet(self._document.chunks)
 
     def add_match(self, doc_id: Union[str, int], score_value: float, **kwargs) -> 'Document':
         """Add a match document to the current document
@@ -516,27 +518,27 @@ class Document:
         else:
             raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
 
-    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+    def convert_buffer_to_uri(self, charset: str = 'utf-8', in_base64: bool = False):
         """ Convert uri to data uri.
         Internally it first reads into buffer and then converts it to data URI.
 
         :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param in_base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
         """
 
         if not self.mime_type:
             raise ValueError(f'{self.mime_type} is unset, can not convert it to data uri')
 
-        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+        self.uri = to_datauri(self.mime_type, self.buffer, charset, in_base64, binary=True)
 
-    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+    def convert_text_to_uri(self, charset: str = 'utf-8', in_base64: bool = False):
         """ Convert text to data uri.
 
         :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param in_base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
         """
 
-        self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
+        self.uri = to_datauri(self.mime_type, self.text, charset, in_base64, binary=False)
 
     def convert_uri_to_text(self):
         """Assuming URI is text, convert it to text """

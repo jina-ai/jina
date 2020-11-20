@@ -1,8 +1,9 @@
 import uuid
-from typing import Union, Optional, Sequence, Iterator
+from typing import Union, Optional, Sequence
 
 from ..document import Document
 from ..querylang import QueryLang
+from ..sets import QueryLangSet, DocumentSet
 from ...drivers import BaseDriver
 from ...enums import CompressAlgo, ClientMode
 from ...helper import typename
@@ -74,16 +75,16 @@ class Request:
             raise AttributeError
 
     @property
-    def docs(self) -> Iterator['Document']:
+    def docs(self) -> 'DocumentSet':
+        self.is_used = True
         req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
-        for d in req.docs:
-            yield Document(d)
+        return DocumentSet(req.docs)
 
     @property
-    def groundtruths(self) -> Iterator['Document']:
+    def groundtruths(self) -> 'DocumentSet':
+        self.is_used = True
         req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
-        for d in req.groundtruths:
-            yield Document(d)
+        return DocumentSet(req.groundtruths)
 
     @staticmethod
     def _decompress(data: bytes, algorithm: str) -> bytes:
@@ -170,6 +171,6 @@ class Request:
                 raise TypeError(f'unknown type {typename(q)}')
 
     @property
-    def queryset(self) -> Iterator[QueryLang]:
-        for p in self.as_pb_object.queryset:
-            yield QueryLang(p)
+    def queryset(self) -> 'QueryLangSet':
+        self.is_used = True
+        return QueryLangSet(self.as_pb_object.queryset)

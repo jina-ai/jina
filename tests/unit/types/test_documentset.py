@@ -1,5 +1,5 @@
 from jina import Document
-from jina.types.document.set import DocumentSet
+from jina.types.sets import DocumentSet
 from tests import random_docs
 
 
@@ -57,3 +57,16 @@ def test_docset_reverse():
     ds.reverse()
     ids2 = [d.id for d in ds]
     assert list(reversed(ids)) == ids2
+
+
+def test_docset_getitem():
+    docs = list(random_docs(10))[0].chunks
+    ds = DocumentSet(docs)
+
+    for j in range(len(ds)):
+        assert isinstance(ds[j], Document)
+
+    # after build we can now index via doc id
+    ds.build()
+    for j in range(len(ds)):
+        assert isinstance(ds[ds[j].id], Document)

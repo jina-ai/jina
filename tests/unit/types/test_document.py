@@ -5,7 +5,7 @@ from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.enums import ClientMode
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.document import Document
+from jina.types.document import Document, BadDocID
 from tests import random_docs_new_api
 
 
@@ -35,7 +35,7 @@ def test_doc_update_fields():
     c = {'tags': 'string', 'tag-tag': {'tags': 123.45}}
     d = [12, 34, 56]
     e = 'text-mod'
-    a.update(embedding=b, tags=c, location=d, modality=e)
+    a.set_attrs(embedding=b, tags=c, location=d, modality=e)
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e
@@ -86,7 +86,7 @@ def test_copy_construct():
 
 def test_bad_good_doc_id():
     b = Document()
-    with pytest.raises(ValueError):
+    with pytest.raises(BadDocID):
         b.id = 'hello'
     b.id = 'abcd' * 4
     b.id = 'de09' * 4

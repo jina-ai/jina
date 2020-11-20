@@ -6,6 +6,7 @@ from . import Document
 
 __all__ = ['extract_embedding', 'extract_content', 'DocGroundtruthPair']
 
+
 def extract_embedding(docs: Iterable['Document']) -> Tuple['np.ndarray',
                                                            List['Document'], List[Tuple[str, str]]]:
     return _extract_docs(docs, 'embedding')
@@ -17,7 +18,7 @@ def extract_content(docs: Iterable['Document']) -> Tuple['np.ndarray',
 
 
 def _extract_docs(docs: Iterable['Document'], attr: str) -> Tuple['np.ndarray',
-                                                                 List['Document'], List[Tuple[str, str]]]:
+                                                                  List['Document'], List[Tuple[str, str]]]:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents

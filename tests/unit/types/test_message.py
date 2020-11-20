@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-from jina import Request, QueryLang
+from jina import Request, QueryLang, Document
 from jina.clients.python.request import _generate
 from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
@@ -43,10 +43,10 @@ def test_lazy_nest_access():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.docs[0].id = '1'
+        r.docs[0].id = '1' * 16
         # now it is read
         assert r.is_used
-        assert r.index.docs[0].id == '1'
+        assert r.index.docs[0].id == '1' * 16
 
 
 def test_lazy_change_message_type():
@@ -65,7 +65,7 @@ def test_lazy_append_access():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.docs.append(jina_pb2.DocumentProto())
+        r.docs.append(Document())
         # now it is read
         assert r.is_used
 

@@ -1,15 +1,17 @@
-from collections import MutableSequence
+from collections.abc import MutableSequence
 from typing import Iterable
-
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 
-from . import Document, DocumentProto
+from ..document import Document
+from ...proto.jina_pb2 import DocumentProto
+
+__all__ = ['DocumentSet']
 
 
 class DocumentSet(MutableSequence):
     """:class:`DocumentSet` is a mutable sequence of :class:`Document`,
     it gives an efficient view of a list of Document. One can iterate over it like
-    a generator but also modify it.
+    a generator but ALSO modify it, count it, get item.
     """
 
     def __init__(self, docs_proto: 'RepeatedCompositeContainer'):
@@ -21,7 +23,12 @@ class DocumentSet(MutableSequence):
         self._docs_proto.insert(index, doc.as_pb_object)
 
     def __setitem__(self, key, value: 'Document'):
-        self._docs_proto[key].CopyFrom(value.as_pb_object)
+        if isinstance(key, int):
+            self._docs_proto[key].CopyFrom(value.as_pb_object)
+        elif isinstance(key, str):
+            return self._docs_map[key].CopyFrom(value.as_pb_object)
+        else:
+            raise IndexError(f'do not support this index {key}')
 
     def __delitem__(self, index):
         del self._docs_proto[index]
