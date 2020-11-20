@@ -258,6 +258,8 @@ class BaseRecursiveDriver(BaseDriver):
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
+    # TODO(Han): probably want to publicize this, as it is not obvious for driver
+    #  developer which one should be inherited
     def _apply_all(
             self,
             docs: 'DocumentSet',
