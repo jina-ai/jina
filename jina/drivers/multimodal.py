@@ -24,7 +24,7 @@ def _extract_modalities_from_document(doc: 'Document'):
         if modality in doc_content:
             return None
         else:
-            doc_content[modality] = chunk.embedding or chunk.content
+            doc_content[modality] = chunk.embedding if chunk.embedding is not None else chunk.content
     return doc_content
 
 

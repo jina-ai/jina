@@ -210,6 +210,14 @@ class Document:
         self._document.weight = value
 
     @property
+    def modality(self) -> str:
+        return self._document.modality
+
+    @modality.setter
+    def modality(self, value: str):
+        self._document.modality = value
+
+    @property
     def id(self) -> str:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
