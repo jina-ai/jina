@@ -12,7 +12,7 @@ import zmq.asyncio
 from zmq.eventloop.zmqstream import ZMQStream
 from zmq.ssh import tunnel_connection
 
-from .. import __default_host__
+from .. import __default_host__, Request
 from ..enums import SocketType
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..importer import ImportExtensions
@@ -262,7 +262,7 @@ class AsyncZmqlet(Zmqlet):
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'sending message error: {repr(ex)}, gateway cancelled?')
 
-    async def recv_message(self, callback: Callable[['Message'], 'Message'] = None) -> 'Message':
+    async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> 'Message':
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
             self.bytes_recv += msg.size

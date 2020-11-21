@@ -301,17 +301,16 @@ class Message:
         self.envelope.routes[-1].end_time.GetCurrentTime()
 
     @property
-    def response(self) -> 'jina_pb2.RequestProto':
-        """Get the response of the message in protobuf
+    def response(self) -> 'Request':
+        """Get the response of the message in protobuf.
 
         .. note::
             This should be only called at Gateway
         """
         self.envelope.routes[0].end_time.GetCurrentTime()
-        request = self.request.as_pb_object
-        request.status.CopyFrom(self.envelope.status)
-        request.routes.extend(self.envelope.routes)
-        return request
+        self.request.status.CopyFrom(self.envelope.status)
+        self.request.routes.extend(self.envelope.routes)
+        return self.request
 
     def merge_envelope_from(self, msgs: List['Message']):
         routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}

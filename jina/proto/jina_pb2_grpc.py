@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from . import jina_pb2 as jina__pb2
+from . import serializer as jina__pb2
 
 
 class JinaRPCStub(object):

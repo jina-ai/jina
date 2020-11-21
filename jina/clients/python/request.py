@@ -7,7 +7,6 @@ from ... import Request
 from ...enums import RequestType, DataInputType
 from ...excepts import BadDocType
 from ...helper import batch_iterator
-from ...proto import jina_pb2
 from ...types.document import Document, DocumentSourceType, DocumentContentType
 from ...types.querylang import QueryLang
 
@@ -52,13 +51,12 @@ def _generate(data: GeneratorSourceType,
               queryset: Sequence['QueryLang'] = None,
               data_type: DataInputType = DataInputType.AUTO,
               **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
-              ) -> Iterator['jina_pb2.RequestProto']:
+              ) -> Iterator['Request']:
     """
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an interator over possible Document content (set to text, blob and buffer).
     :return:
     """
-
 
     _kwargs = dict(mime_type=mime_type, length=batch_size, weight=1.0)
 
@@ -81,7 +79,7 @@ def _generate(data: GeneratorSourceType,
         if queryset:
             req.extend_queryset(queryset)
 
-        yield req.as_pb_object
+        yield req
 
 
 def index(*args, **kwargs):
@@ -94,7 +92,7 @@ def train(*args, **kwargs):
     yield from _generate(*args, **kwargs)
     req = Request()
     req.train.flush = True
-    yield req.as_pb_object
+    yield req
 
 
 def search(*args, **kwargs):

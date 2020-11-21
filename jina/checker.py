@@ -52,7 +52,6 @@ class NetworkChecker:
 
     def __init__(self, args: 'argparse.Namespace'):
         from jina.peapods.pea import send_ctrl_message
-        from jina.proto import jina_pb2
         from jina.logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time
