@@ -199,7 +199,7 @@ def test_chunk2doc_ranker_driver_traverse_apply():
         assert len(doc.matches) == 2
         for idx, m in enumerate(doc.matches):
             # the score should be 1 / (1 + id * 2)
-            assert m.score.value == pytest.approx(1. / (1 + float(m.id) * 2.), 0.0001)
+            assert m.score.value == pytest.approx(1. / (1 + float(m.id[0]) * 2.), 0.0001)
 
 
 @pytest.mark.skip('TODO: https://github.com/jina-ai/jina/issues/1014')
