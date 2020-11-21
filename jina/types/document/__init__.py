@@ -139,6 +139,9 @@ class Document:
         else:
             raise AttributeError
 
+    def __str__(self):
+        return f'{self.as_pb_object}'
+
     def update_id(self):
         """Update the document id according to its content.
 
