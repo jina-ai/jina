@@ -232,14 +232,14 @@ class PodRoleType(BetterEnum):
         return self.value in {2, 4}
 
 
-class ClientMode(BetterEnum):
+class RequestType(BetterEnum):
     """ The enum of Client mode
 
     """
     INDEX = 0
     SEARCH = 1
     TRAIN = 2
-    EVALUATE = 3
+    CONTROL = 3
 
 
 class CompressAlgo(BetterEnum):

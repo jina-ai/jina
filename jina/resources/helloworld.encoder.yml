@@ -5,7 +5,10 @@ metas:
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !Blob2PngURI {}
+      - !Blob2PngURI
+        with:
+          height: 28
+          width: 28
       - !EncodeDriver {}
       - !ExcludeQL
         with:

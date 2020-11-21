@@ -1,13 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Sequence, Tuple, Dict, Any
+from typing import Tuple, Dict, Any
 
 import numpy as np
 
 from . import BaseRecursiveDriver
-from ..proto import jina_pb2
-from jina.types.ndarray.generic import NdArray
+
+if False:
+    from ..types.document import Document
+    from ..types.sets import DocumentSet
 
 
 class ReduceAllDriver(BaseRecursiveDriver):
@@ -29,8 +31,8 @@ class ReduceAllDriver(BaseRecursiveDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.DocumentProto'],
-            context_doc: 'jina_pb2.DocumentProto',
+            docs: 'DocumentSet',
+            context_doc: 'Document',
             field: str,
             *args,
             **kwargs) -> None:
@@ -45,8 +47,8 @@ class CollectEvaluationDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.DocumentProto'],
-            context_doc: 'jina_pb2.DocumentProto',
+            docs: 'DocumentSet',
+            context_doc: 'Document',
             field: str,
             *args,
             **kwargs) -> None:
@@ -68,17 +70,17 @@ class ConcatEmbedDriver(ReduceAllDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.DocumentProto'],
-            context_doc: 'jina_pb2.DocumentProto',
+            docs: 'DocumentSet',
+            context_doc: 'Document',
             field: str,
             concatenate: bool = False,
             *args,
             **kwargs):
         doc = context_doc
         if concatenate:
-            NdArray(doc.embedding).value = np.concatenate(self.doc_pointers[doc.id], axis=0)
+            doc.embedding = np.concatenate(self.doc_pointers[doc.id], axis=0)
         else:
             if doc.id not in self.doc_pointers:
-                self.doc_pointers[doc.id] = [NdArray(doc.embedding).value]
+                self.doc_pointers[doc.id] = [doc.embedding]
             else:
-                self.doc_pointers[doc.id].append(NdArray(doc.embedding).value)
+                self.doc_pointers[doc.id].append(doc.embedding)

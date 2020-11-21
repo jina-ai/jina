@@ -1,5 +1,7 @@
-from jina.proto import jina_pb2
 from .. import BaseNdArray
+from ....proto import jina_pb2
+
+__all__ = ['BaseDenseNdArray']
 
 
 class BaseDenseNdArray(BaseNdArray):
@@ -8,6 +10,7 @@ class BaseDenseNdArray(BaseNdArray):
 
     Do not use this class directly. Subclass should be used.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_sparse = False

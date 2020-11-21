@@ -2,18 +2,19 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-from typing import Callable, Union, Sequence, Optional
+from typing import Callable, Union, Optional
 
 from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar, pprint_routes, safe_callback, extract_field
 from .request import GeneratorSourceType
-from ...enums import ClientMode, CallbackOnType
+from ...enums import RequestType, CallbackOnType
 from ...excepts import BadClient, DryRunException
 from ...helper import typename
 from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
+from ...types.request import Request
 from ...types.request.common import DryRunRequest, TrainDryRunRequest, IndexDryRunRequest, SearchDryRunRequest
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
@@ -61,12 +62,12 @@ class PyClient(GrpcClient):
         return self._mode
 
     @mode.setter
-    def mode(self, value: ClientMode) -> None:
-        if isinstance(value, ClientMode):
+    def mode(self, value: RequestType) -> None:
+        if isinstance(value, RequestType):
             self._mode = value
             self.args.mode = value
         else:
-            raise ValueError(f'{value} must be one of {ClientMode}')
+            raise ValueError(f'{value} must be one of {RequestType}')
 
     @staticmethod
     def check_input(input_fn: Optional[InputFnType] = None, **kwargs) -> None:
@@ -89,14 +90,14 @@ class PyClient(GrpcClient):
             default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call_unary(self, data: Union[GeneratorSourceType], mode: ClientMode, **kwargs) -> None:
+    def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
 
         This function should not be used in production due to its low-efficiency. For example,
         you should not use it in a for-loop. Use :meth:`call` instead.
         Nonetheless, you can use it for testing one query and check the result.
 
-        :param data: the binary data of the document or the ``DocumentProto`` in protobuf
+        :param data: the binary data of the document in protobuf
         :param mode: request will be sent in this mode, available ``train``, ``index``, ``query``
         """
         self.mode = mode
@@ -110,10 +111,9 @@ class PyClient(GrpcClient):
         return self._stub.CallUnary(next(req_iter))
 
     def call(self,
-             on_done: Callable[['jina_pb2.RequestProto'], None] = None,
-             on_error: Callable[[Sequence['jina_pb2.RouteProto'],
-                                 Optional['jina_pb2.StatusProto']], None] = pprint_routes,
-             on_always: Callable[['jina_pb2.RequestProto'], None] = None,
+             on_done: Callable[['Request'], None] = None,
+             on_error: Callable[['Request'], None] = pprint_routes,
+             on_always: Callable[['Request'], None] = None,
              **kwargs) -> None:
         """ Calling the server with promise callbacks, better use :func:`start` instead.
 
@@ -131,10 +131,6 @@ class PyClient(GrpcClient):
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
 
-        callback_on = self.args.callback_on
-        if isinstance(callback_on, str):
-            callback_on = CallbackOnType.from_string(callback_on)
-
         if on_error:
             safe_on_error = safe_callback(on_error, self.args.continue_on_error, self.logger)
 
@@ -149,11 +145,11 @@ class PyClient(GrpcClient):
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             for resp in self._stub.Call(req_iter):
                 if resp.status.code >= jina_pb2.StatusProto.ERROR and on_error:
-                    safe_on_error(resp.routes, resp.status)
+                    safe_on_error(resp)
                 elif on_done:
-                    safe_on_done(extract_field(resp, callback_on))
+                    safe_on_done(resp)
                 if on_always:
-                    safe_on_always(extract_field(resp, callback_on))
+                    safe_on_always(resp)
                 p_bar.update(self.args.batch_size)
 
     @property
@@ -184,7 +180,7 @@ class PyClient(GrpcClient):
         """
 
         def req_gen():
-            yield req.as_pb_object
+            yield req
 
         before = time.perf_counter()
         for resp in self._stub.Call(req_gen()):
@@ -195,24 +191,24 @@ class PyClient(GrpcClient):
                 raise DryRunException(resp.status)
 
     def train(self, input_fn: Optional[InputFnType] = None,
-              output_fn: Callable[['jina_pb2.RequestProto'], None] = None, **kwargs) -> None:
-        self.mode = ClientMode.TRAIN
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        self.mode = RequestType.TRAIN
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(TrainDryRunRequest())
         self.start(output_fn, **kwargs)
 
     def search(self, input_fn: Optional[InputFnType] = None,
-               output_fn: Callable[['jina_pb2.RequestProto'], None] = None, **kwargs) -> None:
-        self.mode = ClientMode.SEARCH
+               output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        self.mode = RequestType.SEARCH
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(SearchDryRunRequest())
         self.start(output_fn, **kwargs)
 
     def index(self, input_fn: Optional[InputFnType] = None,
-              output_fn: Callable[['jina_pb2.RequestProto'], None] = None, **kwargs) -> None:
-        self.mode = ClientMode.INDEX
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        self.mode = RequestType.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(IndexDryRunRequest())

@@ -52,7 +52,6 @@ class NetworkChecker:
 
     def __init__(self, args: 'argparse.Namespace'):
         from jina.peapods.pea import send_ctrl_message
-        from jina.proto import jina_pb2
         from jina.logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time
@@ -62,8 +61,7 @@ class NetworkChecker:
             total_success = 0
             for j in range(args.retries):
                 with TimeContext(f'ping {ctrl_addr} at {j} round', default_logger) as tc:
-                    r = send_ctrl_message(ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.STATUS,
-                                          timeout=args.timeout)
+                    r = send_ctrl_message(ctrl_addr, 'STATUS', timeout=args.timeout)
                     if not r:
                         default_logger.warning('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))
                     else:
