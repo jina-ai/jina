@@ -319,10 +319,8 @@ class Document:
         :param kwargs: other key-value parameters written to the ``score`` object
         """
         r = self._document.matches.add()
-        if isinstance(doc_id, np.int64) or isinstance(doc_id, np.int32):
-            doc_id = doc_id.item()
-        if isinstance(doc_id, int):
-            r.id = uid.hash2id(doc_id)
+        if isinstance(doc_id, (int, np.integer)):
+            r.id = uid.hash2id(int(doc_id))
         elif isinstance(doc_id, str):
             r.id = doc_id
         r.granularity = self._document.granularity
