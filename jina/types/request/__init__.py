@@ -67,7 +67,7 @@ class Request:
     def __getattr__(self, name: str):
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
         if name in _trigger_body_fields:
-            req = getattr(self.as_pb_object, self.request_type)
+            req = getattr(self.as_pb_object, self._request_type)
             return getattr(req, name)
         elif hasattr(_empty_request, name):
             return getattr(self.as_pb_object, name)
@@ -75,19 +75,23 @@ class Request:
             raise AttributeError
 
     @property
-    def request_type(self) -> str:
+    def _request_type(self) -> str:
         return self.as_pb_object.WhichOneof('body')
+
+    @property
+    def request_type(self) -> str:
+        return getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body')).__class__.__name__
 
     @property
     def docs(self) -> 'DocumentSet':
         self.is_used = True
-        req = getattr(self.as_pb_object, self.request_type)
+        req = getattr(self.as_pb_object, self._request_type)
         return DocumentSet(req.docs)
 
     @property
     def groundtruths(self) -> 'DocumentSet':
         self.is_used = True
-        req = getattr(self.as_pb_object, self.request_type)
+        req = getattr(self.as_pb_object, self._request_type)
         return DocumentSet(req.groundtruths)
 
     @staticmethod
@@ -153,9 +157,9 @@ class Request:
         :param document: document to add
         :param request_type: the type of request to add to, when not given then will always add to existing type
         """
-        if not self.request_type and request_type is None:
+        if not self._request_type and request_type is None:
             raise TypeError(f'request_type must be specified as one of {list(ClientMode)}')
-        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type is not None else self.request_type)
+        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type is not None else self._request_type)
         d = _req.docs.add()
         d.CopyFrom(document.as_pb_object)
 
@@ -165,9 +169,9 @@ class Request:
         :param document: groundtruth document to add
         :param request_type: the type of request to add to, when not given then will always add to existing type
         """
-        if not self.request_type and request_type is None:
+        if not self._request_type and request_type is None:
             raise TypeError(f'request_type must be specified as one of {list(ClientMode)}')
-        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type is not None else self.request_type)
+        _req = getattr(self.as_pb_object, str(request_type).lower() if request_type is not None else self._request_type)
         d = _req.groundtruths.add()
         d.CopyFrom(document.as_pb_object)
 
@@ -190,3 +194,8 @@ class Request:
     def queryset(self) -> 'QueryLangSet':
         self.is_used = True
         return QueryLangSet(self.as_pb_object.queryset)
+
+    @property
+    def command(self) -> str:
+        self.is_used = True
+        return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.as_pb_object.control.command)

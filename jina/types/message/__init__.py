@@ -53,7 +53,7 @@ class Message:
         if isinstance(request, bytes):
             self.request = Request(request, self.envelope)
             self._size += sys.getsizeof(request)
-        elif isinstance(request, jina_pb2.RequestProto):
+        elif isinstance(request, (Request, jina_pb2.RequestProto)):
             self.request = request  # type: Union['Request', 'jina_pb2.RequestProto']
         else:
             raise TypeError(f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(request)}')
@@ -118,10 +118,16 @@ class Message:
                 envelope.request_type = envelope.request_type.replace('Proto', '')
 
         elif isinstance(self.request, Request):
-            raise TypeError('can add envelope to a Request object, '
-                            'as it will trigger the deserialization.'
-                            'in general, this invoke should not exist, '
-                            'as add_envelope() is only called at the gateway')
+            envelope.request_id = request_id or self.request.request_id
+            envelope.request_type = request_type or self.request.request_type
+            # for compatibility
+            if envelope.request_type.endswith('Proto'):
+                envelope.request_type = envelope.request_type.replace('Proto', '')
+
+            # raise TypeError('can not add envelope to a Request object, '
+            #                 'as it will trigger the deserialization.'
+            #                 'in general, this invoke should not exist, '
+            #                 'as add_envelope() is only called at the gateway')
         else:
             raise TypeError(f'expecting request in type: jina_pb2.RequestProto, but receiving {type(self.request)}')
 
@@ -295,8 +301,8 @@ class Message:
         self.envelope.routes[-1].end_time.GetCurrentTime()
 
     @property
-    def response(self):
-        """Get the response of the message
+    def response(self) -> 'jina_pb2.RequestProto':
+        """Get the response of the message in protobuf
 
         .. note::
             This should be only called at Gateway

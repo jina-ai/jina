@@ -25,7 +25,7 @@ def test_convert_blob_to_uri(arr_size, mode):
 
 
 @pytest.mark.parametrize('uri, mimetype', [(__file__, 'text/x-python'),
-                                           ('https://api.jina.ai/latest.json', 'text/plain')])
+                                           ('http://google.com/index.html', 'text/html')])
 def test_convert_uri_to_buffer(uri, mimetype):
     d = Document(uri=uri)
     assert not d.buffer

@@ -17,7 +17,6 @@ from ..enums import SocketType
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..importer import ImportExtensions
 from ..logging import default_logger, profile_logger, JinaLogger
-from ..proto import jina_pb2
 from ..types.message import Message
 from ..types.message.common import ControlMessage
 
@@ -213,8 +212,7 @@ class Zmqlet:
 
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        msg = ControlMessage(jina_pb2.RequestProto.ControlRequestProto.IDLE,
-                             pod_name=self.name, identity=self.args.identity)
+        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
@@ -350,7 +348,7 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: 'jina_pb2.RequestProto.ControlRequestProto', timeout: int) -> 'Message':
+def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
@@ -361,7 +359,7 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.RequestProto.ControlRequestPr
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        msg = ControlMessage(cmd, pod_name='ctl', identity='')
+        msg = ControlMessage(cmd)
         send_message(sock, msg, timeout)
         r = None
         try:
