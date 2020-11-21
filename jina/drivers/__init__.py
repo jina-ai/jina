@@ -21,7 +21,6 @@ from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml, convert_tuple_to_list
 
-
 if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.pea import BasePea
@@ -99,10 +98,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                    not q.disabled
-                    and self.__class__.__name__ == q.name
-                    and q.priority > self._priority
-                    and key in q.parameters
+                        not q.disabled
+                        and self.__class__.__name__ == q.name
+                        and q.priority > self._priority
+                        and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -360,7 +359,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break
