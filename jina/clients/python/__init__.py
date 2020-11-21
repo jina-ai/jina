@@ -8,7 +8,7 @@ from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar, pprint_routes, safe_callback, extract_field
 from .request import GeneratorSourceType
-from ...enums import ClientMode, CallbackOnType
+from ...enums import RequestType, CallbackOnType
 from ...excepts import BadClient, DryRunException
 from ...helper import typename
 from ...logging import default_logger
@@ -61,12 +61,12 @@ class PyClient(GrpcClient):
         return self._mode
 
     @mode.setter
-    def mode(self, value: ClientMode) -> None:
-        if isinstance(value, ClientMode):
+    def mode(self, value: RequestType) -> None:
+        if isinstance(value, RequestType):
             self._mode = value
             self.args.mode = value
         else:
-            raise ValueError(f'{value} must be one of {ClientMode}')
+            raise ValueError(f'{value} must be one of {RequestType}')
 
     @staticmethod
     def check_input(input_fn: Optional[InputFnType] = None, **kwargs) -> None:
@@ -89,7 +89,7 @@ class PyClient(GrpcClient):
             default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call_unary(self, data: Union[GeneratorSourceType], mode: ClientMode, **kwargs) -> None:
+    def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
 
         This function should not be used in production due to its low-efficiency. For example,
@@ -196,7 +196,7 @@ class PyClient(GrpcClient):
 
     def train(self, input_fn: Optional[InputFnType] = None,
               output_fn: Callable[['jina_pb2.RequestProto'], None] = None, **kwargs) -> None:
-        self.mode = ClientMode.TRAIN
+        self.mode = RequestType.TRAIN
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(TrainDryRunRequest())
@@ -204,7 +204,7 @@ class PyClient(GrpcClient):
 
     def search(self, input_fn: Optional[InputFnType] = None,
                output_fn: Callable[['jina_pb2.RequestProto'], None] = None, **kwargs) -> None:
-        self.mode = ClientMode.SEARCH
+        self.mode = RequestType.SEARCH
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(SearchDryRunRequest())
@@ -212,7 +212,7 @@ class PyClient(GrpcClient):
 
     def index(self, input_fn: Optional[InputFnType] = None,
               output_fn: Callable[['jina_pb2.RequestProto'], None] = None, **kwargs) -> None:
-        self.mode = ClientMode.INDEX
+        self.mode = RequestType.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
             self.dry_run(IndexDryRunRequest())

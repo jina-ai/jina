@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterator, Union, Tuple, Sequence
 
 from ... import Request
-from ...enums import ClientMode, DataInputType
+from ...enums import RequestType, DataInputType
 from ...excepts import BadDocType
 from ...helper import batch_iterator
 from ...proto import jina_pb2
@@ -46,7 +46,7 @@ def _build_doc(data, data_type: DataInputType, override_doc_id, **kwargs) -> Tup
 
 def _generate(data: GeneratorSourceType,
               batch_size: int = 0,
-              mode: ClientMode = ClientMode.INDEX,
+              mode: RequestType = RequestType.INDEX,
               mime_type: str = None,
               override_doc_id: bool = True,
               queryset: Sequence['QueryLang'] = None,
@@ -58,13 +58,13 @@ def _generate(data: GeneratorSourceType,
             or an interator over possible Document content (set to text, blob and buffer).
     :return:
     """
-    if isinstance(mode, str):
-        mode = ClientMode.from_string(mode)
+
 
     _kwargs = dict(mime_type=mime_type, length=batch_size, weight=1.0)
 
     for batch in batch_iterator(data, batch_size):
         req = Request()
+        req.request_type = str(mode)
         for content in batch:
             if isinstance(content, tuple) and len(content) == 2:
                 # content comes in pair,  will take the first as the input and the second as the groundtruth
@@ -72,11 +72,11 @@ def _generate(data: GeneratorSourceType,
                 # note how data_type is cached
                 d, data_type = _build_doc(content[0], data_type, override_doc_id, **_kwargs)
                 gt, _ = _build_doc(content[1], data_type, override_doc_id, **_kwargs)
-                req.add_document(d, mode)
-                req.add_groundtruth(gt, mode)
+                req.docs.append(d)
+                req.groundtruths.append(gt)
             else:
                 d, data_type = _build_doc(content, data_type, override_doc_id, **_kwargs)
-                req.add_document(d, mode)
+                req.docs.append(d)
 
         if queryset:
             req.extend_queryset(queryset)

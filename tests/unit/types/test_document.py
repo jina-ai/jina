@@ -3,7 +3,6 @@ import pytest
 from google.protobuf.json_format import MessageToDict
 
 from jina import NdArray, Request
-from jina.enums import ClientMode
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document, BadDocID
 from tests import random_docs_new_api
@@ -118,8 +117,9 @@ def test_doc_content():
 def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
     r = Request()
+    r.request_type = 'index'
     for d in random_docs_new_api(10):
-        r.add_document(d, ClientMode.INDEX)
+        r.docs.append(d)
 
     for idx, d in enumerate(r.docs):
         assert isinstance(d, Document)
@@ -152,8 +152,9 @@ def test_request_docs_mutable_iterator():
 def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
     r = Request()
+    r.request_type = 'index'
     for d in random_docs_new_api(10):
-        r.add_document(d, ClientMode.INDEX)
+        r.docs.append(d)
 
     for d in r.docs:
         assert isinstance(d, Document)

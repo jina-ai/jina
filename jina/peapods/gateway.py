@@ -12,7 +12,7 @@ from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
 from .zmq import AsyncZmqlet
 from .. import __stop_msg__
-from ..enums import ClientMode
+from ..enums import RequestType
 from ..helper import use_uvloop
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
@@ -195,7 +195,7 @@ class RESTGatewayPea(BasePea):
             if 'data' not in content:
                 return http_error('"data" field is empty', 406)
 
-            content['mode'] = ClientMode.from_string(mode)
+            content['mode'] = RequestType.from_string(mode)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
             return Response(asyncio.run(results),

@@ -155,3 +155,29 @@ def test_request_extend_queryset():
 
     with pytest.raises(TypeError):
         r.extend_queryset(1)
+
+
+@pytest.mark.parametrize('typ,pb_typ', [('train', jina_pb2.RequestProto.TrainRequestProto),
+                                        ('index', jina_pb2.RequestProto.IndexRequestProto),
+                                        ('search', jina_pb2.RequestProto.SearchRequestProto),
+                                        ('control', jina_pb2.RequestProto.ControlRequestProto)])
+def test_empty_request_type(typ, pb_typ):
+    r = Request()
+    assert r.request_type is None
+    with pytest.raises(ValueError):
+        print(r.body)
+
+    r.request_type = typ
+    assert r._request_type == typ
+    assert isinstance(r.body, pb_typ)
+
+@pytest.mark.parametrize('typ,pb_typ', [('index', jina_pb2.RequestProto.IndexRequestProto),
+                                        ('search', jina_pb2.RequestProto.SearchRequestProto)])
+def test_add_doc_to_type(typ, pb_typ):
+    r = Request()
+    r.request_type = typ
+    for _ in range(10):
+        r.docs.append(Document())
+        r.groundtruths.append(Document())
+    assert len(r.docs) == 10
+    assert len(r.groundtruths) == 10

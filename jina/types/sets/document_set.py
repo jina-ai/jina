@@ -56,6 +56,9 @@ class DocumentSet(MutableSequence):
     def append(self, doc: 'Document'):
         self._docs_proto.append(doc.as_pb_object)
 
+    def add(self, doc: 'Document'):
+        self.append(doc)
+
     def extend(self, iterable: Iterable['Document']) -> None:
         self._docs_proto.extend(doc.as_pb_object for doc in iterable)
 

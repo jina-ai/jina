@@ -19,7 +19,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
 
     def __call__(self, *args, **kwargs):
         docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
-                             zip(self.req.docs, self.req.groundtruths)]
+                             zip(self.docs, self.req.groundtruths)]
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
 
     @property
@@ -139,12 +139,12 @@ class LoadGroundTruthDriver(KVSearchDriver):
 
     def __call__(self, *args, **kwargs):
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
-        for idx, doc in enumerate(self.req.docs):
+        for idx, doc in enumerate(self.docs):
             serialized_groundtruth = self.exec_fn(self.id2hash(doc.id))
             if serialized_groundtruth:
-                self.req.add_groundtruth(Document(serialized_groundtruth))
+                self.docs.append(Document(serialized_groundtruth))
             else:
                 miss_idx.append(idx)
         # delete non-existed matches in reverse
         for j in reversed(miss_idx):
-            del self.req.docs[j]
+            del self.docs[j]

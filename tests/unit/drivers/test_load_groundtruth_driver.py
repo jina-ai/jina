@@ -5,7 +5,6 @@ import pytest
 
 from jina import Request
 from jina.drivers.evaluate import LoadGroundTruthDriver
-from jina.enums import ClientMode
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import DocumentProto
@@ -78,6 +77,7 @@ def mock_groundtruth_indexer():
 @pytest.fixture(scope='function')
 def eval_request():
     req = Request()
+    req.request_type = 'search'
     # doc: 1
     # doc: 2
     # doc: 3
@@ -86,7 +86,7 @@ def eval_request():
     for idx in range(5):
         dp = DocumentProto()
         dp.id = f'0{str(idx + 1)}'
-        req.add_document(Document(dp), ClientMode.SEARCH)
+        req.docs.append(Document(dp))
     return req
 
 
