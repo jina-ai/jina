@@ -15,6 +15,10 @@ class SimpleRankEvaluateDriver(RankEvaluateDriver):
     def exec_fn(self):
         return self._exec_fn
 
+    @property
+    def expect_parts(self) -> int:
+        return 1
+
 
 @pytest.fixture
 def simple_rank_evaluate_driver(field):
@@ -68,6 +72,10 @@ class SimpleChunkRankEvaluateDriver(RankEvaluateDriver):
     def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
+
+    @property
+    def expect_parts(self) -> int:
+        return 1
 
 
 @pytest.fixture
