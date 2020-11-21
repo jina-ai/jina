@@ -288,7 +288,6 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(
             self, docs: 'DocumentSet', *args, **kwargs
     ) -> None:
-        from ..types.sets import DocumentSet
         for path in self._traversal_paths:
             if path[0] == 'r':
                 self._traverse_rec(docs, None, None, [], *args, **kwargs)

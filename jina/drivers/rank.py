@@ -7,6 +7,7 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from ..executors.rankers import Chunk2DocRanker, Match2DocRanker
+from ..types.document import uid
 
 if False:
     from ..types.sets import DocumentSet
@@ -210,14 +211,8 @@ class Matches2DocRankDriver(BaseRankDriver):
         self._sort_matches_in_place(context_doc, new_match_scores)
 
     def _sort_matches_in_place(self, context_doc: 'Document', match_scores: 'np.ndarray') -> None:
-        sorted_scores = self._sort(match_scores)
-        old_matches = {match.id_in_hash: match for match in context_doc.matches}
-        context_doc.ClearField('matches')
-        for match_hash, score in sorted_scores:
-            new_match = context_doc.add_match(doc_id=match_hash,
-                                              score_value=score,
-                                              op_name=exec.__class__.__name__)
-            new_match.MergeFrom(old_matches[match_hash])
-
-    def _sort(self, docs_scores: 'np.ndarray') -> 'np.ndarray':
-        return np.sort(docs_scores, order=Match2DocRanker.COL_SCORE)[::-1]
+        cm = context_doc.matches
+        cm.build()
+        for match_hash, score in match_scores:
+            cm[uid.hash2id(match_hash)].score.value = score
+        cm.sort(key=lambda x: x.score.value, reverse=True)
