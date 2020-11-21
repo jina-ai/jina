@@ -121,6 +121,10 @@ class SimpleChunkEvaluateDriver(FieldEvaluateDriver):
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
+    @property
+    def expect_parts(self) -> int:
+        return 1
+
 
 @pytest.fixture(scope='function')
 def doc_groundtruth_pair(doc_with_field_type, groundtruth_with_field_type):
