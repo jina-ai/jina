@@ -207,18 +207,25 @@ class Document:
 
     @property
     def weight(self) -> float:
+        """Returns the weight of the document """
         return self._document.weight
 
     @weight.setter
     def weight(self, value: float):
+        """Set the weight of the document
+
+        :param value: the float weight of the document.
+        """
         self._document.weight = value
 
     @property
     def modality(self) -> str:
+        """Get the modality of the document """
         return self._document.modality
 
     @modality.setter
     def modality(self, value: str):
+        """Set the modality of the document"""
         self._document.modality = value
 
     @property
@@ -305,18 +312,24 @@ class Document:
 
     @property
     def matches(self) -> 'DocumentSet':
+        """Get all matches of the current document """
         return DocumentSet(self._document.matches)
 
     @property
     def chunks(self) -> 'DocumentSet':
+        """Get all chunks of the current document """
         return DocumentSet(self._document.chunks)
 
-    def add_match(self, doc_id: Union[str, int], score_value: float, **kwargs) -> 'Document':
+    def add_match(self, doc_id: Union[str, int, 'np.integer'], score_value: float, **kwargs) -> 'Document':
         """Add a match document to the current document
 
         :param doc_id: the document id in hash or hex string
         :param score_value: the value of the score
         :param kwargs: other key-value parameters written to the ``score`` object
+
+        .. note::
+            Comparing to :attr:`matches.append()`, this method adds more safeguard to
+            make sure the added match is legit.
         """
         r = self._document.matches.add()
         if isinstance(doc_id, (int, np.integer)):
@@ -336,6 +349,10 @@ class Document:
         """Add a sub-document (i.e chunk) to the current Document
 
         :return: the newly added sub-document in :class:`Document` view
+
+        .. note::
+            Comparing to :attr:`chunks.append()`, this method adds more safeguard to
+            make sure the added chunk is legit.
         """
         c = self._document.chunks.add()
         if document is not None:
