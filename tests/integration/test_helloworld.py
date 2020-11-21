@@ -13,26 +13,20 @@ from jina.parser import set_hw_parser
 
 
 @pytest.mark.timeout(360)
-def test_helloworld_call(tmpdir):
-    subprocess.check_call(['jina', 'hello-world', '--workdir', str(tmpdir)])
-
-
-@pytest.mark.timeout(360)
-def test_helloworld(tmpdir):
+def test_helloworld_execution(tmpdir):
     cmd = ['jina', 'hello-world', '--workdir', str(tmpdir)]
-    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                             universal_newlines=True)
-    is_hello_world = False
-    for stdout_line in iter(popen.stdout.readline, ""):
-        #  'cli = hello-world' is in stdoutput of hello-world script
-        #  this should be an indicator that hello-world script is executed
-        if 'cli = hello-world' in stdout_line:
-            is_hello_world = True
-            popen.terminate()
-            break
-    popen.stdout.close()
-    popen.wait()
-    assert is_hello_world, 'No cli = hello-world in stdoutput,' \
+    is_hello_world_in_stdout = False
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                          universal_newlines=True) as proc:
+        for stdout_line in iter(proc.stdout.readline, ""):
+            #  'cli = hello-world' is in stdoutput of hello-world script
+            #  this should be an indicator that hello-world script is executed
+            if 'cli = hello-world' in stdout_line:
+                is_hello_world_in_stdout = True
+        proc.communicate()
+        assert proc.returncode == 0, 'Script exited with non-zero code'
+    # is_hello_world_in_stdout  = True
+    assert is_hello_world_in_stdout, 'No cli = hello-world in stdoutput,' \
                            'probably hello-world wasnt executed'
 
 
