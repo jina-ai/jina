@@ -11,8 +11,8 @@ from google.protobuf.json_format import MessageToJson
 from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
 from .zmq import AsyncZmqlet
-from .. import __stop_msg__
-from ..enums import ClientMode
+from .. import __stop_msg__, Request
+from ..enums import RequestType
 from ..helper import use_uvloop
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
@@ -93,12 +93,7 @@ class GatewayPea:
             self.name = args.name or self.__class__.__name__
             self.logger = JinaLogger(self.name, **vars(args))
 
-        def handle(self, msg: 'Message') -> 'jina_pb2.RequestProto':
-            """ Note gRPC accepts :class:`jina_pb2.RequestProto` only, so no more :class:`Request`.
-
-            :param msg:
-            :return:
-            """
+        def handle(self, msg: 'Message') -> 'Request':
             msg.add_route(self.name, self.args.identity)
             return msg.response
 
@@ -195,7 +190,7 @@ class RESTGatewayPea(BasePea):
             if 'data' not in content:
                 return http_error('"data" field is empty', 406)
 
-            content['mode'] = ClientMode.from_string(mode)
+            content['mode'] = RequestType.from_string(mode)
 
             results = get_result_in_json(getattr(python.request, mode)(**content))
             return Response(asyncio.run(results),

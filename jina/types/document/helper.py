@@ -1,15 +1,24 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
-from typing import Dict, Any, Iterable, Tuple
+from typing import Iterable, Tuple, List
 
 import numpy as np
 
-from ..proto import jina_pb2
-from jina.types.ndarray.generic import NdArray
+from . import Document
+
+__all__ = ['extract_embedding', 'extract_content', 'DocGroundtruthPair']
 
 
-def extract_docs(docs: Iterable['jina_pb2.DocumentProto'], embedding: bool) -> Tuple:
+def extract_embedding(docs: Iterable['Document']) -> Tuple['np.ndarray',
+                                                           List['Document'], List[Tuple[str, str]]]:
+    return _extract_docs(docs, 'embedding')
+
+
+def extract_content(docs: Iterable['Document']) -> Tuple['np.ndarray',
+                                                         List['Document'], List[Tuple[str, str]]]:
+    return _extract_docs(docs, 'content')
+
+
+def _extract_docs(docs: Iterable['Document'], attr: str) -> Tuple['np.ndarray',
+                                                                  List['Document'], List[Tuple[str, str]]]:
     """Iterate over a list of protobuf documents and extract chunk-level information from them
 
     :param docs: an iterable of protobuf documents
@@ -26,13 +35,8 @@ def extract_docs(docs: Iterable['jina_pb2.DocumentProto'], embedding: bool) -> T
     docs_pts = []
     bad_doc_ids = []
 
-    if embedding:
-        _extract_fn = lambda doc: NdArray(doc.embedding).value
-    else:
-        _extract_fn = lambda doc: doc.text or doc.buffer or NdArray(doc.blob).value
-
     for doc in docs:
-        content = _extract_fn(doc)
+        content = getattr(doc, attr)
 
         if content is not None:
             contents.append(content)
@@ -44,18 +48,6 @@ def extract_docs(docs: Iterable['jina_pb2.DocumentProto'], embedding: bool) -> T
     return contents, docs_pts, bad_doc_ids
 
 
-def pb_obj2dict(obj, keys: Iterable[str]) -> Dict[str, Any]:
-    """Convert a protobuf object to a Dict by selected keys
-
-    :param obj: a protobuf object
-    :param keys: an iterable of keys for extraction
-    """
-    ret = {k: getattr(obj, k) for k in keys if hasattr(obj, k)}
-    if 'blob' in ret:
-        ret['blob'] = NdArray(obj.blob).value
-    return ret
-
-
 class DocGroundtruthPair:
     """
     Helper class to expose common interface to the traversal logic of the BaseExecutable Driver.
@@ -64,18 +56,18 @@ class DocGroundtruthPair:
     This does not imply that you can't compare at the end a document with 10 matches with a groundtruth with 20 matches
     """
 
-    def __init__(self, doc: 'jina_pb2.DocumentProto', groundtruth: 'jina_pb2.DocumentProto'):
+    def __init__(self, doc: 'Document', groundtruth: 'Document'):
         self.doc = doc
         self.groundtruth = groundtruth
 
     @property
-    def matches(self):
-        assert self.groundtruth and len(self.doc.matches) == len(self.groundtruth.matches)
+    def matches(self) -> Iterable['DocGroundtruthPair']:
+        assert len(self.doc.matches) == len(self.groundtruth.matches)
         for doc, groundtruth in zip(self.doc.matches, self.groundtruth.matches):
             yield DocGroundtruthPair(doc, groundtruth)
 
     @property
-    def chunks(self):
-        assert self.groundtruth and len(self.doc.chunks) == len(self.groundtruth.chunks)
+    def chunks(self) -> Iterable['DocGroundtruthPair']:
+        assert len(self.doc.chunks) == len(self.groundtruth.chunks)
         for doc, groundtruth in zip(self.doc.chunks, self.groundtruth.chunks):
             yield DocGroundtruthPair(doc, groundtruth)

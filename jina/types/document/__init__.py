@@ -1,25 +1,27 @@
-import mimetypes
+import base64
 import os
-import re
 import urllib.parse
+import urllib.request
 import warnings
-from typing import Union, Dict, Iterator, Optional, TypeVar
+from typing import Union, Dict, Optional, TypeVar, Any
 
 import numpy as np
 from google.protobuf import json_format
 
+from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
+from ..sets import DocumentSet
 from ...excepts import BadDocType
-from ...helper import is_url, typename, guess_mime
+from ...helper import is_url, typename
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
 _empty_doc = jina_pb2.DocumentProto()
-_id_regex = re.compile(r'[0-9a-fA-F]{16}')
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray, jina_pb2.NdArrayProto, NdArray)
+DocumentContentType = TypeVar('DocumentContentType', bytes, str,
+                              np.ndarray, jina_pb2.NdArrayProto, NdArray)
 DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
 
@@ -66,7 +68,9 @@ class Document:
             # to set as embedding
             d.embedding = np.random.random([10, 5])
 
-    It also provides multiple way to extract from existing Document. You can build :class:`Document`
+    MIME type is auto set/guessed when setting :attr:`content` and :attr:`uri`
+
+    :class:`Document` also provides multiple way to build from existing Document. You can build :class:`Document`
     from ``jina_pb2.DocumentProto``, ``bytes``, ``str``, and ``Dict``. You can also use it as view (i.e.
     weak reference when building from an existing ``jina_pb2.DocumentProto``). For example,
 
@@ -77,6 +81,8 @@ class Document:
             b = Document(a, copy=False)
             a.text = 'hello'
             assert b.text == 'hello'
+
+    You can leverage the :meth:`convert_a_to_b` interface to convert between content forms.
 
     """
 
@@ -117,20 +123,25 @@ class Document:
                     try:
                         self._document.ParseFromString(document)
                     except RuntimeWarning as ex:
-                        raise BadDocType('fail to construct a document') from ex
+                        raise BadDocType(f'fail to construct a document from {document}') from ex
+            elif isinstance(document, Document):
+                self._document = document.as_pb_object
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
         except Exception as ex:
-            raise BadDocType('fail to construct a document') from ex
+            raise BadDocType(f'fail to construct a document from {document}') from ex
 
-        self.update(**kwargs)
+        self.set_attrs(**kwargs)
 
     def __getattr__(self, name: str):
         if hasattr(_empty_doc, name):
             return getattr(self._document, name)
         else:
             raise AttributeError
+
+    def __str__(self):
+        return f'{self.as_pb_object}'
 
     def update_id(self):
         """Update the document id according to its content.
@@ -170,6 +181,22 @@ class Document:
         return id2bytes(self._document.id)
 
     @property
+    def parent_id_in_hash(self) -> int:
+        """The document id in the integer form of bytes, as 8 bytes map to int64.
+        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
+        such as ranker and Numpyindexer
+        """
+        return id2hash(self._document.parent_id)
+
+    @property
+    def parent_id_in_bytes(self) -> bytes:
+        """The document id in the binary format of str, it has 8 bytes fixed length,
+        so it can be used in the dense file storage, e.g. BinaryPbIndexer,
+        as it requires the key has to be fixed length.
+        """
+        return id2bytes(self._document.parent_id)
+
+    @property
     def length(self) -> int:
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
         return self._document.length
@@ -179,11 +206,41 @@ class Document:
         self._document.length = value
 
     @property
+    def weight(self) -> float:
+        """Returns the weight of the document """
+        return self._document.weight
+
+    @weight.setter
+    def weight(self, value: float):
+        """Set the weight of the document
+
+        :param value: the float weight of the document.
+        """
+        self._document.weight = value
+
+    @property
+    def modality(self) -> str:
+        """Get the modality of the document """
+        return self._document.modality
+
+    @modality.setter
+    def modality(self, value: str):
+        """Set the modality of the document"""
+        self._document.modality = value
+
+    @property
     def id(self) -> str:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
         return self._document.id
+
+    @property
+    def parent_id(self) -> str:
+        """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
+        it will be used as the major view.
+        """
+        return self._document.parent_id
 
     @id.setter
     def id(self, value: str):
@@ -199,13 +256,25 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        if not isinstance(value, str) or not _id_regex.match(value):
-            raise ValueError('Customized ``id`` is only acceptable when: \
-            - it only contains chars "0"–"9" to represent values 0 to 9, \
-            and "A"–"F" (or alternatively "a"–"f"). \
-            - it has 16 chars described above.')
-        else:
+        if is_valid_id(value):
             self._document.id = value
+
+    @parent_id.setter
+    def parent_id(self, value: str):
+        """Set document's parent id to a string value
+
+        .. note:
+
+            Customized ``id`` is acceptable as long as
+            - it only contains the symbols "0"–"9" to represent values 0 to 9,
+            and "A"–"F" (or alternatively "a"–"f").
+            - it has 16 chars described above.
+
+        :param value: restricted string value
+        :return:
+        """
+        if is_valid_id(value):
+            self._document.parent_id = value
 
     @property
     def blob(self) -> 'np.ndarray':
@@ -242,18 +311,31 @@ class Document:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
-    def matches(self) -> Iterator['Document']:
-        for d in self._document.matches:
-            yield Document(d)
+    def matches(self) -> 'DocumentSet':
+        """Get all matches of the current document """
+        return DocumentSet(self._document.matches)
 
     @property
-    def chunks(self) -> Iterator['Document']:
-        for d in self._document.chunks:
-            yield Document(d)
+    def chunks(self) -> 'DocumentSet':
+        """Get all chunks of the current document """
+        return DocumentSet(self._document.chunks)
 
-    def add_match(self, doc_id: str, score_value: float, **kwargs) -> 'Document':
+    def add_match(self, doc_id: Union[str, int, 'np.integer'], score_value: float, **kwargs) -> 'Document':
+        """Add a match document to the current document
+
+        :param doc_id: the document id in hash or hex string
+        :param score_value: the value of the score
+        :param kwargs: other key-value parameters written to the ``score`` object
+
+        .. note::
+            Comparing to :attr:`matches.append()`, this method adds more safeguard to
+            make sure the added match is legit.
+        """
         r = self._document.matches.add()
-        r.id = doc_id
+        if isinstance(doc_id, (int, np.integer)):
+            r.id = uid.hash2id(int(doc_id))
+        elif isinstance(doc_id, str):
+            r.id = doc_id
         r.granularity = self._document.granularity
         r.adjacency = self._document.adjacency + 1
         r.score.ref_id = self._document.id
@@ -267,20 +349,30 @@ class Document:
         """Add a sub-document (i.e chunk) to the current Document
 
         :return: the newly added sub-document in :class:`Document` view
+
+        .. note::
+            Comparing to :attr:`chunks.append()`, this method adds more safeguard to
+            make sure the added chunk is legit.
         """
         c = self._document.chunks.add()
         if document is not None:
             c.CopyFrom(document.as_pb_object)
 
         with Document(c) as chunk:
-            chunk.update(parent_id=self._document.id,
-                         granularity=self._document.granularity + 1,
-                         **kwargs)
-            chunk.mime_type = self._document.mime_type
+            chunk.set_attrs(parent_id=self._document.id,
+                            granularity=self._document.granularity + 1,
+                            **kwargs)
+            if not chunk.mime_type:
+                chunk.mime_type = self._document.mime_type
             return chunk
 
-    def update(self, **kwargs):
-        """Bulk update Document fields with key-value specified in kwargs """
+    def set_attrs(self, **kwargs):
+        """Bulk update Document fields with key-value specified in kwargs
+
+        .. seealso::
+            :meth:`get_attrs` for bulk get attributes
+
+        """
         for k, v in kwargs.items():
             if isinstance(v, list) or isinstance(v, tuple):
                 self._document.ClearField(k)
@@ -289,7 +381,19 @@ class Document:
                 self._document.ClearField(k)
                 getattr(self._document, k).update(v)
             else:
-                setattr(self, k, v)
+                if hasattr(self, k):
+                    setattr(self, k, v)
+                else:
+                    raise AttributeError(f'{k} is not recognized')
+
+    def get_attrs(self, *args) -> Dict[str, Any]:
+        """Bulk fetch Document fields and return a dict of the key-value pairs
+
+        .. seealso::
+            :meth:`update` for bulk set/update attributes
+
+        """
+        return {k: getattr(self, k) for k in args if hasattr(self, k)}
 
     @property
     def as_pb_object(self) -> 'jina_pb2.DocumentProto':
@@ -307,7 +411,7 @@ class Document:
     @buffer.setter
     def buffer(self, value: bytes):
         self._document.buffer = value
-        if self._document.buffer:
+        if value:
             with ImportExtensions(required=False,
                                   pkg_name='python-magic',
                                   help_text=f'can not sniff the MIME type '
@@ -383,6 +487,11 @@ class Document:
         self.update_id()
 
     @property
+    def content_type(self) -> str:
+        """Return the content type of the document, possible values: text, blob, buffer"""
+        return self._document.WhichOneof('content')
+
+    @property
     def content(self) -> DocumentContentType:
         """Return the content of the document. It checks whichever field among :attr:`blob`, :attr:`text`,
         :attr:`buffer` has value and return it.
@@ -390,7 +499,7 @@ class Document:
         .. seealso::
             :attr:`blob`, :attr:`buffer`, :attr:`text`
         """
-        attr = self._document.WhichOneof('content')
+        attr = self.content_type
         if attr:
             return getattr(self, attr)
 
@@ -417,3 +526,101 @@ class Document:
         else:
             # ``None`` is also considered as bad type
             raise TypeError(f'{typename(value)} is not recognizable')
+
+    def convert_buffer_to_blob(self, **kwargs):
+        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
+        set :attr:`blob` accordingly.
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+
+        .. note::
+            One can only recover values not shape information from pure buffer.
+        """
+        self.blob = np.frombuffer(self.buffer)
+
+    def convert_blob_to_uri(self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs):
+        """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly"""
+        png_bytes = png_to_buffer(self.blob, width, height, resize_method)
+        self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+
+    def convert_uri_to_buffer(self, **kwargs):
+        """Convert uri to buffer
+        Internally it downloads from the URI and set :attr:`buffer`.
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+
+        """
+        if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
+            req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as fp:
+                self.buffer = fp.read()
+        elif os.path.exists(self.uri):
+            with open(self.uri, 'rb') as fp:
+                self.buffer = fp.read()
+        else:
+            raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
+
+    def convert_uri_to_data_uri(self, charset: str = 'utf-8', base64: bool = False, **kwargs):
+        """ Convert uri to data uri.
+        Internally it reads uri into buffer and convert it to data uri
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        self.convert_uri_to_buffer()
+        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+
+    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False, **kwargs):
+        """ Convert buffer to data uri.
+        Internally it first reads into buffer and then converts it to data URI.
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
+         Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
+         frequently uses non-US-ASCII characters.
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+
+        if not self.mime_type:
+            raise ValueError(f'{self.mime_type} is unset, can not convert it to data uri')
+
+        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+
+    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False, **kwargs):
+        """ Convert text to data uri.
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
+        Designed to be efficient for non-text 8 bit and binary data.
+        Sometimes used for text data that frequently uses non-US-ASCII characters.
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+
+        self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
+
+    def convert_uri_to_text(self, **kwargs):
+        """Assuming URI is text, convert it to text
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        self.convert_uri_to_buffer()
+        self.text = self.buffer.decode()
+
+    def convert_content_to_uri(self, **kwargs):
+        """Convert content in URI with best effort
+
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        if self.text:
+            self.convert_text_to_uri()
+        elif self.buffer:
+            self.convert_buffer_to_uri()
+        elif self.content_type:
+            raise NotImplementedError
+
+    def MergeFrom(self, doc: 'Document'):
+        self._document.MergeFrom(doc.as_pb_object)
+
+    def CopyFrom(self, doc: 'Document'):
+        self._document.CopyFrom(doc.as_pb_object)

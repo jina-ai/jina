@@ -3,16 +3,14 @@ __license__ = "Apache-2.0"
 
 import functools
 import math
-import mimetypes
 import os
 import random
 import re
 import sys
 import time
-import urllib.parse
-import urllib.request
 import uuid
 import numpy as np
+import warnings
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from io import StringIO
@@ -27,7 +25,7 @@ __all__ = ['batch_iterator', 'yaml',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
            'cached_property', 'is_url', 'complete_path',
-           'typename', 'get_public_ip', 'get_internal_ip', 'guess_mime']
+           'typename', 'get_public_ip', 'get_internal_ip']
 
 
 def deprecated_alias(**aliases):
@@ -43,14 +41,13 @@ def deprecated_alias(**aliases):
 
 
 def rename_kwargs(func_name: str, kwargs, aliases):
-    from .logging import default_logger
     for alias, new in aliases.items():
         if alias in kwargs:
             if new in kwargs:
                 raise TypeError(f'{func_name} received both {alias} and {new}')
-            default_logger.warning(
+            warnings.warn(
                 f'"{alias}" is deprecated in "{func_name}()" '
-                f'and will be removed in the next version; please use "{new}" instead')
+                f'and will be removed in the next version; please use "{new}" instead', DeprecationWarning)
             kwargs[new] = kwargs.pop(alias)
 
 
@@ -607,17 +604,6 @@ def get_readable_time(*args, **kwargs):
                 n = int(secs)
             parts.append(f'{n} {unit}' + ('' if n == 1 else 's'))
     return ' and '.join(parts)
-
-
-def guess_mime(uri):
-    # guess when uri points to a local file
-    m_type = mimetypes.guess_type(uri)[0]
-    # guess when uri points to a remote file
-    if not m_type and urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
-        page = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
-        tmp = urllib.request.urlopen(page)
-        m_type = tmp.info().get_content_type()
-    return m_type
 
 
 def get_internal_ip():

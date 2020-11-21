@@ -2,30 +2,21 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Sequence, Tuple, Dict, List
+from typing import Tuple, Dict, List
 
 import numpy as np
 
 from .encode import BaseEncodeDriver
-from ..proto import jina_pb2
-from jina.types.ndarray.generic import NdArray
+
+if False:
+    from ..types.document import Document
+    from ..types.sets import DocumentSet
 
 
-def _extract_doc_content(doc: 'jina_pb2.DocumentProto'):
-    """Returns the content of the document with the following priority:
-    If the document has an embedding, return it, otherwise return its content.
-    """
-    r = NdArray(doc.embedding).value
-    if r is not None:
-        return r
-    elif doc.text or doc.buffer:
-        return doc.text or doc.buffer
-    else:
-        return NdArray(doc.blob).value
-
-
-def _extract_modalities_from_document(doc: 'jina_pb2.DocumentProto'):
+def _extract_modalities_from_document(doc: 'Document'):
     """Returns a dictionary of document content (embedding, text, blob or buffer) with `modality` as its key
+
+    TODO: this should be part of the Document class, but this logic looks really specific @Joan
     """
     doc_content = {}
     for chunk in doc.chunks:
@@ -33,7 +24,7 @@ def _extract_modalities_from_document(doc: 'jina_pb2.DocumentProto'):
         if modality in doc_content:
             return None
         else:
-            doc_content[modality] = _extract_doc_content(chunk)
+            doc_content[modality] = chunk.embedding if chunk.embedding is not None else chunk.content
     return doc_content
 
 
@@ -80,7 +71,7 @@ class MultiModalDriver(BaseEncodeDriver):
 
     def _apply_all(
             self,
-            docs: Sequence['jina_pb2.DocumentProto'],
+            docs: 'DocumentSet',
             *args, **kwargs
     ) -> None:
         """
@@ -110,7 +101,7 @@ class MultiModalDriver(BaseEncodeDriver):
             embeds = self.exec_fn(*input_args)
             if len(valid_docs) != embeds.shape[0]:
                 self.logger.error(
-                    f'mismatched {len(valid_docs)} docs from level {docs[0].granularity} '
+                    f'mismatched {len(valid_docs)} docs from level {valid_docs[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
             for doc, embedding in zip(valid_docs, embeds):
-                NdArray(doc.embedding).value = embedding
+                doc.embedding = embedding

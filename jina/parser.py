@@ -529,7 +529,7 @@ def set_client_cli_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from .enums import ClientMode, CallbackOnType
+    from .enums import RequestType, CallbackOnType
 
     _set_grpc_parser(parser)
 
@@ -537,7 +537,7 @@ def set_client_cli_parser(parser=None):
 
     gp1.add_argument('--batch-size', type=int, default=100,
                      help='the number of documents in each request')
-    gp1.add_argument('--mode', choices=list(ClientMode), type=ClientMode.from_string,
+    gp1.add_argument('--mode', choices=list(RequestType), type=RequestType.from_string,
                      # required=True,
                      help='the mode of the client and the server')
     gp1.add_argument('--top-k', type=int,
