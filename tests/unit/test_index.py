@@ -158,9 +158,8 @@ def test_compound_idx(tmpdir):
     os.environ['TEST_WORKDIR'] = str(tmpdir)
 
     def validate(req, indexer_name):
-        print(f' req {req}')
         assert req.status.code < jina_pb2.StatusProto.ERROR
-        #assert req.search.docs[0].matches[0].score.op_name == indexer_name
+        assert req.search.docs[0].matches[0].score.op_name == indexer_name
 
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as f:
         f.index(random_docs_new_api(100, chunks_per_doc=0))
