@@ -50,18 +50,21 @@ def create_document_to_score():
     #    |- matches: (id: 6, parent_id: 60, score.value: 6),
     #    |- matches: (id: 7, parent_id: 70, score.value: 7)
     doc = jina_pb2.DocumentProto()
-    doc.id = '1'
+    doc.id = '1' * 16
     for c in range(2):
         chunk = doc.chunks.add()
-        chunk.id = str(c + 2)
+        chunk_id = str(c + 2)
+        chunk.id = chunk_id * 16
         for m in range(2):
             match = chunk.matches.add()
-            match.id = str(2 * int(chunk.id) + m)
-            match.parent_id = str(10 * int(match.id))
-            match.length = int(match.id)
+            match_id = 2 * int(chunk_id) + m
+            match.id = str(match_id) * 8
+            parent_id = 10 * int(match_id)
+            match.parent_id = str(parent_id) * 8
+            match.length = int(match_id)
             # to be used by MaxRanker and MinRanker
             match.score.ref_id = chunk.id
-            match.score.value = int(match.id)
+            match.score.value = int(match_id)
     return Document(doc)
 
 
@@ -74,20 +77,22 @@ def create_chunk_matches_to_score():
     #    |- matches: (id: 21, parent_id: 2, score.value: 4),
     #    |- matches: (id: 22, parent_id: 2, score.value: 5)
     doc = jina_pb2.DocumentProto()
-    doc.id = '1'
+    doc.id = '1' * 16
     doc.granularity = 0
     num_matches = 2
     for parent_id in range(1, 3):
         chunk = doc.chunks.add()
-        chunk.id = str(parent_id * 10)
+        chunk_id = parent_id * 10
+        chunk.id = str(chunk_id)
         chunk.granularity = doc.granularity + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
             match = chunk.matches.add()
             match.granularity = chunk.granularity
-            match.parent_id = str(parent_id)
+            match.parent_id = str(parent_id) * 16
             match.score.value = score_value
-            match.score.ref_id = str(chunk.id)
+            match.score.ref_id = chunk.id
             match.id = str(10 * int(parent_id) + score_value)
+            print(match.id)
             match.length = 4
     return Document(doc)
 
@@ -131,13 +136,13 @@ def test_chunk2doc_ranker_driver_mock_exec():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == '70'
+    assert doc.matches[0].id == '70' * 8
     assert doc.matches[0].score.value == 7
-    assert doc.matches[1].id == '60'
+    assert doc.matches[1].id == '60' * 8
     assert doc.matches[1].score.value == 6
-    assert doc.matches[2].id == '50'
+    assert doc.matches[2].id == '50' * 8
     assert doc.matches[2].score.value == 5
-    assert doc.matches[3].id == '40'
+    assert doc.matches[3].id == '40' * 8
     assert doc.matches[3].score.value == 4
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
@@ -151,13 +156,13 @@ def test_chunk2doc_ranker_driver_max_ranker():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == '70'
+    assert doc.matches[0].id == '70' * 8
     assert doc.matches[0].score.value == 7
-    assert doc.matches[1].id == '60'
+    assert doc.matches[1].id == '60' * 8
     assert doc.matches[1].score.value == 6
-    assert doc.matches[2].id == '50'
+    assert doc.matches[2].id == '50' * 8
     assert doc.matches[2].score.value == 5
-    assert doc.matches[3].id == '40'
+    assert doc.matches[3].id == '40' * 8
     assert doc.matches[3].score.value == 4
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
@@ -171,13 +176,13 @@ def test_chunk2doc_ranker_driver_min_ranker():
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == '40'
+    assert doc.matches[0].id == '40' * 8
     assert doc.matches[0].score.value == pytest.approx(1 / (1 + 4), 0.0001)
-    assert doc.matches[1].id == '50'
+    assert doc.matches[1].id == '50' * 8
     assert doc.matches[1].score.value == pytest.approx(1 / (1 + 5), 0.0001)
-    assert doc.matches[2].id == '60'
+    assert doc.matches[2].id == '60' * 8
     assert doc.matches[2].score.value == pytest.approx(1 / (1 + 6), 0.0001)
-    assert doc.matches[3].id == '70'
+    assert doc.matches[3].id == '70' * 8
     assert doc.matches[3].score.value == pytest.approx(1 / (1 + 7), 0.0001)
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
