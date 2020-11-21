@@ -84,7 +84,6 @@ def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search
             assert match.granularity == chunk.granularity
             assert match.score.ref_id == str(chunk.id)
             assert match.embedding is None
-            assert match.id == uid.hash2id(0)
         assert chunk.matches[0].score.value == 0.
         assert chunk.matches[1].score.value == 1.
 
