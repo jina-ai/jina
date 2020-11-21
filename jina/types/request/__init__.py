@@ -4,7 +4,7 @@ from ..querylang import QueryLang
 from ..sets import QueryLangSet, DocumentSet
 from ...drivers import BaseDriver
 from ...enums import CompressAlgo, RequestType
-from ...helper import typename
+from ...helper import typename, get_random_identity
 from ...proto import jina_pb2
 
 _body_type = set(str(v).lower() for v in RequestType)
