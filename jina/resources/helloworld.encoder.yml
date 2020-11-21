@@ -7,8 +7,8 @@ requests:
     [IndexRequest, SearchRequest]:
       - !Blob2PngURI
         with:
-          height: 32
-          width: 32
+          height: 28
+          width: 28
       - !EncodeDriver {}
       - !ExcludeQL
         with:
