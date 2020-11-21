@@ -142,7 +142,7 @@ class LoadGroundTruthDriver(KVSearchDriver):
         for idx, doc in enumerate(self.docs):
             serialized_groundtruth = self.exec_fn(self.id2hash(doc.id))
             if serialized_groundtruth:
-                self.docs.append(Document(serialized_groundtruth))
+                self.req.groundtruths.append(Document(serialized_groundtruth))
             else:
                 miss_idx.append(idx)
         # delete non-existed matches in reverse

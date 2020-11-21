@@ -80,6 +80,10 @@ class SimpleChunkEvaluateDriver(NDArrayEvaluateDriver):
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
+    @property
+    def expect_parts(self) -> int:
+        return 1
+
 
 @pytest.fixture
 def simple_chunk_evaluate_driver():
