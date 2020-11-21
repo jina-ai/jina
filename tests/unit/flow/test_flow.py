@@ -498,10 +498,10 @@ def test_flow_with_publish_driver():
 
     def validate(req):
         for d in req.docs:
-            assert d.embedding
+            assert d.embedding is not None
 
     with f:
-        f.index_lines(lines=['text_1', 'text_2'], output_fn=validate, callback_on='body')
+        f.index_lines(lines=['text_1', 'text_2'], output_fn=validate)
 
 
 def test_flow_with_modalitys_simple():

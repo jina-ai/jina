@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from cli import _is_latest_version
-from jina import NdArray
+from jina import NdArray, Request
 from jina.clients.python import PyClient, pprint_routes, safe_callback
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
@@ -146,7 +146,9 @@ def test_pprint_routes(capfd):
     r = jina_pb2.RouteProto()
     r.status.code = jina_pb2.StatusProto.SUCCESS
     result.append(r)
-    pprint_routes(result)
+    rr = Request()
+    rr.routes.extend(result)
+    pprint_routes(rr)
     out, err = capfd.readouterr()
     assert out == '''+-----+------+------------+
 | \x1b[1mPod\x1b[0m | \x1b[1mTime\x1b[0m | \x1b[1mException\x1b[0m  |

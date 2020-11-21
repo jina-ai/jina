@@ -73,6 +73,7 @@ def test_on_error_callback():
         raise NotImplementedError
 
     def validate2(x, *args):
+        x = x.routes
         assert len(x) == 4  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
         assert badones[0].pod == 'r3'
