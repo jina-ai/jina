@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
 import ruamel.yaml
+from multiprocessing.synchronize import Event
 
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
@@ -158,7 +159,7 @@ class JinadAPI:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t create {pod_type} with remote jinad {repr(ex)}')
 
-    def log(self, remote_id: 'str', **kwargs) -> None:
+    def log(self, remote_id: 'str', stop_event: Event, **kwargs) -> None:
         """ Start the log stream from remote pea/pod, will use local logger for output
 
         :param remote_id: the identity of that pea/pod
@@ -174,6 +175,8 @@ class JinadAPI:
             for log_line in r.iter_content():
                 if log_line:
                     self.logger.info(f'🌏 {log_line.strip()}')
+                if stop_event.is_set():
+                    break
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t connect with remote jinad url {repr(ex)}')
         finally:
