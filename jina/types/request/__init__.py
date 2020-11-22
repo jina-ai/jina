@@ -18,8 +18,6 @@ _empty_request = jina_pb2.RequestProto()
 
 __all__ = ['Request']
 
-__all__ = ['Request']
-
 
 class Request:
     """
