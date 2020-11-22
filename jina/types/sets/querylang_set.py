@@ -1,10 +1,14 @@
 from collections.abc import MutableSequence
-from typing import Iterable
+from typing import Iterable, Union
 
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 
 from ..querylang import QueryLang
+from ...drivers import BaseDriver
+from ...helper import typename
 from ...proto.jina_pb2 import QueryLangProto
+
+AcceptQueryLangType = Union[QueryLang, BaseDriver, QueryLangProto]
 
 __all__ = ['QueryLangSet']
 
@@ -49,11 +53,20 @@ class QueryLangSet(MutableSequence):
         else:
             raise IndexError(f'do not support this index {item}')
 
-    def append(self, doc: 'QueryLang'):
-        self._querylangs_proto.append(doc.as_pb_object)
+    def append(self, value: 'AcceptQueryLangType'):
+        q_pb = self._querylangs_proto.add()
+        if isinstance(value, BaseDriver):
+            q_pb.CopyFrom(QueryLang(value).as_pb_object)
+        elif isinstance(value, QueryLangProto):
+            q_pb.CopyFrom(value)
+        elif isinstance(value, QueryLang):
+            q_pb.CopyFrom(value.as_pb_object)
+        else:
+            raise TypeError(f'unknown type {typename(value)}')
 
-    def extend(self, iterable: Iterable['QueryLang']) -> None:
-        self._querylangs_proto.extend(doc.as_pb_object for doc in iterable)
+    def extend(self, iterable: Iterable[AcceptQueryLangType]) -> None:
+        for q in iterable:
+            self.append(q)
 
     def clear(self):
         del self._querylangs_proto[:]

@@ -9,6 +9,7 @@ from ...excepts import BadDocType
 from ...helper import batch_iterator
 from ...types.document import Document, DocumentSourceType, DocumentContentType
 from ...types.querylang import QueryLang
+from ...types.sets.querylang_set import AcceptQueryLangType
 
 GeneratorSourceType = Iterator[Union[DocumentContentType,
                                      DocumentSourceType,
@@ -48,7 +49,7 @@ def _generate(data: GeneratorSourceType,
               mode: RequestType = RequestType.INDEX,
               mime_type: str = None,
               override_doc_id: bool = True,
-              queryset: Sequence['QueryLang'] = None,
+              queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
               data_type: DataInputType = DataInputType.AUTO,
               **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
               ) -> Iterator['Request']:
@@ -76,8 +77,10 @@ def _generate(data: GeneratorSourceType,
                 d, data_type = _build_doc(content, data_type, override_doc_id, **_kwargs)
                 req.docs.append(d)
 
-        if queryset:
-            req.extend_queryset(queryset)
+        if isinstance(queryset, Sequence):
+            req.queryset.extend(queryset)
+        elif queryset is not None:
+            req.queryset.append(queryset)
 
         yield req
 

@@ -1,4 +1,5 @@
 import sys
+from typing import Sequence
 
 import pytest
 
@@ -138,23 +139,31 @@ def test_request_extend_queryset():
     q3.parameters['end'] = 4
     q3.priority = 2
     r = Request()
-    r.extend_queryset([q1, q2, q3])
+    r.queryset.extend([q1, q2, q3])
+    assert isinstance(r.queryset, Sequence)
     for idx, q in enumerate(r.queryset):
         assert q.priority == idx
         assert q.parameters['start'] == 3
         assert q.parameters['end'] == 4
 
+    # q1 and q2 refer to the same
+    assert len({id(q) for q in r.queryset}) == 2
+
+    r2 = Request()
+    r2.queryset.extend(r.queryset)
+    assert len({id(q) for q in r2.queryset}) == 2
+
     r = Request()
-    r.extend_queryset(q1)
-    r.extend_queryset(q2)
-    r.extend_queryset(q3)
+    r.queryset.append(q1)
+    r.queryset.append(q2)
+    r.queryset.append(q3)
     for idx, q in enumerate(r.queryset):
         assert q.priority == idx
         assert q.parameters['start'] == 3
         assert q.parameters['end'] == 4
 
     with pytest.raises(TypeError):
-        r.extend_queryset(1)
+        r.queryset.extend(1)
 
 
 @pytest.mark.parametrize('typ,pb_typ', [('train', jina_pb2.RequestProto.TrainRequestProto),
