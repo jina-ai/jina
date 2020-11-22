@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from argparse import Namespace
 from typing import Dict, Union, Optional, Any
+
 from .zmq import Zmqlet, send_ctrl_message
 from .jinad import PeaAPI, PodAPI
 from .pea import BasePea
@@ -42,7 +43,7 @@ class RemotePea(BasePea):
         return self.spawn_remote(host=self.args.host, port=self.args.port_expose)
 
     def spawn_remote(self, host: str, port: int, **kwargs) -> Optional[str]:
-        self.api = self.APIClass(host, port, self.logger, **kwargs)
+        self.api = self.APIClass(host=host, port=port, logger=self.logger, **kwargs)
 
         if self.api.is_alive:
             pea_args = namespace_to_dict(self.args)
@@ -85,7 +86,7 @@ class RemotePod(RemotePea):
                                                                          first_pea_args.ctrl_with_ipc)
 
     def spawn_remote(self, host: str, port: int, pod_type: str = 'cli', **kwargs) -> Optional[str]:
-        return super().spawn_remote(host, port, pod_type=pod_type)
+        return super().spawn_remote(host=host, port=port, pod_type=pod_type)
 
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
@@ -103,4 +104,4 @@ class RemoteMutablePod(RemotePod):
         return self.spawn_remote(host=self.args['peas'][0].host, port=self.args['peas'][0].port_expose)
 
     def spawn_remote(self, host: str, port: int, pod_type: str = 'flow', **kwargs) -> Optional[str]:
-        return super().spawn_remote(host, port, pod_type=pod_type)
+        return super().spawn_remote(host=host, port=port, pod_type=pod_type)
