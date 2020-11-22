@@ -23,7 +23,7 @@ f = (Flow()
 
 ... or use the Pod image via Jina CLI
 ```bash
-jina pod --image jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
+jina pod --uses jinaai/hub.examples.mwu_encoder --port-in 55555 --port-out 55556
 ```
 
 More information about [the usage can be found here](./use-your-pod.html#use-your-pod-image).
