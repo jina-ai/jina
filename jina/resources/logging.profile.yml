@@ -1,6 +1,6 @@
 handlers:  # enabled handlers, order does not matter
   - SysLogHandler
-  - FluentHandler
+#  - FluentHandler TODO(Han): I temporally disable it for suppress the warning and better ux for newbies
 level: INFO  # set verbose level
 configs:
   SysLogHandler:
