@@ -155,7 +155,7 @@ class ImportExtensions:
     """
 
     def __init__(self, required: bool, logger=None,
-                 help_text: str = None, pkg_name: str = None):
+                 help_text: str = None, pkg_name: str = None, verbose: bool=True):
         """
 
         :param required: set to True if you want to raise the ModuleNotFound error
@@ -169,6 +169,7 @@ class ImportExtensions:
         self._help_text = help_text
         self._logger = logger
         self._pkg_name = pkg_name
+        self._verbose = verbose
 
     def __enter__(self):
         return self
@@ -204,20 +205,22 @@ class ImportExtensions:
                 err_msg = f'{exc_val.msg}'
 
             if self._required:
-                if self._logger:
-                    self._logger.critical(err_msg)
-                    if self._help_text:
-                        self._logger.error(self._help_text)
-                else:
-                    warnings.warn(err_msg, RuntimeWarning, stacklevel=2)
+                if self._verbose:
+                    if self._logger:
+                        self._logger.critical(err_msg)
+                        if self._help_text:
+                            self._logger.error(self._help_text)
+                    else:
+                        warnings.warn(err_msg, RuntimeWarning, stacklevel=2)
                 raise exc_val
             else:
-                if self._logger:
-                    self._logger.warning(err_msg)
-                    if self._help_text:
-                        self._logger.info(self._help_text)
-                else:
-                    warnings.warn(err_msg, RuntimeWarning, stacklevel=2)
+                if self._verbose:
+                    if self._logger:
+                        self._logger.warning(err_msg)
+                        if self._help_text:
+                            self._logger.info(self._help_text)
+                    else:
+                        warnings.warn(err_msg, RuntimeWarning, stacklevel=2)
                 return True  # suppress the error
 
 
