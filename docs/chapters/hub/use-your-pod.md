@@ -35,9 +35,9 @@ docker run --rm --entrypoint "jina" jinaai/hub.examples.mwu_encoder check
 
 ## Use the Pod image via Jina CLI
 
-Another way to use the Pod image is simply give it to `jina pod` via `--image`,
+Another way to use the Pod image is simply give it to `jina pod` via `--uses`,
 ```bash
-jina pod --image jinaai/hub.examples.mwu_encoder
+jina pod --uses jinaai/hub.examples.mwu_encoder
 ```
 
 ```text
