@@ -178,11 +178,11 @@ class JinadAPI:
                     if log_line:
                         try:
                             log_line = json.loads(log_line)
+                            current_line = int(list(log_line.keys())[0])
+                            message = list(log_line.values())[0]['message']
+                            self.logger.info(f'🌏 {message.strip()}')
                         except json.decoder.JSONDecodeError:
-                            pass
-                        current_line = int(list(log_line.keys())[0])
-                        message = list(log_line.values())[0]['message']
-                        self.logger.info(f'🌏 {message.strip()}')
+                            continue
                     await websocket.send(json.dumps({}))
         except websockets.exceptions.ConnectionClosedOK:
             self.logger.debug(f'Client got disconnected from server')
