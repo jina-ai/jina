@@ -194,7 +194,7 @@ class JinaLogger:
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
             elif h == 'FluentHandler':
                 from ..importer import ImportExtensions
-                with ImportExtensions(required=False):
+                with ImportExtensions(required=False, verbose=False):
                     from fluent import asynchandler as fluentasynchandler
                     from fluent.handler import FluentRecordFormatter
 
