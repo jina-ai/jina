@@ -1,8 +1,9 @@
 import sys
+from typing import Sequence
 
 import pytest
 
-from jina import Request, QueryLang
+from jina import Request, QueryLang, Document
 from jina.clients.python.request import _generate
 from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
@@ -43,10 +44,10 @@ def test_lazy_nest_access():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.docs[0].id = '1'
+        r.docs[0].id = '1' * 16
         # now it is read
         assert r.is_used
-        assert r.index.docs[0].id == '1'
+        assert r.index.docs[0].id == '1' * 16
 
 
 def test_lazy_change_message_type():
@@ -65,7 +66,7 @@ def test_lazy_append_access():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.docs.append(jina_pb2.DocumentProto())
+        r.docs.append(Document())
         # now it is read
         assert r.is_used
 
@@ -138,20 +139,54 @@ def test_request_extend_queryset():
     q3.parameters['end'] = 4
     q3.priority = 2
     r = Request()
-    r.extend_queryset([q1, q2, q3])
+    r.queryset.extend([q1, q2, q3])
+    assert isinstance(r.queryset, Sequence)
     for idx, q in enumerate(r.queryset):
         assert q.priority == idx
         assert q.parameters['start'] == 3
         assert q.parameters['end'] == 4
 
+    # q1 and q2 refer to the same
+    assert len({id(q) for q in r.queryset}) == 2
+
+    r2 = Request()
+    r2.queryset.extend(r.queryset)
+    assert len({id(q) for q in r2.queryset}) == 2
+
     r = Request()
-    r.extend_queryset(q1)
-    r.extend_queryset(q2)
-    r.extend_queryset(q3)
+    r.queryset.append(q1)
+    r.queryset.append(q2)
+    r.queryset.append(q3)
     for idx, q in enumerate(r.queryset):
         assert q.priority == idx
         assert q.parameters['start'] == 3
         assert q.parameters['end'] == 4
 
     with pytest.raises(TypeError):
-        r.extend_queryset(1)
+        r.queryset.extend(1)
+
+
+@pytest.mark.parametrize('typ,pb_typ', [('train', jina_pb2.RequestProto.TrainRequestProto),
+                                        ('index', jina_pb2.RequestProto.IndexRequestProto),
+                                        ('search', jina_pb2.RequestProto.SearchRequestProto),
+                                        ('control', jina_pb2.RequestProto.ControlRequestProto)])
+def test_empty_request_type(typ, pb_typ):
+    r = Request()
+    assert r.request_type is None
+    with pytest.raises(ValueError):
+        print(r.body)
+
+    r.request_type = typ
+    assert r._request_type == typ
+    assert isinstance(r.body, pb_typ)
+
+@pytest.mark.parametrize('typ,pb_typ', [('index', jina_pb2.RequestProto.IndexRequestProto),
+                                        ('search', jina_pb2.RequestProto.SearchRequestProto)])
+def test_add_doc_to_type(typ, pb_typ):
+    r = Request()
+    r.request_type = typ
+    for _ in range(10):
+        r.docs.append(Document())
+        r.groundtruths.append(Document())
+    assert len(r.docs) == 10
+    assert len(r.groundtruths) == 10

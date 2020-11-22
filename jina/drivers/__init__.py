@@ -8,7 +8,6 @@ from typing import (
     Dict,
     Callable,
     Tuple,
-    Iterator,
     Optional,
     Sequence,
 )
@@ -17,11 +16,10 @@ import ruamel.yaml.constructor
 from google.protobuf.struct_pb2 import Struct
 
 from ..enums import SkipOnErrorType
-from ..executors.compound import CompoundExecutor
 from ..executors import BaseExecutor
+from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml, convert_tuple_to_list
-from ..proto import jina_pb2
 
 
 if False:
@@ -30,7 +28,9 @@ if False:
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
     from ..types.message import Message
-    from .. import Request
+    from ..types.request import Request
+    from ..types.document import Document
+    from ..types.sets import QueryLangSet, DocumentSet
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -193,16 +193,11 @@ class BaseDriver(metaclass=DriverType):
         return self.pea.message
 
     @property
-    def queryset(self) -> Iterator['jina_pb2.QueryLangProto']:
+    def queryset(self) -> 'QueryLangSet':
         if self.msg:
             return self.msg.request.queryset
         else:
             return []
-
-    @property
-    def envelope(self) -> 'jina_pb2.EnvelopeProto':
-        """Get the current request, shortcut to ``self.pea.message``"""
-        return self.msg.envelope
 
     @property
     def logger(self) -> 'JinaLogger':
@@ -262,17 +257,19 @@ class BaseRecursiveDriver(BaseDriver):
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
+    # TODO(Han): probably want to publicize this, as it is not obvious for driver
+    #  developer which one should be inherited
     def _apply_all(
         self,
-        docs: Sequence['jina_pb2.DocumentProto'],
-        context_doc: 'jina_pb2.DocumentProto',
+        docs: 'DocumentSet',
+        context_doc: 'Document',
         field: str,
         *args,
         **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
-        :param docs: a list of :class:`jina_pb2.DocumentProto` objects to work on; they could come from ``matches``/``chunks``.
+        :param docs: a list of :class:`jina.Document` objects to work on; they could come from ``matches``/``chunks``.
         :param context_doc: the owner of ``docs``
         :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
         """
@@ -287,17 +284,13 @@ class BaseRecursiveDriver(BaseDriver):
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)
 
-    def _traverse_apply(
-        self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs
-    ) -> None:
+    def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
                 self._traverse_rec(docs, None, None, [], *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(
-                    [
-                        doc,
-                    ],
+                    [doc],
                     None,
                     None,
                     path,
@@ -351,7 +344,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
-            self.envelope.status.code != jina_pb2.StatusProto.ERROR
+            not self.msg.is_error
             or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
         ):
             return self._exec_fn

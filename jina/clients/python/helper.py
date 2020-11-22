@@ -4,8 +4,9 @@ __license__ = "Apache-2.0"
 import sys
 import time
 from functools import wraps
-from typing import Sequence, Callable
+from typing import Callable
 
+from ... import Request
 from ...enums import CallbackOnType
 from ...excepts import BadClientCallback
 from ...helper import colored
@@ -93,8 +94,7 @@ class ProgressBar(TimeContext):
         sys.stdout.write(f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s", "green")}\n')
 
 
-def pprint_routes(routes: Sequence['jina_pb2.RouteProto'],
-                  status: 'jina_pb2.StatusProto' = None,
+def pprint_routes(resp: 'Request',
                   stack_limit: int = 3):
     """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`
 
@@ -104,6 +104,8 @@ def pprint_routes(routes: Sequence['jina_pb2.RouteProto'],
     :return:
     """
     from textwrap import fill
+
+    routes = resp.routes
 
     header = [colored(v, attrs=['bold']) for v in ('Pod', 'Time', 'Exception')]
 

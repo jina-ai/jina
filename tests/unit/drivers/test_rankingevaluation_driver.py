@@ -1,9 +1,9 @@
 import pytest
 
 from jina.drivers.evaluate import RankEvaluateDriver
-from jina.drivers.helper import DocGroundtruthPair
 from jina.executors.evaluators.rank.precision import PrecisionEvaluator
 from jina.proto import jina_pb2
+from jina.types.document.helper import DocGroundtruthPair
 
 
 class SimpleRankEvaluateDriver(RankEvaluateDriver):
@@ -14,6 +14,10 @@ class SimpleRankEvaluateDriver(RankEvaluateDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
+
+    @property
+    def expect_parts(self) -> int:
+        return 1
 
 
 @pytest.fixture
@@ -68,6 +72,10 @@ class SimpleChunkRankEvaluateDriver(RankEvaluateDriver):
     def req(self) -> 'jina_pb2.RequestProto':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
+
+    @property
+    def expect_parts(self) -> int:
+        return 1
 
 
 @pytest.fixture

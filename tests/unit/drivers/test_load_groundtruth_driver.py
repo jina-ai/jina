@@ -3,10 +3,12 @@ from typing import Optional
 import numpy as np
 import pytest
 
+from jina import Request
 from jina.drivers.evaluate import LoadGroundTruthDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.types.document import uid
+from jina.proto.jina_pb2 import DocumentProto
+from jina.types.document import uid, Document
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):
@@ -61,6 +63,10 @@ class SimpleLoadGroundTruthDriver(LoadGroundTruthDriver):
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
         return self.eval_request
 
+    @property
+    def expect_parts(self) -> int:
+        return 1
+
 
 @pytest.fixture(scope='function')
 def simple_load_groundtruth_driver():
@@ -74,15 +80,17 @@ def mock_groundtruth_indexer():
 
 @pytest.fixture(scope='function')
 def eval_request():
-    req = jina_pb2.RequestProto.SearchRequestProto()
+    req = Request()
+    req.request_type = 'search'
     # doc: 1
     # doc: 2
     # doc: 3
     # doc: 4
     # doc: 5 - will be missing from KV indexer
     for idx in range(5):
-        doc = req.docs.add()
-        doc.id = f'0{str(idx + 1)}'
+        dp = DocumentProto()
+        dp.id = f'0{str(idx + 1)}'
+        req.docs.append(Document(dp))
     return req
 
 

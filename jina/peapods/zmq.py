@@ -12,13 +12,13 @@ import zmq.asyncio
 from zmq.eventloop.zmqstream import ZMQStream
 from zmq.ssh import tunnel_connection
 
-from .. import __default_host__
+from .. import __default_host__, Request
 from ..enums import SocketType
 from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
 from ..importer import ImportExtensions
 from ..logging import default_logger, profile_logger, JinaLogger
-from ..proto import jina_pb2
-from jina.types.message import Message, ControlMessage
+from ..types.message import Message
+from ..types.message.common import ControlMessage
 
 if False:
     import argparse
@@ -45,7 +45,7 @@ class Zmqlet:
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
-        self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args)
+        self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0
@@ -75,26 +75,29 @@ class Zmqlet:
         self.poller.register(self.in_sock)
 
     @staticmethod
-    def get_ctrl_address(args: 'argparse.Namespace') -> Tuple[str, bool]:
+    def get_ctrl_address(host: str, port_ctrl: str, ctrl_with_ipc: bool) -> Tuple[str, bool]:
         """Get the address of the control socket
 
-        :param args: the parsed arguments from the CLI
+        :param host: the host in he arguments
+        :param port_ctrl: the control port
+        :param ctrl_with_ipc: a bool of whether using IPC protocol for controlling
         :return: A tuple of two pieces:
 
             - a string of control address
             - a bool of whether using IPC protocol for controlling
 
         """
-        ctrl_with_ipc = (os.name != 'nt') and args.ctrl_with_ipc
+        host_out = host
+        ctrl_with_ipc = (os.name != 'nt') and ctrl_with_ipc
         if ctrl_with_ipc:
             return _get_random_ipc(), ctrl_with_ipc
         else:
-            if '@' in args.host:
+            if '@' in host_out:
                 # user@hostname
-                host = args.host.split('@')[-1]
+                host_out = host_out.split('@')[-1]
             else:
-                host = args.host
-            return f'tcp://{host}:{args.port_ctrl}', ctrl_with_ipc
+                host_out = host_out
+            return f'tcp://{host_out}:{port_ctrl}', ctrl_with_ipc
 
     def _pull(self, interval: int = 1):
         socks = dict(self.poller.poll(interval))
@@ -212,8 +215,7 @@ class Zmqlet:
 
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        msg = ControlMessage(jina_pb2.RequestProto.ControlRequestProto.IDLE,
-                             pod_name=self.name, identity=self.args.identity)
+        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.args.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
@@ -263,7 +265,7 @@ class AsyncZmqlet(Zmqlet):
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'sending message error: {repr(ex)}, gateway cancelled?')
 
-    async def recv_message(self, callback: Callable[['Message'], 'Message'] = None) -> 'Message':
+    async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> 'Message':
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
             self.bytes_recv += msg.size
@@ -349,7 +351,7 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: 'jina_pb2.RequestProto.ControlRequestProto', timeout: int) -> 'Message':
+def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
@@ -360,7 +362,7 @@ def send_ctrl_message(address: str, cmd: 'jina_pb2.RequestProto.ControlRequestPr
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        msg = ControlMessage(cmd, pod_name='ctl', identity='')
+        msg = ControlMessage(cmd)
         send_message(sock, msg, timeout)
         r = None
         try:

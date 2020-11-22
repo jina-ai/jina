@@ -5,7 +5,7 @@ import pytest
 from jina.drivers.index import KVIndexDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.types.document import uid
+from jina.types.document import uid, Document
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):
@@ -59,10 +59,8 @@ def documents():
     # doc: 4
     # doc: 5
     for idx in range(5):
-        doc = jina_pb2.DocumentProto()
-        doc.text = str(idx + 1)
-        doc.id = uid.new_doc_id(doc)
-        docs.append(doc)
+        with Document(text=str(idx+1)) as d:
+            docs.append(d)
 
     return docs
 

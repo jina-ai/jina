@@ -4,7 +4,7 @@ import requests
 from jina.clients import py_client
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files
-from jina.enums import ClientMode
+from jina.enums import RequestType
 from jina.flow import Flow
 from jina.helper import random_port
 from jina.parser import set_gateway_parser
@@ -35,7 +35,7 @@ def test_img_2():
 def test_client(flow):
     with flow:
         py_client(port_expose=flow.port_expose).call_unary(
-            [b'a1234', b'b4567'], mode=ClientMode.INDEX,
+            [b'a1234', b'b4567'], mode=RequestType.INDEX,
         )
 
 

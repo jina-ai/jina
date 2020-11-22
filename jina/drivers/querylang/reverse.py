@@ -1,12 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Sequence, Tuple
+from typing import Tuple
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
-    from ...proto import jina_pb2
+    from ...types.sets import DocumentSet
 
 
 class ReverseQL(QuerySetReader, BaseRecursiveDriver):
@@ -24,9 +24,5 @@ class ReverseQL(QuerySetReader, BaseRecursiveDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: Sequence['jina_pb2.DocumentProto'], *args, **kwargs) -> None:
-        prev_len = len(docs)
-        for d in reversed(docs):
-            dd = docs.add()
-            dd.CopyFrom(d)
-        del docs[:prev_len]
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+        docs.reverse()

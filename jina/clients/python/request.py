@@ -4,12 +4,12 @@ __license__ = "Apache-2.0"
 from typing import Iterator, Union, Tuple, Sequence
 
 from ... import Request
-from ...enums import ClientMode, DataInputType
+from ...enums import RequestType, DataInputType
 from ...excepts import BadDocType
 from ...helper import batch_iterator
-from ...proto import jina_pb2
 from ...types.document import Document, DocumentSourceType, DocumentContentType
 from ...types.querylang import QueryLang
+from ...types.sets.querylang_set import AcceptQueryLangType
 
 GeneratorSourceType = Iterator[Union[DocumentContentType,
                                      DocumentSourceType,
@@ -46,25 +46,24 @@ def _build_doc(data, data_type: DataInputType, override_doc_id, **kwargs) -> Tup
 
 def _generate(data: GeneratorSourceType,
               batch_size: int = 0,
-              mode: ClientMode = ClientMode.INDEX,
+              mode: RequestType = RequestType.INDEX,
               mime_type: str = None,
               override_doc_id: bool = True,
-              queryset: Sequence['QueryLang'] = None,
+              queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
               data_type: DataInputType = DataInputType.AUTO,
               **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
-              ) -> Iterator['jina_pb2.RequestProto']:
+              ) -> Iterator['Request']:
     """
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an interator over possible Document content (set to text, blob and buffer).
     :return:
     """
-    if isinstance(mode, str):
-        mode = ClientMode.from_string(mode)
 
     _kwargs = dict(mime_type=mime_type, length=batch_size, weight=1.0)
 
     for batch in batch_iterator(data, batch_size):
         req = Request()
+        req.request_type = str(mode)
         for content in batch:
             if isinstance(content, tuple) and len(content) == 2:
                 # content comes in pair,  will take the first as the input and the second as the groundtruth
@@ -72,16 +71,18 @@ def _generate(data: GeneratorSourceType,
                 # note how data_type is cached
                 d, data_type = _build_doc(content[0], data_type, override_doc_id, **_kwargs)
                 gt, _ = _build_doc(content[1], data_type, override_doc_id, **_kwargs)
-                req.add_document(d, mode)
-                req.add_groundtruth(gt, mode)
+                req.docs.append(d)
+                req.groundtruths.append(gt)
             else:
                 d, data_type = _build_doc(content, data_type, override_doc_id, **_kwargs)
-                req.add_document(d, mode)
+                req.docs.append(d)
 
-        if queryset:
-            req.extend_queryset(queryset)
+        if isinstance(queryset, Sequence):
+            req.queryset.extend(queryset)
+        elif queryset is not None:
+            req.queryset.append(queryset)
 
-        yield req.as_pb_object
+        yield req
 
 
 def index(*args, **kwargs):
@@ -94,7 +95,7 @@ def train(*args, **kwargs):
     yield from _generate(*args, **kwargs)
     req = Request()
     req.train.flush = True
-    yield req.as_pb_object
+    yield req
 
 
 def search(*args, **kwargs):

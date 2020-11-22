@@ -135,7 +135,7 @@ class BasePea(metaclass=PeaMeta):
                 self.name = self.args.name
             if self.args.role == PeaRoleType.PARALLEL:
                 self.name = f'{self.name}-{self.args.pea_id}'
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args)
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc)
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)
@@ -404,15 +404,14 @@ class BasePea(metaclass=PeaMeta):
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """
         if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.TERMINATE,
+            send_ctrl_message(self.ctrl_addr, 'TERMINATE',
                               timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
         if self.is_ready_event.is_set() and getattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.STATUS,
-                                     timeout=self.args.timeout_ctrl)
+            return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
 
     def start(self) -> 'BasePea':
         super().start()

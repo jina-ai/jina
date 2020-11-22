@@ -4,6 +4,7 @@ from google.protobuf.struct_pb2 import ListValue
 from jina.drivers.predict import BinaryPredictDriver, MultiLabelPredictDriver, OneHotPredictDriver, \
     Prediction2DocBlobDriver
 from jina.types.ndarray.generic import NdArray
+from jina.types.sets import DocumentSet
 from tests import random_docs
 
 
@@ -75,7 +76,7 @@ def test_multi_label_predict_driver():
 
 
 def test_as_blob_driver():
-    docs = list(random_docs(2))
+    docs = DocumentSet(random_docs(2))
     driver = MockPrediction2DocBlobDriver()
     driver._traverse_apply(docs)
 

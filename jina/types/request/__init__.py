@@ -1,27 +1,22 @@
-import uuid
-from typing import Union, Optional, Sequence
+from typing import Union, Optional
 
-from ..document import Document
-from ..querylang import QueryLang
-from ...drivers import BaseDriver
-from ...enums import CompressAlgo, ClientMode
-from ...helper import typename
+from ..sets import QueryLangSet, DocumentSet
+from ...enums import CompressAlgo, RequestType
+from ...helper import get_random_identity
 from ...proto import jina_pb2
 
+_body_type = set(str(v).lower() for v in RequestType)
 _trigger_body_fields = set(kk
                            for v in [jina_pb2.RequestProto.IndexRequestProto,
                                      jina_pb2.RequestProto.SearchRequestProto,
                                      jina_pb2.RequestProto.TrainRequestProto,
                                      jina_pb2.RequestProto.ControlRequestProto]
                            for kk in v.DESCRIPTOR.fields_by_name.keys())
-_trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()).difference(
-    {'train', 'index', 'search', 'control'})
+_trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()).difference(_body_type)
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
 _empty_request = jina_pb2.RequestProto()
 
-AcceptQuerySetType = Union[QueryLang, BaseDriver, jina_pb2.QueryLangProto,
-                           Sequence[QueryLang], Sequence[BaseDriver],
-                           Sequence[jina_pb2.QueryLangProto]]
+__all__ = ['Request']
 
 
 class Request:
@@ -56,7 +51,7 @@ class Request:
         elif request is None:
             self._request = jina_pb2.RequestProto()
             # make sure every new request has a request id
-            self._request.request_id = uuid.uuid1().hex
+            self._request.request_id = get_random_identity()
 
         self._envelope = envelope
         self.is_used = False  #: Return True when request has been r/w at least once
@@ -64,12 +59,47 @@ class Request:
     def __getattr__(self, name: str):
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
         if name in _trigger_body_fields:
-            req = getattr(self.as_pb_object, self.as_pb_object.WhichOneof('body'))
-            return getattr(req, name)
+            return getattr(self.body, name)
         elif hasattr(_empty_request, name):
             return getattr(self.as_pb_object, name)
         else:
             raise AttributeError
+
+    @property
+    def body(self):
+        if self._request_type:
+            return getattr(self.as_pb_object, self._request_type)
+        else:
+            raise ValueError(f'"request_type" is not set yet')
+
+    @property
+    def _request_type(self) -> str:
+        return self.as_pb_object.WhichOneof('body')
+
+    @property
+    def request_type(self) -> Optional[str]:
+        """Return the request body type, when not set yet, return ``None``"""
+        if self._request_type:
+            return self.body.__class__.__name__
+
+    @request_type.setter
+    def request_type(self, value: str):
+        """Set the type of this request, but keep the body empty"""
+        value = value.lower()
+        if value in _body_type:
+            getattr(self.as_pb_object, value).SetInParent()
+        else:
+            raise ValueError(f'{value} is not valid, must be one of {_body_type}')
+
+    @property
+    def docs(self) -> 'DocumentSet':
+        self.is_used = True
+        return DocumentSet(self.body.docs)
+
+    @property
+    def groundtruths(self) -> 'DocumentSet':
+        self.is_used = True
+        return DocumentSet(self.body.groundtruths)
 
     @staticmethod
     def _decompress(data: bytes, algorithm: str) -> bytes:
@@ -128,29 +158,12 @@ class Request:
             # no touch, skip serialization, return original
             return self._buffer
 
-    def add_document(self, document: 'Document', mode: 'ClientMode'):
-        """Add a document to the request """
-        _req = getattr(self.as_pb_object, str(mode).lower())
-        d = _req.docs.add()
-        d.CopyFrom(document.as_pb_object)
+    @property
+    def queryset(self) -> 'QueryLangSet':
+        self.is_used = True
+        return QueryLangSet(self.as_pb_object.queryset)
 
-    def add_groundtruth(self, document: 'Document', mode: 'ClientMode'):
-        """Add a groundtruth document to the request """
-        _req = getattr(self.as_pb_object, str(mode).lower())
-        d = _req.groundtruths.add()
-        d.CopyFrom(document.as_pb_object)
-
-    def extend_queryset(self, queryset: AcceptQuerySetType):
-        """Extend the queryset of the request """
-        if not isinstance(queryset, Sequence):
-            queryset = [queryset]
-        for q in queryset:
-            q_pb = self.as_pb_object.queryset.add()
-            if isinstance(q, BaseDriver):
-                q_pb.CopyFrom(QueryLang(q).as_pb_object)
-            elif isinstance(q, jina_pb2.QueryLangProto):
-                q_pb.CopyFrom(q)
-            elif isinstance(q, QueryLang):
-                q_pb.CopyFrom(q.as_pb_object)
-            else:
-                raise TypeError(f'unknown type {typename(q)}')
+    @property
+    def command(self) -> str:
+        self.is_used = True
+        return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.as_pb_object.control.command)
