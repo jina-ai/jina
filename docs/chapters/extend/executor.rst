@@ -72,6 +72,10 @@ If your algorithm is so unique and does not fit any any of the category below, y
 
       You want to combine multiple executors in one.
 
+    * :class:`jina.executors.BaseClassifier`
+
+      You want to enrich the documents and chunks with a classifer.
+
 Override :meth:`__init__` and :meth:`post_init`
 ------------------------------------------------
 
@@ -146,18 +150,21 @@ Override the *core* method of the base class
 Each :class:`Executor` has a core method, which defines the algorithmic behavior of the :class:`Executor`. For making your own extension, you have to override the core method. The following table lists the core method you may want to override. Note some executors may have multiple core methods.
 
 
-+----------------------+----------------------------+
-|      Base class      |       Core method(s)       |
-+----------------------+----------------------------+
-| :class:`BaseEncoder` |       :meth:`encode`       |
-+----------------------+----------------------------+
-| :class:`BaseCrafter` | :meth:`craft`              |
-+----------------------+----------------------------+
-| :class:`BaseIndexer` | :meth:`add`, :meth:`query` |
-+----------------------+----------------------------+
-| :class:`BaseRanker`  | :meth:`score`              |
-+----------------------+----------------------------+
-
++-------------------------+-----------------------------+
+|      Base class         |        Core method(s)       |
++-------------------------+-----------------------------+
+| :class:`BaseEncoder`    |        :meth:`encode`       |
++-------------------------+-----------------------------+
+| :class:`BaseCrafter`    |  :meth:`craft`              |
++-------------------------+-----------------------------+
+| :class:`BaseIndexer`    |  :meth:`add`, :meth:`query` |
++-------------------------+-----------------------------+
+| :class:`BaseRanker`     |  :meth:`score`              |
++-------------------------+-----------------------------+
+| :class:`BaseClassifier` |    :meth:`predict`          |
++-------------------------+-----------------------------+
+| :class:`BaseEvaluator`  |   :meth:`evaluate`          |
++-------------------------+-----------------------------+
 
 Feel free to override other methods/properties as you need. But frankly, most of the extension can be done by simply overriding the core methods listed above. Nothing more. You can read the source code of our executors for details.
 
