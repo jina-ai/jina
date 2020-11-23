@@ -9,6 +9,7 @@ from multiprocessing.synchronize import Event
 
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
+from ..excepts import RemotePodClosed
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
@@ -164,26 +165,42 @@ class JinadAPI:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t create {pod_type} with remote jinad {repr(ex)}')
 
-    async def wslogs(self, remote_id: 'str', current_line: int = 0):
+    async def wslogs(self, remote_id: 'str', stop_event: Event, current_line: int = 0):
+        """ websocket log stream from remote pea/pod
+
+        :param remote_id: the identity of that pea/pod
+        :param stop_event: the multiprocessing event which marks if stop event is set
+        :param current_line: the line number from which logs would be streamed
+        :return:
+        """
         with ImportExtensions(required=True):
             import websockets
 
         try:
             # sleeping for few seconds to allow the logs to be written in remote
-            await asyncio.sleep(5)
-            async with websockets.connect(f'{self.log_url}/{remote_id}?timeout=2') as websocket:
+            await asyncio.sleep(3)
+            async with websockets.connect(f'{self.log_url}/{remote_id}?timeout=20') as websocket:
                 await websocket.send(json.dumps({'from': current_line}))
+                remote_loggers = {}
                 while True:
                     log_line = await websocket.recv()
                     if log_line:
                         try:
                             log_line = json.loads(log_line)
                             current_line = int(list(log_line.keys())[0])
-                            message = list(log_line.values())[0]['message']
-                            self.logger.info(f'🌏 {message.strip()}')
+                            log_line_dict = list(log_line.values())[0]
+                            name = log_line_dict['name']
+                            if name not in remote_loggers:
+                                remote_loggers[name] = JinaLogger(context=f'🌏 {name}')
+                            # TODO: change logging level, process name in local logger
+                            remote_loggers[name].info(f'{log_line_dict["message"].strip()}')
                         except json.decoder.JSONDecodeError:
                             continue
                     await websocket.send(json.dumps({}))
+                    if stop_event.is_set():
+                        for logger in remote_loggers.values():
+                            logger.close()
+                        raise RemotePodClosed
         except websockets.exceptions.ConnectionClosedOK:
             self.logger.debug(f'Client got disconnected from server')
             return current_line
@@ -200,15 +217,11 @@ class JinadAPI:
         current_line = 0
         try:
             self.logger.info(f'fetching streamed logs from remote id: {remote_id}')
-            c = 0
-            # TODO: this needs to be handled better
-            while c < 5:
-                current_line = asyncio.run(
-                    self.wslogs(remote_id=remote_id, current_line=current_line)
-                )
-                c += 1
-                if stop_event.is_set():
-                    break
+            while True:
+                current_line = asyncio.run(self.wslogs(
+                    remote_id=remote_id, stop_event=stop_event, current_line=current_line))
+        except RemotePodClosed:
+            self.logger.debug(f'🌏 remote closed')
         finally:
             self.logger.info(f'🌏 exiting from remote logger')
 

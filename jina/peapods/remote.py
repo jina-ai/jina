@@ -37,6 +37,8 @@ class RemotePea(BasePea):
 
     def __init__(self, args: Union['Namespace', Dict]):
         super().__init__(args)
+        if isinstance(self.args, Namespace):
+            self.ctrl_timeout = self.args.timeout_ctrl
 
     @cached_property
     def remote_id(self) -> str:
@@ -58,6 +60,12 @@ class RemotePea(BasePea):
         else:
             self.logger.error(f'fail to create {typename(self)} remotely')
 
+    def send_terminate_signal(self) -> None:
+        """Gracefully close this pea and release all resources """
+        if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
+            send_ctrl_message(address=self.ctrl_addr, cmd='TERMINATE',
+                              timeout=self.ctrl_timeout)
+
     def close(self) -> None:
         self.send_terminate_signal()
         self.is_shutdown.set()
@@ -77,6 +85,7 @@ class RemotePod(RemotePea):
 
         if isinstance(self.args, Dict):
             first_pea_args = self.args['peas'][0]
+            self.ctrl_timeout = first_pea_args.timeout_ctrl
             self.daemon = first_pea_args.daemon
             if first_pea_args.name:
                 self.name = first_pea_args.name
@@ -87,12 +96,6 @@ class RemotePod(RemotePea):
 
     def spawn_remote(self, host: str, port: int, pod_type: str = 'cli', **kwargs) -> Optional[str]:
         return super().spawn_remote(host=host, port=port, pod_type=pod_type)
-
-    def send_terminate_signal(self) -> None:
-        """Gracefully close this pea and release all resources """
-        if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            send_ctrl_message(self.ctrl_addr, jina_pb2.RequestProto.ControlRequestProto.TERMINATE,
-                              timeout=self.args['peas'][0].timeout_ctrl)
 
 
 class RemoteMutablePod(RemotePod):
