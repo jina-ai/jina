@@ -9,23 +9,8 @@ import numpy as np
 from .encode import BaseEncodeDriver
 
 if False:
-    from ..types.document import Document
+    from ..types.document.multimodal import MultimodalDocument
     from ..types.sets import DocumentSet
-
-
-def _extract_modalities_from_document(doc: 'Document'):
-    """Returns a dictionary of document content (embedding, text, blob or buffer) with `modality` as its key
-
-    TODO: this should be part of the Document class, but this logic looks really specific @Joan
-    """
-    doc_content = {}
-    for chunk in doc.chunks:
-        modality = chunk.modality
-        if modality in doc_content:
-            return None
-        else:
-            doc_content[modality] = chunk.embedding if chunk.embedding is not None else chunk.content
-    return doc_content
 
 
 class MultiModalDriver(BaseEncodeDriver):
@@ -83,7 +68,7 @@ class MultiModalDriver(BaseEncodeDriver):
 
         valid_docs = []
         for doc in docs:
-            doc_content = _extract_modalities_from_document(doc)
+            doc_content = doc.extract_modalities()
             if doc_content:
                 valid_docs.append(doc)
                 for modality in self.positional_modality:
