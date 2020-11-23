@@ -15,6 +15,7 @@ Welcome to Jina Documentation!
    chapters/install/via-docker
    chapters/install/on-rasp-linux
    chapters/install/on-x
+   chapters/install/on-wsl
    chapters/install/upgrade
    chapters/install/autocomplete
 

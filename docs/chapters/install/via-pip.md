@@ -94,8 +94,11 @@ These are the extra dependencies used by Jina:
 |`ngt` | `index` | `Neighborhood Graph and Tree for Indexing High-dimensional Data.`
 |`uvloop` | `òptimization` | `Fast implementation of asyncio event loop on top of libuv.`
 
-## On Windows and Other OSes
+## On Windows
 
-Currently we do not support Windows.
+Currently we do not support native python on Windows.
 
-If you are a Windows user, one workaround is to [run Jina in a Docker container](via-docker.md). If you manage to run Jina on Windows after some tweaks, please submit your changes [here](https://github.com/jina-ai/jina/issues/new).
+If you are a Windows user, one workaround is to [run Jina on Windows Subsystem for Linux](on-wsl.md) or [run Jina in a Docker container](via-docker.md). If you manage to run Jina on Windows after some tweaks, please submit your changes [here](https://github.com/jina-ai/jina/issues/new).
+
+## Other OSes
+Please refer to [run Jina in a Docker container](via-docker.md). If you manage to run Jina on other OSes after some tweaks, please submit your changes [here](https://github.com/jina-ai/jina/issues/new).
