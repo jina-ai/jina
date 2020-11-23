@@ -165,3 +165,7 @@ class BadDocType(TypeError):
 
 class BadQueryLangType(TypeError):
     """ Exception when can not construct a query language from the given data """
+
+
+class RemotePodClosed(Exception):
+    """ Exception when remote pod is closed and log streaming needs to exit """

@@ -1,3 +1,5 @@
+import json
+import asyncio
 from contextlib import ExitStack
 from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
@@ -7,6 +9,7 @@ from multiprocessing.synchronize import Event
 
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
+from ..excepts import RemotePodClosed
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
@@ -70,6 +73,7 @@ class JinadAPI:
     def __init__(self,
                  host: str,
                  port: int,
+                 version: str = 'v1',
                  logger: 'JinaLogger' = None,
                  timeout: int = 5, **kwargs):
         """
@@ -88,12 +92,14 @@ class JinadAPI:
         # TODO: for https, the jinad server would need a tls certificate.
         # no changes would be required in terms of how the api gets invoked,
         # as requests does ssl verfication. we'd need to add some exception handling logic though
-        self.base_url = f'http://{host}:{port}/v1'
-        self.alive_url = f'{self.base_url}/alive'
-        self.upload_url = f'{self.base_url}/upload'
-        self.pea_url = f'{self.base_url}/pea'
-        self.pod_url = f'{self.base_url}/pod'
-        self.log_url = f'{self.base_url}/log'
+        url = f'{host}:{port}/{version}'
+        rest_url = f'http://{url}'
+        websocket_url = f'ws://{url}'
+        self.alive_url = f'{rest_url}/alive'
+        self.upload_url = f'{rest_url}/upload'
+        self.pea_url = f'{rest_url}/pea'
+        self.pod_url = f'{rest_url}/pod'
+        self.log_url = f'{websocket_url}/wslog'
 
     @property
     def is_alive(self) -> bool:
@@ -159,26 +165,63 @@ class JinadAPI:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t create {pod_type} with remote jinad {repr(ex)}')
 
+    async def wslogs(self, remote_id: 'str', stop_event: Event, current_line: int = 0):
+        """ websocket log stream from remote pea/pod
+
+        :param remote_id: the identity of that pea/pod
+        :param stop_event: the multiprocessing event which marks if stop event is set
+        :param current_line: the line number from which logs would be streamed
+        :return:
+        """
+        with ImportExtensions(required=True):
+            import websockets
+
+        try:
+            # sleeping for few seconds to allow the logs to be written in remote
+            await asyncio.sleep(3)
+            async with websockets.connect(f'{self.log_url}/{remote_id}?timeout=20') as websocket:
+                await websocket.send(json.dumps({'from': current_line}))
+                remote_loggers = {}
+                while True:
+                    log_line = await websocket.recv()
+                    if log_line:
+                        try:
+                            log_line = json.loads(log_line)
+                            current_line = int(list(log_line.keys())[0])
+                            log_line_dict = list(log_line.values())[0]
+                            name = log_line_dict['name']
+                            if name not in remote_loggers:
+                                remote_loggers[name] = JinaLogger(context=f'🌏 {name}')
+                            # TODO: change logging level, process name in local logger
+                            remote_loggers[name].info(f'{log_line_dict["message"].strip()}')
+                        except json.decoder.JSONDecodeError:
+                            continue
+                    await websocket.send(json.dumps({}))
+                    if stop_event.is_set():
+                        for logger in remote_loggers.values():
+                            logger.close()
+                        raise RemotePodClosed
+        except websockets.exceptions.ConnectionClosedOK:
+            self.logger.debug(f'Client got disconnected from server')
+            return current_line
+        except websockets.exceptions.WebSocketException as e:
+            self.logger.error(f'Got following error while streaming logs via websocket {repr(e)}')
+            return 0
+
     def log(self, remote_id: 'str', stop_event: Event, **kwargs) -> None:
         """ Start the log stream from remote pea/pod, will use local logger for output
 
         :param remote_id: the identity of that pea/pod
         :return:
         """
-
-        with ImportExtensions(required=True):
-            import requests
-
+        current_line = 0
         try:
-            url = f'{self.log_url}/?{self.kind}_id={remote_id}'
-            r = requests.get(url=url, stream=True)
-            for log_line in r.iter_content():
-                if log_line:
-                    self.logger.info(f'🌏 {log_line.strip()}')
-                if stop_event.is_set():
-                    break
-        except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t connect with remote jinad url {repr(ex)}')
+            self.logger.info(f'fetching streamed logs from remote id: {remote_id}')
+            while True:
+                current_line = asyncio.run(self.wslogs(
+                    remote_id=remote_id, stop_event=stop_event, current_line=current_line))
+        except RemotePodClosed:
+            self.logger.debug(f'🌏 remote closed')
         finally:
             self.logger.info(f'🌏 exiting from remote logger')
 
