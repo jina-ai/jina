@@ -62,4 +62,4 @@ mock:                       test
 requests:                   http
 prettytable:                devel, test
 sseclient-py:               test
-websockets:                 http
+websockets:                 http, devel

@@ -12,4 +12,6 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 
 COPY . /
 
-ENTRYPOINT ["python", "jinad/jinad/main.py"]
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["bash", "-c", "./entrypoint.sh"]

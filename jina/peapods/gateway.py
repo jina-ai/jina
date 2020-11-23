@@ -157,8 +157,12 @@ class RESTGatewayPea(BasePea):
         self.get_http_server()
 
     def close(self):
-        if hasattr(self, 'terminate'):
-            self.terminate()
+        import urllib.request
+        try:
+            # it may have been shutdown from the outside
+            urllib.request.urlopen(f'{self.args.host}:{self.args.port_expose}/shutdown', timeout=5)
+        except Exception as ex:
+            self.logger.info(f'Failed to connect to shutdown gateway server: {repr(ex)}')
         self.logger.close()
 
     def get_http_server(self):
@@ -166,6 +170,7 @@ class RESTGatewayPea(BasePea):
             from flask import Flask, Response, jsonify, request
             from flask_cors import CORS, cross_origin
             from gevent.pywsgi import WSGIServer
+            import gevent
 
         app = Flask(__name__)
         app.config['CORS_HEADERS'] = 'Content-Type'
@@ -208,6 +213,10 @@ class RESTGatewayPea(BasePea):
         # app.run('0.0.0.0', 5000)
         server = WSGIServer((self.args.host, self.args.port_expose), app, log=None)
 
+        @app.route('/shutdown')
+        def shutdown():
+            close()
+
         def close(*args, **kwargs):
             server.stop()
             self.unset_ready()
@@ -220,3 +229,4 @@ class RESTGatewayPea(BasePea):
         self.logger.warning('you are using a REST gateway, which is still in early beta version. '
                             'advanced features such as prefetch and streaming are disabled.')
         server.serve_forever()
+        gevent.get_hub().join()
