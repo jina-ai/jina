@@ -35,10 +35,6 @@ sudo setenforce 0
 
 [Source](https://stackoverflow.com/questions/61527193/docker-and-permissionerror-errno-13-permission-denied-output-svg)
 
-## Windows Subsystem for Linux (WSL)
-
-Currently not supported. But if you can get it working we'd love to hear from you!
-
 ## Other
 
 If you've got Jina running on other systems, we'd love to hear from you, and especially the steps you had to go through to make it work properly!
