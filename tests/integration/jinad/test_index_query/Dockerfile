@@ -12,6 +12,8 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 
 COPY . /
 
+COPY tests/integration/jinad/test_index_query/entrypoint.sh .
+
 RUN chmod +x entrypoint.sh
 
 ENTRYPOINT ["bash", "-c", "./entrypoint.sh"]
