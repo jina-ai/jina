@@ -24,6 +24,8 @@ from ..logging.profile import TimeContext
 from ..parser import set_pod_parser
 from ..peapods import Pod
 
+from jina import __version__ as jina_version
+
 if False:
     import argparse
 
@@ -488,7 +490,8 @@ class HubIO:
 
         self.manifest = self._read_manifest(self.manifest_path)
         self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
-        self.tag = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}'.format(**self.manifest))
+        self.manifest['jina_version'] = jina_version
+        self.tag = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(**self.manifest))
         self.canonical_name = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}'.format(**self.manifest))
         return completeness
 
