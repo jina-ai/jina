@@ -62,10 +62,10 @@ class ContainerPea(BasePea):
             net_mode = None
 
         _args = kwargs2list(non_defaults)
+        ports = {f'{v}/tcp': v for v in _expose_port} if not net_mode else None
         self._container = self._client.containers.run(self.args.uses, _args,
                                                       detach=True, auto_remove=True,
-                                                      ports={f'{v}/tcp': v for v in
-                                                             _expose_port},
+                                                      ports=ports,
                                                       name=self.name,
                                                       volumes=_volumes,
                                                       network_mode=net_mode,
