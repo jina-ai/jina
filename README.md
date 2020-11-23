@@ -4,9 +4,7 @@
 <p align="center">
 An easier way to build neural search in the cloud
 </p>
-<p align="center">
-<a href="#quick-start">Quick Start</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#tutorials">Learn</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
-</p><p align=center>
+<p align=center>
 <a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8" title="Jina supports Python 3.7 and above"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
@@ -42,6 +40,12 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 🧩 **Plug & Play** - Easily extendable with Pythonic interface.
 
 ❤️  **Made with Love** - Quality first, never compromises, maintained by a [full-time, venture-backed team](https://jina.ai).
+
+---
+
+<p align="center">
+<a href="#jina-hello-world-">Hello World</a> • <a href="#get-started">Quick Start</a> • <a href="#learn">Learn</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
+</p>
 
 
 ## Installation
@@ -397,6 +401,8 @@ Get started with neural search, inputs, outputs, and Flows
     <td>
       <h4><a href="https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html">What is Neural Search?</a></h4>
       What it is, how it works, and how it's different
+      <h4><a href="https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/">Primitive Data Types in Neural Search System</a></h4>
+      Construct your first `Document` in Jina
       <h4><a href="https://hanxiao.io/2020/08/02/Layer-of-Abstraction-when-Building-Tensorflow-for-Search/">Jina's Layers of Abstraction</a></h4>
       Why do we build Jina and for whom?
       <h4><a href="https://hanxiao.io/2020/10/19/A-Curated-List-of-Neural-Search-and-Jina-Framework-Designs/">Curated List of Neural Search and Jina</a></h4>
