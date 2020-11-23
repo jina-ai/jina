@@ -33,9 +33,9 @@ curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accep
 FLOW_ID=$(curl -s --request PUT "http://localhost:8000/v1/flow/yaml" \
     -H  "accept: application/json" \
     -H  "Content-Type: multipart/form-data" \
-    -F "uses_files=@pods/index.yml" \
-    -F "uses_files=@pods/encode.yml" \
-    -F "pymodules_files=@pods/dummy-encoder.py" \
+    -F "uses_files=@tests/integration/jinad/test_index_query/pods/index.yml" \
+    -F "uses_files=@tests/integration/jinad/test_index_query/pods/encode.yml" \
+    -F "pymodules_files=@tests/integration/jinad/test_index_query/pods/dummy-encoder.py" \
     -F "yamlspec=@tests/integration/jinad/test_index_query/flow.yml"\
     | jq -r .flow_id)
 echo "Successfully started the flow: ${FLOW_ID}. Let's send some query"
