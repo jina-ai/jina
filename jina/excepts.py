@@ -172,4 +172,4 @@ class RemotePodClosed(Exception):
 
 
 class LengthMismatchException(Exception):
-    """ Exception when remote pod is closed and log streaming needs to exit """
+    """ Exception when length of two items should be identical while not """
