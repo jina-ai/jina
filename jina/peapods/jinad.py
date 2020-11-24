@@ -189,6 +189,7 @@ class JinadAPI:
                             log_line = json.loads(log_line)
                             current_line = int(list(log_line.keys())[0])
                             log_line_dict = list(log_line.values())[0]
+                            log_line_dict = json.loads(log_line_dict.split('\t')[-1].strip())
                             name = log_line_dict['name']
                             if name not in remote_loggers:
                                 remote_loggers[name] = JinaLogger(context=f'🌏 {name}')

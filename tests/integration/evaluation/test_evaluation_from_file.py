@@ -3,7 +3,7 @@ import os
 import pytest
 
 from jina.flow import Flow
-from jina.proto import jina_pb2
+from jina import Document
 
 
 @pytest.fixture
@@ -22,11 +22,8 @@ def index_groundtruth():
     """
     docs = []
     for idx in range(0, 100):
-        doc = jina_pb2.DocumentProto()
-        doc.id = f'{idx}'
-        # Invalid ids if odd length https://github.com/jina-ai/jina/issues/1125
-        if len(doc.id) % 2 != 0:
-            doc.id = f'0{doc.id}'
+        doc = Document()
+        doc.id = f'{idx:0>16}'
         doc.tags['groundtruth'] = True
         doc.text = 'aa'
         if idx not in (5, 10, 50):
@@ -50,11 +47,8 @@ def evaluate_docs():
     """
     docs = []
     for idx in range(0, 100):
-        doc = jina_pb2.DocumentProto()
-        doc.id = f'{idx}'
-        # Invalid ids if odd length https://github.com/jina-ai/jina/issues/1125
-        if len(doc.id) % 2 != 0:
-            doc.id = f'0{doc.id}'
+        doc = Document()
+        doc.id = f'{idx:0>16}'
         doc.tags['groundtruth'] = False
         doc.text = 'aaa'
         docs.append(doc)
