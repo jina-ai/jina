@@ -58,7 +58,7 @@ def create_document_to_score():
         for m in range(2):
             match = chunk.matches.add()
             match_id = 2 * int(chunk_id) + m
-            match.id = str(match_id) * 8
+            match.id = str(match_id) * 16
             parent_id = 10 * int(match_id)
             match.parent_id = str(parent_id) * 8
             match.length = int(match_id)
@@ -83,7 +83,7 @@ def create_chunk_matches_to_score():
     for parent_id in range(1, 3):
         chunk = doc.chunks.add()
         chunk_id = parent_id * 10
-        chunk.id = str(chunk_id)
+        chunk.id = str(chunk_id) * 8
         chunk.granularity = doc.granularity + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
             match = chunk.matches.add()
@@ -91,7 +91,7 @@ def create_chunk_matches_to_score():
             match.parent_id = str(parent_id) * 16
             match.score.value = score_value
             match.score.ref_id = chunk.id
-            match.id = str(10 * int(parent_id) + score_value)
+            match.id = str(10 * int(parent_id) + score_value) * 8
             print(match.id)
             match.length = 4
     return Document(doc)

@@ -71,7 +71,7 @@ def random_docs_new_api(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> I
                 c.tags['id'] = c_id
                 c.tags['parent_id'] = j
                 c_id += 1
-            d.add_chunk(c)
+            d.chunks.append(c)
         yield d
 
 
