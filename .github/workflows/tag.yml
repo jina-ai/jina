@@ -111,7 +111,7 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           TAG_IN_ISSUES: '@jina-ai/engineering'
-          MODULES_REPO: 'jina-ai/jina-hub.git'
+          MODULES_REPO: 'jina-ai/jina-hub'
         run: |
           sudo apt-get update -y
           sudo apt-get install python3.7 git python3-distutils python3-pip python3-setuptools -y
