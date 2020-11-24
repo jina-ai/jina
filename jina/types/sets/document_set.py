@@ -49,7 +49,7 @@ class DocumentSet(MutableSequence):
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
-            return Document(self._docs_map[item])
+            return Document(self._docs_map[str(item)])
         else:
             raise IndexError(f'do not support this index {item}')
 
