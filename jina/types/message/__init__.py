@@ -342,4 +342,8 @@ class Message:
     def is_error(self) -> bool:
         return self.envelope.status.code >= jina_pb2.StatusProto.ERROR
 
+    @property
+    def is_ready(self) -> bool:
+        return self.envelope.status.code == jina_pb2.StatusProto.READY
+
 

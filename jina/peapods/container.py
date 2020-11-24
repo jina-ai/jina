@@ -2,9 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+import asyncio
 from pathlib import Path
 
 from .pea import BasePea
+from .zmq import send_ctrl_message
 from .. import __ready_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger
@@ -78,20 +80,29 @@ class ContainerPea(BasePea):
 
     def loop_body(self):
         """Direct the log from the container to local console """
-        import docker
+        def check_ready():
+            # TODO: This needs to be fixed, sleep needs to be awaited
+            while not self.is_ready:
+                asyncio.sleep(0.1)
+            self.is_ready_event.set()
+            self.logger.success(__ready_msg__)
+            return True
 
-        logger = JinaLogger('🐳', **vars(self.args))
+        async def _loop_body():
+            import docker
+            loop = asyncio.get_event_loop()
+            loop.run_in_executor(None, check_ready)
 
-        with logger:
-            try:
-                for line in self._container.logs(stream=True):
-                    msg = line.strip().decode()
-                    logger.info(msg)
-                    if __ready_msg__ in msg:
-                        self.is_ready_event.set()
-                        self.logger.success(__ready_msg__)
-            except docker.errors.NotFound:
-                self.logger.error('the container can not be started, check your arguments, entrypoint')
+            logger = JinaLogger('🐳', **vars(self.args))
+
+            with logger:
+                try:
+                    for line in self._container.logs(stream=True):
+                        logger.info(line.strip().decode())
+                except docker.errors.NotFound:
+                    self.logger.error('the container can not be started, check your arguments, entrypoint')
+
+        asyncio.run(_loop_body())
 
     def loop_teardown(self):
         """Stop the container """
@@ -104,6 +115,18 @@ class ContainerPea(BasePea):
                     'the container is already shutdown (mostly because of some error inside the container)')
         if getattr(self, '_client', None):
             self._client.close()
+
+    @property
+    def status(self):
+        """Send the control signal ``STATUS`` to itself and return the status """
+        if getattr(self, 'ctrl_addr'):
+            return send_ctrl_message(self.ctrl_addr, 'STATUS',
+                                     timeout=self.args.timeout_ctrl)
+
+    @property
+    def is_ready(self) -> bool:
+        status = self.status
+        return status and status.is_ready
 
     def close(self) -> None:
         self.send_terminate_signal()
