@@ -41,7 +41,7 @@ def create_document_to_search():
         chunk = Document()
         chunk.id = str(c) * 16
         chunk.embedding = np.array([c])
-        doc.add_chunk(chunk)
+        doc.chunks.append(chunk)
     return doc
 
 

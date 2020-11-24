@@ -5,13 +5,14 @@ import urllib.request
 import warnings
 from typing import Union, Dict, Optional, TypeVar, Any
 
-import numpy as np
 from google.protobuf import json_format
 
 from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
 from ..sets import DocumentSet
+from ..sets.chunk_set import ChunkSet
+from ..sets.match_set import MatchSet
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
@@ -252,8 +253,12 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        if is_valid_id(value):
+        if isinstance(value, (int, np.integer)):
+            self._document.id = uid.hash2id(int(value))
+        elif isinstance(value, str) and is_valid_id(value):
             self._document.id = value
+        else:
+            raise BadDocID(f'{value} is not a valid id')
 
     @parent_id.setter
     def parent_id(self, value: str):
@@ -307,60 +312,14 @@ class Document:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
-    def matches(self) -> 'DocumentSet':
+    def matches(self) -> 'MatchSet':
         """Get all matches of the current document """
-        return DocumentSet(self._document.matches)
+        return MatchSet(self._document.matches, reference_doc=self)
 
     @property
-    def chunks(self) -> 'DocumentSet':
+    def chunks(self) -> 'ChunkSet':
         """Get all chunks of the current document """
-        return DocumentSet(self._document.chunks)
-
-    def add_match(self, doc_id: Union[str, int, 'np.integer'], score_value: float, **kwargs) -> 'Document':
-        """Add a match document to the current document
-
-        :param doc_id: the document id in hash or hex string
-        :param score_value: the value of the score
-        :param kwargs: other key-value parameters written to the ``score`` object
-
-        .. note::
-            Comparing to :attr:`matches.append()`, this method adds more safeguard to
-            make sure the added match is legit.
-        """
-        r = self._document.matches.add()
-        if isinstance(doc_id, (int, np.integer)):
-            r.id = uid.hash2id(int(doc_id))
-        elif isinstance(doc_id, str):
-            r.id = doc_id
-        r.granularity = self._document.granularity
-        r.adjacency = self._document.adjacency + 1
-        r.score.ref_id = self._document.id
-        r.score.value = score_value
-        for k, v in kwargs.items():
-            if hasattr(r.score, k):
-                setattr(r.score, k, v)
-        return Document(r)
-
-    def add_chunk(self, document: Optional['Document'] = None, **kwargs) -> 'Document':
-        """Add a sub-document (i.e chunk) to the current Document
-
-        :return: the newly added sub-document in :class:`Document` view
-
-        .. note::
-            Comparing to :attr:`chunks.append()`, this method adds more safeguard to
-            make sure the added chunk is legit.
-        """
-        c = self._document.chunks.add()
-        if document is not None:
-            c.CopyFrom(document.as_pb_object)
-
-        with Document(c) as chunk:
-            chunk.set_attrs(parent_id=self._document.id,
-                            granularity=self._document.granularity + 1,
-                            **kwargs)
-            if not chunk.mime_type:
-                chunk.mime_type = self._document.mime_type
-            return chunk
+        return ChunkSet(self._document.chunks, reference_doc=self)
 
     def set_attrs(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs

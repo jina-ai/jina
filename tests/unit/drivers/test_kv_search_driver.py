@@ -6,8 +6,8 @@ from jina import Document
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.types.ndarray.generic import NdArray
 from jina.types.document.uid import id2hash
+from jina.types.ndarray.generic import NdArray
 
 
 class MockIndexer(BaseKVIndexer):
@@ -76,7 +76,7 @@ def create_document_to_search():
     doc = Document()
     doc.id = '0' * 16
     for c in range(5):
-        chunk = doc.add_chunk()
+        chunk = doc.chunks.append()
         chunk.id = str(c + 1) * 16
     return doc
 
@@ -92,10 +92,12 @@ def create_document_to_search_with_matches_on_chunks():
     #     - match: 6 - will be missing from KV indexer
     doc = Document()
     doc.id = '0' * 16
-    chunk = doc.add_chunk()
+    chunk = doc.chunks.append()
     chunk.id = '1' * 16
     for m in range(5):
-        match = chunk.add_match(doc_id=str(m + 2) * 16, score_value=1.)
+        d = Document(id=str(m + 2) * 16)
+        d.score.value = 1.
+        chunk.matches.append(d)
     return doc
 
 
