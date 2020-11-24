@@ -1,0 +1,6 @@
+!Flow
+pods:
+  pod:
+    uses: yaml/fast_slow.yml
+    read_only: true
+    parallel: $JINA_NON_BLOCKING_PARALLEL

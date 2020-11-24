@@ -8,7 +8,7 @@ from . import request
 from .grpc import GrpcClient
 from .helper import ProgressBar, pprint_routes, safe_callback, extract_field
 from .request import GeneratorSourceType
-from ...enums import RequestType, CallbackOnType
+from ...enums import RequestType
 from ...excepts import BadClient, DryRunException
 from ...helper import typename
 from ...logging import default_logger
