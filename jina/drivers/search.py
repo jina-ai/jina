@@ -59,7 +59,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            serialized_doc = self.exec_fn(retrieved_doc.id.to_hash)
+            serialized_doc = self.exec_fn(retrieved_doc.id.hash_value)
             if serialized_doc:
                 r = Document(serialized_doc)
 
@@ -84,7 +84,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embeds = self.exec_fn([d.id.to_hash for d in docs])
+        embeds = self.exec_fn([d.id.hash_value for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding = embedding
 
