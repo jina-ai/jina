@@ -62,15 +62,15 @@ class Chunk2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}  # type: Dict[int, Dict]
         match_chunk_meta = {}  # type: Dict[int, Dict]
         for chunk in docs:
-            query_chunk_meta[chunk.id.hash_value] = chunk.get_attrs(*self.exec.required_keys)
+            query_chunk_meta[hash(chunk.id)] = chunk.get_attrs(*self.exec.required_keys)
             for match in chunk.matches:
                 match_idx.append(
-                    (match.parent_id.hash_value,
-                     match.id.hash_value,
-                     chunk.id.hash_value,
+                    (hash(match.parent_id),
+                     hash(match.id),
+                     hash(chunk.id),
                      match.score.value)
                 )
-                match_chunk_meta[match.id.hash_value] = match.get_attrs(*self.exec.required_keys)
+                match_chunk_meta[hash(match.id)] = match.get_attrs(*self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(
@@ -141,14 +141,14 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}
         match_chunk_meta = {}
         for match in docs:
-            query_chunk_meta[context_doc.id.hash_value] = context_doc.get_attrs(*self.exec.required_keys)
+            query_chunk_meta[hash(context_doc.id)] = context_doc.get_attrs(*self.exec.required_keys)
             match_idx.append((
-                match.parent_id.hash_value,
-                match.id.hash_value,
-                context_doc.id.hash_value,
+                hash(match.parent_id),
+                hash(match.id),
+                hash(context_doc.id),
                 match.score.value
             ))
-            match_chunk_meta[match.id.hash_value] = match.get_attrs(*self.exec.required_keys)
+            match_chunk_meta[hash(match.id)] = match.get_attrs(*self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(match_idx,
@@ -204,8 +204,8 @@ class Matches2DocRankDriver(BaseRankDriver):
         # if at the top-level already, no need to aggregate further
         query_meta = context_doc.get_attrs(*self.exec.required_keys)
 
-        old_match_scores = {match.id.hash_value: match.score.value for match in docs}
-        match_meta = {match.id.hash_value: match.get_attrs(*self.exec.required_keys) for match in docs}
+        old_match_scores = {hash(match.id): match.score.value for match in docs}
+        match_meta = {hash(match.id): match.get_attrs(*self.exec.required_keys) for match in docs}
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return
