@@ -95,6 +95,10 @@ class RemotePod(RemotePea):
                 ctrl_addr, _ = Zmqlet.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
                 self.all_ctrl_addr.append(ctrl_addr)
 
+        if isinstance(self.args, Namespace):
+            self.daemon = self.args.daemon
+            self.all_ctrl_addr.append(self.ctrl_addr)
+
     def spawn_remote(self, host: str, port: int, pod_type: str = 'cli', **kwargs) -> Optional[str]:
         return super().spawn_remote(host=host, port=port, pod_type=pod_type)
 
