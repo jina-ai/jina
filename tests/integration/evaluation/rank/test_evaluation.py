@@ -2,8 +2,8 @@ import os
 
 import numpy as np
 
-from jina.flow import Flow
 from jina import Document
+from jina.flow import Flow
 
 
 def test_evaluation(tmpdir):
@@ -90,9 +90,13 @@ def test_evaluation(tmpdir):
             doc0.embedding = np.array([0])
 
         with Document() as groundtruth0:
-            match0 = groundtruth0.add_match('1', -1)
+            m1 = Document(id='1' * 16)
+            m1.score.value = -1
+            match0 = groundtruth0.matches.append(m1)
             match0.tags['id'] = '0'
-            match1 = groundtruth0.add_match('2', -1)
+            m2 = Document(id='2' * 16)
+            m2.score.value = -1
+            match1 = groundtruth0.matches.append(m2)
             match1.tags['id'] = '2'
         # top_k is set to 2 for VectorSearchDriver
         # expects as matches [0, 2] but given [0, 1]
@@ -111,9 +115,13 @@ def test_evaluation(tmpdir):
             doc1.embedding = np.array([2])
 
         with Document() as groundtruth1:
-            match0 = groundtruth1.add_match('1', -1)
+            m1 = Document(id='1' * 16)
+            m1.score.value = -1
+            match0 = groundtruth1.matches.append(m1)
             match0.tags['id'] = '1'
-            match1 = groundtruth1.add_match('2', -1)
+            m2 = Document(id='2' * 16)
+            m2.score.value = -1
+            match1 = groundtruth1.matches.append(m2)
             match1.tags['id'] = '2'
         # expects as matches [1, 2] but given [2, 1]
         # Precision@1 = 100%
