@@ -17,7 +17,6 @@ from ...helper import is_url, typename
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
-_empty_doc = jina_pb2.DocumentProto()
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
 DocumentContentType = TypeVar('DocumentContentType', bytes, str,
@@ -135,10 +134,7 @@ class Document:
         self.set_attrs(**kwargs)
 
     def __getattr__(self, name: str):
-        if hasattr(_empty_doc, name):
-            return getattr(self._document, name)
-        else:
-            raise AttributeError
+        return getattr(self._document, name)
 
     def __str__(self):
         return f'{self.as_pb_object}'

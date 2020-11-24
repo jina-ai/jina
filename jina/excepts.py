@@ -96,10 +96,6 @@ class BadPersistantFile(Exception):
     """Bad or broken dump file that can not be deserialized with ``pickle.load``"""
 
 
-class BadRequestType(Exception):
-    """Bad request type and the pod does not know how to handle """
-
-
 class GRPCServerError(Exception):
     """Can not connect to the grpc gateway"""
 
@@ -165,6 +161,10 @@ class BadDocType(TypeError):
 
 class BadQueryLangType(TypeError):
     """ Exception when can not construct a query language from the given data """
+
+
+class BadRequestType(TypeError):
+    """Exception when can not construct a request object from given data"""
 
 
 class RemotePodClosed(Exception):
