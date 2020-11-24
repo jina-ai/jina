@@ -25,7 +25,7 @@ echo "Successfully started the flow: ${FLOW_ID}. Let's index some data"
 
 for i in {1..100};
   do
-    TEXT_INDEXED=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude message ${i}"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/index' | \
+    TEXT_INDEXED=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude message '${i}'"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/index' | \
     jq -e ".index.docs[] | .text")
     echo "Indexed document has the text: ${TEXT_INDEXED}"
   done
