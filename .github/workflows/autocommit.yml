@@ -73,7 +73,7 @@ jobs:
           COMMIT_NAME: Jina Dev Bot
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: ''
-          TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
+          TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md'
           COMMIT_MESSAGE: 'chore(docs): update TOC'
       - uses: ad-m/github-push-action@master
         with:
