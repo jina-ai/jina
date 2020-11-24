@@ -140,7 +140,7 @@ class LoadGroundTruthDriver(KVSearchDriver):
     def __call__(self, *args, **kwargs):
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
         for idx, doc in enumerate(self.docs):
-            serialized_groundtruth = self.exec_fn(self.id2hash(doc.id))
+            serialized_groundtruth = self.exec_fn(doc.id.to_hash)
             if serialized_groundtruth:
                 self.req.groundtruths.append(Document(serialized_groundtruth))
             else:

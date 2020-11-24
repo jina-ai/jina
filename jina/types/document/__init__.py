@@ -2,7 +2,6 @@ import base64
 import os
 import urllib.parse
 import urllib.request
-import warnings
 from typing import Union, Dict, Optional, TypeVar, Any
 
 from google.protobuf import json_format
@@ -10,7 +9,6 @@ from google.protobuf import json_format
 from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
-from ..sets import DocumentSet
 from ..sets.chunk_set import ChunkSet
 from ..sets.match_set import MatchSet
 from ...excepts import BadDocType
@@ -140,59 +138,6 @@ class Document:
     def __str__(self):
         return f'{self.as_pb_object}'
 
-    def update_id(self):
-        """Update the document id according to its content.
-
-        .. warning::
-            To fully consider the content in this document, please use this function after
-            you have fully modified the Document, not right way after create the Document.
-
-            If you are using Document as context manager, then no need to call this function manually.
-            Simply
-
-            .. highlight:: python
-            .. code-block:: python
-
-                with Document() as d:
-                    d.text = 'hello'
-
-                assert d.id  # now `id` has value
-
-        """
-        self._document.id = new_doc_id(self._document)
-
-    @property
-    def id_in_hash(self) -> int:
-        """The document id in the integer form of bytes, as 8 bytes map to int64.
-        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
-        such as ranker and Numpyindexer
-        """
-        return id2hash(self._document.id)
-
-    @property
-    def id_in_bytes(self) -> bytes:
-        """The document id in the binary format of str, it has 8 bytes fixed length,
-        so it can be used in the dense file storage, e.g. BinaryPbIndexer,
-        as it requires the key has to be fixed length.
-        """
-        return id2bytes(self._document.id)
-
-    @property
-    def parent_id_in_hash(self) -> int:
-        """The document id in the integer form of bytes, as 8 bytes map to int64.
-        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
-        such as ranker and Numpyindexer
-        """
-        return id2hash(self._document.parent_id)
-
-    @property
-    def parent_id_in_bytes(self) -> bytes:
-        """The document id in the binary format of str, it has 8 bytes fixed length,
-        so it can be used in the dense file storage, e.g. BinaryPbIndexer,
-        as it requires the key has to be fixed length.
-        """
-        return id2bytes(self._document.parent_id)
-
     @property
     def length(self) -> int:
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
@@ -226,21 +171,36 @@ class Document:
         self._document.modality = value
 
     @property
-    def id(self) -> str:
+    def id(self) -> 'UniqueId':
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return self._document.id
+        return UniqueId(self._document.id)
 
     @property
-    def parent_id(self) -> str:
+    def parent_id(self) -> 'UniqueId':
         """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return self._document.parent_id
+        return UniqueId(self._document.parent_id)
+
+    def update_id(self):
+        """Update the document id according to its content.
+        .. warning::
+            To fully consider the content in this document, please use this function after
+            you have fully modified the Document, not right way after create the Document.
+            If you are using Document as context manager, then no need to call this function manually.
+            Simply
+            .. highlight:: python
+            .. code-block:: python
+                with Document() as d:
+                    d.text = 'hello'
+                assert d.id  # now `id` has value
+        """
+        self._document.id = new_doc_id(self._document)
 
     @id.setter
-    def id(self, value: str):
+    def id(self, value: Union[bytes, str, int]):
         """Set document id to a string value
 
         .. note:
@@ -253,15 +213,10 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        if isinstance(value, (int, np.integer)):
-            self._document.id = uid.hash2id(int(value))
-        elif isinstance(value, str) and is_valid_id(value):
-            self._document.id = value
-        else:
-            raise BadDocID(f'{value} is not a valid id')
+        self._document.id = UniqueId(value)
 
     @parent_id.setter
-    def parent_id(self, value: str):
+    def parent_id(self, value: Union[bytes, str, int]):
         """Set document's parent id to a string value
 
         .. note:
@@ -274,8 +229,7 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        if is_valid_id(value):
-            self._document.parent_id = value
+        self._document.parent_id = UniqueId(value)
 
     @property
     def blob(self) -> 'np.ndarray':

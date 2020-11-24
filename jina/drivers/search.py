@@ -29,9 +29,6 @@ class BaseSearchDriver(BaseExecutableDriver):
             **kwargs
         )
 
-        self.hash2id = uid.hash2id
-        self.id2hash = uid.id2hash
-
 
 class KVSearchDriver(BaseSearchDriver):
     """Fill in the doc/chunk-level top-k results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
@@ -62,7 +59,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            serialized_doc = self.exec_fn(retrieved_doc.id_in_hash)
+            serialized_doc = self.exec_fn(retrieved_doc.id.to_hash)
             if serialized_doc:
                 r = Document(serialized_doc)
 
@@ -87,7 +84,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embeds = self.exec_fn([d.id_in_hash for d in docs])
+        embeds = self.exec_fn([d.id.to_hash for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding = embedding
 
