@@ -61,8 +61,16 @@ class DummyIndexer2(NumpyIndexer):
         self._size += keys.shape[0]
 
 
+@pytest.fixture(scope='function')
+def test_workspace(tmpdir):
+    os.environ['JINA_TEST_INDEX_REMOTE'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_INDEX_REMOTE']
+    yield workspace_path
+    del os.environ['JINA_TEST_INDEX_REMOTE']
+
+
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_index_remote():
+def test_index_remote(test_workspace):
     f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
 
     def start_gateway():
@@ -86,12 +94,14 @@ def test_index_remote():
 
     time.sleep(3)
     for j in range(3):
-        assert os.path.exists(f'test2-{j + 1}/test2.bin')
-        assert os.path.exists(f'test2-{j + 1}/tmp2')
+        bin_path = os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
+        index_filename_path = os.path.join(test_workspace, f'test2-{j + 1}/tmp2')
+        assert os.path.exists(bin_path)
+        assert os.path.exists(index_filename_path)
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_index_remote_rpi():
+def test_index_remote_rpi(test_workspace):
     f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
 
     def start_gateway():
