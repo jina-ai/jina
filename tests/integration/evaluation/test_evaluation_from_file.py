@@ -68,7 +68,7 @@ def random_workspace(tmpdir):
                           ('flow-index-gt-parallel.yml', 'flow-parallel-evaluate-from-file-parallel.yml')
                           ])
 def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs, index_yaml, search_yaml):
-    with Flow().load_config(index_yaml) as index_gt_flow:
+    with Flow.load_config(index_yaml) as index_gt_flow:
         index_gt_flow.index(input_fn=index_groundtruth, override_doc_id=False)
 
     def validate_evaluation_response(resp):
@@ -81,7 +81,7 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
         for gt in resp.groundtruths:
             assert gt.tags['groundtruth']
 
-    with Flow().load_config(search_yaml) as evaluate_flow:
+    with Flow.load_config(search_yaml) as evaluate_flow:
         evaluate_flow.search(
             input_fn=evaluate_docs,
             output_fn=validate_evaluation_response,

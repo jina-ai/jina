@@ -34,9 +34,9 @@ def validate_results(resp):
 
 
 def test_topk(config):
-    with Flow().load_config('flow.yml') as index_flow:
+    with Flow.load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
-    with Flow().load_config('flow.yml') as search_flow:
+    with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])),
                            output_fn=validate_results)
 
@@ -51,8 +51,8 @@ def test_topk_override(config):
     # Making queryset
     top_k_queryset = QueryLang(VectorSearchDriver(top_k=int(os.environ['JINA_TOPK_OVERRIDE']), priority=1))
 
-    with Flow().load_config('flow.yml') as index_flow:
+    with Flow.load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
-    with Flow().load_config('flow.yml') as search_flow:
+    with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(int(os.environ['JINA_NDOCS'])),
                            output_fn=validate_override_results, queryset=[top_k_queryset])
