@@ -10,7 +10,7 @@ from jina import NdArray, Request
 from jina.clients.python import PyClient, pprint_routes, safe_callback
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
-from jina.helper import cached_property, convert_tuple_to_list
+from jina.helper import cached_property, convert_tuple_to_list, complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
@@ -195,3 +195,14 @@ def test_random_docs_new_api():
             np.testing.assert_almost_equal(c2.embedding, NdArray(c1.embedding).value)
             assert c2.text == c1.text
             assert c2.tags['id'] == c1.tags['id']
+
+
+def test_complete_path_success():
+    assert complete_path('test_helper.py')
+    assert complete_path('helper.py')
+    assert complete_path('bash')
+
+
+def test_complete_path_not_found():
+    with pytest.raises(FileNotFoundError):
+        assert complete_path('unknown.yaml')
