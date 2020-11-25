@@ -68,7 +68,7 @@ def remove_control_characters(s):
 
 
 def safe_url_name(s):
-    return s.lower().replace('-', '--').replace('_', '__').replace(' ', '_')
+    return s.lower().replace('_', '__').replace(' ', '_')
 
 
 def get_exist_path(directory, s):
