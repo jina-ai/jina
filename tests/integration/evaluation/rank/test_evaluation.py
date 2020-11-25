@@ -38,7 +38,7 @@ def test_evaluation(tmpdir):
 
         return [doc0, doc1, doc2]
 
-    with Flow().load_config('flow-index.yml') as index_flow:
+    with Flow.load_config('flow-index.yml') as index_flow:
         index_flow.index(input_fn=index_documents)
 
     def validate_evaluation_response(resp):
@@ -137,7 +137,7 @@ def test_evaluation(tmpdir):
 
         return [(doc0, groundtruth0), (doc1, groundtruth1)]
 
-    with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
+    with Flow.load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs,
             output_fn=validate_evaluation_response,

@@ -527,7 +527,7 @@ Passing `top_k_queryset` to `flow.search` will override `top_k` value of `10` wi
 Note that more than one `queryset` can be passed with any request.
 
 ```python
-    with Flow().load_config('flow.yml') as search_flow:
+    with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=docs, output_fn=print_results, queryset=[top_k_queryset])
 ```
 
