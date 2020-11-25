@@ -422,4 +422,4 @@ Jina는 오픈소스 프로젝트이다. 우리는 풀스택 개발자, evangeli
 
 Copyright (c) 2020 Jina AI Limited. All rights reserved
 
-Jina는 아파치 2.0 라이선스를 사용한다. [라이선스 문서의 전문을 확인하기 위해서는 License를 참조하세요.](LICENSE)
+Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
