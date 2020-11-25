@@ -10,9 +10,17 @@ from jina.flow import Flow
 from jina.parser import set_flow_parser
 from jina.proto import jina_pb2
 from jina import Document
-from tests import random_docs_new_api
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture(scope='function')
+def test_workspace(tmpdir):
+    os.environ['JINA_TEST_INDEX'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_INDEX']
+    yield workspace_path
+    del os.environ['JINA_TEST_INDEX']
 
 
 def get_result(resp):
@@ -60,7 +68,7 @@ class DummyIndexer2(NumpyIndexer):
 
 
 def test_doc_iters():
-    docs = random_docs_new_api(3, 5)
+    docs = random_docs(3, 5)
     for doc in docs:
         assert isinstance(doc, Document)
 
@@ -68,7 +76,7 @@ def test_doc_iters():
 def test_simple_route():
     f = Flow().add()
     with f:
-        f.index(input_fn=random_docs_new_api(10))
+        f.index(input_fn=random_docs(10))
 
 
 def test_update_method(test_metas):
@@ -98,7 +106,7 @@ def test_two_client_route_parallel():
     f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(parallel=3)
 
     def start_client(fl):
-        fl.index(input_fn=random_docs_new_api(10))
+        fl.index(input_fn=random_docs(10))
 
     with f1:
         assert f1.num_peas == 6
@@ -125,7 +133,7 @@ def test_two_client_route_parallel():
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
 def test_two_client_route():
     def start_client(fl):
-        fl.index(input_fn=random_docs_new_api(10))
+        fl.index(input_fn=random_docs(10))
 
     with Flow().add() as f:
         t1 = mp.Process(target=start_client, args=(f,))
@@ -137,34 +145,27 @@ def test_two_client_route():
         t2.start()
 
 
-def test_index(tmpdir):
-    os.environ['JINA_TEST_INDEX'] = str(tmpdir)
-    workspace_path = os.environ['JINA_TEST_INDEX']
+def test_index(test_workspace):
     f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3, separated_workspace=True)
     with f:
-        f.index(input_fn=random_docs_new_api(1000))
+        f.index(input_fn=random_docs(20))
 
     for j in range(3):
-        path = os.path.join(workspace_path, f'test2-{j + 1}/test2.bin')
+        path = os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
         assert os.path.exists(path)
-        assert os.path.exists(os.path.join(workspace_path, f'test2-{j + 1}/tmp2'))
+        assert os.path.exists(os.path.join(test_workspace, f'test2-{j + 1}/tmp2'))
 
     with f:
-        f.search(input_fn=random_docs_new_api(2), output_fn=get_result, top_k=50)
-    del os.environ['JINA_TEST_INDEX']
+        f.search(input_fn=random_docs(2), output_fn=get_result, top_k=5)
 
 
-def test_compound_idx(tmpdir):
-    os.environ['TEST_WORKDIR'] = str(tmpdir)
-
+def test_compound_idx(test_workspace):
     def validate(req, indexer_name):
         assert req.status.code < jina_pb2.StatusProto.ERROR
         assert req.search.docs[0].matches[0].score.op_name == indexer_name
 
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as f:
-        f.index(random_docs_new_api(100, chunks_per_doc=0))
+        f.index(random_docs(100, chunks_per_doc=0))
 
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as g:
-        g.search(random_docs_new_api(10, chunks_per_doc=0), output_fn=lambda x: validate(x, 'NumpyIndexer'))
-
-    del os.environ['TEST_WORKDIR']
+        g.search(random_docs(10, chunks_per_doc=0), output_fn=lambda x: validate(x, 'NumpyIndexer'))

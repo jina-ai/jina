@@ -5,7 +5,7 @@ from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document, BadDocID
-from tests import random_docs_new_api
+from tests import random_docs
 
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
@@ -118,7 +118,7 @@ def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
     r = Request()
     r.request_type = 'index'
-    for d in random_docs_new_api(10):
+    for d in random_docs(10):
         r.docs.append(d)
 
     for idx, d in enumerate(r.docs):
@@ -153,7 +153,7 @@ def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
     r = Request()
     r.request_type = 'index'
-    for d in random_docs_new_api(10):
+    for d in random_docs(10):
         r.docs.append(d)
 
     for d in r.docs:
