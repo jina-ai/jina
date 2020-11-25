@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import os
 import asyncio
+import time
 from pathlib import Path
 
 from .pea import BasePea
@@ -83,7 +84,7 @@ class ContainerPea(BasePea):
         def check_ready():
             # TODO: This needs to be fixed, sleep needs to be awaited
             while not self.is_ready:
-                asyncio.sleep(0.1)
+                time.sleep(0.1)
             self.is_ready_event.set()
             self.logger.success(__ready_msg__)
             return True
