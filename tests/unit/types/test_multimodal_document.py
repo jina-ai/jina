@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 
 from jina.types.document import Document
+from jina.excepts import BadDocType, LengthMismatchException
 from jina.types.document.multimodal import MultimodalDocument
 
 @pytest.fixture(scope='function')
@@ -48,3 +49,23 @@ def test_extract_content_by_modality(multimodal_document, visual_embedding, text
     np.testing.assert_array_equal(textual, textual_embedding)
     visual = multimodal_document.extract_content_by_modality(modality='visual')
     np.testing.assert_array_equal(visual, visual_embedding)
+
+def test_multimodal_document_fail_bad_doctype(visual_embedding):
+    # the multimodal document don't have any chunks
+    with pytest.raises(BadDocType):
+        md = MultimodalDocument()
+        md.tags['id'] = 1
+        md.embedding = visual_embedding
+        md.modality_content_mapping
+
+def test_multimodal_document_fail_length_mismatch(multimodal_document):
+    # the multimodal document has 3 chunks, while 2 types of modalities.
+    with pytest.raises(LengthMismatchException):
+        chunk_3 =  Document()
+        chunk_3.modality = 'visual'
+        chunk_3.content = 'random text'
+        multimodal_document.chunks.add(chunk_3)
+        multimodal_document.modality_content_mapping
+
+
+

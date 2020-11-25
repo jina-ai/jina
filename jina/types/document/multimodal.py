@@ -5,6 +5,7 @@ import numpy as np
 from . import Document
 from ...proto import jina_pb2
 from ..ndarray.generic import NdArray
+from ...excepts import LengthMismatchException, BadDocType
 
 __all__ = ['MultimodalDocument', 'DocumentContentType']
 
@@ -25,6 +26,13 @@ class MultimodalDocument(Document):
             self._modality_content_mapping[modality] = chunk.embedding \
                 if chunk.embedding is not None \
                 else chunk.content
+        self._validate()
+
+    def _validate(self):
+        if len(self.chunks) < 2:
+            raise BadDocType('MultimodalDocument should consist at least 2 chunks.')
+        if len(self._modality_content_mapping.keys()) != len(self.chunks):
+            raise LengthMismatchException(f'Length of modality is not identical to length of chunks.')
 
     @property
     def modality_content_mapping(self):
@@ -32,10 +40,8 @@ class MultimodalDocument(Document):
             self._build_modality_content_mapping()
         return self._modality_content_mapping
 
-
     def extract_content_by_modality(self, modality: str):
         return self.modality_content_mapping.get(modality, None)
-
 
     @property
     def modalities(self) -> List[str]:
