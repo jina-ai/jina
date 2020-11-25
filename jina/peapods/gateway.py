@@ -144,6 +144,44 @@ class GatewayPea:
                     prefetch_task = [j for j in onrecv_task]
 
 
+class AsyncGatewayPea:
+    def __init__(self, args):
+        if not args.proxy and os.name != 'nt':
+            os.unsetenv('http_proxy')
+            os.unsetenv('https_proxy')
+
+        self.logger = JinaLogger(context=self.__class__.__name__,
+                                 name='gateway',
+                                 log_id=args.log_id,
+                                 log_config=args.log_config)
+        self._p_servicer = GatewayPea._Pea(args)
+
+    def init_server(self, args):
+        self._server = grpc.aio.server(
+            options=[('grpc.max_send_message_length', args.max_message_size),
+                     ('grpc.max_receive_message_length', args.max_message_size)])
+
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
+        self._bind_address = f'{args.host}:{args.port_expose}'
+        self._server.add_insecure_port(self._bind_address)
+
+    async def start(self):
+        await self._server.start()
+        self.logger.success(f'gateway is listening at: {self._bind_address}')
+        return self
+
+    async def __aenter__(self):
+        return await self.start()
+
+    async def __exit__(self, exc_type, exc_val, exc_tb):
+        await self.close()
+
+    async def close(self):
+        await self._server.stop(None)
+        self.logger.success(__stop_msg__)
+        self.logger.close()
+
+
 class RESTGatewayPea(BasePea):
     """A :class:`BasePea`-like class for holding a HTTP Gateway.
 

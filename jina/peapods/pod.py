@@ -5,12 +5,12 @@ import argparse
 import copy
 import time
 from argparse import Namespace
-from contextlib import ExitStack
+from contextlib import ExitStack, AsyncExitStack
 from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
 from . import Pea
-from .gateway import GatewayPea, RESTGatewayPea
+from .gateway import GatewayPea, RESTGatewayPea, AsyncGatewayPea
 from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
@@ -554,6 +554,25 @@ class GatewayPod(BasePod):
 
         self.start_sentinels()
         return self
+
+
+class AsyncGatewayPod(BasePod, AsyncExitStack):
+    """A :class:`BasePod` that holds a Gateway """
+
+    async def start(self) -> 'AsyncGatewayPod':
+        for s in self.all_args:
+            p = AsyncGatewayPea(s)
+            self.peas.append(p)
+            self.enter_async_context(p)
+
+        self.start_sentinels()
+        return self
+
+    async def __aenter__(self):
+        return await self.start()
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        super(AsyncExitStack, self).__aexit__(exc_type, exc_val, exc_tb)
 
 
 class GatewayFlowPod(GatewayPod, FlowPod):
