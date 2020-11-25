@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 
-from jina.types.document import Document
+from jina import Document
 from jina.excepts import BadDocType, LengthMismatchException
 from jina.types.document.multimodal import MultimodalDocument
 
@@ -66,6 +66,3 @@ def test_multimodal_document_fail_length_mismatch(multimodal_document):
         chunk_3.content = 'random text'
         multimodal_document.chunks.add(chunk_3)
         multimodal_document.modality_content_mapping
-
-
-
