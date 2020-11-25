@@ -68,7 +68,7 @@ class MultiModalDriver(BaseEncodeDriver):
 
         valid_docs = []
         for doc in docs:
-            doc_content = doc.extract_content()
+            doc_content = doc.modality_content_mapping
             if doc_content:
                 valid_docs.append(doc)
                 for modality in self.positional_modality:

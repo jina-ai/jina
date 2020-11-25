@@ -1,44 +1,42 @@
-from typing import List
+from typing import Dict, List, TypeVar
+
+import numpy as np
 
 from . import Document
-from ...excepts import LengthMismatchException, BadDocType
+from ...proto import jina_pb2
+from ..ndarray.generic import NdArray
+
+__all__ = ['MultimodalDocument', 'DocumentContentType']
+
+DocumentContentType = TypeVar('DocumentContentType', bytes, str,
+                              np.ndarray, jina_pb2.NdArrayProto, NdArray)
 
 class MultimodalDocument(Document):
-    """Each :class:`MultimodalDocument` should have at least 2 chunks (represent as :class:`DocumentSet`)
-    and len(set(doc.chunks.modality)) == len(doc.chunk)
+    """Each :class:`MultimodalDocument` should have at least 2 chunks (represent as :class:`ChunkSet`)
+    and len(set(doc.chunks.modality)) == len(doc.chunks)
     """
-    def __init__(self, document = None,
-                 copy: bool = False, **kwargs):
+    def __init__(self, document = None, copy: bool = False, **kwargs):
         super().__init__(document=document, copy=copy, **kwargs)
-        self._modalities = set()
-        self._doc_content = {}
-        if len(self._document.chunks) < 2:
-            raise BadDocType(
-                f'A MultimodalDocument should have at least 2 modalities, {len(self.document.chunks)} received.')
-        if len(self._document.chunks) != len(self.modalities):
-            raise LengthMismatchException(
-                f'Document has {len(self._document.chunks)} chunks and {len(self.modalities)} modalities')
+        self._modality_content_mapping = {}
 
-    def extract_content(self) -> List[str]:
-        if not self._doc_content:
-            for chunk in self._document.chunks:
-                modality = chunk.modality
-                if modality in self._modality_by_chunk:
-                    continue
-                else:
-                    self._doc_content[modality] = chunk.embedding \
-                        if chunk.embedding is not None \
-                        else chunk.content
-        return self._doc_content
+    def _build_modality_content_mapping(self) -> Dict:
+        for chunk in self.chunks:
+            modality = chunk.modality
+            self._modality_content_mapping[modality] = chunk.embedding \
+                if chunk.embedding is not None \
+                else chunk.content
+
+    @property
+    def modality_content_mapping(self):
+        if not self._modality_content_mapping:
+            self._build_modality_content_mapping()
+        return self._modality_content_mapping
+
 
     def extract_content_by_modality(self, modality: str):
-        doc_content = self.extract_modalities()
-        return doc_content.get(modality, None)
+        return self.modality_content_mapping.get(modality, None)
+
 
     @property
     def modalities(self) -> List[str]:
-        # TODO Decide do we need to preserve the order
-        if not self._modalities:
-            for chunk in self._document.chunks:
-                self._modalities.add(chunk.modality)
-        return list(self._modalities)
+        return self.modality_content_mapping.keys()
