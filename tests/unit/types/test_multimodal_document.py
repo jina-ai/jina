@@ -80,11 +80,11 @@ def test_multimodal_document_fail_length_mismatch(multimodal_document, chunk_3):
         multimodal_document.chunks.add(chunk_3)
         multimodal_document.modality_content_mapping
 
-def test_from_chunkset_success(chunk_1, chunk_2):
+def test_from_chunks_success(chunk_1, chunk_2):
     md = MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2])
     assert len(md.modalities) == 2
     assert 'visual' and 'textual' in md.modalities
 
-def test_from_chunkset_fail(chunk_1, chunk_2, chunk_3):
+def test_from_chunks_fail(chunk_1, chunk_2, chunk_3):
     with pytest.raises(LengthMismatchException):
         MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2, chunk_3])
