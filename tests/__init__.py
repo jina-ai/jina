@@ -57,9 +57,9 @@ def random_docs_new_api(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> I
 
 
 def rm_files(file_paths):
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
+    for file_paths in file_paths:
+        if pathlib.path(file_paths).exists():
+            if path(file_path).is_file():
+                pathlib.Path.unlink(file_paths)
+            elif path(file_paths).is_dir():
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
