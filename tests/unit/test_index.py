@@ -148,7 +148,7 @@ def test_two_client_route():
 def test_index(test_workspace):
     f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3, separated_workspace=True)
     with f:
-        f.index(input_fn=random_docs(20))
+        f.index(input_fn=random_docs(1000))
 
     for j in range(3):
         assert os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
