@@ -10,10 +10,16 @@ from jina.parser import set_pea_parser
 from jina.peapods.pea import BasePea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-os.environ['TEST_WORKDIR'] = os.getcwd()
+
+@pytest.fixture(scope='function')
+def test_workspace(tmpdir):
+    os.environ['TEST_WORKDIR'] = str(tmpdir)
+    workspace_path = os.environ['TEST_WORKDIR']
+    yield workspace_path
+    del os.environ['TEST_WORKDIR']
 
 
-def test_yaml_expand():
+def test_yaml_expand(test_workspace):
     with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
@@ -27,7 +33,7 @@ def test_yaml_expand():
     assert b['non_exist_env'] == '$JINA_WHATEVER_ENV'
 
 
-def test_yaml_expand2():
+def test_yaml_expand2(test_workspace):
     with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
         a = yaml.load(fp)
     os.environ['ENV1'] = 'a'
@@ -40,14 +46,14 @@ def test_yaml_expand2():
     assert b['components'][1]['metas']['name_shortcut'] == 'test_numpy'
 
 
-def test_yaml_expand3():
+def test_yaml_expand3(test_workspace):
     with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
     assert b['pea_workspace'] != '{root.workspace}/{root.name}-{this.pea_id}'
 
 
-def test_attr_dict():
+def test_attr_dict(test_workspace):
     class AttrDict:
         pass
 
@@ -58,13 +64,13 @@ def test_attr_dict():
     assert isinstance(a.components, list)
 
 
-def test_yaml_fill():
+def test_yaml_fill(test_workspace):
     with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
         a = yaml.load(fp)
     print(fill_metas_with_defaults(a))
 
 
-def test_class_yaml():
+def test_class_yaml(test_workspace):
     class DummyClass:
         pass
 
@@ -89,9 +95,7 @@ def test_class_yaml():
     assert _defaults is not None
 
 
-def test_joint_indexer(tmpdir):
-    os.environ['TEST_WORKDIR'] = str(tmpdir)
-
+def test_joint_indexer(test_workspace):
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
     print(b[0].name)
     print(type(b[0]))
@@ -100,5 +104,3 @@ def test_joint_indexer(tmpdir):
     b.attach(pea=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]
-
-    del os.environ['TEST_WORKDIR']

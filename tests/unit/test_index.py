@@ -1,8 +1,8 @@
-import multiprocessing as mp
 import os
+import multiprocessing as mp
 
-import numpy as np
 import pytest
+import numpy as np
 
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector import NumpyIndexer
@@ -17,10 +17,10 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture(scope='function')
 def test_workspace(tmpdir):
-    os.environ['JINA_TEST_INDEX'] = str(tmpdir)
-    workspace_path = os.environ['JINA_TEST_INDEX']
+    os.environ['TEST_WORKDIR'] = str(tmpdir)
+    workspace_path = os.environ['TEST_WORKDIR']
     yield workspace_path
-    del os.environ['JINA_TEST_INDEX']
+    del os.environ['TEST_WORKDIR']
 
 
 def get_result(resp):
@@ -151,8 +151,7 @@ def test_index(test_workspace):
         f.index(input_fn=random_docs(20))
 
     for j in range(3):
-        path = os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
-        assert os.path.exists(path)
+        assert os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
         assert os.path.exists(os.path.join(test_workspace, f'test2-{j + 1}/tmp2'))
 
     with f:
