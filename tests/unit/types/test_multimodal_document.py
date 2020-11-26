@@ -5,7 +5,6 @@ import numpy as np
 from jina import Document
 from jina.excepts import BadDocType, LengthMismatchException
 from jina.types.document.multimodal import MultimodalDocument
-from jina.types.sets.chunk_set import ChunkSet
 
 @pytest.fixture(scope='function')
 def visual_embedding():
@@ -28,7 +27,7 @@ def chunk_1(visual_embedding):
 def chunk_2(textual_embedding):
     chunk = Document()
     chunk.modality = 'textual'
-    chunk.embedding = textual_embedding
+    chunk.content = textual_embedding
     return chunk
 
 @pytest.fixture(scope='function')
@@ -39,7 +38,7 @@ def chunk_3(textual_embedding):
     return chunk
 
 @pytest.yield_fixture(scope='function')
-def multimodal_document(visual_embedding, textual_embedding, chunk_1, chunk_2):
+def multimodal_document(chunk_1, chunk_2):
     with MultimodalDocument() as md:
         md.tags['id'] = 1
         md.text = b'hello world'

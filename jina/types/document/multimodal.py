@@ -2,7 +2,7 @@ from typing import Dict, List, TypeVar
 
 import numpy as np
 
-from . import Document, ChunkSet
+from . import Document
 from ...proto import jina_pb2
 from ..ndarray.generic import NdArray
 from ...excepts import LengthMismatchException, BadDocType
@@ -31,6 +31,8 @@ class MultimodalDocument(Document):
                 it as a JSON string and parse a :class:`DocumentProto` from it; finally,
                 one can also give `DocumentProto` directly, then depending on the ``copy``,
                 it builds a view or a copy from it.
+        :param chunks: the chunks of the multimodal document to initialize with. Expected to
+                received a list of :class:`Document`, with different modalities.
         :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
                 view (i.e. weak reference) from it or a deep copy from it.
         :param kwargs: other parameters to be set
@@ -50,7 +52,7 @@ class MultimodalDocument(Document):
                 else chunk.content
         self._validate(chunks=self.chunks)
 
-    def _validate(self, chunks):
+    def _validate(self, chunks: List[Document]):
         modalities = set([chunk.modality for chunk in chunks])
         if len(chunks) < 2:
             raise BadDocType('MultimodalDocument should consist at least 2 chunks.')
