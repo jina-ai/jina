@@ -1,15 +1,12 @@
 import os
-import shutil
 import sys
-import warnings
+import shutil
 from typing import Iterator
 from os.path import dirname
 
 import numpy as np
 
-from jina.proto import jina_pb2
-from jina.types.document import uid, Document, DocumentProto
-from jina.types.ndarray.generic import NdArray
+from jina.types.document import uid, Document
 
 
 file_dir = os.path.dirname(__file__)
