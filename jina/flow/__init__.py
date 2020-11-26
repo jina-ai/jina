@@ -139,8 +139,8 @@ class Flow(ExitStack):
         yaml.dump(self, stream)
         return stream.getvalue().strip()
 
-    @classmethod
-    def load_config(cls: Type['Flow'], filename: Union[str, TextIO]) -> 'Flow':
+    @staticmethod
+    def load_config(filename: Union[str, TextIO]) -> 'Flow':
         """Build an executor from a YAML file.
 
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
