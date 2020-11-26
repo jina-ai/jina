@@ -180,7 +180,6 @@ def test_empty_request_type(typ, pb_typ):
     assert r._request_type == typ
     assert isinstance(r.body, pb_typ)
 
-
 @pytest.mark.parametrize('typ,pb_typ', [('index', jina_pb2.RequestProto.IndexRequestProto),
                                         ('search', jina_pb2.RequestProto.SearchRequestProto)])
 def test_add_doc_to_type(typ, pb_typ):

@@ -98,6 +98,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5647,3 +5649,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```7e52c60c```](https://github.com/jina-ai/jina/commit/7e52c60c51339bf4f20117ade05e897d250b920a)] __-__ hotfix release 0.8.0 (*Han Xiao*)
  - [[```0a3c3cf9```](https://github.com/jina-ai/jina/commit/0a3c3cf9b105e21d13424ee5e9c95c4619caa05e)] __-__ release 0.8.0 (*Han Xiao*)
  - [[```5fa2a6e6```](https://github.com/jina-ai/jina/commit/5fa2a6e685a85f9d72460659052734930e5ace07)] __-__ __version__: the next version will be 0.7.13 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-1></a>
+## Release Note (`0.8.1`)
+
+> Release time: 2020-11-24 16:29:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Deepankar Mahapatro,  Nan Wang,  cristian,  Jina Dev Bot,  bwanglzu,  Szymon Skorupinski,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```0dfa66bc```](https://github.com/jina-ai/jina/commit/0dfa66bca0db7c1cd248bac680d5aeedbc418f47)] __-__ send terminate to every Pea (#1331) (*Joan Fontanals*)
+ - [[```42f99195```](https://github.com/jina-ai/jina/commit/42f9919525fad863a7987f2ac9d270e2c9aa1526)] __-__ incompatible options containerpea (#1334) (*Joan Fontanals*)
+ - [[```895112e2```](https://github.com/jina-ai/jina/commit/895112e2cedd8bc53539e2420cdcae8964e18391)] __-__ adapt to new remote log endpoint (#1300) (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```f3a7c15b```](https://github.com/jina-ai/jina/commit/f3a7c15bd5add354e771883c07b20cb7bf144df0)] __-__ __types__: move add_chunk add_match to Set (#1343) (*Han Xiao*)
+ - [[```8d97afa3```](https://github.com/jina-ai/jina/commit/8d97afa3c24953277a22ef20dd908515f7bd982d)] __-__ moving log parse to core from jinad (#1342) (*Deepankar Mahapatro*)
+ - [[```3b70f698```](https://github.com/jina-ai/jina/commit/3b70f6982356e7c32d76a9cb6db60dd3f1cdcb0b)] __-__ refactor the test for evaluation (#1339) (*Nan Wang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```79064e60```](https://github.com/jina-ai/jina/commit/79064e60b6a18d3c0469af6e134bd0fb9393f800)] __-__ add integ test about non blocking gateway (#1338) (*Joan Fontanals*)
+ - [[```dfacc51b```](https://github.com/jina-ai/jina/commit/dfacc51b19994f5aff7cc22fdfa2c7eab41ee57b)] __-__ auto approve/merge chore tasks for hub (#1298) (*cristian*)
+ - [[```db5f3dc8```](https://github.com/jina-ai/jina/commit/db5f3dc81b50ac4949e3678c74e1a926315eff9e)] __-__ refactor queryset with primitive type (*bwanglzu*)
+ - [[```6559d2da```](https://github.com/jina-ai/jina/commit/6559d2da8c927c0b85b111b20a6bca70791d392c)] __-__ improve test hello world (*Szymon Skorupinski*)
+
+### 🍹 Other Improvements
+
+ - [[```7264977d```](https://github.com/jina-ai/jina/commit/7264977df1e296987065faf58c498e59a46b7dd1)] __-__ hotfix release 0.8.1 (*Han Xiao*)
+ - [[```c5968974```](https://github.com/jina-ai/jina/commit/c59689749e6b1e4a04908d94a47ae97eace3139f)] __-__ fix toc generator behavior (*Han Xiao*)
+ - [[```2de9b3ca```](https://github.com/jina-ai/jina/commit/2de9b3cab7e1f2ed8d8dcb90343c08320e345e79)] __-__ update toc generator settings (*Han Xiao*)
+ - [[```b1fcba01```](https://github.com/jina-ai/jina/commit/b1fcba0179192a5b3e5b548b4c05bd3e556edb4b)] __-__ remove toc from readme (*Han Xiao*)
+ - [[```ca89d3bb```](https://github.com/jina-ai/jina/commit/ca89d3bbd4a91b8d51952de10fa7f16df7693d16)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```6b4de2de```](https://github.com/jina-ai/jina/commit/6b4de2de67f19987ef6cd7435f074946af4dd5eb)] __-__ update toc generator to v3 (*Han Xiao*)
+ - [[```d23e7ae7```](https://github.com/jina-ai/jina/commit/d23e7ae7f899c31c01d4adda735f2f081a0a64bd)] __-__ fix readme typo (*Han Xiao*)
+ - [[```0baec933```](https://github.com/jina-ai/jina/commit/0baec9334180a1ce24e1713bc349e46dd8843602)] __-__ __version__: the next version will be 0.8.1 (*Jina Dev Bot*)
+
