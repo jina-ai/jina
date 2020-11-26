@@ -59,7 +59,7 @@ class ContainerPea(BasePea):
             _expose_port.append(self.args.port_out)
 
         from sys import platform
-        if platform == "linux" or platform == "linux2":
+        if platform in ('linux', 'linux2'):
             net_mode = 'host'
         else:
             net_mode = None
@@ -79,7 +79,8 @@ class ContainerPea(BasePea):
 
         # Related to potential docker-in-docker communication. If `ContainerPea` lives already inside a container.
         # it will need to communicate using the `bridge` network.
-        self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self._client.networks.get('bridge').attrs['IPAM']['Config'][0]['Gateway'],
+        if platform in ('linux', 'linux2'):
+            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self._client.networks.get('bridge').attrs['IPAM']['Config'][0]['Gateway'],
                                                                      self.args.port_ctrl,
                                                                      self.args.ctrl_with_ipc)
         # wait until the container is ready

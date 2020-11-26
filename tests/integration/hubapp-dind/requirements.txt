@@ -1,0 +1,3 @@
+# seems that BiT only works in 2.0.0 not 2.2.0, but hey it's google's problem!
+tensorflow_cpu==2.1.0
+jina[cv,http]==0.6.4

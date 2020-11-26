@@ -1,0 +1,10 @@
+!Flow
+with:
+  read_only: true
+  rest_api: true
+  port_expose: 45678
+pods:
+  pod1:
+    uses: hubpod:test
+  pod2:
+    uses: hubpod:test

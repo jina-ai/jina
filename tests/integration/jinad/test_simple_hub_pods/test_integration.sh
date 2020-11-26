@@ -6,9 +6,6 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
-# Setting env variables locals for this script
-export $(grep -v '^#' tests/integration/jinad/test_simple_hub_pods/.env | xargs -d '\n')
-
 docker-compose -f tests/integration/jinad/test_simple_hub_pods/docker-compose.yml --project-directory . up  --build -d
 
 sleep 5
