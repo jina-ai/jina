@@ -1,8 +1,11 @@
-from typing import Union, Optional
+from typing import Union, Optional, TypeVar, Dict
+
+from google.protobuf import json_format
 
 from ..sets import QueryLangSet, DocumentSet
 from ...enums import CompressAlgo, RequestType
-from ...helper import get_random_identity
+from ...excepts import BadRequestType
+from ...helper import get_random_identity, typename
 from ...proto import jina_pb2
 
 _body_type = set(str(v).lower() for v in RequestType)
@@ -14,9 +17,11 @@ _trigger_body_fields = set(kk
                            for kk in v.DESCRIPTOR.fields_by_name.keys())
 _trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()).difference(_body_type)
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
-_empty_request = jina_pb2.RequestProto()
 
 __all__ = ['Request']
+
+RequestSourceType = TypeVar('RequestSourceType',
+                            jina_pb2.RequestProto, bytes, str, Dict)
 
 
 class Request:
@@ -39,19 +44,28 @@ class Request:
                  copy: bool = False):
 
         self._buffer = None
-        self._request = None  # type: 'jina_pb2.RequestProto'
-
-        if isinstance(request, bytes):
-            self._buffer = request
-        elif isinstance(request, jina_pb2.RequestProto):
-            if copy:
-                self._request.CopyFrom(request)
-            else:
-                self._request = request
-        elif request is None:
-            self._request = jina_pb2.RequestProto()
-            # make sure every new request has a request id
-            self._request.request_id = get_random_identity()
+        self._request = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
+        try:
+            if isinstance(request, jina_pb2.RequestProto):
+                if copy:
+                    self._request.CopyFrom(request)
+                else:
+                    self._request = request
+            elif isinstance(request, dict):
+                json_format.ParseDict(request, self._request)
+            elif isinstance(request, str):
+                json_format.Parse(request, self._request)
+            elif isinstance(request, bytes):
+                self._buffer = request
+                self._request = None
+            elif request is None:
+                # make sure every new request has a request id
+                self._request.request_id = get_random_identity()
+            elif request is not None:
+                # note ``None`` is not considered as a bad type
+                raise ValueError(f'{typename(request)} is not recognizable')
+        except Exception as ex:
+            raise BadRequestType(f'fail to construct a request from {request}') from ex
 
         self._envelope = envelope
         self.is_used = False  #: Return True when request has been r/w at least once
@@ -60,10 +74,8 @@ class Request:
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
         if name in _trigger_body_fields:
             return getattr(self.body, name)
-        elif hasattr(_empty_request, name):
-            return getattr(self.as_pb_object, name)
         else:
-            raise AttributeError
+            return getattr(self.as_pb_object, name)
 
     @property
     def body(self):

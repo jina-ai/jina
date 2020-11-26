@@ -65,16 +65,15 @@ jobs:
         env:
           PRIVATE_TOKEN: ${{ secrets.JINA_DEV_BOT }}
       - name: Generate TOC
-        uses: technote-space/toc-generator@v2
+        uses: technote-space/toc-generator@v3
         with:
           MAX_HEADER_LEVEL: 2
-          FOLDING: false
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           COMMIT_NAME: Jina Dev Bot
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: ''
-          TARGET_PATHS: 'README*.md,CHANGELOG.md,CONTRIBUTING.md'
-          COMMIT_MESSAGE: 'chore(docs): update TOC'
+          TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md'
+          CHECK_ONLY_DEFAULT_BRANCH: true  ## If you want not to check existing PRs
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}

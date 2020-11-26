@@ -82,7 +82,7 @@ class RemotePod(RemotePea):
 
     def __init__(self, args: Union['Namespace', Dict]):
         super().__init__(args)
-
+        self.all_ctrl_addr = []
         if isinstance(self.args, Dict):
             first_pea_args = self.args['peas'][0]
             self.ctrl_timeout = first_pea_args.timeout_ctrl
@@ -91,11 +91,23 @@ class RemotePod(RemotePea):
                 self.name = first_pea_args.name
             if first_pea_args.role == PeaRoleType.PARALLEL:
                 self.name = f'{self.name}-{first_pea_args.pea_id}'
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(first_pea_args.host, first_pea_args.port_ctrl,
-                                                                         first_pea_args.ctrl_with_ipc)
+            for args in self.args['peas']:
+                ctrl_addr, _ = Zmqlet.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
+                self.all_ctrl_addr.append(ctrl_addr)
+
+        if isinstance(self.args, Namespace):
+            self.daemon = self.args.daemon
+            self.all_ctrl_addr.append(self.ctrl_addr)
 
     def spawn_remote(self, host: str, port: int, pod_type: str = 'cli', **kwargs) -> Optional[str]:
         return super().spawn_remote(host=host, port=port, pod_type=pod_type)
+
+    def send_terminate_signal(self) -> None:
+        """Gracefully close this pea and release all resources """
+        if self.is_ready_event.is_set() and self.all_ctrl_addr:
+            for ctrl_addr in self.all_ctrl_addr:
+                send_ctrl_message(address=ctrl_addr, cmd='TERMINATE',
+                                  timeout=self.ctrl_timeout)
 
 
 class RemoteMutablePod(RemotePod):

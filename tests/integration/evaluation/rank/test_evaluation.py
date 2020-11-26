@@ -2,9 +2,8 @@ import os
 
 import numpy as np
 
+from jina import Document
 from jina.flow import Flow
-from jina.proto import jina_pb2
-from jina.types.ndarray.generic import NdArray
 
 
 def test_evaluation(tmpdir):
@@ -22,21 +21,24 @@ def test_evaluation(tmpdir):
                  tag__dummy_score = -2
                  embedding = 2
         """
-        doc0 = jina_pb2.DocumentProto()
-        doc0.tags['id'] = '0'
-        doc0.tags['dummy_score'] = 0
-        NdArray(doc0.embedding).value = np.array([0])
-        doc1 = jina_pb2.DocumentProto()
-        doc1.tags['id'] = '1'
-        doc1.tags['dummy_score'] = -1
-        NdArray(doc1.embedding).value = np.array([1])
-        doc2 = jina_pb2.DocumentProto()
-        doc2.tags['id'] = '2'
-        doc2.tags['dummy_score'] = -2
-        NdArray(doc2.embedding).value = np.array([2])
+        with Document() as doc0:
+            doc0.tags['id'] = '0'
+            doc0.tags['dummy_score'] = 0
+            doc0.embedding = np.array([0])
+
+        with Document() as doc1:
+            doc1.tags['id'] = '1'
+            doc1.tags['dummy_score'] = -1
+            doc1.embedding = np.array([1])
+
+        with Document() as doc2:
+            doc2.tags['id'] = '2'
+            doc2.tags['dummy_score'] = -2
+            doc2.embedding = np.array([2])
+
         return [doc0, doc1, doc2]
 
-    with Flow().load_config('flow-index.yml') as index_flow:
+    with Flow.load_config('flow-index.yml') as index_flow:
         index_flow.index(input_fn=index_documents)
 
     def validate_evaluation_response(resp):
@@ -84,13 +86,18 @@ def test_evaluation(tmpdir):
         assert doc.evaluations[7].value == 1.0
 
     def doc_groundtruth_evaluation_pairs():
-        doc0 = jina_pb2.DocumentProto()
-        NdArray(doc0.embedding).value = np.array([0])  # it will match 0 and 1
-        groundtruth0 = jina_pb2.DocumentProto()
-        match0 = groundtruth0.matches.add()
-        match0.tags['id'] = '0'
-        match1 = groundtruth0.matches.add()
-        match1.tags['id'] = '2'
+        with Document() as doc0:
+            doc0.embedding = np.array([0])
+
+        with Document() as groundtruth0:
+            m1 = Document(id='1' * 16)
+            m1.score.value = -1
+            match0 = groundtruth0.matches.append(m1)
+            match0.tags['id'] = '0'
+            m2 = Document(id='2' * 16)
+            m2.score.value = -1
+            match1 = groundtruth0.matches.append(m2)
+            match1.tags['id'] = '2'
         # top_k is set to 2 for VectorSearchDriver
         # expects as matches [0, 2] but given [0, 1]
         # Precision@1 = 100%
@@ -104,13 +111,18 @@ def test_evaluation(tmpdir):
         # Recall@1 = 100%
         # Recall@2 = 50%
 
-        doc1 = jina_pb2.DocumentProto()
-        NdArray(doc1.embedding).value = np.array([2])  # it will match 2 and 1
-        groundtruth1 = jina_pb2.DocumentProto()
-        match0 = groundtruth1.matches.add()
-        match0.tags['id'] = '1'
-        match1 = groundtruth1.matches.add()
-        match1.tags['id'] = '2'
+        with Document() as doc1:
+            doc1.embedding = np.array([2])
+
+        with Document() as groundtruth1:
+            m1 = Document(id='1' * 16)
+            m1.score.value = -1
+            match0 = groundtruth1.matches.append(m1)
+            match0.tags['id'] = '1'
+            m2 = Document(id='2' * 16)
+            m2.score.value = -1
+            match1 = groundtruth1.matches.append(m2)
+            match1.tags['id'] = '2'
         # expects as matches [1, 2] but given [2, 1]
         # Precision@1 = 100%
         # Precision@2 = 100%
@@ -125,9 +137,9 @@ def test_evaluation(tmpdir):
 
         return [(doc0, groundtruth0), (doc1, groundtruth1)]
 
-    with Flow().load_config('flow-evaluate.yml') as evaluate_flow:
+    with Flow.load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.search(
-            input_fn=doc_groundtruth_evaluation_pairs(),
+            input_fn=doc_groundtruth_evaluation_pairs,
             output_fn=validate_evaluation_response,
             callback_on='body',
             top_k=2

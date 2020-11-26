@@ -1,5 +1,5 @@
+from jina.types.document import Document
 from jina.drivers.querylang.queryset.lookup import LookupLeaf
-from jina.proto import jina_pb2
 
 
 class MockId:
@@ -26,21 +26,21 @@ def test_lookup_leaf_exact():
 
 
 def test_lookup_leaf_exact_document_tags():
-    doc = jina_pb2.DocumentProto()
-    doc.tags.update({'label': 'jina'})
-    leaf = LookupLeaf(tags__label='jina')
-    assert leaf.evaluate(doc)
-    leaf = LookupLeaf(tags__label='not_jina')
-    assert not leaf.evaluate(doc)
+    with Document() as doc:
+        doc.tags['label'] = 'jina'
+        leaf = LookupLeaf(tags__label='jina')
+        assert leaf.evaluate(doc)
+        leaf = LookupLeaf(tags__label='not_jina')
+        assert not leaf.evaluate(doc)
 
 
 def test_lookup_leaf_exact_document_tags_complex():
-    doc = jina_pb2.DocumentProto()
-    doc.tags.update({'key1': {'key2': 'jina'}})
-    leaf = LookupLeaf(tags__key1__key2='jina')
-    assert leaf.evaluate(doc)
-    leaf = LookupLeaf(tags__key1__key2='not_jina')
-    assert not leaf.evaluate(doc)
+    with Document() as doc:
+        doc.tags['key1'] = {'key2': 'jina'}
+        leaf = LookupLeaf(tags__key1__key2='jina')
+        assert leaf.evaluate(doc)
+        leaf = LookupLeaf(tags__key1__key2='not_jina')
+        assert not leaf.evaluate(doc)
 
 
 def test_lookup_leaf_neq():

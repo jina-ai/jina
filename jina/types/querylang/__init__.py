@@ -9,7 +9,6 @@ from ...helper import typename
 from ...importer import import_classes
 from ...proto import jina_pb2
 
-_empty_querylang = jina_pb2.QueryLangProto()
 
 QueryLangSourceType = TypeVar('QueryLangSourceType',
                               jina_pb2.QueryLangProto, bytes, str, Dict, BaseDriver)
@@ -131,10 +130,7 @@ class QueryLang:
         self._querylang.name = value.__class__.__name__
 
     def __getattr__(self, name: str):
-        if hasattr(_empty_querylang, name):
-            return getattr(self._querylang, name)
-        else:
-            raise AttributeError
+        return getattr(self._querylang, name)
 
     @property
     def as_pb_object(self) -> 'jina_pb2.QueryLangProto':

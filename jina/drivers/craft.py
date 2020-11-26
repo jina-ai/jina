@@ -46,4 +46,4 @@ class SegmentDriver(CraftDriver):
             with Document(length=len(ret), **r) as c:
                 if not c.mime_type:
                     c.mime_type = doc.mime_type
-            doc.add_chunk(c)
+            doc.chunks.append(c)

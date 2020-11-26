@@ -16,7 +16,7 @@ def test_remote_not_allowed():
 
 
 @pytest.mark.skip
-@pytest.mark.parametrize('args', [['--allow-spawn'], []])
+@pytest.mark.parametrize('args', [[]])
 def test_cont_gateway(args):
     parsed_args = set_gateway_parser().parse_args(args)
     with GatewayPod(parsed_args):
