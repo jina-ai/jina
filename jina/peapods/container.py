@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 from .pea import BasePea
-from .zmq import send_ctrl_message
+from .zmq import send_ctrl_message, Zmqlet
 from .. import __ready_msg__
 from ..helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from ..logging import JinaLogger
@@ -76,6 +76,13 @@ class ContainerPea(BasePea):
                                                       # publish_all_ports=True # This looks like something I would
                                                       # activate
                                                       )
+
+        # Related to potential docker-in-docker communication. If `ContainerPea` lives already inside a container.
+        # it will need to communicate using the `bridge` network.
+        self.args.host = self._client.networks.get('bridge').attrs['IPAM']['Config'][0]['Gateway']
+        self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host,
+                                                                     self.args.port_ctrl,
+                                                                     self.args.ctrl_with_ipc)
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
 
