@@ -22,7 +22,10 @@ import sys
 from binascii import unhexlify
 from hashlib import blake2b
 
+import numpy as np
+
 from ...excepts import BadDocID
+from ...helper import typename
 from ...proto.jina_pb2 import DocumentProto
 
 _doc_field_mask = None
@@ -88,3 +91,33 @@ def is_valid_id(value: str) -> bool:
         and "A"–"F" (or alternatively "a"–"f"). \
         - it has 16 chars described above.')
     return True
+
+
+class UniqueId(str):
+    def __new__(cls, seq):
+        if isinstance(seq, (int, np.integer)):
+            seq = hash2id(int(seq))
+        elif isinstance(seq, bytes):
+            seq = bytes2id(seq)
+        elif seq == '':
+            pass
+        elif isinstance(seq, str) and is_valid_id(seq):
+            seq = seq
+        elif seq is not None:
+            raise BadDocID(f'{typename(seq)}: {seq} is not a valid id')
+
+        return str.__new__(cls, seq)
+
+    def __hash__(self):
+        """The document id in the integer form of bytes, as 8 bytes map to int64.
+        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
+        such as ranker and Numpyindexer
+        """
+        return id2hash(self)
+
+    def __bytes__(self):
+        """The document id in the binary format of str, it has 8 bytes fixed length,
+        so it can be used in the dense file storage, e.g. BinaryPbIndexer,
+        as it requires the key has to be fixed length.
+        """
+        return id2bytes(self)
