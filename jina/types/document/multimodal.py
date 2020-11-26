@@ -2,7 +2,7 @@ from typing import Dict, List, TypeVar
 
 import numpy as np
 
-from . import Document
+from . import Document, ChunkSet
 from ...proto import jina_pb2
 from ..ndarray.generic import NdArray
 from ...excepts import LengthMismatchException, BadDocType
@@ -22,7 +22,7 @@ class MultimodalDocument(Document):
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
         - It assumes that every :class:`MultimodalDocument` have at least two chunks.
     """
-    def __init__(self, document = None, copy: bool = False, **kwargs):
+    def __init__(self, document = None, chunks: List[Document] = None, copy: bool = False, **kwargs):
         """
 
         :param document: the document to construct from. If ``bytes`` is given
@@ -37,6 +37,10 @@ class MultimodalDocument(Document):
         """
         super().__init__(document=document, copy=copy, **kwargs)
         self._modality_content_mapping = {}
+        if chunks:
+            self._validate(chunks)
+            self.chunks.clear()
+            self.chunks.extend(chunks)
 
     def _build_modality_content_mapping(self) -> Dict:
         for chunk in self.chunks:
@@ -44,12 +48,13 @@ class MultimodalDocument(Document):
             self._modality_content_mapping[modality] = chunk.embedding \
                 if chunk.embedding is not None \
                 else chunk.content
-        self._validate()
+        self._validate(chunks=self.chunks)
 
-    def _validate(self):
-        if len(self.chunks) < 2:
+    def _validate(self, chunks):
+        modalities = set([chunk.modality for chunk in chunks])
+        if len(chunks) < 2:
             raise BadDocType('MultimodalDocument should consist at least 2 chunks.')
-        if len(self._modality_content_mapping.keys()) != len(self.chunks):
+        if len(modalities) != len(chunks):
             raise LengthMismatchException(f'Length of modality is not identical to length of chunks.')
 
     @property
@@ -78,3 +83,7 @@ class MultimodalDocument(Document):
         :return: List of modalities extracted from chunks of the document.
         """
         return self.modality_content_mapping.keys()
+
+    @classmethod
+    def from_chunks(cls, chunks: List[Document]):
+        return cls(chunks=chunks)
