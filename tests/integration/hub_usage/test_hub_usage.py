@@ -3,6 +3,7 @@ import subprocess
 
 import pytest
 
+from jina import __version__ as jina_version
 from jina.docker.hubio import HubIO
 from jina.excepts import PeaFailToStart, HubBuilderError
 from jina.executors import BaseExecutor
@@ -51,8 +52,7 @@ def test_use_from_local_dir_flow_container_level():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error'])
     HubIO(args).build()
-
-    with Flow().add(uses='jinahub/pod.crafter.dummyhubexecutor:0.0.0'):
+    with Flow().add(uses=f'jinahub/pod.crafter.dummyhubexecutor:0.0.0-{jina_version}'):
         pass
 
 

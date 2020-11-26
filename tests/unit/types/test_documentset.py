@@ -70,3 +70,18 @@ def test_docset_getitem():
     ds.build()
     for j in range(len(ds)):
         assert isinstance(ds[ds[j].id], Document)
+
+
+def test_match_chunk_set():
+    with Document() as d:
+        d.content = 'hello world'
+
+    m = d.matches.append()
+    assert m.granularity == d.granularity
+    assert m.adjacency == d.adjacency + 1
+    assert len(d.matches) == 1
+
+    c = d.chunks.append()
+    assert c.granularity == d.granularity + 1
+    assert c.adjacency == d.adjacency
+    assert len(d.chunks) == 1

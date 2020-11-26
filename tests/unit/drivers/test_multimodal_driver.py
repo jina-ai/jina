@@ -41,9 +41,9 @@ def doc_with_multimodal_chunks(embeddings):
     chunk2.update_id()
     chunk3.update_id()
     doc.update_id()
-    doc.add_chunk(chunk1)
-    doc.add_chunk(chunk2)
-    doc.add_chunk(chunk3)
+    doc.chunks.append(chunk1)
+    doc.chunks.append(chunk2)
+    doc.chunks.append(chunk3)
     return doc
 
 
@@ -113,9 +113,9 @@ def doc_with_multimodal_chunks_wrong(embeddings):
     chunk2.update_id()
     chunk3.update_id()
     doc.update_id()
-    doc.add_chunk(chunk1)
-    doc.add_chunk(chunk2)
-    doc.add_chunk(chunk3)
+    doc.chunks.append(chunk1)
+    doc.chunks.append(chunk2)
+    doc.chunks.append(chunk3)
     return doc
 
 

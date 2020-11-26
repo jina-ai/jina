@@ -49,7 +49,7 @@ class DocumentSet(MutableSequence):
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
-            return Document(self._docs_map[item])
+            return Document(self._docs_map[str(item)])
         else:
             raise IndexError(f'do not support this index {item}')
 
@@ -57,6 +57,7 @@ class DocumentSet(MutableSequence):
         self._docs_proto.append(doc.as_pb_object)
 
     def add(self, doc: 'Document'):
+        """Shortcut to :meth:`append`, do not override this method """
         self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
