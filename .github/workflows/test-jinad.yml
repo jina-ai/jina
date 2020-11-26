@@ -29,6 +29,13 @@ jobs:
         run: |
           docker build -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
           docker build --build-arg PIP_TAG="[devel]" -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
+      - name: Build hub pod image
+        run: |
+          pip install .[cicd] --no-cache-dir
+          jina hub build --prune-images --raise-error --host-info --test-uses --daemon tests/intagration/jinad/hub_mwu
+          # change the tag to latest to make it independent of jina version.
+          IMAGE_ID=$(docker images --filter=reference='jinahub/pod.encoder.dummy_mwu_encoder' --format "{{.ID}}")
+          docker tag $IMAGE_ID jinahub/pod.encoder.dummy_mwu_encoder:latest
       - name: Test jinad
         run: |
           ./tests/integration/jinad/exec_tests.sh
