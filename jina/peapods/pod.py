@@ -10,7 +10,7 @@ from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
 from . import Pea
-from .gateway import GatewayPea, RESTGatewayPea, AsyncGatewayPea
+from .gateway import GatewayPea, RESTGatewayPea, AsyncGatewayPea, _GatewayPea
 from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
@@ -548,7 +548,7 @@ class GatewayPod(BasePod):
 
     def start(self) -> 'GatewayPod':
         for s in self.all_args:
-            p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else GatewayPea(s)
+            p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else _GatewayPea(s)
             self.peas.append(p)
             self.enter_context(p)
 
@@ -558,6 +558,7 @@ class GatewayPod(BasePod):
 
 class AsyncGatewayPod(BasePod, AsyncExitStack):
     """A :class:`BasePod` that holds a Gateway """
+    # TODO: remove this, as we are handling async in loop_body of gateway
 
     async def start(self) -> 'AsyncGatewayPod':
         for s in self.all_args:

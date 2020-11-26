@@ -10,7 +10,7 @@ from google.protobuf.json_format import MessageToJson
 
 from .grpc_asyncio import AsyncioExecutor
 from .pea import BasePea
-from .zmq import AsyncZmqlet
+from .zmq import AsyncZmqlet, AsyncCtrlZmqlet, send_message_async, recv_message_async, send_ctrl_message
 from .. import __stop_msg__, Request
 from ..enums import RequestType
 from ..helper import use_uvloop
@@ -104,6 +104,7 @@ class GatewayPea:
                 return await zmqlet.recv_message(callback=self.handle)
 
         async def Call(self, request_iterator, context):
+            print('#################################')
             with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
                 # this restricts the gateway can not be the joiner to wait
                 # as every request corresponds to one message, #send_message = #recv_message
@@ -155,6 +156,14 @@ class AsyncGatewayPea:
                                  log_id=args.log_id,
                                  log_config=args.log_config)
         self._p_servicer = GatewayPea._Pea(args)
+        self.configure_event_loop()
+        self.is_gateway_ready = asyncio.Event()
+        self.init_server(args)
+
+    def configure_event_loop(self):
+        use_uvloop()
+        import asyncio
+        asyncio.set_event_loop(asyncio.new_event_loop())
 
     def init_server(self, args):
         self._server = grpc.aio.server(
@@ -166,20 +175,84 @@ class AsyncGatewayPea:
         self._server.add_insecure_port(self._bind_address)
 
     async def start(self):
+        self.logger.info('IN AsyncGatewayPea start()')
         await self._server.start()
         self.logger.success(f'gateway is listening at: {self._bind_address}')
+        await self.is_gateway_ready.wait()
         return self
 
     async def __aenter__(self):
         return await self.start()
 
-    async def __exit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
 
     async def close(self):
         await self._server.stop(None)
+        self.logger.close()
+
+
+class _GatewayPea(BasePea):
+    def __init__(self, args):
+        super().__init__(args)
+        self.logger.info('In __init__')
+        if not args.proxy and os.name != 'nt':
+            os.unsetenv('http_proxy')
+            os.unsetenv('https_proxy')
+        self._p_servicer = GatewayPea._Pea(args)
+        self.ctrl_addr, _ = AsyncCtrlZmqlet.get_ipc_ctrl_address()
+        self.logger.warning(f'name: {self.name}, ctrl_addr: {self.ctrl_addr}')
+
+    async def handle_terminate_signal(self):
+        from ..types.message.common import ControlMessage
+        with AsyncCtrlZmqlet(args=self.args, logger=self.logger, ctrl_addr=self.ctrl_addr) as zmqlet:
+            # TODO: currently exits for any ctrl message. should only happen for terminate
+            msg = await recv_message_async(sock=zmqlet.ctrl_sock)
+            # TODO: send_message_async needs to send a message of type `Message`, can be avoided?
+            await send_message_async(sock=zmqlet.ctrl_sock, msg=ControlMessage('STATUS'))
+            self.loop_teardown()
+            self.is_shutdown.set()
+
+    async def _loop_body(self):
+        self.gateway_task = asyncio.get_event_loop().create_task(self.gateway.start())
+        # we cannot use zmqstreamlet here, as that depends on a custom loop
+        self.zmq_task = asyncio.get_running_loop().create_task(self.handle_terminate_signal())
+        # gateway gets started without awaiting the task, as we don't want to suspend the loop_body here
+        # event loop should be suspended depending on zmq ctrl recv, hence awaiting here
+        try:
+            await self.zmq_task
+        except asyncio.CancelledError:
+            self.logger.info('zmq_task got cancelled')
+
+    def loop_body(self):
+        self.gateway = AsyncGatewayPea(self.args)
+        self.set_ready()
+        # asyncio.run() or asyncio.run_until_complete() wouldn't work here as we are running a custom loop
+        asyncio.get_event_loop().run_until_complete(self._loop_body())
+
+    async def _loop_teardown(self):
+        # TODO: This might not be required, as setting the asyncio Event stops the server
+        await asyncio.get_event_loop().create_task(self.gateway.stop())
+
+    def loop_teardown(self):
+        self.zmq_task.cancel()
+        if hasattr(self, 'gateway'):
+            self.gateway.is_gateway_ready.set()
+            # asyncio.get_event_loop().run_until_complete(self._loop_teardown())
+
+    def send_terminate_signal(self):
+        if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
+            # TODO: set a timeout in the args, rather than using fixed number?
+            send_ctrl_message(self.ctrl_addr, 'TERMINATE',
+                              timeout=10000)
+
+    def close(self) -> None:
+        self.send_terminate_signal()
+        self.is_shutdown.wait()
         self.logger.success(__stop_msg__)
         self.logger.close()
+        if not self.daemon:
+            self.join()
 
 
 class RESTGatewayPea(BasePea):
@@ -189,6 +262,7 @@ class RESTGatewayPea(BasePea):
     Unlike :class:`GatewayPea`, it does not support bi-directional streaming. Therefore, it is
     synchronous from the client perspective.
     """
+    # TODO: move this to AsyncCtrlZmqlet based termination
 
     def loop_body(self):
         self._p_servicer = GatewayPea._Pea(self.args)

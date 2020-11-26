@@ -78,7 +78,7 @@ class Zmqlet:
     def get_ctrl_address(host: str, port_ctrl: str, ctrl_with_ipc: bool) -> Tuple[str, bool]:
         """Get the address of the control socket
 
-        :param host: the host in he arguments
+        :param host: the host in the arguments
         :param port_ctrl: the control port
         :param ctrl_with_ipc: a bool of whether using IPC protocol for controlling
         :return: A tuple of two pieces:
@@ -280,6 +280,57 @@ class AsyncZmqlet(Zmqlet):
         return self
 
 
+class AsyncCtrlZmqlet(AsyncZmqlet):
+    """Async zmqlet with only ctrl socket
+    This can be used by all local pea-like objects that don't carry a zmqstreamlet (gateway-grpc, gateway-rest, remote)
+
+    ctrl_address is ipc based (to avoid port collison for gateway)
+        - main process can fetch this from a static call.
+        - child process can build a socket from the same ctrl_address
+    """
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger', ctrl_addr: 'str') -> None:
+        self.args = args
+        self.logger = logger
+        self.is_closed = False
+        self.opened_socks = []
+        if ctrl_addr is None:
+            ctrl_addr, _ = self.get_ipc_ctrl_address()
+        self.ctx, self.ctrl_sock = self.init_ctrl_sockets(ctrl_addr)
+        self.opened_socks.append(self.ctrl_sock)
+        self.register_pollin()
+
+    def register_pollin(self):
+        self.poller = zmq.Poller()
+        self.poller.register(self.ctrl_sock, zmq.POLLIN)
+
+    def _get_zmq_ctx(self):
+        return zmq.asyncio.Context()
+
+    @staticmethod
+    def get_ipc_ctrl_address():
+        return Zmqlet.get_ctrl_address(host=None, port_ctrl=None, ctrl_with_ipc=True)
+
+    def init_ctrl_sockets(self, ctrl_addr):
+        ctx = self._get_zmq_ctx()
+        try:
+            ctrl_sock, _ = _init_socket(ctx, ctrl_addr, None, SocketType.PAIR_BIND,
+                                        use_ipc=True)
+            self.logger.info(f'control only: over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})')
+            return ctx, ctrl_sock
+
+        except zmq.error.ZMQError as ex:
+            self.close()
+            raise ex
+
+    def close(self):
+        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
+        if not self.is_closed:
+            self.is_closed = True
+            self.close_sockets()
+            if hasattr(self, 'ctx'):
+                self.ctx.term()
+
+
 class ZmqStreamlet(Zmqlet):
     """A :class:`ZmqStreamlet` object can send/receive data to/from ZeroMQ stream and invoke callback function. It
     has three sockets for input, output and control.
@@ -367,7 +418,9 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
         r = None
         try:
             r = recv_message(sock, timeout)
+            print('INSIDE send_ctrl_message after recv_message')
         except TimeoutError:
+            print('INSIDE send_ctrl_message after TimeoutError')
             pass
         finally:
             sock.close()
@@ -462,6 +515,8 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
         return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
+        print(f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
+              f'is the server still online? is the network broken? are "port" correct? ')
         raise TimeoutError(
             f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
             'is the server still online? is the network broken? are "port" correct? ')
