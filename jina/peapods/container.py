@@ -72,22 +72,23 @@ class ContainerPea(BasePea):
                                                       name=self.name,
                                                       volumes=_volumes,
                                                       network_mode=net_mode,
-                                                      entrypoint=self.args.entrypoint,
-                                                      # publish_all_ports=True # This looks like something I would
-                                                      # activate
-                                                      )
+                                                      entrypoint=self.args.entrypoint)
 
         # Related to potential docker-in-docker communication. If `ContainerPea` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         if platform in ('linux', 'linux2'):
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self._client.networks.get('bridge').attrs['IPAM']['Config'][0]['Gateway'],
-                                                                     self.args.port_ctrl,
-                                                                     self.args.ctrl_with_ipc)
+            bridge_network = self._client.networks.get('bridge')
+            if bridge_network:
+                self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(
+                    bridge_network.attrs['IPAM']['Config'][0]['Gateway'],
+                    self.args.port_ctrl,
+                    self.args.ctrl_with_ipc)
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
 
     def loop_body(self):
         """Direct the log from the container to local console """
+
         def check_ready():
             # TODO: This needs to be fixed, sleep needs to be awaited
             while not self.is_ready:
