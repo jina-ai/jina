@@ -1,4 +1,4 @@
-name: Test hubapp with hubpods dind
+name: Test hubapp with hubpods
 
 on:
   pull_request:

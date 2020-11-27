@@ -6,7 +6,7 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
-CONTAINER_ID=$(docker run -v /var/run/docker.sock:/var/run/docker.sock -d jinaai/test_hubapp_dind)
+CONTAINER_ID=$(docker run -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/test_hubapp_dind)
 
 sleep 5
 
@@ -16,6 +16,8 @@ TEXT_RESPONSE=$(echo $RESPONSE | jq -e ".index.docs[] | .text")
 
 echo "Response is: ${RESPONSE}"
 
+# remove the new pods
+docker ps -a | awk '{ print $1,$2 }' | grep hubpod:test | awk '{print $1 }' | xargs -I {} docker rm -f {}
 docker rm -f $CONTAINER_ID
 
 EXPECTED_TEXT='"text:hey, dude"'
