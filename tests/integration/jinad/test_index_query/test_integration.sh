@@ -6,9 +6,6 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
-# Setting env variables locals for this script
-export $(grep -v '^#' tests/integration/jinad/test_index_query/.env | xargs -d '\n')
-
 docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . up  --build -d
 
 sleep 5
@@ -50,7 +47,7 @@ docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --
 
 EXPECTED_TEXT='"text:hey, dude"'
 
-if [ "$EXPECTED_TEXT" = "TEXT_MATCHED" ]; then
+if [ "$EXPECTED_TEXT" = "$TEXT_MATCHED" ]; then
         echo "Success"
 else
         echo "Fail"
