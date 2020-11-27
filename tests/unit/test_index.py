@@ -16,12 +16,18 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope='function')
-def test_workspace(tmpdir):
-    os.environ['TEST_WORKDIR'] = str(tmpdir)
-    workspace_path = os.environ['TEST_WORKDIR']
+def test_workspace_index(tmpdir):
+    os.environ['JINA_TEST_INDEX'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_INDEX']
     yield workspace_path
-    del os.environ['TEST_WORKDIR']
+    del os.environ['JINA_TEST_INDEX']
 
+@pytest.fixture(scope='function')
+def test_workspace_joint(tmpdir):
+    os.environ['JINA_TEST_JOINT'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_JOINT']
+    yield workspace_path
+    del os.environ['JINA_TEST_JOINT']
 
 def get_result(resp):
     n = []
@@ -145,17 +151,17 @@ def test_two_client_route():
         t2.start()
 
 
-def test_index(test_workspace):
+def test_index(test_workspace_index):
     f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3, separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(50))
 
     for j in range(3):
-        assert os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
-        assert os.path.exists(os.path.join(test_workspace, f'test2-{j + 1}/tmp2'))
+        assert os.path.join(test_workspace_index, f'test2-{j + 1}/test2.bin')
+        assert os.path.exists(os.path.join(test_workspace_index, f'test2-{j + 1}/tmp2'))
 
 
-def test_compound_idx(test_workspace):
+def test_compound_idx(test_workspace_joint):
     def validate(req, indexer_name):
         assert req.status.code < jina_pb2.StatusProto.ERROR
         assert req.search.docs[0].matches[0].score.op_name == indexer_name

@@ -3,7 +3,7 @@ with:
   index_filename: tmp2
 metas:
   name: test2
-  workspace: $TEST_WORKDIR
+  workspace: $JINA_TEST_INDEX
 requests:
   on:
     SearchRequest:

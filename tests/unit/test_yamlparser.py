@@ -13,13 +13,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture(scope='function')
 def test_workspace(tmpdir):
-    os.environ['TEST_WORKDIR'] = str(tmpdir)
-    workspace_path = os.environ['TEST_WORKDIR']
+    os.environ['JINA_TEST_JOINT'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_JOINT']
     yield workspace_path
-    del os.environ['TEST_WORKDIR']
+    del os.environ['JINA_TEST_JOINT']
 
-
-def test_yaml_expand(test_workspace):
+def test_yaml_expand():
     with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
@@ -33,7 +32,7 @@ def test_yaml_expand(test_workspace):
     assert b['non_exist_env'] == '$JINA_WHATEVER_ENV'
 
 
-def test_yaml_expand2(test_workspace):
+def test_yaml_expand2():
     with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
         a = yaml.load(fp)
     os.environ['ENV1'] = 'a'
@@ -46,14 +45,14 @@ def test_yaml_expand2(test_workspace):
     assert b['components'][1]['metas']['name_shortcut'] == 'test_numpy'
 
 
-def test_yaml_expand3(test_workspace):
+def test_yaml_expand3():
     with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
     assert b['pea_workspace'] != '{root.workspace}/{root.name}-{this.pea_id}'
 
 
-def test_attr_dict(test_workspace):
+def test_attr_dict():
     class AttrDict:
         pass
 
@@ -64,13 +63,13 @@ def test_attr_dict(test_workspace):
     assert isinstance(a.components, list)
 
 
-def test_yaml_fill(test_workspace):
+def test_yaml_fill():
     with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
         a = yaml.load(fp)
     print(fill_metas_with_defaults(a))
 
 
-def test_class_yaml(test_workspace):
+def test_class_yaml():
     class DummyClass:
         pass
 
@@ -97,10 +96,6 @@ def test_class_yaml(test_workspace):
 
 def test_joint_indexer(test_workspace):
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
-    print(b[0].name)
-    print(type(b[0]))
-    print(b._drivers['SearchRequest'][0]._executor_name)
-    print(b._drivers['SearchRequest'])
     b.attach(pea=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]
