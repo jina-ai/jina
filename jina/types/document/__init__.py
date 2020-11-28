@@ -548,11 +548,11 @@ class Document:
             for doc in docs:
                 if next_edge == 'm':
                     self._traverse_rec(
-                        doc.matches, doc, 'matches', path[1:], *args, **kwargs
+                        doc.matches, doc, 'matches', path[1:], apply_func, *args, **kwargs
                     )
                 if next_edge == 'c':
                     self._traverse_rec(
-                        doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
+                        doc.chunks, doc, 'chunks', path[1:], apply_func, *args, **kwargs
                     )
         else:
             apply_func(docs, parent_doc, parent_edge_type, *args, **kwargs)
