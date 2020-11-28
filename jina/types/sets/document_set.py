@@ -1,5 +1,3 @@
-from typing import Tuple, Callable
-
 from collections.abc import MutableSequence
 from typing import Iterable, Union, Sequence
 
