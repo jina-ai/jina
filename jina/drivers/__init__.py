@@ -260,7 +260,7 @@ class BaseRecursiveDriver(BaseDriver):
     #  developer which one should be inherited
     def _apply_all(
         self,
-        doc: 'Document',
+        docs: 'DocumentSet',
         context_doc: 'Document',
         field: str,
         *args,
@@ -281,8 +281,8 @@ class BaseRecursiveDriver(BaseDriver):
             return self.req.docs
 
     def __call__(self, *args, **kwargs):
-        for doc in self.docs:
-            doc.traverse_apply(traversal_paths=self._traversal_paths, apply_func=self._apply_all)
+        docset = DocumentSet(self.docs)
+        docset.traverse_apply(self._traversal_paths, self._apply_all)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

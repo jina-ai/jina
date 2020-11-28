@@ -1,3 +1,5 @@
+from typing import Tuple, Callable
+
 from collections.abc import MutableSequence
 from typing import Iterable, Union, Sequence
 
@@ -88,3 +90,10 @@ class DocumentSet(MutableSequence):
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
+
+    def traverse_apply(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs):
+        from ..document import Document
+        for d in self._docs_proto:
+            if isinstance(d, 'RepeatedCompositeContainer'):
+                d = Document(d)
+            d.traverse_apply(traversal_paths, apply_func)
