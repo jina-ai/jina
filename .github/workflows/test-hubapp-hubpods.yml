@@ -34,10 +34,10 @@ jobs:
           docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
       - name: Build hubapp image
         run: |
-          docker build -f tests/integration/hubapp-dind/Dockerfile -t jinaai/test_hubapp_dind .
+          docker build -f tests/integration/hubapp_hubpods/Dockerfile -t jinaai/test_hubapp_hubpods .
       - name: Test hubapp with hubpods
         run: |
-          ./tests/integration/hubapp-dind/test_integration.sh
+          ./tests/integration/hubapp_hubpods/test_integration.sh
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
