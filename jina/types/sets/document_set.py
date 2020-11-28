@@ -92,8 +92,4 @@ class DocumentSet(MutableSequence):
         self._docs_proto.sort(*args, **kwargs)
 
     def traverse_apply(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs):
-        from ..document import Document
-        for d in self._docs_proto:
-            if isinstance(d, 'RepeatedCompositeContainer'):
-                d = Document(d)
-            d.traverse_apply(traversal_paths, apply_func)
+        [d.traverse_apply(traversal_paths, apply_func) for d in self]
