@@ -539,19 +539,20 @@ class Document:
         """Traverse leaves of the document."""
         for path in traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec(self, None, None, [], apply_func, *args, **kwargs)
-            self._traverse_rec(self, None, None, path, apply_func, *args, **kwargs)
+                self._traverse_rec([self], None, None, [], apply_func, *args, **kwargs)
+            self._traverse_rec([self], None, None, path, apply_func, *args, **kwargs)
 
-    def _traverse_rec(self, parent_doc, parent_edge_type, path, apply_func, *args, **kwargs):
+    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, apply_func, *args, **kwargs):
         if path:
             next_edge = path[0]
-            if next_edge == 'm':
-                self._traverse_rec(
-                    self.matches, self, 'matches', path[1:], apply_func, *args, **kwargs
-                )
-            if next_edge == 'c':
-                self._traverse_rec(
-                    self.chunks, self, 'chunks', path[1:], apply_func, *args, **kwargs
-                )
+            for doc in docs:
+                if next_edge == 'm':
+                    self._traverse_rec(
+                        doc.matches, doc, 'matches', path[1:], *args, **kwargs
+                    )
+                if next_edge == 'c':
+                    self._traverse_rec(
+                        doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
+                    )
         else:
-            apply_func(self, parent_doc, parent_edge_type, *args, **kwargs)
+            apply_func(docs, parent_doc, parent_edge_type, *args, **kwargs)
