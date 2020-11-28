@@ -77,12 +77,18 @@ class ContainerPea(BasePea):
         # Related to potential docker-in-docker communication. If `ContainerPea` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         if platform in ('linux', 'linux2'):
-            bridge_network = self._client.networks.get('bridge')
-            if bridge_network:
-                self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(
-                    bridge_network.attrs['IPAM']['Config'][0]['Gateway'],
-                    self.args.port_ctrl,
-                    self.args.ctrl_with_ipc)
+            try:
+                bridge_network = self._client.networks.get('bridge')
+                if bridge_network:
+                    self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(
+                        bridge_network.attrs['IPAM']['Config'][0]['Gateway'],
+                        self.args.port_ctrl,
+                        self.args.ctrl_with_ipc)
+            except Exception as exc:
+                self.logger.warning(f'Unable to set control address from "bridge" network: {repr(exc)}'
+                                    f' Control address set to {self.ctrl_addr}')
+            finally:
+                pass
         # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
 
