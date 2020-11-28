@@ -535,7 +535,7 @@ class Document:
     def CopyFrom(self, doc: 'Document'):
         self._document.CopyFrom(doc.as_pb_object)
 
-    def traverse(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs) -> None:
+    def traverse_apply(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs) -> None:
         """Traverse leaves of the document."""
         for path in traversal_paths:
             if path[0] == 'r':

@@ -282,7 +282,7 @@ class BaseRecursiveDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         for doc in self.docs:
-            doc.traverse(traversal_paths=self._traversal_paths, apply_func=self._apply_all)
+            doc.traverse_apply(traversal_paths=self._traversal_paths, apply_func=self._apply_all)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
