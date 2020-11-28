@@ -260,7 +260,7 @@ class BaseRecursiveDriver(BaseDriver):
     #  developer which one should be inherited
     def _apply_all(
         self,
-        docs: 'DocumentSet',
+        doc: 'Document',
         context_doc: 'Document',
         field: str,
         *args,
@@ -281,36 +281,8 @@ class BaseRecursiveDriver(BaseDriver):
             return self.req.docs
 
     def __call__(self, *args, **kwargs):
-        self._traverse_apply(self.docs, *args, **kwargs)
-
-    def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        for path in self._traversal_paths:
-            if path[0] == 'r':
-                self._traverse_rec(docs, None, None, [], *args, **kwargs)
-            for doc in docs:
-                self._traverse_rec(
-                    [doc],
-                    None,
-                    None,
-                    path,
-                    *args,
-                    **kwargs,
-                )
-
-    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, *args, **kwargs):
-        if path:
-            next_edge = path[0]
-            for doc in docs:
-                if next_edge == 'm':
-                    self._traverse_rec(
-                        doc.matches, doc, 'matches', path[1:], *args, **kwargs
-                    )
-                if next_edge == 'c':
-                    self._traverse_rec(
-                        doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
-                    )
-        else:
-            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
+        for doc in self.docs:
+            doc.traverse(traversal_paths=self._traversal_paths, apply_func=self._apply_all)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

@@ -3,7 +3,7 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-from typing import Union, Dict, Optional, TypeVar, Any
+from typing import Union, Dict, Optional, TypeVar, Any, Tuple, Callable
 
 from google.protobuf import json_format
 
@@ -534,3 +534,24 @@ class Document:
 
     def CopyFrom(self, doc: 'Document'):
         self._document.CopyFrom(doc.as_pb_object)
+
+    def traverse(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs) -> None:
+        """Traverse leaves of the document."""
+        for path in traversal_paths:
+            if path[0] == 'r':
+                self._traverse_rec(self, None, None, [], apply_func, *args, **kwargs)
+            self._traverse_rec(self, None, None, path, apply_func, *args, **kwargs)
+
+    def _traverse_rec(self, parent_doc, parent_edge_type, path, apply_func, *args, **kwargs):
+        if path:
+            next_edge = path[0]
+            if next_edge == 'm':
+                self._traverse_rec(
+                    self.matches, self, 'matches', path[1:], apply_func, *args, **kwargs
+                )
+            if next_edge == 'c':
+                self._traverse_rec(
+                    self.chunks, self, 'chunks', path[1:], apply_func, *args, **kwargs
+                )
+        else:
+            apply_func(self, parent_doc, parent_edge_type, *args, **kwargs)
