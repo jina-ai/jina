@@ -281,8 +281,8 @@ class BaseRecursiveDriver(BaseDriver):
             return self.req.docs
 
     def __call__(self, *args, **kwargs):
-        docset = DocumentSet(self.docs)
-        docset.traverse_apply(self._traversal_paths, self._apply_all)
+        for doc in self.docs:
+            doc.traverse_apply(self._traversal_paths, self._apply_all)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

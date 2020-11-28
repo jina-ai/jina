@@ -90,6 +90,3 @@ class DocumentSet(MutableSequence):
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
-
-    def traverse_apply(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs):
-        [d.traverse_apply(traversal_paths, apply_func) for d in self]
