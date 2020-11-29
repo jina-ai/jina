@@ -418,9 +418,7 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
         r = None
         try:
             r = recv_message(sock, timeout)
-            print('INSIDE send_ctrl_message after recv_message')
         except TimeoutError:
-            print('INSIDE send_ctrl_message after TimeoutError')
             pass
         finally:
             sock.close()

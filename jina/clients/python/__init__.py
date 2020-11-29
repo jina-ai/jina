@@ -186,7 +186,8 @@ class PyClient(GrpcClient):
         for resp in self._stub.Call(req_gen()):
             if resp.status.code < jina_pb2.StatusProto.ERROR:
                 self.logger.info(
-                    f'dry run of {typename(req)} takes {time.perf_counter() - before:.3f}s, this flow has a good connectivity')
+                    f'dry run of {typename(req)} takes {time.perf_counter() - before:.3f}s, '
+                    f'this flow has a good connectivity')
             else:
                 raise DryRunException(resp.status)
 
