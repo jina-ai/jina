@@ -513,8 +513,6 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
         return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
-        print(f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
-              f'is the server still online? is the network broken? are "port" correct? ')
         raise TimeoutError(
             f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
             'is the server still online? is the network broken? are "port" correct? ')
