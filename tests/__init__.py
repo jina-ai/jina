@@ -6,7 +6,7 @@ from os.path import dirname
 
 import numpy as np
 
-from jina.types.document import uid, Document
+from jina.types.document import Document
 
 
 file_dir = os.path.dirname(__file__)
