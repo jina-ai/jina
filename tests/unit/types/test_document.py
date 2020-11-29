@@ -1,5 +1,5 @@
-import numpy as np
 import pytest
+import numpy as np
 from google.protobuf.json_format import MessageToDict
 
 from jina import NdArray, Request
@@ -7,6 +7,7 @@ from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document, BadDocID
 from tests import random_docs
 
+DOCUMENTS_PER_LEVEL = 1
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
 def test_ndarray_get_set(field):
@@ -188,3 +189,61 @@ def test_request_docs_chunks_mutable_iterator():
         assert isinstance(d, DocumentProto)
         for c in d.chunks:
             assert c.text == 'now i change it back'
+
+# Test document traverse
+
+def add_chunk(doc):
+    chunk = Document()
+    chunk.granularity = doc.granularity + 1
+    chunk.adjacency = doc.adjacency
+    doc.chunks.append(chunk)
+    return chunk
+
+
+def add_match(doc):
+    match = Document()
+    match.granularity = doc.granularity
+    match.adjacency = doc.adjacency + 1
+    doc.matches.append(match)
+    return match
+
+
+@pytest.fixture(scope='function')
+def doc_with_chunks_and_matches():
+    """ Builds up a complete chunk-match structure, with a depth of 2 in both directions recursively. """
+    max_granularity = 2
+    max_adjacency = 2
+
+    def iterate_build(document, current_granularity, current_adjacency):
+        if current_granularity < max_granularity:
+            for i in range(DOCUMENTS_PER_LEVEL):
+                chunk = add_chunk(document)
+                iterate_build(chunk, chunk.granularity, chunk.adjacency)
+        if current_adjacency < max_adjacency:
+            for i in range(DOCUMENTS_PER_LEVEL):
+                match = add_match(document)
+                iterate_build(match, match.granularity, match.adjacency)
+
+    document = DocumentProto()
+    document.granularity = 0
+    document.adjacency = 0
+    iterate_build(document, 0, 0)
+    return Document(document)
+
+
+def test_only_root(doc_with_chunks_and_matches):
+
+    def _apply_all(docs, *args, **kwargs):
+        for doc in docs:
+            add_chunk(doc)
+            add_match(doc)
+            add_match(doc)
+
+    doc_with_chunks_and_matches.traverse_apply(['r'], apply_func=_apply_all)
+    assert len(doc_with_chunks_and_matches) == 1
+    assert len(doc_with_chunks_and_matches[0].chunks) == 2
+    assert len(doc_with_chunks_and_matches[0].chunks[0].chunks) == 1
+    assert len(doc_with_chunks_and_matches[0].chunks[0].chunks[0].matches) == 1
+    assert len(doc_with_chunks_and_matches[0].chunks[0].matches) == 1
+    assert len(doc_with_chunks_and_matches[0].matches) == 3
+    assert len(doc_with_chunks_and_matches[0].matches[0].chunks) == 1
