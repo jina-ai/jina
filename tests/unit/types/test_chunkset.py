@@ -36,6 +36,5 @@ def test_append_from_documents(chunkset, document_factory, reference_doc):
     assert len(chunkset) == 4
     assert chunkset[-1].text == 'test 4'
     assert rv.text == chunk.text
-    assert rv.id == chunk.id
     assert rv.parent_id == reference_doc.id
     assert rv.granularity == reference_doc.granularity + 1

@@ -21,15 +21,16 @@ class ChunkSet(DocumentSet):
             make sure the added chunk is legit.
         """
         from ..document import Document
-        chunk = Document()
-        if document:
-            chunk.CopyFrom(document)
+        with Document() as chunk:
+            if document:
+                chunk.CopyFrom(document)
 
-        chunk.set_attrs(parent_id=self._ref_doc.id,
-                        granularity=self._ref_doc.granularity + 1,
-                        **kwargs)
-        if not chunk.mime_type:
-            chunk.mime_type = self._ref_doc.mime_type
+            chunk.set_attrs(parent_id=self._ref_doc.id,
+                            granularity=self._ref_doc.granularity + 1,
+                            **kwargs)
 
-        self._docs_proto.append(chunk.as_pb_object)
-        return chunk
+            if not chunk.mime_type:
+                chunk.mime_type = self._ref_doc.mime_type
+
+            self._docs_proto.append(chunk.as_pb_object)
+            return chunk
