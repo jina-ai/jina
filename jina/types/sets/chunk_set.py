@@ -32,7 +32,7 @@ class ChunkSet(DocumentSet):
             chunk = Document()
             if document:
                 chunk.CopyFrom(document)
-            self._docs_proto.append(chunk.as_pb_object)
+            self._docs_proto.append(chunk)
 
         chunk.set_attrs(parent_id=self._ref_doc.id,
                         granularity=self._ref_doc.granularity + 1,

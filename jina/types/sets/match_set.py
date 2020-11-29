@@ -28,7 +28,7 @@ class MatchSet(DocumentSet):
             match = Document()
             if document:
                 match.CopyFrom(document)
-            self._docs_proto.append(match.as_pb_object)
+            self._docs_proto.append(match)
 
         match.set_attrs(parent_id=self._ref_doc.id,
                         granularity=self._ref_doc.granularity + 1,
