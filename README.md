@@ -132,9 +132,10 @@ Let's create some random data and index it:
 
 ```python
 from jina import Document
+import numpy
 
 with Flow().add() as f:
-    f.index_ndarray(numpy.random.random[4,2], output_fn=print)  # index ndarray data, document sliced on first dimension
+    f.index_ndarray(numpy.random.random([4,2]), output_fn=print)  # index ndarray data, document sliced on first dimension
     f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
     f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])  # index files and wildcard globs, each file is a document
     f.index((Document() for _ in range(10)))  # index raw Jina Documents
