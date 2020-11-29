@@ -131,8 +131,8 @@ f.plot()
 Let's create some random data and index it:
 
 ```python
-from jina import Document
 import numpy
+from jina import Document
 
 with Flow().add() as f:
     f.index_ndarray(numpy.random.random([4,2]), output_fn=print)  # index ndarray data, document sliced on first dimension
