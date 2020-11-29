@@ -30,10 +30,12 @@ def docs(document_factory):
 def chunkset(docs, reference_doc):
     return ChunkSet(docs_proto=docs, reference_doc=reference_doc)
 
-def test_append_from_documents(chunkset, document_factory):
+def test_append_from_documents(chunkset, document_factory, reference_doc):
     chunk = document_factory.create(4, 'test 4')
     rv = chunkset.append(chunk)
     assert len(chunkset) == 4
     assert chunkset[-1].text == 'test 4'
     assert rv.text == chunk.text
     assert rv.id == chunk.id
+    assert rv.parent_id == reference_doc.id
+    assert rv.granularity == reference_doc.granularity + 1
