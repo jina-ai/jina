@@ -1,7 +1,7 @@
 import pytest
 
 from jina.types.document import Document
-from jina.types.sets.chunk_set import ChunkSet
+from jina.types.sets.match_set import MatchSet
 
 @pytest.fixture(scope='function')
 def document_factory():
@@ -19,7 +19,7 @@ def reference_doc(document_factory):
     return document_factory.create(0, 'test ref')
 
 @pytest.fixture
-def chunks(document_factory):
+def matches(document_factory):
     return [
         document_factory.create(1, 'test 1'),
         document_factory.create(2, 'test 1'),
@@ -27,14 +27,14 @@ def chunks(document_factory):
     ]
 
 @pytest.fixture
-def chunkset(chunks, reference_doc):
-    return ChunkSet(docs_proto=chunks, reference_doc=reference_doc)
+def matchset(matches, reference_doc):
+    return MatchSet(docs_proto=matches, reference_doc=reference_doc)
 
-def test_append_from_documents(chunkset, document_factory, reference_doc):
-    chunk = document_factory.create(4, 'test 4')
-    rv = chunkset.append(chunk)
-    assert len(chunkset) == 4
-    assert chunkset[-1].text == 'test 4'
-    assert rv.text == chunk.text
+def test_append_from_documents(matchset, document_factory, reference_doc):
+    match = document_factory.create(4, 'test 4')
+    rv = matchset.append(match)
+    assert len(matchset) == 4
+    assert matchset[-1].text == 'test 4'
+    assert rv.text == match.text
     assert rv.parent_id == reference_doc.id
     assert rv.granularity == reference_doc.granularity + 1

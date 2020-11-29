@@ -2,6 +2,8 @@ from typing import Optional
 
 from .document_set import DocumentSet
 
+from google.protobuf.pyext._message import RepeatedCompositeContainer
+
 if False:
     from ..document import Document
 
@@ -21,16 +23,21 @@ class ChunkSet(DocumentSet):
             make sure the added chunk is legit.
         """
         from ..document import Document
-        with Document() as chunk:
+        if isinstance(self._docs_proto, RepeatedCompositeContainer):
+            c = self._docs_proto.add()
+            if document:
+                c.CopyFrom(document.as_pb_object)
+            chunk = Document(c)
+        else:
+            chunk = Document()
             if document:
                 chunk.CopyFrom(document)
-
-            chunk.set_attrs(parent_id=self._ref_doc.id,
-                            granularity=self._ref_doc.granularity + 1,
-                            **kwargs)
-
-            if not chunk.mime_type:
-                chunk.mime_type = self._ref_doc.mime_type
-
             self._docs_proto.append(chunk.as_pb_object)
-            return chunk
+
+        chunk.set_attrs(parent_id=self._ref_doc.id,
+                        granularity=self._ref_doc.granularity + 1,
+                        **kwargs)
+        if not chunk.mime_type:
+            chunk.mime_type = self._ref_doc.mime_type
+
+        return chunk
