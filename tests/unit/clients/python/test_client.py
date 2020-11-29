@@ -8,7 +8,7 @@ from jina.enums import RequestType
 from jina.flow import Flow
 from jina.helper import random_port
 from jina.parser import set_gateway_parser
-from jina.peapods.gateway import RESTGatewayPea
+from jina.peapods.gateway.rest import RESTGatewayPea
 from jina.proto.jina_pb2 import DocumentProto
 
 

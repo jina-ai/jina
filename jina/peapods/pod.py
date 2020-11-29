@@ -5,12 +5,13 @@ import argparse
 import copy
 import time
 from argparse import Namespace
-from contextlib import ExitStack, AsyncExitStack
+from contextlib import ExitStack
 from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
 from . import Pea
-from .gateway import GatewayPea, RESTGatewayPea, AsyncGatewayPea, _GatewayPea
+from .gateway.grpc import GatewayPea
+from .gateway.rest import RESTGatewayPea
 from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
@@ -513,7 +514,7 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     # is BIND & CONNECT all on the same remote?
     bind_conn_same_remote = not bind_local and not conn_local and \
-                                (bind_args.host == connect_args.host)
+                            (bind_args.host == connect_args.host)
 
     if platform == 'linux' or platform == 'linux2':
         local_host = __default_host__
@@ -548,32 +549,12 @@ class GatewayPod(BasePod):
 
     def start(self) -> 'GatewayPod':
         for s in self.all_args:
-            p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else _GatewayPea(s)
+            p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else GatewayPea(s)
             self.peas.append(p)
             self.enter_context(p)
 
         self.start_sentinels()
         return self
-
-
-class AsyncGatewayPod(BasePod, AsyncExitStack):
-    """A :class:`BasePod` that holds a Gateway """
-    # TODO: remove this, as we are handling async in loop_body of gateway
-
-    async def start(self) -> 'AsyncGatewayPod':
-        for s in self.all_args:
-            p = AsyncGatewayPea(s)
-            self.peas.append(p)
-            self.enter_async_context(p)
-
-        self.start_sentinels()
-        return self
-
-    async def __aenter__(self):
-        return await self.start()
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        super(AsyncExitStack, self).__aexit__(exc_type, exc_val, exc_tb)
 
 
 class GatewayFlowPod(GatewayPod, FlowPod):

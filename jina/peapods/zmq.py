@@ -418,9 +418,7 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
         r = None
         try:
             r = recv_message(sock, timeout)
-            print('INSIDE send_ctrl_message after recv_message')
         except TimeoutError:
-            print('INSIDE send_ctrl_message after TimeoutError')
             pass
         finally:
             sock.close()
@@ -515,8 +513,6 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
         return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
-        print(f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
-              f'is the server still online? is the network broken? are "port" correct? ')
         raise TimeoutError(
             f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
             'is the server still online? is the network broken? are "port" correct? ')
