@@ -100,6 +100,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5690,4 +5691,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```6b4de2de```](https://github.com/jina-ai/jina/commit/6b4de2de67f19987ef6cd7435f074946af4dd5eb)] __-__ update toc generator to v3 (*Han Xiao*)
  - [[```d23e7ae7```](https://github.com/jina-ai/jina/commit/d23e7ae7f899c31c01d4adda735f2f081a0a64bd)] __-__ fix readme typo (*Han Xiao*)
  - [[```0baec933```](https://github.com/jina-ai/jina/commit/0baec9334180a1ce24e1713bc349e46dd8843602)] __-__ __version__: the next version will be 0.8.1 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-2></a>
+## Release Note (`0.8.2`)
+
+> Release time: 2020-11-29 23:10:21
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Han Xiao,  Hongchuang He,  Wang Bo,  Joan Fontanals,  doomdabo,  cristian,  Pratik Bhavsar,  florian-hoenicke,  🙇
+
+
+### 🆕 New Features
+
+ - [[```7ce30f37```](https://github.com/jina-ai/jina/commit/7ce30f372a73f2232b0ec2d45926fe5e1b58534e)] __-__ __flow__: pretty print flow obj in ipython (#1373) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```54c501dc```](https://github.com/jina-ai/jina/commit/54c501dcf6d2761641b2d94d8a0d83c51beac884)] __-__ assert with var (#1367) (*Joan Fontanals*)
+ - [[```086b21e4```](https://github.com/jina-ai/jina/commit/086b21e4efa8d0e0fabf6a6bb7d6107cea8c5f02)] __-__ __readme__: update korean readme (#1364) (*doomdabo*)
+ - [[```e1223486```](https://github.com/jina-ai/jina/commit/e122348650c9a287ab0042c967675ec82a067eb9)] __-__ make load config static (#1354) (*cristian*)
+ - [[```8fdffa8b```](https://github.com/jina-ai/jina/commit/8fdffa8b78ad89f3e38055b1bce2c74b0bd7286c)] __-__ topk priority (#1359) (*Pratik Bhavsar*)
+ - [[```ed81dd30```](https://github.com/jina-ai/jina/commit/ed81dd308c2b46fc1d7269fd78daf24bd47218c7)] __-__ __helper__: search file error handling (#1353) (*florian-hoenicke*)
+ - [[```d9438494```](https://github.com/jina-ai/jina/commit/d94384947874a912b51561de9dbd1313a448a674)] __-__ add jina version info to docker image name (#1341) (*cristian*)
+ - [[```f8db2301```](https://github.com/jina-ai/jina/commit/f8db230173d50dc256158295883d79afc9082e3d)] __-__ fix module name in tag workflow (#1345) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```0098cad4```](https://github.com/jina-ai/jina/commit/0098cad41854a369cc3877acdcac0985f59f8d53)] __-__ replace all random docs with new api (#1356) (*Wang Bo*)
+ - [[```2d3f69bd```](https://github.com/jina-ai/jina/commit/2d3f69bdfc48a47adb37363f960898296c930d04)] __-__ remove hub updater (#1360) (*cristian*)
+ - [[```0765255b```](https://github.com/jina-ai/jina/commit/0765255bb41f79a31a7f8f3820e18965742e3326)] __-__ skeleton new jinad integ test (#1317) (*Joan Fontanals*)
+ - [[```ac38ebf4```](https://github.com/jina-ai/jina/commit/ac38ebf4f2373f0486c43e45b5d6fd6961bb697b)] __-__ refactor index remote (#1346) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```9017bc2e```](https://github.com/jina-ai/jina/commit/9017bc2e6c7a964266012a0db7da41be18efe8bc)] __-__ __docs__: update readme (*Jina Dev Bot*)
+ - [[```c565ab33```](https://github.com/jina-ai/jina/commit/c565ab33374aee4c67f94cabedf1e367cb050ca8)] __-__ __docs__: update readme (#1370) (*Hongchuang He*)
+ - [[```338df326```](https://github.com/jina-ai/jina/commit/338df326af34d606facb9546284ebc684f38b4c8)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```60d60f51```](https://github.com/jina-ai/jina/commit/60d60f51c09235b4a421c95826cab433ee74cc81)] __-__ __flow__: no constructor for class method needed (#1352) (*florian-hoenicke*)
+ - [[```28016639```](https://github.com/jina-ai/jina/commit/28016639e8df95b49ea2ef4047f8c1c13e929509)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5a653ccc```](https://github.com/jina-ai/jina/commit/5a653ccc88706f1dd50f10573219c30eed49ddc8)] __-__ __version__: the next version will be 0.8.2 (*Jina Dev Bot*)
 
