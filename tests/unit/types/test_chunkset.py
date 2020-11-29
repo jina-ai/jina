@@ -6,17 +6,18 @@ from jina.types.sets.chunk_set import ChunkSet
 @pytest.fixture(scope='function')
 def document_factory():
     class DocumentFactory(object):
-        def create(self, idx, text, ):
+        def create(self, idx, text, mime_type=None):
             with Document() as d:
                 d.tags['id'] = idx
                 d.text = text
+                d.mime_type = mime_type
             return d
 
     return DocumentFactory()
 
 @pytest.fixture
 def reference_doc(document_factory):
-    return document_factory.create(0, 'test ref')
+    return document_factory.create(0, 'test ref', 'text/plain')
 
 @pytest.fixture
 def chunks(document_factory):
@@ -38,3 +39,4 @@ def test_append_from_documents(chunkset, document_factory, reference_doc):
     assert rv.text == chunk.text
     assert rv.parent_id == reference_doc.id
     assert rv.granularity == reference_doc.granularity + 1
+    assert rv.mime_type == 'text/plain'

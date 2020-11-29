@@ -33,7 +33,7 @@ class MatchSet(DocumentSet):
         match.set_attrs(parent_id=self._ref_doc.id,
                         granularity=self._ref_doc.granularity + 1,
                         **kwargs)
+        match.score.ref_id = self._ref_doc.id
         if not match.mime_type:
             match.mime_type = self._ref_doc.mime_type
-
         return match
