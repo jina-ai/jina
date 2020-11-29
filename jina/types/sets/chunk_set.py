@@ -37,7 +37,9 @@ class ChunkSet(DocumentSet):
         chunk.set_attrs(parent_id=self._ref_doc.id,
                         granularity=self._ref_doc.granularity + 1,
                         **kwargs)
+
         if not chunk.mime_type:
             chunk.mime_type = self._ref_doc.mime_type
+        chunk.update_id()
 
         return chunk
