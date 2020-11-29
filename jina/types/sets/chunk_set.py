@@ -31,5 +31,5 @@ class ChunkSet(DocumentSet):
         if not chunk.mime_type:
             chunk.mime_type = self._ref_doc.mime_type
 
-        self._docs_proto.append(chunk)
+        self._docs_proto.append(chunk.as_pb_object)
         return chunk
