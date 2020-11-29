@@ -30,9 +30,9 @@ class MatchSet(DocumentSet):
                 match.CopyFrom(document)
             self._docs_proto.append(match)
 
-        match.set_attrs(parent_id=self._ref_doc.id,
-                        granularity=self._ref_doc.granularity + 1,
-                        **kwargs)
+        match.set_attrs(granularity=self._ref_doc.granularity,
+                    adjacency=self._ref_doc.adjacency + 1,
+                    **kwargs)
         match.score.ref_id = self._ref_doc.id
         if not match.mime_type:
             match.mime_type = self._ref_doc.mime_type

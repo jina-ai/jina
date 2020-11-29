@@ -37,7 +37,7 @@ def test_append_from_documents(matchset, document_factory, reference_doc):
     assert len(matchset) == 4
     assert matchset[-1].text == 'test 4'
     assert rv.text == match.text
-    assert rv.parent_id == reference_doc.id
-    assert rv.granularity == reference_doc.granularity + 1
+    assert rv.granularity == reference_doc.granularity
+    assert rv.adjacency == reference_doc.adjacency + 1
     assert rv.mime_type == 'text/plain'
     assert rv.score.ref_id == reference_doc.id
