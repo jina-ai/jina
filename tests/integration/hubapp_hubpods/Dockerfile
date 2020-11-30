@@ -9,5 +9,4 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 
 COPY tests/integration/hubapp_hubpods/ .
 
-
 ENTRYPOINT ["python", "app.py"]
