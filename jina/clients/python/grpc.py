@@ -10,6 +10,7 @@ from ...excepts import GRPCServerError, BadClientRequestGenerator, BadClient
 from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc
 from ...helper import use_uvloop
+from ...peapods.pea import BasePea
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -60,7 +61,7 @@ class AsyncGrpcClient:
     async def __exit__(self, exc_type, exc_val, exc_tb):
         await self.close()
 
-    async def start(self, *args, **kwargs) -> 'GrpcClient':
+    async def start(self, *args, **kwargs) -> 'AsyncGrpcClient':
         """Wrapping :meth:`call` and provide exception captures
         """
         try:

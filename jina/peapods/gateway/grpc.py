@@ -30,10 +30,10 @@ class GatewayPea(BasePea):
         try:
             await self.zmq_task
         except asyncio.CancelledError:
-            self.logger.info('zmq_task got cancelled')
+            self.logger.debug('received terminate ctrl message from main process')
 
     def loop_body(self):
-        self.gateway = _AsyncGatewayPea(self.args)
+        self.gateway = AsyncGateway(self.args)
         self.set_ready()
         # asyncio.run() or asyncio.run_until_complete() wouldn't work here as we are running a custom loop
         asyncio.get_event_loop().run_until_complete(self._loop_body())
@@ -49,7 +49,7 @@ class GatewayPea(BasePea):
             # asyncio.get_event_loop().run_until_complete(self._loop_teardown())
 
 
-class _AsyncGatewayPea:
+class AsyncGateway:
     def __init__(self, args):
         if not args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
