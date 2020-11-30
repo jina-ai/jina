@@ -13,16 +13,17 @@ from typing import Dict, Optional, Union, List
 import zmq
 
 from jina.types.message import Message
-from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
+from .zmq import ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__, Request
 from ..enums import PeaRoleType, SkipOnErrorType
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
+from ..excepts import RequestLoopEnd, NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, \
     ChainedPodException
 from ..executors import BaseExecutor
-from ..helper import is_valid_local_config_source, typename
+from ..helper import is_valid_local_config_source
 from ..logging import JinaLogger
 from ..logging.profile import used_memory, TimeDict
 from ..proto import jina_pb2
+from .helper import _get_event, _make_or_event
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -56,52 +57,14 @@ class PeaMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
-def _get_event(obj: 'BasePea') -> Event:
-    if isinstance(obj, threading.Thread):
-        return threading.Event()
-    elif isinstance(obj, multiprocessing.Process):
-        return multiprocessing.Event()
-    else:
-        raise NotImplementedError
-
-
-def _make_or_event(obj: 'BasePea', *events) -> Event:
-    or_event = _get_event(obj)
-
-    def or_set(self):
-        self._set()
-        self.changed()
-
-    def or_clear(self):
-        self._clear()
-        self.changed()
-
-    def orify(e, changed_callback):
-        e._set = e.set
-        e._clear = e.clear
-        e.changed = changed_callback
-        e.set = lambda: or_set(e)
-        e.clear = lambda: or_clear(e)
-
-    def changed():
-        bools = [e.is_set() for e in events]
-        if any(bools):
-            or_event.set()
-        else:
-            or_event.clear()
-
-    for e in events:
-        orify(e, changed)
-    changed()
-    return or_event
-
-
 class BasePea(metaclass=PeaMeta):
     """BasePea is an unary service unit which provides network interface and
     communicates with others via protobuf and ZeroMQ
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['argparse.Namespace', Dict],
+                 is_ready: Optional['Event'] = None,
+                 is_shutdown: Optional['Event'] = None):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
@@ -111,10 +74,8 @@ class BasePea(metaclass=PeaMeta):
         self.args = args
         self.name = self.__class__.__name__  #: this is the process name
 
-        self.is_ready_event = _get_event(self)
-        self.is_shutdown = _get_event(self)
-        self.ready_or_shutdown = _make_or_event(self, self.is_ready_event, self.is_shutdown)
-        self.is_shutdown.clear()
+        self.is_ready_event = is_ready or _get_event(self)
+        self.is_shutdown = is_shutdown or _get_event(self)
 
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
@@ -135,7 +96,6 @@ class BasePea(metaclass=PeaMeta):
                 self.name = self.args.name
             if self.args.role == PeaRoleType.PARALLEL:
                 self.name = f'{self.name}-{self.args.pea_id}'
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc)
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)
@@ -286,20 +246,12 @@ class BasePea(metaclass=PeaMeta):
         self.is_post_hook_done = True
         return msg
 
-    def _handle_terminate_signal(self, msg):
-        # save executor
-        if hasattr(self, 'executor'):
-            if not self.args.exit_no_dump:
-                self.save_executor(dump_interval=0)
-            self.executor.close()
-
-        # serious error happen in callback, we need to break the event loop
+    def _teardown(self, msg):
         self.zmqlet.send_message(msg)
         # note, the logger can only be put on the second last line before `close`, as when
         # `close` is called, the callback is unregistered and everything after `close` can not be reached
         # some black magic in eventloop i guess?
-        self.loop_teardown()
-        self.is_shutdown.set()
+        self.close_zmqlet()
 
     def msg_callback(self, msg: 'Message') -> Optional['Message']:
         """Callback function after receiving the message
@@ -310,10 +262,14 @@ class BasePea(metaclass=PeaMeta):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self.zmqlet.send_message(self._callback(msg))
+        except RequestLoopEnd as ex:
+            # this is the proper way to end when a terminate signal is sent
+            self._teardown(msg)
+            raise ex
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # save executor
             self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
-            self._handle_terminate_signal(msg)
+            self._teardown(msg)
         except MemoryOverHighWatermark:
             self.logger.critical(
                 f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
@@ -344,10 +300,6 @@ class BasePea(metaclass=PeaMeta):
             Class inherited from :class:`BasePea` must override this function. And add
             :meth:`set_ready` when your loop body is started
         """
-        os.environ['JINA_POD_NAME'] = self.name
-        os.environ['JINA_LOG_ID'] = self.args.log_id
-        self.load_plugins()
-        self.load_executor()
         self.zmqlet = ZmqStreamlet(self.args, logger=self.logger)
         self.set_ready()
         self.zmqlet.start(self.msg_callback)
@@ -357,35 +309,52 @@ class BasePea(metaclass=PeaMeta):
             from ..importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
-    def loop_teardown(self):
+    def close_zmqlet(self):
         """Stop the request loop """
         if hasattr(self, 'zmqlet'):
             self.zmqlet.close()
 
-    def run(self):
-        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+    def _initialize_executor(self):
         try:
-            # Every logger created in this process will be identified by the `Pod Id` and use the same name
             self.post_init()
-            self.loop_body()
+            os.environ['JINA_POD_NAME'] = self.name
+            os.environ['JINA_LOG_ID'] = self.args.log_id
+            self.load_plugins()
+            self.load_executor()
+            return self.executor
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.uses}', exc_info=True)
-        except KeyboardInterrupt:
-            self.logger.info('Loop interrupted by user')
-        except SystemError as ex:
-            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
-        except DriverError as ex:
-            self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
-        except zmq.error.ZMQError:
-            self.logger.critical('zmqlet can not be initiated')
-        except Exception as ex:
-            # this captures the general exception from the following places:
-            # - self.zmqlet.recv_message
-            # - self.zmqlet.send_message
-            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+
+    def run(self):
+        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        save_executor = False
+        try:
+            # eventually we could have `executor dump logic` inside executor itself
+            with self._initialize_executor():
+                try:
+                    # Every logger created in this process will be identified by the `Pod Id` and use the same name
+                    self.loop_body()
+                except RequestLoopEnd:
+                    save_executor = True
+                except KeyboardInterrupt:
+                    self.logger.info('Loop interrupted by user')
+                except SystemError as ex:
+                    self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+                except DriverError as ex:
+                    self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
+                except zmq.error.ZMQError:
+                    self.logger.critical('zmqlet can not be initiated')
+                except Exception as ex:
+                    # this captures the general exception from the following places:
+                    # - self.zmqlet.recv_message
+                    # - self.zmqlet.send_message
+                    self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
             # if an exception occurs this unsets ready and shutting down
-            self.loop_teardown()
+            self.close_zmqlet()
+            if save_executor:
+                if not self.args.exit_no_dump:
+                    self.save_executor(dump_interval=0)
             self.unset_ready()
             self.is_shutdown.set()
 
@@ -393,58 +362,3 @@ class BasePea(metaclass=PeaMeta):
         """Check the memory watermark """
         if used_memory() > self.args.memory_hwm > 0:
             raise MemoryOverHighWatermark
-
-    def post_init(self):
-        """Post initializer after the start of the request loop via :func:`run`, so that they can be kept in the same
-        process/thread as the request loop.
-
-        """
-        pass
-
-    def send_terminate_signal(self) -> None:
-        """Gracefully close this pea and release all resources """
-        if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            send_ctrl_message(self.ctrl_addr, 'TERMINATE',
-                              timeout=self.args.timeout_ctrl)
-
-    @property
-    def status(self):
-        """Send the control signal ``STATUS`` to itself and return the status """
-        if self.is_ready_event.is_set() and getattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
-
-    def start(self) -> 'BasePea':
-        super().start()
-        if isinstance(self.args, dict):
-            _timeout = getattr(self.args['peas'][0], 'timeout_ready', -1)
-        else:
-            _timeout = getattr(self.args, 'timeout_ready', -1)
-
-        if _timeout <= 0:
-            _timeout = None
-        else:
-            _timeout /= 1e3
-
-        if self.ready_or_shutdown.wait(_timeout):
-            if self.is_shutdown.is_set():
-                # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {typename(self)} with name {self.name}, '
-                                     f'this often means the executor used in the pod is not valid')
-                raise PeaFailToStart
-            return self
-        else:
-            raise TimeoutError(
-                f'{typename(self)} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
-
-    def __enter__(self) -> 'BasePea':
-        return self.start()
-
-    def close(self) -> None:
-        self.send_terminate_signal()
-        self.is_shutdown.wait()
-        if not self.daemon:
-            self.logger.close()
-            self.join()
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self.close()

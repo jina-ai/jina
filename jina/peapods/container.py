@@ -16,7 +16,7 @@ class ContainerPea(BasePea):
     It requires a docker-corresponding valid ``args.uses``.
     """
 
-    def post_init(self):
+    def docker_run(self):
         import docker
         self._client = docker.from_env()
 
@@ -105,8 +105,18 @@ class ContainerPea(BasePea):
         if getattr(self, '_client', None):
             self._client.close()
 
-    def close(self) -> None:
-        self.send_terminate_signal()
-        if not self.daemon:
-            self.logger.close()
-            self.join()
+    def run(self):
+        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        try:
+            self.docker_run()
+            self.loop_body()
+        except KeyboardInterrupt:
+            self.logger.info('Loop interrupted by user')
+        except SystemError as ex:
+            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+        except Exception as ex:
+            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+        finally:
+            self.loop_teardown()
+            self.unset_ready()
+            self.is_shutdown.set()

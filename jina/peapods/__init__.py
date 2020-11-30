@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from multiprocessing.synchronize import Event
 from typing import Dict, Union
 
 from .. import __default_host__
@@ -12,7 +13,10 @@ if False:
     import argparse
 
 
-def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
+def Pea(args: 'argparse.Namespace' = None,
+        ready: Event = None,
+        shutdown: Event = None,
+        allow_remote: bool = True, **kwargs):
     """Initialize a :class:`BasePea`, :class:`RemoteSSHPea` or :class:`ContainerPea`
 
     :param args: arguments from CLI
@@ -32,19 +36,19 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
 
     if args.host != __default_host__:
         from .remote import RemotePea
-        return RemotePea(args)
+        return RemotePea(args, ready=ready, shutdown=shutdown)
     elif args.uses and not is_valid_local_config_source(args.uses):
         from .container import ContainerPea
-        return ContainerPea(args)
+        return ContainerPea(args, ready=ready, shutdown=shutdown)
     elif args.role == PeaRoleType.HEAD:
         from .head_pea import HeadPea
-        return HeadPea(args)
+        return HeadPea(args, ready=ready, shutdown=shutdown)
     elif args.role == PeaRoleType.TAIL:
         from .tail_pea import TailPea
-        return TailPea(args)
+        return TailPea(args, ready=ready, shutdown=shutdown)
     else:
         from .pea import BasePea
-        return BasePea(args)
+        return BasePea(args, ready=ready, shutdown=shutdown)
 
 
 def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = True, **kwargs):

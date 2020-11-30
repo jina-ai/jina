@@ -9,10 +9,8 @@ from contextlib import ExitStack
 from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
-from . import Pea
 from .gateway import GatewayPea, RESTGatewayPea
-from .head_pea import HeadPea
-from .tail_pea import TailPea
+from .runtime_support import RunTimeSupport
 from .. import __default_host__
 from ..enums import *
 from ..helper import random_port, get_random_identity, get_parsed_args, get_non_defaults_args, \
@@ -31,7 +29,7 @@ class BasePod(ExitStack):
         :param args: arguments parsed from the CLI
         """
         super().__init__()
-        self.peas = []
+        self.pea_runtimes = []
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
@@ -48,7 +46,7 @@ class BasePod(ExitStack):
     def is_idle(self) -> bool:
         """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
         """
-        return all(p.is_idle for p in self.peas if p.is_ready_event.is_set())
+        return all(p.is_idle for p in self.pea_runtimes if p.is_ready_event.is_set())
 
     def close_if_idle(self):
         """Check every second if the pod is in idle, if yes, then close the pod"""
@@ -189,7 +187,7 @@ class BasePod(ExitStack):
     @property
     def num_peas(self) -> int:
         """Get the number of running :class:`BasePea`"""
-        return len(self.peas)
+        return len(self.pea_runtimes)
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -224,13 +222,13 @@ class BasePod(ExitStack):
         """
         # start head and tail
         if self.peas_args['head']:
-            p = HeadPea(self.peas_args['head'])
-            self.peas.append(p)
+            p = RunTimeSupport(self.peas_args['head'])
+            self.pea_runtimes.append(p)
             self.enter_context(p)
 
         if self.peas_args['tail']:
-            p = TailPea(self.peas_args['tail'])
-            self.peas.append(p)
+            p = RunTimeSupport(self.peas_args['tail'])
+            self.pea_runtimes.append(p)
             self.enter_context(p)
 
         # start real peas and accumulate the storage id
@@ -243,8 +241,8 @@ class BasePod(ExitStack):
         for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
             _args.pea_id = idx
             _args.role = role
-            p = Pea(_args, allow_remote=False)
-            self.peas.append(p)
+            p = RunTimeSupport(_args)
+            self.pea_runtimes.append(p)
             self.enter_context(p)
 
         self.start_sentinels()
@@ -252,7 +250,7 @@ class BasePod(ExitStack):
 
     @property
     def is_shutdown(self) -> bool:
-        return all(not p.is_ready_event.is_set() for p in self.peas)
+        return all(not p.is_ready_event.is_set() for p in self.pea_runtimes)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -260,14 +258,14 @@ class BasePod(ExitStack):
     @property
     def status(self) -> List:
         """The status of a BasePod is the list of status of all its Peas """
-        return [p.status for p in self.peas]
+        return [p.status for p in self.pea_runtimes]
 
     def is_ready(self) -> bool:
         """Wait till the ready signal of this BasePod.
 
         The pod is ready only when all the contained Peas returns is_ready_event
         """
-        for p in self.peas:
+        for p in self.pea_runtimes:
             p.is_ready_event.wait()
         return True
 
@@ -277,12 +275,12 @@ class BasePod(ExitStack):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for s in self.peas:
+            for s in self.pea_runtimes:
                 s.join()
         except KeyboardInterrupt:
             pass
         finally:
-            self.peas.clear()
+            self.pea_runtimes.clear()
 
 
 class MutablePod(BasePod):
@@ -513,7 +511,7 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     # is BIND & CONNECT all on the same remote?
     bind_conn_same_remote = not bind_local and not conn_local and \
-                                (bind_args.host == connect_args.host)
+                            (bind_args.host == connect_args.host)
 
     if platform == 'linux' or platform == 'linux2':
         local_host = __default_host__
@@ -549,11 +547,21 @@ class GatewayPod(BasePod):
     def start(self) -> 'GatewayPod':
         for s in self.all_args:
             p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else GatewayPea(s)
-            self.peas.append(p)
+            self.pea_runtimes.append(p)
             self.enter_context(p)
 
         self.start_sentinels()
         return self
+
+    def join(self):
+        """Wait until all peas exit"""
+        try:
+            for s in self.pea_runtimes:
+                s.join()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.pea_runtimes.clear()
 
 
 class GatewayFlowPod(GatewayPod, FlowPod):
