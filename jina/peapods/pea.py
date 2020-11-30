@@ -7,7 +7,6 @@ import os
 import threading
 import time
 from collections import defaultdict
-from multiprocessing.synchronize import Event
 from typing import Dict, Optional, Union, List
 
 import zmq
@@ -62,9 +61,7 @@ class BasePea(metaclass=PeaMeta):
     communicates with others via protobuf and ZeroMQ
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict],
-                 is_ready: Optional['Event'] = None,
-                 is_shutdown: Optional['Event'] = None):
+    def __init__(self, args: Union['argparse.Namespace', Dict]):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
@@ -74,8 +71,10 @@ class BasePea(metaclass=PeaMeta):
         self.args = args
         self.name = self.__class__.__name__  #: this is the process name
 
-        self.is_ready_event = is_ready or _get_event(self)
-        self.is_shutdown = is_shutdown or _get_event(self)
+        self.is_ready_event = _get_event(self)
+        self.is_shutdown = _get_event(self)
+        self.ready_or_shutdown = _make_or_event(self, self.is_ready_event, self.is_shutdown)
+        self._graceful_shutdown = False
 
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
@@ -265,7 +264,7 @@ class BasePea(metaclass=PeaMeta):
         except RequestLoopEnd as ex:
             # this is the proper way to end when a terminate signal is sent
             self._teardown(msg)
-            raise ex
+            self._graceful_shutdown = True
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # save executor
             self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
@@ -316,7 +315,6 @@ class BasePea(metaclass=PeaMeta):
 
     def _initialize_executor(self):
         try:
-            self.post_init()
             os.environ['JINA_POD_NAME'] = self.name
             os.environ['JINA_LOG_ID'] = self.args.log_id
             self.load_plugins()
@@ -327,15 +325,12 @@ class BasePea(metaclass=PeaMeta):
 
     def run(self):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
-        save_executor = False
         try:
             # eventually we could have `executor dump logic` inside executor itself
             with self._initialize_executor():
                 try:
                     # Every logger created in this process will be identified by the `Pod Id` and use the same name
                     self.loop_body()
-                except RequestLoopEnd:
-                    save_executor = True
                 except KeyboardInterrupt:
                     self.logger.info('Loop interrupted by user')
                 except SystemError as ex:
@@ -352,7 +347,7 @@ class BasePea(metaclass=PeaMeta):
         finally:
             # if an exception occurs this unsets ready and shutting down
             self.close_zmqlet()
-            if save_executor:
+            if self._graceful_shutdown:
                 if not self.args.exit_no_dump:
                     self.save_executor(dump_interval=0)
             self.unset_ready()

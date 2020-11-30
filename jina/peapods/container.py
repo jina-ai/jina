@@ -96,7 +96,6 @@ class ContainerPea(BasePea):
         """Direct the log from the container to local console """
 
         def check_ready():
-            # TODO: This needs to be fixed, sleep needs to be awaited
             while not self.is_ready:
                 time.sleep(0.1)
             self.is_ready_event.set()

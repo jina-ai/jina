@@ -46,7 +46,7 @@ class BasePod(ExitStack):
     def is_idle(self) -> bool:
         """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
         """
-        return all(p.is_idle for p in self.pea_runtimes if p.is_ready_event.is_set())
+        return all(r.pea.is_idle for r in self.pea_runtimes if r.pea.is_ready_event.is_set())
 
     def close_if_idle(self):
         """Check every second if the pod is in idle, if yes, then close the pod"""
@@ -250,7 +250,7 @@ class BasePod(ExitStack):
 
     @property
     def is_shutdown(self) -> bool:
-        return all(not p.is_ready_event.is_set() for p in self.pea_runtimes)
+        return all(not r.pea.is_ready_event.is_set() for r in self.pea_runtimes)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -275,8 +275,8 @@ class BasePod(ExitStack):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for s in self.pea_runtimes:
-                s.join()
+            for r in self.pea_runtimes:
+                r.pea.join()
         except KeyboardInterrupt:
             pass
         finally:
@@ -550,8 +550,8 @@ class GatewayPod(BasePod):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for s in self.pea_runtimes:
-                s.join()
+            for r in self.pea_runtimes:
+                r.pea.join()
         except KeyboardInterrupt:
             pass
         finally:
