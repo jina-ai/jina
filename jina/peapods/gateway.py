@@ -13,7 +13,7 @@ from .pea import BasePea
 from .zmq import AsyncZmqlet
 from .. import __stop_msg__, Request
 from ..enums import RequestType
-from ..helper import use_uvloop
+from ..helper import use_uvloop, colored
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -92,6 +92,13 @@ class GatewayPea:
             self.args = args
             self.name = args.name or self.__class__.__name__
             self.logger = JinaLogger(self.name, **vars(args))
+            self.logger.info(
+                f'Gateway will connect with the following arguments: \n'
+                f'host_in: {colored(self.args.host_in, "yellow")}, port_in: {colored(self.args.port_in, "yellow")}, '
+                f'socket_in: {colored(self.args.socket_in, "yellow")} \n '
+                f'host_out: {colored(self.args.host_out, "yellow")}, port_out: {colored(self.args.port_out, "yellow")}, '
+                f'socket_out: {colored(self.args.socket_out, "yellow")} \n '
+                f'host: {colored(self.args.host, "yellow")}, control_port: {colored(self.args.port_ctrl, "yellow")}')
 
         def handle(self, msg: 'Message') -> 'Request':
             msg.add_route(self.name, self.args.identity)
