@@ -80,7 +80,6 @@ class _AsyncGatewayPea:
         self._server.add_insecure_port(self._bind_address)
 
     async def start(self):
-        self.logger.info('IN AsyncGatewayPea start()')
         await self._server.start()
         self.logger.success(f'gateway is listening at: {self._bind_address}')
         await self.is_gateway_ready.wait()

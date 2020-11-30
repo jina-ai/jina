@@ -2,10 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
+import asyncio
 from typing import Callable, Union, Optional
 
 from . import request
-from .grpc import GrpcClient
+from .grpc import AsyncGrpcClient
 from .helper import ProgressBar, pprint_routes, safe_callback, extract_field
 from .request import GeneratorSourceType
 from ...enums import RequestType
@@ -24,7 +25,7 @@ if False:
     import argparse
 
 
-class PyClient(GrpcClient):
+class PyClient(AsyncGrpcClient):
     """A simple Python client for connecting to the gateway. This class is for internal only,
     use the python interface :func:`jina.clients.py_client` to start :class:`PyClient` if you
     want to use it in Python.
@@ -90,7 +91,7 @@ class PyClient(GrpcClient):
             default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
+    async def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
 
         This function should not be used in production due to its low-efficiency. For example,
@@ -108,13 +109,13 @@ class PyClient(GrpcClient):
         _kwargs.update(kwargs)
 
         req_iter = getattr(request, str(self.mode).lower())(**_kwargs)
-        return self._stub.CallUnary(next(req_iter))
+        return await self._stub.CallUnary(next(req_iter))
 
-    def call(self,
-             on_done: Callable[['Request'], None] = None,
-             on_error: Callable[['Request'], None] = pprint_routes,
-             on_always: Callable[['Request'], None] = None,
-             **kwargs) -> None:
+    async def call(self,
+                   on_done: Callable[['Request'], None] = None,
+                   on_error: Callable[['Request'], None] = pprint_routes,
+                   on_always: Callable[['Request'], None] = None,
+                   **kwargs) -> None:
         """ Calling the server with promise callbacks, better use :func:`start` instead.
 
         :param on_done: a callback function, invoke after every success response is received
@@ -143,7 +144,7 @@ class PyClient(GrpcClient):
         req_iter = getattr(request, tname)(**_kwargs)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-            for resp in self._stub.Call(req_iter):
+            async for resp in self._stub.Call(req_iter):
                 if resp.status.code >= jina_pb2.StatusProto.ERROR and on_error:
                     safe_on_error(resp)
                 elif on_done:
@@ -171,7 +172,7 @@ class PyClient(GrpcClient):
         else:
             self._input_fn = bytes_gen
 
-    def dry_run(self, req: 'DryRunRequest') -> None:
+    async def dry_run(self, req: 'DryRunRequest') -> None:
         """A dry run request is a Search/Index/Train Request with empty content.
         Useful for testing connectivity and debugging the connectivity of the server/flow
 
@@ -183,7 +184,7 @@ class PyClient(GrpcClient):
             yield req
 
         before = time.perf_counter()
-        for resp in self._stub.Call(req_gen()):
+        async for resp in self._stub.Call(req_gen()):
             if resp.status.code < jina_pb2.StatusProto.ERROR:
                 self.logger.info(
                     f'dry run of {typename(req)} takes {time.perf_counter() - before:.3f}s, '
@@ -196,21 +197,21 @@ class PyClient(GrpcClient):
         self.mode = RequestType.TRAIN
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(TrainDryRunRequest())
-        self.start(output_fn, **kwargs)
+            self.loop.run_until_complete(self.dry_run(TrainDryRunRequest()))
+        self.loop.run_until_complete(self.start(output_fn, **kwargs))
 
     def search(self, input_fn: Optional[InputFnType] = None,
                output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.SEARCH
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(SearchDryRunRequest())
-        self.start(output_fn, **kwargs)
+            self.loop.run_until_complete(self.dry_run(SearchDryRunRequest()))
+        self.loop.run_until_complete(self.start(output_fn, **kwargs))
 
     def index(self, input_fn: Optional[InputFnType] = None,
               output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(IndexDryRunRequest())
-        self.start(output_fn, **kwargs)
+            self.loop.run_until_complete(self.dry_run(IndexDryRunRequest()))
+        self.loop.run_until_complete(self.start(output_fn, **kwargs))

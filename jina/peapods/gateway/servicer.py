@@ -33,22 +33,28 @@ class GRPCServicer(jina_pb2_grpc.JinaRPCServicer):
             prefetch_task = []
             onrecv_task = []
 
-            def prefetch_req(num_req, fetch_to):
+            async def prefetch_req(num_req, fetch_to):
                 for _ in range(num_req):
                     try:
+                        if hasattr(request_iterator, '__anext__'):
+                            next_request = await request_iterator.__anext__()
+                        elif hasattr(request_iterator, '__next__'):
+                            next_request = next(request_iterator)
+                        else:
+                            break
                         asyncio.create_task(
                             zmqlet.send_message(
-                                Message(None, next(request_iterator), 'gateway',
+                                Message(None, next_request, 'gateway',
                                         **vars(self.args))))
                         fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
-                    except StopIteration:
+                    except (StopIteration, StopAsyncIteration):
                         return True
                 return False
 
             with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
                 self.logger.warning('if this takes too long, you may want to take smaller "--prefetch" or '
                                     'ask client to reduce "--batch-size"')
-                is_req_empty = prefetch_req(self.args.prefetch, prefetch_task)
+                is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
                 if is_req_empty and not prefetch_task:
                     self.logger.error('receive an empty stream from the client! '
                                       'please check your client\'s input_fn, '
@@ -62,6 +68,6 @@ class GRPCServicer(jina_pb2_grpc.JinaRPCServicer):
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
                     yield await r
-                    is_req_empty = prefetch_req(self.args.prefetch_on_recv, onrecv_task)
+                    is_req_empty = await prefetch_req(self.args.prefetch_on_recv, onrecv_task)
                 prefetch_task.clear()
                 prefetch_task = [j for j in onrecv_task]
