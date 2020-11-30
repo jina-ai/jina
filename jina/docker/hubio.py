@@ -8,6 +8,9 @@ import urllib.request
 import webbrowser
 from typing import Dict, Any
 
+from docker import DockerClient
+from docker.errors import ImageNotFound, APIError
+
 from jina import __version__ as jina_version
 from .checker import *
 from .helper import credentials_file
@@ -22,7 +25,7 @@ from ..helper import colored, get_readable_size, get_now_timestamp, get_full_ver
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
-from ..parser import set_pod_parser
+from ..parser import set_pod_parser, set_hub_list_parser
 from ..peapods import Pod
 
 if False:
@@ -57,7 +60,7 @@ class HubIO:
             import docker
             from docker import APIClient
 
-            self._client = docker.from_env()
+            self._client: DockerClient = docker.from_env()
 
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
@@ -171,6 +174,16 @@ class HubIO:
         name = name or self.args.name
 
         try:
+            # check if image exists
+            # fail if it does
+            if self._image_version_exists(
+                    build_result['manifest_info']['name'],
+                    build_result['manifest_info']['version'],
+                    jina_version
+            ):
+                raise Exception(f'Image with name {name} already exists. Will NOT overwrite.')
+            else:
+                self.logger.debug(f'Image with name {name} does not exist. Pushing now...')
             self._push_docker_hub(name, readme_path)
 
             if not build_result:
@@ -253,8 +266,9 @@ class HubIO:
             if f'{_label_prefix}{r}' not in image.labels.keys():
                 self.logger.warning(f'{r} is missing in your docker image labels, you may want to check it')
         try:
+            image.labels['jina_version'] = jina_version
             if name != safe_url_name(
-                    f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}'.format(
+                    f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
                         **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})):
                 raise ValueError(f'image {name} does not match with label info in the image')
         except KeyError:
@@ -489,9 +503,10 @@ class HubIO:
 
         self.manifest = self._read_manifest(self.manifest_path)
         self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
-        self.manifest['jina_version'] = jina_version
-        self.tag = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(**self.manifest))
-        self.canonical_name = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}'.format(**self.manifest))
+        tag_name = safe_url_name(
+            f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}:{self.manifest["version"]}-{jina_version}')
+        self.tag = tag_name
+        self.canonical_name = tag_name
         return completeness
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:
@@ -584,3 +599,16 @@ class HubIO:
     # alias of "new" in cli
     create = new
     init = new
+
+    def _image_version_exists(self, name, module_version, req_jina_version):
+        manifests = _list(self.logger, name)
+        # check if matching module version and jina version exists
+        if manifests:
+            matching = [
+                m for m in manifests
+                if m['version'] == module_version
+                and 'jina_version' in m.keys()
+                and m['jina_version'] == req_jina_version
+            ]
+            return len(matching) > 0
+        return True
