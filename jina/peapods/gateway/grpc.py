@@ -22,7 +22,10 @@ class GatewayPea(BasePea):
             self.is_shutdown.set()
 
     async def _loop_body(self):
-        self.gateway_task = asyncio.get_event_loop().create_task(self.gateway.start())
+        asyncio.get_event_loop().create_task(self.gateway.start()) \
+            if asyncio.iscoroutinefunction(self.gateway.start) \
+            else self.gateway.start()
+
         # we cannot use zmqstreamlet here, as that depends on a custom loop
         self.zmq_task = asyncio.get_running_loop().create_task(self.handle_terminate_signal())
         # gateway gets started without awaiting the task, as we don't want to suspend the loop_body here
@@ -38,15 +41,10 @@ class GatewayPea(BasePea):
         # asyncio.run() or asyncio.run_until_complete() wouldn't work here as we are running a custom loop
         asyncio.get_event_loop().run_until_complete(self._loop_body())
 
-    async def _loop_teardown(self):
-        # TODO: This might not be required, as setting the asyncio Event stops the server
-        await asyncio.get_event_loop().create_task(self.gateway.stop())
-
     def loop_teardown(self):
         self.zmq_task.cancel()
         if hasattr(self, 'gateway'):
             self.gateway.is_gateway_ready.set()
-            # asyncio.get_event_loop().run_until_complete(self._loop_teardown())
 
 
 class AsyncGateway:
@@ -81,7 +79,7 @@ class AsyncGateway:
 
     async def start(self):
         await self._server.start()
-        self.logger.success(f'gateway is listening at: {self._bind_address}')
+        self.logger.success(f'gateway (gRPC) is listening at: {self._bind_address}')
         await self.is_gateway_ready.wait()
         return self
 

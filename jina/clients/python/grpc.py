@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+import asyncio
 
 import grpc
 
@@ -10,7 +11,6 @@ from ...excepts import GRPCServerError, BadClientRequestGenerator, BadClient
 from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc
 from ...helper import use_uvloop
-from ...peapods.pea import BasePea
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -36,9 +36,10 @@ class AsyncGrpcClient:
             f'{args.host}:{args.port_expose}',
             options={
                 'grpc.max_send_message_length': -1,
-                'grpc.max_receive_message_length': -1,
+                'grpc.max_receive_message_length': -1
             }.items(),
         )
+        asyncio.get_event_loop().run_until_complete(self._channel.channel_ready())
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
 
         # attache response handler
@@ -46,10 +47,12 @@ class AsyncGrpcClient:
         self.is_closed = False
 
     def configure_event_loop(self):
-        use_uvloop()
-        import asyncio
-        asyncio.set_event_loop(asyncio.new_event_loop())
-        self.loop = asyncio.get_event_loop()
+        try:
+            self.loop = asyncio.get_running_loop()
+        except RuntimeError:
+            use_uvloop()
+            asyncio.set_event_loop(asyncio.new_event_loop())
+            self.loop = asyncio.get_event_loop()
 
     async def call(self, *args, **kwargs):
         """Calling the gRPC server """

@@ -18,6 +18,8 @@
 
 scipy>=1.4.1:               index, numeric, cicd
 flask:                      devel, cicd, http, sse
+fastapi:                    devel, cicd, http
+uvicorn:                    devel, cicd, http
 flask_cors:                 devel, cicd, http, sse
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, test
 nmslib>=1.6.3:              index

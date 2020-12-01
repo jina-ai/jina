@@ -1,3 +1,4 @@
+import time
 import pytest
 import requests
 
@@ -60,12 +61,14 @@ def test_check_input_fail(input_fn):
 def test_gateway_ready(port_expose, route, status_code):
     p = set_gateway_parser().parse_args(['--port-expose', str(port_expose)])
     with RESTGatewayPea(p):
+        time.sleep(0.5)
         a = requests.get(f'http://0.0.0.0:{p.port_expose}{route}')
         assert a.status_code == status_code
 
 
 def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
     with flow_with_rest_api_enabled:
+        time.sleep(0.5)
         r = requests.post(
             f'http://0.0.0.0:{flow_with_rest_api_enabled.port_expose}/api/index',
             json={
