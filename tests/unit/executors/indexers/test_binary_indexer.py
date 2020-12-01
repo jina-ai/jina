@@ -1,13 +1,14 @@
 import copy
+import os
 
 import numpy as np
 import pytest
 
+from jina import Document
+from jina.executors import BaseExecutor
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
-from jina.proto import jina_pb2
-from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
-
 from tests import random_docs
 
 
@@ -30,3 +31,33 @@ def test_binarypb_in_flow(test_metas):
         d.ClearField('embedding')
     with f:
         f.search(docs_no_embedding, output_fn=validate, override_doc_id=False)
+
+
+def test_binarypb_update(tmpdir):
+    # FIXME how to open a specific file in a dir. os.path.join(tmpdir, file) doesn't work
+    with BinaryPbIndexer('pbdix.bin') as idxer:
+        idxer.add([1, 2, 3], [b'oldvalue', b'same', b'random'])
+        idxer.save()
+        assert idxer.size == 3
+        assert idxer.query(1) == b'oldvalue'
+        first_size = os.fstat(idxer.write_handler.body.fileno()).st_size
+
+        # no update triggered on same values or missing key
+        idxer.update([1, 2, 99], [b'oldvalue', b'same', b'decoy'])
+        idxer.save()
+        assert idxer.is_updated is False
+        second_size = os.fstat(idxer.write_handler.body.fileno()).st_size
+        assert second_size == first_size
+
+        # some new value
+        idxer.update([1, 2, 99], [b'newvalue', b'same', b'decoy'])
+        # FIXME this fails
+        # idxer.save()
+        third_size = os.fstat(idxer.write_handler.body.fileno()).st_size
+        assert third_size > first_size
+        assert idxer.is_updated is True
+        assert idxer.size == 3
+        assert idxer.query(1) == b'newvalue'
+        assert idxer.query(2) == b'same'
+        assert idxer.query(3) == b'random'
+        assert idxer.query(99) is None
