@@ -37,6 +37,7 @@ class BinaryPbIndexer(BaseKVIndexer):
 
     def get_add_handler(self):
         # keep _start position as in pickle serialization
+        # TODO does 'ab' make a difference?
         return self.WriteHandler(self.index_abspath, 'ab')
 
     def get_create_handler(self):
@@ -69,6 +70,9 @@ class BinaryPbIndexer(BaseKVIndexer):
             # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
 
     def query(self, key: int) -> Optional[bytes]:
+        # FIXME this shouldn't be required
+        if self.query_handler is None:
+            self.query_handler = self.get_query_handler()
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info
@@ -76,20 +80,37 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        # check: hard fail (raises) on key not found
+        for key in keys:
+            if self.query_handler.header.get(key) is None:
+                raise KeyError(f'Key {key} was not found in {self.save_abspath}')
+
+        adder = self.get_add_handler()
+        _start = adder.body.tell()
         for key, new_value in zip(keys, values):
-            pos_info = self.query_handler.header.get(key, None)
-            p, r, l = pos_info
-            with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
-                old_value = m[r:]
-                if old_value != new_value:
-                    # update
-                    l_end = len(new_value)  #: the length
-                    p_end = int(self._start / self._page_size) * self._page_size  #: offset of the page
-                    r_end = self._start % self._page_size  #
-                    self.write_handler.header.write(key, p_end, r_end, r_end + l_end)
-                    self.write_handler.body.write(new_value)
+            l = len(new_value)  #: the length
+            p = int(_start / self._page_size) * self._page_size  #: offset of the page
+            r = _start % self._page_size  #: the remainder, i.e. the start position given the offset
+            # noinspection PyTypeChecker
+            adder.header.write(
+                np.array(
+                    (key, p, r, r + l),
+                    dtype=np.int64
+                ).tobytes()
+            )
+            _start += l
+            adder.body.write(new_value)
+
+        # FIXME none of these fix the .save() error
+        # adder.flush()
+        # adder.close()
+        # del adder
+        # FIXME this is required in order to avoid the warning 'no update...'. Maybe there's a better way?
+        # self.touch()
+
         # rebuild
-        del self.query_handler
+        # TODO is this required?
+        # self.query_handler = self.get_query_handler()
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
         raise NotImplementedError

