@@ -9,7 +9,6 @@ import webbrowser
 from typing import Dict, Any
 
 from docker import DockerClient
-from docker.errors import ImageNotFound, APIError
 
 from jina import __version__ as jina_version
 from .checker import *
@@ -25,7 +24,7 @@ from ..helper import colored, get_readable_size, get_now_timestamp, get_full_ver
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
-from ..parser import set_pod_parser, set_hub_list_parser
+from ..parser import set_pod_parser
 from ..peapods import Pod
 
 if False:
