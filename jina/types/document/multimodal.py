@@ -3,6 +3,7 @@ from typing import Dict, List, TypeVar
 import numpy as np
 
 from . import Document
+from ..sets.chunk_set import ChunkSet
 from ...proto import jina_pb2
 from ..ndarray.generic import NdArray
 from ...excepts import LengthMismatchException, BadDocType
@@ -41,8 +42,8 @@ class MultimodalDocument(Document):
         self._modality_content_mapping = {}
         if chunks:
             self._validate(chunks)
-            self.chunks.clear()
             self.chunks.extend(chunks)
+            self._handle_chunk_attributes()
 
     def _build_modality_content_mapping(self) -> Dict:
         for chunk in self.chunks:
@@ -59,6 +60,17 @@ class MultimodalDocument(Document):
         if len(modalities) != len(chunks):
             raise LengthMismatchException(f'Length of modality is not identical to length of chunks.')
 
+    def _handle_chunk_attributes(self):
+        """Handle chunk attributes, such as :attr:`granularity` and :attr:`mime_type`.
+
+        Chunk granularity should be greater than parent granularity level. Besides, if the chunk do not have
+        a specified :attr:`mime_type`, it will be manually set to it's parent's :attr:`mime_type`.
+        """
+        for chunk in self.chunks:
+            chunk.granularity = self.granularity + 1
+            if not chunk.mime_type:
+                chunk.mime_type = self.mime_type
+
     @property
     def modality_content_mapping(self) -> Dict:
         """Get the mapping of modality and content, the mapping is represented as a :attr:`dict`, the keys
@@ -70,7 +82,7 @@ class MultimodalDocument(Document):
             self._build_modality_content_mapping()
         return self._modality_content_mapping
 
-    def extract_content_by_modality(self, modality: str) -> DocumentContentType:
+    def extract_content_from_modality(self, modality: str) -> DocumentContentType:
         """Extract content by the name of the modality.
 
         :param modality: The name of the modality.
@@ -87,10 +99,10 @@ class MultimodalDocument(Document):
         return self.modality_content_mapping.keys()
 
     @classmethod
-    def from_chunks(cls, chunks: List[Document]) -> 'MultimodalDocument':
-        """Create :class:`MultimodalDocument` from a list of chunks.
+    def from_chunkset(cls, chunks: List[Document], **kwargs) -> 'MultimodalDocument':
+        """Create :class:`MultimodalDocument` from list of :class:`Document`.
 
-        :param chunks: List of :class:`Document` to be added as chunks.
+        :param chunks: List of :class:`Document`.
         :return: An instance of :class:`MultimodalDocument`.
         """
         return cls(chunks=chunks)

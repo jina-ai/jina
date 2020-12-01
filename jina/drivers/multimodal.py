@@ -71,7 +71,7 @@ class MultiModalDriver(BaseEncodeDriver):
             if doc.modality_content_mapping:
                 valid_docs.append(doc)
                 for modality in self.positional_modality:
-                    content_by_modality[modality].append(doc.extract_content_by_modality(modality))
+                    content_by_modality[modality].append(doc.extract_content_from_modality(modality))
             else:
                 self.logger.warning(f'Invalid doc {doc.id}. Only one chunk per modality is accepted')
 

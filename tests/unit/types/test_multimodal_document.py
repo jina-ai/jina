@@ -59,10 +59,10 @@ def test_modality_content_mapping_property(multimodal_document, visual_embedding
     np.testing.assert_array_equal(mapping['textual'], textual_embedding)
     np.testing.assert_array_equal(mapping['visual'], visual_embedding)
 
-def test_extract_content_by_modality(multimodal_document, visual_embedding, textual_embedding):
-    textual = multimodal_document.extract_content_by_modality(modality='textual')
+def test_extract_content_from_modality(multimodal_document, visual_embedding, textual_embedding):
+    textual = multimodal_document.extract_content_from_modality(modality='textual')
     np.testing.assert_array_equal(textual, textual_embedding)
-    visual = multimodal_document.extract_content_by_modality(modality='visual')
+    visual = multimodal_document.extract_content_from_modality(modality='visual')
     np.testing.assert_array_equal(visual, visual_embedding)
 
 def test_multimodal_document_fail_bad_doctype(visual_embedding):
@@ -80,10 +80,12 @@ def test_multimodal_document_fail_length_mismatch(multimodal_document, chunk_3):
         multimodal_document.modality_content_mapping
 
 def test_from_chunks_success(chunk_1, chunk_2):
-    md = MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2])
+    md = MultimodalDocument.from_chunkset(chunks=[chunk_1, chunk_2])
     assert len(md.modalities) == 2
     assert 'visual' and 'textual' in md.modalities
+    assert len(md.chunks) == 2
+    assert md.granularity == md.chunks[0].granularity - 1
 
 def test_from_chunks_fail(chunk_1, chunk_2, chunk_3):
     with pytest.raises(LengthMismatchException):
-        MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2, chunk_3])
+        MultimodalDocument.from_chunkset(chunks=[chunk_1, chunk_2, chunk_3])
