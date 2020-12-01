@@ -17,7 +17,7 @@ from ..helper import use_uvloop, colored
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
-from ..proto import jina_pb2_grpc, jina_pb2
+from ..proto import jina_pb2_grpc
 from jina.types.message import Message
 
 use_uvloop()

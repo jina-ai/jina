@@ -19,7 +19,7 @@ class ContainerPea(BasePea):
     It requires a docker-corresponding valid ``args.uses``.
     """
 
-    def post_init(self):
+    def docker_run(self):
         import docker
         self._client = docker.from_env()
 
@@ -96,7 +96,6 @@ class ContainerPea(BasePea):
         """Direct the log from the container to local console """
 
         def check_ready():
-            # TODO: This needs to be fixed, sleep needs to be awaited
             while not self.is_ready:
                 time.sleep(0.1)
             self.is_ready_event.set()
@@ -119,7 +118,7 @@ class ContainerPea(BasePea):
 
         asyncio.run(_loop_body())
 
-    def loop_teardown(self):
+    def _teardown(self):
         """Stop the container """
         if getattr(self, '_container', None):
             import docker
@@ -137,6 +136,22 @@ class ContainerPea(BasePea):
         if getattr(self, 'ctrl_addr'):
             return send_ctrl_message(self.ctrl_addr, 'STATUS',
                                      timeout=self.args.timeout_ctrl)
+
+    def run(self):
+        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        try:
+            self.docker_run()
+            self.loop_body()
+        except KeyboardInterrupt:
+            self.logger.info('Loop interrupted by user')
+        except SystemError as ex:
+            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+        except Exception as ex:
+            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+        finally:
+            self._teardown()
+            self.unset_ready()
+            self.is_shutdown.set()
 
     @property
     def is_ready(self) -> bool:
