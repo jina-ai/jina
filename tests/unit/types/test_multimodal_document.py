@@ -37,6 +37,13 @@ def chunk_3(textual_embedding):
     chunk.embedding = textual_embedding
     return chunk
 
+@pytest.fixture(scope='function')
+def modality_content_mapping():
+    return {
+        'visual': 'content visual',
+        'textual': 'content textual'
+    }
+
 @pytest.yield_fixture(scope='function')
 def multimodal_document(chunk_1, chunk_2):
     with MultimodalDocument() as md:
@@ -89,3 +96,11 @@ def test_from_chunks_success(chunk_1, chunk_2):
 def test_from_chunks_fail(chunk_1, chunk_2, chunk_3):
     with pytest.raises(LengthMismatchException):
         MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2, chunk_3])
+
+def test_from_content_category_mapping(modality_content_mapping):
+    md = MultimodalDocument.from_modality_content_mapping(modality_content_mapping=modality_content_mapping)
+    assert len(md.modalities) == 2
+    assert 'visual' and 'textual' in md.modalities
+    assert len(md.chunks) == 2
+    assert md.granularity == md.chunks[0].granularity - 1
+

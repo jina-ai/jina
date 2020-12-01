@@ -23,7 +23,7 @@ class MultimodalDocument(Document):
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
         - It assumes that every :class:`MultimodalDocument` have at least two chunks.
     """
-    def __init__(self, document = None, chunks: List[Document] = None, copy: bool = False, **kwargs):
+    def __init__(self, document = None, chunks: List[Document] = None, modality_content_mapping: Dict = None, copy: bool = False, **kwargs):
         """
 
         :param document: the document to construct from. If ``bytes`` is given
@@ -40,10 +40,13 @@ class MultimodalDocument(Document):
         """
         super().__init__(document=document, copy=copy, **kwargs)
         self._modality_content_mapping = {}
-        if chunks:
-            self._validate(chunks)
-            self.chunks.extend(chunks)
-            self._handle_chunk_attributes()
+        if chunks or modality_content_mapping:
+            if chunks:
+                self.chunks.extend(chunks)
+            if not chunks and modality_content_mapping:
+                self._add_chunks_from_modality_content_mapping(modality_content_mapping)
+            self._handle_chunk_level_attributes()
+            self._validate()
 
     def _build_modality_content_mapping(self) -> Dict:
         for chunk in self.chunks:
@@ -51,20 +54,27 @@ class MultimodalDocument(Document):
             self._modality_content_mapping[modality] = chunk.embedding \
                 if chunk.embedding is not None \
                 else chunk.content
-        self._validate(chunks=self.chunks)
+        self._validate()
 
-    def _validate(self, chunks: List[Document]):
-        modalities = set([chunk.modality for chunk in chunks])
-        if len(chunks) < 2:
+    def _add_chunks_from_modality_content_mapping(self, modality_content_mapping):
+        for modality, content in modality_content_mapping.items():
+            with Document() as chunk:
+                chunk.modality = modality
+                chunk.content = content
+                self.chunks.add(chunk)
+
+    def _validate(self):
+        modalities = set([chunk.modality for chunk in self.chunks])
+        if len(self.chunks) < 2:
             raise BadDocType('MultimodalDocument should consist at least 2 chunks.')
-        if len(modalities) != len(chunks):
+        if len(modalities) != len(self.chunks):
             raise LengthMismatchException(f'Length of modality is not identical to length of chunks.')
 
-    def _handle_chunk_attributes(self):
+    def _handle_chunk_level_attributes(self):
         """Handle chunk attributes, such as :attr:`granularity` and :attr:`mime_type`.
 
         Chunk granularity should be greater than parent granularity level. Besides, if the chunk do not have
-        a specified :attr:`mime_type`, it will be manually set to it's parent's :attr:`mime_type`.
+            a specified :attr:`mime_type`, it will be manually set to it's parent's :attr:`mime_type`.
         """
         for chunk in self.chunks:
             chunk.granularity = self.granularity + 1
@@ -106,3 +116,13 @@ class MultimodalDocument(Document):
         :return: An instance of :class:`MultimodalDocument`.
         """
         return cls(chunks=chunks)
+
+    @classmethod
+    def from_modality_content_mapping(cls, modality_content_mapping: Dict):
+        """Create :class:`MultimodalDocument` from :attr:`modality_content_mapping`.
+
+        :param:`modality_content_mapping`: A Python dict, the keys are the modalities and the values
+            are the :attr:`content` of the :class:`Document`
+        :return: An instance of :class:`MultimodalDocument`.
+        """
+        return cls(modality_content_mapping=modality_content_mapping)
