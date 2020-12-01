@@ -75,6 +75,25 @@ class BinaryPbIndexer(BaseKVIndexer):
             with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
                 return m[r:]
 
+    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        for key, new_value in zip(keys, values):
+            pos_info = self.query_handler.header.get(key, None)
+            p, r, l = pos_info
+            with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
+                old_value = m[r:]
+                if old_value != new_value:
+                    # update
+                    l_end = len(new_value)  #: the length
+                    p_end = int(self._start / self._page_size) * self._page_size  #: offset of the page
+                    r_end = self._start % self._page_size  #
+                    self.write_handler.header.write(key, p_end, r_end, r_end + l_end)
+                    self.write_handler.body.write(new_value)
+        # rebuild
+        del self.query_handler
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        raise NotImplementedError
+
 
 class DataURIPbIndexer(BinaryPbIndexer):
     """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,

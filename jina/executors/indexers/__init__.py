@@ -215,6 +215,12 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
+    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        raise NotImplementedError
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        raise NotImplementedError
+
     def __getitem__(self, key: Any) -> Optional[Any]:
         return self.query(key)
 
