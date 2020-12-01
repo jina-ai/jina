@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  flow:
+    image: test_index_query
+    build:
+      context: .
+      dockerfile: tests/integration/jinad/test_index_query/Dockerfile
+    ports:
+      - "8000:8000"
+      - "45678:45678"
+    env_file:
+      - tests/integration/jinad/test_index_query/.env
+    expose:
+      - 10000-60000
+  encoder:
+    image: test_index_query
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_index_query/.env
+  indexer:
+    image: test_index_query
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_index_query/.env

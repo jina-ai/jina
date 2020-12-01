@@ -16,7 +16,6 @@ from jina.types.ndarray.generic import NdArray
 
 from tests import random_docs
 
-
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 img_name = 'jina/mwu-encoder'
@@ -165,3 +164,14 @@ def test_tail_host_docker2local(docker_image_built):
     with f:
         assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == localhost
         f.dry_run()
+
+
+def test_container_status():
+    args = set_pea_parser().parse_args(['--uses', img_name,
+                                        '--uses-internal',
+                                        os.path.join(cur_dir, '../mwu-encoder/mwu_encoder_ext.yml')])
+    pea = ContainerPea(args)
+    assert not pea.is_ready
+    with pea:
+        time.sleep(2.)
+        assert pea.is_ready

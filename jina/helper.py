@@ -562,28 +562,34 @@ def get_now_timestamp():
     return int(datetime.timestamp(now))
 
 
-def complete_path(path: str) -> str:
+def search_file_in_paths(path):
+    '''
+        searches in all dirs of the PATH environment variable and all dirs of files used in the call stack.
+    '''
     import inspect
-    _p = None
+    search_paths = []
+    frame = inspect.currentframe()
 
+    # iterates over the call stack
+    while frame:
+        search_paths.append(os.path.dirname(inspect.getfile(frame)))
+        frame = frame.f_back
+    search_paths += os.environ['PATH'].split(os.pathsep)
+
+    # return first occurrence of path. If it does not exist, return None.
+    for p in search_paths:
+        _p = os.path.join(p, path)
+        if os.path.exists(_p):
+            return _p
+
+
+def complete_path(path: str) -> str:
+    _p = None
     if os.path.exists(path):
         # this checks both abs and relative paths already
         _p = path
     else:
-        search_paths = []
-        frame = inspect.currentframe()
-
-        # iterates on whoever calls me
-        while frame:
-            search_paths.append(os.path.dirname(inspect.getfile(frame)))
-            frame = frame.f_back
-        search_paths += os.environ['PATH'].split(os.pathsep)
-
-        # not in local path, search within all search paths
-        for p in search_paths:
-            _p = os.path.join(p, path)
-            if os.path.exists(_p):
-                break
+        _p = search_file_in_paths(path)
     if _p:
         return _p
     else:

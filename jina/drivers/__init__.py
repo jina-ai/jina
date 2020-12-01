@@ -21,7 +21,6 @@ from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml, convert_tuple_to_list
 
-
 if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.pea import BasePea

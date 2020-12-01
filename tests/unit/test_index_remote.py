@@ -1,16 +1,17 @@
-import multiprocessing as mp
 import os
 import time
-import unittest
+import multiprocessing as mp
 
+import pytest
 import numpy as np
 
-from jina.enums import FlowOptimizeLevel
-from jina.executors.indexers.vector import NumpyIndexer
 from jina.flow import Flow
-from jina.parser import set_gateway_parser
+from jina.helper import random_port
 from jina.peapods.pod import GatewayPod
-from tests import JinaTestCase, random_docs
+from jina.enums import FlowOptimizeLevel
+from jina.parser import set_gateway_parser
+from jina.executors.indexers.vector import NumpyIndexer
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -60,56 +61,63 @@ class DummyIndexer2(NumpyIndexer):
         self._size += keys.shape[0]
 
 
-@unittest.skipIf('GITHUB_WORKFLOW' in os.environ, 'skip the network test on github workflow')
-class MyTestCase(JinaTestCase):
-
-    def tearDown(self) -> None:
-        super().tearDown()
-        time.sleep(2)
-
-    def test_index_remote(self):
-        f_args = set_gateway_parser().parse_args(['--allow-spawn'])
-
-        def start_gateway():
-            with GatewayPod(f_args):
-                time.sleep(20)
-
-        t = mp.Process(target=start_gateway)
-        t.daemon = True
-        t.start()
-
-        f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
-                       parallel=3, separated_workspace=True,
-                       host='localhost', port_expose=f_args.port_expose)
-
-        with f:
-            f.index(input_fn=random_docs(1000))
-
-        time.sleep(3)
-        for j in range(3):
-            self.assertTrue(os.path.exists(f'test2-{j + 1}/test2.bin'))
-            self.assertTrue(os.path.exists(f'test2-{j + 1}/tmp2'))
-            self.add_tmpfile(f'test2-{j + 1}/test2.bin', f'test2-{j + 1}/tmp2', f'test2-{j + 1}')
-
-    def test_index_remote_rpi(self):
-        f_args = set_gateway_parser().parse_args(['--allow-spawn'])
-
-        def start_gateway():
-            with GatewayPod(f_args):
-                time.sleep(50)
-
-        t = mp.Process(target=start_gateway)
-        t.daemon = True
-        t.start()
-
-        f = (Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY)
-             .add(uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
-                  parallel=3, separated_workspace=True,
-                  host='192.168.31.76', port_expose=44444))
-
-        with f:
-            f.index(input_fn=random_docs(1000))
+@pytest.fixture(scope='function')
+def test_workspace(tmpdir):
+    os.environ['JINA_TEST_INDEX_REMOTE'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_INDEX_REMOTE']
+    yield workspace_path
+    del os.environ['JINA_TEST_INDEX_REMOTE']
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
+def test_index_remote(test_workspace):
+    f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
+
+    def start_gateway():
+        with GatewayPod(f_args):
+            time.sleep(20)
+
+    t = mp.Process(target=start_gateway)
+    t.daemon = True
+    t.start()
+
+    f = Flow().add(
+        uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
+        parallel=3,
+        separated_workspace=True,
+        host='0.0.0.0',
+        port_expose=f_args.port_expose
+    )
+
+    with f:
+        f.index(input_fn=random_docs(1000))
+
+    time.sleep(3)
+    for j in range(3):
+        bin_path = os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
+        index_filename_path = os.path.join(test_workspace, f'test2-{j + 1}/tmp2')
+        assert os.path.exists(bin_path)
+        assert os.path.exists(index_filename_path)
+
+
+@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
+def test_index_remote_rpi(test_workspace):
+    f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
+
+    def start_gateway():
+        with GatewayPod(f_args):
+            time.sleep(3)
+
+    t = mp.Process(target=start_gateway)
+    t.daemon = True
+    t.start()
+
+    f = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(
+        uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
+        parallel=3,
+        separated_workspace=True,
+        host='0.0.0.0',
+        port_expose=random_port())
+
+    with f:
+        f.index(input_fn=random_docs(1000))

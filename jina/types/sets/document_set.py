@@ -27,9 +27,9 @@ class DocumentSet(MutableSequence):
 
     def __setitem__(self, key, value: 'Document'):
         if isinstance(key, int):
-            self._docs_proto[key].CopyFrom(value.as_pb_object)
+            self._docs_proto[key].CopyFrom(value)
         elif isinstance(key, str):
-            return self._docs_map[key].CopyFrom(value.as_pb_object)
+            self._docs_map[key].CopyFrom(value)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -49,7 +49,7 @@ class DocumentSet(MutableSequence):
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
-            return Document(self._docs_map[str(item)])
+            return Document(self._docs_map[item])
         else:
             raise IndexError(f'do not support this index {item}')
 
