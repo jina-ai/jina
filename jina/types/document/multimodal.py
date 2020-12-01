@@ -99,7 +99,7 @@ class MultimodalDocument(Document):
         return self.modality_content_mapping.keys()
 
     @classmethod
-    def from_chunkset(cls, chunks: List[Document], **kwargs) -> 'MultimodalDocument':
+    def from_chunks(cls, chunks: List[Document]) -> 'MultimodalDocument':
         """Create :class:`MultimodalDocument` from list of :class:`Document`.
 
         :param chunks: List of :class:`Document`.
