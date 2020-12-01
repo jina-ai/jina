@@ -156,7 +156,11 @@ class BaseIndexer(BaseExecutor):
 
     def flush(self):
         """Flush all buffered data to ``index_abspath`` """
-        call_obj_fn(self.write_handler, 'flush')
+        try:
+            # It may have already been closed by the Pea using context manager
+            call_obj_fn(self.write_handler, 'flush')
+        except:
+            pass
 
 
 class BaseVectorIndexer(BaseIndexer):

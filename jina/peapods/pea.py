@@ -115,7 +115,6 @@ class BasePea(metaclass=PeaMeta):
         self.is_shutdown = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready_event, self.is_shutdown)
         self.is_shutdown.clear()
-        self._graceful_shutdown = False
 
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
@@ -194,7 +193,7 @@ class BasePea(metaclass=PeaMeta):
         try:
             self.executor = BaseExecutor.load_config(
                 self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
-                self.args.separated_workspace, self.args.pea_id)
+                self.args.separated_workspace, self.args.pea_id, self.args.read_only)
             self.executor.attach(pea=self)
         except FileNotFoundError as ex:
             self.logger.error(f'fail to load file dependency: {repr(ex)}')
@@ -206,21 +205,13 @@ class BasePea(metaclass=PeaMeta):
         self.logger.info(
             ' '.join(f'{k}: {v / self._timer.accum_time["loop"]:.2f}' for k, v in self._timer.accum_time.items()))
 
-    def save_executor(self, dump_interval: int = 0):
+    def save_executor(self):
         """Save the contained executor
 
         :param dump_interval: the time interval for saving
         """
-        if ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
-            if self.args.read_only:
-                self.logger.debug('executor is not saved as "read_only" is set to true for this BasePea')
-            elif not hasattr(self, 'executor'):
-                self.logger.debug('this BasePea contains no executor, no need to save')
-            elif self.executor.save():
-                self.logger.info('dumped changes to the executor, %3.0fs since last the save'
-                                 % (time.perf_counter() - self.last_dump_time))
-            else:
-                self.logger.info('executor says there is nothing to save')
+        if (time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0:
+            self.executor.save()
             self.last_dump_time = time.perf_counter()
             if hasattr(self, 'zmqlet'):
                 self.zmqlet.print_stats()
@@ -261,7 +252,7 @@ class BasePea(metaclass=PeaMeta):
         """Post-hook function, what to do before handing out the message """
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
-        self.save_executor(self.args.dump_interval)
+        self.save_executor()
         self.check_memory_watermark()
 
         if self.expect_parts > 1:
@@ -303,7 +294,6 @@ class BasePea(metaclass=PeaMeta):
             # this is the proper way to end when a terminate signal is sent
             self.zmqlet.send_message(msg)
             self._teardown()
-            self._graceful_shutdown = True
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # save executor
             self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
@@ -385,9 +375,6 @@ class BasePea(metaclass=PeaMeta):
         finally:
             # if an exception occurs this unsets ready and shutting down
             self.close_zmqlet()
-            if self._graceful_shutdown:
-                if not self.args.exit_no_dump:
-                    self.save_executor(dump_interval=0)
             self.unset_ready()
             self.is_shutdown.set()
 

@@ -305,8 +305,6 @@ def set_pea_parser(parser=None):
     gp3.add_argument('--dump-interval', type=int, default=240,
                      help='serialize the model in the pod every n seconds if model changes. '
                           '-1 means --read-only. ')
-    gp3.add_argument('--exit-no-dump', action='store_true', default=False,
-                     help='do not serialize the model when the pod exits')
     gp3.add_argument('--read-only', action='store_true', default=False,
                      help='do not allow the pod to modify the model, '
                           'dump_interval will be ignored')
