@@ -1,10 +1,8 @@
 import numpy as np
 import pytest
-from google.protobuf.pyext._message import RepeatedCompositeContainer
 
 from jina.excepts import BadClientCallback
 from jina.flow import Flow
-from jina.proto import jina_pb2
 
 
 def test_on_error():

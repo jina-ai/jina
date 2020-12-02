@@ -59,6 +59,7 @@ pytest-xdist==1.34.0:       test
 pytest-timeout:             test
 pytest-cov:                 test
 pytest-repeat:              test
+pytest-asyncio:             test
 flaky:                      test
 mock:                       test
 requests:                   http

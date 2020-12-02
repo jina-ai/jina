@@ -41,10 +41,16 @@ class GatewayPea(BasePea):
         # asyncio.run() or asyncio.run_until_complete() wouldn't work here as we are running a custom loop
         asyncio.get_event_loop().run_until_complete(self._loop_body())
 
+    async def _loop_teardown(self):
+        asyncio.get_event_loop().create_task(self.gateway.close()) \
+            if asyncio.iscoroutinefunction(self.gateway.close) \
+            else self.gateway.close()
+
     def loop_teardown(self):
         self.zmq_task.cancel()
         if hasattr(self, 'gateway'):
             self.gateway.is_gateway_ready.set()
+            # asyncio.get_event_loop().run_until_complete(self._loop_teardown())
 
 
 class AsyncGateway:

@@ -2,8 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-import asyncio
-from typing import Callable, Union, Optional
+from typing import Callable, Union, Optional, Dict
 
 from . import request
 from .grpc import AsyncGrpcClient
@@ -38,13 +37,16 @@ class PyClient(AsyncGrpcClient):
         from jina.clients import py_client
 
         # to test connectivity
-        py_client(host='192.168.1.100', port_expose=55555).dry_run()
+        await py_client(host='192.168.1.100', port_expose=55555).dry_run()
 
         # to search
-        py_client(host='192.168.1.100', port_expose=55555).search(input_fn, output_fn)
+        await py_client(host='192.168.1.100', port_expose=55555).search(input_fn, output_fn)
 
         # to index
-        py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
+        await py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
+
+    .. note::
+        to perform `index`, `search` or `train`, py_client needs to be awaited, as it is a coroutine
 
     """
 
@@ -192,26 +194,26 @@ class PyClient(AsyncGrpcClient):
             else:
                 raise DryRunException(resp.status)
 
-    def train(self, input_fn: Optional[InputFnType] = None,
-              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def train(self, input_fn: Optional[InputFnType] = None,
+                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.TRAIN
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.loop.run_until_complete(self.dry_run(TrainDryRunRequest()))
-        self.loop.run_until_complete(self.start(output_fn, **kwargs))
+            await self.dry_run(TrainDryRunRequest())
+        await self.start(output_fn, **kwargs)
 
-    def search(self, input_fn: Optional[InputFnType] = None,
-               output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def search(self, input_fn: Optional[InputFnType] = None,
+                     output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.SEARCH
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.loop.run_until_complete(self.dry_run(SearchDryRunRequest()))
-        self.loop.run_until_complete(self.start(output_fn, **kwargs))
+            await self.dry_run(SearchDryRunRequest())
+        await self.start(output_fn, **kwargs)
 
-    def index(self, input_fn: Optional[InputFnType] = None,
-              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def index(self, input_fn: Optional[InputFnType] = None,
+                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.loop.run_until_complete(self.dry_run(IndexDryRunRequest()))
-        self.loop.run_until_complete(self.start(output_fn, **kwargs))
+            await self.dry_run(IndexDryRunRequest())
+        await self.start(output_fn, **kwargs)

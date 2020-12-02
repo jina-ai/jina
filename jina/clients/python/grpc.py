@@ -39,7 +39,7 @@ class AsyncGrpcClient:
                 'grpc.max_receive_message_length': -1
             }.items(),
         )
-        asyncio.get_event_loop().run_until_complete(self._channel.channel_ready())
+        self.loop.run_until_complete(self._channel.channel_ready())
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
 
         # attache response handler
@@ -97,7 +97,8 @@ class AsyncGrpcClient:
     async def close(self) -> None:
         """Gracefully shutdown the client and release all gRPC-related resources """
         if not self.is_closed:
-            await self._channel.close()
+            if not self._channel._channel.closed():
+                await self._channel.close()
             self.logger.success(__stop_msg__)
             self.logger.close()
             self.is_closed = True

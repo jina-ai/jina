@@ -294,7 +294,7 @@ class AsyncCtrlZmqlet(AsyncZmqlet):
         self.is_closed = False
         self.opened_socks = []
         if ctrl_addr is None:
-            ctrl_addr, _ = self.get_ipc_ctrl_address()
+            ctrl_addr = self.get_ipc_ctrl_address()
         self.ctx, self.ctrl_sock = self.init_ctrl_sockets(ctrl_addr)
         self.opened_socks.append(self.ctrl_sock)
         self.register_pollin()
@@ -308,7 +308,7 @@ class AsyncCtrlZmqlet(AsyncZmqlet):
 
     @staticmethod
     def get_ipc_ctrl_address():
-        return Zmqlet.get_ctrl_address(host=None, port_ctrl=None, ctrl_with_ipc=True)
+        return Zmqlet.get_ctrl_address(host=None, port_ctrl=None, ctrl_with_ipc=True)[0]
 
     def init_ctrl_sockets(self, ctrl_addr):
         ctx = self._get_zmq_ctx()

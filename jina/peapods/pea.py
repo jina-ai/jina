@@ -129,13 +129,16 @@ class BasePea(metaclass=PeaMeta):
         self._partial_requests = None
         self._partial_messages = None
 
-        if isinstance(self.args, argparse.Namespace):
+        if 'daemon' in args:
             self.daemon = args.daemon
-            if self.args.name:
-                self.name = self.args.name
-            if self.args.role == PeaRoleType.PARALLEL:
-                self.name = f'{self.name}-{self.args.pea_id}'
+        if 'name' in self.args and self.args.name:
+            self.name = self.args.name
+        if 'role' in self.args and self.args.role == PeaRoleType.PARALLEL:
+            self.name = f'{self.name}-{self.args.pea_id}'
+        if 'host' in self.args and 'port_ctrl' in self.args and 'ctrl_with_ipc' in self.args:
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc)
+
+        if 'log_id' in self.args and 'log_config' in self.args:
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)

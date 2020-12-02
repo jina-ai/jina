@@ -32,14 +32,23 @@ def test_img_1():
 def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
 
+
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason='pytest asyncio inserts a custom event loop, this fails with `Event loop is closed`')
-async def test_client(flow):
+async def test_client_call_unary(flow):
     with flow:
         await py_client(port_expose=flow.port_expose).call_unary(
             [b'a1234', b'b4567'], mode=RequestType.INDEX,
         )
+
+@pytest.mark.asyncio
+async def test_client_index(flow):
+    with flow:
+        await py_client(port_expose=flow.port_expose).index(['a1234', 'b4567'])
+
+@pytest.mark.asyncio
+async def test_client_search(flow):
+    with flow:
+        await py_client(port_expose=flow.port_expose).search(['a1234', 'b4567'])
 
 
 @pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
