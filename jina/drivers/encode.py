@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from . import BaseExecutableDriver
-from ..types.document.helper import extract_content
 
 if False:
     from ..types.sets import DocumentSet
@@ -20,10 +19,10 @@ class EncodeDriver(BaseEncodeDriver):
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        contents, docs_pts, bad_doc_ids = extract_content(docs)
+        contents, docs_pts, bad_docs = docs.all_contents
 
-        if bad_doc_ids:
-            self.logger.warning(f'these bad docs can not be added: {bad_doc_ids} '
+        if bad_docs:
+            self.logger.warning(f'these bad docs can not be added: {bad_docs} '
                                 f'from level depth {docs_pts[0].granularity}')
 
         if docs_pts:
