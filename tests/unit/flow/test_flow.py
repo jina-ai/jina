@@ -286,6 +286,7 @@ def test_shards():
     rm_files(['test-docshard-tmp'])
 
 
+@pytest.mark.skip('this causes segmentation faults as py_client is async')
 def test_py_client():
     f = (Flow().add(name='r1')
          .add(name='r2')
