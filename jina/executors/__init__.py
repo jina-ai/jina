@@ -194,7 +194,7 @@ class BaseExecutor(metaclass=ExecutorType):
         if not getattr(self, 'name', None):
             _id = get_random_identity().split('-')[0]
             _name = f'{typename(self)}-{_id}'
-            if self.warn_unnamed:
+            if getattr(self, 'warn_unnamed', False):
                 self.logger.warning(
                     f'this executor is not named, i will call it "{_name}". '
                     'naming is important as it provides an unique identifier when '
