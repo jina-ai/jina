@@ -1,0 +1,34 @@
+version: "3.3"
+services:
+  flow:
+    image: test_simple_hub_pods
+    build:
+      context: .
+      dockerfile: tests/integration/jinad/test_simple_hub_pods/Dockerfile
+    ports:
+      - "8000:8000"
+      - "45678:45678"
+    env_file:
+      - tests/integration/jinad/test_simple_hub_pods/.env
+    expose:
+      - 10000-60000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  pod1:
+    image: test_simple_hub_pods
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_simple_hub_pods/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  pod2:
+    image: test_simple_hub_pods
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/integration/jinad/test_simple_hub_pods/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

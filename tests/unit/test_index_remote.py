@@ -11,7 +11,7 @@ from jina.peapods.pod import GatewayPod
 from jina.enums import FlowOptimizeLevel
 from jina.parser import set_gateway_parser
 from jina.executors.indexers.vector import NumpyIndexer
-from tests import random_docs_new_api
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -90,7 +90,7 @@ def test_index_remote(test_workspace):
     )
 
     with f:
-        f.index(input_fn=random_docs_new_api(1000))
+        f.index(input_fn=random_docs(1000))
 
     time.sleep(3)
     for j in range(3):
@@ -120,4 +120,4 @@ def test_index_remote_rpi(test_workspace):
         port_expose=random_port())
 
     with f:
-        f.index(input_fn=random_docs_new_api(1000))
+        f.index(input_fn=random_docs(1000))

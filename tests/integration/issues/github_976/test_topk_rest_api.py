@@ -23,3 +23,4 @@ def test_top_k_with_rest_api(query_dict):
         resp = request.urlopen(req).read().decode('utf8')
         assert json.loads(resp)['queryset'][0]['name'] == 'VectorSearchDriver'
         assert json.loads(resp)['queryset'][0]['parameters']['top_k'] == TOP_K
+        assert json.loads(resp)['queryset'][0]['priority'] == 1

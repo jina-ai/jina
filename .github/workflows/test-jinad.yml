@@ -2,8 +2,10 @@ name: Test jinad
 
 on:
   pull_request:
-    branches:
-      - master
+    #branches:
+    #  - master
+    branches-ignore:
+      - '**'
 
 jobs:
   jinad-test:
@@ -25,13 +27,16 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build jina test-pip
+      - name: Build jina test-pip with fluentd
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg PIP_TAG="[devel]" -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
+      - name: Build hub pod image
+        run: |
+          docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
       - name: Test jinad
         run: |
-          ./tests/integration/jinad/test_simple_distributed/test_integration.sh
+          ./tests/integration/jinad/exec_tests.sh
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}

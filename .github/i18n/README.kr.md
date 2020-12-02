@@ -36,22 +36,22 @@
   <a href="https://github.com/jina-ai/jina-hub">허브(허브)</a> •
   <a href="https://dashboard.jina.ai">대시보드(메시지)</a> •
   <a href="https://github.com/jina-ai/jinabox.js/">지나복스 (beta)</a> •
-  <a href="http://www.twitter.com/JinaAI_">트위터를 하다</a> •
-  <a href="https://jobs.jina.ai">우리는 고용하고 있다.</a>
+  <a href="http://www.twitter.com/JinaAI_">트위터</a> •
+  <a href="https://jobs.jina.ai">고용정보.</a>
 
 </p>
 
-지나(Jina)는 AI로 구동되는 검색 프레임워크로 개발자가 클라우드 상에 **크로스/멀티모달 검색 시스템**(예: 텍스트, 이미지, 비디오, 오디오)을 만들 수 있도록 한다. 지나는 [전임, 벤처후원팀]의 지원을 받고 있다.(https://jina.ai).
+지나(Jina)는 AI로 구동되는 검색 프레임워크로 개발자가 클라우드 상에 **크로스/멀티-모달 검색 시스템**(예: 텍스트, 이미지, 비디오, 오디오)을 만들 수 있도록 한다. 지나는 [풀타임, 벤처후원팀]의 지원을 받고 있다.(https://jina.ai).
 
-⏱️ **시간 절약** - 몇 분 안에 AI로 구동되는 시스템을 부팅하십시오.
+⏱️ **시간 절약** - 몇 분 안에 AI로 구동되는 시스템을 부트스트랩한다.
 
-🧠 **퍼스트 클래스 AI 모델** - 지나(Jina)는 신경 검색 시스템의 새로운 디자인 패턴으로, [최첨단 AI 모델]을 1등급으로 지원한다.(https://docs.jina.ai/chapters/all_exec.html).
+🧠 **최상의 AI 모델** - 지나(Jina)는 신경 검색 시스템의 새로운 디자인 패턴으로, [최첨단 AI 모델]을 최상급으로 지원한다.(https://docs.jina.ai/chapters/all_exec.html).
 
-🌌 **유니버설 서치** - 여러 플랫폼에서 모든 종류의 대규모 인덱싱 및 쿼리 데이터. 비디오, 이미지, 긴/짧은 텍스트, 음악, 소스 코드 등
+🌌 **광범위한 검색** - 여러 플랫폼에서 모든 종류의 대규모 인덱싱 및 데이터 쿼리를 지원한다: 비디오, 이미지, 긴/짧은 텍스트, 음악, 소스 코드 등
 
-🚀 **프로덕션 레디** - 클라우드 네이티브 기능은 컨테이너형화, 마이크로 서비스, 배포, 확장, 샤딩, 비동기 IO, REST, gRPC와 같이 즉시 사용할 수 있다.
+🚀 **클라우드 준비** - 컨테이너화, 마이크로 서비스, 배포, 확장, 샤딩, 비동기 IO, REST, gRPC와 같은 클라우드 네이티브 기능을 사용하는 분산형 아키텍쳐이다.
 
-🧩 **플러그 앤 플레이** - 와 함께 [Jina Hub](https://github.com/jina-ai/jina-hub), 검색 도메인에 최적화된 간단한 Python 스크립트 또는 Docker 이미지로 쉽게 Jina를 확장하십시오.
+🧩 **플러그 앤 플레이** - Pythonic 인터페이스로 쉽게 확장할 수 있다.
 
 ## Contents
 
@@ -60,49 +60,48 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [착수하다](#%EC%B0%A9%EC%88%98%ED%95%98%EB%8B%A4)
-- [Jina "안녕 세계" 👋🌍](#jina-%EC%95%88%EB%85%95-%EC%84%B8%EA%B3%84-)
-- [자습서](#%EC%9E%90%EC%8A%B5%EC%84%9C)
+- [시작](#%EC%B0%A9%EC%88%98%ED%95%98%EB%8B%A4)
+- [Jina “Hello, World!” 👋🌍](#jina-%EC%95%88%EB%85%95-%EC%84%B8%EA%B3%84-)
+- [튜토리얼](#%EC%9E%90%EC%8A%B5%EC%84%9C)
 - [문서화](#%EB%AC%B8%EC%84%9C%ED%99%94)
-- [기여하는](#%EA%B8%B0%EC%97%AC%ED%95%98%EB%8A%94)
-- [community](#community)
+- [기여](#%EA%B8%B0%EC%97%AC%ED%95%98%EB%8A%94)
+- [커뮤니티](#community)
 - [오픈 거버넌스](#%EC%98%A4%ED%94%88-%EA%B1%B0%EB%B2%84%EB%84%8C%EC%8A%A4)
 - [참여하기](#%EC%B0%B8%EC%97%AC%ED%95%98%EA%B8%B0)
-- [면허증](#%EB%A9%B4%ED%97%88%EC%A6%9D)
+- [라이선스](#%EB%A9%B4%ED%97%88%EC%A6%9D)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## 착수하다
+## 설치
 
-### 로부터 PyPi
-
-Python이 포함된 Linux/MacOS에서 >= 3.7:
+Python 3.7/3.8이 포함된 Linux/MacOS:
 
 ```bash
 pip install jina
 ```
 
-종속성이 추가적인 Jina를 설치하거나 Rasberry Pi에 설치하려면 [문서 참조](https://docs.jina.ai). 
+추가적인 의존성을 가진 Jina를 설치하거나, Raspberry Pi에 설치하고자 한다면, [문서를 참조해라.](https://docs.jina.ai). 
 
-⚠️ 현재 지나는 윈도우를 지원하지 않는다. 보다 [보다](https://docs.jina.ai/chapters/install/via-pip.html?highlight=windows#on-windows-and-other-oses) f자세한 정보는. 
+⚠️ 윈도우 사용자들은 jina를 [윈도우상의 리눅스 하위 시스템](https://docs.jina.ai/chapters/install/via-pip.html?highlight=windows#on-windows-and-other-oses)을 통해 사용할 수 있다. 우리 커뮤니티는 [윈도우 지원](https://github.com/jina-ai/jina/issues/1252)에 대한 도움을 환영하고 있다.
+ 
 
-### 의 Docker 컨테이너
+### Docker 컨테이너
 
-여러 아키텍처를 지원하는 범용 도커 이미지를 제공함 (포함 x64, x86, arm-64/v7/v6). 달리다:
+여러 아키텍쳐(x64, x86, arm-64/v7/v6을 포함)를 지원하는 범용적인 Docker 이미지를 제공한다. 아무것도 설치할 필요 없이, 그냥 수행하면 된다.
 
 ```bash
 docker run jinaai/jina --help
 ```
 
-## Jina "안녕 세계" 👋🌍
+## Jina "Hello, World!" 👋🌍
 
-선발투수로서, 저희를 한번 시험해 보십시오. "안녕 세계" - 에 대한 간단한 이미지 신경 탐색 데모 [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). 추가 종속성이 필요하지 않고 실행하십시오.:
+스타터로서, [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/)를 위한 이미지 신경 검색의 간단한 데모인 "Hello, World!"를 사용해보세요. 추가 종속성이 필요하지 않으며 다음을 실행하십시오.:
 
 ```bash
 jina hello-world
 ```
 
-...도커에게 더 Docker 사용자, **설치가 필요 없음**:
+...또는 Docker 사용자의 경우, **설치가 필요하지 않습니다.**:
 
 ```bash
 docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html  # replace "open" with "xdg-open" on Linux
@@ -117,7 +116,7 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 
 </details>
 
-도커 이미지는 Fashion-MNIST 훈련과 테스트 데이터 세트를 다운로드하고 지나에게 훈련 세트에서 6만 개의 이미지를 인덱싱하라고 말한다. 그런 다음 검사 세트에서 무작위로 영상을 샘플링해 조회하고 지나에게 관련 결과를 가져오라고 한다. 전체 과정은 약 1분이 소요되며, 결국 웹 페이지를 열고 다음과 같은 결과를 보여준다.
+이것은 Fashion-MNIST 교육과 테스트 데이터 세트를 다운로드하고 지나에게 교육 세트에서 6만 개의 이미지를 인덱싱하라고 말한다. 그런 다음 검사 세트에서 무작위로 영상을 샘플링해 조회하고 지나에게 관련 결과를 가져오라고 한다. 전체 과정은 약 1분이 소요되며, 결과적으로 웹 페이지를 열고 다음과 같은 결과를 보여준다.
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="90%">
@@ -191,7 +190,7 @@ from jina.flow import Flow
 f = Flow().add(uses='encoder.yml', host='192.168.0.99')
 ```
 
-#### [의 Docker 컨테이너](https://docs.jina.ai/chapters/hub/index.html)
+#### [Docker 컨테이너 ](https://docs.jina.ai/chapters/hub/index.html)
 
 ```python
 from jina.flow import Flow
@@ -221,24 +220,24 @@ with f:
     f.block()
 ```
 
-흥미롭다고? 다른 옵션으로 재생:
+흥미롭다면? 다른 옵션으로 재생하세요:
 
 ```bash
 jina hello-world --help
 ```
 </details>
 
-### 첫 번째 Jina 프로젝트
+### 첫 번째 Jina 프로젝트 생성하기
 
 ```bash
 pip install jina[devel]
 jina hub new --type app
 ```
 
-하나의 터미널 명령으로 템플릿에서 쉽게 지나 프로젝트를 만들 수 있다. 이렇게 하면 Python 진입점, YAML 구성 및 Docker 파일이 생성된다. 거기서부터 시작할 수 있어.
+하나의 터미널 명령으로 템플릿에서 쉽게 지나 프로젝트를 만들 수 있다. 이를 통해 Python 진입점, YAML 구성 및 Docker 파일이 생성된다. 그곳에서부터 귀하가 시작할 수 있다.
 
 
-## 자습서
+## 튜토리얼
 
 <table>
   <tr>
@@ -266,22 +265,22 @@ jina hub new --type app
 <table>
 <tr>
 <th width="10%">레벨</th>
-<th width="90%">자습서</th>
+<th width="90%">튜토리얼</th>
 </tr>
 
 <tr>
 <td><h3>🐣</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">NLP 의미 검색 시스템 구축</a></h4>
-South Park 스크립트 검색 및 Flows 및 Pods 사용 연습
+South Park의 문서를 검색하고 Flow와 Pods를 이용하여 연습해라
 </td>
 </tr>
 
 <tr>
 <td><h3>🐣</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">첫 앱 Jina</a></h4>
-사용 cookiecutter for bootstrap a jina app
+<h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">내 첫 Jina 앱</a></h4>
+Jina 앱을 bootstarp하기 위하여 cookiecutter를 사용
 </td>
 </tr>
 
@@ -289,7 +288,7 @@ South Park 스크립트 검색 및 Flows 및 Pods 사용 연습
 <td><h3>🐣</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">쿼리 언어를 사용한 패션 검색</a></h4>
-질의어로 Hello-World에 활기를 불어넣기
+쿼리 언어로 Hello-World에 활기 불어넣기
 </td>
 </tr>
 
@@ -297,15 +296,15 @@ South Park 스크립트 검색 및 Flows 및 Pods 사용 연습
 <td><h3>🕊</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/multires-lyrics-search">청크를 사용하여 가사 검색</a></h4>
-청크를 사용하여 가사 검색
+Findgrained level에서 검색하기 위하여 문서를 쪼개기
 </td>
 </tr>
 
 <tr>
 <td><h3>🕊</h3></td>
 <td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/cross-modal-search">이미지 및 캡션 혼합 및 일치</a></h4>
-이미지 및 캡션 혼합 및 일치
+<h4><a href="https://github.com/jina-ai/examples/tree/master/cross-modal-search">이미지와 캡션을 믹스 앤 매치</a></h4>
+이미지로부터 캡션 또는 캡션으로부터 이미지를 얻기 위하여 크로스 모달을 검색
 </td>
 </tr>
 
@@ -313,7 +312,7 @@ South Park 스크립트 검색 및 Flows 및 Pods 사용 연습
 <td><h3>🚀</h3></td>
 <td>
 <h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">스케일업 비디오 의미 검색</a></h4>
-프리페치 및 샤드를 사용하여 성능 향상
+프리패칭과 샤딩을 이용한 퍼포먼스의 향상
 </td>
 </tr>
 
@@ -341,30 +340,30 @@ Search Pokemon with state-of-the-art visual representation
 <img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-지나를 깊이 있게 배우는 가장 좋은 방법은 우리의 문서를 읽는 것이다. 문서는 마스터 분기의 모든 푸시, 병합 및 릴리스에 기초하여 작성된다.
+지나를 깊이 있게 배우는 가장 좋은 방법은 우리의 문서를 읽는 것이다. 문서는 마스터 브랜치의 모든 푸쉬, 머지, 릴리즈에 기초하여 작성된다.
 
 #### 기본 사항
 
 - [Flow API를 사용하여 검색 워크플로우 구성](https://docs.jina.ai/chapters/flow/index.html)
 - [Jina의 입력 및 출력 기능](https://docs.jina.ai/chapters/io/index.html)
-- [Dashboard를 사용하여 Jina 워크플로우의 통찰력 확보](https://github.com/jina-ai/dashboard)
-- [워크플로를 원격으로 배포](https://docs.jina.ai/chapters/remote/index.html)
+- [Dashboard를 사용하여 jina 워크플로우의 인사이트 확보](https://github.com/jina-ai/dashboard)
+- [워크플로우를 원격으로 배포](https://docs.jina.ai/chapters/remote/index.html)
 - [Docker Container를 통해 Jina 포드 실행](https://docs.jina.ai/chapters/hub/index.html)
 
 #### 참조
 
-- [명령줄 인터페이스 인수](https://docs.jina.ai/chapters/cli/index.html)
-- [Python API 인터페이스](https://docs.jina.ai/api/jina.html)
-- [YAML 구문 을 위해 Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
-- [Protobuf 스키마를 타다](https://docs.jina.ai/chapters/proto/index.html)
+- [command line 인터페이스 논의](https://docs.jina.ai/chapters/cli/index.html)
+- [파이썬 API 인터페이스](https://docs.jina.ai/api/jina.html)
+- [Executor과 Driver, Flow를 위한 VAML 문장](https://docs.jina.ai/chapters/yaml/yaml.html)
+- [Protobuf 스키마](https://docs.jina.ai/chapters/proto/index.html)
 - [환경변수](https://docs.jina.ai/chapters/envs.html)
-- ... [등등](https://docs.jina.ai/index.html)
+- ... [그 외](https://docs.jina.ai/index.html)
 
-너 '닥' 스타야? 우리와 함께! 우리는 문서의 모든 종류의 개선을 환영한다.
+당신은 “DOC” 스타인가요? 우리와 함께해요! 우리는 문서에 대한 모든 종류의 개선을 환영합니다.
 
-[이전 버전에 대한 설명서는 여기에 보관되어 있음](https://github.com/jina-ai/docs/releases).
+[이전 버전에 대한 설명서는 여기에 보관되어 있다.](https://github.com/jina-ai/docs/releases).
 
-## 기여하는
+## 기여
 
 우리는 오픈 소스 커뮤니티, 개인 및 파트너의 모든 종류의 기부를 환영한다. 우리의 성공은 당신의 적극적인 참여 덕분이다.
 
@@ -406,22 +405,21 @@ Search Pokemon with state-of-the-art visual representation
 
 ## 오픈 거버넌스
 
-[깃허브 이정표](https://github.com/jina-ai/jina/milestones) 지나의 장래의 개선의 길을 내다.
+[깃허브 이정표](https://github.com/jina-ai/jina/milestones)로 Jina의 미래 개선점들에 대한 윤곽을 잡았음
 
-오픈 거버넌스 모델의 일환으로 지나의 거버넌스 모델을 주최한다.[엔지니어링 미팅]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) 사람들 앞에서 이 확대/축소 회의는 매월 둘째 주 화요일 14:00-15:30(CET)에 반복된다. 모든 사람은 다음 달력 초대를 통해 가입할 수 있다.
+여러분은 우리의 오픈 거버넌스 모델의 일환으로 모두를 위한 Jina의 공학을 주최한다.
+Zoom미팅은 매달 두 번째 화요일마다 진행을 하며 시간은 14:00-15:30(CET)이다. Calendar 초대를 통해 모두 참여가 가능하다.
 
 - [Google 캘린더에 추가](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
-- [다운로드 .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
+- [.ics다운로드 하기](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
 
-이 모임은 생방송으로 진행되며 나중에 [유튜브 채널]에 게시될 것이다](https://youtube.com/c/jina-ai).
-
+또한 이 회의는 생방송으로 송출될 것이며 이 후에 [유튜브 채널에 영상으로 제작될 것이다.](https://youtube.com/c/jina-ai).
 ## 참여하기
 
-지나(Jina)는 오픈소스 프로젝트다. [우리는 고용하고 있다.](https://jobs.jina.ai) 풀스택 개발자, 전도사, 프로젝트 매니저 등이 오픈 소스의 차세대 신경 검색 생태계를 구축한다.
+Jina는 오픈소스 프로젝트이다. 우리는 풀스택 개발자, evangelists, 프로젝트 매니저들을 [채용](https://jobs.jina.ai)하여 뉴럴 탐색 생태계를 오픈소스에 구축하려고 한다.
 
+## 라이선스
 
-## 면허증
+Copyright (c) 2020 Jina AI Limited. All rights reserved
 
-저작권 (c) 2020 지나 AI 유한회사. 모든 권리 보유.
-
-Jina는 Apache License 버전 2.0에 따라 라이센스를 받는다.[전체 라이센스 텍스트는 LICE를 참조하십시오.](LICENSE)
+Jina는 Apache Licence 2.0을 사용한다. [라이선스 문서의 전문을 확인하기 위해서는 License를 참조하세요.](LICENSE)
