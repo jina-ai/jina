@@ -9,6 +9,8 @@ import numpy as np
 from . import BaseKVIndexer
 from ..compound import CompoundExecutor
 
+HEADER_NONE_ENTRY = (-1, -1, -1)
+
 
 class BinaryPbIndexer(BaseKVIndexer):
     class WriteHandler:
@@ -28,7 +30,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         def __init__(self, path):
             with open(path + '.head', 'rb') as fp:
                 tmp = np.frombuffer(fp.read(), dtype=np.int64).reshape([-1, 4])
-                self.header = {r[0]: None if np.array_equal(r[1:], (-1, -1, -1)) else r[1:] for r in tmp}
+                self.header = {r[0]: None if np.array_equal(r[1:], HEADER_NONE_ENTRY) else r[1:] for r in tmp}
             self._body = open(path, 'r+b')
             self.body = self._body.fileno()
 
@@ -105,7 +107,6 @@ class BinaryPbIndexer(BaseKVIndexer):
             if self.query_handler:
                 self.query_handler.header[key] = None
             self._size -= 1
-            pass
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
