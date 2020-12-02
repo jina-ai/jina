@@ -65,14 +65,14 @@ def test_add_route():
 def test_extract_docs():
     d = Document()
 
-    contents, docs_pts, bad_doc_ids = DocumentSet([d]).all_embeddings
-    assert len(bad_doc_ids) > 0
+    contents, docs_pts, bad_docs = DocumentSet([d]).all_embeddings
+    assert len(bad_docs) > 0
     assert contents is None
 
     vec = np.random.random([2, 2])
     d.embedding = vec
-    contents, docs_pts, bad_doc_ids = DocumentSet([d]).all_embeddings
-    assert len(bad_doc_ids) == 0
+    contents, docs_pts, bad_docs = DocumentSet([d]).all_embeddings
+    assert len(bad_docs) == 0
     np.testing.assert_equal(contents[0], vec)
 
 
