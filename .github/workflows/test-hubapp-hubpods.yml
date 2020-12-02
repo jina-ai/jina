@@ -1,14 +1,12 @@
-name: Test jinad
+name: Test hubapp with hubpods
 
 on:
   pull_request:
-    #branches:
-    #  - master
-    branches-ignore:
-      - '**'
+    branches:
+      - master
 
 jobs:
-  jinad-test:
+  hubapp-hubpod-test:
     if: |
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
@@ -27,16 +25,18 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build jina test-pip with fluentd
+      - name: Build jina test-pip
         run: |
-          docker build -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
-          docker build --build-arg PIP_TAG="[devel]" -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Build hub pod image
         run: |
           docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
-      - name: Test jinad
+      - name: Build hubapp image
         run: |
-          ./tests/integration/jinad/exec_tests.sh
+          docker build -f tests/integration/hubapp_hubpods/Dockerfile -t jinaai/test_hubapp_hubpods .
+      - name: Test hubapp with hubpods
+        run: |
+          ./tests/integration/hubapp_hubpods/test_integration.sh
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}

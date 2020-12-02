@@ -6,7 +6,7 @@ from jina.types.sets import DocumentSet
 @pytest.fixture(scope='function')
 def document_factory():
     class DocumentFactory(object):
-        def create(self, idx, text, ):
+        def create(self, idx, text):
             with Document() as d:
                 d.tags['id'] = idx
                 d.text = text
