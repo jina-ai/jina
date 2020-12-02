@@ -12,6 +12,7 @@ __all__ = ['MultimodalDocument', 'DocumentContentType']
 DocumentContentType = TypeVar('DocumentContentType', bytes, str,
                               np.ndarray, jina_pb2.NdArrayProto, NdArray)
 
+
 class MultimodalDocument(Document):
     """
     :class:`MultimodalDocument` is a data type created based on Jina primitive data type :class:`Document`.
