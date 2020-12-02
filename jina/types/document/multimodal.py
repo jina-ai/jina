@@ -1,9 +1,8 @@
-from typing import Dict, List, TypeVar
+from typing import Dict, Sequence, TypeVar, List
 
 import numpy as np
 
 from . import Document
-from ..sets.chunk_set import ChunkSet
 from ...proto import jina_pb2
 from ..ndarray.generic import NdArray
 from ...excepts import LengthMismatchException, BadDocType
@@ -23,7 +22,7 @@ class MultimodalDocument(Document):
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
         - It assumes that every :class:`MultimodalDocument` have at least two chunks.
     """
-    def __init__(self, document = None, chunks: List[Document] = None, modality_content_mapping: Dict = None, copy: bool = False, **kwargs):
+    def __init__(self, document = None, chunks: Sequence[Document] = None, modality_content_mapping: Dict = None, copy: bool = False, **kwargs):
         """
 
         :param document: the document to construct from. If ``bytes`` is given
@@ -77,7 +76,10 @@ class MultimodalDocument(Document):
             a specified :attr:`mime_type`, it will be manually set to it's parent's :attr:`mime_type`.
         """
         for chunk in self.chunks:
-            chunk.granularity = self.granularity + 1
+            if chunk.granularity == 0:
+                chunk.granularity = self.granularity + 1
+            else:
+                self.granularity = chunk.granularity - 1
             if not chunk.mime_type:
                 chunk.mime_type = self.mime_type
 
@@ -109,17 +111,24 @@ class MultimodalDocument(Document):
         return self.modality_content_mapping.keys()
 
     @classmethod
-    def from_chunks(cls, chunks: List[Document]) -> 'MultimodalDocument':
+    def from_chunks(cls, chunks: Sequence[Document]) -> 'MultimodalDocument':
         """Create :class:`MultimodalDocument` from list of :class:`Document`.
 
         :param chunks: List of :class:`Document`.
         :return: An instance of :class:`MultimodalDocument`.
         """
+        granularities = [chunk.granularity for chunk in chunks]
+        if len(set(granularities)) != 1:
+            raise BadDocType('Each chunk should have the same granularity.')
         return cls(chunks=chunks)
 
     @classmethod
     def from_modality_content_mapping(cls, modality_content_mapping: Dict):
         """Create :class:`MultimodalDocument` from :attr:`modality_content_mapping`.
+
+        .. warning::
+            - Buld :class:`MultimodalDocument` from :attr:`modality_content_mapping` expects you assign
+              :attr:`Document.content` as the value of the dictionary.
 
         :param:`modality_content_mapping`: A Python dict, the keys are the modalities and the values
             are the :attr:`content` of the :class:`Document`

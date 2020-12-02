@@ -21,6 +21,7 @@ def chunk_1(visual_embedding):
     chunk = Document()
     chunk.modality = 'visual'
     chunk.embedding = visual_embedding
+    chunk.granularity = 0
     return chunk
 
 @pytest.fixture(scope='function')
@@ -28,6 +29,7 @@ def chunk_2(textual_embedding):
     chunk = Document()
     chunk.modality = 'textual'
     chunk.content = textual_embedding
+    chunk.granularity = 0
     return chunk
 
 @pytest.fixture(scope='function')
@@ -35,6 +37,15 @@ def chunk_3(textual_embedding):
     chunk = Document()
     chunk.modality = 'textual'
     chunk.embedding = textual_embedding
+    chunk.granularity = 0
+    return chunk
+
+@pytest.fixture(scope='function')
+def chunk_4(textual_embedding):
+    chunk = Document()
+    chunk.modality = 'textual'
+    chunk.embedding = textual_embedding
+    chunk.granularity = 1
     return chunk
 
 @pytest.fixture(scope='function')
@@ -93,9 +104,19 @@ def test_from_chunks_success(chunk_1, chunk_2):
     assert len(md.chunks) == 2
     assert md.granularity == md.chunks[0].granularity - 1
 
-def test_from_chunks_fail(chunk_1, chunk_2, chunk_3):
+def test_from_chunks_fail_length_mismatch(chunk_1, chunk_2, chunk_3):
+    """Initialize a :class:`MultimodalDocument` expect to fail which has 3 chunks
+    with 2 modalities.
+    """
     with pytest.raises(LengthMismatchException):
         MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2, chunk_3])
+
+def test_from_chunks_fail_multiple_granularity(chunk_1, chunk_2, chunk_4):
+    """Initialize a :class:`MultimodalDocument` expect to fail which has 3 chunks with different
+    granularity value, expect all chunks has the same granularity value.
+    """
+    with pytest.raises(BadDocType):
+        MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2, chunk_4])
 
 def test_from_content_category_mapping(modality_content_mapping):
     md = MultimodalDocument.from_modality_content_mapping(modality_content_mapping=modality_content_mapping)
