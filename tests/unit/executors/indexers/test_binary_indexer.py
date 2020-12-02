@@ -61,3 +61,18 @@ def test_binarypb_update(tmpdir):
         assert idxer.query(2) == b'same'
         assert idxer.query(3) == b'random'
         assert idxer.query(99) is None
+
+
+def test_binarypb_delete(tmpdir):
+    # FIXME how to open a specific file in a dir. os.path.join(tmpdir, file) doesn't work
+    with BinaryPbIndexer('pbdix2.bin') as idxer:
+        idxer.add([1, 2, 3], [b'oldvalue', b'same', b'random'])
+        idxer.save()
+        assert idxer.size == 3
+        assert idxer.query(1) == b'oldvalue'
+        idxer.delete(iter([1, 2]))
+        assert idxer.query(1) == None
+        assert idxer.query(2) == None
+        assert idxer.query(3) == b'random'
+
+

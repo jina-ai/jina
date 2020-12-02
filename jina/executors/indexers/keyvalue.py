@@ -28,7 +28,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         def __init__(self, path):
             with open(path + '.head', 'rb') as fp:
                 tmp = np.frombuffer(fp.read(), dtype=np.int64).reshape([-1, 4])
-                self.header = {r[0]: r[1:] for r in tmp}
+                self.header = {r[0]: None if np.array_equal(tmp[0][1:], (-1, -1, -1)) else r[1:] for r in tmp}
             self._body = open(path, 'r+b')
             self.body = self._body.fileno()
 
@@ -119,7 +119,20 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.query_handler = self.get_query_handler()
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
-        raise NotImplementedError
+        for key in keys:
+            self.write_handler.header.write(
+                np.array(
+                    (key, -1, -1, -1),
+                    dtype=np.int64
+                ).tobytes()
+            )
+            if self.query_handler:
+                self.query_handler.header[key] = None
+            pass
+
+
+
+
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
