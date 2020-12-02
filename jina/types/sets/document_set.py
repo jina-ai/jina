@@ -96,8 +96,11 @@ class MultiModalDocumentSet(DocumentSet):
     documents fulfill the MultiModal Document specifications
     """
 
-    def __init__(self, document_set: DocumentSet):
-        super().__init__(docs_proto=document_set._docs_proto)
+    def __init__(self, document_set:  Union[DocumentSet, 'RepeatedCompositeContainer', Sequence['Document']]):
+        if isinstance(document_set, DocumentSet):
+            super().__init__(docs_proto=document_set._docs_proto)
+        else:
+            super().__init__(docs_proto=document_set)
 
     def __iter__(self):
         from ..document.multimodal import MultimodalDocument
