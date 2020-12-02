@@ -28,7 +28,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         def __init__(self, path):
             with open(path + '.head', 'rb') as fp:
                 tmp = np.frombuffer(fp.read(), dtype=np.int64).reshape([-1, 4])
-                self.header = {r[0]: r[1:] for r in tmp}
+                self.header = {r[0]: None if np.array_equal(r[1:], (-1, -1, -1)) else r[1:] for r in tmp}
             self._body = open(path, 'r+b')
             self.body = self._body.fileno()
 
@@ -37,7 +37,6 @@ class BinaryPbIndexer(BaseKVIndexer):
 
     def get_add_handler(self):
         # keep _start position as in pickle serialization
-        # TODO does 'ab' make a difference?
         return self.WriteHandler(self.index_abspath, 'ab')
 
     def get_create_handler(self):
@@ -68,9 +67,9 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.body.write(value)
             self._size += 1
             # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
+        self.write_handler.flush()
 
     def query(self, key: int) -> Optional[bytes]:
-        # FIXME this shouldn't be required
         if self.query_handler is None:
             self.query_handler = self.get_query_handler()
         pos_info = self.query_handler.header.get(key, None)
@@ -81,39 +80,32 @@ class BinaryPbIndexer(BaseKVIndexer):
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         # check: hard fail (raises) on key not found
+        missed = []
         for key in keys:
             if self.query_handler.header.get(key) is None:
-                raise KeyError(f'Key {key} was not found in {self.save_abspath}')
+                missed.append(key)
+        if missed:
+            # FIXME get indexer name
+            raise KeyError(f'Key(s) {missed} were not found in {self.save_abspath}')
 
-        adder = self.get_add_handler()
-        _start = adder.body.tell()
-        for key, new_value in zip(keys, values):
-            l = len(new_value)  #: the length
-            p = int(_start / self._page_size) * self._page_size  #: offset of the page
-            r = _start % self._page_size  #: the remainder, i.e. the start position given the offset
-            # noinspection PyTypeChecker
-            adder.header.write(
+        self.delete(keys)
+        self.add(keys, values)
+        # update required
+        self.query_handler = self.get_query_handler()
+        return
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        for key in keys:
+            self.write_handler.header.write(
                 np.array(
-                    (key, p, r, r + l),
+                    (key, -1, -1, -1),
                     dtype=np.int64
                 ).tobytes()
             )
-            _start += l
-            adder.body.write(new_value)
-
-        # FIXME none of these fix the .save() error
-        # adder.flush()
-        # adder.close()
-        # del adder
-        # FIXME this is required in order to avoid the warning 'no update...'. Maybe there's a better way?
-        # self.touch()
-
-        # rebuild
-        # TODO is this required?
-        # self.query_handler = self.get_query_handler()
-
-    def delete(self, keys: Iterator[int], *args, **kwargs):
-        raise NotImplementedError
+            if self.query_handler:
+                self.query_handler.header[key] = None
+            self._size -= 1
+            pass
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
