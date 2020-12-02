@@ -535,24 +535,24 @@ class Document:
     def CopyFrom(self, doc: 'Document'):
         self._document.CopyFrom(doc.as_pb_object)
 
-    def traverse_apply(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs) -> None:
+    def traverse(self, traversal_paths: Tuple[str], callback_fn: Callable, *args, **kwargs) -> None:
         """Traverse leaves of the document."""
         for path in traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec([self], None, None, [], apply_func, *args, **kwargs)
-            self._traverse_rec([self], None, None, path, apply_func, *args, **kwargs)
+                self._traverse_rec([self], None, None, [], callback_fn, *args, **kwargs)
+            self._traverse_rec([self], None, None, path, callback_fn, *args, **kwargs)
 
-    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, apply_func, *args, **kwargs):
+    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, callback_fn, *args, **kwargs):
         if path:
             next_edge = path[0]
             for doc in docs:
                 if next_edge == 'm':
                     self._traverse_rec(
-                        doc.matches, doc, 'matches', path[1:], apply_func, *args, **kwargs
+                        doc.matches, doc, 'matches', path[1:], callback_fn, *args, **kwargs
                     )
                 if next_edge == 'c':
                     self._traverse_rec(
-                        doc.chunks, doc, 'chunks', path[1:], apply_func, *args, **kwargs
+                        doc.chunks, doc, 'chunks', path[1:], callback_fn, *args, **kwargs
                     )
         else:
-            apply_func(docs, parent_doc, parent_edge_type, *args, **kwargs)
+            callback_fn(docs, parent_doc, parent_edge_type, *args, **kwargs)
