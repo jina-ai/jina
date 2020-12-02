@@ -92,11 +92,8 @@ class DocumentSet(MutableSequence):
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
 
-    def travers(self, traversal_paths: Tuple[str], callback_fn: Callable, *args, **kwargs):
-        [d.traverse_apply(traversal_paths, callback_fn, *args, **kwargs) for d in self]
-
-    def traverse_apply(self, traversal_paths: Tuple[str], apply_func: Callable, *args, **kwargs):
-        [d.traverse_apply(traversal_paths, apply_func, *args, **kwargs) for d in self]
+    def traverse(self, traversal_paths: Tuple[str], callback_fn: Callable, *args, **kwargs):
+        [d.traverse(traversal_paths, callback_fn, *args, **kwargs) for d in self]
 
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
