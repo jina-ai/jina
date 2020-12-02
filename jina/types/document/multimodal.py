@@ -3,7 +3,6 @@ from typing import Dict, List, TypeVar
 import numpy as np
 
 from . import Document
-from ..sets.chunk_set import ChunkSet
 from ...proto import jina_pb2
 from ..ndarray.generic import NdArray
 from ...excepts import LengthMismatchException, BadDocType
@@ -12,6 +11,7 @@ __all__ = ['MultimodalDocument', 'DocumentContentType']
 
 DocumentContentType = TypeVar('DocumentContentType', bytes, str,
                               np.ndarray, jina_pb2.NdArrayProto, NdArray)
+
 
 class MultimodalDocument(Document):
     """
@@ -23,7 +23,9 @@ class MultimodalDocument(Document):
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
         - It assumes that every :class:`MultimodalDocument` have at least two chunks.
     """
-    def __init__(self, document = None, chunks: List[Document] = None, modality_content_mapping: Dict = None, copy: bool = False, **kwargs):
+
+    def __init__(self, document=None, chunks: List[Document] = None, modality_content_mapping: Dict = None,
+                 copy: bool = False, **kwargs):
         """
 
         :param document: the document to construct from. If ``bytes`` is given

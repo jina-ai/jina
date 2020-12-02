@@ -7,9 +7,9 @@ from typing import Tuple, Dict, List
 import numpy as np
 
 from .encode import BaseEncodeDriver
+from ..types.sets.document_set import MultiModalDocumentSet
 
 if False:
-    from ..types.document.multimodal import MultimodalDocument
     from ..types.sets import DocumentSet
 
 
@@ -67,7 +67,7 @@ class MultiModalDriver(BaseEncodeDriver):
         content_by_modality = defaultdict(list)  # array of num_rows equal to num_docs and num_columns equal to
 
         valid_docs = []
-        for doc in docs:
+        for doc in MultiModalDocumentSet(docs):
             if doc.modality_content_mapping:
                 valid_docs.append(doc)
                 for modality in self.positional_modality:

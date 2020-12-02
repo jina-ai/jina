@@ -80,8 +80,9 @@ def multimodal_all_types_documents():
     return docs
 
 
-def test_multimodal_all_types_parallel(multimodal_all_types_documents):
+def test_multimodal_all_types_parallel(multimodal_all_types_documents, check_callback_called):
     def validate_response(resp):
+        check_callback_called.called = True
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
             np.testing.assert_almost_equal(NdArray(doc.embedding).value,

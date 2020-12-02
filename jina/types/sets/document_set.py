@@ -88,3 +88,18 @@ class DocumentSet(MutableSequence):
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
+
+
+class MultiModalDocumentSet(DocumentSet):
+    """:class:`MultiModalDocumentSet` is a mutable sequence of :class:`Document`,
+    It wraps itself a DocumentSet to guarantee that it iterates guaranteeing that the generated
+    documents fulfill the MultiModal Document specifications
+    """
+
+    def __init__(self, document_set: DocumentSet):
+        super().__init__(docs_proto=document_set._docs_proto)
+
+    def __iter__(self):
+        from ..document.multimodal import MultimodalDocument
+        for d in self._docs_proto:
+            yield MultimodalDocument(d)
