@@ -4,11 +4,11 @@ __license__ = "Apache-2.0"
 import asyncio
 from typing import Dict, Union, Callable
 
-from ..proto import jina_pb2
 from ..peapods.pea import BasePea
-from ..peapods.zmq import AsyncCtrlZmqlet, send_message_async, recv_message_async, send_ctrl_message
 
 if False:
+    import argparse
+    from ..types.request import Request
     from .python import PyClient, InputFnType
 
 
