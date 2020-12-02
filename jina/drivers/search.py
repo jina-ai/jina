@@ -4,8 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Tuple
 
 from . import BaseExecutableDriver, QuerySetReader
-from ..types.document import uid, Document
-from ..types.document.helper import extract_embedding
+from ..types.document import Document
 
 if False:
     from ..types.sets import DocumentSet
@@ -108,7 +107,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._fill_embedding = fill_embedding
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, doc_pts, bad_doc_ids = extract_embedding(docs)
+        embed_vecs, doc_pts, bad_docs = docs.all_embeddings
 
         if not doc_pts:
             return
@@ -117,8 +116,8 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         if self._fill_embedding and not fill_fn:
             self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method')
 
-        if bad_doc_ids:
-            self.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
+        if bad_docs:
+            self.logger.warning(f'these bad docs can not be added: {bad_docs}')
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
         op_name = self.exec.__class__.__name__
         for doc, topks, scores in zip(doc_pts, idx, dist):

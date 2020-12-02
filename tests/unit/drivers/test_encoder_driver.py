@@ -1,11 +1,9 @@
 from typing import Any
 
 import numpy as np
-
-from jina import Document
+from jina import Document, DocumentSet
 from jina.drivers.encode import EncodeDriver
 from jina.executors.encoders import BaseEncoder
-from jina.types.ndarray.generic import NdArray
 
 
 class MockEncoder(BaseEncoder):
@@ -33,7 +31,7 @@ def create_documents_to_encode(num_docs):
         doc = Document(content=np.array([idx]))
 
         docs.append(doc)
-    return docs
+    return DocumentSet(docs)
 
 
 def test_encode_driver():

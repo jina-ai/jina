@@ -2,7 +2,7 @@ import json
 import os
 import pkgutil
 from pkgutil import iter_modules
-from typing import Dict, Sequence, Any, Optional
+from typing import Dict, Sequence, Any, Optional, List
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -68,7 +68,7 @@ def _list_local(logger) -> Optional[Dict[str, Any]]:
 
 
 def _list(logger, image_name: str = None, image_kind: str = None,
-          image_type: str = None, image_keywords: Sequence = ()) -> Optional[Dict[str, Any]]:
+          image_type: str = None, image_keywords: Sequence = ()) -> Optional[List[Dict[str, Any]]]:
     """ Use Hub api to get the list of filtered images
 
     :param logger: logger to use
