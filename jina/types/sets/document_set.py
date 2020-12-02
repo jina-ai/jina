@@ -1,6 +1,7 @@
 from collections.abc import MutableSequence
-from typing import Iterable, Union, Sequence
+from typing import Union, Sequence, Iterable, Tuple
 
+import numpy as np
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 
 from ...proto.jina_pb2 import DocumentProto
@@ -88,3 +89,44 @@ class DocumentSet(MutableSequence):
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
+
+    @property
+    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+        """Return all embeddings from every document in this set as a ndarray
+
+        :return a tuple of embedding in :class:`np.ndarray`,
+                the corresponding documents in a :class:`DocumentSet`,
+                and the documents have no embedding in a :class:`DocumentSet`.
+        """
+        return self._extract_docs('embedding')
+
+    @property
+    def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+        """Return all embeddings from every document in this set as a ndarray
+
+        :return a tuple of embedding in :class:`np.ndarray`,
+                the corresponding documents in a :class:`DocumentSet`,
+                and the documents have no contents in a :class:`DocumentSet`.
+        """
+        return self._extract_docs('content')
+
+    def _extract_docs(self, attr: str) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+        contents = []
+        docs_pts = []
+        bad_docs = []
+
+        for doc in self:
+            content = getattr(doc, attr)
+
+            if content is not None:
+                contents.append(content)
+                docs_pts.append(doc)
+            else:
+                bad_docs.append(doc)
+
+        contents = np.stack(contents) if contents else None
+        return contents, DocumentSet(docs_pts), DocumentSet(bad_docs)
+
+    def __bool__(self):
+        """To simulate ```l = []; if l: ...``` """
+        return bool(len(self))

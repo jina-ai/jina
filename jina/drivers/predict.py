@@ -5,7 +5,6 @@ import numpy as np
 from . import BaseExecutableDriver
 from ..helper import typename
 from ..types.document import Document
-from ..types.document.helper import extract_embedding
 
 if False:
     from ..types.sets import DocumentSet
@@ -38,7 +37,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts, bad_doc_ids = extract_embedding(docs)
+        embed_vecs, docs_pts, bad_doc_ids = docs.all_embeddings
 
         if bad_doc_ids:
             self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
@@ -153,7 +152,7 @@ class Prediction2DocBlobDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts, bad_doc_ids = extract_embedding(docs)
+        embed_vecs, docs_pts, bad_doc_ids = docs.all_embeddings
 
         if bad_doc_ids:
             self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')

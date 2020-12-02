@@ -4,8 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Tuple
 
 from . import BaseExecutableDriver, QuerySetReader
-from ..types.document import uid, Document
-from ..types.document.helper import extract_embedding
+from ..types.document import Document
 
 if False:
     from ..types.sets import DocumentSet
@@ -108,7 +107,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._fill_embedding = fill_embedding
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, doc_pts, bad_doc_ids = extract_embedding(docs)
+        embed_vecs, doc_pts, bad_doc_ids = docs.all_embeddings
 
         if not doc_pts:
             return
