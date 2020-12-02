@@ -437,6 +437,14 @@ class Document:
             # ``None`` is also considered as bad type
             raise TypeError(f'{typename(value)} is not recognizable')
 
+    @property
+    def granularity(self):
+        return self._document.granularity
+
+    @granularity.setter
+    def granularity(self, granularity_value: int):
+        self._document.granularity = granularity_value
+
     def convert_buffer_to_blob(self, **kwargs):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
         set :attr:`blob` accordingly.

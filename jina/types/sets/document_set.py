@@ -130,3 +130,21 @@ class DocumentSet(MutableSequence):
     def __bool__(self):
         """To simulate ```l = []; if l: ...``` """
         return bool(len(self))
+ 
+
+class MultiModalDocumentSet(DocumentSet):
+    """:class:`MultiModalDocumentSet` is a mutable sequence of :class:`Document`,
+    It wraps itself a DocumentSet to guarantee that it iterates guaranteeing that the generated
+    documents fulfill the MultiModal Document specifications
+    """
+
+    def __init__(self, document_set:  Union[DocumentSet, 'RepeatedCompositeContainer', Sequence['Document']]):
+        if isinstance(document_set, DocumentSet):
+            super().__init__(docs_proto=document_set._docs_proto)
+        else:
+            super().__init__(docs_proto=document_set)
+
+    def __iter__(self):
+        from ..document.multimodal import MultimodalDocument
+        for d in self._docs_proto:
+            yield MultimodalDocument(d)
