@@ -12,7 +12,7 @@ We'll dive into these concepts in this document:
 
 - [Chunks in Jina](#chunks-in-jina)
 - [Matches in Jina](#matches-in-jina)
-- [Recursive structure and Traversal](#recursive-structure-and-traversal)
+- [Let's go deeper: Recursive structure and Traversal](#recursive-structure-and-traversal)
 ---
 
 ## Chunks in Jina
@@ -32,13 +32,13 @@ with Document() as root:
 # Initialised a document as root with 0 chunks.
 print(len(root.chunks))
 >>> 0
-# Initialise a document and add as a chunk to root.
+# Initialise two documents and add as a chunk to root.
 with Document() as chunk1:
     chunk1.text = 'What is love?'
     root.chunks.add(chunk1)
-with Document() as chunk1:
+with Document() as chunk2:
     chunk1.text = 'Oh baby do not hurt me.'
-    root.chunks.add(chunk1)
+    root.chunks.add(chunk2)
 # Now the document has 2 chunks
 print(len(root.chunks))
 >>> 2
