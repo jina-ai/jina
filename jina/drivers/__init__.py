@@ -114,7 +114,7 @@ class QuerySetReader:
             raise AttributeError
         if name in self._init_kwargs_dict:
             return self._get_parameter(name, default=self._init_kwargs_dict[name])
-        raise AttributeError(name)
+        raise AttributeError
 
 
 class DriverType(type):
