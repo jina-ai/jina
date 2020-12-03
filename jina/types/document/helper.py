@@ -1,51 +1,8 @@
-from typing import Iterable, Tuple, List
-
-import numpy as np
+from typing import Iterable
 
 from . import Document
 
-__all__ = ['extract_embedding', 'extract_content', 'DocGroundtruthPair']
-
-
-def extract_embedding(docs: Iterable['Document']) -> Tuple['np.ndarray',
-                                                           List['Document'], List[Tuple[str, str]]]:
-    return _extract_docs(docs, 'embedding')
-
-
-def extract_content(docs: Iterable['Document']) -> Tuple['np.ndarray',
-                                                         List['Document'], List[Tuple[str, str]]]:
-    return _extract_docs(docs, 'content')
-
-
-def _extract_docs(docs: Iterable['Document'], attr: str) -> Tuple['np.ndarray',
-                                                                  List['Document'], List[Tuple[str, str]]]:
-    """Iterate over a list of protobuf documents and extract chunk-level information from them
-
-    :param docs: an iterable of protobuf documents
-    :param embedding: an indicator of extracting embedding or not.
-                    If ``True`` then all doc-level embedding are extracted.
-                    If ``False`` then ``text``, ``buffer``, ``blob`` info of each doc are extracted
-    :return: A tuple of 3 pieces:
-
-            - a numpy ndarray of extracted info
-            - the corresponding doc references
-            - the doc_id list where the doc has no contents, useful for debugging
-    """
-    contents = []
-    docs_pts = []
-    bad_doc_ids = []
-
-    for doc in docs:
-        content = getattr(doc, attr)
-
-        if content is not None:
-            contents.append(content)
-            docs_pts.append(doc)
-        else:
-            bad_doc_ids.append((doc.id, doc.parent_id))
-
-    contents = np.stack(contents) if contents else None
-    return contents, docs_pts, bad_doc_ids
+__all__ = ['DocGroundtruthPair']
 
 
 class DocGroundtruthPair:

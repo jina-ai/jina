@@ -7,25 +7,10 @@ from typing import Tuple, Dict, List
 import numpy as np
 
 from .encode import BaseEncodeDriver
+from ..types.sets.document_set import MultimodalDocumentSet
 
 if False:
-    from ..types.document import Document
     from ..types.sets import DocumentSet
-
-
-def _extract_modalities_from_document(doc: 'Document'):
-    """Returns a dictionary of document content (embedding, text, blob or buffer) with `modality` as its key
-
-    TODO: this should be part of the Document class, but this logic looks really specific @Joan
-    """
-    doc_content = {}
-    for chunk in doc.chunks:
-        modality = chunk.modality
-        if modality in doc_content:
-            return None
-        else:
-            doc_content[modality] = chunk.embedding if chunk.embedding is not None else chunk.content
-    return doc_content
 
 
 class MultiModalDriver(BaseEncodeDriver):
@@ -82,12 +67,11 @@ class MultiModalDriver(BaseEncodeDriver):
         content_by_modality = defaultdict(list)  # array of num_rows equal to num_docs and num_columns equal to
 
         valid_docs = []
-        for doc in docs:
-            doc_content = _extract_modalities_from_document(doc)
-            if doc_content:
+        for doc in MultimodalDocumentSet(docs):
+            if doc.modality_content_mapping:
                 valid_docs.append(doc)
                 for modality in self.positional_modality:
-                    content_by_modality[modality].append(doc_content[modality])
+                    content_by_modality[modality].append(doc.extract_content_from_modality(modality))
             else:
                 self.logger.warning(f'Invalid doc {doc.id}. Only one chunk per modality is accepted')
 

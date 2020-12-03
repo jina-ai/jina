@@ -244,7 +244,7 @@ def batching(func: Callable[[Any], np.ndarray] = None,
 
             b_size = (batch_size(data) if callable(batch_size) else batch_size) or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
-            if b_size is None:
+            if b_size is None or data is None:
                 return func(*args, **kwargs)
 
             default_logger.debug(
@@ -337,11 +337,12 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
     def _batching(func):
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
+            data = args[slice_on]
             # priority: decorator > class_attribute
             # by default data is in args[1:] (self needs to be taken into account)
             b_size = batch_size or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
-            if b_size is None:
+            if b_size is None or data is None:
                 return func(*args, **kwargs)
 
             args = list(args)
