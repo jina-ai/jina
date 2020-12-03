@@ -1,9 +1,8 @@
 ## Multi & Cross Modality
 
-Jina is a data type agnostic framework. It basically can work with any data type. 
-One just needs to find a way to project the documents of this type into an embedding space.
+Jina is a data type-agnostic framework. It basically can work with any kind of data. 
 
-Jina does not only offer this but also allows you to run cross- and multi-modal search flows. 
+Jina does not only offer the possibility to work with any data, but also allows you to run cross- and multi-modal search flows. 
 To better understand what this implies we first need to understand the concept of modality. 
 
 One may think that different modalities correspond to different kinds of data (images and text in this case).
@@ -21,19 +20,19 @@ Now that we are agreed on the concept of modality, we can describe cross-modal a
 The main difference between these two search modes is that for cross-modal, there is a direct mapping between a single document or chunk and a
 vector in embedding space, while for MultiModal this does not hold true, since 2 or more documents might be combined into a single vector.
  
-This unlocks a lot of powerful patterns and makes jina fully flexible and agnostic to what can be searched.
+This unlocks a lot of powerful patterns and makes Jina fully flexible and agnostic to what can be searched.
  
  - It allows to look for images by giving corresponding caption descriptions (https://github.com/jina-ai/examples/tree/master/cross-modal-search)
- - It allows to merge visual and textual information in a multimodal way to look for images with transformation descriptions ( - It allows to look for images by giving corresponding caption descriptions (https://github.com/jina-ai/examples/tree/master/multi-modal-search-tirg)
+ - It allows to merge visual and textual information in a multi-modal way to look for images with transformation descriptions ( - It allows to look for images by giving corresponding caption descriptions (https://github.com/jina-ai/examples/tree/master/multi-modal-search-tirg)
  
 ### Cross modal search
 
-Supporting cross-modal search in Jina is very easy. One just needs to properly set the modality tags of the input documents
+Supporting cross-modal search in Jina is very easy. One just needs to properly set the modality field of the input documents
 and design the Flow in such a way that the queries target the desired embedding space.
 
 ### Multi modal search
 
-In order to support MultiModal search and to make it easy to build such applications, jina provides three new concepts.
+In order to support multi-modal search and to make it easy to build such applications, Jina provides three new concepts.
  
  - `MultiModalDocument`: `MultiModalDocument` is a document composed by more than one chunk with different modalities. It makes it easy
  for the client and for the multimodal drivers to build and work with these constructions.
