@@ -80,7 +80,7 @@ def test_modalities_property(multimodal_document):
 
 
 def test_modality_content_mapping_property(multimodal_document, visual_embedding, textual_embedding):
-    mapping = multimodal_document.modality_content_mapping
+    mapping = multimodal_document.modality_content_map
     assert isinstance(mapping, dict)
     np.testing.assert_array_equal(mapping['textual'], textual_embedding)
     np.testing.assert_array_equal(mapping['visual'], visual_embedding)
@@ -131,7 +131,7 @@ def test_from_chunks_fail_multiple_granularity(chunk_1, chunk_2, chunk_4):
 
 
 def test_from_content_category_mapping(modality_content_mapping):
-    md = MultimodalDocument(modality_content_mapping=modality_content_mapping)
+    md = MultimodalDocument(modality_content_map=modality_content_mapping)
     assert len(md.modalities) == 2
     assert 'visual' and 'textual' in md.modalities
     assert len(md.chunks) == 2

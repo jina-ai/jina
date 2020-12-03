@@ -19,7 +19,7 @@ class MultimodalDocument(Document):
 
     def __init__(self, document: Optional[DocumentSourceType] = None,
                  chunks: Sequence[Document] = None,
-                 modality_content_mapping: Dict = None,
+                 modality_content_map: Dict[str, DocumentContentType] = None,
                  copy: bool = False, **kwargs):
         """
 
@@ -42,14 +42,14 @@ class MultimodalDocument(Document):
               :attr:`Document.content` as the value of the dictionary.
         """
         super().__init__(document=document, copy=copy, **kwargs)
-        if chunks or modality_content_mapping:
+        if chunks or modality_content_map:
             if chunks:
                 granularities = [chunk.granularity for chunk in chunks]
                 if len(set(granularities)) != 1:
                     raise BadDocType('Each chunk should have the same granularity.')
                 self.chunks.extend(chunks)
-            elif modality_content_mapping:
-                self.modality_content_mapping = modality_content_mapping
+            elif modality_content_map:
+                self.modality_content_map = modality_content_map
             self._handle_chunk_level_attributes()
 
     @property
@@ -85,7 +85,7 @@ class MultimodalDocument(Document):
                 chunk.mime_type = self.mime_type
 
     @property
-    def modality_content_mapping(self) -> Dict:
+    def modality_content_map(self) -> Dict:
         """Get the mapping of modality and content, the mapping is represented as a :attr:`dict`, the keys
         are the modalities of the chunks, the values are the corresponded content of the chunks.
 
@@ -97,8 +97,8 @@ class MultimodalDocument(Document):
             result[modality] = chunk.embedding if chunk.embedding is not None else chunk.content
         return result
 
-    @modality_content_mapping.setter
-    def modality_content_mapping(self, value: Dict[str, Any]):
+    @modality_content_map.setter
+    def modality_content_map(self, value: Dict[str, Any]):
         for modality, content in value.items():
             with Document() as chunk:
                 chunk.modality = modality
@@ -112,7 +112,7 @@ class MultimodalDocument(Document):
         :return: Content of the corresponded modality.
         """
         if isinstance(modality, str):
-            return self.modality_content_mapping.get(modality, None)
+            return self.modality_content_map.get(modality, None)
         else:
             raise TypeError(f'{typename(modality)} is not supported')
 
@@ -122,4 +122,4 @@ class MultimodalDocument(Document):
 
         :return: List of modalities extracted from chunks of the document.
         """
-        return list(self.modality_content_mapping.keys())
+        return list(self.modality_content_map.keys())
