@@ -562,7 +562,5 @@ class Document:
                     self._traverse_rec(
                         doc.chunks, doc, 'chunks', path[1:], callback_fn, *args, **kwargs
                     )
-                else:
-                    raise ValueError(f'"{next_edge}" from "{path}" is not a valid traversal path')
         else:
             callback_fn(docs, parent_doc, parent_edge_type, *args, **kwargs)
