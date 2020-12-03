@@ -18,19 +18,25 @@ def validate(req):
     assert len(chunk_ids) == 20
 
 
-def test_dummy_seg():
+def test_dummy_seg(mocker):
+    response_mock = mocker.Mock(wraps=validate)
     f = Flow().add(uses='DummySegment')
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+    response_mock.assert_called()
 
 
-def test_dummy_seg_random():
+def test_dummy_seg_random(mocker):
+    response_mock = mocker.Mock(wraps=validate)
     f = Flow().add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-random.yml'))
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+    response_mock.assert_called()
 
 
-def test_dummy_seg_not_random():
+def test_dummy_seg_not_random(mocker):
+    response_mock = mocker.Mock(wraps=validate)
     f = Flow().add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-not-random.yml'))
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+    response_mock.assert_called()
