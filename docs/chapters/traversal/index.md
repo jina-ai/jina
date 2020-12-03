@@ -55,12 +55,20 @@ root.id == root.chunks[0].parent_id
 >>> True
 ```
 
-Two important things happened when adding the `chunk` to `root`:
-1. The granularity of the chunk has been increased by 1 (default 0).
-2. The `chunk` has been referenced to it's parent: `root`.
-
 This can be seen in the image blow:
 
 ![granularity](img/granularity.png)
+
+The previous code sample & graph demonstrates the basic idea of a `Chunk` in a `Document`.
+At the beginning, we initialised a `Document` with `granularity=0` (by default).
+We then initialised two chunks and add them to the `root` document.
+Two things happened when adding the `chunk` to `root`:
+
+1. The granularity of the chunk has been increased by 1 (default 0).
+2. The `chunk` has been referenced to it's parent: `root`.
+
+This allows Jina (and you) to query chunks and reference back to it's root document at any `granularity` level.
+
+
 
 
