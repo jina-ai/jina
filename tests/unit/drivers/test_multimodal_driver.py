@@ -1,12 +1,10 @@
-import pytest
 import numpy as np
-
-from jina import Document
+import pytest
+from jina import Document, DocumentSet
 from jina.drivers.multimodal import MultiModalDriver
-from jina.types.sets.document_set import MultimodalDocumentSet
+from jina.excepts import LengthMismatchException
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 from jina.types.document.multimodal import MultimodalDocument
-from jina.excepts import LengthMismatchException
 
 
 @pytest.fixture(scope='function')
@@ -90,7 +88,7 @@ def simple_multimodal_driver():
 
 def test_multimodal_driver(simple_multimodal_driver, mock_multimodal_encoder, doc_with_multimodal_chunks):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder, pea=None)
-    simple_multimodal_driver._apply_all(MultimodalDocumentSet([doc_with_multimodal_chunks]))
+    simple_multimodal_driver._apply_all(DocumentSet([doc_with_multimodal_chunks]))
     doc = doc_with_multimodal_chunks
     assert len(doc.chunks) == 3
     visual1 = doc.chunks[0]
@@ -126,7 +124,7 @@ def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_drive
                                                          doc_with_multimodal_chunks_wrong):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder, pea=None)
     with pytest.raises(LengthMismatchException):
-        simple_multimodal_driver._apply_all(MultimodalDocumentSet([doc_with_multimodal_chunks_wrong]))
+        simple_multimodal_driver._apply_all(DocumentSet([doc_with_multimodal_chunks_wrong]))
 
 
 @pytest.fixture
@@ -137,7 +135,7 @@ def mock_multimodal_encoder_shuffled():
 def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_multimodal_encoder_shuffled,
                                                doc_with_multimodal_chunks):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder_shuffled, pea=None)
-    simple_multimodal_driver._apply_all(MultimodalDocumentSet([doc_with_multimodal_chunks]))
+    simple_multimodal_driver._apply_all(DocumentSet([doc_with_multimodal_chunks]))
     doc = doc_with_multimodal_chunks
     assert len(doc.chunks) == 3
     visual1 = doc.chunks[2]

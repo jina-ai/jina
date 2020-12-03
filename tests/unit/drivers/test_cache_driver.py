@@ -3,7 +3,7 @@ from typing import Any
 
 import numpy as np
 import pytest
-
+from jina import DocumentSet
 from jina.drivers.cache import BaseCacheDriver
 from jina.executors.indexers.cache import DocIDCache
 from jina.proto import jina_pb2
@@ -20,24 +20,27 @@ class MockCacheDriver(BaseCacheDriver):
     def on_hit(self, req_doc: 'jina_pb2.DocumentProto', hit_result: Any) -> None:
         raise NotImplementedError
 
+    @property
+    def docs(self):
+        return DocumentSet(list(random_docs(10)))
+
 
 def test_cache_driver_twice(tmp_path):
     filename = tmp_path / 'test-tmp.bin'
-    docs = list(random_docs(10))
+    docs = DocumentSet(list(random_docs(10)))
     driver = MockCacheDriver()
     with DocIDCache(filename) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, pea=None)
-
-        driver._traverse_apply(docs)
+        driver.__call__()
 
         with pytest.raises(NotImplementedError):
             # duplicate docs
-            driver._traverse_apply(docs)
+            driver.__call__()
 
         # new docs
         docs = list(random_docs(10))
-        driver._traverse_apply(docs)
+        driver.__call__()
 
         # check persistence
         assert os.path.exists(filename)

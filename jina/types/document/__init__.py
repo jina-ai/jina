@@ -19,8 +19,7 @@ from ...proto import jina_pb2
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str,
-                              np.ndarray, jina_pb2.NdArrayProto, NdArray)
+DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
 DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
 
