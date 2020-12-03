@@ -397,12 +397,109 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 #### MultiModalDocument
   
  A MultimodalDocument in Jina is a document composed by more than one chunks with different modalities.
- One can build a Multimodal document by providing the modality names and the content of the chunks.
+ 
+There are different ways to build your multimodal document: 
+ 
+##### From content modality mapping
+Build a Multimodal document by providing the modality names and the content of the chunks.
   
 ```python
-  
+    from jina.types.document.multimodal import MultimodalDocument
+    from PIL import Image
+    image_title = 'my holiday picture'
+    image_description = 'the family having fun on the beach'
+    image = Image.open('path/to/image.jpg')
+    content_mapping = {
+        'title': image_title,
+        'description': image_description,
+        'image': image
+    }   
+    document = MultimodalDocument.from_modality_content_mapping(content_mapping)
 ```
 
+##### From chunks with different modalities
+Build a Multimodal document by creating chunks. Useful when extra metadata needs to exist in every chunk
+  
+```python
+    from jina.types import Document
+    from jina.types.document.multimodal import MultimodalDocument
+    from PIL import Image
+    chunk_title = Document()
+    chunk_title.text = 'my holiday picture'
+    chunk_title.modality = 'title'
+    
+    chunk_description = Document()
+    chunk_description.text = 'the family having fun on the beach'
+    chunk_description.modality = 'description'
+
+    chunk_image = Document()
+    chunk_image.blob =  Image.open('path/to/image.jpg')
+    chunk_image.modality = 'description'
+    chunk_image.tags['date'] = '10/08/2019' 
+  
+    document = MultimodalDocument.from_chunks([chunk_title, chunk_description, chunk_image])
+```
+
+##### From a simple Document
+A Multimodal document is a subclass of the primitive Document data type. Therefore, we can also construct a 
+Multimodal document from a primitive Document type. It only needs to fulfill the requirements for these documents.
+It must have more than one chunk, and each of them must belong to a different modality.  
+  
+```python
+    from jina.types import Document
+    from jina.types.document.multimodal import MultimodalDocument
+    from PIL import Image
+    chunk_title = Document()
+    chunk_title.text = 'my holiday picture'
+    chunk_title.modality = 'title'
+    
+    chunk_description = Document()
+    chunk_description.text = 'the family having fun on the beach'
+    chunk_description.modality = 'description'
+
+    chunk_image = Document()
+    chunk_image.blob =  Image.open('path/to/image.jpg')
+    chunk_image.modality = 'description'
+    chunk_image.tags['date'] = '10/08/2019' 
+    
+    document = Document()
+    document.chunks.append(chunk_title)
+    document.chunks.append(chunk_description)
+    document.chunks.append(chunk_image)
+
+    multimodal_document = MultimodalDocument(document)
+```
+
+#### MultimodalEncoder and MultimodalDriver
+
+In order to extract fusion embeddings from different modalities we have `MultimodalEncoders`.
+An example of a `MultimodalEncoder` can be found in https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg
+
+```yaml
+!TirgMultiModalEncoder
+with:
+  model_path: checkpoint.pth
+  texts_path: texts.pkl
+  positional_modality: ['image', 'text']
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !MultiModalDriver {}
+```
+
+A `MultimodalEncoder` expects a variable number of arguments in the `encode` interface.
+
+```python
+    def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
+        """
+        :param: data: M arguments of shape `B x (D)` numpy ``ndarray``, `B` is the size of the batch, `M` is the number of modalities
+        :return: a `B x D` numpy ``ndarray``
+        """
+```
+
+The required argument for every `MultimodalEncoder` is the `positional_modality` argument, which is used to guarantee
+that the executor will receive from the `MultimodalDriver` will provide `data` in the correct expected order. In this case
+the encoder expects to have `image` data in the first argument, and `text` in the second one.
 
 ## Learn
 

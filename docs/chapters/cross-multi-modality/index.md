@@ -35,10 +35,9 @@ and design the Flow in such a way that the queries target the desired embedding 
 
 In order to support MultiModal search and to make it easy to build such applications, jina provides three new concepts.
  
- - MultiModalDocument: MultiModalDocument is a document composed by more than one chunk with different modalities. It makes it easy
+ - `MultiModalDocument`: `MultiModalDocument` is a document composed by more than one chunk with different modalities. It makes it easy
  for the client and for the multimodal drivers to build and work with these constructions.
- - MultiModalEncoder: MultiModalEncoder is a new family of Executors, derived from the Encoders, that encodes data coming from more than 
+ - `MultiModalEncoder`: `MultiModalEncoder` is a new family of Executors, derived from the Encoders, that encodes data coming from more than 
  one modality into a single embedding vector.
- - MultiModalDriver: MultiModalDriver is a new Driver designed to extract the expected content from every chunk inside MultiModalDocuments
+ - `MultiModalDriver`: `MultiModalDriver` is a new Driver designed to extract the expected content from every chunk inside MultiModalDocuments
  and to provide it to the executor.
-
