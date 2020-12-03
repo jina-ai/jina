@@ -142,6 +142,10 @@ class Document:
 
         self.id = custom_id
 
+        if custom_id is None:
+            custom_id = random.random()
+        self.id = custom_id
+
         self.set_attrs(**kwargs)
 
     def __getattr__(self, name: str):
@@ -404,12 +408,6 @@ class Document:
                 self._document.mime_type = r
             else:
                 raise ValueError(f'{value} is not a valid MIME type')
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        return self
 
     @property
     def content_type(self) -> str:
