@@ -68,12 +68,9 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._start += l
             self.write_handler.body.write(value)
             self._size += 1
-            # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
         self.write_handler.flush()
 
     def query(self, key: int) -> Optional[bytes]:
-        if self.query_handler is None:
-            self.query_handler = self.get_query_handler()
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info
@@ -87,13 +84,13 @@ class BinaryPbIndexer(BaseKVIndexer):
             if self.query_handler.header.get(key) is None:
                 missed.append(key)
         if missed:
-            # FIXME get indexer name
             raise KeyError(f'Key(s) {missed} were not found in {self.save_abspath}')
 
+        # hack
+        self.query_handler.close()
+        self.handler_mutex = False
         self.delete(keys)
         self.add(keys, values)
-        # update required
-        self.query_handler = self.get_query_handler()
         return
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
