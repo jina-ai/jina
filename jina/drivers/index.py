@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 from . import BaseExecutableDriver
-from ..types.document.helper import extract_embedding
 
 if False:
     from ..types.sets import DocumentSet
@@ -22,10 +21,10 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, docs_pts, bad_doc_ids = extract_embedding(docs)
+        embed_vecs, docs_pts, bad_docs = docs.all_embeddings
 
-        if bad_doc_ids:
-            self.pea.logger.warning(f'these bad docs can not be added: {bad_doc_ids}')
+        if bad_docs:
+            self.pea.logger.warning(f'these bad docs can not be added: {bad_docs}')
 
         if docs_pts:
             self.exec_fn(np.array([hash(doc.id) for doc in docs_pts]), np.stack(embed_vecs))

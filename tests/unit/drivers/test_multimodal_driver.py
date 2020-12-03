@@ -1,9 +1,12 @@
-import numpy as np
 import pytest
+import numpy as np
 
-from jina.drivers.multimodal import MultiModalDriver
-from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 from jina import Document
+from jina.drivers.multimodal import MultiModalDriver
+from jina.types.sets.document_set import MultimodalDocumentSet
+from jina.executors.encoders.multimodal import BaseMultiModalEncoder
+from jina.types.document.multimodal import MultimodalDocument
+from jina.excepts import LengthMismatchException
 
 
 @pytest.fixture(scope='function')
@@ -27,7 +30,7 @@ def embeddings(embedding):
 
 @pytest.fixture(scope='function')
 def doc_with_multimodal_chunks(embeddings):
-    doc = Document()
+    doc = MultimodalDocument()
     chunk1 = Document()
     chunk2 = Document()
     chunk3 = Document()
@@ -87,7 +90,7 @@ def simple_multimodal_driver():
 
 def test_multimodal_driver(simple_multimodal_driver, mock_multimodal_encoder, doc_with_multimodal_chunks):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder, pea=None)
-    simple_multimodal_driver._apply_all([doc_with_multimodal_chunks])
+    simple_multimodal_driver._apply_all(MultimodalDocumentSet([doc_with_multimodal_chunks]))
     doc = doc_with_multimodal_chunks
     assert len(doc.chunks) == 3
     visual1 = doc.chunks[0]
@@ -99,7 +102,7 @@ def test_multimodal_driver(simple_multimodal_driver, mock_multimodal_encoder, do
 
 @pytest.fixture(scope='function')
 def doc_with_multimodal_chunks_wrong(embeddings):
-    doc = Document()
+    doc = MultimodalDocument()
     chunk1 = Document()
     chunk2 = Document()
     chunk3 = Document()
@@ -122,11 +125,8 @@ def doc_with_multimodal_chunks_wrong(embeddings):
 def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_driver, mock_multimodal_encoder,
                                                          doc_with_multimodal_chunks_wrong):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder, pea=None)
-    simple_multimodal_driver._apply_all([doc_with_multimodal_chunks_wrong])
-    doc = doc_with_multimodal_chunks_wrong
-    assert len(doc.chunks) == 3
-    # DocumentProto consider invalid to be encoded by the driver
-    assert doc.embedding is None
+    with pytest.raises(LengthMismatchException):
+        simple_multimodal_driver._apply_all(MultimodalDocumentSet([doc_with_multimodal_chunks_wrong]))
 
 
 @pytest.fixture
@@ -137,7 +137,7 @@ def mock_multimodal_encoder_shuffled():
 def test_multimodal_driver_with_shuffled_order(simple_multimodal_driver, mock_multimodal_encoder_shuffled,
                                                doc_with_multimodal_chunks):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder_shuffled, pea=None)
-    simple_multimodal_driver._apply_all([doc_with_multimodal_chunks])
+    simple_multimodal_driver._apply_all(MultimodalDocumentSet([doc_with_multimodal_chunks]))
     doc = doc_with_multimodal_chunks
     assert len(doc.chunks) == 3
     visual1 = doc.chunks[2]

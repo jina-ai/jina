@@ -43,6 +43,12 @@ def test_doc_update_fields():
     assert a.weight == w
 
 
+def test_granularity_get_set():
+    d = Document()
+    d.granularity = 1
+    assert d.granularity == 1
+
+
 def test_uri_get_set():
     a = Document()
     a.uri = 'https://abc.com/a.jpg'
