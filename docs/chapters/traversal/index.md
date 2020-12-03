@@ -1,6 +1,6 @@
-# Understand Jina Document Recursive Structure and Traversal
+# Understand Jina Recursive Document Representation
 
-In Jina, each Document is represented as a rooted binary-tree:
+In Jina, each `Document` is represented as a rooted binary-tree:
 
 >  a binary tree is a tree data structure in which each node has at most two children, which are referred to as the left child and the right child.
 
@@ -18,3 +18,46 @@ We'll dive into these concepts in this document:
 ---
 
 ## Chunks in Jina
+
+Each Jina `Document` consist a list of `Chunks`. The Chunk is a small semantic unit of a Document, like a sentence or a 64x64 pixel image patch.
+Most of the algorithms in Jina works on the Chunk level.
+
+Think about these use cases: you wanna search a document at a specific granularity level, e.g. a sentence or a paragraph. Or your query consist of mutiple modalities, such as you wanna query an image with a piece of text and another image. `Chunk` makes it feasible!
+
+In Jina [primitive data types](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/), `Chunk` is defined as a `property` of `Document`:
+
+```python
+from jina import Document
+
+with Document() as root:
+    root.id = 1
+# Initialised a document as root with 0 chunks.
+print(len(root.chunks))
+# Initialise a document and add as a chunk to root.
+with Document() as chunk:
+    chunk.id = 2
+    root.chunks.add(chunk)
+# Now the document has 1 chunks
+print(len(root.chunks))
+```
+
+What happened by adding `chunk` to `root`?
+
+```python
+print(root.granularity)
+>>> 0
+print(root.chunks[0].granularity)
+>>> 1
+root.id == root.chunks[0].parent_id
+>>> True
+```
+
+Two important things happened when adding the `chunk` to `root`:
+1. The granularity of the chunk has been increased by 1 (default 0).
+2. The `chunk` has been referenced to it's parent: `root`.
+
+This can be seen in the image blow:
+
+![granularity](img/granularity.png)
+
+
