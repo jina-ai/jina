@@ -41,12 +41,12 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> Iterator[
 def random_docs_new_api(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> Iterator['Document']:
     c_id = 3 * num_docs  # avoid collision with docs
     for j in range(num_docs):
-        with Document() as d:
+        with Document(random_id=False) as d:
             d.tags['id'] = j
             d.text = b'hello world'
             d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
         for k in range(chunks_per_doc):
-            with Document() as c:
+            with Document(random_id=False) as c:
                 c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
                 c.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
                 c.tags['id'] = c_id

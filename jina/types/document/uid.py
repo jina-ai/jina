@@ -37,6 +37,15 @@ def new_doc_hash(doc: 'DocumentProto') -> int:
     return id2hash(new_doc_id(doc))
 
 
+def new_random_id() -> str:
+    import random
+    """ Generate a random id
+
+    :return: a random id
+    """
+    return str(random.random())
+
+
 def new_doc_id(doc: 'DocumentProto') -> str:
     """ Generate a new hexdigest based on the content of the document.
 
@@ -94,8 +103,10 @@ def is_valid_id(value: str) -> bool:
 
 
 class UniqueId(str):
-    def __new__(cls, seq):
-        if isinstance(seq, (int, np.integer)):
+    def __new__(cls, seq, random_id):
+        if random_id:
+            seq = new_random_id()
+        elif isinstance(seq, (int, np.integer)):
             seq = hash2id(int(seq))
         elif isinstance(seq, bytes):
             seq = bytes2id(seq)
