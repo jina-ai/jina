@@ -31,9 +31,15 @@ class MultimodalDocument(Document):
                 it builds a view or a copy from it.
         :param chunks: the chunks of the multimodal document to initialize with. Expected to
                 received a list of :class:`Document`, with different modalities.
+        :param: `modality_content_mapping`: A Python dict, the keys are the modalities and the values
+                are the :attr:`content` of the :class:`Document`
         :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
                 view (i.e. weak reference) from it or a deep copy from it.
         :param kwargs: other parameters to be set
+
+        .. warning::
+            - Build :class:`MultimodalDocument` from :attr:`modality_content_mapping` expects you assign
+              :attr:`Document.content` as the value of the dictionary.
         """
         super().__init__(document=document, copy=copy, **kwargs)
         if chunks or modality_content_mapping:
@@ -115,26 +121,3 @@ class MultimodalDocument(Document):
         :return: List of modalities extracted from chunks of the document.
         """
         return list(self.modality_content_mapping.keys())
-
-    @classmethod
-    def from_chunks(cls, chunks: Sequence[Document]) -> 'MultimodalDocument':
-        """Create :class:`MultimodalDocument` from list of :class:`Document`.
-
-        :param chunks: List of :class:`Document`.
-        :return: An instance of :class:`MultimodalDocument`.
-        """
-        return cls(chunks=chunks)
-
-    @classmethod
-    def from_modality_content_mapping(cls, modality_content_mapping: Dict[str, Any]) -> 'MultimodalDocument':
-        """Create :class:`MultimodalDocument` from :attr:`modality_content_mapping`.
-
-        .. warning::
-            - Buld :class:`MultimodalDocument` from :attr:`modality_content_mapping` expects you assign
-              :attr:`Document.content` as the value of the dictionary.
-
-        :param: `modality_content_mapping`: A Python dict, the keys are the modalities and the values
-            are the :attr:`content` of the :class:`Document`
-        :return: An instance of :class:`MultimodalDocument`.
-        """
-        return cls(modality_content_mapping=modality_content_mapping)
