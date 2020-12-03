@@ -20,7 +20,6 @@ from ..executors import BaseExecutor
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import yaml, convert_tuple_to_list
-from ..types.sets import DocumentSet
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -30,7 +29,7 @@ if False:
     from ..types.message import Message
     from ..types.request import Request
     from ..types.document import Document
-    from ..types.sets import QueryLangSet
+    from ..types.sets import QueryLangSet, DocumentSet
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -282,7 +281,7 @@ class BaseRecursiveDriver(BaseDriver):
             return self.req.docs
 
     def __call__(self, *args, **kwargs):
-        self.docs.traverse_apply(self._traversal_paths, self._apply_all, *args, **kwargs)
+        self.docs.traverse(self._traversal_paths, self._apply_all, *args, **kwargs)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

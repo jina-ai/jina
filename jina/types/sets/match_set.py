@@ -1,8 +1,8 @@
 from typing import Optional
 
-from .document_set import DocumentSet
-
 from google.protobuf.pyext._message import RepeatedCompositeContainer
+
+from .document_set import DocumentSet
 
 if False:
     from ..document import Document
@@ -31,8 +31,8 @@ class MatchSet(DocumentSet):
             self._docs_proto.append(match)
 
         match.set_attrs(granularity=self._ref_doc.granularity,
-                    adjacency=self._ref_doc.adjacency + 1,
-                    **kwargs)
+                        adjacency=self._ref_doc.adjacency + 1,
+                        **kwargs)
         match.score.ref_id = self._ref_doc.id
         if not match.mime_type:
             match.mime_type = self._ref_doc.mime_type

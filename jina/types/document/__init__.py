@@ -3,7 +3,7 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-from typing import Union, Dict, Optional, TypeVar, Any, Tuple, Callable
+from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence
 
 from google.protobuf import json_format
 
@@ -543,14 +543,15 @@ class Document:
     def CopyFrom(self, doc: 'Document'):
         self._document.CopyFrom(doc.as_pb_object)
 
-    def traverse(self, traversal_paths: Tuple[str], callback_fn: Callable, *args, **kwargs) -> None:
+    def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs) -> None:
         """Traverse leaves of the document."""
         for path in traversal_paths:
             if path[0] == 'r':
                 self._traverse_rec([self], None, None, [], callback_fn, *args, **kwargs)
             self._traverse_rec([self], None, None, path, callback_fn, *args, **kwargs)
 
-    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, callback_fn, *args, **kwargs):
+    def _traverse_rec(self, docs: Sequence['Document'], parent_doc: Optional['Document'],
+                      parent_edge_type: Optional[str], path: Sequence[str], callback_fn: Callable, *args, **kwargs):
         if path:
             next_edge = path[0]
             for doc in docs:
@@ -558,9 +559,11 @@ class Document:
                     self._traverse_rec(
                         doc.matches, doc, 'matches', path[1:], callback_fn, *args, **kwargs
                     )
-                if next_edge == 'c':
+                elif next_edge == 'c':
                     self._traverse_rec(
                         doc.chunks, doc, 'chunks', path[1:], callback_fn, *args, **kwargs
                     )
+                else:
+                    raise ValueError(f'"{next_edge}" from "{path}" is not a valid traversal path')
         else:
             callback_fn(docs, parent_doc, parent_edge_type, *args, **kwargs)
