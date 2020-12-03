@@ -86,7 +86,7 @@ class Document:
     """
 
     def __init__(self, document: Optional[DocumentSourceType] = None,
-                 copy: bool = False, random_id: bool = True, **kwargs):
+                 copy: bool = False, custom_id: Optional[str] = None, **kwargs):
         """
 
         :param document: the document to construct from. If ``bytes`` is given
@@ -100,7 +100,6 @@ class Document:
         :param kwargs: other parameters to be set
         """
 
-        self.random_id = random_id
         self._document = jina_pb2.DocumentProto()
         try:
             if isinstance(document, jina_pb2.DocumentProto):
@@ -132,6 +131,10 @@ class Document:
                 raise ValueError(f'{typename(document)} is not recognizable')
         except Exception as ex:
             raise BadDocType(f'fail to construct a document from {document}') from ex
+
+        if custom_id is None:
+            custom_id = random.random()
+        self.id = custom_id
 
         self.set_attrs(**kwargs)
 
@@ -391,12 +394,6 @@ class Document:
                 self._document.mime_type = r
             else:
                 raise ValueError(f'{value} is not a valid MIME type')
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        return self
 
     @property
     def content_type(self) -> str:
