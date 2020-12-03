@@ -85,7 +85,7 @@ class Document:
     """
 
     def __init__(self, document: Optional[DocumentSourceType] = None,
-                 copy: bool = False, **kwargs):
+                 copy: bool = False, random_id: bool = True, **kwargs):
         """
 
         :param document: the document to construct from. If ``bytes`` is given
@@ -98,6 +98,8 @@ class Document:
                 view (i.e. weak reference) from it or a deep copy from it.
         :param kwargs: other parameters to be set
         """
+
+        self.random_id = random_id
         self._document = jina_pb2.DocumentProto()
         try:
             if isinstance(document, jina_pb2.DocumentProto):
@@ -180,14 +182,14 @@ class Document:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return UniqueId(self._document.id)
+        return UniqueId(self._document.id, self.random_id)
 
     @property
     def parent_id(self) -> 'UniqueId':
         """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return UniqueId(self._document.parent_id)
+        return UniqueId(self._document.parent_id, self.random_id)
 
     def update_id(self):
         """Update the document id according to its content.
@@ -218,7 +220,7 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        self._document.id = UniqueId(value)
+        self._document.id = UniqueId(value, self.random_id)
 
     @parent_id.setter
     def parent_id(self, value: Union[bytes, str, int]):
@@ -234,7 +236,7 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        self._document.parent_id = UniqueId(value)
+        self._document.parent_id = UniqueId(value, self.random_id)
 
     @property
     def blob(self) -> 'np.ndarray':
@@ -402,7 +404,7 @@ class Document:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.update_id()
+        return self
 
     @property
     def content_type(self) -> str:
