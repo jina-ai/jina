@@ -28,15 +28,20 @@ In Jina [primitive data types](https://hanxiao.io/2020/11/22/Primitive-Data-Type
 from jina import Document
 
 with Document() as root:
-    root.id = 1
+    root.text = 'What is love? Oh baby do not hurt me.'
 # Initialised a document as root with 0 chunks.
 print(len(root.chunks))
+>>> 0
 # Initialise a document and add as a chunk to root.
-with Document() as chunk:
-    chunk.id = 2
-    root.chunks.add(chunk)
-# Now the document has 1 chunks
+with Document() as chunk1:
+    chunk1.text = 'What is love?'
+    root.chunks.add(chunk1)
+with Document() as chunk1:
+    chunk1.text = 'Oh baby do not hurt me.'
+    root.chunks.add(chunk1)
+# Now the document has 2 chunks
 print(len(root.chunks))
+>>> 2
 ```
 
 What happened by adding `chunk` to `root`?
