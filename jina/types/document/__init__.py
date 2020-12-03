@@ -99,7 +99,6 @@ class Document:
         :param kwargs: other parameters to be set
         """
 
-        self.random_id = random_id
         self._document = jina_pb2.DocumentProto()
         try:
             if isinstance(document, jina_pb2.DocumentProto):
