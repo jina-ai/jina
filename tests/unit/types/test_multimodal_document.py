@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from jina import Document
-from jina.excepts import BadDocType, LengthMismatchException
+from jina.excepts import BadDocType
 from jina.types.document.multimodal import MultimodalDocument
 
 
@@ -95,22 +95,20 @@ def test_extract_content_from_modality(multimodal_document, visual_embedding, te
 
 def test_multimodal_document_fail_bad_doctype(visual_embedding):
     # the multimodal document don't have any chunks
-    with pytest.raises(BadDocType):
-        md = MultimodalDocument()
-        md.tags['id'] = 1
-        md.embedding = visual_embedding
-        md.modality_content_mapping
+    md = MultimodalDocument()
+    md.tags['id'] = 1
+    md.embedding = visual_embedding
+    assert not md.is_valid
 
 
 def test_multimodal_document_fail_length_mismatch(multimodal_document, chunk_3):
     # the multimodal document has 3 chunks, while 2 types of modalities.
-    with pytest.raises(LengthMismatchException):
-        multimodal_document.chunks.add(chunk_3)
-        multimodal_document.modality_content_mapping
+    multimodal_document.chunks.add(chunk_3)
+    assert not multimodal_document.is_valid
 
 
 def test_from_chunks_success(chunk_1, chunk_2):
-    md = MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2])
+    md = MultimodalDocument(chunks=[chunk_1, chunk_2])
     assert len(md.modalities) == 2
     assert 'visual' and 'textual' in md.modalities
     assert len(md.chunks) == 2
@@ -121,8 +119,7 @@ def test_from_chunks_fail_length_mismatch(chunk_1, chunk_2, chunk_3):
     """Initialize a :class:`MultimodalDocument` expect to fail which has 3 chunks
     with 2 modalities.
     """
-    with pytest.raises(LengthMismatchException):
-        MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2, chunk_3])
+    assert not MultimodalDocument(chunks=[chunk_1, chunk_2, chunk_3]).is_valid
 
 
 def test_from_chunks_fail_multiple_granularity(chunk_1, chunk_2, chunk_4):
@@ -130,11 +127,11 @@ def test_from_chunks_fail_multiple_granularity(chunk_1, chunk_2, chunk_4):
     granularity value, expect all chunks has the same granularity value.
     """
     with pytest.raises(BadDocType):
-        MultimodalDocument.from_chunks(chunks=[chunk_1, chunk_2, chunk_4])
+        MultimodalDocument(chunks=[chunk_1, chunk_2, chunk_4])
 
 
 def test_from_content_category_mapping(modality_content_mapping):
-    md = MultimodalDocument.from_modality_content_mapping(modality_content_mapping=modality_content_mapping)
+    md = MultimodalDocument(modality_content_mapping=modality_content_mapping)
     assert len(md.modalities) == 2
     assert 'visual' and 'textual' in md.modalities
     assert len(md.chunks) == 2

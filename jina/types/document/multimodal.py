@@ -51,14 +51,16 @@ class MultimodalDocument(Document):
             elif modality_content_mapping:
                 self.modality_content_mapping = modality_content_mapping
             self._handle_chunk_level_attributes()
-            self._validate()
 
-    def _validate(self):
+    @property
+    def is_valid(self) -> bool:
+        """A valid :class:`MultimodalDocument` should meet the following requirements:
+
+            - Document should consist at least 2 chunks.
+            - Length of modality is not identical to length of chunks.
+        """
         modalities = set([chunk.modality for chunk in self.chunks])
-        if len(self.chunks) < 2:
-            raise BadDocType('MultimodalDocument should consist at least 2 chunks.')
-        if len(modalities) != len(self.chunks):
-            raise LengthMismatchException(f'Length of modality is not identical to length of chunks.')
+        return 2 <= len(self.chunks) == len(modalities)
 
     def _handle_chunk_level_attributes(self):
         """Handle chunk attributes, such as :attr:`granularity` and :attr:`mime_type`.
