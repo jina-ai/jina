@@ -132,8 +132,8 @@ class DocumentSet(MutableSequence):
         return bool(len(self))
  
 
-class MultiModalDocumentSet(DocumentSet):
-    """:class:`MultiModalDocumentSet` is a mutable sequence of :class:`Document`,
+class MultimodalDocumentSet(DocumentSet):
+    """:class:`MultimodalDocumentSet` is a mutable sequence of :class:`Document`,
     It wraps itself a DocumentSet to guarantee that it iterates guaranteeing that the generated
     documents fulfill the MultiModal Document specifications
     """
