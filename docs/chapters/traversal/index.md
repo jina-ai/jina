@@ -7,20 +7,20 @@ In Jina, the root node is the document itself, while the *left* & *right* childr
 
 ![rooted-binary-tree](img/rooted-binary-tree.png)
 
-The above image illustrates a most simple document structure: A document (root node) consist of two child nodes, *chunks* and *matches*.
+The above image illustrates a minimal document structure: A document (root node) consist of two child nodes, *chunks* and *matches*.
 We'll dive into these concepts in this document:
 
 - [Chunks in Jina](#chunks-in-jina)
 - [Matches in Jina](#matches-in-jina)
-- [Let's go deeper: Recursive structure and Traversal](#recursive-structure-and-traversal)
----
+- [Let's go deeper: Recursive structure](#recursive-structure-and-traversal)
+- [Document Traversal with traversal paths](#document-traversal-with-traversal-paths)
 
 ## Chunks in Jina
 
 Each Jina `Document` consist a list of `Chunk`s. A `Chunk` is a small semantic unit of a `Document`, like a sentence or a 64x64 pixel image patch.
 Most of the algorithms in Jina works on the `Chunk` level.
 
-Think about these use cases: you wanna search a document at a specific `granularity` level, e.g. a sentence or a paragraph. Or your query consist of mutiple modalities, such as you wanna query an image with a piece of text and another image. `Chunk` makes it feasible!
+Think about these use cases: you wanna search a document at a specific `granularity` level, e.g. a sentence or a paragraph. Or your query consist of mutiple modalities, such as you wanna query an image with a piece of text together with another image. `Chunk` makes it feasible!
 
 In Jina [primitive data types](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/), `Chunk` is defined as a `property` of `Document`:
 
@@ -32,7 +32,7 @@ with Document() as root:
 # Initialised a document as root with 0 chunks.
 print(len(root.chunks))
 >>> 0
-# Initialise two documents and add as a chunk to root.
+# Initialise two documents and add as chunks to root.
 with Document() as chunk1:
     chunk1.text = 'What is love?'
     root.chunks.add(chunk1)
@@ -68,6 +68,41 @@ Two things happened when adding the `chunk` to `root`:
 2. The `chunk` has been referenced to it's parent: `root`.
 
 This allows Jina (and you) to query chunks and reference back to it's root document at any `granularity` level.
+
+## Matches in Jina
+
+In a neural search system (or traditional retrieval system), matches are the expected documents returned from the system given the user query.
+In Jina, `Matches` could happens at `root` level or any `chunk` level.
+
+In order to fully understand the concept of `Matches`, we introduce a new term, named `adjacency` (short for `a` in the diagram), reflects the level of the document it is connected to.
+
+**NOTE: adjacency applys to chunks as well.**
+
+![adjacency](img/adjacency.png)
+
+By default, the `root` node has an `adjacency` of 0, and the value increase by 1 when the `matches` go deeper.
+
+```python
+from jina import Document
+
+with Document() as root:
+    root.text = 'What is love? Oh baby do not hurt me.'
+print(root.adjacency)
+>>> 0
+with Document() as match:
+    # a match document semantically related to our root
+    match.text = 'What is love? Oh please do not hurt me.'
+    root.matches.add(match)
+print(len(root.matches))
+>>> 1
+print(root.matches[0].granularity)
+>>> 0
+print(root.matches[0].adjacency)
+>>> 1
+
+```
+
+
 
 
 
