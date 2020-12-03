@@ -1,11 +1,13 @@
 from jina import Document
 from jina.types.sets import DocumentSet
 from tests import random_docs
+from tests import random_docs_new_api
 
 
 def test_docset_init():
     # we need low-level protobuf generation for testing
-    docs = list(random_docs(10))[0].chunks
+    #docs = list(random_docs(10))[0].chunks
+    docs = list(random_docs_new_api(10))[0].chunks
     ds = DocumentSet(docs)
     assert len(docs) == len(ds)
     for d, od in zip(ds, docs):
@@ -44,14 +46,16 @@ def test_docset_iterate_twice():
 
 
 def test_docset_reverse():
-    docs = list(random_docs(10))[0].chunks
+    #docs = list(random_docs(10))[0].chunks
+    docs = list(random_docs_new_api(10))[0].chunks
     ids = [d.id for d in docs]
     ds = DocumentSet(docs)
     ds.reverse()
     ids2 = [d.id for d in ds]
     assert list(reversed(ids)) == ids2
 
-    docs = list(random_docs(10, chunks_per_doc=7))[0].chunks
+    #docs = list(random_docs(10, chunks_per_doc=7))[0].chunks
+    docs = list(random_docs_new_api(10, chunks_per_doc=7))[0].chunks
     ids = [d.id for d in docs]
     ds = DocumentSet(docs)
     ds.reverse()
@@ -60,7 +64,8 @@ def test_docset_reverse():
 
 
 def test_docset_getitem():
-    docs = list(random_docs(10))[0].chunks
+    #docs = list(random_docs(10))[0].chunks
+    docs = list(random_docs_new_api(10))[0].chunks
     ds = DocumentSet(docs)
 
     for j in range(len(ds)):
