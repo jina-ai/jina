@@ -542,26 +542,26 @@ class Document:
     def CopyFrom(self, doc: 'Document'):
         self._document.CopyFrom(doc.as_pb_object)
 
-    def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs) -> None:
+    def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) -> None:
         """Traverse leaves of the document."""
         from ..sets import DocumentSet
-        for path in traversal_paths:
-            if path[0] == 'r':
-                self._traverse_rec(DocumentSet([self]), None, None, [], callback_fn, *args, **kwargs)
-            self._traverse_rec(DocumentSet([self]), None, None, path, callback_fn, *args, **kwargs)
+        self._traverse_rec(DocumentSet([self]), None, None, traversal_path, callback_fn, *args, **kwargs)
 
     def _traverse_rec(self, docs: Sequence['Document'], parent_doc: Optional['Document'],
-                      parent_edge_type: Optional[str], path: Sequence[str], callback_fn: Callable, *args, **kwargs):
-        if path:
-            next_edge = path[0]
+                      parent_edge_type: Optional[str], traversal_path: str, callback_fn: Callable, *args, **kwargs):
+        if traversal_path:
+            next_edge = traversal_path[0]
             for doc in docs:
                 if next_edge == 'm':
                     self._traverse_rec(
-                        doc.matches, doc, 'matches', path[1:], callback_fn, *args, **kwargs
+                        doc.matches, doc, 'matches', traversal_path[1:], callback_fn, *args, **kwargs
                     )
                 elif next_edge == 'c':
                     self._traverse_rec(
-                        doc.chunks, doc, 'chunks', path[1:], callback_fn, *args, **kwargs
+                        doc.chunks, doc, 'chunks', traversal_path[1:], callback_fn, *args, **kwargs
                     )
+                else:
+                    raise ValueError(f'"{next_edge}" in "{traversal_path}" is not a valid traversal path')
         else:
-            callback_fn(docs, parent_doc, parent_edge_type, *args, **kwargs)
+            for d in docs:
+                callback_fn(d, parent_doc, parent_edge_type, *args, **kwargs)

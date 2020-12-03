@@ -26,7 +26,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
     def __call__(self, *args, **kwargs):
         # all pointers of the docs, provide the weak ref to all docs in partial reqs
         self.doc_pointers = {}  # type: Dict[str, Any]
-        self._traverse_apply(self.docs.traverse(), *args, **kwargs)
+        self._traverse_apply(self.docs, *args, **kwargs)
         self.doc_pointers.clear()
 
     def _apply_all(

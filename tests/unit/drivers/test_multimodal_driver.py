@@ -123,8 +123,7 @@ def doc_with_multimodal_chunks_wrong(embeddings):
 def test_multimodal_driver_assert_one_chunk_per_modality(simple_multimodal_driver, mock_multimodal_encoder,
                                                          doc_with_multimodal_chunks_wrong):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder, pea=None)
-    with pytest.raises(LengthMismatchException):
-        simple_multimodal_driver._apply_all(DocumentSet([doc_with_multimodal_chunks_wrong]))
+    assert not doc_with_multimodal_chunks_wrong.is_valid
 
 
 @pytest.fixture

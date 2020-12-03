@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
-import warnings
 from functools import wraps
 from typing import (
     Any,
@@ -282,14 +281,36 @@ class BaseRecursiveDriver(BaseDriver):
             return self.req.docs
 
     def __call__(self, *args, **kwargs):
-        self.docs.traverse(self._traversal_paths, self._apply_all, *args, **kwargs)
+        self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        warnings.warn(f'the method should not be called, '
-                      f'if you are using it then most likely '
-                      f'it is called by some legacy unit test '
-                      f'try use driver() directly', DeprecationWarning)
-        docs.traverse(self._traversal_paths, self._apply_all, *args, **kwargs)
+        for path in self._traversal_paths:
+            if path[0] == 'r':
+                self._traverse_rec(docs, None, None, [], *args, **kwargs)
+            for doc in docs:
+                self._traverse_rec(
+                    [doc],
+                    None,
+                    None,
+                    path,
+                    *args,
+                    **kwargs,
+                )
+
+    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, *args, **kwargs):
+        if path:
+            next_edge = path[0]
+            for doc in docs:
+                if next_edge == 'm':
+                    self._traverse_rec(
+                        doc.matches, doc, 'matches', path[1:], *args, **kwargs
+                    )
+                if next_edge == 'c':
+                    self._traverse_rec(
+                        doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
+                    )
+        else:
+            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
