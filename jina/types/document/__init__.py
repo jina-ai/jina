@@ -544,10 +544,11 @@ class Document:
 
     def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs) -> None:
         """Traverse leaves of the document."""
+        from ..sets import DocumentSet
         for path in traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec([self], None, None, [], callback_fn, *args, **kwargs)
-            self._traverse_rec([self], None, None, path, callback_fn, *args, **kwargs)
+                self._traverse_rec(DocumentSet([self]), None, None, [], callback_fn, *args, **kwargs)
+            self._traverse_rec(DocumentSet([self]), None, None, path, callback_fn, *args, **kwargs)
 
     def _traverse_rec(self, docs: Sequence['Document'], parent_doc: Optional['Document'],
                       parent_edge_type: Optional[str], path: Sequence[str], callback_fn: Callable, *args, **kwargs):
