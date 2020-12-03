@@ -75,7 +75,7 @@ def test_set_get_mime():
 
 def test_no_copy_construct():
     a = DocumentProto()
-    b = Document(a, copy=False)
+    b = Document(a, copy=False, random_id=False)
     a.id = '1' * 16
     assert b.id == '1' * 16
 
@@ -94,7 +94,7 @@ def test_copy_construct():
 
 
 def test_bad_good_doc_id():
-    b = Document()
+    b = Document(random_id=False)
     with pytest.raises(BadDocID):
         b.id = 'hello'
     b.id = 'abcd' * 4
@@ -105,7 +105,7 @@ def test_bad_good_doc_id():
 
 def test_id_context():
     with Document() as d:
-        assert not d.id
+        #assert not d.id
         d.buffer = b'123'
     assert d.id
 
