@@ -1,10 +1,17 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import time
 import asyncio
 from typing import Dict, Union, Callable
 
+from ..proto import jina_pb2
+from ..logging import JinaLogger
 from ..peapods.pea import BasePea
+from ..peapods.zmq import CtrlZmqlet
+from ..excepts import GRPCServerError
+from ..types.request import Request
+from .python.helper import callback_exec, pprint_routes
 
 if False:
     import argparse
@@ -44,31 +51,72 @@ def py_client(**kwargs) -> 'PyClient':
     return PyClient(args)
 
 
-def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> 'PyClientRuntime':
+def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> None:
+    """ This method allows callback execution of client process in main process
+
+    PyClient writes the response from servicer in a PAIR-BIND socket.
+    Main process reads from it using PAIR-CONNECT.
+
+    """
+    from zmq.error import Again
     from ..parser import set_client_cli_parser
     from ..helper import get_parsed_args
     _, args, _ = get_parsed_args(kwargs, set_client_cli_parser(), 'Client')
 
-    # setting these manually to avoid exposing these args on CLI
+    # setting this manually to avoid exposing on CLI
     args.runtime = 'process'
-    args.port_ctrl = None
-    args.ctrl_with_ipc = True
-    return PyClientRuntime(args, mode, input_fn, output_fn, **kwargs)
+
+    with JinaLogger(context='PyClientRuntime') as logger:
+        with CtrlZmqlet(args=args, logger=logger, is_bind=False, is_async=False, timeout=10) as zmqlet:
+            # PAIR-CONNECT socket to read from PyClient response stream
+            with PyClientRuntime(args, mode=mode, input_fn=input_fn, output_fn=output_fn,
+                                 address=zmqlet.address, **kwargs):
+                # sleeping for a second to allow the process, event loop & the sockets to start in the client process
+                time.sleep(1)
+                while True:
+                    try:
+                        msg = zmqlet.sock.recv()
+                        if msg == 'TERMINATE':
+                            # ideal way of exit, but PyClient socket might have closed before we recv it here
+                            logger.info('received terminate message from the client response stream')
+                            break
+                        grpc_response = jina_pb2.RequestProto()
+                        grpc_response.ParseFromString(msg)
+                        # TODO (Deepankar): handle this better.
+                        if 'on_error' in kwargs:
+                            on_error = kwargs['on_error']
+                        else:
+                            on_error = pprint_routes
+
+                        if 'on_always' in kwargs:
+                            on_always = kwargs['on_always']
+                        else:
+                            on_always = None
+
+                        callback_exec(response=grpc_response, on_done=output_fn, on_error=on_error, on_always=on_always,
+                                      continue_on_error=args.continue_on_error, logger=logger)
+                        zmqlet.sock.send_string('')
+
+                    except Again:
+                        logger.info('PyClient has already closed its socket. exiting')
+                        break
 
 
 class PyClientRuntime(BasePea):
-    """ This class allows PyClient to run in a different process/thread"""
+    """ This class allows `PyClient` to run in a different process/thread"""
 
     def __init__(self,
                  args: Union['argparse.Namespace', Dict],
                  mode: str,
                  input_fn: 'InputFnType',
                  output_fn: Callable[['Request'], None],
+                 address: str = None,
                  **kwargs):
         super().__init__(args)
         self.mode = mode
         self.input_fn = input_fn
         self.output_fn = output_fn
+        self._address = address
         self._kwargs = kwargs
 
     async def _loop_body(self):
@@ -76,27 +124,38 @@ class PyClientRuntime(BasePea):
         Unlike other peas (gateway, remote), PyClientRuntime shouldn't wait for flow closure
         This should await `index`, `search` or `train` & then close itself, rather than relying on terminate signal
         """
+        try:
+            await self.grpc_client.__aenter__()
+        except GRPCServerError:
+            self.logger.error('couldn\'t connect to PyClient. exiting')
+            self.loop_teardown()
+            return
         self.primary_task = asyncio.get_running_loop().create_task(
             getattr(self.grpc_client, self.mode)(self.input_fn, self.output_fn, **self._kwargs)
         )
         try:
             await self.primary_task
         except asyncio.CancelledError:
-            self.logger.warning('')
+            self.logger.debug(f'{self.mode} operation got cancelled manually')
 
     def loop_body(self):
         from .python import PyClient
-        self.grpc_client = PyClient(args=self.args)
+        PyClient.configure_event_loop()
+        self.grpc_client = PyClient(args=self.args, address=self._address)
         self.is_ready_event.set()
         asyncio.get_event_loop().run_until_complete(self._loop_body())
 
     async def _loop_teardown(self):
-        await self.grpc_client.close()
+        if not self.grpc_client.is_closed:
+            await self.grpc_client.close()
 
     def loop_teardown(self):
         if hasattr(self, 'grpc_client'):
-            self.primary_task.cancel()
-            asyncio.get_event_loop().run_until_complete(self._loop_teardown())
+            if hasattr(self, 'primary_task'):
+                if not self.primary_task.done():
+                    self.primary_task.cancel()
+                asyncio.get_event_loop().run_until_complete(self._loop_teardown())
+            self.is_shutdown.set()
 
     def close(self) -> None:
         self.is_shutdown.wait()

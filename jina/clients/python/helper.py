@@ -169,3 +169,15 @@ def safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
                 raise BadClientCallback(err_msg) from ex
 
     return arg_wrapper
+
+
+def callback_exec(response, on_done, on_error, on_always, continue_on_error, logger):
+    if on_error and response.status.code >= jina_pb2.StatusProto.ERROR:
+        safe_on_error = safe_callback(on_error, continue_on_error, logger)
+        safe_on_error(response)
+    elif on_done:
+        safe_on_done = safe_callback(on_done, continue_on_error, logger)
+        safe_on_done(response)
+    if on_always:
+        safe_on_always = safe_callback(on_always, continue_on_error, logger)
+        safe_on_always(response)

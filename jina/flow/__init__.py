@@ -573,8 +573,8 @@ class Flow(ExitStack):
             kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
-        self.client = py_client_runtime(mode=mode, input_fn=input_fn, output_fn=output_fn, **kwargs)
-        self.enter_context(self.client)
+
+        py_client_runtime(mode=mode, input_fn=input_fn, output_fn=output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: InputFnType = None,
@@ -900,7 +900,11 @@ class Flow(ExitStack):
         :return: the flow
         """
 
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        # deepcopy causes the below error while reusing a flow in Jupyter
+        # 'Pickling an AuthenticationString object is disallowed for security reasons'
+        op_flow = self
+        # op_flow = copy.deepcopy(self) if copy_flow else self
+
         if build:
             op_flow.build(False)
 

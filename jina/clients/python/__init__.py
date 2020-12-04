@@ -2,11 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-from typing import Callable, Union, Optional, Dict
+from typing import Callable, Union, Optional
 
 from . import request
 from .grpc import AsyncGrpcClient
-from .helper import ProgressBar, pprint_routes, safe_callback, extract_field
+from .helper import ProgressBar, pprint_routes, callback_exec
 from .request import GeneratorSourceType
 from ...enums import RequestType
 from ...excepts import BadClient, DryRunException
@@ -15,7 +15,9 @@ from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
 from ...types.request import Request
+from ...peapods.zmq import CtrlZmqlet
 from ...types.request.common import DryRunRequest, TrainDryRunRequest, IndexDryRunRequest, SearchDryRunRequest
+from ...types.message.common import ControlMessage
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 
@@ -46,19 +48,21 @@ class PyClient(AsyncGrpcClient):
         await py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
 
     .. note::
-        to perform `index`, `search` or `train`, py_client needs to be awaited, as it is a coroutine
+        To perform `index`, `search` or `train`, py_client needs to be awaited, as it is a coroutine
 
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', address: str = None):
         """
 
         :param args: args provided by the CLI
+        :param address: an optional address (PAIR_CONNECT) on which client can send the response from the servicer
 
         """
         super().__init__(args)
         self._mode = self.args.mode
         self._input_fn = None
+        self._address = address
 
     @property
     def mode(self) -> str:
@@ -92,6 +96,12 @@ class PyClient(AsyncGrpcClient):
         except:
             default_logger.error(f'input_fn is not valid!')
             raise
+
+    def configure_zmqlet(self):
+        """ We use this method to create a PAIR-BIND socket
+        """
+        self.zmqlet = CtrlZmqlet(args=self.args, logger=self.logger, address=self._address,
+                                 is_bind=True, is_async=True, timeout=10)
 
     async def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
@@ -134,26 +144,35 @@ class PyClient(AsyncGrpcClient):
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
 
-        if on_error:
-            safe_on_error = safe_callback(on_error, self.args.continue_on_error, self.logger)
-
-        if on_done:
-            safe_on_done = safe_callback(on_done, self.args.continue_on_error, self.logger)
-
-        if on_always:
-            safe_on_always = safe_callback(on_always, self.args.continue_on_error, self.logger)
-
         req_iter = getattr(request, tname)(**_kwargs)
 
+        if self._address:
+            self.configure_zmqlet()
+
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-            async for resp in self._stub.Call(req_iter):
-                if resp.status.code >= jina_pb2.StatusProto.ERROR and on_error:
-                    safe_on_error(resp)
-                elif on_done:
-                    safe_on_done(resp)
-                if on_always:
-                    safe_on_always(resp)
+            async for response in self._stub.Call(req_iter):
+                # For some reason, `response.SerializeToString()` before doing `response.as_pb_object` results None
+                serialized_string = response.as_pb_object.SerializeToString()
+                if serialized_string is None:
+                    self.logger.warning('empty response from servicer')
+                    continue
+                if self._address:
+                    # If a zmq ctrl address is passed, the callback will get executed in the main process
+                    # Hence we send the `response` back to the main process on the mentioned sock.
+                    # `response` needs to be sent as a serialized string.
+                    # Note: shouldn't use await for `send` and `recv` - https://stackoverflow.com/a/14370767
+                    self.zmqlet.sock.send(serialized_string)
+                    msg = self.zmqlet.sock.recv()
+                else:
+                    # If no ctrl address is passed, callback gets executed in the client process
+                    callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
+                                  continue_on_error=self.args.continue_on_error, logger=self.logger)
                 p_bar.update(self.args.batch_size)
+
+            if self._address:
+                # Once we are out of the response stream, send a `TERMINATE` message
+                self.zmqlet.sock.send_string('TERMINATE')
+                self.zmqlet.sock.recv()
 
     @property
     def input_fn(self) -> InputFnType:
@@ -217,3 +236,8 @@ class PyClient(AsyncGrpcClient):
         if not self.args.skip_dry_run:
             await self.dry_run(IndexDryRunRequest())
         await self.start(output_fn, **kwargs)
+
+    async def close(self) -> None:
+        await super().close()
+        if hasattr(self, 'zmqlet'):
+            self.zmqlet.close()
