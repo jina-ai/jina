@@ -37,8 +37,19 @@ class GRPCServicer(jina_pb2_grpc.JinaRPCServicer):
                 for _ in range(num_req):
                     try:
                         if hasattr(request_iterator, '__anext__'):
-                            next_request = await request_iterator.__anext__()
+                            # This block will be executed for gRPC based invocations
+                            # An iterator gets converted to a grpc._cython.cygrpc._MessageReceiver object,
+                            # which doesn't have a __next__, only an __anext__ method.
+                            # If there's any issue with the request_iterator, __anext__() never fails, just hangs.
+                            # Adding a default timeout of 2 secs for the anext to avoid hang.
+
+                            # In case of any issues with request_iterator, it'll raise asyncio.TimeoutError,
+                            # which gets caught in grpc client. Since issues with the iterator is never propagated
+                            # by grpc, asyncio will log the error message during garbage collection.
+                            # TODO (Deepankar): Issues with request_iterator should be handled in the client caller itself
+                            next_request = await asyncio.wait_for(request_iterator.__anext__(), timeout=2)
                         elif hasattr(request_iterator, '__next__'):
+                            # This block will be executed for REST based invocations
                             next_request = next(request_iterator)
                         else:
                             break

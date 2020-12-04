@@ -1,4 +1,3 @@
-import os
 import asyncio
 from typing import Any
 
@@ -84,6 +83,7 @@ class RESTGateway:
             def run(self, sockets=None):
                 return asyncio.get_event_loop().create_task(self.serve(sockets=sockets))
 
+        # change log_level for REST server debugging
         self._config = Config(app=self.app, host=self.host, port=self.port_expose, log_level='critical')
         self._server = UvicornCustomServer(config=self._config)
         self.logger.success(f'gateway (REST) is listening at: {self.host}:{self.port_expose}')
