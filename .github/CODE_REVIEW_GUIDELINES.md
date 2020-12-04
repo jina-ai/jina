@@ -20,7 +20,7 @@
 - Ask for jina env if needed by `jina -vf`
 - Suggest changes and check back ASAP. Get PR merged soon
 - For new features, suggest adding appropriate documentation
-- Don&#39;t forget to praise when PR is ready with something like LGTM
+- Don't forget to praise when PR is ready with something like LGTM
 
 ## TLDR for pyguide  
 
@@ -42,7 +42,7 @@
 
 - You can keep function specific imports inside functions
 - Jina ENV variables should start with **JINA_**
-- For type hints which require import, you can do like this
+- For type hints which require import, you can do it like this
 
 ```python
 if False:
@@ -64,7 +64,7 @@ def func(arr: 'Image'):
 
 **Single Responsibility Principle (SRS)**  
 
-Do not place more than one responsibility into a single class or function, refactor into separate classes and functions.
+Do not place more than one responsibility into a single class or function. Instead, refactor into separate classes and functions.
 
 **Open Closed Principle**  
 
