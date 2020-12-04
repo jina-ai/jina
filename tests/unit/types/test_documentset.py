@@ -122,12 +122,12 @@ def test_match_chunk_set():
     with Document() as d:
         d.content = 'hello world'
 
-    m = d.matches.append()
+    m = d.matches.new()
     assert m.granularity == d.granularity
     assert m.adjacency == d.adjacency + 1
     assert len(d.matches) == 1
 
-    c = d.chunks.append()
+    c = d.chunks.new()
     assert c.granularity == d.granularity + 1
     assert c.adjacency == d.adjacency
     assert len(d.chunks) == 1
