@@ -293,8 +293,12 @@ class Document:
                 self._document.ClearField(k)
                 getattr(self._document, k).update(v)
             else:
-                if hasattr(self, k):
+                if hasattr(Document, k) and isinstance(getattr(Document, k), property) and getattr(Document, k).fset:
+                    # if class property has a setter
                     setattr(self, k, v)
+                elif hasattr(self._document, k):
+                    # no property setter, but proto has this attribute so fallback to proto
+                    setattr(self._document, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
 

@@ -19,12 +19,25 @@ class MatchSet(DocumentSet):
         m.CopyFrom(document.as_pb_object)
         match = Document(m)
 
-        match.set_attrs(granularity=self._ref_doc.granularity,
-                        adjacency=self._ref_doc.adjacency + 1,
-                        **kwargs)
+        match.set_attrs(granularity=self.granularity, adjacency=self.adjacency, **kwargs)
         match.score.ref_id = self._ref_doc.id
 
         if not match.mime_type:
             match.mime_type = self._ref_doc.mime_type
 
         return match
+
+    @property
+    def reference_doc(self) -> 'Document':
+        """Get the document that this :class:`MatchSet` referring to"""
+        return self._ref_doc
+
+    @property
+    def granularity(self) -> int:
+        """The granularity of all document in this set """
+        return self._ref_doc.granularity
+
+    @property
+    def adjacency(self) -> int:
+        """The adjacency of all document in this set """
+        return self._ref_doc.adjacency + 1
