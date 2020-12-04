@@ -58,11 +58,11 @@ def func(arr: 'Image'):
 - Add new unit & integration test if you add a new feature
 - Use pytest tmpdir fixture for temporary directories
 - Check test locally before pushing
-- If a `Flow()` needs to be built in the test and is not a test in the Flow module -> It belongs to integration test
+- If a `Flow()` needs to be built in the test and is not a test of the Flow module, the test should go under `/tests/integration`
 
 ## Core  
 
-**Single Responsibility Principle (SRS)**  
+**Single Responsibility Principle**  
 
 Do not place more than one responsibility into a single class or function. Instead, refactor into separate classes and functions.
 
@@ -76,8 +76,8 @@ The child class should not change the behavior (meaning) of the parent class. Th
 
 **Interface segregation**  
 
-Do not create lengthy interfaces, instead split them into smaller interfaces based on the functionality. The interface should not contain any dependencies (parameters), which are not required for the expected functionality.
+Do not create lengthy interfaces. Instead, split them into smaller interfaces based on the functionality. The interface should not contain any dependencies (parameters) which are not required for the expected functionality.
 
 **Dependency Injection**  
 
-Do not hardcode the dependencies, instead inject them.
+Inject dependencies instead of hard-coding them.
