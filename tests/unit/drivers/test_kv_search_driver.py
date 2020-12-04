@@ -76,7 +76,7 @@ def create_document_to_search():
     doc = Document()
     doc.id = '0' * 16
     for c in range(5):
-        chunk = doc.chunks.append()
+        chunk = doc.chunks.new()
         chunk.id = str(c + 1) * 16
     return doc
 
@@ -92,7 +92,7 @@ def create_document_to_search_with_matches_on_chunks():
     #     - match: 6 - will be missing from KV indexer
     doc = Document()
     doc.id = '0' * 16
-    chunk = doc.chunks.append()
+    chunk = doc.chunks.new()
     chunk.id = '1' * 16
     for m in range(5):
         d = Document(id=str(m + 2) * 16)

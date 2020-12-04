@@ -123,7 +123,10 @@ class Document:
                     except RuntimeWarning as ex:
                         raise BadDocType(f'fail to construct a document from {document}') from ex
             elif isinstance(document, Document):
-                self._document = document.as_pb_object
+                if copy:
+                    self._document.CopyFrom(document.as_pb_object)
+                else:
+                    self._document = document.as_pb_object
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
