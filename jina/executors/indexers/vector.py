@@ -220,7 +220,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
     batch_size = 512
 
-    def __init__(self, metric: str = 'euclidean',
+    def __init__(self, metric: str = 'cosine',
                  backend: str = 'numpy',
                  compress_level: int = 0,
                  *args, **kwargs):

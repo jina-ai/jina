@@ -1,5 +1,5 @@
-import numpy as np
 import pytest
+import numpy as np
 from google.protobuf.json_format import MessageToDict
 
 from jina import NdArray, Request
@@ -7,6 +7,7 @@ from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document, BadDocID
 from tests import random_docs
 
+DOCUMENTS_PER_LEVEL = 1
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
 def test_ndarray_get_set(field):

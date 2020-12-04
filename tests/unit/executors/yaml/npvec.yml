@@ -2,6 +2,7 @@
 components:
   - !NumpyIndexer
     with:
+      metric: euclidean
       num_dim: -1
       index_key: HNSW32
       index_filename: vec.idx

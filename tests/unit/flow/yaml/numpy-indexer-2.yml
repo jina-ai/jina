@@ -4,6 +4,7 @@ metas:
 components:
   - !NumpyIndexer
     with:
+      metric: euclidean
       index_filename: vec2.gz
     metas:
       name: vecidx2  # a customized name
