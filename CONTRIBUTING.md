@@ -66,11 +66,12 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jina-hub-submodule) for details. 
 2. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 3. Work on this branch to do the fix/improvement.
-4. Commit the changes with the [correct commit style](#writing-your-commit-message).
-5. Make a pull request. 
-6. Submit your pull request and wait for all checks to pass.
-7. Request reviews from one of [the code owners](.github/CODEOWNERS).
-8. Get a LGTM 👍 and PR gets merged.
+4. Check if your code changes follow the [code review guidelines](.github/CODE_REVIEW_GUIDELINES.md).
+5. Commit the changes with the [correct commit style](#writing-your-commit-message).
+6. Make a pull request. 
+7. Submit your pull request and wait for all checks to pass.
+8. Request reviews from one of [the code owners](.github/CODEOWNERS).
+9. Get a LGTM 👍 and PR gets merged.
 
 **Note:** If you're just fixing a typo or grammatical issue, you can go straight to a pull request.
 
