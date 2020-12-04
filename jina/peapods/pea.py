@@ -359,6 +359,10 @@ class BasePea(metaclass=PeaMeta):
 
     def loop_teardown(self):
         """Stop the request loop """
+        if os.getenv('JINA_POD_NAME'):
+            del os.environ['JINA_POD_NAME']
+        if os.getenv('JINA_LOG_ID'):
+            del os.environ['JINA_LOG_ID']
         if hasattr(self, 'zmqlet'):
             self.zmqlet.close()
 
