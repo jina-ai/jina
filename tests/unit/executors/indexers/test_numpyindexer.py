@@ -181,4 +181,4 @@ def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
         assert idx == None
-        assert idx == None
+        assert dist == None
