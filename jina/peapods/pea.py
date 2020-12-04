@@ -372,6 +372,10 @@ class BasePea(metaclass=PeaMeta):
                     # - self.zmqlet.recv_message
                     # - self.zmqlet.send_message
                     self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+        except Exception as exc:
+            # this exception handling is important to guarantee that finally is called if exception is raised
+            # from _initialize_executor
+            self.logger.critical(f' Exception when loading the executor {repr(exc)}')
         finally:
             # if an exception occurs this unsets ready and shutting down
             self.close_zmqlet()
