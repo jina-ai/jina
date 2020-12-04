@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 from pkg_resources import resource_filename
 
-from jina.clients import py_client
 from jina.clients.python.io import input_numpy
 from jina.flow import Flow
 from jina.helloworld import download_data
@@ -66,9 +65,7 @@ def test_helloworld_flow(tmpdir):
 
     # run it!
     with f:
-        py_client(host=f.host,
-                  port_expose=f.port_expose,
-                  ).index(input_numpy(targets['index']['data']), batch_size=args.index_batch_size)
+        f.index(input_numpy(targets['index']['data']), batch_size=args.index_batch_size)
 
 
 def test_helloworld_flow_dry_run(tmpdir):

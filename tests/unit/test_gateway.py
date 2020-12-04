@@ -1,6 +1,5 @@
 import functools
 import time
-import asyncio
 from threading import Thread
 
 import numpy as np
@@ -28,8 +27,7 @@ def test_compression(compress_algo):
     with f:
         f.index(random_docs(10))
 
-# This test is hanging again in github action
-@pytest.mark.skip('this tests hang up for unknown reason on github')
+# @pytest.mark.skip('this tests hang up for unknown reason on github')
 def test_rest_gateway_concurrency():
     def _request(status_codes, durations, index):
         resp = requests.post(
@@ -71,9 +69,8 @@ def test_rest_gateway_concurrency():
     assert rate < 0.1
 
 
-# To test this, we need to have custom event loop for each thread
-# Or test this, after PyClient lives in a separate process
-@pytest.mark.skip('raw grpc gateway is not stable enough under high concurrency')
+# TODO (Deepankar): change this to Processes & test
+# @pytest.mark.skip('raw grpc gateway is not stable enough under high concurrency')
 def test_grpc_gateway_concurrency():
     def _input_fn():
         return iter([

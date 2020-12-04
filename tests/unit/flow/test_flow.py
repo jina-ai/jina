@@ -286,8 +286,9 @@ def test_shards():
     rm_files(['test-docshard-tmp'])
 
 
-@pytest.mark.skip('this causes segmentation faults as py_client is async')
-def test_py_client():
+# @pytest.mark.skip('this causes segmentation faults as py_client is async')
+@pytest.mark.asyncio
+async def test_py_client():
     f = (Flow().add(name='r1')
          .add(name='r2')
          .add(name='r3', needs='r1')
@@ -301,7 +302,9 @@ def test_py_client():
     with f:
         f.dry_run()
         from jina.clients import py_client
-        py_client(port_expose=f.port_expose, host=f.host).dry_run(IndexDryRunRequest())
+        client = py_client(port_expose=f.port_expose, host=f.host)
+        await client.configure_client()
+        await client.dry_run(IndexDryRunRequest())
 
     with f:
         node = f._pod_nodes['gateway']

@@ -34,24 +34,27 @@ def test_img_2():
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip('this inserts an event loop in the main process')
 async def test_client_call_unary(flow):
     with flow:
-        await py_client(port_expose=flow.port_expose).call_unary(
+        client = py_client(port_expose=flow.port_expose)
+        await client.configure_client()
+        await client.call_unary(
             [b'a1234', b'b4567'], mode=RequestType.INDEX,
         )
 
 @pytest.mark.asyncio
-@pytest.mark.skip('this inserts an event loop in the main process')
 async def test_client_index(flow):
     with flow:
-        await py_client(port_expose=flow.port_expose).index(['a1234', 'b4567'])
+        client = py_client(port_expose=flow.port_expose)
+        await client.configure_client()
+        await client.index(['a1234', 'b4567'])
 
 @pytest.mark.asyncio
-@pytest.mark.skip('this inserts an event loop in the main process')
 async def test_client_search(flow):
     with flow:
-        await py_client(port_expose=flow.port_expose).search(['a1234', 'b4567'])
+        client = py_client(port_expose=flow.port_expose)
+        await client.configure_client()
+        await client.search(['a1234', 'b4567'])
 
 
 @pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
