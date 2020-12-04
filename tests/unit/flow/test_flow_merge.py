@@ -1,4 +1,3 @@
-import os
 import random
 
 import pytest
@@ -6,8 +5,6 @@ import pytest
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from tests import random_docs
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class DummySegment(BaseSegmenter):

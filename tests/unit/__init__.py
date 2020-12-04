@@ -1,6 +1,5 @@
-import os
 import sys
-from os.path import dirname
+from pathlib import Path
 
-file_dir = os.path.dirname(__file__)
-sys.path.append(dirname(file_dir))
+file_dir = Path(__file__).parent
+sys.path.append(str(file_dir.parent))

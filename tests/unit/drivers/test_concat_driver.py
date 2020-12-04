@@ -7,8 +7,6 @@ from jina.types.document import uid
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-
 e1 = np.random.random([7])
 e2 = np.random.random([5])
 e3 = np.random.random([3])
