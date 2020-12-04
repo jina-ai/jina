@@ -54,6 +54,24 @@ def chunk_4(textual_embedding):
 
 
 @pytest.fixture(scope='function')
+def chunk_5(visual_embedding):
+    chunk = Document()
+    chunk.modality = 'visual'
+    chunk.embedding = visual_embedding
+    chunk.granularity = 3
+    return chunk
+
+
+@pytest.fixture(scope='function')
+def chunk_6(textual_embedding):
+    chunk = Document()
+    chunk.modality = 'textual'
+    chunk.content = textual_embedding
+    chunk.granularity = 3
+    return chunk
+
+
+@pytest.fixture(scope='function')
 def modality_content_mapping():
     return {
         'visual': 'content visual',
@@ -113,6 +131,21 @@ def test_from_chunks_success(chunk_1, chunk_2):
     assert 'visual' and 'textual' in md.modalities
     assert len(md.chunks) == 2
     assert md.granularity == md.chunks[0].granularity - 1
+    assert md.chunks[0].granularity == 1
+
+
+def test_from_chunks_granularity_2(chunk_5, chunk_6):
+    md = MultimodalDocument(chunks=[chunk_5, chunk_6])
+    assert len(md.modalities) == 2
+    assert 'visual' and 'textual' in md.modalities
+    assert len(md.chunks) == 2
+    assert md.granularity == md.chunks[0].granularity - 1
+    assert md.chunks[0].granularity == 3
+
+
+def test_assert_granularity(chunk_1, chunk_6):
+    with pytest.raises(BadDocType):
+        md = MultimodalDocument(chunks=[chunk_1, chunk_6])
 
 
 def test_from_chunks_fail_length_mismatch(chunk_1, chunk_2, chunk_3):
