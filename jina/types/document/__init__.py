@@ -98,7 +98,6 @@ class Document:
                 view (i.e. weak reference) from it or a deep copy from it.
         :param kwargs: other parameters to be set
         """
-
         self._document = jina_pb2.DocumentProto()
         try:
             if isinstance(document, jina_pb2.DocumentProto):
@@ -137,7 +136,9 @@ class Document:
                              f'you may use "Document(content=your_content)"') from ex
 
         if custom_id is None:
+            import random
             custom_id = random.random()
+
         self.id = custom_id
 
         self.set_attrs(**kwargs)
@@ -185,14 +186,14 @@ class Document:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return UniqueId(self._document.id, self.random_id)
+        return UniqueId(self._document.id)
 
     @property
     def parent_id(self) -> 'UniqueId':
         """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return UniqueId(self._document.parent_id, self.random_id)
+        return UniqueId(self._document.parent_id)
 
     def update_id(self):
         """Update the document id according to its content.
@@ -223,7 +224,7 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        self._document.id = UniqueId(value, self.random_id)
+        self._document.id = UniqueId(value)
 
     @parent_id.setter
     def parent_id(self, value: Union[bytes, str, int]):
@@ -239,7 +240,7 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        self._document.parent_id = UniqueId(value, self.random_id)
+        self._document.parent_id = UniqueId(value)
 
     @property
     def blob(self) -> 'np.ndarray':
