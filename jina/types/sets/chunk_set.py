@@ -25,10 +25,25 @@ class ChunkSet(DocumentSet):
         chunk = Document(c)
 
         chunk.set_attrs(parent_id=self._ref_doc.id,
-                        granularity=self._ref_doc.granularity + 1,
+                        granularity=self.granularity,
                         **kwargs)
 
         if not chunk.mime_type:
             chunk.mime_type = self._ref_doc.mime_type
         chunk.update_id()
         return chunk
+
+    @property
+    def parent_doc(self) -> 'Document':
+        """Get the document that this :class:`ChunkSet` belonging to"""
+        return self._ref_doc
+
+    @property
+    def granularity(self) -> int:
+        """The granularity of all document in this set """
+        return self._ref_doc.granularity + 1
+
+    @property
+    def adjacency(self) -> int:
+        """The adjacency of all document in this set """
+        return self._ref_doc.adjacency
