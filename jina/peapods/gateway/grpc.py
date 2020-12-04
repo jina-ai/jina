@@ -1,6 +1,5 @@
 import asyncio
 import os
-from attr import has
 
 import grpc
 
