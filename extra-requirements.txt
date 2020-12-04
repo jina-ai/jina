@@ -55,6 +55,7 @@ cookiecutter:               hub, devel, cicd
 pytest:                     test
 pytest-xdist==1.34.0:       test
 pytest-timeout:             test
+pytest-mock:                test
 pytest-cov:                 test
 pytest-repeat:              test
 flaky:                      test
