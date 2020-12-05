@@ -156,12 +156,12 @@ def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) 
 ```
 
 This allow you to apply the `callback_fn` based on `traversal_path`.
-The `traversal_path` is defined as blow:
+The `traversal_path` is defined as below:
 
 ![nodes](img/nodes.png)
 
 With these pre-defined node names, you're able to apply any callbacks (defined as `_apply_all` in the `driver`) to a specific node.
-In the blow YAML configuration, the `VectorSearchDriver` was applied to node `c`, `KVSearchDriver` was applied to node `cm` (matches of chunks).
+In the below YAML configuration, the `VectorSearchDriver` was applied to node `c`, `KVSearchDriver` was applied to node `cm` (matches of chunks).
 
 ```yaml
 !CompoundIndexer
