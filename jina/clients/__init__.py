@@ -69,8 +69,7 @@ def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> None:
         with CtrlZmqlet(args=args, logger=logger, is_bind=False, is_async=False, timeout=10) as zmqlet:
             with PyClientRuntime(args, mode=mode, input_fn=input_fn, output_fn=output_fn,
                                  address=zmqlet.address, **kwargs):
-                # sleeping for a second to allow the process, event loop & the sockets to start in the client process
-                time.sleep(1)
+                counter = 0
                 while True:
                     try:
                         msg = zmqlet.sock.recv()
@@ -89,8 +88,13 @@ def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> None:
                         zmqlet.sock.send_string('')
 
                     except Again:
+                        # TODO(Deepankar): this can be handled better?
+                        if counter == 5:
+                            logger.warning('Waited for 5 seconds for zmq BIND socket before exiting')
+                            break
                         logger.debug('PyClient\'s BIND socket is not open yet. waiting for some time!')
-                        time.sleep(0.5)
+                        time.sleep(1)
+                        counter += 1
                         continue
 
 
