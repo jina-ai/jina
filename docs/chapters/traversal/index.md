@@ -128,9 +128,20 @@ Jina has defined a recursive structure with **arbitrary width and depth** instea
 Roughly speaking, `chunks` can have the next level chunks and the same level matches; and so does matches.
 This could go on and on. The following figure illustrates this structure [Ref: New Features in Jina v0.5 You Should Know About](https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/).
 
+![recursive](img/recursive.png)
+
+This recursive structure allows Document to represent many real-world objects much comfortable than before.
+For example, in NLP a long document is composed of semantic chapters; each chapter consists of multiple paragraphs, which can be further segmented into sentences.
+In CV, a video is composed of one or more scenes, including one or more shots (i.e. a sequence of frames taken by a single camera over a continuous period time).
+Each shot includes one or more frames. Such hierarchical structures can be very well represented with the recursive representation.
+
 If we look from a tree view (with a depth of 3):
 
 ![tree-view](img/tree.png)
+
+## Document Traversal with traversal paths
+
+
 
 
 
