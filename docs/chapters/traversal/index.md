@@ -111,7 +111,7 @@ print(root.matches[0].adjacency)
 ![adjacency](img/adjacency.png)
 
 In the code snippet and diagram above, we initialised a `Document` as `root` with the text: *What is love? Oh baby do not hurt me.*.
-And a `Document` with text *What is love? Oh please do not hurt me.* was added as a match to the `root`.
+And a `Document` with text *What is love? Oh please do not hurt me* was added as a match to the `root`.
 The matched document `match` is a document without any parents, so it stays at the same level as `root` with a granularity value of 0.
 Meanwhile, since `match` is the retrieved result from `root`, so the `adjanjency` increased to 1.
 
@@ -120,7 +120,8 @@ By default, the `root` node has an `adjacency` of 0, and the value increase by 1
 ## Let's go deeper: Recursive Document Representation
 
 Till now, we've introduced `chunks` and `matches` **with a depth of 1**.
-While in a real-world scenario, things could be much more complicated than this: A `Chunk` could be further divided into small chunks, and a chunk at any level might have it's own `matches` at that level.
+While in a real-world scenario, things could be much more complicated than this.
+For instance, a `Chunk` could be further divided into small chunks, and a chunk at any level might have it's own `matches` at that level.
 
 ![go-deeper](https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg)
 
@@ -149,7 +150,7 @@ Jina has defined a method called `traversal` within the class of `Document`, whi
 
 ```python
 def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) -> None
-    """Traversal apply `:meth:callback_fn` on the tree representation."""
+    """Traversal apply `:meth:callback_fn` on the recursive tree representation."""
     ...
 ```
 
