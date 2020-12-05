@@ -128,7 +128,9 @@ Jina has defined a recursive structure with **arbitrary width and depth** instea
 Roughly speaking, `chunks` can have the next level chunks and the same level matches; and so does matches.
 This could go on and on. The following figure illustrates this structure [Ref: New Features in Jina v0.5 You Should Know About](https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/).
 
+If we look from a tree view (with a depth of 3):
 
+![tree-view](img/tree.png)
 
 
 
