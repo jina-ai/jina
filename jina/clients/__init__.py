@@ -67,6 +67,7 @@ def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> None:
 
     with JinaLogger(context='PyClientRuntime') as logger:
         with CtrlZmqlet(args=args, logger=logger, is_bind=False, is_async=False, timeout=10) as zmqlet:
+            # note: we don't use async zmq context here on the main process
             with PyClientRuntime(args, mode=mode, input_fn=input_fn, output_fn=output_fn,
                                  address=zmqlet.address, **kwargs):
                 counter = 0

@@ -56,7 +56,7 @@ class PyClient(AsyncGrpcClient):
         """
 
         :param args: args provided by the CLI
-        :param address: an optional address (PAIR_CONNECT) on which client can send the response from the servicer
+        :param address: an optional address (PAIR_BIND) on which client can send the response from the servicer
 
         """
         super().__init__(args)
@@ -159,9 +159,8 @@ class PyClient(AsyncGrpcClient):
                     # If a zmq ctrl address is passed, the callback will get executed in the main process
                     # Hence we send the `response` back to the main process on the mentioned sock.
                     # `response` needs to be sent as a serialized string.
-                    # Note: shouldn't use await for `send` and `recv` - https://stackoverflow.com/a/14370767
-                    self.zmqlet.sock.send(serialized_string)
-                    msg = self.zmqlet.sock.recv()
+                    await self.zmqlet.sock.send(serialized_string)
+                    await self.zmqlet.sock.recv()
                 else:
                     # If no ctrl address is passed, callback gets executed in the client process
                     callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
@@ -170,8 +169,8 @@ class PyClient(AsyncGrpcClient):
 
             if self._address:
                 # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
-                self.zmqlet.sock.send_string('TERMINATE')
-                self.zmqlet.sock.recv()
+                await self.zmqlet.sock.send_string('TERMINATE')
+                await self.zmqlet.sock.recv()
 
     @property
     def input_fn(self) -> InputFnType:
