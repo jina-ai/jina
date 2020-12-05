@@ -169,7 +169,7 @@ class PyClient(AsyncGrpcClient):
                 p_bar.update(self.args.batch_size)
 
             if self._address:
-                # Once we are out of the response stream, send a `TERMINATE` message
+                # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
                 self.zmqlet.sock.send_string('TERMINATE')
                 self.zmqlet.sock.recv()
 

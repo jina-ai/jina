@@ -77,18 +77,21 @@ def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> None:
                         if msg == b'TERMINATE':
                             # ideal way of exit, but PyClient socket might have closed before we recv it here
                             logger.debug('received terminate message from the client response stream')
+                            zmqlet.sock.send_string('')
                             break
                         on_error = kwargs['on_error'] if 'on_error' in kwargs else pprint_routes
                         on_always = kwargs['on_always'] if 'on_always' in kwargs else None
                         grpc_response = RequestProto.FromString(msg)
-                        callback_exec(response=grpc_response, on_done=output_fn,
-                                      on_error=on_error, on_always=on_always, continue_on_error=args.continue_on_error,
+
+                        callback_exec(response=grpc_response, on_done=output_fn, on_error=on_error,
+                                      on_always=on_always, continue_on_error=args.continue_on_error,
                                       logger=logger)
                         zmqlet.sock.send_string('')
 
                     except Again:
-                        logger.debug('PyClient has already closed its socket. exiting')
-                        break
+                        logger.debug('PyClient\'s BIND socket is not open yet. waiting for some time!')
+                        time.sleep(0.5)
+                        continue
 
 
 class PyClientRuntime(BasePea):
