@@ -269,7 +269,7 @@ def test_flow_log_server():
         assert a.status_code == 200
 
         # Check ready endpoint after shutdown, check if server stopped
-        with pytest.raises(requests.exceptions.ConnectionError):
+        with pytest.raises((requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)):
             requests.get(
                 JINA_GLOBAL.logserver.address +
                 '/status/ready',
@@ -286,8 +286,8 @@ def test_shards():
     rm_files(['test-docshard-tmp'])
 
 
-# @pytest.mark.skip('this causes segmentation faults as py_client is async')
 @pytest.mark.asyncio
+@pytest.mark.skip('this causes segmentation faults intermittently')
 async def test_py_client():
     f = (Flow().add(name='r1')
          .add(name='r2')

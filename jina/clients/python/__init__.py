@@ -14,10 +14,10 @@ from ...helper import typename
 from ...logging import default_logger
 from ...logging.profile import TimeContext
 from ...proto import jina_pb2
+from ...proto.serializer import RequestProto
 from ...types.request import Request
 from ...peapods.zmq import CtrlZmqlet
 from ...types.request.common import DryRunRequest, TrainDryRunRequest, IndexDryRunRequest, SearchDryRunRequest
-from ...types.message.common import ControlMessage
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 
@@ -151,8 +151,7 @@ class PyClient(AsyncGrpcClient):
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             async for response in self._stub.Call(req_iter):
-                # For some reason, `response.SerializeToString()` before doing `response.as_pb_object` results None
-                serialized_string = response.as_pb_object.SerializeToString()
+                serialized_string = RequestProto.SerializeToString(response)
                 if serialized_string is None:
                     self.logger.warning('empty response from servicer')
                     continue
