@@ -34,6 +34,7 @@ def test_img_2():
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip('this causes segmentation faults intermittently')
 async def test_client_call_unary(flow):
     with flow:
         client = py_client(port_expose=flow.port_expose)
@@ -43,6 +44,7 @@ async def test_client_call_unary(flow):
         )
 
 @pytest.mark.asyncio
+@pytest.mark.skip('this causes segmentation faults intermittently')
 async def test_client_index(flow):
     with flow:
         client = py_client(port_expose=flow.port_expose)
@@ -50,6 +52,7 @@ async def test_client_index(flow):
         await client.index(['a1234', 'b4567'])
 
 @pytest.mark.asyncio
+@pytest.mark.skip('this causes segmentation faults intermittently')
 async def test_client_search(flow):
     with flow:
         client = py_client(port_expose=flow.port_expose)
