@@ -159,8 +159,7 @@ The `traversal_path` is defined as blow:
 ![nodes](img/nodes.png)
 
 With these pre-defined node names, you're able to apply any callbacks (defined as `_apply_all` in the `driver`) to a specific node.
-
-For instance:
+In the blow yaml configuration, the `VectorSearchDriver` was applied to node `c`, `KVSearchDriver` was applied to node `cm` (matches of chunks).
 
 ```yaml
 !CompoundIndexer
@@ -175,6 +174,3 @@ requests:
         with:
           traversal_path: ['cm']
 ```
-
-In the above yaml configuration, the `VectorSearchDriver` was applied to path `c`, `KVSearchDriver` was applied to path `cm` (matches of chunks).
-
