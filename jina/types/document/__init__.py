@@ -3,7 +3,7 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-from typing import Union, Dict, Optional, TypeVar, Any
+from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence
 
 from google.protobuf import json_format
 
@@ -19,8 +19,7 @@ from ...proto import jina_pb2
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str,
-                              np.ndarray, jina_pb2.NdArrayProto, NdArray)
+DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
 DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
 
@@ -124,7 +123,10 @@ class Document:
                     except RuntimeWarning as ex:
                         raise BadDocType(f'fail to construct a document from {document}') from ex
             elif isinstance(document, Document):
-                self._document = document.as_pb_object
+                if copy:
+                    self._document.CopyFrom(document.as_pb_object)
+                else:
+                    self._document = document.as_pb_object
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
@@ -291,8 +293,12 @@ class Document:
                 self._document.ClearField(k)
                 getattr(self._document, k).update(v)
             else:
-                if hasattr(self, k):
+                if hasattr(Document, k) and isinstance(getattr(Document, k), property) and getattr(Document, k).fset:
+                    # if class property has a setter
                     setattr(self, k, v)
+                elif hasattr(self._document, k):
+                    # no property setter, but proto has this attribute so fallback to proto
+                    setattr(self._document, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
 
@@ -437,6 +443,14 @@ class Document:
             # ``None`` is also considered as bad type
             raise TypeError(f'{typename(value)} is not recognizable')
 
+    @property
+    def granularity(self):
+        return self._document.granularity
+
+    @granularity.setter
+    def granularity(self, granularity_value: int):
+        self._document.granularity = granularity_value
+
     def convert_buffer_to_blob(self, **kwargs):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
         set :attr:`blob` accordingly.
@@ -534,3 +548,27 @@ class Document:
 
     def CopyFrom(self, doc: 'Document'):
         self._document.CopyFrom(doc.as_pb_object)
+
+    def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) -> None:
+        """Traverse leaves of the document."""
+        from ..sets import DocumentSet
+        self._traverse_rec(DocumentSet([self]), None, None, traversal_path, callback_fn, *args, **kwargs)
+
+    def _traverse_rec(self, docs: Sequence['Document'], parent_doc: Optional['Document'],
+                      parent_edge_type: Optional[str], traversal_path: str, callback_fn: Callable, *args, **kwargs):
+        if traversal_path:
+            next_edge = traversal_path[0]
+            for doc in docs:
+                if next_edge == 'm':
+                    self._traverse_rec(
+                        doc.matches, doc, 'matches', traversal_path[1:], callback_fn, *args, **kwargs
+                    )
+                elif next_edge == 'c':
+                    self._traverse_rec(
+                        doc.chunks, doc, 'chunks', traversal_path[1:], callback_fn, *args, **kwargs
+                    )
+                else:
+                    raise ValueError(f'"{next_edge}" in "{traversal_path}" is not a valid traversal path')
+        else:
+            for d in docs:
+                callback_fn(d, parent_doc, parent_edge_type, *args, **kwargs)

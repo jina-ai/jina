@@ -9,7 +9,6 @@ import re
 import sys
 import time
 import uuid
-import numpy as np
 import warnings
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
@@ -18,6 +17,7 @@ from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
 
+import numpy as np
 from ruamel.yaml import YAML, nodes
 
 __all__ = ['batch_iterator', 'yaml',
@@ -25,7 +25,7 @@ __all__ = ['batch_iterator', 'yaml',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
            'cached_property', 'is_url', 'complete_path',
-           'typename', 'get_public_ip', 'get_internal_ip']
+           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list']
 
 
 def deprecated_alias(**aliases):

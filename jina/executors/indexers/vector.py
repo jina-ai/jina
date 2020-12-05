@@ -220,7 +220,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
     batch_size = 512
 
-    def __init__(self, metric: str = 'euclidean',
+    def __init__(self, metric: str = 'cosine',
                  backend: str = 'numpy',
                  compress_level: int = 0,
                  *args, **kwargs):
@@ -260,7 +260,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         return idx, dist
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple[Optional['np.ndarray'], Optional['np.ndarray']]:
         """ Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
         :return: a tuple of two ndarray.
@@ -272,6 +272,8 @@ class NumpyIndexer(BaseNumpyIndexer):
             Distance (the smaller the better) is returned, not the score.
 
         """
+        if self.size == 0:
+            return None, None
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
             dist = self._cdist(keys, self.query_handler)
         elif self.metric == 'euclidean':

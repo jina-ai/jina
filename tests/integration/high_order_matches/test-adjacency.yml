@@ -1,6 +1,7 @@
 !NumpyIndexer
 with:
   index_filename: tmp2
+  metric: euclidean
 metas:
   name: test2
   workspace: test-index-file
