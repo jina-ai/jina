@@ -78,7 +78,7 @@ In Jina, `Matches` could happens at `root` level or any `chunk` level.
 
 In order to fully understand the concept of `Matches`, we introduce a new term, named `adjacency` (short for `a` in the diagram), reflects the level of the document it is connected to.
 
-**NOTE: adjacency applys to both chunks and matches.**
+**NOTE: granularity and adjacency applys to both chunks and matches.**
 
 ```python
 from jina import Document
@@ -102,9 +102,12 @@ print(root.matches[0].adjacency)
 
 ![adjacency](img/adjacency.png)
 
+In the code snippet and diagram above, we initialised a `Document` as `root` with the text: *What is love? Oh baby do not hurt me.*.
+And a `Document` with text *What is love? Oh please do not hurt me.* was added as a match to the `root`.
+The matched document `match` is a document without any parents, so it stays at the same level as `root` with a granularity value of 0.
+Meanwhile, since `match` is the retrieved result from `root`, so the `adjanjency` increased to 1.
 
-
-By default, the `root` node has an `adjacency` of 0, and the value increase by 1 when the `matches` go deeper.
+By default, the `root` node has an `adjacency` of 0, and the value increase by 1 when it hit a `match`.
 
 
 
