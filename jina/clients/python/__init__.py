@@ -161,11 +161,8 @@ class PyClient(AsyncGrpcClient):
                         # If a zmq ctrl address is passed, the callback will get executed in the main process
                         # Hence we send the `response` back to the main process on the mentioned sock.
                         # `response` needs to be sent as a serialized string.
-                        self.logger.warning('before send serialized_string ')
                         await self.zmqlet.sock.send(serialized_string)
-                        self.logger.warning('after send serialized_string ')
                         await self.zmqlet.sock.recv()
-                        self.logger.warning('after recv ')
                     else:
                         # If no ctrl address is passed, callback gets executed in the client process
                         callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
