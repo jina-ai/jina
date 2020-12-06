@@ -312,8 +312,7 @@ class CtrlZmqlet(AsyncZmqlet):
         self.ctx, self.sock = self.init_sockets()
         self.opened_socks.append(self.sock)
         self.register_pollin()
-        # This is buggy - causes `zmq.error.Again: Resource Temporarily Ynavailable` error
-        # self.set_timeout()
+        self.set_timeout()
 
     def register_pollin(self):
         self.poller = zmq.Poller()

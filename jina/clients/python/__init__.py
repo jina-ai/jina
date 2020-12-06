@@ -101,7 +101,7 @@ class PyClient(AsyncGrpcClient):
         """ We use this method to create a PAIR-BIND socket
         """
         self.zmqlet = CtrlZmqlet(args=self.args, logger=self.logger, address=self._address,
-                                 is_bind=True, is_async=True, timeout=10)
+                                 is_bind=True, is_async=True, timeout=10000)
 
     async def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
@@ -150,27 +150,34 @@ class PyClient(AsyncGrpcClient):
             self.configure_zmqlet()
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-            async for response in self._stub.Call(req_iter):
-                serialized_string = RequestProto.SerializeToString(response)
-                if serialized_string is None:
-                    self.logger.warning('empty response from servicer')
-                    continue
-                if self._address:
-                    # If a zmq ctrl address is passed, the callback will get executed in the main process
-                    # Hence we send the `response` back to the main process on the mentioned sock.
-                    # `response` needs to be sent as a serialized string.
-                    await self.zmqlet.sock.send(serialized_string)
-                    await self.zmqlet.sock.recv()
-                else:
-                    # If no ctrl address is passed, callback gets executed in the client process
-                    callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
-                                  continue_on_error=self.args.continue_on_error, logger=self.logger)
-                p_bar.update(self.args.batch_size)
+            from zmq.error import Again
+            try:
+                async for response in self._stub.Call(req_iter):
+                    serialized_string = RequestProto.SerializeToString(response)
+                    if serialized_string is None:
+                        self.logger.warning('empty response from servicer')
+                        continue
+                    if self._address:
+                        # If a zmq ctrl address is passed, the callback will get executed in the main process
+                        # Hence we send the `response` back to the main process on the mentioned sock.
+                        # `response` needs to be sent as a serialized string.
+                        self.logger.warning('before send serialized_string ')
+                        await self.zmqlet.sock.send(serialized_string)
+                        self.logger.warning('after send serialized_string ')
+                        await self.zmqlet.sock.recv()
+                        self.logger.warning('after recv ')
+                    else:
+                        # If no ctrl address is passed, callback gets executed in the client process
+                        callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
+                                      continue_on_error=self.args.continue_on_error, logger=self.logger)
+                    p_bar.update(self.args.batch_size)
 
-            if self._address:
-                # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
-                await self.zmqlet.sock.send_string('TERMINATE')
-                await self.zmqlet.sock.recv()
+                if self._address:
+                    # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
+                    await self.zmqlet.sock.send_string('TERMINATE')
+                    await self.zmqlet.sock.recv()
+            except Again:
+                self.logger.warning(f'waited for 10s for the socket to response. breaking')
 
     @property
     def input_fn(self) -> InputFnType:

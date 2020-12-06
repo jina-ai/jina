@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import time
 import asyncio
 from typing import Dict, Union, Callable
 
@@ -66,11 +65,10 @@ def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> None:
     args.runtime = 'process'
 
     with JinaLogger(context='PyClientRuntime') as logger:
-        with CtrlZmqlet(args=args, logger=logger, is_bind=False, is_async=False, timeout=10) as zmqlet:
+        with CtrlZmqlet(args=args, logger=logger, is_bind=False, is_async=False, timeout=10000) as zmqlet:
             # note: we don't use async zmq context here on the main process
             with PyClientRuntime(args, mode=mode, input_fn=input_fn, output_fn=output_fn,
                                  address=zmqlet.address, **kwargs):
-                counter = 0
                 while True:
                     try:
                         msg = zmqlet.sock.recv()
@@ -89,15 +87,8 @@ def py_client_runtime(mode, input_fn, output_fn, **kwargs) -> None:
                         zmqlet.sock.send_string('')
 
                     except Again:
-                        # TODO(Deepankar): this can be handled better?
-                        if counter == 5:
-                            logger.warning('Waited for 5 seconds for zmq BIND socket before exiting')
-                            break
-                        logger.debug('PyClient\'s BIND socket is not open yet. waiting for some time!')
-                        time.sleep(1)
-                        counter += 1
-                        continue
-
+                        logger.warning(f'waited for 10 secs for PyClient to respond. breaking')
+                        break
 
 class PyClientRuntime(BasePea):
     """ This class allows `PyClient` to run in a different process/thread"""
