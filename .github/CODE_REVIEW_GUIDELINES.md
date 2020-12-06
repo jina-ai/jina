@@ -13,7 +13,7 @@
 - The scope of PR should be simple, unique and well-defined. PR should not contain unrelated changes
 - Approve PR only if you are sure about the scope
 - Be respectful and reply asap
-- Avoid spending time on trivial changes
+- Avoid spending too much time on trivial changes
 - Avoid premature optimisation
 - For community PR, check CLA by typing `recheckcla`
 - Ask for jina env if needed by `jina -vf`
