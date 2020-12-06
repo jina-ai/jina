@@ -71,7 +71,7 @@ def test_binarypb_update1(tmpdir, test_metas):
         assert idxer.query(99) is None
 
 
-def test_binarypb_add_and_update_not_working(tmpdir, test_metas):
+def test_binarypb_add_and_update_not_working(test_metas):
     with BinaryPbIndexer(metas=test_metas) as idxer:
         idxer.add([11, 12], [b'eleven', b'twelve'])
         idxer.save()
