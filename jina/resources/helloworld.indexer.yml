@@ -3,6 +3,7 @@ components:
   - !NumpyIndexer
     with:
       index_filename: vec.gz
+      metric: euclidean
     metas:
       name: vecidx  # a customized name
       workspace: $HW_WORKDIR

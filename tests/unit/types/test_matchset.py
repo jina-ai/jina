@@ -1,7 +1,9 @@
 import pytest
+from jina import Request
 
 from jina.types.document import Document
 from jina.types.sets.match_set import MatchSet
+
 
 @pytest.fixture(scope='function')
 def document_factory():
@@ -15,21 +17,28 @@ def document_factory():
 
     return DocumentFactory()
 
+
 @pytest.fixture
 def reference_doc(document_factory):
     return document_factory.create(0, 'test ref', 'text/plain')
 
+
 @pytest.fixture
 def matches(document_factory):
-    return [
+    req = Request()
+    req.request_type = 'index'
+    req.docs.extend([
         document_factory.create(1, 'test 1'),
         document_factory.create(2, 'test 1'),
         document_factory.create(3, 'test 3')
-    ]
+    ])
+    return req.as_pb_object.index.docs
+
 
 @pytest.fixture
 def matchset(matches, reference_doc):
     return MatchSet(docs_proto=matches, reference_doc=reference_doc)
+
 
 def test_append_from_documents(matchset, document_factory, reference_doc):
     match = document_factory.create(4, 'test 4')

@@ -1,7 +1,9 @@
 import pytest
+from jina import Request
 
 from jina.types.document import Document
 from jina.types.sets.chunk_set import ChunkSet
+
 
 @pytest.fixture(scope='function')
 def document_factory():
@@ -15,21 +17,28 @@ def document_factory():
 
     return DocumentFactory()
 
+
 @pytest.fixture
 def reference_doc(document_factory):
     return document_factory.create(0, 'test ref', 'text/plain')
 
+
 @pytest.fixture
 def chunks(document_factory):
-    return [
+    req = Request()
+    req.request_type = 'index'
+    req.docs.extend([
         document_factory.create(1, 'test 1'),
         document_factory.create(2, 'test 1'),
         document_factory.create(3, 'test 3')
-    ]
+    ])
+    return req.as_pb_object.index.docs
+
 
 @pytest.fixture
 def chunkset(chunks, reference_doc):
     return ChunkSet(docs_proto=chunks, reference_doc=reference_doc)
+
 
 def test_append_from_documents(chunkset, document_factory, reference_doc):
     chunk = document_factory.create(4, 'test 4')

@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -16,16 +16,15 @@ num_query = 10
 vec_idx = np.random.randint(0, high=num_data, size=[num_data])
 vec = np.random.random([num_data, num_dim])
 query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
 def test_numpy_indexer(batch_size, compress_level, test_metas):
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -42,11 +41,11 @@ def test_numpy_indexer_known(batch_size, compress_level, test_metas):
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
@@ -64,12 +63,12 @@ def test_numpy_indexer_known(batch_size, compress_level, test_metas):
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
 def test_scipy_indexer(batch_size, compress_level, test_metas):
-    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level,
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', backend='scipy', compress_level=compress_level,
                       metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -96,11 +95,11 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with NumpyIndexer(index_filename='np.test.gz', compress_level=compress_level,
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
                       metas=test_metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -130,11 +129,11 @@ def test_scipy_indexer_known_big(batch_size, compress_level, test_metas):
 
     keys = np.arange(10000, 20000).reshape(-1, 1)
 
-    with NumpyIndexer(index_filename='np.test.gz', backend='scipy', compress_level=compress_level,
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', backend='scipy', compress_level=compress_level,
                       metas=test_metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -155,8 +154,30 @@ def test__get_sorted_top_k(batch_size, num_docs, top_k):
     expected_idx = np.argsort(dist)[:, :top_k]
     expected_dist = np.sort(dist)[:, :top_k]
 
-    with NumpyIndexer() as indexer:
+    with NumpyIndexer(metric='euclidean') as indexer:
         idx, dist = indexer._get_sorted_top_k(dist, top_k=top_k)
 
         np.testing.assert_equal(idx, expected_idx)
         np.testing.assert_equal(dist, expected_dist)
+
+
+@pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
+def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
+    np.random.seed(500)
+    num_dim = 64
+    num_query = 10
+    query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
+
+    idx_file_path = Path(test_metas['workspace']) / 'np.test.gz'
+    with NumpyIndexer(index_filename=str(idx_file_path), compress_level=compress_level, metas=test_metas) as indexer:
+        indexer.batch_size = batch_size
+        indexer.touch()
+        indexer.save()
+        assert Path(indexer.index_abspath).exists()
+        save_abspath = indexer.save_abspath
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, NumpyIndexer)
+        idx, dist = indexer.query(query, top_k=4)
+        assert idx == None
+        assert dist == None

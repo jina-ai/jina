@@ -3,6 +3,8 @@ import pytest
 from jina import Document
 from jina.types.sets import DocumentSet
 
+DOCUMENTS_PER_LEVEL = 1
+
 
 @pytest.fixture(scope='function')
 def document_factory():
@@ -120,12 +122,61 @@ def test_match_chunk_set():
     with Document() as d:
         d.content = 'hello world'
 
-    m = d.matches.append()
+    m = d.matches.new()
     assert m.granularity == d.granularity
     assert m.adjacency == d.adjacency + 1
     assert len(d.matches) == 1
 
-    c = d.chunks.append()
+    c = d.chunks.new()
     assert c.granularity == d.granularity + 1
     assert c.adjacency == d.adjacency
     assert len(d.chunks) == 1
+
+
+def add_chunk(doc):
+    with Document() as chunk:
+        chunk.granularity = doc.granularity + 1
+        chunk.adjacency = doc.adjacency
+        doc.chunks.append(chunk)
+        return chunk
+
+
+def add_match(doc):
+    with Document() as match:
+        match.granularity = doc.granularity
+        match.adjacency = doc.adjacency + 1
+        doc.matches.add(match)
+        return match
+
+
+@pytest.fixture
+def documentset():
+    """ Builds up a complete chunk-match structure, with a depth of 2 in both directions recursively. """
+    max_granularity = 2
+    max_adjacency = 2
+
+    def iterate_build(document, current_granularity, current_adjacency):
+        if current_granularity < max_granularity:
+            for i in range(DOCUMENTS_PER_LEVEL):
+                chunk = add_chunk(document)
+                iterate_build(chunk, chunk.granularity, chunk.adjacency)
+        if current_adjacency < max_adjacency:
+            for i in range(DOCUMENTS_PER_LEVEL):
+                match = add_match(document)
+                iterate_build(match, match.granularity, match.adjacency)
+
+    docs = []
+    for base_id in range(DOCUMENTS_PER_LEVEL):
+        with Document() as d:
+            d.granularity = 0
+            d.adjacency = 0
+            docs.append(d)
+            iterate_build(d, 0, 0)
+    return DocumentSet(docs)
+
+
+def callback_fn(docs, *args, **kwargs) -> None:
+    for doc in docs:
+        add_chunk(doc)
+        add_match(doc)
+        add_match(doc)

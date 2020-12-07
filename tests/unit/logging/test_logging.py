@@ -1,10 +1,11 @@
 import os
+from pathlib import Path
 
 import pytest
 from jina import __uptime__
 from jina.logging import JinaLogger
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+cur_dir = Path(__file__).parent
 
 
 def log(logger):
@@ -20,7 +21,7 @@ def log(logger):
 
 
 def test_logging_syslog():
-    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/syslog.yml')) as logger:
+    with JinaLogger('test_logger', log_config=str(cur_dir / 'yaml' / 'syslog.yml')) as logger:
         log(logger)
         assert len(logger.handlers) == 1
 
@@ -38,11 +39,11 @@ def test_logging_default():
 
 def test_logging_file():
     fn = f'jina-{__uptime__}.log'
-    if os.path.exists(fn):
+    if Path(fn).exists():
         os.remove(fn)
-    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
+    with JinaLogger('test_logger', log_config=str(cur_dir / 'yaml' / 'file.yml')) as logger:
         log(logger)
-    assert os.path.exists(fn)
+    assert Path(fn).exists()
     with open(fn) as fp:
         assert len(fp.readlines()) == 7
     os.remove(fn)

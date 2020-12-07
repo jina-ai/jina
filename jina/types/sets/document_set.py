@@ -1,4 +1,5 @@
 from collections.abc import MutableSequence
+from typing import Callable
 from typing import Union, Sequence, Iterable, Tuple
 
 import numpy as np
@@ -54,12 +55,12 @@ class DocumentSet(MutableSequence):
         else:
             raise IndexError(f'do not support this index {item}')
 
-    def append(self, doc: 'Document'):
-        self._docs_proto.append(doc.as_pb_object)
+    def append(self, doc: 'Document') -> 'Document':
+        return self._docs_proto.append(doc.as_pb_object)
 
-    def add(self, doc: 'Document'):
+    def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method """
-        self.append(doc)
+        return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
         self._docs_proto.extend(doc.as_pb_object for doc in iterable)
@@ -89,6 +90,10 @@ class DocumentSet(MutableSequence):
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
+
+    def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs):
+        for d in self:
+            d.traverse(traversal_paths, callback_fn, *args, **kwargs)
 
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
@@ -129,22 +134,9 @@ class DocumentSet(MutableSequence):
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...``` """
-        return bool(len(self))
- 
+        return len(self) > 0
 
-class MultimodalDocumentSet(DocumentSet):
-    """:class:`MultimodalDocumentSet` is a mutable sequence of :class:`Document`,
-    It wraps itself a DocumentSet to guarantee that it iterates guaranteeing that the generated
-    documents fulfill the MultiModal Document specifications
-    """
-
-    def __init__(self, document_set:  Union[DocumentSet, 'RepeatedCompositeContainer', Sequence['Document']]):
-        if isinstance(document_set, DocumentSet):
-            super().__init__(docs_proto=document_set._docs_proto)
-        else:
-            super().__init__(docs_proto=document_set)
-
-    def __iter__(self):
-        from ..document.multimodal import MultimodalDocument
-        for d in self._docs_proto:
-            yield MultimodalDocument(d)
+    def new(self) -> 'Document':
+        """Create a new empty document appended to the end of the set"""
+        from ..document import Document
+        return self.append(Document())
