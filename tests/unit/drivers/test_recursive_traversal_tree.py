@@ -1,9 +1,5 @@
-import os
-
 from jina.drivers import BaseRecursiveDriver
 from jina.proto import jina_pb2
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 DOCUMENTS_PER_LEVEL = 1
 

@@ -1,9 +1,5 @@
-import os
-
 from jina.drivers.querylang.queryset.lookup import QuerySet, Q
 from tests import random_docs
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_docs_filter():

@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -44,7 +44,7 @@ def test_cache_driver_twice(tmp_path):
         driver._traverse_apply(docs)
 
         # check persistence
-        assert os.path.exists(filename)
+        assert Path(filename).exists()
 
 
 def test_cache_driver_tmpfile():
@@ -65,7 +65,7 @@ def test_cache_driver_tmpfile():
         driver._traverse_apply(docs)
 
     # check persistence
-    assert os.path.exists(executor.index_abspath)
+    assert Path(executor.index_abspath).exists()
 
 
 def test_cache_driver_from_file(tmp_path):
@@ -88,4 +88,4 @@ def test_cache_driver_from_file(tmp_path):
         driver._traverse_apply(docs)
 
         # check persistence
-        assert os.path.exists(filename)
+        assert Path(filename).exists()
