@@ -43,7 +43,9 @@ def py_client_old(**kwargs) -> 'PyClient':
 
     """
 
-    warnings.warn('this method is depreciated after 0.8.3, use "py_client" instead', DeprecationWarning)
+    warnings.warn('this method is depreciated after 0.8.3, use "py_client" instead.'
+                  'unit tests still may use it, but that means these should use new "py_client" instead.',
+                  DeprecationWarning)
     from ..parser import set_client_cli_parser
     from ..helper import get_parsed_args
     from .python import PyClient
