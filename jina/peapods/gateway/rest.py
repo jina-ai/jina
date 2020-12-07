@@ -6,6 +6,7 @@ from google.protobuf.json_format import MessageToDict
 from .grpc import GatewayPea
 from .servicer import GRPCServicer
 from ...enums import RequestType
+from ...helper import configure_event_loop
 from ...importer import ImportExtensions
 
 
@@ -17,6 +18,7 @@ class RESTGatewayPea(GatewayPea):
     synchronous from the client perspective.
     """
     def loop_body(self):
+        configure_event_loop()
         self.gateway = RESTGateway(host=self.args.host,
                                    port_expose=self.args.port_expose,
                                    servicer=GRPCServicer(self.args),
