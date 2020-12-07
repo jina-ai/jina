@@ -63,8 +63,5 @@ class PyClientRuntime(BasePea):
                 asyncio.get_event_loop().run_until_complete(self._loop_teardown())
             self.is_shutdown.set()
 
-    def close(self) -> None:
-        self.is_shutdown.wait()
-        if not self.daemon:
-            self.logger.close()
-            self.join()
+    def send_terminate_signal(self) -> None:
+        pass
