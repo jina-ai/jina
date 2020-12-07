@@ -2,10 +2,8 @@ name: Test jinad
 
 on:
   pull_request:
-    #branches:
-    #  - master
-    branches-ignore:
-      - '**'
+    branches:
+      - master
 
 jobs:
   jinad-test:
