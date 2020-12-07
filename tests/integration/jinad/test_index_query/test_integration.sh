@@ -8,7 +8,7 @@ fi
 
 docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . up  --build -d
 
-sleep 5
+sleep 10
 #Indexing part
 FLOW_ID=$(curl -s --request PUT "http://localhost:8000/v1/flow/yaml" \
     -H  "accept: application/json" \
