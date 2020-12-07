@@ -566,15 +566,15 @@ class Flow(ExitStack):
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _invoke_client(self, mode, input_fn, output_fn, **kwargs):
+    def _invoke_client(self, *args, **kwargs):
         kwargs.update(self._common_kwargs)
-        from ..clients import py_client_runtime
+        from ..clients import py_client
         if 'port_expose' not in kwargs:
             kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
 
-        py_client_runtime(mode=mode, input_fn=input_fn, output_fn=output_fn, **kwargs)
+        py_client(*args, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: InputFnType = None,

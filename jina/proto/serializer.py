@@ -15,4 +15,4 @@ class RequestProto:
 
     @staticmethod
     def FromString(x: bytes):
-        return Request(rp.FromString(x))
+        return Request(x)
