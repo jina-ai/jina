@@ -32,7 +32,7 @@ def test_binarypb_in_flow(test_metas):
         f.search(docs_no_embedding, output_fn=validate, override_doc_id=False)
 
 
-def test_binarypb_update1(tmpdir, test_metas):
+def test_binarypb_update1(test_metas):
     with BinaryPbIndexer(metas=test_metas) as idxer:
         idxer.add([1, 2, 3], [b'oldvalue', b'same', b'random'])
         idxer.save()
@@ -95,7 +95,7 @@ def test_binarypb_add_and_update_not_working(test_metas):
         assert idxer.size == 2
 
 
-def test_binarypb_delete(tmpdir, test_metas):
+def test_binarypb_delete(test_metas):
     with BinaryPbIndexer(metas=test_metas) as idxer:
         idxer.add([1, 2, 3], [b'oldvalue', b'same', b'random'])
         idxer.save()
@@ -114,3 +114,21 @@ def test_binarypb_delete(tmpdir, test_metas):
         assert idxer.query(1) == None
         assert idxer.query(2) == None
         assert idxer.query(3) == b'random'
+
+
+def test_binarypb_update_twice(test_metas):
+    """two updates in a row does work"""
+    with BinaryPbIndexer(metas=test_metas) as idxer:
+        idxer.add([1, 2, 3], [b'oldvalue', b'same', b'random'])
+        idxer.save()
+        assert idxer.size == 3
+        save_abspath = idxer.save_abspath
+
+    with BaseIndexer.load(save_abspath) as idxer:
+        idxer.update([1], [b'newvalue'])
+        idxer.update([2], [b'othernewvalue'])
+        idxer.save()
+
+    with BaseIndexer.load(save_abspath) as idxer:
+        assert idxer.query(1) == b'newvalue'
+        assert idxer.query(2) == b'othernewvalue'
