@@ -86,5 +86,6 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
             input_fn=evaluate_docs,
             output_fn=validate_evaluation_response,
             callback_on='body',
-            override_doc_id=False
+            override_doc_id=False,
+            batch_size=10
         )
