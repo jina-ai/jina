@@ -1,4 +1,5 @@
 import json
+import time
 from urllib import request
 
 import pytest
@@ -17,6 +18,8 @@ def query_dict():
 
 def test_top_k_with_rest_api(query_dict):
     with Flow(rest_api=True, port_expose=PORT).add():
+        # temporarily adding sleep
+        time.sleep(0.5)
         query = json.dumps(query_dict).encode('utf-8')
         req = request.Request(f'http://0.0.0.0:{PORT}/api/search', data=query,
                               headers={'content-type': 'application/json'})
