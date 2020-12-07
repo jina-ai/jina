@@ -10,7 +10,8 @@ from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
 from . import Pea
-from .gateway import GatewayPea, RESTGatewayPea
+from .gateway.grpc import GatewayPea
+from .gateway.rest import RESTGatewayPea
 from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
