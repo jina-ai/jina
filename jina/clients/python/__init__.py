@@ -4,6 +4,8 @@ __license__ = "Apache-2.0"
 import time
 from typing import Callable, Union, Optional
 
+from zmq.error import Again
+
 from . import request
 from .grpc import AsyncGrpcClient
 from .helper import ProgressBar, pprint_routes, callback_exec
@@ -13,10 +15,9 @@ from ...excepts import BadClient, DryRunException
 from ...helper import typename
 from ...logging import default_logger
 from ...logging.profile import TimeContext
-from ...proto import jina_pb2
-from ...proto.serializer import RequestProto
-from ...types.request import Request
 from ...peapods.zmq import CtrlZmqlet
+from ...proto import jina_pb2
+from ...types.request import Request
 from ...types.request.common import DryRunRequest, TrainDryRunRequest, IndexDryRunRequest, SearchDryRunRequest
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
@@ -63,6 +64,7 @@ class PyClient(AsyncGrpcClient):
         self._mode = self.args.mode
         self._input_fn = None
         self._address = address
+        self.zmqlet = None
 
     @property
     def mode(self) -> str:
@@ -96,12 +98,6 @@ class PyClient(AsyncGrpcClient):
         except:
             default_logger.error(f'input_fn is not valid!')
             raise
-
-    def configure_zmqlet(self):
-        """ We use this method to create a PAIR-BIND socket
-        """
-        self.zmqlet = CtrlZmqlet(args=self.args, logger=self.logger, address=self._address,
-                                 is_bind=True, is_async=True, timeout=10000)
 
     async def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
@@ -147,21 +143,17 @@ class PyClient(AsyncGrpcClient):
         req_iter = getattr(request, tname)(**_kwargs)
 
         if self._address:
-            self.configure_zmqlet()
+            self.zmqlet = CtrlZmqlet(logger=self.logger, address=self._address,
+                                     is_bind=True, is_async=True, timeout=10000)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-            from zmq.error import Again
             try:
                 async for response in self._stub.Call(req_iter):
-                    serialized_string = RequestProto.SerializeToString(response)
-                    if serialized_string is None:
-                        self.logger.warning('empty response from servicer')
-                        continue
-                    if self._address:
+                    if self.zmqlet:
                         # If a zmq ctrl address is passed, the callback will get executed in the main process
                         # Hence we send the `response` back to the main process on the mentioned sock.
                         # `response` needs to be sent as a serialized string.
-                        await self.zmqlet.sock.send(serialized_string)
+                        await self.zmqlet.sock.send(response.SerializeToString())
                         await self.zmqlet.sock.recv()
                     else:
                         # If no ctrl address is passed, callback gets executed in the client process
@@ -169,7 +161,7 @@ class PyClient(AsyncGrpcClient):
                                       continue_on_error=self.args.continue_on_error, logger=self.logger)
                     p_bar.update(self.args.batch_size)
 
-                if self._address:
+                if self.zmqlet:
                     # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
                     await self.zmqlet.sock.send_string('TERMINATE')
                     await self.zmqlet.sock.recv()
@@ -241,5 +233,5 @@ class PyClient(AsyncGrpcClient):
 
     async def close(self) -> None:
         await super().close()
-        if hasattr(self, 'zmqlet'):
+        if getattr(self, 'zmqlet', None):
             self.zmqlet.close()

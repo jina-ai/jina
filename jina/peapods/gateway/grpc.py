@@ -13,7 +13,7 @@ from ...proto import jina_pb2_grpc, jina_pb2
 
 class GatewayPea(BasePea):
     async def handle_terminate_signal(self):
-        with CtrlZmqlet(args=self.args, logger=self.logger, address=self.ctrl_addr) as zmqlet:
+        with CtrlZmqlet(logger=self.logger, address=self.ctrl_addr) as zmqlet:
             msg = await recv_message_async(sock=zmqlet.sock)
             if msg.request.command == 'TERMINATE':
                 msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
