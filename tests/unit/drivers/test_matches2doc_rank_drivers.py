@@ -72,3 +72,4 @@ def test_chunk2doc_ranker_driver_mock_exec():
     assert doc.matches[3].score.value == -4
     for match in doc.matches:
         assert match.score.ref_id == doc.id
+        assert match.score.op_name == 'MockAbsoluteLengthRanker'

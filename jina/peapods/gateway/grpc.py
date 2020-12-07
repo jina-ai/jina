@@ -6,14 +6,14 @@ import grpc
 from .servicer import GRPCServicer
 from ..pea import BasePea
 from ..zmq import CtrlZmqlet, send_message_async, recv_message_async
-from ...helper import use_uvloop
+from ...helper import configure_event_loop
 from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc, jina_pb2
 
 
 class GatewayPea(BasePea):
     async def _handle_terminate_signal(self):
-        with CtrlZmqlet(args=self.args, logger=self.logger, address=self.ctrl_addr) as zmqlet:
+        with CtrlZmqlet(logger=self.logger, address=self.ctrl_addr) as zmqlet:
             msg = await recv_message_async(sock=zmqlet.sock)
             if msg.request.command == 'TERMINATE':
                 msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
@@ -40,8 +40,8 @@ class GatewayPea(BasePea):
 
     def loop_body(self):
         self.gateway = AsyncGateway(self.args)
-        AsyncGateway.configure_event_loop()
-        self.gateway.configure_server()
+        configure_event_loop()
+        self.gateway.configure_server(self.args)
         self.set_ready()
         # asyncio.run() or asyncio.run_until_complete() wouldn't work here as we are running a custom loop
         asyncio.get_event_loop().run_until_complete(self._loop_body())
@@ -82,21 +82,13 @@ class AsyncGateway:
                                  log_config=args.log_config)
         self._p_servicer = GRPCServicer(args)
         self.is_gateway_ready = asyncio.Event()
+        self._bind_address = f'{args.host}:{args.port_expose}'
+
+    def configure_server(self, args):
         self._server = grpc.aio.server(
             options=[('grpc.max_send_message_length', args.max_message_size),
                      ('grpc.max_receive_message_length', args.max_message_size)])
 
-        self._bind_address = f'{args.host}:{args.port_expose}'
-
-    @staticmethod
-    def configure_event_loop():
-        # This should be set in loop_body of every process that needs an event loop as the 1st step
-        # TODO(Deepankar): can be moved to generic helper function
-        use_uvloop()
-        import asyncio
-        asyncio.set_event_loop(asyncio.new_event_loop())
-
-    def configure_server(self):
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
         self._server.add_insecure_port(self._bind_address)
 

@@ -2,7 +2,7 @@ import time
 import pytest
 import requests
 
-from jina.clients import py_client
+from jina.clients import py_client_old
 from jina.clients.python import PyClient
 from jina.clients.python.io import input_files
 from jina.enums import RequestType
@@ -37,7 +37,7 @@ def test_img_2():
 @pytest.mark.skip('this causes segmentation faults intermittently')
 async def test_client_call_unary(flow):
     with flow:
-        client = py_client(port_expose=flow.port_expose)
+        client = py_client_old(port_expose=flow.port_expose)
         await client.configure_client()
         await client.call_unary(
             [b'a1234', b'b4567'], mode=RequestType.INDEX,
@@ -47,7 +47,7 @@ async def test_client_call_unary(flow):
 @pytest.mark.skip('this causes segmentation faults intermittently')
 async def test_client_index(flow):
     with flow:
-        client = py_client(port_expose=flow.port_expose)
+        client = py_client_old(port_expose=flow.port_expose)
         await client.configure_client()
         await client.index(['a1234', 'b4567'])
 
@@ -55,7 +55,7 @@ async def test_client_index(flow):
 @pytest.mark.skip('this causes segmentation faults intermittently')
 async def test_client_search(flow):
     with flow:
-        client = py_client(port_expose=flow.port_expose)
+        client = py_client_old(port_expose=flow.port_expose)
         await client.configure_client()
         await client.search(['a1234', 'b4567'])
 

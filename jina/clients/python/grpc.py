@@ -10,7 +10,6 @@ from ... import __stop_msg__
 from ...excepts import GRPCServerError, BadClientRequestGenerator, BadClient, BadDocType
 from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc
-from ...helper import use_uvloop
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -30,16 +29,6 @@ class AsyncGrpcClient:
             os.unsetenv('https_proxy')
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.is_closed = True
-
-    @staticmethod
-    def configure_event_loop():
-        # This should be called by the process that the channel & stub will live in
-        try:
-            return asyncio.get_running_loop()
-        except RuntimeError:
-            use_uvloop()
-            asyncio.set_event_loop(asyncio.new_event_loop())
-            return asyncio.get_event_loop()
 
     async def configure_client(self):
         # This is moved to a different function, as this sets up an event loop

@@ -301,8 +301,8 @@ async def test_py_client():
 
     with f:
         f.dry_run()
-        from jina.clients import py_client
-        client = py_client(port_expose=f.port_expose, host=f.host)
+        from jina.clients import py_client_old
+        client = py_client_old(port_expose=f.port_expose, host=f.host)
         await client.configure_client()
         await client.dry_run(IndexDryRunRequest())
 

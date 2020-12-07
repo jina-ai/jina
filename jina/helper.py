@@ -520,6 +520,14 @@ def use_uvloop():
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
+def configure_event_loop():
+    # This should be set in loop_body of every process that needs an event loop as the 1st step
+    # This helps getting rid of `event loop already running` error while executing `run_until_complete`
+    use_uvloop()
+    import asyncio
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+
 def typename(obj):
     if not isinstance(obj, type):
         obj = obj.__class__
