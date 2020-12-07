@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pytest
 import requests
@@ -15,7 +15,7 @@ from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request.common import IndexDryRunRequest
 from tests import random_docs, rm_files
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+cur_dir = Path(__file__).parent
 
 
 def test_ping():
@@ -138,15 +138,15 @@ def test_simple_flow():
 
 
 def test_load_flow_from_yaml():
-    with open(os.path.join(cur_dir, '../yaml/test-flow.yml')) as fp:
+    with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
-        with open(os.path.join(cur_dir, '../yaml/swarm-out.yml'), 'w') as fp, a:
+        with open(cur_dir.parent / 'yaml' / 'swarm-out.yml', 'w') as fp, a:
             a.to_swarm_yaml(fp)
-        rm_files([os.path.join(cur_dir, '../yaml/swarm-out.yml')])
+        rm_files([str(cur_dir.parent / 'yaml' / 'swarm-out.yml')])
 
 
 def test_flow_identical():
-    with open(os.path.join(cur_dir, '../yaml/test-flow.yml')) as fp:
+    with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
 
     b = (Flow()
@@ -199,7 +199,7 @@ def test_flow_identical():
 
 def test_dryrun():
     f = (Flow()
-         .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
+         .add(name='dummyEncoder', uses=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder.yml')))
 
     with f:
         f.dry_run()
@@ -215,14 +215,14 @@ def test_pod_status():
 
 def test_flow_no_container():
     f = (Flow()
-         .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
+         .add(name='dummyEncoder', uses=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder.yml')))
 
     with f:
         f.index(input_fn=random_docs(10))
 
 
 def test_flow_yaml_dump():
-    f = Flow(logserver_config=os.path.join(cur_dir, '../yaml/test-server-config.yml'),
+    f = Flow(logserver_config=str(cur_dir.parent / 'yaml' / 'test-server-config.yml'),
              optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
              no_gateway=True)
     f.save_config('test1.yml')
@@ -234,7 +234,7 @@ def test_flow_yaml_dump():
 
 
 def test_flow_log_server():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/test_log_server.yml'))
+    f = Flow.load_config(str(cur_dir.parent / 'yaml' / 'test_log_server.yml'))
     with f:
         assert hasattr(JINA_GLOBAL.logserver, 'ready')
 
@@ -277,7 +277,7 @@ def test_flow_log_server():
 
 
 def test_shards():
-    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3,
+    f = Flow().add(name='doc_pb', uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'), parallel=3,
                    separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(1000), random_doc_id=False)
@@ -482,7 +482,7 @@ def test_index_text_files():
         for d in req.docs:
             assert d.text
 
-    f = (Flow(read_only=True).add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
+    f = (Flow(read_only=True).add(uses=str(cur_dir.parent / 'yaml' / 'datauriindex.yml'), timeout_ready=-1))
 
     with f:
         f.index_files('*.py', output_fn=validate, callback_on='body')

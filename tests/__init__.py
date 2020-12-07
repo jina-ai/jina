@@ -1,16 +1,16 @@
 import os
 import sys
 import shutil
+from pathlib import Path
 from typing import Iterator
-from os.path import dirname
 
 import numpy as np
 
 from jina.types.document import Document
 
 
-file_dir = os.path.dirname(__file__)
-sys.path.append(dirname(file_dir))
+file_dir = Path(__file__).parent
+sys.path.append(str(file_dir.parent))
 
 
 def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> Iterator['Document']:
@@ -33,8 +33,9 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> Iterator[
 
 def rm_files(file_paths):
     for file_path in file_paths:
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
+        file_path = Path(file_path)
+        if file_path.exists():
+            if file_path.is_file():
                 os.remove(file_path)
-            elif os.path.isdir(file_path):
+            elif file_path.is_dir():
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
