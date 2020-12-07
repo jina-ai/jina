@@ -16,7 +16,7 @@ pods:
     read_only: true
     needs: gateway
   multimodal_encoder:
-    uses_before: _merge_all
+    uses_before: _merge_chunks
     uses: yaml/all-types-multimodal-encoder.yml
     read_only: true
     needs: [pass_modality_1, pass_modality_2, pass_modality_3, pass_modality_4]
