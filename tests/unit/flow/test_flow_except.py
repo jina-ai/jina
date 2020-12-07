@@ -99,7 +99,6 @@ def test_no_error_callback():
         f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate1, on_error=validate2)
 
 
-
 def test_flow_on_callback():
     f = Flow().add()
     hit = []
