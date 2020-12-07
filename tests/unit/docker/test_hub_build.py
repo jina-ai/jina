@@ -92,10 +92,10 @@ def test_hub_build_push_push_again():
     assert len(manifests) >= 1
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
-    # try and push same version again should fail
-    args = set_hub_build_parser().parse_args([str(cur_dir / 'hub-mwu'), '--push', '--host-info'])
-    summary = HubIO(args).build()
-    print(summary['is_build_success'])
+    with pytest.raises(Exception):
+        # try and push same version again should fail with `--no-overwrite`
+        args = set_hub_build_parser().parse_args([str(cur_dir / 'hub-mwu'), '--push', '--host-info', '--no-overwrite'])
+        HubIO(args).build()
 
 
 def test_hub_build_failures():
