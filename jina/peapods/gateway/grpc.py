@@ -81,15 +81,17 @@ class AsyncGateway:
                                  log_id=args.log_id,
                                  log_config=args.log_config)
         self._p_servicer = GRPCServicer(args)
-        self.is_gateway_ready = asyncio.Event()
         self._bind_address = f'{args.host}:{args.port_expose}'
 
     def configure_server(self, args):
+        # event can't be initialized in __init__
+        self.is_gateway_ready = asyncio.Event()
         self._server = grpc.aio.server(
             options=[('grpc.max_send_message_length', args.max_message_size),
                      ('grpc.max_receive_message_length', args.max_message_size)])
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
+        self._bind_address = f'{args.host}:{args.port_expose}'
         self._server.add_insecure_port(self._bind_address)
 
     async def start(self):

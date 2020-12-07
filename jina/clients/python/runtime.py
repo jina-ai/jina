@@ -35,7 +35,7 @@ class PyClientRuntime(BasePea):
             await self.grpc_client.__aenter__()
         except GRPCServerError:
             self.logger.error('couldn\'t connect to PyClient. exiting')
-            self.loop_teardown()
+            self._teardown()
             return
         self.primary_task = asyncio.get_running_loop().create_task(
             getattr(self.grpc_client, self.mode)(self.input_fn, self.output_fn, **self._kwargs)
@@ -51,11 +51,31 @@ class PyClientRuntime(BasePea):
         self.is_ready_event.set()
         asyncio.get_event_loop().run_until_complete(self._loop_body())
 
+    def run(self):
+        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        try:
+            # Every logger created in this process will be identified by the `Pod Id` and use the same name
+            self.loop_body()
+        except KeyboardInterrupt:
+            self.logger.info('Loop interrupted by user')
+        except SystemError as ex:
+            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+        except Exception as ex:
+            # this captures the general exception from the following places:
+            # - self.zmqlet.recv_message
+            # - self.zmqlet.send_message
+            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+        finally:
+            # if an exception occurs this unsets ready and shutting down
+            self._teardown()
+            self.unset_ready()
+            self.is_shutdown.set()
+
     async def _loop_teardown(self):
         if not self.grpc_client.is_closed:
             await self.grpc_client.close()
 
-    def loop_teardown(self):
+    def _teardown(self):
         if hasattr(self, 'grpc_client'):
             if hasattr(self, 'primary_task'):
                 if not self.primary_task.done():
@@ -63,5 +83,8 @@ class PyClientRuntime(BasePea):
                 asyncio.get_event_loop().run_until_complete(self._loop_teardown())
             self.is_shutdown.set()
 
-    def send_terminate_signal(self) -> None:
-        pass
+    def close(self) -> None:
+        self.is_shutdown.wait()
+        if not self.daemon:
+            self.logger.close()
+            self.join()
