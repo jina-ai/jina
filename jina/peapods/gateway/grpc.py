@@ -12,19 +12,19 @@ from ...proto import jina_pb2_grpc, jina_pb2
 
 
 class GatewayPea(BasePea):
-    async def handle_terminate_signal(self):
+    async def _handle_terminate_signal(self):
         with CtrlZmqlet(args=self.args, logger=self.logger, address=self.ctrl_addr) as zmqlet:
             msg = await recv_message_async(sock=zmqlet.sock)
             if msg.request.command == 'TERMINATE':
                 msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             await send_message_async(sock=zmqlet.sock, msg=msg)
-            self.loop_teardown()
+            self._teardown()
             self.is_shutdown.set()
 
     async def _loop_body(self):
         self.gateway_task = asyncio.create_task(self.gateway.start())
         # we cannot use zmqstreamlet here, as that depends on a custom loop
-        self.zmq_task = asyncio.create_task(self.handle_terminate_signal())
+        self.zmq_task = asyncio.create_task(self._handle_terminate_signal())
         # gateway gets started without awaiting the task, as we don't want to suspend the loop_body here
         # event loop should be suspended depending on zmq ctrl recv, hence awaiting here
 
@@ -41,22 +41,33 @@ class GatewayPea(BasePea):
     def loop_body(self):
         self.gateway = AsyncGateway(self.args)
         AsyncGateway.configure_event_loop()
-        self.gateway.configure_server(self.args)
+        self.gateway.configure_server()
         self.set_ready()
         # asyncio.run() or asyncio.run_until_complete() wouldn't work here as we are running a custom loop
         asyncio.get_event_loop().run_until_complete(self._loop_body())
 
-    async def _loop_teardown(self):
-        asyncio.get_event_loop().create_task(self.gateway.close()) \
-            if asyncio.iscoroutinefunction(self.gateway.close) \
-            else self.gateway.close()
-
-    def loop_teardown(self):
+    def _teardown(self):
         if hasattr(self, 'zmq_task'):
             self.zmq_task.cancel()
         if hasattr(self, 'gateway'):
             self.gateway.is_gateway_ready.set()
-            # asyncio.get_event_loop().run_until_complete(self._loop_teardown())
+
+    def run(self):
+        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        try:
+            # Every logger created in this process will be identified by the `Pod Id` and use the same name
+            self.loop_body()
+        except KeyboardInterrupt:
+            self.logger.info('Loop interrupted by user')
+        except SystemError as ex:
+            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+        except Exception as ex:
+            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+        finally:
+            # if an exception occurs this unsets ready and shutting down
+            self._teardown()
+            self.unset_ready()
+            self.is_shutdown.set()
 
 
 class AsyncGateway:
@@ -70,6 +81,12 @@ class AsyncGateway:
                                  log_id=args.log_id,
                                  log_config=args.log_config)
         self._p_servicer = GRPCServicer(args)
+        self.is_gateway_ready = asyncio.Event()
+        self._server = grpc.aio.server(
+            options=[('grpc.max_send_message_length', args.max_message_size),
+                     ('grpc.max_receive_message_length', args.max_message_size)])
+
+        self._bind_address = f'{args.host}:{args.port_expose}'
 
     @staticmethod
     def configure_event_loop():
@@ -79,14 +96,8 @@ class AsyncGateway:
         import asyncio
         asyncio.set_event_loop(asyncio.new_event_loop())
 
-    def configure_server(self, args):
-        self.is_gateway_ready = asyncio.Event()
-        self._server = grpc.aio.server(
-            options=[('grpc.max_send_message_length', args.max_message_size),
-                     ('grpc.max_receive_message_length', args.max_message_size)])
-
+    def configure_server(self):
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._p_servicer, self._server)
-        self._bind_address = f'{args.host}:{args.port_expose}'
         self._server.add_insecure_port(self._bind_address)
 
     async def start(self):
