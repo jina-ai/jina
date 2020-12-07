@@ -6,7 +6,7 @@ import grpc
 from .servicer import GRPCServicer
 from ..pea import BasePea
 from ..zmq import CtrlZmqlet, send_message_async, recv_message_async
-from ...helper import use_uvloop
+from ...helper import configure_event_loop
 from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc, jina_pb2
 
@@ -40,7 +40,7 @@ class GatewayPea(BasePea):
 
     def loop_body(self):
         self.gateway = AsyncGateway(self.args)
-        AsyncGateway.configure_event_loop()
+        configure_event_loop()
         self.gateway.configure_server(self.args)
         self.set_ready()
         # asyncio.run() or asyncio.run_until_complete() wouldn't work here as we are running a custom loop
@@ -70,14 +70,6 @@ class AsyncGateway:
                                  log_id=args.log_id,
                                  log_config=args.log_config)
         self._p_servicer = GRPCServicer(args)
-
-    @staticmethod
-    def configure_event_loop():
-        # This should be set in loop_body of every process that needs an event loop as the 1st step
-        # TODO(Deepankar): can be moved to generic helper function
-        use_uvloop()
-        import asyncio
-        asyncio.set_event_loop(asyncio.new_event_loop())
 
     def configure_server(self, args):
         self.is_gateway_ready = asyncio.Event()

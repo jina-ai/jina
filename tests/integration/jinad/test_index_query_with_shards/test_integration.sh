@@ -28,7 +28,6 @@ for i in {1..100};
     echo "Indexed document has the text: ${TEXT_INDEXED}"
   done
 
-echo "Indexed document has the text: ${TEXT_INDEXED}"
 curl --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
@@ -45,7 +44,9 @@ echo "Successfully started the flow: ${FLOW_ID}. Let's send some query"
 
 TEXT_MATCHED=$(curl --request POST -d '{"top_k": 10, "data": ["text:anything will match the same"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search' | \
     jq -e ".search.docs[] | .matches[] | .text")
-echo "document matched has the text: ${TEXT_INDEXED}"
+
+echo "document matched has the text: ${TEXT_MATCHED}"
+
 curl --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
