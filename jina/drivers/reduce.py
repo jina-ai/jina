@@ -20,7 +20,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
         It uses the last request as a reference.
     """
 
-    def __init__(self, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
