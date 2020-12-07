@@ -19,6 +19,8 @@
 scipy>=1.4.1:               index, numeric, cicd
 flask:                      devel, cicd, http, sse
 flask_cors:                 devel, cicd, http, sse
+fastapi:                    devel, cicd, http
+uvicorn:                    devel, cicd, http
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, test
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, test
@@ -55,8 +57,10 @@ cookiecutter:               hub, devel, cicd
 pytest:                     test
 pytest-xdist==1.34.0:       test
 pytest-timeout:             test
+pytest-mock:                test
 pytest-cov:                 test
 pytest-repeat:              test
+pytest-asyncio:             test
 flaky:                      test
 mock:                       test
 requests:                   http

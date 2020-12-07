@@ -55,12 +55,12 @@ class DocumentSet(MutableSequence):
         else:
             raise IndexError(f'do not support this index {item}')
 
-    def append(self, doc: 'Document'):
-        self._docs_proto.append(doc.as_pb_object)
+    def append(self, doc: 'Document') -> 'Document':
+        return self._docs_proto.append(doc.as_pb_object)
 
-    def add(self, doc: 'Document'):
+    def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method """
-        self.append(doc)
+        return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
         self._docs_proto.extend(doc.as_pb_object for doc in iterable)
@@ -135,3 +135,8 @@ class DocumentSet(MutableSequence):
     def __bool__(self):
         """To simulate ```l = []; if l: ...``` """
         return len(self) > 0
+
+    def new(self) -> 'Document':
+        """Create a new empty document appended to the end of the set"""
+        from ..document import Document
+        return self.append(Document())

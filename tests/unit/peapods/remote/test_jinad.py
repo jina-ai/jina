@@ -1,11 +1,11 @@
-import os
+from pathlib import Path
 
 import mock
 from jina.logging import JinaLogger
 from jina.peapods.jinad import JinadAPI, PodAPI, PeaAPI, fetch_files_from_yaml
 
 logger = JinaLogger(context='test-remote')
-yaml_path = os.path.dirname(os.path.realpath(__file__))
+yaml_path = Path(__file__).parent
 relative_pymodules_path = 'tests/unit/peapods/remote'
 jinad_api = JinadAPI(host='0.0.0.0', port=8000, logger=logger)
 pod_api = PodAPI(host='0.0.0.0', port=8000, logger=logger)

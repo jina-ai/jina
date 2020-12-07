@@ -23,14 +23,3 @@ def test_metas(tmpdir, random_workspace_name):
     del os.environ[random_workspace_name]
 
 
-@pytest.fixture(scope='function')
-def is_callback_called():
-    class Called:
-        def __init__(self):
-            self._callback_called = False
-
-    called = Called()
-    yield called
-    assert called._callback_called
-
-

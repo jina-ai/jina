@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import PosixPath
 
 import pytest
 
@@ -15,7 +15,7 @@ def test_waiter(seconds, expected):
 
 
 def test_credentials_file():
-    assert isinstance(credentials_file(), pathlib.PosixPath)
+    assert isinstance(credentials_file(), PosixPath)
 
 
 @pytest.mark.parametrize(
