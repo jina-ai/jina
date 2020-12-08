@@ -14,7 +14,7 @@ def test_get_set_success():
     """
     pass
 
-def test_set_fail():
+def test_get_set_fail():
     """Test :meth:`__setitem__` and :meth:`__getitem__`  in :class`QueryLangSet`.
     Should raise `IndexError` given invalid key.
     """
