@@ -52,7 +52,7 @@ class PyClientRuntime(BasePea):
         asyncio.get_event_loop().run_until_complete(self._loop_body())
 
     def run(self):
-        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        """Start the process to host the PyClient in a separate process"""
         try:
             # Every logger created in this process will be identified by the `Pod Id` and use the same name
             self.loop_body()

@@ -138,7 +138,9 @@ class ContainerPea(BasePea):
                                      timeout=self.args.timeout_ctrl)
 
     def run(self):
-        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        """Start the container loop. Will spawn a docker container with a BasePea running inside.
+         It will communicate with the container to see when it is ready to receive messages from the rest
+         of the flow and stream the logs from the pea in the container"""
         try:
             self.docker_run()
             self.loop_body()
