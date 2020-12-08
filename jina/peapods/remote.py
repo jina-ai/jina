@@ -66,6 +66,23 @@ class RemotePea(BasePea):
             send_ctrl_message(address=self.ctrl_addr, cmd='TERMINATE',
                               timeout=self.ctrl_timeout)
 
+    def run(self):
+        """Start the container loop. Will spawn a docker container with a BasePea running inside.
+         It will communicate with the container to see when it is ready to receive messages from the rest
+         of the flow and stream the logs from the pea in the container"""
+        try:
+            self.loop_body()
+        except KeyboardInterrupt:
+            self.logger.info('Loop interrupted by user')
+        except SystemError as ex:
+            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+        except Exception as ex:
+            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+        finally:
+            self._teardown()
+            self.unset_ready()
+            self.is_shutdown.set()
+
     def close(self) -> None:
         self.send_terminate_signal()
         self.is_shutdown.set()
