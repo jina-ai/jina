@@ -5,11 +5,11 @@ In Jina, each `Document` is represented as a recursive representation (tree).
 A rooted recursive representation has a root node and every node has X children.
 In Jina, the root node is the document itself, while the *left* & *right* children are referred to as *chunks* and *matches* respectively.
 
-![rooted-binary-tree](img/rooted-binary-tree.png)
+![rooted-binary-tree](img/overview.png)
 
-The above image illustrates a minimal document structure: A document (root node) consists of two child nodes: *chunks* and *matches*.
-`chunks`s are a sequence of `Document`s which is attached to the root document with a higher `granularity` degree. `Matches` is a sequence of `Document`s  which are semantically related to the root document.
-We'll dive into these concepts in this document:
+The above image illustrates a basic document structure: A document (root node) and the two possible child nodes: *chunks* and *matches*.
+`chunks` are a sequence of `Documents` which is attached to the root document with a higher `granularity` degree. `matches` is a sequence of `Documents` which are semantically related to the root document.
+We'll dive into these concepts in this chapter:
 
 - [Chunks](#chunks)
 - [Matches](#matches)
@@ -19,13 +19,13 @@ We'll dive into these concepts in this document:
 
 ## Chunks
 
-Each Jina `Document` (potentially) consists of a list of `Chunk`s. A `Chunk` is a small semantic unit of a `Document`, like a sentence or a 64x64 pixel image patch.
+Each Jina `Document` (potentially) consists of a list of `chunks`. A `chunk` is a small semantic unit of a `Document`, like a sentence or a 64x64 pixel image patch.
 
 Think about these use cases: you want to search a document at a specific `granularity` level, e.g. a sentence or a paragraph.
-Or your query consists of multiple modalities, such as your query consist of a piece of text together with an image.
-`Chunk` makes it feasible!
+Or your query consists of multiple modalities, such as a piece of text together with an image.
+`chunk` makes it feasible!
 
-In Jina [primitive data types](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/), `Chunk` is defined as a `property` of `Document`:
+In Jina [primitive data types](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/), `chunk` is defined as a `property` of a `Document`:
 
 ```python
 from jina import Document
@@ -62,7 +62,7 @@ This can be seen in the image below:
 
 ![granularity](img/granularity.png)
 
-The above code sample & graph demonstrates the basic idea of a `Chunk` in a `Document`.
+The code sample and graph above demonstrates the basic idea of a `chunk` in a `Document`.
 In the beginning, we initialized a `Document` with `granularity=0` (by default).
 We then initialized two chunks and add them to the `root` document.
 Two things happened when adding the `chunk` to `root`:
@@ -75,9 +75,9 @@ This allows Jina (and you) to query chunks and reference back to its root docume
 ## Matches
 
 In a neural search system (and traditional retrieval system), matches are the expected documents returned from the system given the user query.
-In Jina, `Matches` could happen at the `root` level or any `chunk` level.
+In Jina, `matches` could happen at the `root` level or any `chunk` level.
 
-To fully understand the concept of `Matches`, we introduce a new term, named `adjacency` (short for `a` in the diagram), which reflects the level of the document it is connected to.
+To fully understand the concept of `matches`, we introduce a new term, named `adjacency` (short for `a` in the diagram), which reflects the level of the document it is connected to.
 
 **NOTE: granularity and adjacency apply to both chunks and matches.**
 
@@ -116,13 +116,13 @@ And a `Document` with text *What is love? Oh please do not hurt me* was added as
 The matched document `match` is a document without any parents, so it stays at the same level as `root` with a granularity value of 0.
 Meanwhile, since `match` is the retrieved result from `root`, so the `adjacency` increased to 1.
 
-By default, the `root` node has an `adjacency` of 0, and the value increases by 1 when it hit a `match`.
+By default, the `root` node has an `adjacency` of 0, and the value increases by 1 when it hits a `match`.
 
 ## Let's go deeper: Recursive Document Representation
 
 Till now, we've introduced `chunks` and `matches` **with a depth of 1**.
 While in a real-world scenario, things could be much more complicated than this.
-For instance, a `Chunk` could be further divided into small chunks, and a chunk at any level might have it's own `matches` at that level.
+For instance, a `chunk` could be further divided into small chunks, and a chunk at any level might have it's own `matches` at that level.
 
 ![go-deeper](https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg)
 
@@ -143,7 +143,7 @@ If we look from a tree view (with a depth of 3):
 
 ## Document Traversal with traversal paths
 
-As you already learned from [Jina 101](https://docs.jina.ai/chapters/101/.sphinx.html), one needs to apply transformation (i.e. a `callback`) on a different level of documents.
+As you already learned from [Jina 101](https://docs.jina.ai/chapters/101/.sphinx.html), you needs to apply transformation (i.e. a `callback`) on a different level of documents.
 Given the tree structure, how could we achieve that?
 The answer is `traversal`.
 
@@ -155,7 +155,7 @@ def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) 
     ...
 ```
 
-This allow you to apply the `callback_fn` based on `traversal_path`.
+This allows you to apply `callback_fn` based on `traversal_path`.
 The `traversal_path` is defined as below:
 
 ![nodes](img/nodes.png)
