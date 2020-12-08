@@ -94,6 +94,12 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         :type: str
         :default: ``'{root.metas.workspace}/{root.metas.name}-{root.metas.pea_id}'``
 
+    .. confval:: read_only
+
+        do not allow the pod to modify the model, save calls will be ignored. If set to true no serialization of the executor
+
+        :type: bool
+        :default: ``False``
 
     .. warning::
         ``name`` and ``workspace`` must be set if you want to serialize/deserialize this executor.

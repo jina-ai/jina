@@ -314,7 +314,7 @@ class BaseExecutor(metaclass=ExecutorType):
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
-    def save(self, filename: str = None) -> bool:
+    def save(self, filename: str = None):
         """
         Persist data of this executor to the :attr:`workspace` (or :attr:`pea_workspace`). The data could be
         a file or collection of files produced/used during an executor run.
@@ -335,31 +335,28 @@ class BaseExecutor(metaclass=ExecutorType):
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
         :return: successfully persisted or not
         """
-        if not self.is_updated:
-            self.logger.info(f'no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. '
+        if not self.read_only and self.is_updated:
+            f = filename or self.save_abspath
+            if not f:
+                f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
+
+            if self.max_snapshot > 0 and os.path.exists(f):
+                bak_f = f + f'.snapshot-{self._last_snapshot_ts.strftime("%Y%m%d%H%M%S") or "NA"}'
+                os.rename(f, bak_f)
+                self._snapshot_files.append(bak_f)
+                if len(self._snapshot_files) > self.max_snapshot:
+                    d_f = self._snapshot_files.pop(0)
+                    if os.path.exists(d_f):
+                        os.remove(d_f)
+            with open(f, 'wb') as fp:
+                pickle.dump(self, fp)
+                self._last_snapshot_ts = datetime.now()
+            self.is_updated = False
+            self.logger.success(f'artifacts of this executor ({self.name}) is persisted to {f}')
+        else:
+            if not self.is_updated:
+                self.logger.info(f'no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. '
                              'If you really want to save it, call "touch()" before "save()" to force saving')
-            return False
-
-        self.is_updated = False
-        f = filename or self.save_abspath
-        if not f:
-            f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
-
-        if self.max_snapshot > 0 and os.path.exists(f):
-            bak_f = f + f'.snapshot-{self._last_snapshot_ts.strftime("%Y%m%d%H%M%S") or "NA"}'
-            os.rename(f, bak_f)
-            self._snapshot_files.append(bak_f)
-            if len(self._snapshot_files) > self.max_snapshot:
-                d_f = self._snapshot_files.pop(0)
-                if os.path.exists(d_f):
-                    os.remove(d_f)
-
-        with open(f, 'wb') as fp:
-            pickle.dump(self, fp)
-            self._last_snapshot_ts = datetime.now()
-
-        self.logger.success(f'artifacts of this executor ({self.name}) is persisted to {f}')
-        return True
 
     def save_config(self, filename: str = None) -> bool:
         """
@@ -381,10 +378,10 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def load_config(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
-                    pea_id: int = 0) -> AnyExecutor:
+                    pea_id: int = 0, read_only: bool = False) -> AnyExecutor:
         """Build an executor from a YAML file.
 
-        :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
+        :param source: the file path of the YAML file or a ``TextIO`` stream to be loaded from
         :param separated_workspace: the dump and data files associated to this executor will be stored separately for
                 each parallel pea, which will be indexed by the ``pea_id``
         :param pea_id: the id of the storage of this parallel pea, only effective when ``separated_workspace=True``
@@ -416,6 +413,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
                 tmp['metas']['separated_workspace'] = separated_workspace
                 tmp['metas']['pea_id'] = pea_id
+                tmp['metas']['read_only'] = read_only
 
             else:
                 raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')
@@ -446,6 +444,7 @@ class BaseExecutor(metaclass=ExecutorType):
         """
         Release the resources as executor is destroyed, need to be overrided
         """
+        self.save()
         self.logger.close()
 
     def __enter__(self):

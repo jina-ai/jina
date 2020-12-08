@@ -16,7 +16,7 @@ from jina.types.message import Message
 from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
 from .. import __ready_msg__, __stop_msg__, Request
 from ..enums import PeaRoleType, SkipOnErrorType
-from ..excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
+from ..excepts import RequestLoopEnd, NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, PeaFailToStart, \
     ChainedPodException
 from ..executors import BaseExecutor
 from ..helper import is_valid_local_config_source, typename
@@ -196,7 +196,7 @@ class BasePea(metaclass=PeaMeta):
         try:
             self.executor = BaseExecutor.load_config(
                 self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
-                self.args.separated_workspace, self.args.pea_id)
+                self.args.separated_workspace, self.args.pea_id, self.args.read_only)
             self.executor.attach(pea=self)
         except FileNotFoundError as ex:
             self.logger.error(f'fail to load file dependency: {repr(ex)}')
@@ -208,21 +208,13 @@ class BasePea(metaclass=PeaMeta):
         self.logger.info(
             ' '.join(f'{k}: {v / self._timer.accum_time["loop"]:.2f}' for k, v in self._timer.accum_time.items()))
 
-    def save_executor(self, dump_interval: int = 0):
+    def save_executor(self):
         """Save the contained executor
 
         :param dump_interval: the time interval for saving
         """
-        if ((time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0) or dump_interval <= 0:
-            if self.args.read_only:
-                self.logger.debug('executor is not saved as "read_only" is set to true for this BasePea')
-            elif not hasattr(self, 'executor'):
-                self.logger.debug('this BasePea contains no executor, no need to save')
-            elif self.executor.save():
-                self.logger.info('dumped changes to the executor, %3.0fs since last the save'
-                                 % (time.perf_counter() - self.last_dump_time))
-            else:
-                self.logger.info('executor says there is nothing to save')
+        if (time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0:
+            self.executor.save()
             self.last_dump_time = time.perf_counter()
             if hasattr(self, 'zmqlet'):
                 self.zmqlet.print_stats()
@@ -263,7 +255,7 @@ class BasePea(metaclass=PeaMeta):
         """Post-hook function, what to do before handing out the message """
         # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
-        self.save_executor(self.args.dump_interval)
+        self.save_executor()
         self.check_memory_watermark()
 
         if self.expect_parts > 1:
@@ -289,20 +281,8 @@ class BasePea(metaclass=PeaMeta):
         self.is_post_hook_done = True
         return msg
 
-    def _handle_terminate_signal(self, msg):
-        # save executor
-        if hasattr(self, 'executor'):
-            if not self.args.exit_no_dump:
-                self.save_executor(dump_interval=0)
-            self.executor.close()
-
-        # serious error happen in callback, we need to break the event loop
-        self.zmqlet.send_message(msg)
-        # note, the logger can only be put on the second last line before `close`, as when
-        # `close` is called, the callback is unregistered and everything after `close` can not be reached
-        # some black magic in eventloop i guess?
-        self.loop_teardown()
-        self.is_shutdown.set()
+    def _teardown(self):
+        self.close_zmqlet()
 
     def msg_callback(self, msg: 'Message') -> Optional['Message']:
         """Callback function after receiving the message
@@ -313,10 +293,15 @@ class BasePea(metaclass=PeaMeta):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self.zmqlet.send_message(self._callback(msg))
+        except RequestLoopEnd as ex:
+            # this is the proper way to end when a terminate signal is sent
+            self.zmqlet.send_message(msg)
+            self._teardown()
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # save executor
             self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
-            self._handle_terminate_signal(msg)
+            self.zmqlet.send_message(msg)
+            self._teardown()
         except MemoryOverHighWatermark:
             self.logger.critical(
                 f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
@@ -341,16 +326,10 @@ class BasePea(metaclass=PeaMeta):
 
     def loop_body(self):
         """The body of the request loop
-
         .. note::
-
             Class inherited from :class:`BasePea` must override this function. And add
             :meth:`set_ready` when your loop body is started
         """
-        os.environ['JINA_POD_NAME'] = self.name
-        os.environ['JINA_LOG_ID'] = self.args.log_id
-        self.load_plugins()
-        self.load_executor()
         self.zmqlet = ZmqStreamlet(self.args, logger=self.logger)
         self.set_ready()
         self.zmqlet.start(self.msg_callback)
@@ -360,35 +339,49 @@ class BasePea(metaclass=PeaMeta):
             from ..importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
-    def loop_teardown(self):
-        """Stop the request loop """
+    def close_zmqlet(self):
+        """Close the zmqlet if exists"""
         if hasattr(self, 'zmqlet'):
             self.zmqlet.close()
+
+    def _initialize_executor(self):
+        try:
+            os.environ['JINA_POD_NAME'] = self.name
+            os.environ['JINA_LOG_ID'] = self.args.log_id
+            self.load_plugins()
+            self.load_executor()
+            return self.executor
+        except ExecutorFailToLoad:
+            self.logger.critical(f'can not start a executor from {self.args.uses}', exc_info=True)
 
     def run(self):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
-            # Every logger created in this process will be identified by the `Pod Id` and use the same name
-            self.post_init()
-            self.loop_body()
-        except ExecutorFailToLoad:
-            self.logger.critical(f'can not start a executor from {self.args.uses}', exc_info=True)
-        except KeyboardInterrupt:
-            self.logger.info('Loop interrupted by user')
-        except SystemError as ex:
-            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
-        except DriverError as ex:
-            self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
-        except zmq.error.ZMQError:
-            self.logger.critical('zmqlet can not be initiated')
-        except Exception as ex:
-            # this captures the general exception from the following places:
-            # - self.zmqlet.recv_message
-            # - self.zmqlet.send_message
-            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+            # eventually we could have `executor dump logic` inside executor itself
+            with self._initialize_executor():
+                try:
+                    # Every logger created in this process will be identified by the `Pod Id` and use the same name
+                    self.loop_body()
+                except KeyboardInterrupt:
+                    self.logger.info('Loop interrupted by user')
+                except SystemError as ex:
+                    self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+                except DriverError as ex:
+                    self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
+                except zmq.error.ZMQError:
+                    self.logger.critical('zmqlet can not be initiated')
+                except Exception as ex:
+                    # this captures the general exception from the following places:
+                    # - self.zmqlet.recv_message
+                    # - self.zmqlet.send_message
+                    self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
+        except Exception as exc:
+            # this exception handling is important to guarantee that finally is called if exception is raised
+            # from _initialize_executor
+            self.logger.critical(f' Exception when loading the executor {repr(exc)}')
         finally:
             # if an exception occurs this unsets ready and shutting down
-            self.loop_teardown()
+            self.close_zmqlet()
             self.unset_ready()
             self.is_shutdown.set()
 
@@ -396,13 +389,6 @@ class BasePea(metaclass=PeaMeta):
         """Check the memory watermark """
         if used_memory() > self.args.memory_hwm > 0:
             raise MemoryOverHighWatermark
-
-    def post_init(self):
-        """Post initializer after the start of the request loop via :func:`run`, so that they can be kept in the same
-        process/thread as the request loop.
-
-        """
-        pass
 
     def send_terminate_signal(self) -> None:
         """Gracefully close this pea and release all resources """

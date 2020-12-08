@@ -1,13 +1,8 @@
 import os
 import time
 
-import pytest
-from mock import patch
-
-from jina.excepts import BadPersistantFile
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-from jina.peapods.pea import BasePea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 save_abs_path = os.path.join(cur_dir, 'slow-save-executor.bin')
@@ -51,39 +46,4 @@ def test_close_and_load_executor():
     assert hasattr(exec, 'test')
     assert exec.test == 10
     assert exec.save_abspath == save_abs_path
-    os.remove(save_abs_path)
-
-
-class OldErrorPea(BasePea):
-    """
-    This Pea tries to simulate the behavior of Pea before issue was fixed
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.daemon = True
-
-    def loop_teardown(self):
-        """Stop the request loop """
-        if hasattr(self, 'executor'):
-            if not self.args.exit_no_dump:
-                self.save_executor(dump_interval=0)
-            self.executor.close()
-        if hasattr(self, 'zmqlet'):
-            self.zmqlet.close()
-
-    def _handle_terminate_signal(self, msg):
-        self.zmqlet.send_message(msg)
-        self.zmqlet.close()
-        self.is_shutdown.set()
-
-
-@patch(target='jina.peapods.pea.BasePea', new=OldErrorPea)
-def test_close_and_load_executor_daemon_failed():
-    with Flow().add(uses=os.path.join(cur_dir, 'yaml/slowexecutor.yml'), daemon=True).build() as f:
-        pass
-
-    with pytest.raises(BadPersistantFile):
-        BaseExecutor.load(save_abs_path)
-
     os.remove(save_abs_path)
