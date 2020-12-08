@@ -336,9 +336,7 @@ class BaseExecutor(metaclass=ExecutorType):
         :return: successfully persisted or not
         """
         if not self.read_only and self.is_updated:
-            self.is_updated = False
             f = filename or self.save_abspath
-
             if not f:
                 f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
 
@@ -353,6 +351,7 @@ class BaseExecutor(metaclass=ExecutorType):
             with open(f, 'wb') as fp:
                 pickle.dump(self, fp)
                 self._last_snapshot_ts = datetime.now()
+            self.is_updated = False
             self.logger.success(f'artifacts of this executor ({self.name}) is persisted to {f}')
         else:
             if not self.is_updated:

@@ -27,7 +27,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Build jina test-pip with fluentd
         run: |
-          docker build -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
           docker build --build-arg PIP_TAG="[devel]" -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
       - name: Build hub pod image
         run: |
