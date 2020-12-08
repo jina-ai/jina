@@ -119,6 +119,8 @@ def set_hub_build_parser(parser=None):
                         help='store the host information during bookkeeping')
     parser.add_argument('--daemon', action='store_true', default=False,
                         help='run the test Pea/Pod as a daemon process, see "jina pea --help" for details')
+    parser.add_argument('--no-overwrite', action='store_true', default=False,
+                        help='Do not allow overwriting existing images (based on module version and jina version)')
     return parser
 
 

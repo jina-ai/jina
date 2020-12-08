@@ -173,3 +173,7 @@ class RemotePodClosed(Exception):
 
 class LengthMismatchException(Exception):
     """ Exception when length of two items should be identical while not """
+
+
+class ImageAlreadyExists(Exception):
+    """ Exception when an image with the name, module version, and Jina version already exists on the Hub"""

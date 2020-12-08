@@ -4,10 +4,7 @@ import numpy as np
 import pytest
 
 from jina.flow import Flow
-from jina.proto import jina_pb2
-from jina.types.document import uid
 from jina.types.ndarray.generic import NdArray
-
 from tests import random_docs
 
 
