@@ -9,6 +9,8 @@ import numpy as np
 from . import BaseKVIndexer
 from ..compound import CompoundExecutor
 
+HEADER_NONE_ENTRY = (-1, -1, -1)
+
 
 class BinaryPbIndexer(BaseKVIndexer):
     class WriteHandler:
@@ -28,7 +30,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         def __init__(self, path):
             with open(path + '.head', 'rb') as fp:
                 tmp = np.frombuffer(fp.read(), dtype=np.int64).reshape([-1, 4])
-                self.header = {r[0]: r[1:] for r in tmp}
+                self.header = {r[0]: None if np.array_equal(r[1:], HEADER_NONE_ENTRY) else r[1:] for r in tmp}
             self._body = open(path, 'r+b')
             self.body = self._body.fileno()
 
@@ -66,7 +68,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._start += l
             self.write_handler.body.write(value)
             self._size += 1
-            # print(f'l: {l} p: {p} r: {r} r+l: {r + l} size: {self._size}')
+        self.write_handler.flush()
 
     def query(self, key: int) -> Optional[bytes]:
         pos_info = self.query_handler.header.get(key, None)
@@ -74,6 +76,34 @@ class BinaryPbIndexer(BaseKVIndexer):
             p, r, l = pos_info
             with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
                 return m[r:]
+
+    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        # check: hard fail (raises) on key not found
+        missed = []
+        for key in keys:
+            if self.query_handler.header.get(key) is None:
+                missed.append(key)
+        if missed:
+            raise KeyError(f'Key(s) {missed} were not found in {self.save_abspath}')
+
+        # hack
+        self.query_handler.close()
+        self.handler_mutex = False
+        self.delete(keys)
+        self.add(keys, values)
+        return
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        for key in keys:
+            self.write_handler.header.write(
+                np.array(
+                    np.concatenate([[key], HEADER_NONE_ENTRY]),
+                    dtype=np.int64
+                ).tobytes()
+            )
+            if self.query_handler:
+                self.query_handler.header[key] = None
+            self._size -= 1
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
