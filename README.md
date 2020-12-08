@@ -396,12 +396,11 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 
 #### MultimodalDocument
   
- A MultimodalDocument in Jina is a document composed by more than one chunks with different modalities.
+A MultimodalDocument in Jina is a document composed of multiple Chunks with different modalities.
  
-There are different ways to build your multimodal document: 
+There are different ways to build your multimodal Document: 
  
-##### From content modality mapping
-Build a Multimodal document by providing the modality names and the content of the chunks.
+We can build a multimodal Document by providing the modality names and the content of the chunks:
   
 ```python
     from jina.types.document.multimodal import MultimodalDocument
@@ -416,8 +415,7 @@ Build a Multimodal document by providing the modality names and the content of t
     document = MultimodalDocument(modality_content_mapping=content_mapping)
 ```
 
-##### From chunks with different modalities
-Build a Multimodal document by creating chunks. Useful when extra metadata needs to exist in every chunk
+We can also create Chunks when we have extra metadata in each Chunk:
   
 ```python
     from jina.types import Document
