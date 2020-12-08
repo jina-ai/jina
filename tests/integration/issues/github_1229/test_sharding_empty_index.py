@@ -25,7 +25,7 @@ def get_search_flow():
         uses='vectorindexer.yml',
         shards=num_shards,
         separated_workspace=True,
-        uses_after='_merge_all',
+        uses_after='_merge_matches',
         polling='all',
         timeout_ready='-1'
     )
