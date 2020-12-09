@@ -395,9 +395,9 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 
 #### MultimodalDocument
   
-A `MultimodalDocument` is a document composed of multiple Chunks with different modalities.
+A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
  
-Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content of the chunks:
+Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content in a `dict`:
   
 ```python
 from jina import MultimodalDocument
@@ -408,15 +408,13 @@ document = MultimodalDocument(modality_content_map={
 })
 ```
 
-One can also compose a `MultimodalDocument` from multiple `Document` with `modality`:
+One can also compose a `MultimodalDocument` from multiple `Document` directly:
   
 ```python
 from jina.types import Document, MultimodalDocument
 
 doc_title = Document(content='my holiday picture', modality='title')
-
-doc_description = Document(content='the family having fun on the beach', modality='description')
-
+doc_desc = Document(content='the family having fun on the beach', modality='description')
 doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='description')
 doc_img.tags['date'] = '10/08/2019' 
 
@@ -444,7 +442,7 @@ requests:
       - !MultiModalDriver {}
 ```
 
-Interested readers can refer to this example to see [how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg)
+Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
 
 </details>
 
