@@ -357,8 +357,15 @@ class HubIO:
                     p_names = []
                     try:
                         is_build_success = False
-                        p_names = self._test_build(image)
-                        is_build_success = True
+                        p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
+                                                                        self.config_yaml_path, self.args.daemon)
+                        if any(test_level in failed_test_levels for test_level in [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
+                            is_build_success = False
+                            self.logger.error(f'build unsuccessful, failed at {str(failed_test_levels)} level')
+                        else:
+                            is_build_success = True
+                            self.logger.warning(
+                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be do to the fact that executor has non-installed external dependencies')
                     except Exception as ex:
                         self.logger.error(f'something wrong while testing the build: {repr(ex)}')
                         ex = HubBuilderTestError(ex)
@@ -417,34 +424,49 @@ class HubIO:
 
         return result
 
-    def _test_build(self, image):
+    @staticmethod
+    def _test_build(image, test_level, config_yaml_path, daemon_arg):
+        p_names = []
+        failed_levels = []
+
         # test uses at executor level
-        if self.args.test_level >= BuildTestLevel.EXECUTOR:
-            with BaseExecutor.load_config(self.config_yaml_path):
-                pass
+        if test_level >= BuildTestLevel.EXECUTOR:
+            try:
+                with BaseExecutor.load_config(config_yaml_path):
+                    pass
+            except:
+                failed_levels.append(BuildTestLevel.EXECUTOR)
 
         # test uses at Pod level (no docker)
-        if self.args.test_level >= BuildTestLevel.POD_NONDOCKER:
-            with Pod(set_pod_parser().parse_args(['--uses', self.config_yaml_path])):
-                pass
+        if test_level >= BuildTestLevel.POD_NONDOCKER:
+            try:
+                with Pod(set_pod_parser().parse_args(['--uses', config_yaml_path])):
+                    pass
+            except:
+                failed_levels.append(BuildTestLevel.POD_NONDOCKER)
 
-        p_names = []
         # test uses at Pod level (with docker)
-        if self.args.test_level >= BuildTestLevel.POD_DOCKER:
+        if test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
-            with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name] +
-                                                 ['--daemon'] if self.args.daemon else [])):
-                pass
-            p_names.append(p_name)
+            try:
+                with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name] +
+                                                     ['--daemon'] if daemon_arg else [])):
+                    pass
+                p_names.append(p_name)
+            except:
+                failed_levels.append(BuildTestLevel.POD_DOCKER)
 
         # test uses at Flow level
-        if self.args.test_level >= BuildTestLevel.FLOW:
+        if test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
-            with Flow().add(name=random_name(), uses=image.tags[0], daemon=self.args.daemon):
-                pass
-            p_names.append(p_name)
+            try:
+                with Flow().add(name=random_name(), uses=image.tags[0], daemon=daemon_arg):
+                    pass
+                p_names.append(p_name)
+            except:
+                failed_levels.append(BuildTestLevel.FLOW)
 
-        return p_names
+        return p_names, failed_levels
 
     def dry_run(self) -> Dict:
         try:
