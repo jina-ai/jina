@@ -5,7 +5,7 @@ import asyncio
 import os
 import tempfile
 import time
-from typing import List, Callable, Union, Tuple
+from typing import List, Callable, Union, Tuple, Optional
 
 import zmq
 import zmq.asyncio
@@ -75,10 +75,10 @@ class Zmqlet:
         self.poller.register(self.in_sock)
 
     @staticmethod
-    def get_ctrl_address(host: str, port_ctrl: str, ctrl_with_ipc: bool) -> Tuple[str, bool]:
+    def get_ctrl_address(host: Optional[str], port_ctrl: Optional[str], ctrl_with_ipc: bool) -> Tuple[str, bool]:
         """Get the address of the control socket
 
-        :param host: the host in he arguments
+        :param host: the host in the arguments
         :param port_ctrl: the control port
         :param ctrl_with_ipc: a bool of whether using IPC protocol for controlling
         :return: A tuple of two pieces:
@@ -87,11 +87,12 @@ class Zmqlet:
             - a bool of whether using IPC protocol for controlling
 
         """
-        host_out = host
+
         ctrl_with_ipc = (os.name != 'nt') and ctrl_with_ipc
         if ctrl_with_ipc:
             return _get_random_ipc(), ctrl_with_ipc
         else:
+            host_out = host
             if '@' in host_out:
                 # user@hostname
                 host_out = host_out.split('@')[-1]
@@ -278,6 +279,65 @@ class AsyncZmqlet(Zmqlet):
     def __enter__(self):
         time.sleep(.2)  # sleep a bit until handshake is done
         return self
+
+
+class CtrlZmqlet(AsyncZmqlet):
+    """ Zmqlet with only a single socket to PAIR (BIND-CONNECT) on
+    This can be used by all local pea-like objects that don't carry a zmqstreamlet - (gateway-grpc,
+    gateway-rest, remote, client)
+
+    ctrl_address is ipc based (to avoid port collison for gateway)
+        - main process can fetch this from a static call.
+        - child process can build a socket from the same ctrl_address
+
+    :param args: args provided by the CLI
+    :param logger: JinaLogger for this class
+    :param address: address to PAIR-BIND / PAIR-CONNECT on
+    :param is_bind: boolean to check if socket is BIND or CONNECT
+    :param is_async: boolean to define the zmq context (this helps in avoiding an event-loop in the main process)
+    :param timeout: timeout for sockets to avoid hang
+
+    """
+
+    def __init__(self, logger: 'JinaLogger', address: 'str' = None,
+                 is_bind: 'bool' = True, is_async: 'bool' = True, timeout: int = -1) -> None:
+        self.logger = logger
+        self.socket_type = SocketType.PAIR_BIND if is_bind else SocketType.PAIR_CONNECT
+        self._is_async = is_async
+        self.timeout = timeout
+        self.is_closed = False
+        self.opened_socks = []
+        self.address = address or _get_random_ipc()
+        self.ctx, self.sock = self.init_sockets()
+        self.opened_socks.append(self.sock)
+        self.register_pollin()
+        self.set_timeout()
+
+    def register_pollin(self):
+        self.poller = zmq.Poller()
+        self.poller.register(self.sock, zmq.POLLIN)
+
+    def _get_zmq_ctx(self):
+        if self._is_async:
+            return zmq.asyncio.Context()
+        return zmq.Context()
+
+    def set_timeout(self):
+        self.sock.setsockopt(zmq.SNDTIMEO, self.timeout)
+        self.sock.setsockopt(zmq.RCVTIMEO, self.timeout)
+
+    def init_sockets(self):
+        ctx = self._get_zmq_ctx()
+        try:
+            sock, _ = _init_socket(ctx, self.address, None, self.socket_type, use_ipc=True)
+            return ctx, sock
+
+        except zmq.error.ZMQError as ex:
+            self.close()
+            raise ex
+
+    def print_stats(self):
+        pass
 
 
 class ZmqStreamlet(Zmqlet):
@@ -541,7 +601,7 @@ def _get_random_ipc() -> str:
     return f'ipc://{tmp}'
 
 
-def _init_socket(ctx: 'zmq.Context', host: str, port: int,
+def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
                  socket_type: 'SocketType', identity: 'str' = None,
                  use_ipc: bool = False, ssh_server: str = None,
                  ssh_keyfile: str = None, ssh_password: str = None) -> Tuple['zmq.Socket', str]:

@@ -1,0 +1,6 @@
+!NumpyIndexer
+with:
+  index_filename: vec.gz
+metas:
+  workspace: $JINA_TEST_1229_WORKSPACE
+  name: vec_idx

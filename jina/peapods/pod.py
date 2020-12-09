@@ -10,7 +10,8 @@ from threading import Thread
 from typing import Optional, Set, Dict, List, Callable, Union
 
 from . import Pea
-from .gateway import GatewayPea, RESTGatewayPea
+from .gateway.grpc import GatewayPea
+from .gateway.rest import RESTGatewayPea
 from .head_pea import HeadPea
 from .tail_pea import TailPea
 from .. import __default_host__
@@ -513,31 +514,25 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     # is BIND & CONNECT all on the same remote?
     bind_conn_same_remote = not bind_local and not conn_local and \
-                                (bind_args.host == connect_args.host)
+                            (bind_args.host == connect_args.host)
 
-    if platform == 'linux' or platform == 'linux2':
+    if platform in ('linux', 'linux2'):
         local_host = __default_host__
     else:
         local_host = 'host.docker.internal'
 
-    if bind_local and conn_local and conn_docker:
-        return local_host
+    # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
+    if bind_local and conn_local:
+        return local_host if conn_docker else __default_host__
 
-    if bind_local and conn_local and not conn_docker:
-        return __default_host__
-
+    # pod1 and pod2 are remote but they are in the same host (pod2 is local w.r.t pod1)
     if bind_conn_same_remote:
-        if conn_docker:
-            return local_host
-        else:
-            return __default_host__
+        return local_host if conn_docker else __default_host__
 
+    # From here: Missing consideration of docker
     if bind_local and not conn_local:
         # in this case we are telling CONN (at remote) our local ip address
-        if bind_args.expose_public:
-            return get_public_ip()
-        else:
-            return get_internal_ip()
+        return get_public_ip() if bind_args.expose_public else get_internal_ip()
     else:
         # in this case we (at local) need to know about remote the BIND address
         return bind_args.host

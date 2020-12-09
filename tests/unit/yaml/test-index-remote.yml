@@ -1,5 +1,6 @@
 !NumpyIndexer
 with:
+  metric: euclidean
   index_filename: tmp2
 metas:
   name: test2

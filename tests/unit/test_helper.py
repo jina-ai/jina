@@ -7,7 +7,7 @@ import pytest
 
 from cli import _is_latest_version
 from jina import NdArray, Request
-from jina.clients.python import PyClient, pprint_routes, safe_callback
+from jina.clients.python.helper import safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
 from jina.helper import cached_property, convert_tuple_to_list, complete_path
@@ -15,7 +15,7 @@ from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.document.uid import *
-from tests import random_docs, random_docs_new_api
+from tests import random_docs
 
 
 def test_cached_property():
@@ -78,11 +78,6 @@ def test_hash():
 
     tmp = np.array(tmp)
     assert tmp.dtype == np.int64
-
-
-def test_random_docs():
-    ds = random_docs(100)
-    PyClient.check_input(ds)
 
 
 def test_dunder_get():
@@ -182,11 +177,11 @@ def test_safe_callback():
         st1()
 
 
-def test_random_docs_new_api():
+def test_random_docs():
     np.random.seed(42)
     docs1 = list(random_docs(10))
     np.random.seed(42)
-    docs2 = list(random_docs_new_api(10))
+    docs2 = list(random_docs(10))
     for d2, d1 in zip(docs2, docs1):
         np.testing.assert_almost_equal(d2.embedding, NdArray(d1.embedding).value)
         assert d2.text == d1.text

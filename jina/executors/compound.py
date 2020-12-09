@@ -220,7 +220,7 @@ class CompoundExecutor(BaseExecutor):
         for c in self.components:
             c.is_trained = val
 
-    def save(self, filename: str = None) -> bool:
+    def save(self, filename: str = None):
         """
         Serialize this compound executor along with all components in it to binary files
 
@@ -229,11 +229,9 @@ class CompoundExecutor(BaseExecutor):
 
         It uses ``pickle`` for dumping.
         """
-
         for c in self.components:
             c.save()
         super().save(filename=filename)  # do i really need to save the compound executor itself
-        return True
 
     @property
     def components(self) -> List[AnyExecutor]:

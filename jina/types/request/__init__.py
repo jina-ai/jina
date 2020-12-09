@@ -150,7 +150,7 @@ class Request:
         else:
             # if not then build one from buffer
             r = jina_pb2.RequestProto()
-            _buffer = self._decompress(self._buffer, self._envelope.compression.algorithm)
+            _buffer = self._decompress(self._buffer, self._envelope.compression.algorithm if self._envelope else None)
             r.ParseFromString(_buffer)
             self.is_used = True
             self._request = r

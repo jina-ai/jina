@@ -10,7 +10,7 @@ import threading
 import time
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, Iterator, Callable, Type, TextIO, Any
+from typing import Optional, Union, Tuple, List, Set, Dict, Iterator, Callable, TextIO, Any
 from urllib.request import Request, urlopen
 
 import ruamel.yaml
@@ -566,14 +566,15 @@ class Flow(ExitStack):
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _get_client(self, **kwargs):
+    def _invoke_client(self, *args, **kwargs):
         kwargs.update(self._common_kwargs)
         from ..clients import py_client
         if 'port_expose' not in kwargs:
             kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
-        return py_client(**kwargs)
+
+        py_client(*args, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: InputFnType = None,
@@ -613,7 +614,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).train(input_fn, output_fn, **kwargs)
+        self._invoke_client('train', input_fn, output_fn, **kwargs)
 
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                       output_fn: Callable[['Request'], None] = None,
@@ -628,8 +629,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_numpy
-        self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle),
-                                         output_fn, **kwargs)
+        input_fn = input_numpy(array, axis, size, shuffle)
+        self._invoke_client('index', input_fn, output_fn, **kwargs)
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        output_fn: Callable[['Request'], None] = None,
@@ -644,8 +645,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_numpy
-        self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle),
-                                          output_fn, **kwargs)
+        input_fn = input_numpy(array, axis, size, shuffle)
+        self._invoke_client('search', input_fn, output_fn, **kwargs)
 
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
@@ -663,9 +664,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                         output_fn,
-                                         **kwargs)
+        input_fn = input_lines(lines, filepath, size, sampling_rate, read_mode)
+        self._invoke_client('index', input_fn, output_fn, **kwargs)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -684,9 +684,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                         output_fn,
-                                         **kwargs)
+        input_fn = input_files(patterns, recursive, size, sampling_rate, read_mode)
+        self._invoke_client('index', input_fn, output_fn, **kwargs)
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -705,9 +704,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                          output_fn,
-                                          **kwargs)
+        input_fn = input_files(patterns, recursive, size, sampling_rate, read_mode)
+        self._invoke_client('search', input_fn, output_fn, **kwargs)
 
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
@@ -725,9 +723,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                          output_fn,
-                                          **kwargs)
+        input_fn = input_lines(lines, filepath, size, sampling_rate, read_mode)
+        self._invoke_client('search', input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: InputFnType = None,
@@ -767,7 +764,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
+        self._invoke_client('index', input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def search(self, input_fn: InputFnType = None,
@@ -808,11 +805,75 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
+        self._invoke_client('search', input_fn, output_fn, **kwargs)
+
+    @property
+    def _mermaid_str(self):
+        mermaid_graph = ["%%{init: {'theme': 'base', "
+                         "'themeVariables': { 'primaryColor': '#32C8CD', "
+                         "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%"]
+        mermaid_graph.append('graph LR')
+
+        start_repl = {}
+        end_repl = {}
+        for node, v in self._pod_nodes.items():
+            if not v.is_singleton and v.role != PodRoleType.GATEWAY:
+                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v._args.parallel})"]')
+                if v.is_head_router:
+                    head_router = node + '_HEAD'
+                    end_repl[node] = (head_router, '((fa:fa-random))')
+                if v.is_tail_router:
+                    tail_router = node + '_TAIL'
+                    start_repl[node] = (tail_router, '((fa:fa-random))')
+
+                p_r = '((%s))'
+                p_e = '[[%s]]'
+                for j in range(v._args.parallel):
+                    r = node + (f'_{j}' if v._args.parallel > 1 else '')
+                    if v.is_head_router:
+                        mermaid_graph.append(f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea')
+                    if v.is_tail_router:
+                        mermaid_graph.append(f'\t{r}{p_e % r}:::pea-->{tail_router}{p_r % "tail"}:::pea')
+                mermaid_graph.append('end')
+
+        for node, v in self._pod_nodes.items():
+            ed_str = str(v.head_args.socket_in).split('_')[0]
+            for need in sorted(v.needs):
+                edge_str = ''
+                if need in self._pod_nodes:
+                    st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[0]
+                    edge_str = f'|{st_str}-{ed_str}|'
+
+                _s = start_repl.get(need, (need, f'({need})'))
+                _e = end_repl.get(node, (node, f'({node})'))
+                _s_role = self._pod_nodes[need].role
+                _e_role = self._pod_nodes[node].role
+                line_st = '-->'
+
+                if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
+                    _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
+
+                if _e_role == PodRoleType.GATEWAY:
+                    _e = ('gateway_END', f'({node})')
+                elif _e_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
+                    _e = end_repl.get(node, (node, f'{{{{{node}}}}}'))
+
+                if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:
+                    line_st = '-.->'
+
+                mermaid_graph.append(
+                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
+        mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
+        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
+        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
+        mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
+        return '\n'.join(mermaid_graph)
 
     def plot(self, output: str = None,
              vertical_layout: bool = False,
-             inline_display: bool = True,
+             inline_display: bool = False,
              build: bool = True,
              copy_flow: bool = True) -> 'Flow':
         """
@@ -839,70 +900,17 @@ class Flow(ExitStack):
         :return: the flow
         """
 
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        # deepcopy causes the below error while reusing a flow in Jupyter
+        # 'Pickling an AuthenticationString object is disallowed for security reasons'
+        op_flow = self
+        # op_flow = copy.deepcopy(self) if copy_flow else self
+
         if build:
             op_flow.build(False)
-        mermaid_graph = ["%%{init: {'theme': 'base', "
-                         "'themeVariables': { 'primaryColor': '#32C8CD', "
-                         "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%"]
-        mermaid_graph.append('graph TD' if vertical_layout else 'graph LR')
 
-        start_repl = {}
-        end_repl = {}
-        for node, v in op_flow._pod_nodes.items():
-            if not v.is_singleton and v.role != PodRoleType.GATEWAY:
-                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v._args.parallel})"]')
-                if v.is_head_router:
-                    head_router = node + '_HEAD'
-                    end_repl[node] = (head_router, '((fa:fa-random))')
-                if v.is_tail_router:
-                    tail_router = node + '_TAIL'
-                    start_repl[node] = (tail_router, '((fa:fa-random))')
-
-                p_r = '((%s))'
-                p_e = '[[%s]]'
-                for j in range(v._args.parallel):
-                    r = node + (f'_{j}' if v._args.parallel > 1 else '')
-                    if v.is_head_router:
-                        mermaid_graph.append(f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea')
-                    if v.is_tail_router:
-                        mermaid_graph.append(f'\t{r}{p_e % r}:::pea-->{tail_router}{p_r % "tail"}:::pea')
-                mermaid_graph.append('end')
-
-        for node, v in op_flow._pod_nodes.items():
-            ed_str = str(v.head_args.socket_in).split('_')[0]
-            for need in sorted(v.needs):
-                edge_str = ''
-                if need in op_flow._pod_nodes:
-                    st_str = str(op_flow._pod_nodes[need].tail_args.socket_out).split('_')[0]
-                    edge_str = f'|{st_str}-{ed_str}|'
-
-                _s = start_repl.get(need, (need, f'({need})'))
-                _e = end_repl.get(node, (node, f'({node})'))
-                _s_role = op_flow._pod_nodes[need].role
-                _e_role = op_flow._pod_nodes[node].role
-                line_st = '-->'
-
-                if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
-                    _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
-
-                if _e_role == PodRoleType.GATEWAY:
-                    _e = ('gateway_END', f'({node})')
-                elif _e_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
-                    _e = end_repl.get(node, (node, f'{{{{{node}}}}}'))
-
-                if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:
-                    line_st = '-.->'
-
-                mermaid_graph.append(
-                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
-        mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
-        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
-        mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
-        mermaid_str = '\n'.join(mermaid_graph)
+        mermaid_str = op_flow._mermaid_str
+        if vertical_layout:
+            mermaid_str = mermaid_str.replace('graph LR', 'graph TD')
 
         image_type = 'svg'
         if output and output.endswith('jpg'):
@@ -913,7 +921,6 @@ class Flow(ExitStack):
         if inline_display:
             try:
                 from IPython.display import display, Image
-                from IPython.utils import io
 
                 display(Image(url=url))
                 showed = True
@@ -927,6 +934,10 @@ class Flow(ExitStack):
             op_flow.logger.info(f'flow visualization: {url}')
 
         return self
+
+    def _ipython_display_(self):
+        """Displays the object in IPython as a side effect"""
+        self.plot(inline_display=True)
 
     def _mermaid_to_url(self, mermaid_str, img_type) -> str:
         """
@@ -1015,15 +1026,15 @@ class Flow(ExitStack):
             protocol = 'gRPC'
 
         address_table = [f'\t🖥️ Local access:\t' + colored(f'{header}{self.host}:{self.port_expose}',
-                                                           'cyan', attrs='underline'),
+                                                            'cyan', attrs='underline'),
                          f'\t🔒 Private network:\t' + colored(f'{header}{self.address_private}:{self.port_expose}',
-                                                            'cyan', attrs='underline')]
+                                                              'cyan', attrs='underline')]
         if self.address_public:
             address_table.append(
                 f'\t🌐 Public address:\t' + colored(f'{header}{self.address_public}:{self.port_expose}',
-                                                  'cyan', attrs='underline'))
+                                                    'cyan', attrs='underline'))
         self.logger.success(f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}')
-        self.logger.info('\n'+'\n'.join(address_table))
+        self.logger.info('\n' + '\n'.join(address_table))
 
     def block(self):
         """Block the process until user hits KeyboardInterrupt """

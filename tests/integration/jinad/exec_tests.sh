@@ -18,6 +18,7 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
+SKIP_TESTS_SCRIPTS=('./tests/integration/jinad/test_simple_hub_pods/test_integration.sh')
 LIST_TEST_SCRIPTS=( $(find "./tests/integration/jinad/" -name "test*sh") )
 
 echo "Have detected ${#LIST_TEST_SCRIPTS[@]} the following tests scripts to run: ${LIST_TEST_SCRIPTS}"
@@ -25,15 +26,27 @@ echo "Have detected ${#LIST_TEST_SCRIPTS[@]} the following tests scripts to run:
 FAILED_TESTS=()
 for script in "${LIST_TEST_SCRIPTS[@]}";
   do
-    echo "Executing test with ${script}\n"
-    eval ${script}
-    status=$?
-    echo "Status ${status}"
-    if [ $status -eq 0 ]; then
-      echo "${script} test successfully finished\n"
+    skip=false
+    for skip_test_script in "${SKIP_TESTS_SCRIPTS[@]}";
+      do
+        if [ "$skip_test_script" == "$script" ]; then
+          skip=true
+        fi
+      done
+
+    if [ ${skip} == false ]; then
+      echo "Executing test with ${script}\n"
+      eval ${script}
+      status=$?
+      echo "Status ${status}"
+      if [ $status -eq 0 ]; then
+        echo "${script} test successfully finished\n"
+      else
+        echo "${script} test failed\n"
+        FAILED_TESTS+=(${script})
+      fi
     else
-      echo "${script} test failed\n"
-      FAILED_TESTS+=(${script})
+      echo "Skipping ${script} test execution"
     fi
   done
 

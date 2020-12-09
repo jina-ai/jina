@@ -5,7 +5,9 @@ from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document, BadDocID
-from tests import random_docs_new_api
+from tests import random_docs
+
+DOCUMENTS_PER_LEVEL = 1
 
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
@@ -41,6 +43,12 @@ def test_doc_update_fields():
     assert a.modality == e
     assert MessageToDict(a.tags) == c
     assert a.weight == w
+
+
+def test_granularity_get_set():
+    d = Document()
+    d.granularity = 1
+    assert d.granularity == 1
 
 
 def test_uri_get_set():
@@ -118,7 +126,7 @@ def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
     r = Request()
     r.request_type = 'index'
-    for d in random_docs_new_api(10):
+    for d in random_docs(10):
         r.docs.append(d)
 
     for idx, d in enumerate(r.docs):
@@ -153,7 +161,7 @@ def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
     r = Request()
     r.request_type = 'index'
-    for d in random_docs_new_api(10):
+    for d in random_docs(10):
         r.docs.append(d)
 
     for d in r.docs:
@@ -188,3 +196,34 @@ def test_request_docs_chunks_mutable_iterator():
         assert isinstance(d, DocumentProto)
         for c in d.chunks:
             assert c.text == 'now i change it back'
+
+
+def test_doc_setattr():
+    from jina import Document
+
+    with Document() as root:
+        root.text = 'abc'
+
+    assert root.adjacency == 0
+
+    with Document() as match:
+        match.text = 'def'
+        m = root.matches.append(match)
+
+    with Document() as chunk:
+        chunk.text = 'def'
+        c = root.chunks.append(chunk)
+
+    assert len(root.matches) == 1
+    assert root.matches[0].granularity == 0
+    assert root.matches[0].adjacency == 1
+
+    assert m.granularity == 0
+    assert m.adjacency == 1
+
+    assert len(root.chunks) == 1
+    assert root.chunks[0].granularity == 1
+    assert root.chunks[0].adjacency == 0
+
+    assert c.granularity == 1
+    assert c.adjacency == 0

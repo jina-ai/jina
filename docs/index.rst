@@ -25,8 +25,9 @@ Welcome to Jina Documentation!
    :caption: Getting Started
 
    chapters/helloworld/index
-   chapters/101/.sphinx
+   chapters/101/index
    chapters/flow/index
+   chapters/traversal/index
    chapters/io/index
    chapters/hub/index
    chapters/remote/index

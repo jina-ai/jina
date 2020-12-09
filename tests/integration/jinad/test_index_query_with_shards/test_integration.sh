@@ -7,12 +7,9 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
-# Setting env variables locals for this script
-export $(grep -v '^#' tests/integration/jinad/test_index_query_with_shards/.env | xargs -d '\n')
-
 docker-compose -f tests/integration/jinad/test_index_query_with_shards/docker-compose.yml --project-directory . up  --build -d
 
-sleep 5
+sleep 10
 #Indexing part
 FLOW_ID=$(curl -s --request PUT "http://localhost:8000/v1/flow/yaml" \
     -H  "accept: application/json" \
@@ -31,7 +28,6 @@ for i in {1..100};
     echo "Indexed document has the text: ${TEXT_INDEXED}"
   done
 
-echo "Indexed document has the text: ${TEXT_INDEXED}"
 curl --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
@@ -48,15 +44,21 @@ echo "Successfully started the flow: ${FLOW_ID}. Let's send some query"
 
 TEXT_MATCHED=$(curl --request POST -d '{"top_k": 10, "data": ["text:anything will match the same"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search' | \
     jq -e ".search.docs[] | .matches[] | .text")
-echo "document matched has the text: ${TEXT_INDEXED}"
+
+echo "documents matched: ${TEXT_MATCHED}"
+
+echo "$TEXT_MATCHED" >> count.txt
+COUNT=$(cat count.txt | wc -l)
+rm count.txt
+
+echo "found ${COUNT} matches"
+
 curl --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
 docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . down
 
-EXPECTED_TEXT='"text:hey, dude"'
-
-if [ "$EXPECTED_TEXT" = "TEXT_MATCHED" ]; then
+if [ $COUNT = 10 ]; then
         echo "Success"
 else
         echo "Fail"

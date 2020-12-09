@@ -3,7 +3,7 @@
    
 This tutorial guides you to run a customized Jina Pod on the remote via a local Jina command line interface.
 
-Before the start, make sure to read ["Understanding Pea and Pod in Jina"](https://docs.jina.ai/chapters/101/.sphinx.html#pea). 
+Before the start, make sure to read ["Understanding Pea and Pod in Jina"](https://docs.jina.ai/chapters/101/index.html#pea). 
 
 ## Terminologies
 

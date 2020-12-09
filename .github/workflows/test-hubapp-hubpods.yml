@@ -1,0 +1,43 @@
+name: Test hubapp with hubpods
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  hubapp-hubpod-test:
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Build jina test-pip
+        run: |
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+      - name: Build hub pod image
+        run: |
+          docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
+      - name: Build hubapp image
+        run: |
+          docker build -f tests/integration/hubapp_hubpods/Dockerfile -t jinaai/test_hubapp_hubpods .
+      - name: Test hubapp with hubpods
+        run: |
+          ./tests/integration/hubapp_hubpods/test_integration.sh
+        timeout-minutes: 30
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}

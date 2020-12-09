@@ -214,8 +214,11 @@ class Matches2DocRankDriver(BaseRankDriver):
         self._sort_matches_in_place(context_doc, new_match_scores)
 
     def _sort_matches_in_place(self, context_doc: 'Document', match_scores: 'np.ndarray') -> None:
+        op_name = self.exec.__class__.__name__
         cm = context_doc.matches
         cm.build()
         for match_hash, score in match_scores:
             cm[uid.hash2id(match_hash)].score.value = score
+            cm[uid.hash2id(match_hash)].score.op_name = op_name
+
         cm.sort(key=lambda x: x.score.value, reverse=True)

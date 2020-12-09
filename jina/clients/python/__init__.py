@@ -4,15 +4,18 @@ __license__ = "Apache-2.0"
 import time
 from typing import Callable, Union, Optional
 
+from zmq.error import Again
+
 from . import request
-from .grpc import GrpcClient
-from .helper import ProgressBar, pprint_routes, safe_callback, extract_field
+from .grpc import AsyncGrpcClient
+from .helper import ProgressBar, pprint_routes, callback_exec
 from .request import GeneratorSourceType
 from ...enums import RequestType
 from ...excepts import BadClient, DryRunException
 from ...helper import typename
 from ...logging import default_logger
 from ...logging.profile import TimeContext
+from ...peapods.zmq import CtrlZmqlet
 from ...proto import jina_pb2
 from ...types.request import Request
 from ...types.request.common import DryRunRequest, TrainDryRunRequest, IndexDryRunRequest, SearchDryRunRequest
@@ -24,7 +27,7 @@ if False:
     import argparse
 
 
-class PyClient(GrpcClient):
+class PyClient(AsyncGrpcClient):
     """A simple Python client for connecting to the gateway. This class is for internal only,
     use the python interface :func:`jina.clients.py_client` to start :class:`PyClient` if you
     want to use it in Python.
@@ -37,25 +40,31 @@ class PyClient(GrpcClient):
         from jina.clients import py_client
 
         # to test connectivity
-        py_client(host='192.168.1.100', port_expose=55555).dry_run()
+        await py_client(host='192.168.1.100', port_expose=55555).dry_run()
 
         # to search
-        py_client(host='192.168.1.100', port_expose=55555).search(input_fn, output_fn)
+        await py_client(host='192.168.1.100', port_expose=55555).search(input_fn, output_fn)
 
         # to index
-        py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
+        await py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
+
+    .. note::
+        To perform `index`, `search` or `train`, py_client needs to be awaited, as it is a coroutine
 
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', address: str = None):
         """
 
         :param args: args provided by the CLI
+        :param address: an optional address (PAIR_BIND) on which client can send the response from the servicer
 
         """
         super().__init__(args)
         self._mode = self.args.mode
         self._input_fn = None
+        self._address = address
+        self.zmqlet = None
 
     @property
     def mode(self) -> str:
@@ -90,7 +99,7 @@ class PyClient(GrpcClient):
             default_logger.error(f'input_fn is not valid!')
             raise
 
-    def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
+    async def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
 
         This function should not be used in production due to its low-efficiency. For example,
@@ -108,13 +117,13 @@ class PyClient(GrpcClient):
         _kwargs.update(kwargs)
 
         req_iter = getattr(request, str(self.mode).lower())(**_kwargs)
-        return self._stub.CallUnary(next(req_iter))
+        return await self._stub.CallUnary(next(req_iter))
 
-    def call(self,
-             on_done: Callable[['Request'], None] = None,
-             on_error: Callable[['Request'], None] = pprint_routes,
-             on_always: Callable[['Request'], None] = None,
-             **kwargs) -> None:
+    async def call(self,
+                   on_done: Callable[['Request'], None] = None,
+                   on_error: Callable[['Request'], None] = pprint_routes,
+                   on_always: Callable[['Request'], None] = None,
+                   **kwargs) -> None:
         """ Calling the server with promise callbacks, better use :func:`start` instead.
 
         :param on_done: a callback function, invoke after every success response is received
@@ -131,26 +140,33 @@ class PyClient(GrpcClient):
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
 
-        if on_error:
-            safe_on_error = safe_callback(on_error, self.args.continue_on_error, self.logger)
-
-        if on_done:
-            safe_on_done = safe_callback(on_done, self.args.continue_on_error, self.logger)
-
-        if on_always:
-            safe_on_always = safe_callback(on_always, self.args.continue_on_error, self.logger)
-
         req_iter = getattr(request, tname)(**_kwargs)
 
+        if self._address:
+            self.zmqlet = CtrlZmqlet(logger=self.logger, address=self._address,
+                                     is_bind=True, is_async=True, timeout=10000)
+
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-            for resp in self._stub.Call(req_iter):
-                if resp.status.code >= jina_pb2.StatusProto.ERROR and on_error:
-                    safe_on_error(resp)
-                elif on_done:
-                    safe_on_done(resp)
-                if on_always:
-                    safe_on_always(resp)
-                p_bar.update(self.args.batch_size)
+            try:
+                async for response in self._stub.Call(req_iter):
+                    if self.zmqlet:
+                        # If a zmq ctrl address is passed, the callback will get executed in the main process
+                        # Hence we send the `response` back to the main process on the mentioned sock.
+                        # `response` needs to be sent as a serialized string.
+                        await self.zmqlet.sock.send(response.SerializeToString())
+                        await self.zmqlet.sock.recv()
+                    else:
+                        # If no ctrl address is passed, callback gets executed in the client process
+                        callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
+                                      continue_on_error=self.args.continue_on_error, logger=self.logger)
+                    p_bar.update(self.args.batch_size)
+
+                if self.zmqlet:
+                    # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
+                    await self.zmqlet.sock.send_string('TERMINATE')
+                    await self.zmqlet.sock.recv()
+            except Again:
+                self.logger.warning(f'waited for 10s for the socket to response. breaking')
 
     @property
     def input_fn(self) -> InputFnType:
@@ -171,7 +187,7 @@ class PyClient(GrpcClient):
         else:
             self._input_fn = bytes_gen
 
-    def dry_run(self, req: 'DryRunRequest') -> None:
+    async def dry_run(self, req: 'DryRunRequest') -> None:
         """A dry run request is a Search/Index/Train Request with empty content.
         Useful for testing connectivity and debugging the connectivity of the server/flow
 
@@ -183,33 +199,39 @@ class PyClient(GrpcClient):
             yield req
 
         before = time.perf_counter()
-        for resp in self._stub.Call(req_gen()):
+        async for resp in self._stub.Call(req_gen()):
             if resp.status.code < jina_pb2.StatusProto.ERROR:
                 self.logger.info(
-                    f'dry run of {typename(req)} takes {time.perf_counter() - before:.3f}s, this flow has a good connectivity')
+                    f'dry run of {typename(req)} takes {time.perf_counter() - before:.3f}s, '
+                    f'this flow has a good connectivity')
             else:
                 raise DryRunException(resp.status)
 
-    def train(self, input_fn: Optional[InputFnType] = None,
-              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def train(self, input_fn: Optional[InputFnType] = None,
+                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.TRAIN
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(TrainDryRunRequest())
-        self.start(output_fn, **kwargs)
+            await self.dry_run(TrainDryRunRequest())
+        await self.start(output_fn, **kwargs)
 
-    def search(self, input_fn: Optional[InputFnType] = None,
-               output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def search(self, input_fn: Optional[InputFnType] = None,
+                     output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.SEARCH
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(SearchDryRunRequest())
-        self.start(output_fn, **kwargs)
+            await self.dry_run(SearchDryRunRequest())
+        await self.start(output_fn, **kwargs)
 
-    def index(self, input_fn: Optional[InputFnType] = None,
-              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def index(self, input_fn: Optional[InputFnType] = None,
+                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.INDEX
         self.input_fn = input_fn
         if not self.args.skip_dry_run:
-            self.dry_run(IndexDryRunRequest())
-        self.start(output_fn, **kwargs)
+            await self.dry_run(IndexDryRunRequest())
+        await self.start(output_fn, **kwargs)
+
+    async def close(self) -> None:
+        await super().close()
+        if getattr(self, 'zmqlet', None):
+            self.zmqlet.close()
