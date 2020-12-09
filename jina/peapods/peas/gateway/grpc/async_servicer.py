@@ -1,11 +1,11 @@
 import asyncio
 
-from ..zmq import AsyncZmqlet
-from ...logging import JinaLogger
-from ...logging.profile import TimeContext
-from ...proto import jina_pb2_grpc
-from ...types.message import Message
-from ...types.request import Request
+from ....zmq import AsyncZmqlet
+from .....logging import JinaLogger
+from .....logging.profile import TimeContext
+from .....proto import jina_pb2_grpc
+from .....types.message import Message
+from .....types.request import Request
 
 
 class GRPCServicer(jina_pb2_grpc.JinaRPCServicer):

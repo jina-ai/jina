@@ -12,13 +12,13 @@ import zmq.asyncio
 from zmq.eventloop.zmqstream import ZMQStream
 from zmq.ssh import tunnel_connection
 
-from .. import __default_host__, Request
-from ..enums import SocketType
-from ..helper import colored, get_random_identity, get_readable_size, use_uvloop
-from ..importer import ImportExtensions
-from ..logging import default_logger, profile_logger, JinaLogger
-from ..types.message import Message
-from ..types.message.common import ControlMessage
+from ... import __default_host__, Request
+from ...enums import SocketType
+from ...helper import colored, get_random_identity, get_readable_size, use_uvloop
+from ...importer import ImportExtensions
+from ...logging import default_logger, profile_logger, JinaLogger
+from ...types.message import Message
+from ...types.message.common import ControlMessage
 
 if False:
     import argparse

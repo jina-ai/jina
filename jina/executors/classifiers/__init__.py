@@ -1,4 +1,4 @@
-from jina.executors import BaseExecutor
+from .. import BaseExecutor
 
 if False:
     import numpy as np

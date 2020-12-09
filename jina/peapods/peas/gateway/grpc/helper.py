@@ -9,8 +9,8 @@ from concurrent import futures
 
 from grpc import _server
 
-from ..helper import use_uvloop, typename
-from ..logging import default_logger
+from .....helper import use_uvloop, typename
+from .....logging import default_logger
 
 use_uvloop()
 

@@ -5,7 +5,7 @@ from typing import Union, Dict, Callable
 from . import PyClient, InputFnType
 from ...excepts import GRPCServerError
 from ...helper import configure_event_loop
-from ...peapods.pea import BasePea
+from ...peapods.peas import BasePea
 from ...types.request import Request
 
 

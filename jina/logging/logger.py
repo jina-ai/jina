@@ -13,11 +13,11 @@ from pkg_resources import resource_filename
 
 from . import formatter
 from ..enums import LogVerbosity
-from ..helper import yaml, complete_path, typename
+from ..helper import yaml, complete_path
 
 
 class NTLogger:
-    def __init__(self, context: str, log_level: 'LogVerbosity'=LogVerbosity.INFO):
+    def __init__(self, context: str, log_level: 'LogVerbosity' = LogVerbosity.INFO):
         """A compatible logger for Windows system, colors are all removed to keep compat.
 
         :param context: the name prefix of each log

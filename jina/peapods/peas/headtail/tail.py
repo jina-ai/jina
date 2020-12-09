@@ -4,11 +4,11 @@ __license__ = "Apache-2.0"
 import argparse
 from typing import Dict, Union
 
-from .pea import BasePea
-from ..logging import JinaLogger
+from .. import BasePea
+from ....logging import JinaLogger
 
 
-class HeadPea(BasePea):
+class TailPea(BasePea):
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
@@ -16,7 +16,7 @@ class HeadPea(BasePea):
         if isinstance(self.args, argparse.Namespace):
             if self.args.name:
                 self.name = self.args.name
-                self.name = f'{self.name}-head'
+                self.name = f'{self.name}-tail'
             self.logger = JinaLogger(self.name, **vars(self.args))
         else:
             self.logger = JinaLogger(self.name)

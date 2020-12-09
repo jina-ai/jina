@@ -1,4 +1,4 @@
-from .document_set import DocumentSet
+from .document import DocumentSet
 
 if False:
     from ..document import Document

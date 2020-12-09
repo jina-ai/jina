@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 from docker import DockerClient
 
-from jina import __version__ as jina_version
+from .. import __version__ as jina_version
 from .checker import *
 from .helper import credentials_file
 from .hubapi import _list, _register_to_mongodb, _list_local

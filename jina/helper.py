@@ -657,3 +657,19 @@ def convert_tuple_to_list(d: Dict):
             d[k] = list(v)
         elif isinstance(v, dict):
             convert_tuple_to_list(v)
+
+
+def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
+    """ helper function to convert argparse.Namespace to json to be uploaded via REST """
+    if isinstance(args, Namespace):
+        return vars(args)
+    elif isinstance(args, dict):
+        pea_args = {}
+        for k, v in args.items():
+            if isinstance(v, Namespace):
+                pea_args[k] = vars(v)
+            elif isinstance(v, list):
+                pea_args[k] = [vars(_) for _ in v]
+            else:
+                pea_args[k] = v
+        return pea_args

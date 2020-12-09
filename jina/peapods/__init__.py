@@ -31,19 +31,19 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
             default_logger.warning(f'setting host to {__default_host__} as allow_remote set to False')
 
     if args.host != __default_host__:
-        from .remote import RemotePea
+        from .peas.remote import RemotePea
         return RemotePea(args)
     elif args.uses and not is_valid_local_config_source(args.uses):
-        from .container import ContainerPea
+        from .peas.container import ContainerPea
         return ContainerPea(args)
     elif args.role == PeaRoleType.HEAD:
-        from .head_pea import HeadPea
+        from .peas.headtail import HeadPea
         return HeadPea(args)
     elif args.role == PeaRoleType.TAIL:
-        from .tail_pea import TailPea
+        from .peas.headtail import TailPea
         return TailPea(args)
     else:
-        from .pea import BasePea
+        from .peas import BasePea
         return BasePea(args)
 
 
@@ -73,11 +73,11 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
 
         if len(hosts) == 1:
             if __default_host__ in hosts:
-                from .pod import MutablePod
+                from .pods.mutable import MutablePod
                 return MutablePod(args)
             else:
                 # TODO: this part needs to be refactored
-                from .remote import RemoteMutablePod
+                from .pods.remote import RemoteMutablePod
                 return RemoteMutablePod(args)
 
     if not allow_remote and args.host != __default_host__:
@@ -86,14 +86,14 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
 
     if args.host != __default_host__:
         if args.remote_access == RemoteAccessType.JINAD:
-            from .remote import RemotePod
+            from .pods.remote import RemotePod
             return RemotePod(args)
         elif args.remote_access == RemoteAccessType.SSH:
-            from .ssh import RemoteSSHPod
+            from .peas.remote.ssh import RemoteSSHPod
             return RemoteSSHPod(args)
         else:
             raise ValueError(f'{args.remote_access} is not supported')
 
     else:
-        from .pod import BasePod
+        from .pods import BasePod
         return BasePod(args)

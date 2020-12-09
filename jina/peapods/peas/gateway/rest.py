@@ -4,10 +4,12 @@ from typing import Any
 from google.protobuf.json_format import MessageToDict
 
 from .grpc import GatewayPea
-from .servicer import GRPCServicer
-from ...enums import RequestType
-from ...helper import configure_event_loop
-from ...importer import ImportExtensions
+from .grpc.async_servicer import GRPCServicer
+from ....enums import RequestType
+from ....helper import configure_event_loop
+from ....importer import ImportExtensions
+
+__all__ = ['RESTGatewayPea']
 
 
 class RESTGatewayPea(GatewayPea):
@@ -17,6 +19,7 @@ class RESTGatewayPea(GatewayPea):
     Unlike :class:`GatewayPea`, it does not support bi-directional streaming. Therefore, it is
     synchronous from the client perspective.
     """
+
     def loop_body(self):
         configure_event_loop()
         self.gateway = RESTGateway(host=self.args.host,
@@ -32,7 +35,6 @@ class RESTGateway:
     def __init__(self, host, port_expose, servicer, logger, proxy) -> None:
         with ImportExtensions(required=True):
             from fastapi import FastAPI, Body
-            from fastapi.encoders import jsonable_encoder
             from fastapi.responses import JSONResponse
             from fastapi.middleware.cors import CORSMiddleware
 
@@ -56,7 +58,7 @@ class RESTGateway:
             path='/api/{mode}'
         )
         async def api(mode: str, body: Any = Body(...)):
-            from ...clients import python
+            from ....clients import python
             if mode.upper() not in RequestType.__members__:
                 return error(reason=f'unsupported mode {mode}', status_code=405)
 

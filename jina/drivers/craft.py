@@ -7,7 +7,7 @@ from . import BaseExecutableDriver
 from ..types.document import Document
 
 if False:
-    from ..types.document import DocumentSet
+    from .. import DocumentSet
 
 
 class CraftDriver(BaseExecutableDriver):

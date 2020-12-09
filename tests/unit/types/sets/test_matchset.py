@@ -2,7 +2,7 @@ import pytest
 from jina import Request
 
 from jina.types.document import Document
-from jina.types.sets.match_set import MatchSet
+from jina.types.sets.match import MatchSet
 
 
 @pytest.fixture(scope='function')

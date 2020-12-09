@@ -8,14 +8,9 @@ from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
 from jina.parser import set_pea_parser, set_ping_parser
-from jina.peapods.container import ContainerPea
-from jina.peapods.pea import BasePea
-from jina.proto import jina_pb2
-from jina.types.document import uid
-from jina.types.ndarray.generic import NdArray
-
+from jina.peapods.peas.container import ContainerPea
+from jina.peapods.peas import BasePea
 from tests import random_docs
-
 
 cur_dir = Path(__file__).parent
 

@@ -21,7 +21,7 @@ def pea(args):
 
 def gateway(args):
     """Start a Gateway Pod"""
-    from jina.peapods.pod import GatewayPod
+    from jina.peapods.pods.gateway import GatewayPod
     with GatewayPod(args) as fs:
         fs.join()
 

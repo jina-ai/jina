@@ -23,7 +23,7 @@ from ..helper import yaml, convert_tuple_to_list
 
 if False:
     # fix type-hint complain for sphinx and flake
-    from ..peapods.pea import BasePea
+    from ..peapods.peas import BasePea
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
     from ..types.message import Message

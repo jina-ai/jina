@@ -10,8 +10,8 @@ from google.protobuf import json_format
 from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
-from ..sets.chunk_set import ChunkSet
-from ..sets.match_set import MatchSet
+from ..sets.chunk import ChunkSet
+from ..sets.match import MatchSet
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
