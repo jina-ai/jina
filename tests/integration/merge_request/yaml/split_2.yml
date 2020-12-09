@@ -1,8 +1,0 @@
-!BaseExecutor
-requests:
-  on:
-    IndexRequest:
-      - !FilterQL
-        with:
-          lookups: {'tags__split': 'split2'}
-          traversal_paths: ['r']
