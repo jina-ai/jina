@@ -10,7 +10,7 @@ from typing import Optional, Dict, List, Union
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
 from .. import Pea
-from ..peas.headtail_pea import TailPea, HeadPea
+from ..peas.headtail import TailPea, HeadPea
 from ...enums import *
 
 

@@ -8,7 +8,7 @@ from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
 from jina.parser import set_pea_parser, set_ping_parser
-from jina.peapods.peas.container_pea import ContainerPea
+from jina.peapods.peas.container import ContainerPea
 from jina.peapods.peas import BasePea
 from tests import random_docs
 

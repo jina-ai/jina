@@ -4,8 +4,8 @@ __license__ = "Apache-2.0"
 from argparse import Namespace
 from typing import Dict, Union, Optional
 
-from ..peas.remote_pea import RemotePea
-from ..peas.remote_pea.jinad import PodAPI
+from ..peas.remote import RemotePea
+from ..peas.remote.jinad import PodAPI
 from ..zmq import Zmqlet, send_ctrl_message
 from ...enums import PeaRoleType
 from ...helper import cached_property
