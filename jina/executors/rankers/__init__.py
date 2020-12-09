@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, List
+from typing import Dict
 
 import numpy as np
 
@@ -88,7 +88,7 @@ class Chunk2DocRanker(BaseRanker):
         r = np.array(r, dtype=[
             (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
             (Chunk2DocRanker.COL_SCORE, np.float64)]
-        )
+                     )
         return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
 
     def get_doc_id(self, match_with_same_doc_id):

@@ -9,7 +9,7 @@ from ...excepts import BadDocType
 from ...helper import batch_iterator
 from ...types.document import Document, DocumentSourceType, DocumentContentType
 from ...types.querylang import QueryLang
-from ...types.sets.querylang_set import AcceptQueryLangType
+from ...types.sets.querylang import AcceptQueryLangType
 
 GeneratorSourceType = Iterator[Union[DocumentContentType,
                                      DocumentSourceType,

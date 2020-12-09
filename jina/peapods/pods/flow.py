@@ -36,7 +36,7 @@ class FlowPod(BasePod):
         self.role = pod_role
 
     def to_cli_command(self):
-        from .gateway_pod import GatewayPod
+        from .gateway import GatewayPod
         if isinstance(self, GatewayPod):
             cmd = 'jina gateway'
         else:
