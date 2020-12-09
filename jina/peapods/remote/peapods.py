@@ -2,29 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from argparse import Namespace
-from typing import Dict, Union, Optional, Any
+from typing import Dict, Union, Optional
 
 from .jinad import PeaAPI, PodAPI
 from ..pea import BasePea
 from ..zmq import Zmqlet, send_ctrl_message
 from ...enums import PeaRoleType
-from ...helper import colored, cached_property, typename
-
-
-def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
-    """ helper function to convert argparse.Namespace to json to be uploaded via REST """
-    if isinstance(args, Namespace):
-        return vars(args)
-    elif isinstance(args, dict):
-        pea_args = {}
-        for k, v in args.items():
-            if isinstance(v, Namespace):
-                pea_args[k] = vars(v)
-            elif isinstance(v, list):
-                pea_args[k] = [vars(_) for _ in v]
-            else:
-                pea_args[k] = v
-        return pea_args
+from ...helper import colored, cached_property, typename, namespace_to_dict
 
 
 class RemotePea(BasePea):

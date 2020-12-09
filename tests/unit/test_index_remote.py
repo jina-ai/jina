@@ -8,7 +8,7 @@ import numpy as np
 
 from jina.flow import Flow
 from jina.helper import random_port
-from jina.peapods.pod import GatewayPod
+from jina.peapods.pod.gateway_pod import GatewayPod
 from jina.enums import FlowOptimizeLevel
 from jina.parser import set_gateway_parser
 from jina.executors.indexers.vector import NumpyIndexer

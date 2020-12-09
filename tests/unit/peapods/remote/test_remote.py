@@ -1,7 +1,7 @@
 from argparse import Namespace
 
 from jina.enums import PollingType
-from jina.peapods.remote import namespace_to_dict
+from jina.helper import namespace_to_dict
 
 
 def test_namespace_to_dict():
