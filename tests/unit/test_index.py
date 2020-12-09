@@ -23,12 +23,14 @@ def test_workspace_index(tmpdir):
     yield workspace_path
     del os.environ['JINA_TEST_INDEX']
 
+
 @pytest.fixture(scope='function')
 def test_workspace_joint(tmpdir):
     os.environ['JINA_TEST_JOINT'] = str(tmpdir)
     workspace_path = os.environ['JINA_TEST_JOINT']
     yield workspace_path
     del os.environ['JINA_TEST_JOINT']
+
 
 def get_result(resp):
     n = []
@@ -162,13 +164,16 @@ def test_index(test_workspace_index):
         assert (Path(test_workspace_index) / f'test2-{j + 1}/tmp2').exists()
 
 
-def test_compound_idx(test_workspace_joint):
-    def validate(req, indexer_name):
+def test_compound_idx(test_workspace_joint, mocker):
+    def validate(req):
         assert req.status.code < jina_pb2.StatusProto.ERROR
-        assert req.search.docs[0].matches[0].score.op_name == indexer_name
+        assert req.search.docs[0].matches[0].score.op_name == 'NumpyIndexer'
 
     with Flow().add(uses=str(cur_dir / 'yaml' / 'test-joint.yml')) as f:
         f.index(random_docs(100, chunks_per_doc=0))
 
+    response_mock = mocker.Mock(wrap=validate)
     with Flow().add(uses=str(cur_dir / 'yaml' / 'test-joint.yml')) as g:
-        g.search(random_docs(10, chunks_per_doc=0), output_fn=lambda x: validate(x, 'NumpyIndexer'))
+        g.search(random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+
+    response_mock.assert_called()

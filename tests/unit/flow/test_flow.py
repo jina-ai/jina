@@ -481,34 +481,43 @@ def test_refactor_num_part_2():
         f.index_lines(lines=['abbcs', 'efgh'])
 
 
-def test_index_text_files():
+def test_index_text_files(mocker):
     def validate(req):
+        assert len(req.docs) > 0
         for d in req.docs:
             assert d.text
+
+    response_mock = mocker.Mock(wrap=validate)
 
     f = (Flow(read_only=True).add(uses=str(cur_dir.parent / 'yaml' / 'datauriindex.yml'), timeout_ready=-1))
 
     with f:
-        f.index_files('*.py', output_fn=validate, callback_on='body')
+        f.index_files('*.py', output_fn=response_mock, callback_on='body')
 
     rm_files(['doc.gzip'])
+    response_mock.assert_called()
 
 
-def test_flow_with_publish_driver():
-    f = (Flow()
-         .add(name='r2', uses='!OneHotTextEncoder')
-         .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
-         .join(needs=['r2', 'r3']))
+def test_flow_with_publish_driver(mocker):
 
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
 
+    response_mock = mocker.Mock(wrap=validate)
+
+    f = (Flow()
+         .add(name='r2', uses='!OneHotTextEncoder')
+         .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
+         .join(needs=['r2', 'r3']))
+
     with f:
-        f.index_lines(lines=['text_1', 'text_2'], output_fn=validate)
+        f.index_lines(lines=['text_1', 'text_2'], output_fn=response_mock)
+
+    response_mock.assert_called()
 
 
-def test_flow_with_modalitys_simple():
+def test_flow_with_modalitys_simple(mocker):
     def validate(req):
         for d in req.index.docs:
             assert d.modality in ['mode1', 'mode2']
@@ -522,11 +531,15 @@ def test_flow_with_modalitys_simple():
         doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 
+    response_mock = mocker.Mock(wrap=validate)
+
     flow = Flow().add(name='chunk_seg', parallel=3). \
         add(name='encoder12', parallel=2,
             uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
     with flow:
-        flow.index(input_fn=input_fn, output_fn=validate)
+        flow.index(input_fn=input_fn, output_fn=response_mock)
+
+    response_mock.assert_called()
 
 
 def test_load_flow_with_port():
