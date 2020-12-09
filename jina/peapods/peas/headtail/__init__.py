@@ -1,2 +1,2 @@
-from .head_pea import HeadPea
-from .tail_pea import TailPea
+from .head import HeadPea
+from .tail import TailPea
