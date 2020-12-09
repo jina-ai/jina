@@ -40,7 +40,7 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
         from .peas.headtail import HeadPea
         return HeadPea(args)
     elif args.role == PeaRoleType.TAIL:
-        from .peas.headtail.tail_pea import TailPea
+        from .peas.headtail import TailPea
         return TailPea(args)
     else:
         from .peas import BasePea
