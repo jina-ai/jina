@@ -77,7 +77,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
                 return MutablePod(args)
             else:
                 # TODO: this part needs to be refactored
-                from .peas.remote_pea import RemoteMutablePod
+                from .pods.remote_pod import RemoteMutablePod
                 return RemoteMutablePod(args)
 
     if not allow_remote and args.host != __default_host__:
@@ -86,7 +86,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
 
     if args.host != __default_host__:
         if args.remote_access == RemoteAccessType.JINAD:
-            from .peas.remote_pea import RemotePod
+            from .pods.remote_pod import RemotePod
             return RemotePod(args)
         elif args.remote_access == RemoteAccessType.SSH:
             from .peas.remote_pea.ssh import RemoteSSHPod

@@ -22,7 +22,7 @@ class RemoteSSHPea(BasePea):
 
     @property
     def remote_command(self) -> str:
-        from ...parser import set_pea_parser
+        from ....parser import set_pea_parser
         non_defaults = get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
         _args = kwargs2list(non_defaults)
         return f'jina pea {" ".join(_args)}'
@@ -56,7 +56,7 @@ class RemoteSSHPod(RemoteSSHPea):
 
     @property
     def remote_command(self) -> str:
-        from ...parser import set_pod_parser
+        from ....parser import set_pod_parser
         non_defaults = get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
         _args = kwargs2list(non_defaults)
         return f'jina pod {" ".join(_args)}'

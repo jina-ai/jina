@@ -1,13 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import os
 import asyncio
+import os
 
 import grpc
 
 from ... import __stop_msg__
-from ...excepts import GRPCServerError, BadClientRequestGenerator, BadClient, BadDocType
+from ...excepts import GRPCServerError, BadClientRequestGenerator, BadClient
 from ...logging import JinaLogger
 from ...proto import jina_pb2_grpc
 

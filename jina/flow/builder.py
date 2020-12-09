@@ -4,7 +4,7 @@ from typing import Dict, List, Callable
 
 from ..enums import SocketType, FlowOptimizeLevel, FlowBuildLevel, PodRoleType
 from ..excepts import FlowBuildLevelError
-from ..peapods.pod.flow_pod import FlowPod
+from ..peapods.pods.flow_pod import FlowPod
 
 if False:
     from . import Flow

@@ -111,7 +111,7 @@ class FlowPod(BasePod):
             return super().start()
         else:
             if self._args.remote_access == RemoteAccessType.JINAD:
-                from ..peas.remote_pea import RemoteMutablePod
+                from ..pods.remote_pod import RemoteMutablePod
                 _remote_pod = RemoteMutablePod(self.peas_args)
             elif self._args.remote_access == RemoteAccessType.SSH:
                 from ..peas.remote_pea.ssh import RemoteSSHMutablePod
