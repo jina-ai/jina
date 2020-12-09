@@ -5,6 +5,7 @@ from jina.proto.jina_pb2 import DocumentProto
 def input_fn():
     doc1 = DocumentProto()
     doc2 = DocumentProto()
+    # doc1 and doc2 should have the same id
     ev1 = doc1.evaluations.add()
     ev1.value = 1
     ev1.op_name = 'op1'

@@ -4,7 +4,6 @@ pods:
     uses: yaml/index-gt.yml
     separated_workspace: True
     polling: 'all'
-    uses_after: _merge_all
     needs: gateway
     shards: 2
   evaluator:
