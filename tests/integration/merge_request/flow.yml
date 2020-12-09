@@ -1,0 +1,10 @@
+!Flow
+pods:
+  split_1:
+    uses: yaml/split_1.yml
+    needs: gateway
+  split_2:
+    uses: yaml/split_2.yml
+    needs: gateway
+  merge_request:
+    needs: [split_1, split_2]

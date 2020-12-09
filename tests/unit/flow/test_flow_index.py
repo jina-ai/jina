@@ -41,7 +41,9 @@ def test_shards_insufficient_data():
             assert d.weight
             assert d.meta_info == b'hello world'
 
-    f = Flow().add(name='doc_pb', uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'), parallel=parallel,
+    f = Flow().add(name='doc_pb',
+                   uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                   parallel=parallel,
                    separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(index_docs), override_doc_id=False)
@@ -50,10 +52,13 @@ def test_shards_insufficient_data():
     with f:
         pass
     time.sleep(2)
-    f = Flow().add(name='doc_pb', uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'), parallel=parallel,
-                   separated_workspace=True, polling='all', uses_after='_merge_all')
+    f = Flow().add(name='doc_pb',
+                   uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                   parallel=parallel,
+                   separated_workspace=True, polling='all', uses_after='_merge_chunks')
     with f:
-        f.search(input_fn=random_queries(1, index_docs), override_doc_id=False,
+        f.search(input_fn=random_queries(1, index_docs),
+                 override_doc_id=False,
                  callback_on='body')
     time.sleep(2)
     rm_files(['test-docshard-tmp'])
