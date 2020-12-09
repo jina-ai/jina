@@ -391,7 +391,7 @@ pip install jina[hub] && jina hub new --type app
 
 This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
-</details>
+
 
 #### MultimodalDocument
   
@@ -446,6 +446,7 @@ requests:
 
 Interested readers can refer to this example to see [how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg)
 
+</details>
 
 ## Learn
 
