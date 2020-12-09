@@ -378,7 +378,6 @@ In practice, the query Flow and the client (i.e. data sender) are often physical
 
 ```python
 f = Flow(port_expose=45678, rest_api=True)
-
 with f:
     f.block()
 ```
@@ -396,53 +395,48 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 
 #### MultimodalDocument
   
-A MultimodalDocument in Jina is a document composed of multiple Chunks with different modalities.
+A `MultimodalDocument` is a document composed of multiple Chunks with different modalities.
  
-There are different ways to build your multimodal Document: 
- 
-We can build a multimodal Document by providing the modality names and the content of the chunks:
+Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content of the chunks:
   
 ```python
-    from jina.types.document.multimodal import MultimodalDocument
-    image_title = 'my holiday picture'
-    image_description = 'the family having fun on the beach'
-    image = PIL.Image.open('path/to/image.jpg')
-    content_mapping = {
-        'title': image_title,
-        'description': image_description,
-        'image': image
-    }   
-    document = MultimodalDocument(modality_content_mapping=content_mapping)
+from jina import MultimodalDocument
+document = MultimodalDocument(modality_content_map={
+    'title': 'my holiday picture',
+    'description': 'the family having fun on the beach',
+    'image': PIL.Image.open('path/to/image.jpg')
+})
 ```
 
-We can also create Chunks when we have extra metadata in each Chunk:
+One can also compose a `MultimodalDocument` from multiple `Document` with `modality`:
   
 ```python
-    from jina.types import Document
-    from jina.types.document.multimodal import MultimodalDocument
-    chunk_title = Document('my holiday picture')
-    chunk_title.modality = 'title'
-    
-    chunk_description = Document('the family having fun on the beach')
-    chunk_description.modality = 'description'
+from jina.types import Document, MultimodalDocument
 
-    chunk_image = Document(Image.open('path/to/image.jpg'))
-    chunk_image.modality = 'description'
-    chunk_image.tags['date'] = '10/08/2019' 
-  
-    document = MultimodalDocument(chunks=[chunk_title, chunk_description, chunk_image])
+doc_title = Document(content='my holiday picture', modality='title')
+
+doc_description = Document(content='the family having fun on the beach', modality='description')
+
+doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='description')
+doc_img.tags['date'] = '10/08/2019' 
+
+document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
 ```
 
-#### MultimodalEncoder and MultimodalDriver
+#### Fusion Embeddings from Different Modalities
 
-In order to extract fusion embeddings from different modalities we have `MultimodalEncoders`.
-An example of a `MultimodalEncoder` can be found in https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg
+To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
+
+```python
+def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
+    ...
+```
+
+`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the endoder as the first argument, and `text` as the second.
 
 ```yaml
-!TirgMultiModalEncoder
+!MyMultimodalEncoder
 with:
-  model_path: checkpoint.pth
-  texts_path: texts.pkl
   positional_modality: ['image', 'text']
 requests:
   on:
@@ -450,19 +444,7 @@ requests:
       - !MultiModalDriver {}
 ```
 
-A `MultimodalEncoder` expects a variable number of arguments in the `encode` interface.
-
-```python
-    def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
-        """
-        :param: data: M arguments of shape `B x (D)` numpy ``ndarray``, `B` is the size of the batch, `M` is the number of modalities
-        :return: a `B x D` numpy ``ndarray``
-        """
-```
-
-The required argument for every `MultimodalEncoder` is the `positional_modality` argument, which is used to guarantee
-that the executor will receive from the `MultimodalDriver` will provide `data` in the correct expected order. In this case
-the encoder expects to have `image` data in the first argument, and `text` in the second one.
+Interested readers can refer to this example to see [how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg)
 
 
 ## Learn

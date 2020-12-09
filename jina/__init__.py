@@ -149,6 +149,7 @@ from jina.types.request import Request
 from jina.types.message import Message
 from jina.types.querylang import QueryLang
 from jina.types.document import Document
+from jina.types.document.multimodal import MultimodalDocument
 from jina.types.sets import DocumentSet, QueryLangSet
 
 # Flow

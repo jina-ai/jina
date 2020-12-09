@@ -131,7 +131,9 @@ class Document:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
         except Exception as ex:
-            raise BadDocType(f'fail to construct a document from {document}') from ex
+            raise BadDocType(f'fail to construct a document from {document}, '
+                             f'if you are trying to set the content '
+                             f'you may use "Document(content=your_content)"') from ex
 
         self.set_attrs(**kwargs)
 
