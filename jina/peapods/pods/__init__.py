@@ -8,10 +8,9 @@ from contextlib import ExitStack
 from threading import Thread
 from typing import Optional, Dict, List, Union
 
+from jina.peapods.peas.headtail_pea import TailPea, HeadPea
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
 from .. import Pea
-from ..headtail.head_pea import HeadPea
-from ..headtail.tail_pea import TailPea
 from ...enums import *
 
 

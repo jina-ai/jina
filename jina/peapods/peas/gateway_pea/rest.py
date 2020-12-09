@@ -5,9 +5,9 @@ from google.protobuf.json_format import MessageToDict
 
 from .grpc import GatewayPea
 from .grpc.async_servicer import GRPCServicer
-from ...enums import RequestType
-from ...helper import configure_event_loop
-from ...importer import ImportExtensions
+from jina.enums import RequestType
+from jina.helper import configure_event_loop
+from jina.importer import ImportExtensions
 
 
 class RESTGatewayPea(GatewayPea):

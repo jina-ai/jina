@@ -8,7 +8,7 @@ from jina.executors import BaseExecutor
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import yaml, expand_dict
 from jina.parser import set_pea_parser
-from jina.peapods.pea import BasePea
+from jina.peapods.peas import BasePea
 
 cur_dir = Path(__file__).parent
 

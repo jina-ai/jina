@@ -4,8 +4,8 @@ import os
 import grpc
 
 from .async_servicer import GRPCServicer
-from ....logging import JinaLogger
-from ....proto import jina_pb2_grpc
+from jina.logging import JinaLogger
+from jina.proto import jina_pb2_grpc
 
 
 class AsyncGRPCStub:

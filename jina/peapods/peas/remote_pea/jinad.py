@@ -7,9 +7,9 @@ from typing import Dict, Tuple, Set, List, Optional
 
 import ruamel.yaml
 
-from ...excepts import RemotePodClosed
-from ...importer import ImportExtensions
-from ...logging import JinaLogger
+from jina.excepts import RemotePodClosed
+from jina.importer import ImportExtensions
+from jina.logging import JinaLogger
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):

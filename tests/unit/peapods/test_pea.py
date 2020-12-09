@@ -2,8 +2,8 @@ import pytest
 
 from jina.excepts import PeaFailToStart
 from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
-from jina.peapods.gateway.grpc import GatewayPea
-from jina.peapods.pea import BasePea
+from jina.peapods.peas.gateway_pea import GatewayPea
+from jina.peapods.peas import BasePea
 from jina.peapods.pod import BasePod
 
 

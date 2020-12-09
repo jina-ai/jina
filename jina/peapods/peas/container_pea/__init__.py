@@ -6,11 +6,11 @@ import os
 import time
 from pathlib import Path
 
-from ..pea import BasePea
-from ..zmq import send_ctrl_message, Zmqlet
-from ... import __ready_msg__
-from ...helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
-from ...logging import JinaLogger
+from jina.peapods.peas import BasePea
+from jina.peapods.zmq import send_ctrl_message, Zmqlet
+from jina import __ready_msg__
+from jina.helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
+from jina.logging import JinaLogger
 
 
 class ContainerPea(BasePea):
@@ -26,7 +26,7 @@ class ContainerPea(BasePea):
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
         # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
-        from ..parser import set_pea_parser
+        from ....parser import set_pea_parser
         non_defaults = get_non_defaults_args(self.args, set_pea_parser(),
                                              taboo={'uses', 'entrypoint', 'volumes', 'pull_latest'})
 

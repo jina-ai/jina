@@ -36,7 +36,7 @@ class FlowPod(BasePod):
         self.role = pod_role
 
     def to_cli_command(self):
-        from .gateway import GatewayPod
+        from .gateway_pod import GatewayPod
         if isinstance(self, GatewayPod):
             cmd = 'jina gateway'
         else:
@@ -111,10 +111,10 @@ class FlowPod(BasePod):
             return super().start()
         else:
             if self._args.remote_access == RemoteAccessType.JINAD:
-                from ..remote import RemoteMutablePod
+                from jina.peapods.peas.remote_pea import RemoteMutablePod
                 _remote_pod = RemoteMutablePod(self.peas_args)
             elif self._args.remote_access == RemoteAccessType.SSH:
-                from jina.peapods.remote.ssh import RemoteSSHMutablePod
+                from jina.peapods.peas.remote_pea.ssh import RemoteSSHMutablePod
                 _remote_pod = RemoteSSHMutablePod(self.peas_args)
             else:
                 raise ValueError(f'{self._args.remote_access} is unsupported')

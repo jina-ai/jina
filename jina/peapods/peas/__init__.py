@@ -12,18 +12,18 @@ from typing import Dict, Optional, Union, List
 
 import zmq
 
-from jina.types.message import Message
-from .zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
-from .. import __ready_msg__, __stop_msg__, Request
-from ..enums import PeaRoleType, SkipOnErrorType
-from ..excepts import RequestLoopEnd, NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, \
+from ..zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
+from ... import Message
+from ... import __ready_msg__, __stop_msg__, Request
+from ...enums import PeaRoleType, SkipOnErrorType
+from ...excepts import RequestLoopEnd, NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, \
     PeaFailToStart, \
     ChainedPodException
-from ..executors import BaseExecutor
-from ..helper import is_valid_local_config_source, typename
-from ..logging import JinaLogger
-from ..logging.profile import used_memory, TimeDict
-from ..proto import jina_pb2
+from ...executors import BaseExecutor
+from ...helper import is_valid_local_config_source, typename
+from ...logging import JinaLogger
+from ...logging.profile import used_memory, TimeDict
+from ...proto import jina_pb2
 
 __all__ = ['PeaMeta', 'BasePea']
 
@@ -338,7 +338,7 @@ class BasePea(metaclass=PeaMeta):
 
     def load_plugins(self):
         if self.args.py_modules:
-            from ..importer import PathImporter
+            from ...importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
     def close_zmqlet(self):
