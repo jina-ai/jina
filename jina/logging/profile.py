@@ -10,7 +10,7 @@ from ..helper import colored, get_readable_size, get_readable_time
 
 if False:
     # fix type-hint complain for sphinx and flake
-    from jina.logging import JinaLogger
+    from . import JinaLogger
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:

@@ -51,8 +51,8 @@ class NetworkChecker:
     """Check if a BasePod is running or not """
 
     def __init__(self, args: 'argparse.Namespace'):
-        from jina.peapods.peas import send_ctrl_message
-        from jina.logging.profile import TimeContext
+        from .peapods.peas import send_ctrl_message
+        from .logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time
         ctrl_addr = f'tcp://{args.host}:{args.port}'

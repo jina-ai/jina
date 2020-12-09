@@ -31,16 +31,16 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
             default_logger.warning(f'setting host to {__default_host__} as allow_remote set to False')
 
     if args.host != __default_host__:
-        from jina.peapods.peas.remote_pea import RemotePea
+        from .peas.remote_pea import RemotePea
         return RemotePea(args)
     elif args.uses and not is_valid_local_config_source(args.uses):
-        from jina.peapods.peas.container_pea import ContainerPea
+        from .peas.container_pea import ContainerPea
         return ContainerPea(args)
     elif args.role == PeaRoleType.HEAD:
-        from jina.peapods.peas.headtail_pea import HeadPea
+        from .peas.headtail_pea import HeadPea
         return HeadPea(args)
     elif args.role == PeaRoleType.TAIL:
-        from jina.peapods.peas.headtail_pea.tail_pea import TailPea
+        from .peas.headtail_pea.tail_pea import TailPea
         return TailPea(args)
     else:
         from .peas import BasePea
@@ -77,7 +77,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
                 return MutablePod(args)
             else:
                 # TODO: this part needs to be refactored
-                from jina.peapods.peas.remote_pea import RemoteMutablePod
+                from .peas.remote_pea import RemoteMutablePod
                 return RemoteMutablePod(args)
 
     if not allow_remote and args.host != __default_host__:
@@ -86,10 +86,10 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
 
     if args.host != __default_host__:
         if args.remote_access == RemoteAccessType.JINAD:
-            from jina.peapods.peas.remote_pea import RemotePod
+            from .peas.remote_pea import RemotePod
             return RemotePod(args)
         elif args.remote_access == RemoteAccessType.SSH:
-            from jina.peapods.peas.remote_pea.ssh import RemoteSSHPod
+            from .peas.remote_pea.ssh import RemoteSSHPod
             return RemoteSSHPod(args)
         else:
             raise ValueError(f'{args.remote_access} is not supported')

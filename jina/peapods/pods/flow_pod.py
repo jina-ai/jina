@@ -111,10 +111,10 @@ class FlowPod(BasePod):
             return super().start()
         else:
             if self._args.remote_access == RemoteAccessType.JINAD:
-                from jina.peapods.peas.remote_pea import RemoteMutablePod
+                from ..peas.remote_pea import RemoteMutablePod
                 _remote_pod = RemoteMutablePod(self.peas_args)
             elif self._args.remote_access == RemoteAccessType.SSH:
-                from jina.peapods.peas.remote_pea.ssh import RemoteSSHMutablePod
+                from ..peas.remote_pea.ssh import RemoteSSHMutablePod
                 _remote_pod = RemoteSSHMutablePod(self.peas_args)
             else:
                 raise ValueError(f'{self._args.remote_access} is unsupported')

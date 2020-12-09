@@ -1,13 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-
 from typing import Optional
 
 import numpy as np
-from jina.excepts import UndefinedModel
-from jina.executors.decorators import batching
+
 from .. import BaseNumericEncoder
+from ...decorators import batching
+from ....excepts import UndefinedModel
 
 
 class TransformEncoder(BaseNumericEncoder):
