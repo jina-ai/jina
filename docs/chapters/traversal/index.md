@@ -144,7 +144,7 @@ If we look from a tree view (with a depth of 3):
 
 ## Document Traversal with traversal paths
 
-As you already learned from [Jina 101](https://docs.jina.ai/chapters/101/.sphinx.html), you needs to apply transformation (i.e. a `callback`) on a different level of documents.
+As you already learned from [Jina 101](https://docs.jina.ai/chapters/101/index.html), you needs to apply transformation (i.e. a `callback`) on a different level of documents.
 Given the tree structure, how could we achieve that?
 The answer is `traversal`.
 
