@@ -6,11 +6,11 @@ import os
 import time
 from pathlib import Path
 
-from jina.peapods.peas import BasePea
-from jina.peapods.zmq import send_ctrl_message, Zmqlet
-from jina import __ready_msg__
-from jina.helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
-from jina.logging import JinaLogger
+from .. import BasePea
+from ...zmq import send_ctrl_message, Zmqlet
+from .... import __ready_msg__
+from ....helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
+from ....logging import JinaLogger
 
 
 class ContainerPea(BasePea):

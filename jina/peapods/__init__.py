@@ -73,7 +73,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
 
         if len(hosts) == 1:
             if __default_host__ in hosts:
-                from .pod.mutable import MutablePod
+                from .pods.mutable_pod import MutablePod
                 return MutablePod(args)
             else:
                 # TODO: this part needs to be refactored
@@ -95,5 +95,5 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
             raise ValueError(f'{args.remote_access} is not supported')
 
     else:
-        from .pod import BasePod
+        from .pods import BasePod
         return BasePod(args)

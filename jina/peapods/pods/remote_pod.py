@@ -4,11 +4,11 @@ __license__ = "Apache-2.0"
 from argparse import Namespace
 from typing import Dict, Union, Optional
 
-from jina.peapods.peas.remote_pea import RemotePea
-from jina.peapods.peas.remote_pea.jinad import PodAPI
-from jina.peapods.zmq import Zmqlet, send_ctrl_message
-from jina.enums import PeaRoleType
-from jina.helper import cached_property
+from ..peas.remote_pea import RemotePea
+from ..peas.remote_pea.jinad import PodAPI
+from ..zmq import Zmqlet, send_ctrl_message
+from ...enums import PeaRoleType
+from ...helper import cached_property
 
 
 class RemotePod(RemotePea):

@@ -2,9 +2,9 @@ from argparse import Namespace
 from typing import Union, Dict, Optional
 
 from .jinad import PeaAPI
-from jina.peapods.peas import BasePea
-from jina.peapods.zmq import send_ctrl_message
-from jina.helper import cached_property, namespace_to_dict, colored, typename
+from .. import BasePea
+from ...zmq import send_ctrl_message
+from ....helper import cached_property, namespace_to_dict, colored, typename
 
 
 class RemotePea(BasePea):

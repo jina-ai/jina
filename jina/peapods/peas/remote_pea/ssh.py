@@ -1,9 +1,9 @@
 from subprocess import Popen, PIPE
 
-from jina.peapods.peas import BasePea
-from jina import __ready_msg__, __stop_msg__
-from jina.helper import get_non_defaults_args, kwargs2list
-from jina.logging import JinaLogger
+from .. import BasePea
+from .... import __ready_msg__, __stop_msg__
+from ....helper import get_non_defaults_args, kwargs2list
+from ....logging import JinaLogger
 
 
 class RemoteSSHPea(BasePea):

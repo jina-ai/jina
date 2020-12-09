@@ -5,9 +5,11 @@ from google.protobuf.json_format import MessageToDict
 
 from .grpc import GatewayPea
 from .grpc.async_servicer import GRPCServicer
-from jina.enums import RequestType
-from jina.helper import configure_event_loop
-from jina.importer import ImportExtensions
+from ....enums import RequestType
+from ....helper import configure_event_loop
+from ....importer import ImportExtensions
+
+__all__ = ['RESTGatewayPea']
 
 
 class RESTGatewayPea(GatewayPea):
@@ -56,7 +58,7 @@ class RESTGateway:
             path='/api/{mode}'
         )
         async def api(mode: str, body: Any = Body(...)):
-            from ...clients import python
+            from ....clients import python
             if mode.upper() not in RequestType.__members__:
                 return error(reason=f'unsupported mode {mode}', status_code=405)
 

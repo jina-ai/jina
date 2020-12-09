@@ -1,10 +1,10 @@
 import asyncio
 
 from .async_stub import AsyncGRPCStub
-from jina.peapods.peas import BasePea
-from jina.peapods.zmq import CtrlZmqlet, send_message_async, recv_message_async
-from jina.helper import configure_event_loop
-from jina.proto import jina_pb2
+from ... import BasePea
+from ....zmq import CtrlZmqlet, send_message_async, recv_message_async
+from .....helper import configure_event_loop
+from .....proto import jina_pb2
 
 
 class GatewayPea(BasePea):

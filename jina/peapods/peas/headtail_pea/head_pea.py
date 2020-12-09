@@ -4,8 +4,8 @@ __license__ = "Apache-2.0"
 import argparse
 from typing import Dict, Union
 
-from jina.peapods.peas import BasePea
-from jina.logging import JinaLogger
+from .. import BasePea
+from ....logging import JinaLogger
 
 
 class HeadPea(BasePea):

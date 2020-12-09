@@ -2,8 +2,8 @@ from typing import Dict, Set
 
 from . import BasePod, PodRoleType
 from .flow_pod import FlowPod
-from jina.peapods.peas.gateway_pea.grpc import GatewayPea
-from jina.peapods.peas.gateway_pea.rest import RESTGatewayPea
+from ..peas.gateway_pea.grpc import GatewayPea
+from ..peas.gateway_pea.rest import RESTGatewayPea
 from ...parser import set_gateway_parser
 
 
