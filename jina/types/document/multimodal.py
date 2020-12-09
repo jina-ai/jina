@@ -1,7 +1,7 @@
 from typing import Dict, Sequence, List, Optional, Any
 
 from . import Document, DocumentSourceType, typename, DocumentContentType
-from ...excepts import LengthMismatchException, BadDocType
+from ...excepts import BadDocType
 
 __all__ = ['MultimodalDocument']
 

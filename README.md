@@ -378,7 +378,6 @@ In practice, the query Flow and the client (i.e. data sender) are often physical
 
 ```python
 f = Flow(port_expose=45678, rest_api=True)
-
 with f:
     f.block()
 ```
@@ -393,6 +392,60 @@ pip install jina[hub] && jina hub new --type app
 This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
 
 </details>
+
+#### MultimodalDocument
+  
+A `MultimodalDocument` is a document composed of multiple Chunks with different modalities.
+ 
+Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content of the chunks:
+  
+```python
+from jina import MultimodalDocument
+document = MultimodalDocument(modality_content_map={
+    'title': 'my holiday picture',
+    'description': 'the family having fun on the beach',
+    'image': PIL.Image.open('path/to/image.jpg')
+})
+```
+
+One can also compose a `MultimodalDocument` from multiple `Document` with `modality`:
+  
+```python
+from jina.types import Document, MultimodalDocument
+
+doc_title = Document(content='my holiday picture', modality='title')
+
+doc_description = Document(content='the family having fun on the beach', modality='description')
+
+doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='description')
+doc_img.tags['date'] = '10/08/2019' 
+
+document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
+```
+
+#### Fusion Embeddings from Different Modalities
+
+To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
+
+```python
+def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
+    ...
+```
+
+`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the endoder as the first argument, and `text` as the second.
+
+```yaml
+!MyMultimodalEncoder
+with:
+  positional_modality: ['image', 'text']
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !MultiModalDriver {}
+```
+
+Interested readers can refer to this example to see [how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg)
+
 
 ## Learn
 
