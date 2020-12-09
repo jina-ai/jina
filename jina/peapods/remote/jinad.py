@@ -1,15 +1,15 @@
-import json
 import asyncio
+import json
 from contextlib import ExitStack
+from multiprocessing.synchronize import Event
 from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
 import ruamel.yaml
-from multiprocessing.synchronize import Event
 
-from ..importer import ImportExtensions
-from ..logging import JinaLogger
-from ..excepts import RemotePodClosed
+from ...excepts import RemotePodClosed
+from ...importer import ImportExtensions
+from ...logging import JinaLogger
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):

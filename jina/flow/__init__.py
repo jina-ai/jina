@@ -25,7 +25,8 @@ from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_ali
     get_public_ip, get_internal_ip, typename
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..peapods.pod import FlowPod, GatewayFlowPod
+from ..peapods.pod.flow_pod import FlowPod
+from ..peapods.pod.gateway_pod import GatewayFlowPod
 
 if False:
     import argparse

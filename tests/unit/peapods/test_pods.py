@@ -1,7 +1,10 @@
 import pytest
 
 from jina.parser import set_pod_parser, set_gateway_parser
-from jina.peapods.pod import BasePod, GatewayPod, MutablePod, GatewayFlowPod, FlowPod
+from jina.peapods.pod import BasePod
+from jina.peapods.pod.flow_pod import FlowPod
+from jina.peapods.pod.gateway_pod import GatewayFlowPod, GatewayPod
+from jina.peapods.pod.mutable_pod import MutablePod
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])

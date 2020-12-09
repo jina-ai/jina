@@ -4,12 +4,11 @@ __license__ = "Apache-2.0"
 from argparse import Namespace
 from typing import Dict, Union, Optional, Any
 
-from .zmq import Zmqlet, send_ctrl_message
 from .jinad import PeaAPI, PodAPI
-from .pea import BasePea
-from ..helper import colored, cached_property, typename
-from ..enums import PeaRoleType
-from ..proto import jina_pb2
+from ..pea import BasePea
+from ..zmq import Zmqlet, send_ctrl_message
+from ...enums import PeaRoleType
+from ...helper import colored, cached_property, typename
 
 
 def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:

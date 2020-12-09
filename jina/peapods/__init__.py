@@ -37,10 +37,10 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
         from .container import ContainerPea
         return ContainerPea(args)
     elif args.role == PeaRoleType.HEAD:
-        from .head_pea import HeadPea
+        from .headtail.head_pea import HeadPea
         return HeadPea(args)
     elif args.role == PeaRoleType.TAIL:
-        from .tail_pea import TailPea
+        from .headtail.tail_pea import TailPea
         return TailPea(args)
     else:
         from .pea import BasePea
@@ -73,7 +73,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
 
         if len(hosts) == 1:
             if __default_host__ in hosts:
-                from .pod import MutablePod
+                from .pod.mutable import MutablePod
                 return MutablePod(args)
             else:
                 # TODO: this part needs to be refactored
@@ -89,7 +89,7 @@ def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = Tru
             from .remote import RemotePod
             return RemotePod(args)
         elif args.remote_access == RemoteAccessType.SSH:
-            from .ssh import RemoteSSHPod
+            from .remote.ssh import RemoteSSHPod
             return RemoteSSHPod(args)
         else:
             raise ValueError(f'{args.remote_access} is not supported')
