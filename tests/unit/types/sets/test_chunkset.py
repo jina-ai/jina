@@ -2,7 +2,7 @@ import pytest
 from jina import Request
 
 from jina.types.document import Document
-from jina.types.sets.chunk_set import ChunkSet
+from jina.types.sets.chunk import ChunkSet
 
 
 @pytest.fixture(scope='function')

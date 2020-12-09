@@ -2,7 +2,7 @@ import os
 import pytest
 
 from jina.flow import Flow
-from jina.peapods.pod import BasePod
+from jina.peapods.pods import BasePod
 from jina.parser import set_pod_parser
 
 NUM_DOCS = 100

@@ -10,7 +10,7 @@ from jina.enums import FlowOptimizeLevel, SocketType
 from jina.flow import Flow
 from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
 from jina.peapods.peas import BasePea
-from jina.peapods.pod import BasePod
+from jina.peapods.pods import BasePod
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request.common import IndexDryRunRequest
 from tests import random_docs, rm_files
