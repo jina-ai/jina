@@ -8,18 +8,17 @@ from ruamel.yaml import YAML
 from jina.flow import Flow
 from jina.helper import colored
 from jina.logging import default_logger as logger
-from type import IntegerParameter, load_optimization_parameters
+from .parameters import IntegerParameter, load_optimization_parameters
 
 
 class FlowRunner:
     def __init__(
         self,
-        index_document_generator,
-        query_document_generator,
-        index_batch_size,
-        query_batch_size,
+        index_document_generator=None,
+        query_document_generator=None,
+        index_batch_size=None,
+        query_batch_size=None,
         env_yaml=None,
-        workspace_env="JINA_WORKSPACE",
         overwrite_workspace=False,
     ):
 
@@ -28,7 +27,6 @@ class FlowRunner:
         self.index_batch_size = index_batch_size
         self.query_batch_size = query_batch_size
         self.env_yaml = env_yaml
-        self.workspace_env = workspace_env
         self.overwrite_workspace = overwrite_workspace
 
     @staticmethod
@@ -48,9 +46,8 @@ class FlowRunner:
         else:
             logger.info("Cannot load environment variables as no env_yaml passed")
 
-    def run_indexing(self, index_yaml, workspace=None):
+    def run_indexing(self, index_yaml, workspace):
         self._load_env()
-        workspace = Path(os.environ.get(self.workspace_env, workspace))
 
         if workspace.exists():
             if self.overwrite_workspace:
@@ -222,10 +219,12 @@ class Optimizer:
         logger.info(colored(f"Best trial: {study.best_trial.params}", "green"))
         logger.info(colored(f"Time to finish: {study.best_trial.duration}", "green"))
 
-    def optimize_flow(self, n_trials, direction="maximize", seed=42):
+    def optimize_flow(
+        self, n_trials, sampler="TPESampler", direction="maximize", seed=42
+    ):
         import optuna
 
-        sampler = optuna.samplers.TPESampler(seed=seed)
+        sampler = getattr(optuna.samplers, sampler)(seed=seed)
         study = optuna.create_study(direction=direction, sampler=sampler)
         study.optimize(self._objective, n_trials=n_trials)
         self._export_params(study)
