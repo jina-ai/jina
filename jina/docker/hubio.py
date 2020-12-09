@@ -344,13 +344,15 @@ class HubIO:
                     p_names = []
                     try:
                         is_build_success = False
-                        p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level, self.config_yaml_path, self.args.daemon) 
-                        if BuildTestLevel.POD_DOCKER or BuildTestLevel.FLOW in failed_test_levels:
+                        p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
+                                                                        self.config_yaml_path, self.args.daemon)
+                        if any(test_level in failed_test_levels for test_level in [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
                             is_build_success = False
                             self.logger.error(f'build unsuccessful, failed at {str(failed_test_levels)} level')
                         else:
                             is_build_success = True
-                            self.logger.warning(f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be do to the fact that executor has non-installed external dependencies')
+                            self.logger.warning(
+                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be do to the fact that executor has non-installed external dependencies')
                     except Exception as ex:
                         self.logger.error(f'something wrong while testing the build: {repr(ex)}')
                         ex = HubBuilderTestError(ex)
@@ -409,7 +411,6 @@ class HubIO:
 
         return result
 
-
     @staticmethod
     def _test_build(image, test_level, config_yaml_path, daemon_arg):
         p_names = []
@@ -420,7 +421,7 @@ class HubIO:
             try:
                 with BaseExecutor.load_config(config_yaml_path):
                     pass
-            except Exception as ex:
+            except:
                 failed_levels.append(BuildTestLevel.EXECUTOR)
 
         # test uses at Pod level (no docker)
@@ -436,7 +437,7 @@ class HubIO:
             p_name = random_name()
             try:
                 with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name] +
-                                                    ['--daemon'] if daemon_arg else [])):
+                                                     ['--daemon'] if daemon_arg else [])):
                     pass
                 p_names.append(p_name)
             except:
@@ -453,7 +454,6 @@ class HubIO:
                 failed_levels.append(BuildTestLevel.FLOW)
 
         return p_names, failed_levels
-
 
     def dry_run(self) -> Dict:
         try:
@@ -512,7 +512,8 @@ class HubIO:
         self.manifest = self._read_manifest(self.manifest_path)
         self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
         self.manifest['jina_version'] = jina_version
-        self.tag = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(**self.manifest))
+        self.tag = safe_url_name(
+            f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(**self.manifest))
         self.canonical_name = safe_url_name(f'{self.args.repository}/' + '{type}.{kind}.{name}'.format(**self.manifest))
         return completeness
 
