@@ -1,0 +1,11 @@
+!Flow
+with:
+  compress_hwm: 1024
+pods:
+  encode:
+    uses: pods/encoder.yml
+    parallel: $JINA_PARALLEL
+  index:
+    uses: pods/indexer.yml
+    shards: $JINA_SHARDS
+    separated_workspace: true

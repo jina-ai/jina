@@ -1,0 +1,7 @@
+- !IntegerParameter
+  env_var: JINA_MYENCODER_TARGET_DIMENSION
+  high: 256
+  low: 32
+  method: suggest_int
+  parameter_name: target_dimension
+  step_size: 32
