@@ -176,7 +176,7 @@ class Flow(ExitStack):
             p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pod_attr.items()}
             if pod_name != 'gateway':
                 # ignore gateway when reading, it will be added during build()
-                obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
+                obj.add(name=pod_name, **p_pod_attr, inplace=False)
 
         obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
 
@@ -217,7 +217,7 @@ class Flow(ExitStack):
         Set a pod as the last pod in the flow, useful when modifying the flow.
 
         :param name: the name of the existing pod
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param inplace: when set to false, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :return: a (new) flow object with modification
         """
         if name not in self._pod_nodes:
@@ -255,7 +255,7 @@ class Flow(ExitStack):
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Collect all hanging Pod so far and add a blocker to the flow, wait until all handing peas completed.
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param inplace: when set to false, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
@@ -267,7 +267,7 @@ class Flow(ExitStack):
 
     def add(self,
             needs: Union[str, Tuple[str], List[str]] = None,
-            copy_flow: bool = True,
+            inplace: bool = False,
             pod_role: 'PodRoleType' = PodRoleType.POD,
             **kwargs) -> 'Flow':
         """
@@ -281,12 +281,12 @@ class Flow(ExitStack):
         :param needs: the name of the pod(s) that this pod receives data from.
                            One can also use 'pod.Gateway' to indicate the connection with the gateway.
         :param pod_role: the role of the Pod, used for visualization and route planning
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param inplace: when set to false, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the pod CLI supports
         :return: a (new) flow object with modification
         """
 
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        op_flow = copy.deepcopy(self) if not inplace else self
 
         pod_name = kwargs.get('name', None)
 
@@ -393,7 +393,7 @@ class Flow(ExitStack):
             # no inspect node is in the graph, return the current graph
             return self
 
-    def build(self, copy_flow: bool = False) -> 'Flow':
+    def build(self, inplace: bool = False) -> 'Flow':
         """
         Build the current flow and make it ready to use
 
@@ -402,11 +402,11 @@ class Flow(ExitStack):
             No need to manually call it since 0.0.8. When using flow with the
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param inplace: when set to false, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
         :return: the current flow (by default)
 
         .. note::
-            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
+            ``inplace=False`` is recommended if you are building the same flow multiple times in a row. e.g.
 
             .. highlight:: python
             .. code-block:: python
@@ -415,17 +415,17 @@ class Flow(ExitStack):
                 with f:
                     f.index()
 
-                with f.build(copy_flow=True) as fl:
+                with f.build(inplace=False) as fl:
                     fl.search()
 
         """
 
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        op_flow = copy.deepcopy(self) if not inplace else self
 
         _pod_edges = set()
 
         if op_flow.args.inspect == FlowInspectType.COLLECT:
-            op_flow.gather_inspect(copy_flow=False)
+            op_flow.gather_inspect(inplace=True)
 
         if 'gateway' not in op_flow._pod_nodes:
             op_flow._add_gateway(needs={op_flow.last_pod})
@@ -520,7 +520,7 @@ class Flow(ExitStack):
         """
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            self.build(copy_flow=False)
+            self.build(inplace=False)
 
         if self.args.logserver:
             self.logger.info('starting logserver...')
@@ -875,7 +875,7 @@ class Flow(ExitStack):
              vertical_layout: bool = False,
              inline_display: bool = False,
              build: bool = True,
-             copy_flow: bool = True) -> 'Flow':
+             inplace: bool = False) -> 'Flow':
         """
         Visualize the flow up to the current point
         If a file name is provided it will create a jpg image with that name,
@@ -895,7 +895,7 @@ class Flow(ExitStack):
         :param vertical_layout: top-down or left-right layout
         :param inline_display: show image directly inside the Jupyter Notebook
         :param build: build the flow first before plotting, gateway connection can be better showed
-        :param copy_flow: when set to true, then always copy the current flow and
+        :param inplace: when set to false, then always copy the current flow and
                 do the modification on top of it then return, otherwise, do in-line modification
         :return: the flow
         """
@@ -903,7 +903,7 @@ class Flow(ExitStack):
         # deepcopy causes the below error while reusing a flow in Jupyter
         # 'Pickling an AuthenticationString object is disallowed for security reasons'
         op_flow = self
-        # op_flow = copy.deepcopy(self) if copy_flow else self
+        # op_flow = copy.deepcopy(self) if inplace else self
 
         if build:
             op_flow.build(False)
