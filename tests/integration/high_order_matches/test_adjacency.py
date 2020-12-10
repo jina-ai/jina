@@ -17,7 +17,16 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 #         f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), output_fn=validate)
 
 
-def test_high_order_matches_integrated():
+def test_high_order_matches_integrated(mocker):
+    def validate(req):
+        assert len(req.docs) == 1
+        assert len(req.docs[0].matches) == 5
+        assert len(req.docs[0].matches) == 5
+        assert len(req.docs[0].matches[0].matches) == 5
+        assert len(req.docs[0].matches[-1].matches) == 5
+        assert len(req.docs[0].matches[0].matches[0].matches) == 0
+
+    response_mock = mocker.Mock(wrap=validate)
     # this is equivalent to the last test but with simplified YAML spec.
     f = Flow(callback_on='body').add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
 
@@ -25,14 +34,7 @@ def test_high_order_matches_integrated():
         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
 
     with f:
-        f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), output_fn=validate)
+        f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), output_fn=response_mock)
 
-
-def validate(req):
     shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
-    assert len(req.docs) == 1
-    assert len(req.docs[0].matches) == 5
-    assert len(req.docs[0].matches) == 5
-    assert len(req.docs[0].matches[0].matches) == 5
-    assert len(req.docs[0].matches[-1].matches) == 5
-    assert len(req.docs[0].matches[0].matches[0].matches) == 0
+    response_mock.assert_called()

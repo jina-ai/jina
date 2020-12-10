@@ -9,7 +9,7 @@ class DummyCrafter(BaseCrafter):
         return 1 / 0
 
 
-def test_bad_flow_skip_handle():
+def test_bad_flow_skip_handle(mocker):
     def validate(req):
         bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 3
@@ -24,12 +24,16 @@ def test_bad_flow_skip_handle():
          .add(name='r2')
          .add(name='r3'))
 
+    on_error_mock = mocker.Mock(wrap=validate)
+
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+
+    on_error_mock.assert_called()
 
 
-def test_bad_flow_skip_handle_join():
+def test_bad_flow_skip_handle_join(mocker):
     """When skipmode is set to handle, reduce driver wont work anymore"""
 
     def validate(req):
@@ -54,12 +58,16 @@ def test_bad_flow_skip_handle_join():
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))
 
+    on_error_mock = mocker.Mock(wrap=validate)
+
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+
+    on_error_mock.assert_called()
 
 
-def test_bad_flow_skip_exec():
+def test_bad_flow_skip_exec(mocker):
     def validate(req):
         bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 1
@@ -70,12 +78,16 @@ def test_bad_flow_skip_exec():
          .add(name='r2')
          .add(name='r3'))
 
+    on_error_mock = mocker.Mock(wrap=validate)
+
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+
+    on_error_mock.assert_called()
 
 
-def test_bad_flow_skip_exec_join():
+def test_bad_flow_skip_exec_join(mocker):
     """Make sure the exception wont affect the gather/reduce ops"""
 
     def validate(req):
@@ -89,6 +101,10 @@ def test_bad_flow_skip_exec_join():
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))
 
+    on_error_mock = mocker.Mock(wrap=validate)
+
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate)
+        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+
+    on_error_mock.assert_called()

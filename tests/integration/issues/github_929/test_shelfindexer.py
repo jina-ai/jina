@@ -12,7 +12,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.mark.parametrize('uses', ['binarypb.yml'])
-def test_shelf_in_flow(uses):
+def test_shelf_in_flow(uses, mocker):
     m1 = used_memory()
     # shelve does not support embed > 1000??
     # _dbm.error: cannot add item to database
@@ -30,8 +30,11 @@ def test_shelf_in_flow(uses):
         m4 = used_memory()
         print(f'before: {m1}, after index: {m2}, after loading: {m3} after searching {m4}')
 
+    response_mock = mocker.Mock(wraps=validate)
+
     with f:
         m3 = used_memory()
-        f.search([d], output_fn=validate)
+        f.search([d], output_fn=response_mock)
 
     shutil.rmtree('test-workspace', ignore_errors=False, onerror=None)
+    response_mock.assert_called()
