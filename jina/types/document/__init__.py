@@ -410,6 +410,12 @@ class Document:
             else:
                 raise ValueError(f'{value} is not a valid MIME type')
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.update_id()
+
     @property
     def content_type(self) -> str:
         """Return the content type of the document, possible values: text, blob, buffer"""
