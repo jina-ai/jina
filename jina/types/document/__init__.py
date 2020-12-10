@@ -3,7 +3,7 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence
+from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tuple
 
 from google.protobuf import json_format
 
@@ -12,6 +12,7 @@ from .uid import *
 from ..ndarray.generic import NdArray
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
+from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
@@ -452,6 +453,14 @@ class Document:
     @granularity.setter
     def granularity(self, granularity_value: int):
         self._document.granularity = granularity_value
+
+    @property
+    def score(self):
+        return self._document.score
+
+    @score.setter
+    def score(self, score: NamedScore):
+        self._document.score.CopyFrom(score._score)
 
     def convert_buffer_to_blob(self, **kwargs):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,

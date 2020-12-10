@@ -8,6 +8,7 @@ import numpy as np
 from . import BaseExecutableDriver
 from ..executors.rankers import Chunk2DocRanker
 from ..types.document import uid, Document
+from ..types.score import NamedScore
 
 if False:
     from ..types.sets import DocumentSet
@@ -87,8 +88,10 @@ class Chunk2DocRankDriver(BaseRankDriver):
             op_name = exec.__class__.__name__
             for doc_hash, score in docs_scores:
                 m = Document(id=doc_hash)
-                m.score.value = score
-                m.score.op_name = op_name
+                m.score = NamedScore({
+                    'op_name': op_name,
+                    'value': score
+                })
                 context_doc.matches.append(m)
 
 
@@ -166,8 +169,10 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
             op_name = exec.__class__.__name__
             for doc_hash, score in docs_scores:
                 m = Document(id=doc_hash)
-                m.score.value = score
-                m.score.op_name = op_name
+                m.score = NamedScore({
+                    'op_name': op_name,
+                    'value': score
+                })
                 context_doc.matches.append(m)
 
 

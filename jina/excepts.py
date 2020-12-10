@@ -167,6 +167,10 @@ class BadRequestType(TypeError):
     """Exception when can not construct a request object from given data"""
 
 
+class BadNamedScoreType(TypeError):
+    """ Exception when can not construct a named score from the given data """
+
+
 class RemotePodClosed(Exception):
     """ Exception when remote pod is closed and log streaming needs to exit """
 
