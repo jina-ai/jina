@@ -1,11 +1,11 @@
-name: Issue Ref PR
+name: Label PR
 
 on:
   pull_request:
     types: [opened]
 
 jobs:
-  build:
+  ref-issue-to-pr:
     runs-on: ubuntu-latest
     steps:
       - uses: estrada9166/issue-ref@v1

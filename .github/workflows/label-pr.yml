@@ -4,7 +4,7 @@ on:
   - pull_request_target
 
 jobs:
-  label-pr:
+  assign-label-to-pr:
     runs-on: ubuntu-latest
     steps:
       - uses: codelytv/pr-size-labeler@v1
