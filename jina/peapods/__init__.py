@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 from .. import __default_host__
 from ..enums import PeaRoleType, RemoteAccessType
@@ -12,7 +12,8 @@ if False:
     import argparse
 
 
-def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
+def Pea(args: Optional['argparse.Namespace'] = None,
+        allow_remote: bool = True, **kwargs):
     """Initialize a :class:`BasePea`, :class:`RemoteSSHPea` or :class:`ContainerPea`
 
     :param args: arguments from CLI
@@ -47,7 +48,8 @@ def Pea(args: 'argparse.Namespace' = None, allow_remote: bool = True, **kwargs):
         return BasePea(args)
 
 
-def Pod(args: Union['argparse.Namespace', Dict] = None, allow_remote: bool = True, **kwargs):
+def Pod(args: Optional[Union['argparse.Namespace', Dict]] = None,
+        allow_remote: bool = True, **kwargs):
     """Initialize a :class:`BasePod`, :class:`RemoteSSHPod`, :class:`MutablePod` or :class:`RemoteSSHMutablePod`
 
     :param args: arguments from CLI
