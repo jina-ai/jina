@@ -12,24 +12,28 @@ from tests import random_docs
 
 
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_WORKSPACE_BINARY_PB'])
-def test_binarypb_in_flow(test_metas):
+def test_binarypb_in_flow(test_metas, mocker):
     docs = list(random_docs(10))
-    f = Flow(callback_on='body').add(uses='binarypb.yml')
-
-    with f:
-        f.index(docs, override_doc_id=False)
-
     def validate(req):
         assert len(docs) == len(req.docs)
         for d, d0 in zip(req.docs, docs):
             np.testing.assert_almost_equal(NdArray(d.embedding).value,
                                            NdArray(d0.embedding).value)
 
+    f = Flow(callback_on='body').add(uses='binarypb.yml')
+
+    response_mock = mocker.Mock(wrap=validate)
+    with f:
+        f.index(docs, override_doc_id=False)
+
     docs_no_embedding = copy.deepcopy(docs)
     for d in docs_no_embedding:
         d.ClearField('embedding')
+
     with f:
-        f.search(docs_no_embedding, output_fn=validate, override_doc_id=False)
+        f.search(docs_no_embedding, output_fn=response_mock, override_doc_id=False)
+
+    response_mock.assert_called()
 
 
 def test_binarypb_update1(test_metas):

@@ -40,12 +40,16 @@ def test_querylang_request():
     PyClient.check_input(random_docs(10), queryset=qs)
 
 
-def test_read_from_req():
+def test_read_from_req(mocker):
     def validate1(req):
         assert len(req.docs) == 5
 
     def validate2(req):
         assert len(req.docs) == 3
+
+    response_mock = mocker.Mock(wrap=validate1)
+    response_mock_2 = mocker.Mock(wrap=validate2)
+    response_mock_3 = mocker.Mock(wrap=validate1)
 
     qs = QueryLang(SliceQL(start=1, end=4, priority=1))
 
@@ -53,16 +57,21 @@ def test_read_from_req():
 
     # without queryset
     with f:
-        f.index(random_docs(10), output_fn=validate1)
+        f.index(random_docs(10), output_fn=response_mock)
 
+    response_mock.assert_called()
     # with queryset
     with f:
-        f.index(random_docs(10), queryset=qs, output_fn=validate2)
+        f.index(random_docs(10), queryset=qs, output_fn=response_mock_2)
+
+    response_mock_2.assert_called()
 
     qs.priority = -1
     # with queryset, but priority is no larger than driver's default
     with f:
-        f.index(random_docs(10), queryset=qs, output_fn=validate1)
+        f.index(random_docs(10), queryset=qs, output_fn=response_mock_3)
+
+    response_mock_3.assert_called()
 
 
 def test_querlang_driver():

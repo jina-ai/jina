@@ -39,7 +39,7 @@ def test_array2pb():
     np.testing.assert_almost_equal(d.value, e4)
 
 
-def test_concat_embed_driver():
+def test_concat_embed_driver(mocker):
     if 'JINA_ARRAY_QUANT' in os.environ:
         print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
         del os.environ['JINA_ARRAY_QUANT']
@@ -56,10 +56,13 @@ def test_concat_embed_driver():
         #                                np.concatenate([e2, e2], axis=0),
         #                                decimal=4)
 
+    response_mock = mocker.Mock(wrap=validate)
     # simulate two encoders
     flow = (Flow().add(name='a')
             .add(name='b', needs='gateway')
             .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
 
     with flow:
-        flow.index(input_fn=input_fn, output_fn=validate, callback_on='body')
+        flow.index(input_fn=input_fn, output_fn=response_mock, callback_on='body')
+
+    response_mock.assert_called()

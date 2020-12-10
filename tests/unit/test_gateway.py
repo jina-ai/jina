@@ -27,6 +27,7 @@ def test_compression(compress_algo):
     with f:
         f.index(random_docs(10))
 
+
 @pytest.mark.skip('this test hangs up for unknown reason on github, works on local')
 def test_rest_gateway_concurrency():
     def _request(status_codes, durations, index):

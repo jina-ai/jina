@@ -29,6 +29,7 @@ params = ['HANG', 'REMOVE', 'COLLECT']
 
 
 def validate(ids, expect):
+    assert len(ids) > 0
     for j in ids:
         fname = f'tmp{j}.txt'
         assert os.path.exists(fname) == expect

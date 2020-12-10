@@ -125,7 +125,8 @@ class RunTime(metaclass=RuntimeMeta):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             with Pea(self.args) as pea:
-                # TODO: set_ready in different coroutine checking status as it is done for `ContainerPea` (here zmq loop has not started)
+                # TODO: set_ready in different coroutine checking status as it is done for `ContainerPea` (here zmq
+                #  loop has not started)
                 self.set_ready()
                 pea.run()
         finally:
@@ -145,8 +146,8 @@ class RunTime(metaclass=RuntimeMeta):
         else:
             _timeout /= 1e3
 
-        if self.pea.ready_or_shutdown.wait(_timeout):
-            if self.pea.is_shutdown.is_set():
+        if self.ready_or_shutdown.wait(_timeout):
+            if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
                 self.logger.critical(f'fail to start {typename(self)} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
@@ -156,16 +157,14 @@ class RunTime(metaclass=RuntimeMeta):
             raise TimeoutError(
                 f'{typename(self)} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
 
-    def send_terminate_signal(self) -> None:
-        """Gracefully close this pea and release all resources """
-        if self.pea.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            send_ctrl_message(self.ctrl_addr, 'TERMINATE',
-                              timeout=self.args.timeout_ctrl)
-
     @property
     def status(self):
         """Send the control signal ``STATUS`` to itself and return the status """
         return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
+
+    def send_terminate_signal(self):
+        """Send a terminate signal to the Pea supported by this Runtime """
+        return send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
 
     def close(self) -> None:
         self.send_terminate_signal()
