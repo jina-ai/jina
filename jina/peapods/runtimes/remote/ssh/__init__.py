@@ -1,12 +1,13 @@
 from subprocess import Popen, PIPE
 
-from .. import BasePea
-from .... import __ready_msg__, __stop_msg__
-from ....helper import get_non_defaults_args, kwargs2list
-from ....logging import JinaLogger
+from typing import Union, Dict, Optional
+from jina.peapods.runtimes.remote import RemoteRunTime
+from jina import __ready_msg__, __stop_msg__
+from jina.helper import get_non_defaults_args, kwargs2list
+from jina.logging import JinaLogger
 
 
-class RemoteSSHPea(BasePea):
+class RemoteSSHRunTime(RemoteRunTime):
     """Simple SSH based RemoteSSHPea for remote Pea management
 
     .. note::
@@ -20,9 +21,12 @@ class RemoteSSHPea(BasePea):
         method. Lifecycle is handled by :class:`BasePea`.
     """
 
+    def __init__(self, args: Union['Namespace', Dict]):
+        super().__init__(args)
+
     @property
     def remote_command(self) -> str:
-        from ....parser import set_pea_parser
+        from jina.parser import set_pea_parser
         non_defaults = get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
         _args = kwargs2list(non_defaults)
         return f'jina pea {" ".join(_args)}'
@@ -30,7 +34,7 @@ class RemoteSSHPea(BasePea):
     def spawn_remote(self, ssh_proc: 'Popen') -> None:
         ssh_proc.stdin.write(self.remote_command + '\n')
 
-    def loop_body(self):
+    def _monitor_remote(self):
         logger = JinaLogger('🌏', **vars(self.args))
         with Popen(['ssh', self.args.host], stdout=PIPE, stdin=PIPE, bufsize=0, universal_newlines=True) as p:
             self.spawn_remote(p)
@@ -50,13 +54,14 @@ class RemoteSSHPea(BasePea):
         self.is_shutdown.set()
 
 
-class RemoteSSHPod(RemoteSSHPea):
+### TODO: Down here to be removed
+class RemoteSSHPod(RemoteSSHRunTime):
     """SSH based pod to be used while invoking remote Pod
     """
 
     @property
     def remote_command(self) -> str:
-        from ....parser import set_pod_parser
+        from jina.parser import set_pod_parser
         non_defaults = get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
         _args = kwargs2list(non_defaults)
         return f'jina pod {" ".join(_args)}'

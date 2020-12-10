@@ -12,7 +12,6 @@ from jina import __ready_msg__, __stop_msg__
 from jina.helper import typename
 from jina.logging import JinaLogger
 from jina.peapods import Pea
-from .mixins import EventBasedCommunication
 
 __all__ = ['RuntimeMeta', 'LocalRunTime']
 
@@ -86,7 +85,7 @@ class RuntimeMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
-class LocalRunTime(metaclass=RuntimeMeta, EventBasedCommunication):
+class LocalRunTime(metaclass=RuntimeMeta):
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__()
         self.args = args
@@ -180,9 +179,9 @@ class LocalRunTime(metaclass=RuntimeMeta, EventBasedCommunication):
     def close(self) -> None:
         self.send_terminate_signal()
         self.is_shutdown.wait()
+        self.logger.close()
         if not self.daemon:
-            self.logger.close()
-            self.pea.join()
+            self.join()
 
     def __enter__(self):
         return self.start()
