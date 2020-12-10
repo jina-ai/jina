@@ -8,7 +8,7 @@ from .....logging import JinaLogger
 from .....proto import jina_pb2_grpc
 
 
-class AsyncGRPCStub:
+class AsyncGRPCServer:
     def __init__(self, args):
         if not args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
