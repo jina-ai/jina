@@ -18,6 +18,7 @@ class FlowRunner:
         query_document_generator=None,
         index_batch_size=None,
         query_batch_size=None,
+        pod_dir=None,
         env_yaml=None,
         overwrite_workspace=False,
     ):
@@ -26,6 +27,7 @@ class FlowRunner:
         self.query_document_generator = query_document_generator
         self.index_batch_size = index_batch_size
         self.query_batch_size = query_batch_size
+        self.pod_dir = Path(pod_dir)
         self.env_yaml = env_yaml
         self.overwrite_workspace = overwrite_workspace
 
@@ -35,6 +37,35 @@ class FlowRunner:
             shutil.rmtree(workspace)
             logger.warning(colored("Existing workspace deleted", "red"))
             logger.warning(colored("WORKSPACE: " + str(workspace), "red"))
+
+    def _create_trial_pods(self, trial_dir, trial_parameters):
+        if self.pod_workspace.exists():
+            shutil.rmtree(self.pod_workspace)
+        shutil.copytree(self.pod_dir, self.pod_workspace)
+        yaml = YAML(typ="rt")
+        for file_path in self.pod_dir.glob("*.yml"):
+            parameters = yaml.load(file_path)
+            if "components" in parameters:
+                for i, component in enumerate(parameters["components"]):
+                    parameters["components"][i] = Optimizer._replace_param(
+                        component, trial_parameters
+                    )
+            parameters = Optimizer._replace_param(parameters, trial_parameters)
+            new_pod_file_path = self.pod_workspace / file_path.name
+            yaml.dump(parameters, open(new_pod_file_path, "w"))
+
+    def _create_trial_flow(self, flow_yaml, trial_dir):
+        yaml = YAML(typ="rt")
+        parameters = yaml.load(flow_yaml)
+        for pod, val in parameters["pods"].items():
+            for pod_param in parameters["pods"][pod].keys():
+                if pod_param.startswith("uses"):
+                    parameters["pods"][pod][pod_param] = str(
+                        trial_dir / self.pod_dir / Path(val[pod_param]).name
+                    )
+        trial_flow_file_path = self.flow_workspace / flow_yaml.name
+        yaml.dump(parameters, open(trial_flow_file_path, "w"))
+        return trial_flow_file_path
 
     def _load_env(self):
         if self.env_yaml:
@@ -46,9 +77,16 @@ class FlowRunner:
         else:
             logger.info("Cannot load environment variables as no env_yaml passed")
 
-    def run_indexing(self, index_yaml, workspace):
-        self._load_env()
+    def _setup_workspace(self, workspace):
+        workspace.mkdir(exist_ok=True)
+        self.index_workspace = workspace / "index"
+        self.index_workspace.mkdir(exist_ok=True)
+        self.pod_workspace = workspace / "pods"
+        self.flow_workspace = workspace / "flows"
+        self.flow_workspace.mkdir(exist_ok=True)
 
+    def run_indexing(self, index_yaml, trial_parameters, workspace="workspace"):
+        self._load_env()
         if workspace.exists():
             if self.overwrite_workspace:
                 FlowRunner.clean_workdir(workspace)
@@ -65,6 +103,10 @@ class FlowRunner:
                 )
                 return
 
+        self._setup_workspace(workspace)
+        self._create_trial_pods(workspace, trial_parameters)
+        index_yaml = self._create_trial_flow(index_yaml, workspace)
+
         self.index_document_generator, index_document_generator = tee(
             self.index_document_generator
         )
@@ -72,8 +114,15 @@ class FlowRunner:
         with Flow.load_config(index_yaml) as f:
             f.index(index_document_generator, batch_size=self.index_batch_size)
 
-    def run_querying(self, query_yaml, callback):
+    def run_querying(
+        self, query_yaml, trial_parameters, callback, workspace="workspace"
+    ):
         self._load_env()
+
+        self._setup_workspace(workspace)
+        self._create_trial_pods(workspace, trial_parameters)
+        query_yaml = self._create_trial_flow(query_yaml, workspace)
+
         self.query_document_generator, query_document_generator = tee(
             self.query_document_generator
         )
@@ -114,23 +163,19 @@ class Optimizer:
     def __init__(
         self,
         flow_runner,
-        pod_dir,
         index_yaml,
         query_yaml,
         parameter_yaml,
         callback=EvaluationCallback(),
         best_config_filepath="config/best_config.yml",
-        overwrite_trial_workspace=True,
         workspace_env="JINA_WORKSPACE",
     ):
         self.flow_runner = flow_runner
-        self.pod_dir = Path(pod_dir)
         self.index_yaml = Path(index_yaml)
         self.query_yaml = Path(query_yaml)
         self.parameter_yaml = parameter_yaml
         self.callback = callback
         self.best_config_filepath = Path(best_config_filepath)
-        self.overwrite_trial_workspace = overwrite_trial_workspace
         self.workspace_env = workspace_env.lstrip("$")
 
     def _trial_parameter_sampler(self, trial):
@@ -160,49 +205,18 @@ class Optimizer:
                         parameters[section][param] = trial_parameters[val]
         return parameters
 
-    def _create_trial_pods(self, trial_dir, trial_parameters):
-        trial_pod_dir = trial_dir / "pods"
-        shutil.copytree(self.pod_dir, trial_pod_dir)
-        yaml = YAML(typ="rt")
-        for file_path in self.pod_dir.glob("*.yml"):
-            parameters = yaml.load(file_path)
-            if "components" in parameters:
-                for i, component in enumerate(parameters["components"]):
-                    parameters["components"][i] = Optimizer._replace_param(
-                        component, trial_parameters
-                    )
-            parameters = Optimizer._replace_param(parameters, trial_parameters)
-            new_pod_file_path = trial_pod_dir / file_path.name
-            yaml.dump(parameters, open(new_pod_file_path, "w"))
-
-    def _create_trial_flows(self, trial_dir):
-        trial_flow_dir = trial_dir / "flows"
-        trial_flow_dir.mkdir(exist_ok=True)
-        yaml = YAML(typ="rt")
-        for file_path in [self.index_yaml, self.query_yaml]:
-            parameters = yaml.load(file_path)
-            for pod, val in parameters["pods"].items():
-                for pod_param in parameters["pods"][pod].keys():
-                    if pod_param.startswith("uses"):
-                        parameters["pods"][pod][pod_param] = str(
-                            trial_dir / self.pod_dir / Path(val[pod_param]).name
-                        )
-            trial_flow_file_path = trial_flow_dir / file_path.name
-            yaml.dump(parameters, open(trial_flow_file_path, "w"))
-
     def _objective(self, trial):
         trial_parameters = self._trial_parameter_sampler(trial)
-        trial_index_workspace = trial.workspace / "index"
-        trial_index_yaml = trial.workspace / "flows" / self.index_yaml.name
-        trial_query_yaml = trial.workspace / "flows" / self.query_yaml.name
 
-        if self.overwrite_trial_workspace:
-            self.flow_runner.clean_workdir(trial.workspace)
-
-        self._create_trial_pods(trial.workspace, trial_parameters)
-        self._create_trial_flows(trial.workspace)
-        self.flow_runner.run_indexing(trial_index_yaml, trial_index_workspace)
-        self.flow_runner.run_querying(trial_query_yaml, self.callback.process_result)
+        self.flow_runner.run_indexing(
+            self.index_yaml, trial_parameters, trial.workspace
+        )
+        self.flow_runner.run_querying(
+            self.query_yaml,
+            trial_parameters,
+            self.callback.process_result,
+            trial.workspace,
+        )
 
         evaluation_values = self.callback.get_mean_evaluation()
         op_name = list(evaluation_values)[0]
