@@ -20,7 +20,8 @@ query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
 def test_numpy_indexer(batch_size, compress_level, test_metas):
-    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
+                      metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
@@ -41,7 +42,8 @@ def test_numpy_indexer_known(batch_size, compress_level, test_metas):
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
+                      metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
         indexer.save()
@@ -179,5 +181,28 @@ def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
-        assert idx == None
-        assert dist == None
+        assert idx is None
+        assert dist is None
+
+
+@pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
+def test_indexer_one_vector(metric, test_metas):
+    import math
+    add_vec_idx = np.asarray([0])
+    add_vec = np.asarray([[0, 0]])
+    query_vec = np.asarray([[0, 0]])
+    with NumpyIndexer(metric=metric, index_filename='np.test.gz',
+                      metas=test_metas) as indexer:
+        indexer.add(add_vec_idx, add_vec)
+
+        indexer.save()
+        assert Path(indexer.index_abspath).exists()
+        save_abspath = indexer.save_abspath
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, NumpyIndexer)
+        idx, dist = indexer.query(query_vec, top_k=4)
+
+        assert idx.shape == dist.shape
+        assert idx.shape == (1, 1)
+        assert not math.isnan(dist[0])
