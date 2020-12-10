@@ -13,7 +13,7 @@ from docker import DockerClient
 from .. import __version__ as jina_version
 from .checker import *
 from .helper import credentials_file
-from .hubapi import _list, _register_to_mongodb, _list_local
+from .hubapi import _list, _register_to_mongodb, _list_local, _docker_auth
 from ..clients.python import ProgressBar
 from ..enums import BuildTestLevel
 from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
@@ -182,7 +182,12 @@ class HubIO:
                 raise ImageAlreadyExists(f'Image with name {name} already exists. Will NOT overwrite.')
             else:
                 self.logger.debug(f'Image with name {name} does not exist. Pushing now...')
-            self._push_docker_hub(name, readme_path)
+            docker_creds = _docker_auth(logger=self.logger)
+            if docker_creds['docker_username'] and docker_creds['docker_password']:
+                self.logger.info(f'Fetched docker credentials successfully. Pushing now...')
+                self._push_docker_hub(name, readme_path)
+            else:
+                self.logger.error(f'Failed to fetch docker login creds. Aborting push.')
 
             if not build_result:
                 file_path = get_summary_path(name)

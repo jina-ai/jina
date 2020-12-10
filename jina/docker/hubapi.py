@@ -116,6 +116,35 @@ def _list(logger, image_name: str = None, image_kind: str = None,
         return manifests
 
 
+def _docker_auth(logger) -> Optional[Dict[str, str]]:
+    """ Use Hub api to get docker creds
+
+    :return: a dict of specifying username and password
+    """
+    with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
+        hubapi_yml = yaml.load(fp)
+        hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
+
+    request = Request(f'{hubapi_url}')
+    with TimeContext('searching', logger):
+        try:
+            with urlopen(request) as resp:
+                response = json.load(resp)
+        except HTTPError as err:
+            if err.code == 400:
+                logger.warning('no docker credentials found.')
+            elif err.code == 500:
+                logger.error(f'server is down: {err.reason}')
+            else:
+                logger.error(f'unknown error: {err.reason}')
+            return
+
+        docker_creds = response['body']
+        docker_username = docker_creds['docker_username']
+        logger.info(f'Successfully fetched docker creds for user {docker_username}')
+        return docker_creds
+
+
 def _make_hub_table_with_local(manifests, local_manifests):
     info_table = [f'found {len(manifests)} matched hub images',
                   '{:<50s}{:<20s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
