@@ -1,0 +1,14 @@
+!MyEvaluator
+with:
+  eval_at: 1
+metas:
+  name: evaluation
+  py_modules: evaluate.py
+requests:
+  on:
+    [ SearchRequest ]:
+      - !RankEvaluateDriver
+        with:
+          field: tags__label_id
+          executor: precision
+          traversal_paths: [ 'r' ]
