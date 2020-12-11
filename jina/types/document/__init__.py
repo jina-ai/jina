@@ -186,7 +186,7 @@ class Document:
         pass
 
     @content_hash.setter
-    def content_hash(self, value: Union[bytes, str, int]):  # TODO
+    def content_hash(self):  # TODO
         pass
 
     @property

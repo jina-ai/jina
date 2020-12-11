@@ -40,9 +40,6 @@ def new_doc_hash(doc: 'DocumentProto') -> int:
 def get_document_hash(doc: 'DocumentProto') -> str:
     """ Generate a new hexdigest based on the content of the document.
 
-    .. note::
-        Always use it AFTER you fill in the content of the document
-
     :param doc: a non-empty document
     :return: the hexdigest based on :meth:`blake2b`
     """
