@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+#    paths-ignore:
+#      - 'README.md'
+#      - '.all-contributorsrc'
+#      - 'docs/*'
+
+jobs:
+  latency-tracking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Test docker install
+        run: |
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/latency-tracking
+          path: latency
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Run current latency vs. last 3 versions
+        run: |
+          sudo apt-get install jq
+          cd latency
+          docker build --build-arg JINA_VER=master . -t latency-tracking
+          docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
+          bash batch.sh 3
+          pip install prettytable
+          python ppstat.py > comment.txt
+      - id: get-comment-body
+        run: |
+          body=$(cat latency/comment.txt)
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}"
+          echo ::set-output name=body::$body
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Backed by [latency-tracking]'
+
+      - name: Create comment
+        if: ${{ steps.fc.outputs.comment-id == 0 }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+          reaction-type: "eyes"
+
+      - name: Update comment
+        if: ${{ steps.fc.outputs.comment-id != 0 }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+          reaction-type: "rocket"
+      - name: Upload latency result
+        uses: actions/upload-artifact@v2
+        with:
+          name: stats.json.zip
+          path: latency/output/stats.json
