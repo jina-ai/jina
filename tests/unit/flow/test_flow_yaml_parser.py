@@ -26,14 +26,10 @@ def test_load_legacy_and_v1():
 
 def test_add_needs_inspect(tmpdir):
     f1 = (Flow().add(name='pod0', needs='gateway').add(name='pod1', needs='gateway').inspect().needs(['pod0', 'pod1']))
-    f1.plot(str(Path(tmpdir) / 'from_python.jpg'))
     with f1:
         f1.index_ndarray(np.random.random([5, 5]), output_fn=print)
 
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
-    f2.plot(str(Path(tmpdir) / 'from_yaml.jpg'))
-    assert filecmp.cmp(Path(tmpdir) / 'from_python.jpg',
-                       Path(tmpdir) / 'from_yaml.jpg')
 
     with f2:
         f2.index_ndarray(np.random.random([5, 5]), output_fn=print)
