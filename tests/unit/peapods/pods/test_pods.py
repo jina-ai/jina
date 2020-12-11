@@ -16,31 +16,31 @@ def test_pod_context(runtime):
     BasePod(args).start().close()
 
 
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_gateway_pod(runtime):
-    args = set_gateway_parser().parse_args(['--runtime', runtime])
-    with GatewayPod(args):
-        pass
-
-    GatewayPod(args).start().close()
-
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_gateway_pod(runtime):
-    with GatewayFlowPod({'runtime': runtime}):
-        pass
-
-    GatewayFlowPod({'runtime': runtime}).start().close()
+# @pytest.mark.parametrize('runtime', ['process', 'thread'])
+# def test_gateway_pod(runtime):
+#     args = set_gateway_parser().parse_args(['--runtime', runtime])
+#     with GatewayPod(args):
+#         pass
+#
+#     GatewayPod(args).start().close()
 
 
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_mutable_pod(runtime):
-    args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
+# @pytest.mark.parametrize('runtime', ['process', 'thread'])
+# def test_gateway_pod(runtime):
+#     with GatewayFlowPod({'runtime': runtime}):
+#         pass
+#
+#     GatewayFlowPod({'runtime': runtime}).start().close()
 
-    with MutablePod(BasePod(args).peas_args):
-        pass
 
-    MutablePod(BasePod(args).peas_args).start().close()
+# @pytest.mark.parametrize('runtime', ['process', 'thread'])
+# def test_mutable_pod(runtime):
+#     args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
+#
+#     with MutablePod(BasePod(args).peas_args):
+#         pass
+#
+#     MutablePod(BasePod(args).peas_args).start().close()
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])

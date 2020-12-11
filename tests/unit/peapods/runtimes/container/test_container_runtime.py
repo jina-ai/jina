@@ -8,7 +8,7 @@ from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
 from jina.parser import set_pea_parser, set_ping_parser
-from jina.peapods.peas.container import ContainerPea
+from jina.peapods.runtimes.container import ContainerRunTime
 from jina.peapods.peas import BasePea
 from tests import random_docs
 
@@ -35,11 +35,11 @@ def docker_image_built():
 def test_simple_container(docker_image_built):
     args = set_pea_parser().parse_args(['--uses', img_name])
 
-    with ContainerPea(args):
+    with ContainerRunTime(args):
         pass
 
     time.sleep(2)
-    ContainerPea(args).start().close()
+    ContainerRunTime(args).start().close()
 
 
 def test_simple_container_with_ext_yaml(docker_image_built):
@@ -47,7 +47,7 @@ def test_simple_container_with_ext_yaml(docker_image_built):
                                         '--uses-internal',
                                         str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml')])
 
-    with ContainerPea(args):
+    with ContainerRunTime(args):
         time.sleep(2)
 
 
@@ -167,8 +167,8 @@ def test_container_status():
     args = set_pea_parser().parse_args(['--uses', img_name,
                                         '--uses-internal',
                                         str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml')])
-    pea = ContainerPea(args)
-    assert not pea.is_ready
-    with pea:
+    runtime = ContainerRunTime(args)
+    assert not runtime.is_ready
+    with runtime:
         time.sleep(2.)
-        assert pea.is_ready
+        assert runtime.is_ready

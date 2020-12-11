@@ -245,7 +245,7 @@ class BasePod(ExitStack):
 
     @property
     def is_shutdown(self) -> bool:
-        return all(not p.is_ready_event.is_set() for p in self.peas)
+        return all(not runtime.is_ready_event.is_set() for runtime in self.runtimes)
 
     def __enter__(self) -> 'BasePod':
         return self.start()

@@ -285,7 +285,7 @@ class BasePea(ExitStack):
             # - self.zmqlet.send_message
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
-            self.logger.info(f'request loop ended, tearing down ...', exc_info=True)
+            self.logger.info(f'request loop ended, tearing down ...')
             self._teardown()
 
     def check_memory_watermark(self):
