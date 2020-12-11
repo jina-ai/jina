@@ -8,8 +8,9 @@ __all__ = ['RemoteRunTime']
 
 class RemoteRunTime(RunTime):
 
-    def __init__(self, args: Union['Namespace', Dict]):
+    def __init__(self, args: Union['Namespace', Dict], kind: str):
         super().__init__(args)
+        self.kind = kind
 
     def _monitor_remote(self):
         raise NotImplementedError

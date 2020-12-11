@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE
 
-from typing import Union, Dict, Optional
+from typing import Union, Dict
 from jina.peapods.runtimes.remote import RemoteRunTime
 from jina import __ready_msg__, __stop_msg__
 from jina.helper import get_non_defaults_args, kwargs2list
@@ -21,15 +21,31 @@ class RemoteSSHRunTime(RemoteRunTime):
         method. Lifecycle is handled by :class:`BasePea`.
     """
 
-    def __init__(self, args: Union['Namespace', Dict]):
-        super().__init__(args)
+    def __init__(self, args: Union['Namespace', Dict], kind: str):
+        super().__init__(args, kind=kind)
 
     @property
-    def remote_command(self) -> str:
+    def pea_command(self) -> str:
         from jina.parser import set_pea_parser
         non_defaults = get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
         _args = kwargs2list(non_defaults)
         return f'jina pea {" ".join(_args)}'
+
+    @property
+    def pod_command(self) -> str:
+        from jina.parser import set_pod_parser
+        non_defaults = get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
+        _args = kwargs2list(non_defaults)
+        return f'jina pod {" ".join(_args)}'
+
+    @property
+    def remote_command(self) -> str:
+        if self.kind == 'pea':
+            return self.pea_command
+        elif self.kind == 'pod':
+            return self.pod_command
+        else:
+            raise ValueError(f'kind must be pea/pod but it is {self.kind}')
 
     def spawn_remote(self, ssh_proc: 'Popen') -> None:
         ssh_proc.stdin.write(self.remote_command + '\n')
@@ -52,26 +68,3 @@ class RemoteSSHRunTime(RemoteRunTime):
             p.stdin.close()
             p.stdout.close()
         self.is_shutdown.set()
-
-
-### TODO: Down here to be removed
-class RemoteSSHPod(RemoteSSHRunTime):
-    """SSH based pod to be used while invoking remote Pod
-    """
-
-    @property
-    def remote_command(self) -> str:
-        from jina.parser import set_pod_parser
-        non_defaults = get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
-        _args = kwargs2list(non_defaults)
-        return f'jina pod {" ".join(_args)}'
-
-
-class RemoteSSHMutablePod(RemoteSSHPod):
-    """
-    SSH based mutable pod, internally it has to maintain the context of multiple separated peas.
-    Subprocess-based simple ssh session is probably no good for that, but simple ssh remotepod is
-    """
-
-    def spawn_remote(self, ssh_proc: 'Popen') -> None:
-        raise NotImplementedError
