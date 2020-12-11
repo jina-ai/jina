@@ -1,10 +1,10 @@
 import pytest
 
 from jina.parser import set_gateway_parser, set_pea_parser
-from jina.peapods.pod import GatewayPod
+from jina.peapods.pods.gateway import GatewayPod
 
 if False:
-    from jina.peapods.remote import PeaSpawnHelper
+    from jina.peapods.peas.remote import PeaSpawnHelper
 
 
 @pytest.mark.skip

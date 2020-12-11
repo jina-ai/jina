@@ -5,6 +5,8 @@ from jina.flow import Flow
 
 num_docs = 100
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def input_fn(pattern='../../**/*.png'):
     idx = 0
@@ -14,7 +16,7 @@ def input_fn(pattern='../../**/*.png'):
             idx += 1
 
 
-def input_fn2(pattern='../*.*'):
+def input_fn2(pattern=os.path.join(cur_dir, '../*.*')):
     for g in glob.glob(pattern, recursive=True)[:num_docs]:
         yield g
 
@@ -28,48 +30,62 @@ def input_fn3():
         yield g
 
 
-def test_dummy_seg():
+def test_dummy_seg(mocker):
+    response_mock = mocker.Mock()
     f = Flow().add(uses='- !Buffer2URI | {mimetype: png}')
     with f:
-        f.index(input_fn=input_fn)
+        f.index(input_fn=input_fn, output_fn=response_mock)
 
+    response_mock.assert_called()
+    response_mock_2 = mocker.Mock()
     f = Flow().add(uses='- !Buffer2URI | {mimetype: png, base64: true}')
     with f:
-        f.index(input_fn=input_fn)
+        f.index(input_fn=input_fn, output_fn=response_mock_2)
+    response_mock_2.assert_called()
 
 
-def test_any_file():
+def test_any_file(mocker):
+    response_mock = mocker.Mock()
     f = Flow().add(uses='- !URI2DataURI | {base64: true}')
     with f:
-        f.index(input_fn=input_fn2)
+        f.index(input_fn=input_fn2, output_fn=response_mock)
+    response_mock.assert_called()
 
 
-def test_aba():
+def test_aba(mocker):
+    response_mock = mocker.Mock()
     f = (Flow().add(uses='- !Buffer2URI | {mimetype: png}')
          .add(uses='- !URI2Buffer {}')
          .add(uses='- !Buffer2URI | {mimetype: png}'))
 
     with f:
-        f.index(input_fn=input_fn)
+        f.index(input_fn=input_fn, output_fn=response_mock)
+    response_mock.assert_called()
 
 
-def test_pathURI2Buffer():
+def test_pathURI2Buffer(mocker):
+    response_mock = mocker.Mock()
     f = (Flow().add(uses='- !URI2Buffer {}')
          .add(uses='- !Buffer2URI {}'))
 
     with f:
-        f.index(input_fn=input_fn3)
+        f.index(input_fn=input_fn3, output_fn=response_mock)
+    response_mock.assert_called()
 
 
-def test_text2datauri():
+def test_text2datauri(mocker):
+    response_mock = mocker.Mock()
     f = (Flow().add(uses='- !Text2URI {}'))
 
     with f:
-        f.index_lines(lines=['abc', '123', 'hello, world'])
+        f.index_lines(lines=['abc', '123', 'hello, world'], output_fn=response_mock)
+    response_mock.assert_called()
 
 
-def test_gateway_dataui():
+def test_gateway_dataui(mocker):
+    response_mock = mocker.Mock()
     f = (Flow().add())
 
     with f:
-        f.index_lines(lines=['abc', '123', 'hello, world'])
+        f.index_lines(lines=['abc', '123', 'hello, world'], output_fn=response_mock)
+    response_mock.assert_called()

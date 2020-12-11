@@ -1,5 +1,5 @@
-import os
 import time
+from pathlib import Path
 from sys import platform
 
 import pytest
@@ -8,15 +8,11 @@ from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
 from jina.parser import set_pea_parser, set_ping_parser
-from jina.peapods.container import ContainerPea
-from jina.peapods.pea import BasePea
-from jina.proto import jina_pb2
-from jina.types.document import uid
-from jina.types.ndarray.generic import NdArray
-
+from jina.peapods.peas.container import ContainerPea
+from jina.peapods.peas import BasePea
 from tests import random_docs
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+cur_dir = Path(__file__).parent
 
 img_name = 'jina/mwu-encoder'
 
@@ -28,7 +24,7 @@ localhost = defaulthost if (platform == "linux" or platform == "linux2") else 'h
 def docker_image_built():
     import docker
     client = docker.from_env()
-    client.images.build(path=os.path.join(cur_dir, '../mwu-encoder/'), tag=img_name)
+    client.images.build(path=str(cur_dir.parent / 'mwu-encoder'), tag=img_name)
     client.close()
     yield
     time.sleep(2)
@@ -49,7 +45,7 @@ def test_simple_container(docker_image_built):
 def test_simple_container_with_ext_yaml(docker_image_built):
     args = set_pea_parser().parse_args(['--uses', img_name,
                                         '--uses-internal',
-                                        os.path.join(cur_dir, '../mwu-encoder/mwu_encoder_ext.yml')])
+                                        str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml')])
 
     with ContainerPea(args):
         time.sleep(2)
@@ -66,7 +62,7 @@ def test_flow_with_one_container_pod(docker_image_built):
 def test_flow_with_one_container_ext_yaml(docker_image_built):
     f = (Flow()
          .add(name='dummyEncoder2', uses=img_name,
-              uses_internal=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder_ext.yml')))
+              uses_internal=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml')))
 
     with f:
         f.index(input_fn=random_docs(10))
@@ -76,7 +72,7 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
     f = (Flow()
          .add(name='dummyEncoder3',
               uses=img_name,
-              uses_internal=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder_ext.yml'),
+              uses_internal=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml'),
               parallel=3))
 
     with f:
@@ -123,17 +119,18 @@ def test_flow_topo_parallel(docker_image_built):
 
 
 def test_container_volume(docker_image_built, tmpdir):
-    abc_path = os.path.join(tmpdir, 'abc')
+    tmpdir = Path(tmpdir)
+    abc_path = tmpdir / 'abc'
     f = (Flow()
-         .add(name=random_name(), uses=img_name, volumes=abc_path,
-              uses_internal=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder_upd.yml')))
+         .add(name=random_name(), uses=img_name, volumes=str(abc_path),
+              uses_internal=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder_upd.yml')))
 
     with f:
         f.index(random_docs(10))
 
-    out_file = os.path.join(abc_path, 'ext-mwu-encoder.bin')
+    out_file = abc_path / 'ext-mwu-encoder.bin'
 
-    assert os.path.exists(out_file)
+    assert out_file.exists()
 
 
 def test_container_ping(docker_image_built):
@@ -169,7 +166,7 @@ def test_tail_host_docker2local(docker_image_built):
 def test_container_status():
     args = set_pea_parser().parse_args(['--uses', img_name,
                                         '--uses-internal',
-                                        os.path.join(cur_dir, '../mwu-encoder/mwu_encoder_ext.yml')])
+                                        str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml')])
     pea = ContainerPea(args)
     assert not pea.is_ready
     with pea:

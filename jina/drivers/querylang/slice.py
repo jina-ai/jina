@@ -6,7 +6,7 @@ import sys
 from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
-    from ...types.document import DocumentSet
+    from ...types.sets.document import DocumentSet
 
 
 class SliceQL(QuerySetReader, BaseRecursiveDriver):

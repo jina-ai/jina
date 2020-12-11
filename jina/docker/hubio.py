@@ -10,13 +10,13 @@ from typing import Dict, Any
 
 from docker import DockerClient
 
-from jina import __version__ as jina_version
+from .. import __version__ as jina_version
 from .checker import *
 from .helper import credentials_file
 from .hubapi import _list, _register_to_mongodb, _list_local
 from ..clients.python import ProgressBar
 from ..enums import BuildTestLevel
-from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError
+from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
 from ..executors import BaseExecutor
 from ..flow import Flow
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
@@ -32,7 +32,7 @@ if False:
 
 _allowed = {'name', 'description', 'author', 'url',
             'documentation', 'version', 'vendor', 'license', 'avatar',
-            'platform', 'update', 'keywords'}
+            'jina_version', 'platform', 'update', 'keywords'}
 
 _label_prefix = 'ai.jina.hub.'
 
@@ -171,16 +171,15 @@ class HubIO:
         - Writes to the db
         """
         name = name or self.args.name
-
         try:
             # check if image exists
             # fail if it does
-            if self._image_version_exists(
+            if self.args.no_overwrite and self._image_version_exists(
                     build_result['manifest_info']['name'],
                     build_result['manifest_info']['version'],
                     jina_version
             ):
-                raise Exception(f'Image with name {name} already exists. Will NOT overwrite.')
+                raise ImageAlreadyExists(f'Image with name {name} already exists. Will NOT overwrite.')
             else:
                 self.logger.debug(f'Image with name {name} does not exist. Pushing now...')
             self._push_docker_hub(name, readme_path)
@@ -200,9 +199,10 @@ class HubIO:
                     _register_to_mongodb(logger=self.logger, summary=build_result)
                 if build_result.get('details', None) and build_result.get('build_history', None):
                     self._write_slack_message(build_result, build_result['details'], build_result['build_history'])
-
-        except Exception as ex:
-            self.logger.error(f'can not complete the push due to {repr(ex)}')
+        except Exception as e:
+            self.logger.error(f'Error when trying to push image {name}: {repr(e)}')
+            if isinstance(e, ImageAlreadyExists):
+                raise e
 
     def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
         """ Helper push function """
@@ -265,7 +265,7 @@ class HubIO:
             if f'{_label_prefix}{r}' not in image.labels.keys():
                 self.logger.warning(f'{r} is missing in your docker image labels, you may want to check it')
         try:
-            image.labels['jina_version'] = jina_version
+            image.labels['ai.jina.hub.jina_version'] = jina_version
             if name != safe_url_name(
                     f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
                         **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})):
@@ -357,8 +357,15 @@ class HubIO:
                     p_names = []
                     try:
                         is_build_success = False
-                        p_names = self._test_build(image)
-                        is_build_success = True
+                        p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
+                                                                        self.config_yaml_path, self.args.daemon)
+                        if any(test_level in failed_test_levels for test_level in [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
+                            is_build_success = False
+                            self.logger.error(f'build unsuccessful, failed at {str(failed_test_levels)} level')
+                        else:
+                            is_build_success = True
+                            self.logger.warning(
+                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be do to the fact that executor has non-installed external dependencies')
                     except Exception as ex:
                         self.logger.error(f'something wrong while testing the build: {repr(ex)}')
                         ex = HubBuilderTestError(ex)
@@ -417,34 +424,49 @@ class HubIO:
 
         return result
 
-    def _test_build(self, image):
+    @staticmethod
+    def _test_build(image, test_level, config_yaml_path, daemon_arg):
+        p_names = []
+        failed_levels = []
+
         # test uses at executor level
-        if self.args.test_level >= BuildTestLevel.EXECUTOR:
-            with BaseExecutor.load_config(self.config_yaml_path):
-                pass
+        if test_level >= BuildTestLevel.EXECUTOR:
+            try:
+                with BaseExecutor.load_config(config_yaml_path):
+                    pass
+            except:
+                failed_levels.append(BuildTestLevel.EXECUTOR)
 
         # test uses at Pod level (no docker)
-        if self.args.test_level >= BuildTestLevel.POD_NONDOCKER:
-            with Pod(set_pod_parser().parse_args(['--uses', self.config_yaml_path])):
-                pass
+        if test_level >= BuildTestLevel.POD_NONDOCKER:
+            try:
+                with Pod(set_pod_parser().parse_args(['--uses', config_yaml_path])):
+                    pass
+            except:
+                failed_levels.append(BuildTestLevel.POD_NONDOCKER)
 
-        p_names = []
         # test uses at Pod level (with docker)
-        if self.args.test_level >= BuildTestLevel.POD_DOCKER:
+        if test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
-            with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name] +
-                                                 ['--daemon'] if self.args.daemon else [])):
-                pass
-            p_names.append(p_name)
+            try:
+                with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name] +
+                                                     ['--daemon'] if daemon_arg else [])):
+                    pass
+                p_names.append(p_name)
+            except:
+                failed_levels.append(BuildTestLevel.POD_DOCKER)
 
         # test uses at Flow level
-        if self.args.test_level >= BuildTestLevel.FLOW:
+        if test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
-            with Flow().add(name=random_name(), uses=image.tags[0], daemon=self.args.daemon):
-                pass
-            p_names.append(p_name)
+            try:
+                with Flow().add(name=random_name(), uses=image.tags[0], daemon=daemon_arg):
+                    pass
+                p_names.append(p_name)
+            except:
+                failed_levels.append(BuildTestLevel.FLOW)
 
-        return p_names
+        return p_names, failed_levels
 
     def dry_run(self) -> Dict:
         try:
@@ -501,6 +523,7 @@ class HubIO:
             raise FileNotFoundError('Dockerfile or manifest.yml is not given, can not build')
 
         self.manifest = self._read_manifest(self.manifest_path)
+        self.manifest['jina_version'] = jina_version
         self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
         tag_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}:{self.manifest["version"]}-{jina_version}')
@@ -606,8 +629,8 @@ class HubIO:
             matching = [
                 m for m in manifests
                 if m['version'] == module_version
-                and 'jina_version' in m.keys()
-                and m['jina_version'] == req_jina_version
+                   and 'jina_version' in m.keys()
+                   and m['jina_version'] == req_jina_version
             ]
             return len(matching) > 0
-        return True
+        return False

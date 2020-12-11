@@ -1,5 +1,6 @@
 import os
 import pytest
+from pathlib import Path
 
 from pkg_resources import resource_filename
 
@@ -7,9 +8,9 @@ from jina.executors import BaseExecutor
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import yaml, expand_dict
 from jina.parser import set_pea_parser
-from jina.peapods.pea import BasePea
+from jina.peapods.peas import BasePea
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+cur_dir = Path(__file__).parent
 
 @pytest.fixture(scope='function')
 def test_workspace(tmpdir):
@@ -19,7 +20,7 @@ def test_workspace(tmpdir):
     del os.environ['JINA_TEST_JOINT']
 
 def test_yaml_expand():
-    with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
+    with open(cur_dir / 'yaml/test-expand.yml') as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
     assert b['quote_dict'] == {}
@@ -33,7 +34,7 @@ def test_yaml_expand():
 
 
 def test_yaml_expand2():
-    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
+    with open(cur_dir / 'yaml/test-expand2.yml') as fp:
         a = yaml.load(fp)
     os.environ['ENV1'] = 'a'
     b = expand_dict(a)
@@ -46,7 +47,7 @@ def test_yaml_expand2():
 
 
 def test_yaml_expand3():
-    with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
+    with open(cur_dir / 'yaml/test-expand3.yml') as fp:
         a = yaml.load(fp)
     b = expand_dict(a)
     assert b['pea_workspace'] != '{root.workspace}/{root.name}-{this.pea_id}'
@@ -64,7 +65,7 @@ def test_attr_dict():
 
 
 def test_yaml_fill():
-    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
+    with open(cur_dir / 'yaml/test-expand2.yml') as fp:
         a = yaml.load(fp)
     print(fill_metas_with_defaults(a))
 
@@ -95,7 +96,7 @@ def test_class_yaml():
 
 
 def test_joint_indexer(test_workspace):
-    b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
+    b = BaseExecutor.load_config(str(cur_dir / 'yaml/test-joint.yml'))
     b.attach(pea=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]

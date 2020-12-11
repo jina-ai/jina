@@ -37,7 +37,7 @@ __license__ = "Apache-2.0"
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '0.8.3'
+__version__ = '0.8.4'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -149,6 +149,7 @@ from jina.types.request import Request
 from jina.types.message import Message
 from jina.types.querylang import QueryLang
 from jina.types.document import Document
+from jina.types.document.multimodal import MultimodalDocument
 from jina.types.sets import DocumentSet, QueryLangSet
 
 # Flow

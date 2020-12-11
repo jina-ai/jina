@@ -19,7 +19,7 @@ def random_workspace(tmpdir):
     del os.environ['JINA_TEST_QUERYSET_WORKSPACE']
 
 
-def test_queryset_with_struct(random_workspace):
+def test_queryset_with_struct(random_workspace, mocker):
     total_docs = 4
     docs = []
     for doc_id in range(total_docs):
@@ -38,9 +38,14 @@ def test_queryset_with_struct(random_workspace):
     def validate_label2_docs(resp):
         assert len(resp.docs) == total_docs / 2
 
+    response_mock_all_docs = mocker.Mock(wraps=validate_all_docs)
+    response_mock_label2_docs = mocker.Mock(wraps=validate_label2_docs)
     with f:
         # keep all the docs
-        f.index(docs, output_fn=validate_all_docs, callback_on='body')
+        f.index(docs, output_fn=response_mock_all_docs, callback_on='body')
         # keep only the docs with label2
         qs = QueryLang(FilterQL(priority=1, lookups={'tags__label': 'label2'}, traversal_paths=['r']))
-        f.index(docs, queryset=qs, output_fn=validate_label2_docs, callback_on='body')
+        f.index(docs, queryset=qs, output_fn=response_mock_label2_docs, callback_on='body')
+
+    response_mock_all_docs.assert_called()
+    response_mock_label2_docs.assert_called()

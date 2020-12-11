@@ -10,8 +10,8 @@ from google.protobuf import json_format
 from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
-from ..sets.chunk_set import ChunkSet
-from ..sets.match_set import MatchSet
+from ..sets.chunk import ChunkSet
+from ..sets.match import MatchSet
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
@@ -123,12 +123,17 @@ class Document:
                     except RuntimeWarning as ex:
                         raise BadDocType(f'fail to construct a document from {document}') from ex
             elif isinstance(document, Document):
-                self._document = document.as_pb_object
+                if copy:
+                    self._document.CopyFrom(document.as_pb_object)
+                else:
+                    self._document = document.as_pb_object
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
         except Exception as ex:
-            raise BadDocType(f'fail to construct a document from {document}') from ex
+            raise BadDocType(f'fail to construct a document from {document}, '
+                             f'if you are trying to set the content '
+                             f'you may use "Document(content=your_content)"') from ex
 
         self.set_attrs(**kwargs)
 
@@ -290,8 +295,12 @@ class Document:
                 self._document.ClearField(k)
                 getattr(self._document, k).update(v)
             else:
-                if hasattr(self, k):
+                if hasattr(Document, k) and isinstance(getattr(Document, k), property) and getattr(Document, k).fset:
+                    # if class property has a setter
                     setattr(self, k, v)
+                elif hasattr(self._document, k):
+                    # no property setter, but proto has this attribute so fallback to proto
+                    setattr(self._document, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
 

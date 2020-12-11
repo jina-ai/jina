@@ -520,6 +520,14 @@ def use_uvloop():
             asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
+def configure_event_loop():
+    # This should be set in loop_body of every process that needs an event loop as the 1st step
+    # This helps getting rid of `event loop already running` error while executing `run_until_complete`
+    use_uvloop()
+    import asyncio
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+
 def typename(obj):
     if not isinstance(obj, type):
         obj = obj.__class__
@@ -649,3 +657,19 @@ def convert_tuple_to_list(d: Dict):
             d[k] = list(v)
         elif isinstance(v, dict):
             convert_tuple_to_list(v)
+
+
+def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
+    """ helper function to convert argparse.Namespace to json to be uploaded via REST """
+    if isinstance(args, Namespace):
+        return vars(args)
+    elif isinstance(args, dict):
+        pea_args = {}
+        for k, v in args.items():
+            if isinstance(v, Namespace):
+                pea_args[k] = vars(v)
+            elif isinstance(v, list):
+                pea_args[k] = [vars(_) for _ in v]
+            else:
+                pea_args[k] = v
+        return pea_args

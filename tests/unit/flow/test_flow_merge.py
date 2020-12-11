@@ -1,4 +1,3 @@
-import os
 import random
 
 import pytest
@@ -6,8 +5,6 @@ import pytest
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from tests import random_docs
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class DummySegment(BaseSegmenter):
@@ -26,31 +23,40 @@ def validate(req):
 
 
 @pytest.mark.skip('this should fail as explained in https://github.com/jina-ai/jina/pull/730')
-def test_this_will_fail():
+def test_this_will_fail(mocker):
     f = (Flow().add(name='a11', uses='DummySegment')
          .add(name='a12', uses='DummySegment', needs='gateway')
-         .add(name='r1', uses='_merge_all', needs=['a11', 'a12'])
+         .add(name='r1', uses='_merge_chunks', needs=['a11', 'a12'])
          .add(name='a21', uses='DummySegment', needs='gateway')
          .add(name='a22', uses='DummySegment', needs='gateway')
-         .add(name='r2', uses='_merge_all', needs=['a21', 'a22'])
-         .add(uses='_merge_all', needs=['r1', 'r2']))
+         .add(name='r2', uses='_merge_chunks', needs=['a21', 'a22'])
+         .add(uses='_merge_chunks', needs=['r1', 'r2']))
+
+    response_mock = mocker.Mock(wrap=validate)
 
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+
+    response_mock.assert_called()
 
 
 @pytest.mark.timeout(180)
-def test_this_should_work():
+def test_this_should_work(mocker):
     f = (Flow()
          .add(name='a1')
          .add(name='a11', uses='DummySegment', needs='a1')
          .add(name='a12', uses='DummySegment', needs='a1')
-         .add(name='r1', uses='_merge_all', needs=['a11', 'a12'])
+         .add(name='r1', uses='_merge_chunks', needs=['a11', 'a12'])
          .add(name='a2', needs='gateway')
          .add(name='a21', uses='DummySegment', needs='a2')
          .add(name='a22', uses='DummySegment', needs='a2')
-         .add(name='r2', uses='_merge_all', needs=['a21', 'a22'])
-         .add(uses='_merge_all', needs=['r1', 'r2']))
+         .add(name='r2', uses='_merge_chunks', needs=['a21', 'a22'])
+         .add(uses='_merge_chunks', needs=['r1', 'r2']))
+
+    response_mock = mocker.Mock(wrap=validate)
 
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=validate)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+
+    response_mock.assert_called()
+

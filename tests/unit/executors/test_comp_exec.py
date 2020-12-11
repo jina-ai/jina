@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pytest
 
@@ -6,7 +6,7 @@ from jina.executors import BaseExecutor
 from jina.executors.compound import CompoundExecutor
 from tests import rm_files
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+cur_dir = Path(__file__).parent
 
 
 class DummyA(BaseExecutor):
@@ -37,7 +37,7 @@ def test_compositional_route(monkeypatch):
     b.add_route('say', db.name, 'say')
     assert b.say() == 'b'
     b.save_config()
-    assert os.path.exists(b.config_abspath)
+    assert Path(b.config_abspath).exists()
 
     c = BaseExecutor.load_config(b.config_abspath)
     assert c.say_all() == ['a', 'b']
@@ -51,7 +51,7 @@ def test_compositional_route(monkeypatch):
 
     b.touch()
     b.save()
-    assert os.path.exists(b.save_abspath)
+    assert Path(b.save_abspath).exists()
 
     d = BaseExecutor.load(b.save_abspath)
     assert d.say_all() == ['a', 'b']
@@ -67,13 +67,13 @@ def test_compositional_dump():
     a.touch()
     a.save()
     a.save_config()
-    assert os.path.exists(a.save_abspath)
-    assert os.path.exists(a.config_abspath)
+    assert Path(a.save_abspath).exists()
+    assert Path(a.config_abspath).exists()
     rm_files([a.save_abspath, a.config_abspath])
 
 
 def test_compound_from_yaml():
-    a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/npvec.yml'))
+    a = BaseExecutor.load_config(str(cur_dir / 'yaml/npvec.yml'))
     assert isinstance(a, CompoundExecutor)
     assert callable(getattr(a, 'add'))
     assert callable(getattr(a, 'query'))

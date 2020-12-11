@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -16,16 +16,16 @@ num_query = 10
 vec_idx = np.random.randint(0, high=num_data, size=[num_data])
 vec = np.random.random([num_data, num_dim])
 query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
 def test_numpy_indexer(batch_size, compress_level, test_metas):
-    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
+                      metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -42,11 +42,12 @@ def test_numpy_indexer_known(batch_size, compress_level, test_metas):
                         [100, 100, 100],
                         [1000, 1000, 1000]])
     keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
-    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level, metas=test_metas) as indexer:
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
+                      metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
@@ -69,7 +70,7 @@ def test_scipy_indexer(batch_size, compress_level, test_metas):
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -100,7 +101,7 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
                       metas=test_metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -134,7 +135,7 @@ def test_scipy_indexer_known_big(batch_size, compress_level, test_metas):
                       metas=test_metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -164,21 +165,65 @@ def test__get_sorted_top_k(batch_size, num_docs, top_k):
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
 def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
-    np.random.seed(500)
-    num_dim = 64
-    num_query = 10
-    query = np.array(np.random.random([num_query, num_dim]), dtype=np.float32)
-
-    idx_file_path = os.path.join(test_metas['workspace'], 'np.test.gz')
-    with NumpyIndexer(index_filename=idx_file_path, compress_level=compress_level, metas=test_metas) as indexer:
+    idx_file_path = Path(test_metas['workspace']) / 'np.test.gz'
+    with NumpyIndexer(index_filename=str(idx_file_path), compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.touch()
         indexer.save()
-        assert os.path.exists(indexer.index_abspath)
+        assert Path(indexer.index_abspath).exists()
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
-        assert idx == None
-        assert idx == None
+        assert idx is None
+        assert dist is None
+
+
+@pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
+def test_indexer_one_dimensional(metric, test_metas):
+    import math
+    add_vec_idx = np.asarray([0])
+    add_vec = np.asarray([[1]])
+    query_vec = np.asarray([[2]])
+    with NumpyIndexer(metric=metric, index_filename='np.test.gz',
+                      metas=test_metas) as indexer:
+        indexer.add(add_vec_idx, add_vec)
+
+        indexer.save()
+        assert Path(indexer.index_abspath).exists()
+        save_abspath = indexer.save_abspath
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, NumpyIndexer)
+        idx, dist = indexer.query(query_vec, top_k=4)
+        print(f'metric {metric} => dist {dist}')
+        assert idx.shape == dist.shape
+        assert idx.shape == (1, 1)
+        assert not math.isnan(dist[0])
+
+
+@pytest.mark.parametrize('dimension', [1, 64])
+@pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
+def test_indexer_zeros(metric, dimension, test_metas):
+    import math
+    query_vec = np.array(np.zeros([1, dimension]), dtype=np.float32)
+    add_vec_idx = np.random.randint(0, high=num_data, size=[num_data])
+    add_vec = np.random.random([num_data, dimension])
+    with NumpyIndexer(metric=metric, index_filename='np.test.gz',
+                      metas=test_metas) as indexer:
+        indexer.add(add_vec_idx, add_vec)
+        indexer.save()
+        assert Path(indexer.index_abspath).exists()
+        save_abspath = indexer.save_abspath
+
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, NumpyIndexer)
+        idx, dist = indexer.query(query_vec, top_k=4)
+
+        assert idx.shape == dist.shape
+        assert idx.shape == (1, 4)
+        if metric == 'cosine':
+            assert all(math.isnan(x) for x in dist[0])
+        else:
+            assert not any(math.isnan(x) for x in dist[0])

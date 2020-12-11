@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import List
+from typing import Sequence
 
 import numpy as np
 
@@ -15,7 +15,7 @@ class BaseMultiModalEncoder(BaseExecutor):
     """
 
     def __init__(self,
-                 positional_modality: List[str] = [],
+                 positional_modality: Sequence[str],
                  *args,
                  **kwargs):
         """

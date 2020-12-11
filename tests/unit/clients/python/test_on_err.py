@@ -1,13 +1,11 @@
 import numpy as np
 import pytest
-from google.protobuf.pyext._message import RepeatedCompositeContainer
 
 from jina.excepts import BadClientCallback
 from jina.flow import Flow
-from jina.proto import jina_pb2
 
 
-def test_on_error():
+def test_on_error(mocker):
     def validate(x):
         raise NotImplementedError
 
@@ -16,5 +14,9 @@ def test_on_error():
     with pytest.raises(BadClientCallback), f:
         f.index_ndarray(np.random.random([5, 4]), output_fn=validate, continue_on_error=False)
 
+    response_mock = mocker.Mock(wrap=validate)
+
     with f:
-        f.index_ndarray(np.random.random([5, 4]), output_fn=validate, continue_on_error=True)
+        f.index_ndarray(np.random.random([5, 4]), output_fn=response_mock, continue_on_error=True)
+
+    response_mock.assert_called()

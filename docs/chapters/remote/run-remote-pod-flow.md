@@ -3,7 +3,7 @@
    
 This tutorial guides you to run a Jina Pod remotely via Flow API.
 
-Before the start, make sure to read ["Understanding Pea and Pod in Jina"](https://docs.jina.ai/chapters/101/.sphinx.html#pea) and ["Jina Flow API"](https://docs.jina.ai/chapters/flow/index.html). 
+Before the start, make sure to read ["Understanding Pea and Pod in Jina"](https://docs.jina.ai/chapters/101/index.html#pea) and ["Jina Flow API"](https://docs.jina.ai/chapters/flow/index.html). 
 
 ## Terminologies
 

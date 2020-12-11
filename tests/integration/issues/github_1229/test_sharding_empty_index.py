@@ -25,7 +25,7 @@ def get_search_flow():
         uses='vectorindexer.yml',
         shards=num_shards,
         separated_workspace=True,
-        uses_after='_merge_all',
+        uses_after='_merge_matches',
         polling='all',
         timeout_ready='-1'
     )
@@ -35,7 +35,7 @@ def get_search_flow():
 # required because we don't know the order of the pod returning
 # and, when the test failed, we still some time didn't see the error
 @pytest.mark.parametrize('execution_number', range(10))
-def test_sharding_empty_index(tmpdir, execution_number):
+def test_sharding_empty_index(tmpdir, execution_number, mocker):
     os.environ['JINA_TEST_1229_WORKSPACE'] = os.path.abspath(tmpdir)
 
     f = get_index_flow()
@@ -62,12 +62,12 @@ def test_sharding_empty_index(tmpdir, execution_number):
             query.append(doc)
 
     def callback(result):
-        global callback_was_called
-        callback_was_called = True
         assert len(result.docs) == num_query
         for d in result.docs:
             assert len(list(d.matches)) == num_docs
 
+    response_mock = mocker.Mock(wraps=callback)
     with f:
-        f.search(query, output_fn=callback)
-    assert callback_was_called
+        f.search(query, output_fn=response_mock)
+
+    response_mock.assert_called()
