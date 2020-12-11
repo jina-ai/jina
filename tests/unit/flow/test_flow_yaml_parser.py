@@ -42,6 +42,7 @@ def test_add_needs_inspect(tmpdir):
 
 
 def test_load_dump_load(tmpdir):
+    """TODO: Dumping valid yaml is out of scope of PR#1442, to do in separate PR"""
     f1 = Flow.load_config('yaml/flow-legacy-syntax.yml')
     f1.save_config(Path(tmpdir) / 'a0.yml')
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
