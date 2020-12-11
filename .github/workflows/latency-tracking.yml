@@ -28,6 +28,8 @@ jobs:
           cd latency
           docker build --build-arg JINA_VER=master . -t latency-tracking
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
+          pwd
+          ls output/
       - name: Upload latency result
         uses: actions/upload-artifact@v1
         with:
