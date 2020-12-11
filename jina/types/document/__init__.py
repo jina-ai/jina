@@ -141,12 +141,6 @@ class Document:
 
         self.id = custom_id
 
-        if custom_id is None:
-            import random
-            custom_id = random.random()
-
-        self.id = custom_id
-
         self.set_attrs(**kwargs)
 
     def __getattr__(self, name: str):
@@ -414,7 +408,7 @@ class Document:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.update_id()
+        pass
 
     @property
     def content_type(self) -> str:
