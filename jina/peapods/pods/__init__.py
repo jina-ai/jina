@@ -9,7 +9,7 @@ from threading import Thread
 from typing import Optional, Dict, List, Union
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
-from .. import Pea
+from .. import RuntimePea
 from ..peas.headtail import TailPea, HeadPea
 from ...enums import *
 
@@ -237,7 +237,7 @@ class BasePod(ExitStack):
         for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
             _args.pea_id = idx
             _args.role = role
-            p = Pea(_args, allow_remote=False)
+            p = RuntimePea(_args, allow_remote=False)
             self.peas.append(p)
             self.enter_context(p)
 

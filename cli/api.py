@@ -5,15 +5,18 @@ __license__ = "Apache-2.0"
 def pod(args):
     """Start a Pod"""
     from jina.peapods import Pod
-    with Pod(args) as p:
-        p.join()
+    try:
+        with Pod(args) as p:
+            p.join()
+    except KeyboardInterrupt:
+        pass
 
 
 def pea(args):
     """Start a Pea"""
-    from jina.peapods import Pea
+    from jina.peapods import RuntimePea
     try:
-        with Pea(args) as p:
+        with RuntimePea(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass

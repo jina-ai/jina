@@ -12,8 +12,8 @@ if False:
     import argparse
 
 
-def Pea(args: Optional['argparse.Namespace'] = None,
-        allow_remote: bool = True, **kwargs):
+def RuntimePea(args: Optional['argparse.Namespace'] = None,
+                allow_remote: bool = True, **kwargs):
     """Initialize a :class:`BasePea`, :class:`RemoteSSHPea` or :class:`ContainerPea`
 
     :param args: arguments from CLI
@@ -32,24 +32,18 @@ def Pea(args: Optional['argparse.Namespace'] = None,
             default_logger.warning(f'setting host to {__default_host__} as allow_remote set to False')
 
     if args.host != __default_host__:
-        from .peas.remote import RemotePea
-        return RemotePea(args)
+        from .runtimes.remote.jinad import RemoteJinaDRunTime
+        return RemoteJinaDRunTime(args, kind='pea')
     elif args.uses and not is_valid_local_config_source(args.uses):
-        from .peas.container import ContainerPea
-        return ContainerPea(args)
-    elif args.role == PeaRoleType.HEAD:
-        from .peas.headtail import HeadPea
-        return HeadPea(args)
-    elif args.role == PeaRoleType.TAIL:
-        from .peas.headtail import TailPea
-        return TailPea(args)
+        from .runtimes.container import ContainerRunTime
+        return ContainerRunTime(args)
     else:
-        from .peas import BasePea
-        return BasePea(args)
+        from .runtimes.local import LocalRunTime
+        return LocalRunTime(args)
 
 
-def Pod(args: Optional[Union['argparse.Namespace', Dict]] = None,
-        allow_remote: bool = True, **kwargs):
+def Pod(args: Optional['argparse.Namespace'] = None,
+               allow_remote: bool = True, **kwargs):
     """Initialize a :class:`BasePod`, :class:`RemoteSSHPod`, :class:`MutablePod` or :class:`RemoteSSHMutablePod`
 
     :param args: arguments from CLI
@@ -73,14 +67,14 @@ def Pod(args: Optional[Union['argparse.Namespace', Dict]] = None,
                         default_logger.warning(f'host is reset to {__default_host__} as allow_remote=False')
                     hosts.add(kk.host)
 
-        if len(hosts) == 1:
-            if __default_host__ in hosts:
-                from .pods.mutable import MutablePod
-                return MutablePod(args)
-            else:
-                # TODO: this part needs to be refactored
-                from .pods.remote import RemoteMutablePod
-                return RemoteMutablePod(args)
+        # if len(hosts) == 1:
+        #     if __default_host__ in hosts:
+        #         from .pods.mutable import MutablePod
+        #         return MutablePod(args)
+        #     else:
+        #         # TODO: this part needs to be refactored
+        #         from .pods.remote import RemoteMutablePod
+        #         return RemoteMutablePod(args)
 
     if not allow_remote and args.host != __default_host__:
         args.host = __default_host__
@@ -88,14 +82,30 @@ def Pod(args: Optional[Union['argparse.Namespace', Dict]] = None,
 
     if args.host != __default_host__:
         if args.remote_access == RemoteAccessType.JINAD:
-            from .pods.remote import RemotePod
-            return RemotePod(args)
+            from .runtimes.remote.jinad import RemoteJinaDRunTime
+            return RemoteJinaDRunTime(args, kind='pod')
         elif args.remote_access == RemoteAccessType.SSH:
-            from .peas.remote.ssh import RemoteSSHPod
-            return RemoteSSHPod(args)
+            from .runtimes.remote.ssh import RemoteSSHRunTime
+            return RemoteSSHRunTime(args, kind='pod')
         else:
             raise ValueError(f'{args.remote_access} is not supported')
-
     else:
         from .pods import BasePod
         return BasePod(args)
+
+
+def Pea(args: Optional['argparse.Namespace'] = None):
+    """Initialize a :class:`BasePea`, :class:`HeadPea` or :class:`TailPea`
+
+    :param args: arguments from CLI
+
+    """
+    if args.role == PeaRoleType.HEAD:
+        from .peas.headtail import HeadPea
+        return HeadPea(args)
+    elif args.role == PeaRoleType.TAIL:
+        from .peas.headtail import TailPea
+        return TailPea(args)
+    else:
+        from .peas import BasePea
+        return BasePea(args)
