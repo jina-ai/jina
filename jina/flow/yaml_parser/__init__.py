@@ -1,4 +1,4 @@
-from typing import List, Optional, Type
+from typing import List, Optional
 
 from .base import VersionedYamlParser
 from ...excepts import BadFlowYAMLVersion
@@ -23,7 +23,7 @@ def get_parser(version: Optional[str]) -> 'VersionedYamlParser':
                 return p()
         for p in all_parsers:
             # fallback to major
-            if version.startswith(p.version):
+            if version.split('.')[0] == p.version:
                 return p()
         raise BadFlowYAMLVersion(f'{version} is not a valid version number')
     else:

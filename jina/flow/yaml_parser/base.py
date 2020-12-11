@@ -4,7 +4,15 @@ from .. import Flow
 
 
 class VersionedYamlParser:
-    version = 'legacy'  # the version number this parser designed for
+    """ Flow YAML parser for specific version
+
+    Every :class:`VersionedYamlParser` must implement two methods and one class attribute:
+        - :meth:`parse`: to load data (in :class:`dict`) into a :class:`Flow` object
+        - :meth:`dump`: to dump a :class:`Flow` object into a :class:`dict`
+        - :attr:`version`: version number in :class:`str` in format ``MAJOR.[MINOR]``
+    """
+
+    version = 'legacy'  #: the version number this parser designed for
 
     def parse(self, data: Dict) -> 'Flow':
         """Return the Flow YAML parser given the syntax version number
