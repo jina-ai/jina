@@ -8,12 +8,10 @@ from jina.peapods.zmq import send_ctrl_message, Zmqlet
 from jina.enums import PeaRoleType
 from jina.excepts import PeaFailToStart
 
-from jina import __ready_msg__, __stop_msg__
 from jina.helper import typename
 from jina.logging import JinaLogger
-from jina.peapods import Pea
 
-__all__ = ['RuntimeMeta', 'LocalRunTime']
+__all__ = ['RuntimeMeta', 'RunTime']
 
 
 def _get_event(obj: 'LocalRunTime') -> Event:
@@ -85,7 +83,7 @@ class RuntimeMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
-class LocalRunTime(metaclass=RuntimeMeta):
+class RunTime(metaclass=RuntimeMeta):
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__()
         self.args = args
@@ -114,19 +112,7 @@ class LocalRunTime(metaclass=RuntimeMeta):
             self.logger = JinaLogger(self.name)
 
     def run(self):
-        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
-        try:
-            with Pea(self.args) as pea:
-                # TODO: set_ready in different coroutine checking status as it is done for `ContainerPea` (here zmq
-                #  loop has not started)
-                self.set_ready()
-                self.logger.success(__ready_msg__)
-                pea.run()
-        finally:
-            # if an exception occurs this unsets ready and shutting down
-            self.unset_ready()
-            self.logger.success(__stop_msg__)
-            self.set_shutdown()
+        raise NotImplementedError
 
     def start(self):
         super().start()

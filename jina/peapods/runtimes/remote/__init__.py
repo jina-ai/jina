@@ -1,10 +1,12 @@
 from argparse import Namespace
 from typing import Union, Dict
 
-from jina.peapods.runtimes import LocalRunTime
+from jina.peapods.runtimes import RunTime
+
+__all__ = ['RemoteRunTime']
 
 
-class RemoteRunTime(LocalRunTime):
+class RemoteRunTime(RunTime):
 
     def __init__(self, args: Union['Namespace', Dict]):
         super().__init__(args)
@@ -25,6 +27,5 @@ class RemoteRunTime(LocalRunTime):
         except Exception as ex:
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
-            self._teardown()
             self.unset_ready()
             self.is_shutdown.set()

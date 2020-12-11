@@ -12,10 +12,12 @@ from jina import __ready_msg__, __stop_msg__
 from jina.helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from jina.logging import JinaLogger
 
-from .. import LocalRunTime
+from .. import RunTime
+
+__all__ = ['ContainerRunTime']
 
 
-class ContainerRunTime(LocalRunTime):
+class ContainerRunTime(RunTime):
     """A ContainerRunTime that will spawn a dockerized `BasePea`
 
     It requires a docker-corresponding valid ``args.uses``.
@@ -140,7 +142,7 @@ class ContainerRunTime(LocalRunTime):
          of the flow and stream the logs from the pea in the container"""
         try:
             self._docker_run()
-            self.monitor_pea_in_container()
+            self._monitor_pea_in_container()
         except KeyboardInterrupt:
             self.logger.info('Loop interrupted by user')
         except SystemError as ex:
