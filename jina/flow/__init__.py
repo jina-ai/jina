@@ -55,6 +55,7 @@ class Flow(ExitStack):
 
         """
         super().__init__()
+        self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
@@ -86,30 +87,8 @@ class Flow(ExitStack):
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        r = {}
-
-        if data._kwargs:
-            r['with'] = data._kwargs
-
-        if data._pod_nodes:
-            r['pods'] = {}
-
-        if 'gateway' in data._pod_nodes:
-            # always dump gateway as the first pod, if exist
-            r['pods']['gateway'] = {}
-
-        for k, v in data._pod_nodes.items():
-            if k == 'gateway':
-                continue
-
-            kwargs = {'needs': list(v.needs)} if v.needs else {}
-            kwargs.update(v._kwargs)
-
-            if 'name' in kwargs:
-                kwargs.pop('name')
-
-            r['pods'][k] = kwargs
-        return r
+        from .yaml_parser import get_parser
+        return get_parser(version=data._version).dump(data)
 
     @classmethod
     def from_yaml(cls, constructor, node):
@@ -164,27 +143,8 @@ class Flow(ExitStack):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 
-        p = data.get('with', {})  # type: Dict[str, Any]
-        a = p.pop('args') if 'args' in p else ()
-        k = p.pop('kwargs') if 'kwargs' in p else {}
-        # maybe there are some hanging kwargs in "parameters"
-        tmp_a = (expand_env_var(v) for v in a)
-        tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-        obj = cls(*tmp_a, **tmp_p)
-
-        pp = data.get('pods', {})
-        for pod_name, pod_attr in pp.items():
-            p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pod_attr.items()}
-            if pod_name != 'gateway':
-                # ignore gateway when reading, it will be added during build()
-                obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
-
-        obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
-
-        # if node.tag in {'!CompoundExecutor'}:
-        #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
-
-        return obj, data
+        from .yaml_parser import get_parser
+        return get_parser(version=data.get('version', None)).parse(data), data
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
