@@ -233,9 +233,13 @@ def test_doc_score():
     from jina import Document
     from jina.types.score import NamedScore
     with Document() as doc:
-        score = NamedScore({'op_name': 'operation',
-                            'value': 10.0})
-        doc.score = score
+        doc.text = 'text'
+
+    score = NamedScore(op_name='operation',
+                       value=10.0,
+                       ref_id=doc.id)
+    doc.score = score
 
     assert doc.score.op_name == 'operation'
     assert doc.score.value == 10.0
+    assert doc.score.ref_id == doc.id

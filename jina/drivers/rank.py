@@ -88,10 +88,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
             op_name = exec.__class__.__name__
             for doc_hash, score in docs_scores:
                 m = Document(id=doc_hash)
-                m.score = NamedScore({
-                    'op_name': op_name,
-                    'value': score
-                })
+                m.score = NamedScore(op_name=op_name,
+                                     value=score)
                 context_doc.matches.append(m)
 
 
@@ -169,10 +167,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
             op_name = exec.__class__.__name__
             for doc_hash, score in docs_scores:
                 m = Document(id=doc_hash)
-                m.score = NamedScore({
-                    'op_name': op_name,
-                    'value': score
-                })
+                m.score = NamedScore(op_name=op_name,
+                                     value=score)
                 context_doc.matches.append(m)
 
 

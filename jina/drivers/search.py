@@ -126,10 +126,8 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
             topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
             for match_hash, score, vec in zip(topks, scores, topk_embed):
                 m = Document(id=int(match_hash))
-                m.score = NamedScore({
-                    'op_name': op_name,
-                    'value': score
-                })
+                m.score = NamedScore(op_name=op_name,
+                                     value=score)
                 r = doc.matches.append(m)
                 if vec is not None:
                     r.embedding = vec

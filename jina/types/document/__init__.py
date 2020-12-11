@@ -3,7 +3,7 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tuple
+from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence
 
 from google.protobuf import json_format
 
@@ -459,8 +459,13 @@ class Document:
         return self._document.score
 
     @score.setter
-    def score(self, score: NamedScore):
-        self._document.score.CopyFrom(score._score)
+    def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
+        if isinstance(value, jina_pb2.NamedScoreProto):
+            self._document.score.CopyFrom(value)
+        elif isinstance(value, NamedScore):
+            self._document.score.CopyFrom(value._score)
+        else:
+            raise TypeError(f'score is in unsupported type {typename(value)}')
 
     def convert_buffer_to_blob(self, **kwargs):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
