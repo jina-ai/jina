@@ -22,16 +22,15 @@ jobs:
           repository: jina-ai/latency-tracking
           path: latency
           token: ${{ secrets.JINA_DEV_BOT }}
-      - name: Run latency benchmark
+      - name: Run current latency vs. last 3 versions
         run: |
           sudo apt-get install jq
           cd latency
           docker build --build-arg JINA_VER=master . -t latency-tracking
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
-          pwd
-          ls output/
+          bash batch.sh 3
       - name: Upload latency result
         uses: actions/upload-artifact@v1
         with:
           name: benchmark result
-          path: latency/output/benchmark.json
+          path: latency/output/stats.json
