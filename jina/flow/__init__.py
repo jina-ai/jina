@@ -55,7 +55,7 @@ class Flow(ExitStack):
 
         """
         super().__init__()
-        self._version = ''  # YAML version number
+        self._version = '1'  # YAML version number, this will be later overrided if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
@@ -88,7 +88,7 @@ class Flow(ExitStack):
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
         from .yaml_parser import get_parser
-        return get_parser(version=data._version).dump(data), data
+        return get_parser(version=data._version).dump(data)
 
     @classmethod
     def from_yaml(cls, constructor, node):
