@@ -19,6 +19,8 @@ def get_parser(version: Optional[str]) -> 'VersionedYamlParser':
     """
     all_parsers = _get_all_parser()
     if version:
+        if isinstance(version, float) or isinstance(version, int):
+            version = str(version)
         for p in all_parsers:
             if p.version == version:
                 return p()

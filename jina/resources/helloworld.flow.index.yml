@@ -1,12 +1,13 @@
 !Flow
+version: '1.0'
 with:
   logserver: $WITH_LOGSERVER
   compress_hwm: 1024
 pods:
-  encode:
+  - name: encode
     uses: $RESOURCE_DIR/helloworld.encoder.yml
     parallel: $PARALLEL
-  index:
+  - name: index
     uses: $RESOURCE_DIR/helloworld.indexer.yml
     shards: $SHARDS
     separated_workspace: true
