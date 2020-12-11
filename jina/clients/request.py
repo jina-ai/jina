@@ -32,8 +32,8 @@ def _build_doc(data, data_type: DataInputType, override_doc_id, **kwargs) -> Tup
             return data, DataInputType.DOCUMENT
         try:
             d = Document(data, **kwargs)
-            if override_doc_id:
-                d.update_id()
+            #if override_doc_id:
+            #    d.update_id()
             return d, DataInputType.DOCUMENT
         except BadDocType:
             # AUTO has a fallback, now reconsider it as content

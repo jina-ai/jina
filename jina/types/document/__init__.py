@@ -182,6 +182,14 @@ class Document:
         self._document.modality = value
 
     @property
+    def content_hash(self):  # TODO
+        pass
+
+    @content_hash.setter
+    def content_hash(self, value: Union[bytes, str, int]):  # TODO
+        pass
+
+    @property
     def id(self) -> 'UniqueId':
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.

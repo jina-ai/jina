@@ -37,8 +37,20 @@ def new_doc_hash(doc: 'DocumentProto') -> int:
     return id2hash(new_doc_id(doc))
 
 
-def get_document_hash():
-    pass
+def get_document_hash(doc: 'DocumentProto') -> str:
+    """ Generate a new hexdigest based on the content of the document.
+
+    .. note::
+        Always use it AFTER you fill in the content of the document
+
+    :param doc: a non-empty document
+    :return: the hexdigest based on :meth:`blake2b`
+    """
+    d = doc
+    if _doc_field_mask:
+        d = DocumentProto()
+        _doc_field_mask.MergeMessage(doc, d)
+    return blake2b(d.SerializeToString(), digest_size=_digest_size).hexdigest()
 
 
 def new_doc_id(doc: 'DocumentProto') -> str:
