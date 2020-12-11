@@ -1,4 +1,4 @@
-name: Test jinad
+name: CI
 
 on:
   pull_request:

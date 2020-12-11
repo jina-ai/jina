@@ -1,6 +1,6 @@
 import asyncio
 
-from .async_stub import AsyncGRPCStub
+from .async_server import AsyncGRPCServer
 from ... import BasePea
 from ....zmq import CtrlZmqlet, send_message_async, recv_message_async
 from .....helper import configure_event_loop
@@ -35,7 +35,7 @@ class GatewayPea(BasePea):
             return
 
     def loop_body(self):
-        self.gateway = AsyncGRPCStub(self.args)
+        self.gateway = AsyncGRPCServer(self.args)
         configure_event_loop()
         self.gateway.configure_server(self.args)
         self.set_ready()
