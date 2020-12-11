@@ -37,6 +37,10 @@ def new_doc_hash(doc: 'DocumentProto') -> int:
     return id2hash(new_doc_id(doc))
 
 
+def get_document_hash():
+    pass
+
+
 def new_doc_id(doc: 'DocumentProto') -> str:
     """ Generate a new hexdigest based on the content of the document.
 
