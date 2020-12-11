@@ -109,7 +109,7 @@ class DocumentSet(MutableSequence):
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
 
-        :return a tuple of embedding in :class:`np.ndarray`,
+        :return: a tuple of embedding in :class:`np.ndarray`,
                 the corresponding documents in a :class:`DocumentSet`,
                 and the documents have no contents in a :class:`DocumentSet`.
         """

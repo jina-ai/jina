@@ -177,3 +177,7 @@ class LengthMismatchException(Exception):
 
 class ImageAlreadyExists(Exception):
     """ Exception when an image with the name, module version, and Jina version already exists on the Hub"""
+
+
+class BadFlowYAMLVersion(Exception):
+    """ Exception when Flow YAML config specifies a wrong version number"""
