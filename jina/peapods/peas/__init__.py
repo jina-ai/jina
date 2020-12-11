@@ -212,10 +212,12 @@ class BasePea(ExitStack):
             # this is the proper way to end when a terminate signal is sent
             self.logger.info(f'Terminating loop requested by terminate signal {repr(ex)}')
             self.zmqlet.send_message(msg)
+            self._teardown()
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
             # save executor
             self.logger.info(f'{repr(ex)} causes the breaking from the event loop')
             self.zmqlet.send_message(msg)
+            self._teardown()
         except MemoryOverHighWatermark:
             self.logger.critical(
                 f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
@@ -283,6 +285,7 @@ class BasePea(ExitStack):
             # - self.zmqlet.send_message
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
+            self.logger.info(f'request loop ended, tearing down ...', exc_info=True)
             self._teardown()
 
     def check_memory_watermark(self):
@@ -297,4 +300,3 @@ class BasePea(ExitStack):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self._teardown()
-

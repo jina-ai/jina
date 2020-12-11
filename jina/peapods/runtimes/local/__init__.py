@@ -11,6 +11,7 @@ class LocalRunTime(RunTime):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             with Pea(self.args) as pea:
+                # TODO: set ready must be done by having a thread or corouting checking the status or passing multiprocessing event to the pea
                 self.set_ready()
                 self.logger.success(__ready_msg__)
                 pea.run()
