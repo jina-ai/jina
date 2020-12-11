@@ -87,8 +87,8 @@ class Flow(ExitStack):
     @staticmethod
     def _dump_instance_to_yaml(data):
         # note: we only save non-default property for the sake of clarity
-        from .parser import dump
-        return dump(data)
+        from .yaml_parser import get_parser
+        return get_parser(version=data._version).dump(data), data
 
     @classmethod
     def from_yaml(cls, constructor, node):
@@ -143,8 +143,8 @@ class Flow(ExitStack):
         data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
             constructor, node, deep=True)
 
-        from .parser import parse
-        return parse(data), data
+        from .yaml_parser import get_parser
+        return get_parser(version=data.get('version', None)).parse(data), data
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:

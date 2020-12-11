@@ -6,11 +6,11 @@ import pytest
 
 from jina import Flow
 from jina.excepts import BadFlowYAMLVersion
-from jina.flow.parser import get_support_versions
+from jina.flow.yaml_parser import get_supported_versions
 
 
 def test_support_versions():
-    assert get_support_versions() == ['1', 'legacy']
+    assert get_supported_versions() == ['1', 'legacy']
 
 
 def test_load_legacy_and_v1():
