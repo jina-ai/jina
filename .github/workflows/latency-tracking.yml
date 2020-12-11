@@ -29,8 +29,39 @@ jobs:
           docker build --build-arg JINA_VER=master . -t latency-tracking
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
           bash batch.sh 3
-      - name: Upload latency result
-        uses: actions/upload-artifact@v1
+          python ppstat.py > comment.txt
+      - id: get-comment-body
+        run: |
+          body=$(cat latency/output/comment.txt)
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}"
+          echo ::set-output name=body::$body
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
         with:
-          name: benchmark result
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Backed by [latency-tracking]'
+
+      - name: Create comment
+        if: ${{ steps.fc.outputs.comment-id == 0 }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+          reaction-type: "eyes"
+
+      - name: Update comment
+        if: ${{ steps.fc.outputs.comment-id != 0 }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+          reaction-type: "rocket"
+      - name: Upload latency result
+        uses: actions/upload-artifact@v2
+        with:
+          name: stats.json.zip
           path: latency/output/stats.json
