@@ -22,6 +22,9 @@ jobs:
           repository: jina-ai/latency-tracking
           path: latency
           token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
       - name: Run current latency vs. last 3 versions
         run: |
           sudo apt-get install jq
@@ -29,6 +32,7 @@ jobs:
           docker build --build-arg JINA_VER=master . -t latency-tracking
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
           bash batch.sh 3
+          pip install prettytable
           python ppstat.py > comment.txt
       - id: get-comment-body
         run: |
