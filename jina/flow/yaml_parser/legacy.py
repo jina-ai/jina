@@ -27,8 +27,7 @@ class LegacyParser(VersionedYamlParser):
             if pod_name != 'gateway':
                 # ignore gateway when reading, it will be added during build()
                 obj.add(name=pod_name, **p_pod_attr, copy_flow=False)
-        # if node.tag in {'!CompoundExecutor'}:
-        #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
+
         return obj
 
     def dump(self, data: 'Flow') -> Dict:

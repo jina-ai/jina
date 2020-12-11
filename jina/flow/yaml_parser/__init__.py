@@ -1,3 +1,4 @@
+import warnings
 from typing import List, Optional
 
 from .base import VersionedYamlParser
@@ -24,10 +25,15 @@ def get_parser(version: Optional[str]) -> 'VersionedYamlParser':
         for p in all_parsers:
             # fallback to major
             if version.split('.')[0] == p.version:
+                warnings.warn(f'can not find parser for version: {version}, '
+                              f'fallback to parser for version: {p.version}', UserWarning)
                 return p()
         raise BadFlowYAMLVersion(f'{version} is not a valid version number')
     else:
         # fallback to legacy parser
+        warnings.warn(f'can not find parser for version: {version}, '
+                      f'fallback to legacy parser. '
+                      f'this usually mean you are using a depreciated YAML format.', DeprecationWarning)
         from .legacy import LegacyParser
         return LegacyParser()
 

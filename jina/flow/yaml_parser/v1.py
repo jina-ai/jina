@@ -13,6 +13,37 @@ def _get_taboo():
 
 
 class V1Parser(VersionedYamlParser):
+    """V1Parser introduces new syntax and features:
+
+        - It has a top-level field ``version``
+        - ``pods`` is now a List of Dict (rather than a Dict as prev.)
+        - ``name`` is now optional
+        - new field ``method`` can be used to specify how to add this Pod into the Flow, availables are:
+            - ``add``: (default) equal to `Flow.add(...)`
+            - ``needs``: (default) equal to `Flow.needs(...)`
+            - ``inspect``: (default) equal to `Flow.inspect(...)`
+
+    An example V1 YAML config can be found below:
+        .. highlight:: yaml
+        .. code-block:: yaml
+
+            !Flow
+            version: '1.0'
+            pods:
+              - name: pod0  # notice the change here, name is now an attribute
+                method: add  # by default method is always add, available: add, needs, inspect
+                uses: _pass
+                needs: gateway
+              - name: pod1  # notice the change here, name is now an attribute
+                method: add  # by default method is always add, available: add, needs, inspect
+                uses: _pass
+                needs: gateway
+              - method: inspect  # add an inspect node on pod1
+              - method: needs  # let's try something new in Flow YAML v1: needs
+                needs: [pod1, pod0]
+
+
+    """
     version = '1'  # the version number this parser designed for
 
     def parse(self, data: Dict) -> 'Flow':
