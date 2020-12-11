@@ -55,7 +55,7 @@ class Flow(ExitStack):
 
         """
         super().__init__()
-        self._version = '1'  # YAML version number, this will be later overrided if YAML config says the other way
+        self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
