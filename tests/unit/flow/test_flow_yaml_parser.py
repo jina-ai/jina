@@ -26,12 +26,12 @@ def test_load_legacy_and_v1():
 
 def test_add_needs_inspect(tmpdir):
     f1 = (Flow().add(name='pod0', needs='gateway').add(name='pod1', needs='gateway').inspect().needs(['pod0', 'pod1']))
-    f1.plot(Path(tmpdir) / 'from_python.jpg')
+    f1.plot(str(Path(tmpdir) / 'from_python.jpg'))
     with f1:
         f1.index_ndarray(np.random.random([5, 5]), output_fn=print)
 
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
-    f2.plot(Path(tmpdir) / 'from_yaml.jpg')
+    f2.plot(str(Path(tmpdir) / 'from_yaml.jpg'))
     assert filecmp.cmp(Path(tmpdir) / 'from_python.jpg',
                        Path(tmpdir) / 'from_yaml.jpg')
 
@@ -44,6 +44,6 @@ def test_add_needs_inspect(tmpdir):
 def test_load_dump_load(tmpdir):
     """TODO: Dumping valid yaml is out of scope of PR#1442, to do in separate PR"""
     f1 = Flow.load_config('yaml/flow-legacy-syntax.yml')
-    f1.save_config(Path(tmpdir) / 'a0.yml')
+    f1.save_config(str(Path(tmpdir) / 'a0.yml'))
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
-    f2.save_config(Path(tmpdir) / 'a1.yml')
+    f2.save_config(str(Path(tmpdir) / 'a1.yml'))
