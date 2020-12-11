@@ -79,8 +79,8 @@ class FlowRunner:
     def _add_env_parameters(self, trial_parameters):
         if self.env_yaml:
             yaml = YAML(typ="safe")
-            self.env_parameters = yaml.load(open(self.env_yaml))
-            for environment_variable, value in self.env_parameters.items():
+            env_parameters = yaml.load(open(self.env_yaml))
+            for environment_variable, value in env_parameters.items():
                 trial_parameters[environment_variable] = str(value)
             logger.info("Environment variables loaded")
         else:
@@ -101,7 +101,7 @@ class FlowRunner:
 
         trial_parameters = self._add_env_parameters(trial_parameters)
 
-        if (self.task == "index") and workspace.exists():
+        if workspace.exists():
             if self.overwrite_workspace:
                 FlowRunner.clean_workdir(workspace)
                 logger.warning(
@@ -157,8 +157,7 @@ class MultiFlowRunner:
         self.workspace = workspace
 
     def run(self, trial_parameters):
-        for flow_def in self.flows:
-            flow = FlowRunner(**flow_def)
+        for flow in self.flows:
             flow.run(trial_parameters, self.workspace)
 
 
