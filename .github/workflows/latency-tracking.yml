@@ -26,7 +26,7 @@ jobs:
         run: |
           sudo apt-get install jq
           cd latency
-          docker build --build-arg JINA_VER=master . -t latency-tracking
+          docker build --build-arg JINA_VER=0.8.3 . -t latency-tracking
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
       - name: Upload latency result
         uses: actions/upload-artifact@v1
