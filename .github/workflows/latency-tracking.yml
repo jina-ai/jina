@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+#    paths-ignore:
+#      - 'README.md'
+#      - '.all-contributorsrc'
+#      - 'docs/*'
+
+jobs:
+  latency-tracking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Test docker install
+        run: |
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/latency-tracking
+          path: latency
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - name: Run latency benchmark
+        run: |
+          sudo apt-get install jq
+          cd latency
+          docker build --build-arg JINA_VER=master . -t latency-tracking
+          docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
+      - name: Upload latency result
+        uses: actions/upload-artifact@v1
+        with:
+          name: benchmark result
+          path: ./latency/benchmark.json
