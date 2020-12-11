@@ -32,4 +32,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: benchmark result
-          path: latency/benchmark.json
+          path: latency/output/benchmark.json
