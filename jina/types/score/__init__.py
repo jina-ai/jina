@@ -32,38 +32,3 @@ class NamedScore:
 
     def __getattr__(self, name: str):
         return getattr(self._score, name)
-
-    def __str__(self):
-        return f'{self.as_pb_object}'
-
-    @property
-    def op_name(self):
-        return self._score.op_name
-
-    @op_name.setter
-    def op_name(self, op_name: str):
-        self._score.op_name = op_name
-
-    @property
-    def value(self):
-        return self._score.value
-
-    @value.setter
-    def value(self, value: float):
-        self._score.value = value
-
-    @property
-    def description(self):
-        return self._score.description
-
-    @description.setter
-    def description(self, description: str):
-        self._score.description = description
-
-    @property
-    def ref_id(self):
-        return self._score.ref_id
-
-    @ref_id.setter
-    def ref_id(self, ref_id: str):
-        self._score.ref_id = ref_id
