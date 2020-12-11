@@ -10,7 +10,6 @@ from typing import Optional, Dict, List, Union
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
 from .. import RuntimePea
-from ..peas.headtail import TailPea, HeadPea
 from ...enums import *
 
 
@@ -25,7 +24,7 @@ class BasePod(ExitStack):
         :param args: arguments parsed from the CLI
         """
         super().__init__()
-        self.peas = []
+        self.runtimes = []
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
@@ -42,7 +41,7 @@ class BasePod(ExitStack):
     def is_idle(self) -> bool:
         """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
         """
-        return all(p.is_idle for p in self.peas if p.is_ready_event.is_set())
+        return all(runtime.is_idle for runtime in self.runtimes if runtime.is_ready_event.is_set())
 
     def close_if_idle(self):
         """Check every second if the pod is in idle, if yes, then close the pod"""
@@ -183,7 +182,7 @@ class BasePod(ExitStack):
     @property
     def num_peas(self) -> int:
         """Get the number of running :class:`BasePea`"""
-        return len(self.peas)
+        return len(self.runtimes)
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -218,13 +217,13 @@ class BasePod(ExitStack):
         """
         # start head and tail
         if self.peas_args['head']:
-            p = HeadPea(self.peas_args['head'])
-            self.peas.append(p)
+            p = RuntimePea(self.peas_args['head'], allow_remote=False)
+            self.runtimes.append(p)
             self.enter_context(p)
 
         if self.peas_args['tail']:
-            p = TailPea(self.peas_args['tail'])
-            self.peas.append(p)
+            p = RuntimePea(self.peas_args['tail'], allow_remote=False)
+            self.runtimes.append(p)
             self.enter_context(p)
 
         # start real peas and accumulate the storage id
@@ -238,7 +237,7 @@ class BasePod(ExitStack):
             _args.pea_id = idx
             _args.role = role
             p = RuntimePea(_args, allow_remote=False)
-            self.peas.append(p)
+            self.runtimes.append(p)
             self.enter_context(p)
 
         self.start_sentinels()
@@ -254,15 +253,15 @@ class BasePod(ExitStack):
     @property
     def status(self) -> List:
         """The status of a BasePod is the list of status of all its Peas """
-        return [p.status for p in self.peas]
+        return [runtime.status for runtime in self.runtimes]
 
     def is_ready(self) -> bool:
         """Wait till the ready signal of this BasePod.
 
         The pod is ready only when all the contained Peas returns is_ready_event
         """
-        for p in self.peas:
-            p.is_ready_event.wait()
+        for runtime in self.runtimes:
+            runtime.is_ready_event.wait()
         return True
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -271,9 +270,9 @@ class BasePod(ExitStack):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for s in self.peas:
-                s.join()
+            for runtime in self.runtimes:
+                runtime.join()
         except KeyboardInterrupt:
             pass
         finally:
-            self.peas.clear()
+            self.runtimes.clear()

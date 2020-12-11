@@ -15,8 +15,6 @@ def test_pea_context(runtime):
         time.sleep(1)
         pass
 
-    print(f' here')
-
     LocalRunTime(args).start().close()
 
 
@@ -28,6 +26,7 @@ def test_pea_context(runtime):
 #     GatewayPea(args).start().close()
 
 
+# TODO: This will be fixed once the `set_ready` is properly set in runtime
 def test_address_in_use():
     with pytest.raises(PeaFailToStart):
         args1 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
@@ -48,7 +47,11 @@ def test_peas_naming_with_parallel():
                                         '--max-idle-time', '5',
                                         '--shutdown-idle'])
     with BasePod(args) as bp:
-        assert bp.peas[0].name == 'pod-head'
-        assert bp.peas[1].name == 'pod-tail'
-        assert bp.peas[2].name == 'pod-1'
-        assert bp.peas[3].name == 'pod-2'
+        assert bp.runtimes[0].name == 'support-pod-head'
+        assert bp.runtimes[1].name == 'support-pod-tail'
+        assert bp.runtimes[2].name == 'support-pod-1'
+        assert bp.runtimes[3].name == 'support-pod-2'
+        assert bp.runtimes[0].pea.name == 'pod-head'
+        assert bp.runtimes[1].pea.name == 'pod-tail'
+        assert bp.runtimes[2].pea.name == 'pod-1'
+        assert bp.runtimes[3].pea.name == 'pod-2'

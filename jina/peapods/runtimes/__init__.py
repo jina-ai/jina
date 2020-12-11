@@ -99,7 +99,11 @@ class RunTime(metaclass=RuntimeMeta):
         if 'name' in self.args and self.args.name:
             self.name = f'support-{self.args.name}'
         if 'role' in self.args and self.args.role == PeaRoleType.PARALLEL:
-            self.name = f'support-{self.name}-{self.args.pea_id}'
+            self.name = f'support-{self.args.name}-{self.args.pea_id}'
+        if 'role' in self.args and self.args.role == PeaRoleType.HEAD:
+            self.name = f'support-{self.args.name}-head'
+        if 'role' in self.args and self.args.role == PeaRoleType.TAIL:
+            self.name = f'support-{self.args.name}-tail'
         if 'host' in self.args and 'port_ctrl' in self.args and 'ctrl_with_ipc' in self.args:
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl,
                                                                          self.args.ctrl_with_ipc)
@@ -157,6 +161,10 @@ class RunTime(metaclass=RuntimeMeta):
     def is_ready(self) -> bool:
         status = self.status
         return status and status.is_ready
+
+    @property
+    def is_idle(self) -> bool:
+        raise NotImplementedError
 
     def send_terminate_signal(self):
         """Send a terminate signal to the Pea supported by this LocalRunTime """
