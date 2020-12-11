@@ -1,7 +1,6 @@
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
-
 from jina.helper import get_random_identity
 from jina.proto import jina_pb2
 from jina.types.request import Request
@@ -18,11 +17,11 @@ def req():
 
 
 def test_init(req):
-    assert Request(request=None, copy=False)
+    assert Request(request=None)
     assert Request(request=req, copy=True)
     assert Request(request=req, copy=False)
-    assert Request(request=MessageToDict(req), copy=False)
-    assert Request(request=MessageToJson(req), copy=False)
+    assert Request(request=MessageToDict(req))
+    assert Request(request=MessageToJson(req))
 
 def test_init_fail():
     with pytest.raises(BadRequestType):
