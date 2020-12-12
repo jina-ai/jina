@@ -336,6 +336,23 @@ class BasePea(metaclass=PeaMeta):
         self.set_ready()
         self.zmqlet.start(self.msg_callback)
 
+    def set_environment_vars(self):
+        """Set environment variable to this pea
+
+        .. note::
+            Please note that env variables are process-specific. Subprocess inherits envs from
+            the main process. But Subprocess's envs do NOT affect the main process. It does NOT
+            mess up user local system envs.
+
+        .. warning::
+            If you are using ``thread`` as backend, envs setting will likely be overidden by others
+        """
+        os.environ['JINA_POD_NAME'] = self.name
+        os.environ['JINA_LOG_ID'] = self.args.log_id
+        if self.args.env:
+            for k, v in self.args.env.items():
+                os.environ[k] = v
+
     def load_plugins(self):
         if self.args.py_modules:
             from ...importer import PathImporter
@@ -348,8 +365,7 @@ class BasePea(metaclass=PeaMeta):
 
     def _initialize_executor(self):
         try:
-            os.environ['JINA_POD_NAME'] = self.name
-            os.environ['JINA_LOG_ID'] = self.args.log_id
+            self.set_environment_vars()
             self.load_plugins()
             self.load_executor()
             return self.executor
@@ -380,7 +396,7 @@ class BasePea(metaclass=PeaMeta):
         except Exception as exc:
             # this exception handling is important to guarantee that finally is called if exception is raised
             # from _initialize_executor
-            self.logger.critical(f' Exception when loading the executor {repr(exc)}')
+            self.logger.critical(f' Exception when loading the executor {repr(exc)}', exc_info=True)
         finally:
             # if an exception occurs this unsets ready and shutting down
             self.close_zmqlet()

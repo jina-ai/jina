@@ -34,7 +34,7 @@ if False:
 
 
 class Flow(ExitStack):
-    def __init__(self, args: Optional['argparse.Namespace'] = None, **kwargs):
+    def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict]=None, **kwargs):
         """Initialize a flow object
 
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
@@ -61,6 +61,7 @@ class Flow(ExitStack):
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
+        self._env = env  #: environment vars shared by all pods in the flow
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
@@ -432,6 +433,12 @@ class Flow(ExitStack):
         super().__exit__(exc_type, exc_val, exc_tb)
         if self.args.logserver:
             self._stop_log_server()
+
+        # unset all envs to avoid any side-effect
+        if self._env:
+            for k in self._env.keys():
+                os.environ.unsetenv(k)
+
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
@@ -486,6 +493,11 @@ class Flow(ExitStack):
         if self.args.logserver:
             self.logger.info('starting logserver...')
             self._start_log_server()
+
+        # set env only before the pod get started
+        if self._env:
+            for k, v in self._env.items():
+                os.environ[k] = v
 
         for v in self._pod_nodes.values():
             self.enter_context(v)

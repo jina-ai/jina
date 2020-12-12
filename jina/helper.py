@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import functools
+import json
 import math
 import os
 import random
@@ -391,6 +392,8 @@ def kwargs2list(kwargs: Dict) -> List[str]:
                     args.append(f'--{k}')
             elif isinstance(v, list):  # for nargs
                 args.extend([f'--{k}', *(str(vv) for vv in v)])
+            elif isinstance(v, dict):
+                args.extend([f'--{k}', json.dumps(v)])
             else:
                 args.extend([f'--{k}', str(v)])
     return args

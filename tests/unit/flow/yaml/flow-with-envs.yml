@@ -1,0 +1,12 @@
+!Flow
+version: '1'
+env:
+  key_parent: value3  # all pods share this env var
+pods:
+  - name: pod0  # notice the change here, name is now an attribute
+    uses: EnvChecker1
+    env:
+      key1: value1
+      key2: value2
+  - name: pod0  # notice the change here, name is now an attribute
+    uses: EnvChecker2
