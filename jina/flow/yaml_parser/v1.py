@@ -51,13 +51,14 @@ class V1Parser(VersionedYamlParser):
 
         :param data: flow yaml file loaded as python dict
         """
+        envs = data.get('env', {})  # type: Dict[str, str]
         p = data.get('with', {})  # type: Dict[str, Any]
         a = p.pop('args') if 'args' in p else ()
         k = p.pop('kwargs') if 'kwargs' in p else {}
         # maybe there are some hanging kwargs in "parameters"
         tmp_a = (expand_env_var(v) for v in a)
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-        obj = Flow(*tmp_a, **tmp_p)
+        obj = Flow(*tmp_a, env=envs, **tmp_p)
 
         pp = data.get('pods', [])
         for pods in pp:
@@ -78,6 +79,9 @@ class V1Parser(VersionedYamlParser):
         r = {}
         if data._version:
             r['version'] = data._version
+
+        if data._env:
+            r['env'] = data._env
 
         if data._kwargs:
             r['with'] = data._kwargs

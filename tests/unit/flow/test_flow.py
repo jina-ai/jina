@@ -1,12 +1,14 @@
+import os
 from pathlib import Path
 
+import numpy as np
 import pytest
 import requests
-import numpy as np
 
 from jina import JINA_GLOBAL
 from jina.checker import NetworkChecker
 from jina.enums import FlowOptimizeLevel, SocketType
+from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
 from jina.peapods.peas import BasePea
@@ -499,7 +501,6 @@ def test_index_text_files(mocker):
 
 
 def test_flow_with_publish_driver(mocker):
-
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
@@ -606,3 +607,32 @@ def test_flow_needs_all():
 
     with f:
         f.index_ndarray(np.random.random([10, 10]))
+
+
+def test_flow_with_pod_envs():
+    f = Flow.load_config('yaml/flow-with-envs.yml')
+
+    class EnvChecker1(BaseExecutor):
+        """Class used in Flow YAML"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # pea/pod-specific
+            assert os.environ['key1'] == 'value1'
+            assert os.environ['key2'] == 'value2'
+            # inherit from parent process
+            assert os.environ['key_parent'] == 'value3'
+
+    class EnvChecker2(BaseExecutor):
+        """Class used in Flow YAML"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # pea/pod-specific
+            assert 'key1' not in os.environ
+            assert 'key2' not in os.environ
+            # inherit from parent process
+            assert os.environ['key_parent'] == 'value3'
+
+    with f:
+        pass
