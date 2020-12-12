@@ -10,7 +10,7 @@ import threading
 import time
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, Iterator, Callable, TextIO, Any
+from typing import Optional, Union, Tuple, List, Set, Dict, Iterator, Callable, TextIO
 from urllib.request import Request, urlopen
 
 import ruamel.yaml
@@ -21,7 +21,7 @@ from .. import JINA_GLOBAL
 from ..clients.python import InputFnType
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
-from ..helper import yaml, expand_env_var, get_non_defaults_args, deprecated_alias, complete_path, colored, \
+from ..helper import yaml, get_non_defaults_args, deprecated_alias, complete_path, colored, \
     get_public_ip, get_internal_ip, typename
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
@@ -34,7 +34,7 @@ if False:
 
 
 class Flow(ExitStack):
-    def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict]=None, **kwargs):
+    def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
         """Initialize a flow object
 
         :param kwargs: other keyword arguments that will be shared by all pods in this flow
