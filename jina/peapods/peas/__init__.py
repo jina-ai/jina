@@ -147,6 +147,10 @@ class BasePea(metaclass=PeaMeta):
         else:
             self.logger = JinaLogger(self.name)
 
+        self._envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.log_id}
+        if self.args.env:
+            self._envs.update(self.args.env)
+
     def __str__(self):
         r = self.name
         if getattr(self, 'executor', None):
@@ -347,17 +351,18 @@ class BasePea(metaclass=PeaMeta):
         .. warning::
             If you are using ``thread`` as backend, envs setting will likely be overidden by others
         """
-        all_envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.log_id}
-        if self.args.env:
-            all_envs.update(self.args.env)
-
-        if all_envs:
+        if self._envs:
             if self.args.runtime == 'thread':
                 self.logger.warning('environment variables should not be set when runtime="thread". '
-                                    f'ignoring all environment variables: {all_envs}')
+                                    f'ignoring all environment variables: {self._envs}')
             else:
-                for k, v in all_envs.items():
+                for k, v in self._envs.items():
                     os.environ[k] = v
+
+    def unset_environment_vars(self):
+        if self._envs and self.args.runtime != 'thread':
+            for k in self._envs.keys():
+                os.environ.unsetenv(k)
 
     def load_plugins(self):
         if self.args.py_modules:
@@ -407,6 +412,7 @@ class BasePea(metaclass=PeaMeta):
             # if an exception occurs this unsets ready and shutting down
             self.close_zmqlet()
             self.unset_ready()
+            self.unset_environment_vars()
             self.is_shutdown.set()
 
     def check_memory_watermark(self):
