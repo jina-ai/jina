@@ -64,6 +64,7 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: ${{ steps.get-comment-body.outputs.body }}
           reaction-type: "rocket"
+          edit-mode: replace
       - name: Upload latency result
         uses: actions/upload-artifact@v2
         with:
