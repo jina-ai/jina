@@ -4,8 +4,6 @@ __license__ = "Apache-2.0"
 import time
 from typing import Callable, Union, Optional
 
-from zmq.error import Again
-
 from . import request
 from .grpc import AsyncGrpcClient
 from .helper import ProgressBar, pprint_routes, callback_exec
@@ -144,29 +142,26 @@ class PyClient(AsyncGrpcClient):
 
         if self._address:
             self.zmqlet = CtrlZmqlet(logger=self.logger, address=self._address,
-                                     is_bind=True, is_async=True, timeout=10000)
+                                     is_bind=True, is_async=True)
 
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-            try:
-                async for response in self._stub.Call(req_iter):
-                    if self.zmqlet:
-                        # If a zmq ctrl address is passed, the callback will get executed in the main process
-                        # Hence we send the `response` back to the main process on the mentioned sock.
-                        # `response` needs to be sent as a serialized string.
-                        await self.zmqlet.sock.send(response.SerializeToString())
-                        await self.zmqlet.sock.recv()
-                    else:
-                        # If no ctrl address is passed, callback gets executed in the client process
-                        callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
-                                      continue_on_error=self.args.continue_on_error, logger=self.logger)
-                    p_bar.update(self.args.batch_size)
-
+            async for response in self._stub.Call(req_iter):
                 if self.zmqlet:
-                    # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
-                    await self.zmqlet.sock.send_string('TERMINATE')
+                    # If a zmq ctrl address is passed, the callback will get executed in the main process
+                    # Hence we send the `response` back to the main process on the mentioned sock.
+                    # `response` needs to be sent as a serialized string.
+                    await self.zmqlet.sock.send(response.SerializeToString())
                     await self.zmqlet.sock.recv()
-            except Again:
-                self.logger.warning(f'waited for 10s for the socket to response. breaking')
+                else:
+                    # If no ctrl address is passed, callback gets executed in the client process
+                    callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
+                                  continue_on_error=self.args.continue_on_error, logger=self.logger)
+                p_bar.update(self.args.batch_size)
+
+            if self.zmqlet:
+                # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
+                await self.zmqlet.sock.send_string('TERMINATE')
+                await self.zmqlet.sock.recv()
 
     @property
     def input_fn(self) -> InputFnType:

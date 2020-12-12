@@ -33,17 +33,17 @@ class PyClientRuntime(BasePea):
         """
         try:
             await self.grpc_client.__aenter__()
+            self.primary_task = asyncio.get_running_loop().create_task(
+                getattr(self.grpc_client, self.mode)(self.input_fn, self.output_fn, **self._kwargs)
+            )
+            # TODO: read doc and see if this await is necessary (Han 2020.12.12)
+            await self.primary_task
         except GRPCServerError:
             self.logger.error('couldn\'t connect to PyClient. exiting')
-            self._teardown()
-            return
-        self.primary_task = asyncio.get_running_loop().create_task(
-            getattr(self.grpc_client, self.mode)(self.input_fn, self.output_fn, **self._kwargs)
-        )
-        try:
-            await self.primary_task
         except asyncio.CancelledError:
             self.logger.debug(f'{self.mode} operation got cancelled manually')
+        finally:
+            self._teardown()
 
     def loop_body(self):
         configure_event_loop()
@@ -71,16 +71,16 @@ class PyClientRuntime(BasePea):
             self.unset_ready()
             self.is_shutdown.set()
 
-    async def _loop_teardown(self):
-        if not self.grpc_client.is_closed:
-            await self.grpc_client.close()
-
     def _teardown(self):
+        async def _loop_teardown():
+            if not self.grpc_client.is_closed:
+                await self.grpc_client.close()
+
         if hasattr(self, 'grpc_client'):
             if hasattr(self, 'primary_task'):
                 if not self.primary_task.done():
                     self.primary_task.cancel()
-                asyncio.get_event_loop().run_until_complete(self._loop_teardown())
+                asyncio.get_event_loop().run_until_complete(_loop_teardown())
             self.is_shutdown.set()
 
     def close(self) -> None:

@@ -3,8 +3,6 @@ __license__ = "Apache-2.0"
 
 import warnings
 
-from zmq import Again
-
 from .python.helper import callback_exec, pprint_routes
 from .python.runtime import PyClientRuntime
 from .. import Request
@@ -69,23 +67,20 @@ def py_client(mode, input_fn, output_fn, **kwargs) -> None:
     on_always = kwargs['on_always'] if 'on_always' in kwargs else None
 
     with JinaLogger(context='PyClientRuntime') as logger, \
-            CtrlZmqlet(logger=logger, is_bind=False, is_async=False, timeout=10000) as zmqlet, \
+            CtrlZmqlet(logger=logger, is_bind=False, is_async=False) as zmqlet, \
             PyClientRuntime(args, mode=mode, input_fn=input_fn, output_fn=output_fn,
                             address=zmqlet.address, **kwargs):
         # note: we don't use async zmq context here on the main process
+        # TODO: this loop should be put inside PyClientRuntime (Han 2020.12.12)
         while True:
-            try:
-                msg = zmqlet.sock.recv()
-                if msg == b'TERMINATE':
-                    # ideal way of exit, but PyClient socket might have closed before we recv it here
-                    logger.debug('received terminate message from the client response stream')
-                    zmqlet.sock.send_string('')
-                    break
-                else:
-                    callback_exec(response=Request(msg), on_done=output_fn, on_error=on_error,
-                                  on_always=on_always, continue_on_error=args.continue_on_error,
-                                  logger=logger)
-                    zmqlet.sock.send_string('')
-            except Again:
-                logger.warning(f'waited for 10 secs for PyClient to respond. breaking')
+            msg = zmqlet.sock.recv()
+            if msg == b'TERMINATE':
+                # ideal way of exit, but PyClient socket might have closed before we recv it here
+                logger.debug('received terminate message from the client response stream')
+                zmqlet.sock.send_string('')
                 break
+            else:
+                callback_exec(response=Request(msg), on_done=output_fn, on_error=on_error,
+                              on_always=on_always, continue_on_error=args.continue_on_error,
+                              logger=logger)
+                zmqlet.sock.send_string('')

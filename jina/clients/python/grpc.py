@@ -91,11 +91,6 @@ class AsyncGrpcClient:
                                                 'please double check your input iterator') from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
-        finally:
-            # avoid closing a client after a single `index`, `search` or `train` operation
-            if 'close' in kwargs:
-                await self.close()
-
         return self
 
     async def close(self) -> None:
