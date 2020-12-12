@@ -350,6 +350,8 @@ class BasePea(metaclass=PeaMeta):
         all_envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.log_id}
         if self.args.env:
             all_envs.update(self.args.env)
+
+        if all_envs:
             if self.args.runtime == 'thread':
                 self.logger.warning('environment variables should not be set when runtime="thread". '
                                     f'ignoring all environment variables: {all_envs}')
