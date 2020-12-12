@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
-from typing import Callable, Union, Optional
+from typing import Callable, Union, Optional, Iterator
 
 from . import request
 from .grpc import AsyncGrpcClient
@@ -32,10 +32,7 @@ class PyClient(AsyncGrpcClient):
 
     def __init__(self, args: 'argparse.Namespace'):
         """
-
         :param args: args provided by the CLI
-        :param address: an optional address (PAIR_BIND) on which client can send the response from the servicer
-
         """
         super().__init__(args)
         self._mode = self.args.mode
@@ -105,7 +102,15 @@ class PyClient(AsyncGrpcClient):
         :param on_error: a callback function on error, invoke on every error response
         :param on_always: a callback function when a request is complete
         """
-        # take the default args from client
+        req_iter, tname = self.get_requests(**kwargs)
+        with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
+            async for response in self._stub.Call(req_iter):
+                callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
+                              continue_on_error=self.args.continue_on_error, logger=self.logger)
+                p_bar.update(self.args.batch_size)
+
+    def get_requests(self, **kwargs) -> Iterator['Request']:
+        """Get request in generator"""
         _kwargs = vars(self.args)
         _kwargs['data'] = self.input_fn
         # override by the caller-specific kwargs
@@ -115,13 +120,7 @@ class PyClient(AsyncGrpcClient):
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
 
-        req_iter = getattr(request, tname)(**_kwargs)
-        with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-            async for response in self._stub.Call(req_iter):
-                # If no ctrl address is passed, callback gets executed in the client process
-                callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
-                              continue_on_error=self.args.continue_on_error, logger=self.logger)
-                p_bar.update(self.args.batch_size)
+        return getattr(request, tname)(**_kwargs), tname
 
     @property
     def input_fn(self) -> InputFnType:
