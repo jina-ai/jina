@@ -441,15 +441,14 @@ def is_valid_local_config_source(path: str) -> bool:
 
 
 def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
-                    parser: ArgumentParser, parser_name: str = None
-                    ) -> Tuple[List[str], Namespace, List[Any]]:
+                    parser: ArgumentParser) -> Tuple[List[str], Namespace, List[Any]]:
     args = kwargs2list(kwargs)
     try:
         p_args, unknown_args = parser.parse_known_args(args)
         if unknown_args:
             from .logging import default_logger
             default_logger.debug(
-                f'parser {parser_name} can not '
+                f'parser {typename(parser)} can not '
                 f'recognize the following args: {unknown_args}, '
                 f'they are ignored. if you are using them from a global args (e.g. Flow), '
                 f'then please ignore this message')
@@ -529,6 +528,19 @@ def configure_event_loop():
     use_uvloop()
     import asyncio
     asyncio.set_event_loop(asyncio.new_event_loop())
+
+
+def get_or_reuse_eventloop():
+    """Get a new eventloop or reuse the current opened eventloop"""
+    import asyncio
+    try:
+        loop = asyncio.get_running_loop()
+        if loop.is_closed():
+            raise RuntimeError
+    except RuntimeError:
+        use_uvloop()
+        loop = asyncio.new_event_loop()
+    return loop
 
 
 def typename(obj):

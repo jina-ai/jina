@@ -56,6 +56,7 @@ class Flow(ExitStack):
         """
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
+        self._cls_pod = FlowPod  #: the type of the Pod, can be changed to other class
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
@@ -72,7 +73,7 @@ class Flow(ExitStack):
         _flow_parser = set_flow_parser()
         if args is None:
             from ..helper import get_parsed_args
-            _, args, _ = get_parsed_args(kwargs, _flow_parser, 'Flow')
+            _, args, _ = get_parsed_args(kwargs, _flow_parser)
 
         self.args = args
         self._common_kwargs = kwargs
@@ -271,17 +272,13 @@ class Flow(ExitStack):
                 kwargs[key] = value
 
         kwargs['name'] = pod_name
-        kwargs['log-id'] = self.args.log_id
+        kwargs['log_id'] = self.args.log_id
         kwargs['num_part'] = len(needs)
 
-        op_flow._pod_nodes[pod_name] = self._invoke_flowpod(kwargs, needs, pod_role)
+        op_flow._pod_nodes[pod_name] = self._cls_pod(kwargs=kwargs, needs=needs, pod_role=pod_role)
         op_flow.last_pod = pod_name
 
         return op_flow
-
-    def _invoke_flowpod(self, kwargs: Dict, needs: Set[str], pod_role: 'PodRoleType'):
-        """This gets inherited in jinad"""
-        return FlowPod(kwargs=kwargs, needs=needs, pod_role=pod_role)
 
     def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
         """Add an inspection on the last changed Pod in the Flow
@@ -539,15 +536,14 @@ class Flow(ExitStack):
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _invoke_client(self, *args, **kwargs):
+    def _get_client(self, **kwargs):
         kwargs.update(self._common_kwargs)
         from ..clients import py_client
         if 'port_expose' not in kwargs:
             kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
-
-        py_client(*args, **kwargs)
+        return py_client(**kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: InputFnType = None,
@@ -587,7 +583,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._invoke_client('train', input_fn, output_fn, **kwargs)
+        self._get_client('train', input_fn, output_fn, **kwargs)
 
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                       output_fn: Callable[['Request'], None] = None,
@@ -602,8 +598,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_numpy
-        input_fn = input_numpy(array, axis, size, shuffle)
-        self._invoke_client('index', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle),
+                                         output_fn, **kwargs)
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        output_fn: Callable[['Request'], None] = None,
@@ -618,8 +614,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_numpy
-        input_fn = input_numpy(array, axis, size, shuffle)
-        self._invoke_client('search', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle),
+                                          output_fn, **kwargs)
 
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
@@ -637,8 +633,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        input_fn = input_lines(lines, filepath, size, sampling_rate, read_mode)
-        self._invoke_client('index', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode),
+                                         output_fn, **kwargs)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -657,8 +653,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        input_fn = input_files(patterns, recursive, size, sampling_rate, read_mode)
-        self._invoke_client('index', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode),
+                                         output_fn, **kwargs)
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -677,8 +673,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_files
-        input_fn = input_files(patterns, recursive, size, sampling_rate, read_mode)
-        self._invoke_client('search', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode),
+                                          output_fn, **kwargs)
 
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
@@ -696,8 +692,8 @@ class Flow(ExitStack):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.python.io import input_lines
-        input_fn = input_lines(lines, filepath, size, sampling_rate, read_mode)
-        self._invoke_client('search', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode),
+                                          output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: InputFnType = None,
@@ -737,7 +733,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._invoke_client('index', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def search(self, input_fn: InputFnType = None,
@@ -778,7 +774,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._invoke_client('search', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
     @property
     def _mermaid_str(self):
@@ -938,12 +934,6 @@ class Flow(ExitStack):
                 fp.write(urlopen(req).read())
         except:
             self.logger.error('can not download image, please check your graph and the network connections')
-
-    def dry_run(self, **kwargs):
-        """Send a DRYRUN request to this flow, passing through all pods in this flow,
-        useful for testing connectivity and debugging"""
-        self.logger.warning('calling dry_run() on a flow is depreciated, it will be removed in the future version. '
-                            'calling index(), search(), train() will trigger a dry_run()')
 
     @build_required(FlowBuildLevel.GRAPH)
     def to_swarm_yaml(self, path: TextIO):

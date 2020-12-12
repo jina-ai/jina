@@ -9,11 +9,10 @@ from .grpc import AsyncGrpcClient
 from .helper import ProgressBar, pprint_routes, callback_exec
 from .request import GeneratorSourceType
 from ...enums import RequestType
-from ...excepts import BadClient, DryRunException
-from ...helper import typename
+from ...excepts import BadClient, DryRunException, BadInputFunction
+from ...helper import typename, get_or_reuse_eventloop
 from ...logging import default_logger
 from ...logging.profile import TimeContext
-from ...peapods.zmq import CtrlZmqlet
 from ...proto import jina_pb2
 from ...types.request import Request
 from ...types.request.common import DryRunRequest, TrainDryRunRequest, IndexDryRunRequest, SearchDryRunRequest
@@ -29,29 +28,9 @@ class PyClient(AsyncGrpcClient):
     """A simple Python client for connecting to the gateway. This class is for internal only,
     use the python interface :func:`jina.clients.py_client` to start :class:`PyClient` if you
     want to use it in Python.
-
-    Assuming a Flow is "standby" on 192.168.1.100, with port_expose at 55555.
-
-    .. highlight:: python
-    .. code-block:: python
-
-        from jina.clients import py_client
-
-        # to test connectivity
-        await py_client(host='192.168.1.100', port_expose=55555).dry_run()
-
-        # to search
-        await py_client(host='192.168.1.100', port_expose=55555).search(input_fn, output_fn)
-
-        # to index
-        await py_client(host='192.168.1.100', port_expose=55555).index(input_fn, output_fn)
-
-    .. note::
-        To perform `index`, `search` or `train`, py_client needs to be awaited, as it is a coroutine
-
     """
 
-    def __init__(self, args: 'argparse.Namespace', address: str = None):
+    def __init__(self, args: 'argparse.Namespace'):
         """
 
         :param args: args provided by the CLI
@@ -61,8 +40,6 @@ class PyClient(AsyncGrpcClient):
         super().__init__(args)
         self._mode = self.args.mode
         self._input_fn = None
-        self._address = address
-        self.zmqlet = None
 
     @property
     def mode(self) -> str:
@@ -89,13 +66,13 @@ class PyClient(AsyncGrpcClient):
 
         try:
             r = next(getattr(request, 'index')(**kwargs))
-            if r is not None:
+            if isinstance(r, Request):
                 default_logger.success(f'input_fn is valid')
             else:
-                raise TypeError
-        except:
+                raise TypeError(f'{typename(r)} is not a valid Request')
+        except Exception as ex:
             default_logger.error(f'input_fn is not valid!')
-            raise
+            raise BadInputFunction from ex
 
     async def call_unary(self, data: Union[GeneratorSourceType], mode: RequestType, **kwargs) -> None:
         """ Calling the server with one request only, and return the result
@@ -139,29 +116,12 @@ class PyClient(AsyncGrpcClient):
             tname = str(kwargs['mode']).lower()
 
         req_iter = getattr(request, tname)(**_kwargs)
-
-        if self._address:
-            self.zmqlet = CtrlZmqlet(logger=self.logger, address=self._address,
-                                     is_bind=True, is_async=True)
-
         with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
             async for response in self._stub.Call(req_iter):
-                if self.zmqlet:
-                    # If a zmq ctrl address is passed, the callback will get executed in the main process
-                    # Hence we send the `response` back to the main process on the mentioned sock.
-                    # `response` needs to be sent as a serialized string.
-                    await self.zmqlet.sock.send(response.SerializeToString())
-                    await self.zmqlet.sock.recv()
-                else:
-                    # If no ctrl address is passed, callback gets executed in the client process
-                    callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
-                                  continue_on_error=self.args.continue_on_error, logger=self.logger)
+                # If no ctrl address is passed, callback gets executed in the client process
+                callback_exec(response=response, on_error=on_error, on_done=on_done, on_always=on_always,
+                              continue_on_error=self.args.continue_on_error, logger=self.logger)
                 p_bar.update(self.args.batch_size)
-
-            if self.zmqlet:
-                # Once we are out of the response stream, send a `TERMINATE` message & wait for a response
-                await self.zmqlet.sock.send_string('TERMINATE')
-                await self.zmqlet.sock.recv()
 
     @property
     def input_fn(self) -> InputFnType:
@@ -182,7 +142,7 @@ class PyClient(AsyncGrpcClient):
         else:
             self._input_fn = bytes_gen
 
-    async def dry_run(self, req: 'DryRunRequest') -> None:
+    def dry_run(self, req: 'DryRunRequest') -> None:
         """A dry run request is a Search/Index/Train Request with empty content.
         Useful for testing connectivity and debugging the connectivity of the server/flow
 
@@ -193,40 +153,43 @@ class PyClient(AsyncGrpcClient):
         def req_gen():
             yield req
 
-        before = time.perf_counter()
-        async for resp in self._stub.Call(req_gen()):
-            if resp.status.code < jina_pb2.StatusProto.ERROR:
-                self.logger.info(
-                    f'dry run of {typename(req)} takes {time.perf_counter() - before:.3f}s, '
-                    f'this flow has a good connectivity')
-            else:
-                raise DryRunException(resp.status)
+        async def _inner():
+            async with self:
+                before = time.perf_counter()
+                async for resp in self._stub.Call(req_gen()):
+                    if resp.status.code < jina_pb2.StatusProto.ERROR:
+                        self.logger.info(
+                            f'dry run of {typename(req)} takes {time.perf_counter() - before:.3f}s, '
+                            f'this flow has a good connectivity')
+                    else:
+                        raise DryRunException(resp.status)
 
-    async def train(self, input_fn: Optional[InputFnType] = None,
-                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        get_or_reuse_eventloop().run_until_complete(_inner())
+
+    def _run(self, input_fn, output_fn, **kwargs):
+        """Unified interface called by `train`, `search`, `index`"""
+        self.input_fn = input_fn
+
+        async def _inner():
+            async with self:
+                await self.start(output_fn, **kwargs)
+
+        get_or_reuse_eventloop().run_until_complete(_inner())
+
+    def train(self, input_fn: Optional[InputFnType] = None,
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.TRAIN
-        self.input_fn = input_fn
-        if not self.args.skip_dry_run:
-            await self.dry_run(TrainDryRunRequest())
-        await self.start(output_fn, **kwargs)
+        self.dry_run(TrainDryRunRequest())
+        self._run(input_fn, output_fn, **kwargs)
 
-    async def search(self, input_fn: Optional[InputFnType] = None,
-                     output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    def search(self, input_fn: Optional[InputFnType] = None,
+               output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.SEARCH
-        self.input_fn = input_fn
-        if not self.args.skip_dry_run:
-            await self.dry_run(SearchDryRunRequest())
-        await self.start(output_fn, **kwargs)
+        self.dry_run(SearchDryRunRequest())
+        self._run(input_fn, output_fn, **kwargs)
 
-    async def index(self, input_fn: Optional[InputFnType] = None,
-                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    def index(self, input_fn: Optional[InputFnType] = None,
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.INDEX
-        self.input_fn = input_fn
-        if not self.args.skip_dry_run:
-            await self.dry_run(IndexDryRunRequest())
-        await self.start(output_fn, **kwargs)
-
-    async def close(self) -> None:
-        await super().close()
-        if getattr(self, 'zmqlet', None):
-            self.zmqlet.close()
+        self.dry_run(IndexDryRunRequest())
+        self._run(input_fn, output_fn, **kwargs)

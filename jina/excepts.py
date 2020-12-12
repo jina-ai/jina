@@ -151,6 +151,10 @@ class DryRunException(Exception):
     """Dryrun is not successful on the given flow"""
 
 
+class BadInputFunction(Exception):
+    """Exception when the input function throws an error """
+
+
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """
 

@@ -36,11 +36,8 @@ class AsyncGrpcClient:
         self.logger.debug('setting up grpc insecure channel...')
         self._channel = grpc.aio.insecure_channel(
             f'{self.args.host}:{self.args.port_expose}',
-            options={
-                'grpc.max_send_message_length': -1,
-                'grpc.max_receive_message_length': -1
-            }.items(),
-        )
+            options=[('grpc.max_send_message_length', -1),
+                     ('grpc.max_receive_message_length', -1)])
         await self._channel.channel_ready()
         self._stub = jina_pb2_grpc.JinaRPCStub(self._channel)
         self.logger.success(f'connected to the gateway at {self.args.host}:{self.args.port_expose}!')
