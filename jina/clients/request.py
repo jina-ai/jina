@@ -101,7 +101,7 @@ def train(*args, **kwargs):
 def search(*args, **kwargs):
     """Generate a searching request """
     if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
-        from ...drivers.search import VectorSearchDriver
+        from ..drivers.search import VectorSearchDriver
         topk_ql = QueryLang(VectorSearchDriver(top_k=kwargs['top_k'], priority=1))
         if 'queryset' not in kwargs:
             kwargs['queryset'] = [topk_ql]
