@@ -32,33 +32,6 @@ def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
 
 
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_client_call_unary(flow):
-    with flow:
-        client = py_client_old(port_expose=flow.port_expose)
-        await client.configure_client()
-        await client.call_unary(
-            [b'a1234', b'b4567'], mode=RequestType.INDEX,
-        )
-
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_client_index(flow):
-    with flow:
-        client = py_client_old(port_expose=flow.port_expose)
-        await client.configure_client()
-        await client.index(['a1234', 'b4567'])
-
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_client_search(flow):
-    with flow:
-        client = py_client_old(port_expose=flow.port_expose)
-        await client.configure_client()
-        await client.search(['a1234', 'b4567'])
-
-
 @pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
 def test_check_input_success(input_fn):
     Client.check_input(input_fn)

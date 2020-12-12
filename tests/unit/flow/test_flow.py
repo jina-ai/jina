@@ -14,7 +14,6 @@ from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_po
 from jina.peapods.peas import BasePea
 from jina.peapods.pods import BasePod
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.request.common import IndexDryRunRequest
 from tests import random_docs, rm_files
 
 cur_dir = Path(__file__).parent
@@ -199,7 +198,6 @@ def test_flow_identical():
     rm_files(['test2.yml'])
 
 
-
 def test_pod_status():
     args = set_pod_parser().parse_args(['--parallel', '3'])
     with BasePod(args) as p:
@@ -281,9 +279,7 @@ def test_shards():
     rm_files(['test-docshard-tmp'])
 
 
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_py_client():
+def test_py_client():
     f = (Flow().add(name='r1')
          .add(name='r2')
          .add(name='r3', needs='r1')
@@ -293,12 +289,6 @@ async def test_py_client():
          .add(name='r8', needs='r6')
          .add(name='r9', needs='r5')
          .add(name='r10', needs=['r9', 'r8']))
-
-    with f:
-        from jina.clients import py_client_old
-        client = py_client_old(port_expose=f.port_expose, host=f.host)
-        await client.configure_client()
-        await client.dry_run(IndexDryRunRequest())
 
     with f:
         node = f._pod_nodes['gateway']
@@ -369,8 +359,6 @@ def test_dry_run_with_two_pathways_diverging_at_gateway():
             assert node.peas_args['peas'][0] == node.tail_args
 
 
-
-
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
     f = (Flow().add(name='r1')
          .add(name='r2')
@@ -397,7 +385,6 @@ def test_dry_run_with_two_pathways_diverging_at_non_gateway():
         for name, node in f._pod_nodes.items():
             assert node.peas_args['peas'][0] == node.head_args
             assert node.peas_args['peas'][0] == node.tail_args
-
 
 
 def test_refactor_num_part():
