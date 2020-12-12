@@ -347,11 +347,15 @@ class BasePea(metaclass=PeaMeta):
         .. warning::
             If you are using ``thread`` as backend, envs setting will likely be overidden by others
         """
-        os.environ['JINA_POD_NAME'] = self.name
-        os.environ['JINA_LOG_ID'] = self.args.log_id
+        all_envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.log_id}
         if self.args.env:
-            for k, v in self.args.env.items():
-                os.environ[k] = v
+            all_envs.update(self.args.env)
+            if self.args.runtime == 'thread':
+                self.logger.warning('environment variables should not be set when runtime="thread". '
+                                    f'ignoring all environment variables: {all_envs}')
+            else:
+                for k, v in all_envs.items():
+                    os.environ[k] = v
 
     def load_plugins(self):
         if self.args.py_modules:
