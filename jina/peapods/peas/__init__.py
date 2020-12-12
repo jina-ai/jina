@@ -140,14 +140,16 @@ class BasePea(metaclass=PeaMeta):
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl,
                                                                          self.args.ctrl_with_ipc)
 
+        self._envs = {'JINA_POD_NAME': self.name}
+
         if 'log_id' in self.args and 'log_config' in self.args:
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)
+            self._envs['JINA_LOG_ID'] = self.args.log_id
         else:
             self.logger = JinaLogger(self.name)
 
-        self._envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.log_id}
         if self.args.env:
             self._envs.update(self.args.env)
 
