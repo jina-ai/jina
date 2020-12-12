@@ -1,7 +1,6 @@
 import os
 
 import pytest
-
 from jina.executors import BaseExecutor
 from jina.parser import set_pod_parser, set_gateway_parser
 from jina.peapods import Pod
@@ -98,6 +97,29 @@ def test_pod_env_setting():
     os.environ['key_parent'] = 'value3'
 
     with Pod(uses='EnvChecker', env=['key1=value1', 'key2=value2']):
+        pass
+
+    # should not affect the main process
+    assert 'key1' not in os.environ
+    assert 'key2' not in os.environ
+    assert 'key_parent' in os.environ
+
+    os.environ.unsetenv('key_parent')
+
+
+def test_pod_env_setting_thread():
+    class EnvChecker(BaseExecutor):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # pea/pod-specific
+            assert 'key1' not in os.environ
+            assert 'key2' not in os.environ
+            # inherit from parent process
+            assert os.environ['key_parent'] == 'value3'
+
+    os.environ['key_parent'] = 'value3'
+
+    with Pod(uses='EnvChecker', env=['key1=value1', 'key2=value2'], runtime='thread'):
         pass
 
     # should not affect the main process
