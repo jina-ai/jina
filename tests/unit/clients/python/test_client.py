@@ -2,9 +2,8 @@ import time
 import pytest
 import requests
 
-from jina.clients import py_client_old
-from jina.clients.python import PyClient
-from jina.clients.python.io import input_files
+from jina.clients import Client
+from jina.clients.sugary_io import input_files
 from jina.enums import RequestType
 from jina.flow import Flow
 from jina.helper import random_port
@@ -62,13 +61,13 @@ async def test_client_search(flow):
 
 @pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
 def test_check_input_success(input_fn):
-    PyClient.check_input(input_fn)
+    Client.check_input(input_fn)
 
 
 @pytest.mark.parametrize('input_fn', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])])
 def test_check_input_fail(input_fn):
     with pytest.raises(TypeError):
-        PyClient.check_input(input_fn)
+        Client.check_input(input_fn)
 
 
 @pytest.mark.parametrize(

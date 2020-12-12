@@ -9,9 +9,9 @@ import webbrowser
 import numpy as np
 from pkg_resources import resource_filename
 
-from ..clients.python import ProgressBar
 from ..helper import colored
 from ..logging import default_logger
+from ..logging.profile import ProgressBar
 
 result_html = []
 

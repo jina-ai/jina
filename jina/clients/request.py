@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Iterator, Union, Tuple, Sequence
 
-from ... import Request
-from ...enums import RequestType, DataInputType
-from ...excepts import BadDocType
-from ...helper import batch_iterator
-from ...types.document import Document, DocumentSourceType, DocumentContentType
-from ...types.querylang import QueryLang
-from ...types.sets.querylang import AcceptQueryLangType
+from .. import Request
+from ..enums import RequestType, DataInputType
+from ..excepts import BadDocType
+from ..helper import batch_iterator
+from ..types.document import Document, DocumentSourceType, DocumentContentType
+from ..types.querylang import QueryLang
+from ..types.sets.querylang import AcceptQueryLangType
 
 GeneratorSourceType = Iterator[Union[DocumentContentType,
                                      DocumentSourceType,

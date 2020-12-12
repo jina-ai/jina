@@ -58,7 +58,6 @@ class RESTGateway:
             path='/api/{mode}'
         )
         async def api(mode: str, body: Any = Body(...)):
-            from ....clients import python
             if mode.upper() not in RequestType.__members__:
                 return error(reason=f'unsupported mode {mode}', status_code=405)
 
@@ -66,7 +65,7 @@ class RESTGateway:
                 return error('"data" field is empty', 406)
 
             body['mode'] = RequestType.from_string(mode)
-            req_iter = getattr(python.request, mode)(**body)
+            req_iter = getattr(jina.clients.request, mode)(**body)
             results = await self.get_result_in_json(req_iter=req_iter)
             return JSONResponse(content=results[0],
                                 status_code=200)

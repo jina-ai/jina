@@ -18,13 +18,14 @@ from ruamel.yaml import StringIO
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
-from ..clients.python import InputFnType
+from ..clients import InputFnType, Client
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, get_non_defaults_args, deprecated_alias, complete_path, colored, \
-    get_public_ip, get_internal_ip, typename
+    get_public_ip, get_internal_ip, typename, get_parsed_args
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
+from ..parser import set_client_cli_parser
 from ..peapods.pods.flow import FlowPod
 from ..peapods.pods.gateway import GatewayFlowPod
 
@@ -538,12 +539,13 @@ class Flow(ExitStack):
     @build_required(FlowBuildLevel.GRAPH)
     def _get_client(self, **kwargs):
         kwargs.update(self._common_kwargs)
-        from ..clients import py_client
         if 'port_expose' not in kwargs:
             kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
-        return py_client(**kwargs)
+
+        _, args, _ = get_parsed_args(kwargs, set_client_cli_parser())
+        return Client(args)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: InputFnType = None,
@@ -597,7 +599,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.python.io import input_numpy
+        from ..clients.sugary_io import input_numpy
         self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle),
                                          output_fn, **kwargs)
 
@@ -613,7 +615,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.python.io import input_numpy
+        from ..clients.sugary_io import input_numpy
         self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle),
                                           output_fn, **kwargs)
 
@@ -632,7 +634,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.python.io import input_lines
+        from ..clients.sugary_io import input_lines
         self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode),
                                          output_fn, **kwargs)
 
@@ -652,7 +654,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.python.io import input_files
+        from ..clients.sugary_io import input_files
         self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode),
                                          output_fn, **kwargs)
 
@@ -672,7 +674,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.python.io import input_files
+        from ..clients.sugary_io import input_files
         self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode),
                                           output_fn, **kwargs)
 
@@ -691,7 +693,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.python.io import input_lines
+        from ..clients.sugary_io import input_lines
         self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode),
                                           output_fn, **kwargs)
 

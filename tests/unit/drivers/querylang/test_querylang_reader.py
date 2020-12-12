@@ -1,4 +1,4 @@
-from jina.clients.python import PyClient
+from jina.clients import Client
 from jina.drivers import QuerySetReader, BaseDriver
 from jina.drivers.querylang.slice import SliceQL
 from jina.flow import Flow
@@ -37,7 +37,7 @@ class DummyDriver(QuerySetReader, BaseDriver):
 
 def test_querylang_request():
     qs = QueryLang(SliceQL(start=1, end=4, priority=1))
-    PyClient.check_input(random_docs(10), queryset=qs)
+    Client.check_input(random_docs(10), queryset=qs)
 
 
 def test_read_from_req(mocker):
