@@ -7,11 +7,9 @@ from jina.flow import Flow
 from jina.types.ndarray.generic import NdArray
 from tests import random_docs
 
-parallel = 10
-
-num_docs = 100
-chunks_per_doc = 100
-embed_dim = 1000
+num_docs = 10
+chunks_per_doc = 10
+embed_dim = 10
 rseed = 531
 
 
@@ -36,15 +34,8 @@ def test_quant_f1(quant):
     np.random.seed(rseed)
     os.environ['JINA_ARRAY_QUANT'] = quant
 
-    f = Flow(callback_on='body').add()
+    f = Flow().add()
     with f as fl:
         fl.index(random_docs(num_docs, chunks_per_doc=chunks_per_doc, embed_dim=embed_dim), output_fn=get_output)
 
-@pytest.mark.parametrize('quant', ['fp32', 'fp16', 'uint8'])
-def test_quant_f2(quant):
-    np.random.seed(rseed)
-    os.environ['JINA_ARRAY_QUANT'] = quant
-
-    f = Flow(callback_on='body').add()
-    with f as fl:
-        fl.index(random_docs(num_docs, chunks_per_doc=chunks_per_doc, embed_dim=embed_dim), output_fn=get_output)
+    os.unsetenv('JINA_ARRAY_QUANT')
