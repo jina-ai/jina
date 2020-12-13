@@ -1,10 +1,10 @@
 import time
+
 import pytest
 import requests
 
 from jina.clients import Client
 from jina.clients.sugary_io import input_files
-from jina.enums import RequestType
 from jina.excepts import BadInputFunction
 from jina.flow import Flow
 from jina.helper import random_port

@@ -33,8 +33,11 @@ class GatewayPea(BasePea):
             msg = await recv_message_async(sock)
             if msg.request.command == 'TERMINATE':
                 msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
-                await self.server.stop(0)
+                await self._serve_shutdown()
                 await send_message_async(sock, msg)
+
+    async def _serve_shutdown(self):
+        await self.server.stop(0)
 
     async def _serve_forever(self):
         if not self.args.proxy and os.name != 'nt':
