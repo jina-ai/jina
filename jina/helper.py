@@ -511,7 +511,7 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
     return version_info + '\n' + env_info
 
 
-def use_uvloop():
+def _use_uvloop():
     if 'JINA_DISABLE_UVLOOP' not in os.environ:
         from .importer import ImportExtensions
         with ImportExtensions(required=False,
@@ -525,7 +525,7 @@ def use_uvloop():
 def configure_event_loop():
     # This should be set in loop_body of every process that needs an event loop as the 1st step
     # This helps getting rid of `event loop already running` error while executing `run_until_complete`
-    use_uvloop()
+    _use_uvloop()
     import asyncio
     asyncio.set_event_loop(asyncio.new_event_loop())
 
@@ -538,8 +538,11 @@ def get_or_reuse_eventloop():
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        use_uvloop()
+        _use_uvloop()
+        # no running event loop
+        # create a new loop
         loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
     return loop
 
 

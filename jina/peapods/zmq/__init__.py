@@ -14,7 +14,7 @@ from zmq.ssh import tunnel_connection
 
 from ... import __default_host__, Request
 from ...enums import SocketType
-from ...helper import colored, get_random_identity, get_readable_size, use_uvloop
+from ...helper import colored, get_random_identity, get_readable_size
 from ...importer import ImportExtensions
 from ...logging import default_logger, profile_logger, JinaLogger
 from ...types.message import Message
@@ -22,8 +22,6 @@ from ...types.message.common import ControlMessage
 
 if False:
     import argparse
-
-use_uvloop()
 
 
 class Zmqlet:
@@ -281,65 +279,6 @@ class AsyncZmqlet(Zmqlet):
         return self
 
 
-class CtrlZmqlet(AsyncZmqlet):
-    """ Zmqlet with only a single socket to PAIR (BIND-CONNECT) on
-    This can be used by all local pea-like objects that don't carry a zmqstreamlet - (gateway-grpc,
-    gateway-rest, remote, client)
-
-    ctrl_address is ipc based (to avoid port collison for gateway)
-        - main process can fetch this from a static call.
-        - child process can build a socket from the same ctrl_address
-
-    :param args: args provided by the CLI
-    :param logger: JinaLogger for this class
-    :param address: address to PAIR-BIND / PAIR-CONNECT on
-    :param is_bind: boolean to check if socket is BIND or CONNECT
-    :param is_async: boolean to define the zmq context (this helps in avoiding an event-loop in the main process)
-    :param timeout: timeout for sockets to avoid hang
-
-    """
-
-    def __init__(self, logger: 'JinaLogger', address: 'str' = None,
-                 is_bind: 'bool' = True, is_async: 'bool' = True, timeout: int = -1) -> None:
-        self.logger = logger
-        self.socket_type = SocketType.PAIR_BIND if is_bind else SocketType.PAIR_CONNECT
-        self._is_async = is_async
-        self.timeout = timeout
-        self.is_closed = False
-        self.opened_socks = []
-        self.address = address or _get_random_ipc()
-        self.ctx, self.sock = self.init_sockets()
-        self.opened_socks.append(self.sock)
-        self.register_pollin()
-        self.set_timeout()
-
-    def register_pollin(self):
-        self.poller = zmq.Poller()
-        self.poller.register(self.sock, zmq.POLLIN)
-
-    def _get_zmq_ctx(self):
-        if self._is_async:
-            return zmq.asyncio.Context()
-        return zmq.Context()
-
-    def set_timeout(self):
-        self.sock.setsockopt(zmq.SNDTIMEO, self.timeout)
-        self.sock.setsockopt(zmq.RCVTIMEO, self.timeout)
-
-    def init_sockets(self):
-        ctx = self._get_zmq_ctx()
-        try:
-            sock, _ = _init_socket(ctx, self.address, None, self.socket_type, use_ipc=True)
-            return ctx, sock
-
-        except zmq.error.ZMQError as ex:
-            self.close()
-            raise ex
-
-    def print_stats(self):
-        pass
-
-
 class ZmqStreamlet(Zmqlet):
     """A :class:`ZmqStreamlet` object can send/receive data to/from ZeroMQ stream and invoke callback function. It
     has three sockets for input, output and control.
@@ -350,9 +289,6 @@ class ZmqStreamlet(Zmqlet):
     """
 
     def register_pollin(self):
-        use_uvloop()
-        import asyncio
-        asyncio.set_event_loop(asyncio.new_event_loop())
         with ImportExtensions(required=True):
             import tornado.ioloop
             self.io_loop = tornado.ioloop.IOLoop.current()

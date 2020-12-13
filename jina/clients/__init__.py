@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import asyncio
 import os
 from typing import Callable, Union, Optional, Iterator
 
@@ -11,7 +12,7 @@ from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
 from ..excepts import BadClientRequestGenerator, BadClient, BadInputFunction
-from ..helper import get_or_reuse_eventloop, typename
+from ..helper import typename
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
@@ -166,4 +167,4 @@ class Client:
                 else:
                     raise BadClient(msg) from rpc_ex
 
-        get_or_reuse_eventloop().run_until_complete(_inner())
+        asyncio.run(_inner())

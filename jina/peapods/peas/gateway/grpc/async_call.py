@@ -8,7 +8,7 @@ from .....types.message import Message
 from .....types.request import Request
 
 
-class GRPCServicer(jina_pb2_grpc.JinaRPCServicer):
+class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
 
     def __init__(self, args):
         super().__init__()
@@ -19,12 +19,6 @@ class GRPCServicer(jina_pb2_grpc.JinaRPCServicer):
     def handle(self, msg: 'Message') -> 'Request':
         msg.add_route(self.name, self.args.identity)
         return msg.response
-
-    async def CallUnary(self, request, context):
-        with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
-            await zmqlet.send_message(Message(None, request, 'gateway',
-                                              **vars(self.args)))
-            return await zmqlet.recv_message(callback=self.handle)
 
     async def Call(self, request_iterator, context):
         with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:

@@ -5,6 +5,7 @@ import requests
 from jina.clients import Client
 from jina.clients.sugary_io import input_files
 from jina.enums import RequestType
+from jina.excepts import BadInputFunction
 from jina.flow import Flow
 from jina.helper import random_port
 from jina.parser import set_gateway_parser
@@ -39,7 +40,7 @@ def test_check_input_success(input_fn):
 
 @pytest.mark.parametrize('input_fn', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])])
 def test_check_input_fail(input_fn):
-    with pytest.raises(TypeError):
+    with pytest.raises(BadInputFunction):
         Client.check_input(input_fn)
 
 

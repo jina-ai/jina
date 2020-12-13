@@ -306,7 +306,7 @@ class BasePea(metaclass=PeaMeta):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self.zmqlet.send_message(self._callback(msg))
-        except RequestLoopEnd as ex:
+        except RequestLoopEnd:
             # this is the proper way to end when a terminate signal is sent
             self.zmqlet.send_message(msg)
             self._teardown()

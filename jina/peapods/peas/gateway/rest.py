@@ -3,8 +3,7 @@ from typing import Any
 
 from google.protobuf.json_format import MessageToDict
 
-from .grpc import GatewayPea
-from .grpc.async_servicer import GRPCServicer
+from .grpc import GatewayPea, AsyncPrefetchCall
 from ....enums import RequestType
 from ....helper import configure_event_loop
 from ....importer import ImportExtensions
@@ -24,7 +23,7 @@ class RESTGatewayPea(GatewayPea):
         configure_event_loop()
         self.gateway = RESTGateway(host=self.args.host,
                                    port_expose=self.args.port_expose,
-                                   servicer=GRPCServicer(self.args),
+                                   servicer=AsyncPrefetchCall(self.args),
                                    logger=self.logger,
                                    proxy=self.args.proxy)
         self.set_ready()
