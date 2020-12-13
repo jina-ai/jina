@@ -5,6 +5,7 @@ import pytest
 
 from jina.clients import Client
 from jina.clients.sugary_io import input_files, input_lines, input_numpy
+from jina.excepts import BadInputFunction
 
 
 @pytest.fixture(scope='function')
@@ -60,7 +61,7 @@ def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
 
 
 def test_input_files_with_invalid_read_mode():
-    with pytest.raises(RuntimeError):
+    with pytest.raises(BadInputFunction):
         Client.check_input(input_files(patterns='*.*', read_mode='invalid'))
 
 
