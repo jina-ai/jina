@@ -53,9 +53,9 @@ class RESTGatewayPea(GatewayPea):
             from uvicorn import Config, Server
 
         class UvicornCustomServer(Server):
-            # uvicorn only supports predefined event loops
-            # hence we implement a way to serve from a custom (already running) loop
             def run(self, sockets=None):
+                # uvicorn only supports predefined event loops
+                # hence we implement a way to serve from a custom (already running) loop
                 asyncio.create_task(self.serve(sockets=sockets))
 
         # change log_level for REST server debugging
