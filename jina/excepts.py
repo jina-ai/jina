@@ -185,3 +185,7 @@ class ImageAlreadyExists(Exception):
 
 class BadFlowYAMLVersion(Exception):
     """ Exception when Flow YAML config specifies a wrong version number"""
+
+
+class EventLoopError(Exception):
+    """ Exception when a running event loop is found but not under jupyter or ipython """

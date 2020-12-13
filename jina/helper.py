@@ -30,6 +30,8 @@ __all__ = ['batch_iterator', 'yaml',
            'cached_property', 'is_url', 'complete_path',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list']
 
+from jina.excepts import EventLoopError
+
 
 def deprecated_alias(**aliases):
     def deco(f):
@@ -710,10 +712,15 @@ def run_async(func, *args, **kwargs):
         loop = None
 
     if loop and loop.is_running():
-        # eventloop already exist, e.g. running inside Jupyter
-        thread = RunThread()
-        thread.start()
-        thread.join()
-        return thread.result
+        # eventloop already exist
+        if hasattr(__builtins__,'__IPYTHON__'):
+            # running inside Jupyter
+            thread = RunThread()
+            thread.start()
+            thread.join()
+            return thread.result
+        else:
+            raise EventLoopError('running loop found but not under ipython/jupyter, '
+                                 'this should not be happening.')
     else:
         return asyncio.run(func(*args, **kwargs))
