@@ -1,15 +1,8 @@
 from functools import partial
 from typing import Callable, List, Type, Union, Iterable
 
+from ....excepts import LookupyError
 
-## Exceptions
-
-class LookupyError(Exception):
-    """Base exception class for all exceptions raised by lookupy"""
-    pass
-
-
-## utility functions
 
 def iff(precond: Callable, val: Union[int, str], f: Callable) -> bool:
     """If and only if the precond is True
