@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import asyncio
 import functools
 import json
 import math
@@ -512,33 +513,30 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
 
 
 def _use_uvloop():
-    if 'JINA_DISABLE_UVLOOP' not in os.environ:
-        from .importer import ImportExtensions
-        with ImportExtensions(required=False,
-                              help_text='Jina uses uvloop to manage events and sockets, '
-                                        'it often yields better performance than builtin asyncio'):
-            import asyncio
-            import uvloop
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    from .importer import ImportExtensions
+    with ImportExtensions(required=False,
+                          help_text='Jina uses uvloop to manage events and sockets, '
+                                    'it often yields better performance than builtin asyncio'):
+        import uvloop
+        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 def configure_event_loop():
     # This should be set in loop_body of every process that needs an event loop as the 1st step
     # This helps getting rid of `event loop already running` error while executing `run_until_complete`
     _use_uvloop()
-    import asyncio
     asyncio.set_event_loop(asyncio.new_event_loop())
 
 
 def get_or_reuse_eventloop():
     """Get a new eventloop or reuse the current opened eventloop"""
-    import asyncio
     try:
         loop = asyncio.get_running_loop()
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        _use_uvloop()
+        if 'JINA_DISABLE_UVLOOP' not in os.environ:
+            _use_uvloop()
         # no running event loop
         # create a new loop
         loop = asyncio.new_event_loop()
