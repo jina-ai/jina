@@ -369,7 +369,7 @@ class BasePea(metaclass=PeaMeta):
     def unset_environment_vars(self):
         if self._envs and self.args.runtime != 'thread':
             for k in self._envs.keys():
-                os.environ.unsetenv(k)
+                os.unsetenv(k)
 
     def load_plugins(self):
         if self.args.py_modules:

@@ -435,7 +435,7 @@ class Flow(ExitStack):
         # unset all envs to avoid any side-effect
         if self._env:
             for k in self._env.keys():
-                os.environ.unsetenv(k)
+                os.unsetenv(k)
 
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
