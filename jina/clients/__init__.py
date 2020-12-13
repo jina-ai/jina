@@ -12,7 +12,7 @@ from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
 from ..excepts import BadClientRequestGenerator, BadClient, BadInputFunction
-from ..helper import typename
+from ..helper import typename, run_async
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
@@ -167,4 +167,5 @@ class Client:
                 else:
                     raise BadClient(msg) from rpc_ex
 
-        asyncio.run(_inner())
+        run_async(_inner)
+

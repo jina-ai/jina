@@ -9,6 +9,7 @@ import os
 import random
 import re
 import sys
+import threading
 import time
 import uuid
 import warnings
@@ -689,3 +690,37 @@ def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[
             else:
                 pea_args[k] = v
         return pea_args
+
+
+def run_async(func, *args, **kwargs):
+    """Generalized asyncio.run for jupyter notebook.
+
+    When running inside jupyter, an eventloop is already exist, can't be stopped, can't be killed.
+    Directly calling asyncio.run will fail, as This function cannot be called when another asyncio event loop
+    is running in the same thread.
+
+    .. see_also:
+        https://stackoverflow.com/questions/55409641/asyncio-run-cannot-be-called-from-a-running-event-loop
+
+    :param func: function to run
+    :param args: parameters
+    :param kwargs: key-value parameters
+    :return:
+    """
+    class RunThread(threading.Thread):
+        def run(self):
+            self.result = asyncio.run(func(*args, **kwargs))
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # eventloop already exist, e.g. running inside Jupyter
+        thread = RunThread()
+        thread.start()
+        thread.join()
+        return thread.result
+    else:
+        return asyncio.run(func(*args, **kwargs))
