@@ -7,9 +7,9 @@ from jina.flow import Flow
 from jina.types.ndarray.generic import NdArray
 from tests import random_docs
 
-num_docs = 10
-chunks_per_doc = 10
-embed_dim = 10
+num_docs = 100
+chunks_per_doc = 100
+embed_dim = 1000
 rseed = 531
 
 

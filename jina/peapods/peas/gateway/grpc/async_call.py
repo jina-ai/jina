@@ -38,21 +38,16 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                             # which doesn't have a __next__, only an __anext__ method.
                             # If there's any issue with the request_iterator, __anext__() never fails, just hangs.
                             # Adding a default timeout of 2 secs for the anext to avoid hang.
-
-                            # In case of any issues with request_iterator, it'll raise asyncio.TimeoutError,
-                            # which gets caught in grpc client. Since issues with the iterator is never propagated
-                            # by grpc, asyncio will log the error message during garbage collection.
-                            # TODO (Deepankar): Issues with request_iterator should be handled in the client caller itself
-                            next_request = await asyncio.wait_for(request_iterator.__anext__(), timeout=2)
+                            # To cancel on large request (will fail/segfault on large request):
+                            # await asyncio.wait_for(request_iterator.__anext__(), timeout=2)
+                            next_request = await request_iterator.__anext__()
                         elif hasattr(request_iterator, '__next__'):
                             # This code block will be executed for REST based invocations
                             next_request = next(request_iterator)
                         else:
                             break
                         asyncio.create_task(
-                            zmqlet.send_message(
-                                Message(None, next_request, 'gateway',
-                                        **vars(self.args))))
+                            zmqlet.send_message(Message(None, next_request, 'gateway', **vars(self.args))))
                         fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
                     except (StopIteration, StopAsyncIteration):
                         return True
