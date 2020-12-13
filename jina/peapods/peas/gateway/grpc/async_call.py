@@ -18,11 +18,12 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
         self.name = args.name or self.__class__.__name__
         self.logger = JinaLogger(self.name, **vars(args))
 
-    def handle(self, msg: 'Message') -> 'Request':
-        msg.add_route(self.name, self.args.identity)
-        return msg.response
-
     async def Call(self, request_iterator, context):
+
+        def handle(msg: 'Message') -> 'Request':
+            msg.add_route(self.name, self.args.identity)
+            return msg.response
+
         with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
             # this restricts the gateway can not be the joiner to wait
             # as every request corresponds to one message, #send_message = #recv_message
@@ -48,7 +49,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                             break
                         asyncio.create_task(
                             zmqlet.send_message(Message(None, next_request, 'gateway', **vars(self.args))))
-                        fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=self.handle)))
+                        fetch_to.append(asyncio.create_task(zmqlet.recv_message(callback=handle)))
                     except (StopIteration, StopAsyncIteration):
                         return True
                 return False

@@ -713,14 +713,10 @@ def run_async(func, *args, **kwargs):
 
     if loop and loop.is_running():
         # eventloop already exist
-        if hasattr(__builtins__,'__IPYTHON__'):
-            # running inside Jupyter
-            thread = RunThread()
-            thread.start()
-            thread.join()
-            return thread.result
-        else:
-            raise EventLoopError('running loop found but not under ipython/jupyter, '
-                                 'this should not be happening.')
+        # running inside Jupyter
+        thread = RunThread()
+        thread.start()
+        thread.join()
+        return thread.result
     else:
         return asyncio.run(func(*args, **kwargs))
