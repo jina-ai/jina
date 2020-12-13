@@ -14,7 +14,7 @@ from zmq.ssh import tunnel_connection
 
 from ... import __default_host__, Request
 from ...enums import SocketType
-from ...helper import colored, get_random_identity, get_readable_size, get_or_reuse_eventloop
+from ...helper import colored, get_random_identity, get_readable_size, get_or_reuse_loop
 from ...importer import ImportExtensions
 from ...logging import default_logger, profile_logger, JinaLogger
 from ...types.message import Message
@@ -291,7 +291,7 @@ class ZmqStreamlet(Zmqlet):
     def register_pollin(self):
         with ImportExtensions(required=True):
             import tornado.ioloop
-            get_or_reuse_eventloop()
+            get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)

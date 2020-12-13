@@ -522,14 +522,7 @@ def _use_uvloop():
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
-def configure_event_loop():
-    # This should be set in loop_body of every process that needs an event loop as the 1st step
-    # This helps getting rid of `event loop already running` error while executing `run_until_complete`
-    _use_uvloop()
-    asyncio.set_event_loop(asyncio.new_event_loop())
-
-
-def get_or_reuse_eventloop():
+def get_or_reuse_loop():
     """Get a new eventloop or reuse the current opened eventloop"""
     try:
         loop = asyncio.get_running_loop()
