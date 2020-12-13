@@ -2,12 +2,12 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
-import asyncio
 import os
 from typing import Callable, Union, Optional, Iterator
 
 import grpc
 
+from . import request
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
@@ -168,4 +168,3 @@ class Client:
                     raise BadClient(msg) from rpc_ex
 
         run_async(_inner)
-

@@ -4,6 +4,7 @@ from typing import Any
 from google.protobuf.json_format import MessageToDict
 
 from .grpc import GatewayPea, AsyncPrefetchCall
+from .... import clients
 from ....enums import RequestType
 from ....helper import configure_event_loop
 from ....importer import ImportExtensions
@@ -64,7 +65,7 @@ class RESTGateway:
                 return error('"data" field is empty', 406)
 
             body['mode'] = RequestType.from_string(mode)
-            req_iter = getattr(jina.clients.request, mode)(**body)
+            req_iter = getattr(clients.request, mode)(**body)
             results = await self.get_result_in_json(req_iter=req_iter)
             return JSONResponse(content=results[0],
                                 status_code=200)
