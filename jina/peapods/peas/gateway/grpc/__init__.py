@@ -11,6 +11,8 @@ from .....enums import SocketType
 from .....proto import jina_pb2
 from .....proto import jina_pb2_grpc
 
+__all__ = ['GatewayPea']
+
 
 class GatewayPea(BasePea):
     def run(self):

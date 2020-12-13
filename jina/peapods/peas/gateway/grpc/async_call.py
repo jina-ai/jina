@@ -7,6 +7,8 @@ from .....proto import jina_pb2_grpc
 from .....types.message import Message
 from .....types.request import Request
 
+__all__ = ['AsyncPrefetchCall']
+
 
 class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
 
