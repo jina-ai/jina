@@ -3,7 +3,8 @@ from typing import Any
 
 from google.protobuf.json_format import MessageToDict
 
-from ..grpc import GatewayPea, AsyncPrefetchCall
+from ..grpc import GatewayPea
+from ..grpc.async_call import AsyncPrefetchCall
 from ..... import clients
 from .....enums import RequestType
 from .....importer import ImportExtensions
@@ -47,7 +48,7 @@ class RESTGatewayPea(GatewayPea):
 
         return app
 
-    async def _serve_forever(self):
+    async def serve_forever(self):
         with ImportExtensions(required=True):
             from uvicorn import Config, Server
 
@@ -55,7 +56,7 @@ class RESTGatewayPea(GatewayPea):
             # uvicorn only supports predefined event loops
             # hence we implement a way to serve from a custom (already running) loop
             def run(self, sockets=None):
-                asyncio.get_event_loop().create_task(self.serve(sockets=sockets))
+                asyncio.create_task(self.serve(sockets=sockets))
 
         # change log_level for REST server debugging
         config = Config(app=self.get_fastapi_app(),
@@ -67,5 +68,5 @@ class RESTGatewayPea(GatewayPea):
         self._server.run()
         self.set_ready()
 
-    async def _serve_shutdown(self):
+    async def serve_terminate(self):
         await self._server.shutdown()

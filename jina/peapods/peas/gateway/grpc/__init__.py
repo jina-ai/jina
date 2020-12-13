@@ -16,6 +16,7 @@ __all__ = ['GatewayPea']
 
 class GatewayPea(BasePea):
     def run(self):
+        """Do not overridden this method when inheriting from :class:`GatewayPea`"""
         try:
             asyncio.run(self._loop_body())
         except KeyboardInterrupt:
@@ -30,18 +31,27 @@ class GatewayPea(BasePea):
             self.is_shutdown.set()
 
     async def _wait_for_shutdown(self):
+        """Do not overridden this method when inheriting from :class:`GatewayPea`"""
         with zmq.asyncio.Context() as ctx, \
                 _init_socket(ctx, self.ctrl_addr, None, SocketType.PAIR_BIND, use_ipc=True)[0] as sock:
             msg = await recv_message_async(sock)
             if msg.request.command == 'TERMINATE':
                 msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
-                await self._serve_shutdown()
+                await self.serve_terminate()
                 await send_message_async(sock, msg)
 
-    async def _serve_shutdown(self):
+    async def serve_terminate(self):
+        """Shutdown the server with async interface
+
+        This method needs to be overridden when inherited from :class:`GatewayPea`
+        """
         await self.server.stop(0)
 
-    async def _serve_forever(self):
+    async def serve_forever(self):
+        """Serve an async service forever
+
+        This method needs to be overridden when inherited from :class:`GatewayPea`
+        """
         if not self.args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
@@ -57,8 +67,9 @@ class GatewayPea(BasePea):
         await self.server.wait_for_termination()
 
     async def _loop_body(self):
+        """Do not overridden this method when inheriting from :class:`GatewayPea`"""
         try:
-            await asyncio.gather(self._serve_forever(), self._wait_for_shutdown())
+            await asyncio.gather(self.serve_forever(), self._wait_for_shutdown())
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
             await self.server.stop(0)
