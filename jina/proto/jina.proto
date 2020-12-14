@@ -287,6 +287,13 @@ message RequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to index
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+
+        enum Method {
+            ADD = 0; // add a document to the index
+            UPDATE = 1; // update a document contained in the index
+            DELETE = 2; // delete a document from the index
+        }
+        Method method = 3;
     }
 
     /**
