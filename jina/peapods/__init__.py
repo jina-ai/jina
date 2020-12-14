@@ -68,14 +68,14 @@ def Pod(args: Optional['argparse.Namespace'] = None,
                         default_logger.warning(f'host is reset to {__default_host__} as allow_remote=False')
                     hosts.add(kk.host)
 
-        # if len(hosts) == 1:
-        #     if __default_host__ in hosts:
-        #         from .pods.mutable import MutablePod
-        #         return MutablePod(args)
-        #     else:
-        #         # TODO: this part needs to be refactored
-        #         from .pods.remote import RemoteMutablePod
-        #         return RemoteMutablePod(args)
+        if len(hosts) == 1:
+            if __default_host__ in hosts:
+                from .pods.mutable import MutablePod
+                return MutablePod(args)
+            else:
+                # TODO: this part needs to be refactored
+                from .runtimes.remote.jinad import RemoteJinaDRunTime
+                return RemoteJinaDRunTime(args, kind='pod')
 
     if not allow_remote and args.host != __default_host__:
         args.host = __default_host__
