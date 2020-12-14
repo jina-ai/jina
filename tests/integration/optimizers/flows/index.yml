@@ -1,0 +1,13 @@
+!Flow
+version: '1'
+env:
+  JINA_WORKSPACE: $JINA_WORKSPACE
+  JINA_MYENCODER_TARGET_DIMENSION: $JINA_MYENCODER_TARGET_DIMENSION
+with:
+  compress_hwm: 1024
+pods:
+  - uses: pods/encoder.yml
+    parallel: 1
+  - uses: pods/indexer.yml
+    shards: 1
+    separated_workspace: true

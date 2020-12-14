@@ -495,7 +495,7 @@ class Flow(ExitStack):
         # set env only before the pod get started
         if self._env:
             for k, v in self._env.items():
-                os.environ[k] = v
+                os.environ[k] = str(v)
 
         for v in self._pod_nodes.values():
             self.enter_context(v)
