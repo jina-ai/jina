@@ -1,4 +1,4 @@
-from .helper import foo
+from helper import foo
 
 from jina.executors.crafters import BaseCrafter
 
