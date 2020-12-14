@@ -151,6 +151,10 @@ class DryRunException(Exception):
     """Dryrun is not successful on the given flow"""
 
 
+class BadInputFunction(Exception):
+    """Exception when the input function throws an error """
+
+
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """
 
@@ -185,3 +189,7 @@ class BadFlowYAMLVersion(Exception):
 
 class LookupyError(Exception):
     """Base exception class for all exceptions raised by lookupy"""
+
+
+class EventLoopError(Exception):
+    """ Exception when a running event loop is found but not under jupyter or ipython """

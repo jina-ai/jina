@@ -72,7 +72,7 @@ def test_index():
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == SocketType.PULL_BIND
         assert node.tail_args.socket_out == SocketType.PUSH_BIND
-        f.dry_run()
+
 
 
 def test_query():
@@ -141,4 +141,4 @@ def test_query():
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == SocketType.PULL_BIND
         assert node.tail_args.socket_out == SocketType.PUSH_BIND
-        f.dry_run()
+

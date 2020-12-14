@@ -4,7 +4,7 @@ from typing import Sequence
 import pytest
 
 from jina import Request, QueryLang, Document
-from jina.clients.python.request import _generate
+from jina.clients.request import _generate
 from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto

@@ -10,7 +10,7 @@ from ...proto.jina_pb2 import QueryLangProto
 
 AcceptQueryLangType = Union[QueryLang, BaseDriver, QueryLangProto]
 
-__all__ = ['QueryLangSet']
+__all__ = ['QueryLangSet', 'AcceptQueryLangType']
 
 
 class QueryLangSet(MutableSequence):

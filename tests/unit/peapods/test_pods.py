@@ -104,7 +104,7 @@ def test_pod_env_setting():
     assert 'key2' not in os.environ
     assert 'key_parent' in os.environ
 
-    os.environ.unsetenv('key_parent')
+    os.unsetenv('key_parent')
 
 
 def test_pod_env_setting_thread():
@@ -127,4 +127,4 @@ def test_pod_env_setting_thread():
     assert 'key2' not in os.environ
     assert 'key_parent' in os.environ
 
-    os.environ.unsetenv('key_parent')
+    os.unsetenv('key_parent')
