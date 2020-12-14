@@ -186,18 +186,7 @@ class Document:
         return self._document.content_hash
 
     def update_content_hash(self):
-        """Update the document id according to its content.
-                .. warning::
-                    To fully consider the content in this document, please use this function after
-                    you have fully modified the Document, not right way after create the Document.
-                    If you are using Document as context manager, then no need to call this function manually.
-                    Simply
-                    .. highlight:: python
-                    .. code-block:: python
-                        with Document() as d:
-                            d.text = 'hello'
-                        assert d.id  # now `id` has value
-                """
+        """Update the document hash according to its content."""
         self._document.content_hash = new_doc_id(self._document)
 
     @property
