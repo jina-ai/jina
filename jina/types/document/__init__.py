@@ -137,7 +137,7 @@ class Document:
 
         if custom_id is None:
             import random
-            custom_id = random.random()
+            custom_id = random.randint(0, 9)
 
         self.id = custom_id
 
@@ -182,12 +182,23 @@ class Document:
         self._document.modality = value
 
     @property
-    def content_hash(self):  # TODO
-        pass
+    def content_hash(self):
+        return self._document.content_hash
 
-    @content_hash.setter
-    def content_hash(self):  # TODO
-        pass
+    def update_content_hash(self):
+        """Update the document id according to its content.
+                .. warning::
+                    To fully consider the content in this document, please use this function after
+                    you have fully modified the Document, not right way after create the Document.
+                    If you are using Document as context manager, then no need to call this function manually.
+                    Simply
+                    .. highlight:: python
+                    .. code-block:: python
+                        with Document() as d:
+                            d.text = 'hello'
+                        assert d.id  # now `id` has value
+                """
+        self._document.content_hash = new_doc_id(self._document)
 
     @property
     def id(self) -> 'UniqueId':
@@ -202,21 +213,6 @@ class Document:
         it will be used as the major view.
         """
         return UniqueId(self._document.parent_id)
-
-    def update_id(self):
-        """Update the document id according to its content.
-        .. warning::
-            To fully consider the content in this document, please use this function after
-            you have fully modified the Document, not right way after create the Document.
-            If you are using Document as context manager, then no need to call this function manually.
-            Simply
-            .. highlight:: python
-            .. code-block:: python
-                with Document() as d:
-                    d.text = 'hello'
-                assert d.id  # now `id` has value
-        """
-        self._document.id = new_doc_id(self._document)
 
     @id.setter
     def id(self, value: Union[bytes, str, int]):
