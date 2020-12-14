@@ -5,7 +5,7 @@ import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from jina import Document
-from jina.clients.python.request import _generate, _build_doc
+from jina.clients.request import _generate, _build_doc
 from jina.enums import DataInputType
 from jina.excepts import BadDocType
 from jina.proto import jina_pb2

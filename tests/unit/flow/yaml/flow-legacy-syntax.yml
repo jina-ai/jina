@@ -1,0 +1,12 @@
+!Flow
+pods:
+  pod0:
+    uses: _pass
+    needs: gateway
+  pod1:
+    uses: _pass
+    needs: gateway
+  pod2:
+    uses: _merge
+    needs: [pod1, pod0]
+

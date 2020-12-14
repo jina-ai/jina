@@ -44,7 +44,7 @@ def test_bad_flow_customized(mocker):
          .add(name='r3', uses='!BaseEncoder'))
 
     with f:
-        f.dry_run()
+        pass
 
     on_error_mock = mocker.Mock(wrap=validate)
     on_error_mock_2 = mocker.Mock(wrap=validate)
@@ -73,7 +73,7 @@ def test_except_with_parallel(mocker):
          .add(name='r3', uses='!BaseEncoder'))
 
     with f:
-        f.dry_run()
+        pass
 
     on_error_mock = mocker.Mock(wrap=validate)
     on_error_mock_2 = mocker.Mock(wrap=validate)

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from pkg_resources import resource_filename
 
-from jina.clients.python.io import input_numpy
+from jina.clients.sugary_io import input_numpy
 from jina.flow import Flow
 from jina.helloworld import download_data
 from jina.parser import set_hw_parser

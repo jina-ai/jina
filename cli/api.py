@@ -48,8 +48,8 @@ def ping(args):
 
 def client(args):
     """Start a client connects to the gateway"""
-    from jina.clients.python import PyClient
-    PyClient(args)
+    from jina.clients import Client
+    Client(args)
 
 
 def export_api(args):

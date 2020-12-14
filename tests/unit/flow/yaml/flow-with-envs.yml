@@ -1,0 +1,10 @@
+!Flow
+version: '1'
+env:
+  key_parent: value3  # all pods share this env var
+pods:
+  - uses: EnvChecker1
+    env:
+      key1: value1
+      key2: value2
+  - uses: EnvChecker2

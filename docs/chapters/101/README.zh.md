@@ -76,7 +76,7 @@ Executor的属性存储在YAML配置中，它们总是齐头并进。
 **Executor是一个大家庭**。每一个家庭成员都会集中在一个重要的方面进行搜索系统。让我们来认识一下。
 
 -   **Crafter**：用于制作/分割/转换Document和Chunk。
--   **Encoder**编码：用于将Chunk表示为矢量。
+-   **Encoder**：用于将Chunk表示为矢量。
 -   **Indexer**：用于从存储中保存和检索向量和键值信息。
 -   **Ranker**：用于对结果进行排序。
 

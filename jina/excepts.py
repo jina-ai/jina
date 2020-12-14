@@ -151,6 +151,10 @@ class DryRunException(Exception):
     """Dryrun is not successful on the given flow"""
 
 
+class BadInputFunction(Exception):
+    """Exception when the input function throws an error """
+
+
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """
 
@@ -177,3 +181,11 @@ class LengthMismatchException(Exception):
 
 class ImageAlreadyExists(Exception):
     """ Exception when an image with the name, module version, and Jina version already exists on the Hub"""
+
+
+class BadFlowYAMLVersion(Exception):
+    """ Exception when Flow YAML config specifies a wrong version number"""
+
+
+class EventLoopError(Exception):
+    """ Exception when a running event loop is found but not under jupyter or ipython """

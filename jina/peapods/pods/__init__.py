@@ -116,7 +116,6 @@ class BasePod(ExitStack):
                 peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args.get('head', None), peas_args.get('tail', None))
         else:
-            _set_after_to_pass(args)
             self.is_head_router = False
             self.is_tail_router = False
             peas_args['peas'] = [args]

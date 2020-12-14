@@ -2,7 +2,7 @@ import pytest
 
 from jina.excepts import PeaFailToStart
 from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
-from jina.peapods.peas.gateway import GatewayPea
+from jina.peapods.peas.gateway import GatewayPea, RESTGatewayPea
 from jina.peapods.peas import BasePea
 from jina.peapods.pods import BasePod
 
@@ -23,6 +23,12 @@ def test_gateway_pea(runtime):
         pass
     GatewayPea(args).start().close()
 
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_gateway_pea(runtime):
+    args = set_gateway_parser().parse_args(['--runtime', runtime])
+    with RESTGatewayPea(args):
+        pass
+    RESTGatewayPea(args).start().close()
 
 def test_address_in_use():
     with pytest.raises(PeaFailToStart):

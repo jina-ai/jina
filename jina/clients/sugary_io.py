@@ -10,11 +10,11 @@ import numpy as np
 
 
 def input_lines(
-    lines: Iterator[str] = None,
-    filepath: str = None,
-    size: int = None,
-    sampling_rate: float = None,
-    read_mode='r',
+        lines: Iterator[str] = None,
+        filepath: str = None,
+        size: int = None,
+        sampling_rate: float = None,
+        read_mode='r',
 ) -> Iterator[Union[str, bytes]]:
     """Input function that iterates over list of strings, it can be used in the Flow API
 
@@ -43,11 +43,11 @@ def input_lines(
 
 
 def input_files(
-    patterns: Union[str, List[str]],
-    recursive: bool = True,
-    size: int = None,
-    sampling_rate: float = None,
-    read_mode: str = None,
+        patterns: Union[str, List[str]],
+        recursive: bool = True,
+        size: int = None,
+        sampling_rate: float = None,
+        read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
     """Input function that iterates over files, it can be used in the Flow API
 
@@ -82,7 +82,7 @@ def input_files(
 
 
 def input_numpy(
-    array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
+        array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
 ) -> Iterator[Any]:
     """Input function that iterates over a numpy array, it can be used in the Flow API
 
