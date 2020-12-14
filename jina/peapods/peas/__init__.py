@@ -265,8 +265,9 @@ class BasePea(ExitStack):
             self.load_plugins()
             self.load_executor()
             return self.executor
-        except ExecutorFailToLoad:
+        except Exception:
             self.logger.critical(f'can not start a executor from {self.args.uses}', exc_info=True)
+
 
     def run(self, is_ready_event: 'Event'):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
@@ -296,7 +297,9 @@ class BasePea(ExitStack):
             raise MemoryOverHighWatermark
 
     def __enter__(self) -> 'BasePea':
-        self.enter_context(self._initialize_executor())
+        executor = self._initialize_executor()
+        if executor:
+            self.enter_context(executor)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

@@ -20,7 +20,7 @@ scipy>=1.4.1:               index, numeric, cicd
 flask:                      devel, cicd, http, sse
 flask_cors:                 devel, cicd, http, sse
 fastapi:                    devel, cicd, http
-uvicorn:                    devel, cicd, http
+uvicorn>=0.12.1:            devel, cicd, http
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, test
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, test

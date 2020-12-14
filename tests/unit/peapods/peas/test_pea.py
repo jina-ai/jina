@@ -1,56 +1,108 @@
 import pytest
-
-from jina.excepts import PeaFailToStart
-from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
-from jina.peapods.peas.gateway import GatewayPea, RESTGatewayPea
+from jina.parser import set_pea_parser
 from jina.peapods.peas import BasePea
-from jina.peapods.pods import BasePod
+from jina.excepts import DriverError, NoDriverForRequest, ExecutorFailToLoad, EventLoopError, RequestLoopEnd
 
 
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pea_context(runtime):
-    args = set_pea_parser().parse_args(['--runtime', runtime])
-    with BasePea(args):
+class MockExceptionRequestLoopPea(BasePea):
+
+    def __init__(self, args, exception_class):
+        super().__init__(args)
+        self.exception = exception_class
+        self.properly_closed = False
+
+    def request_loop(self, is_ready_event):
+        raise self.exception
+
+    def _teardown(self):
+        super()._teardown()
+        self.properly_closed = True
+
+
+def pea_exception_request_loop_factory():
+    class MockExceptionRequestLoopPeaFactory:
+        def create(self, exception_class):
+            args = set_pea_parser().parse_args([])
+            return MockExceptionRequestLoopPea(args, exception_class)
+
+    return MockExceptionRequestLoopPeaFactory()
+
+
+class MockExceptionCallbackPea(BasePea):
+
+    def __init__(self, args, exception_class):
+        super().__init__(args)
+        self.exception = exception_class
+        self.properly_closed = False
+
+    def _callback(self, msg):
+        raise self.exception
+
+    def _teardown(self):
+        super()._teardown()
+        self.properly_closed = True
+
+
+def pea_exception_callback_factory():
+    class MockExceptionCallbackPeaFactory:
+        def create(self, exception_class):
+            args = set_pea_parser().parse_args([])
+            return MockExceptionCallbackPea(args, exception_class)
+
+    return MockExceptionCallbackPeaFactory()
+
+
+class MockExceptionLoadExecutorPea(BasePea):
+
+    def __init__(self, args, exception_class):
+        super().__init__(args)
+        self.exception = exception_class
+        self.properly_closed = False
+
+    def load_executor(self):
+        raise self.exception
+
+    def _teardown(self):
+        super()._teardown()
+        self.properly_closed = True
+
+
+@pytest.fixture
+def pea_exception_load_executor_factory():
+    class MockExceptionLoadExecutorPeaFactory:
+        def create(self, exception_class):
+            args = set_pea_parser().parse_args([])
+            return MockExceptionLoadExecutorPea(args, exception_class)
+
+    return MockExceptionLoadExecutorPeaFactory()
+
+
+def test_pea_context_load_executor():
+    args = set_pea_parser().parse_args([])
+    pea = BasePea(args)
+    assert not hasattr(pea, 'executor')
+    with pea:
+        assert pea.executor
+
+
+@pytest.mark.parametrize('factory', [pea_exception_request_loop_factory,
+                                     pea_exception_callback_factory])
+@pytest.mark.parametrize('exception_class', [RuntimeError, SystemError,
+                                             KeyboardInterrupt, DriverError, NoDriverForRequest,
+                                             NotImplementedError, ExecutorFailToLoad, EventLoopError,
+                                             RequestLoopEnd])
+def test_pea_proper_terminate(factory, exception_class):
+    pea = factory().create(exception_class)
+    with pea:
         pass
+    assert pea.properly_closed
 
-    BasePea(args).start().close()
 
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_gateway_pea(runtime):
-    args = set_gateway_parser().parse_args(['--runtime', runtime])
-    with GatewayPea(args):
+@pytest.mark.parametrize('exception_class', [ExecutorFailToLoad, RuntimeError, SystemError,
+                                             KeyboardInterrupt, DriverError, NoDriverForRequest,
+                                             NotImplementedError])
+def test_pea_proper_terminate_when_load_fails(pea_exception_load_executor_factory, exception_class):
+    pea = pea_exception_load_executor_factory.create(exception_class)
+    with pea:
         pass
-    GatewayPea(args).start().close()
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_gateway_pea(runtime):
-    args = set_gateway_parser().parse_args(['--runtime', runtime])
-    with RESTGatewayPea(args):
-        pass
-    RESTGatewayPea(args).start().close()
-
-def test_address_in_use():
-    with pytest.raises(PeaFailToStart):
-        args1 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
-        args2 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
-        with BasePea(args1), BasePea(args2):
-            pass
-
-    with pytest.raises(PeaFailToStart):
-        args1 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
-        args2 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
-        with BasePea(args1), BasePea(args2):
-            pass
-
-
-def test_peas_naming_with_parallel():
-    args = set_pod_parser().parse_args(['--name', 'pod',
-                                        '--parallel', '2',
-                                        '--max-idle-time', '5',
-                                        '--shutdown-idle'])
-    with BasePod(args) as bp:
-        assert bp.peas[0].name == 'pod-head'
-        assert bp.peas[1].name == 'pod-tail'
-        assert bp.peas[2].name == 'pod-1'
-        assert bp.peas[3].name == 'pod-2'
+    assert pea.properly_closed
