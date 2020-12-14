@@ -1,7 +1,7 @@
 import os
 from typing import Dict, Union
 
-from jina import __ready_msg__, __stop_msg__
+from jina import __stop_msg__
 from jina.peapods.runtimes import RunTime
 from jina.peapods import Pea
 
@@ -55,10 +55,7 @@ class LocalRunTime(RunTime):
         try:
             self.set_environment_vars()
             with self.pea as pea:
-                # TODO: set ready must be done by having a thread or corouting checking the status or passing multiprocessing event to the pea
-                self.set_ready()
-                self.logger.success(__ready_msg__)
-                pea.run()
+                pea.run(self.is_ready_event)
         except Exception as ex:
             self.logger.info(f'runtime run caught {repr(ex)}')
         finally:

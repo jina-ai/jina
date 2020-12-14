@@ -7,6 +7,7 @@ import time
 from collections import defaultdict
 from contextlib import ExitStack
 from typing import Dict, Optional, Union, List
+from multiprocessing.synchronize import Event
 
 import zmq
 
@@ -214,7 +215,7 @@ class BasePea(ExitStack):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self.zmqlet.send_message(self._callback(msg))
-        except RequestLoopEnd:
+        except RequestLoopEnd as ex:
             # this is the proper way to end when a terminate signal is sent
             self.logger.info(f'Terminating loop requested by terminate signal {repr(ex)}')
             self.zmqlet.send_message(msg)
@@ -246,10 +247,11 @@ class BasePea(ExitStack):
                 raise
             self.zmqlet.send_message(msg)
 
-    def request_loop(self):
+    def request_loop(self, is_ready_event: 'Event'):
         """The body of the request loop
         """
         self.zmqlet = ZmqStreamlet(self.args, logger=self.logger)
+        is_ready_event.set()
         self.zmqlet.start(self.msg_callback)
 
     def load_plugins(self):
@@ -270,11 +272,11 @@ class BasePea(ExitStack):
         except ExecutorFailToLoad:
             self.logger.critical(f'can not start a executor from {self.args.uses}', exc_info=True)
 
-    def run(self):
+    def run(self, is_ready_event: 'Event'):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
             # Every logger created in this process will be identified by the `Pod Id` and use the same name
-            self.request_loop()
+            self.request_loop(is_ready_event)
         except KeyboardInterrupt:
             self.logger.info('Loop interrupted by user')
         except SystemError as ex:

@@ -12,6 +12,10 @@ class RemoteRunTime(RunTime):
         super().__init__(args)
         self.kind = kind
 
+    @property
+    def is_idle(self) -> bool:
+        raise NotImplementedError
+
     def _monitor_remote(self):
         raise NotImplementedError
 

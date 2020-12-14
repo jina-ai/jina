@@ -133,7 +133,7 @@ class RunTime(metaclass=RuntimeMeta):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {typename(self)} with name {self.name}, '
+                self.logger.critical(f'fails to start {typename(self)} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
                 raise PeaFailToStart
             return self

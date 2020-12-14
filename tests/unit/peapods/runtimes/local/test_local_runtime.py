@@ -2,7 +2,6 @@ import pytest
 
 from jina.excepts import PeaFailToStart
 from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
-from jina.peapods.peas.gateway import GatewayPea
 from jina.peapods.runtimes.local import LocalRunTime
 from jina.peapods.pods import BasePod
 
@@ -11,19 +10,18 @@ from jina.peapods.pods import BasePod
 def test_pea_context(runtime):
     args = set_pea_parser().parse_args(['--runtime', runtime])
     with LocalRunTime(args):
-        import time
-        time.sleep(1)
         pass
 
     LocalRunTime(args).start().close()
 
 
-# @pytest.mark.parametrize('runtime', ['process', 'thread'])
-# def test_gateway_pea(runtime):
-#     args = set_gateway_parser().parse_args(['--runtime', runtime])
-#     with GatewayPea(args):
-#         pass
-#     GatewayPea(args).start().close()
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_gateway_pea(runtime):
+    args = set_gateway_parser().parse_args(['--runtime', runtime])
+    with LocalRunTime(args, gateway=True, rest_api=False):
+        pass
+
+    LocalRunTime(args, gateway=True, rest_api=False).start().close()
 
 
 # TODO: This will be fixed once the `set_ready` is properly set in runtime
