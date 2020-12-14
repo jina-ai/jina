@@ -1,3 +1,5 @@
+import pytest
+
 from jina.types.document import Document
 from jina.drivers.querylang.queryset.lookup import LookupLeaf, Q, QuerySet
 
@@ -18,6 +20,9 @@ class MockIter:
     def __init__(self, iterable):
         self.iter = iterable
 
+@pytest.fixture(scope='function')
+def docs():
+    return random_docs(num_docs=10)
 
 def test_lookup_leaf_exact():
     leaf = LookupLeaf(id__exact=1)
@@ -176,8 +181,7 @@ def test_lookup_leaf_None():
     mock1 = MockId(4)
     assert not leaf.evaluate(mock1)
 
-def test_docs_filter():
-    docs = random_docs(10)
+def test_docs_filter(docs):
     filtered_docs = QuerySet(docs).filter(tags__id__lt=5, tags__id__gt=3)
     filtered_docs = list(filtered_docs)
     assert len(filtered_docs) == 1
@@ -185,8 +189,7 @@ def test_docs_filter():
         assert (3 < d.tags['id'] < 5)
 
 
-def test_docs_filter_equal():
-    docs = random_docs(10)
+def test_docs_filter_equal(docs):
     filtered_docs = QuerySet(docs).filter(tags__id=4)
     filtered_docs = list(filtered_docs)
     assert len(filtered_docs) == 1
@@ -195,8 +198,7 @@ def test_docs_filter_equal():
         assert len(d.chunks) == 5
 
 
-def test_nested_chunks_filter():
-    docs = random_docs(10)
+def test_nested_chunks_filter(docs):
     filtered_docs = QuerySet(docs).filter(Q(chunks__filter=Q(tags__id__lt=35, tags__id__gt=33)))
     filtered_docs = list(filtered_docs)
     assert len(filtered_docs) == 1
