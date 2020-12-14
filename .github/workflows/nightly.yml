@@ -33,7 +33,7 @@ jobs:
         run: |
           docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
+            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/386,linux/arm/v7,linux/arm/v6 \
             --output "type=registry" \
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION --build-arg INSTALL_DEV \
             -t jinaai/jina:devel -t jinaai/jina:${{env.JINA_VERSION}} \
