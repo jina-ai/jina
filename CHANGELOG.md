@@ -104,6 +104,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -5884,4 +5885,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```edd0e02b```](https://github.com/jina-ai/jina/commit/edd0e02b5165f484b49165f620dc4db041f3dfd5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d4bfc9c3```](https://github.com/jina-ai/jina/commit/d4bfc9c387a9a447281d48bb7fb91c3dd46c09b0)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```b9bd8643```](https://github.com/jina-ai/jina/commit/b9bd8643c0aca4eb5bf337b1e710b039e6eb8d5f)] __-__ __version__: the next version will be 0.8.5 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-6></a>
+## Release Note (`0.8.6`)
+
+> Release time: 2020-12-14 14:15:03
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  cristian,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f143a073```](https://github.com/jina-ai/jina/commit/f143a073857bd547e4af12caf127e526217d40d6)] __-__ numpy indexer update/delete (#1415) (*cristian*)
+
+### 🐞 Bug fixes
+
+ - [[```95178b0e```](https://github.com/jina-ai/jina/commit/95178b0ebc767e2a7f506fa21c55bbb11b70ad5a)] __-__ __client__: handle request exception on client (#1458) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```a63d5a5b```](https://github.com/jina-ai/jina/commit/a63d5a5bc76c22167bbe26823a8437e8d8133653)] __-__ hotfix release 0.8.6 (*Han Xiao*)
+ - [[```9c9f4c93```](https://github.com/jina-ai/jina/commit/9c9f4c9398e89770fa85a2245b5a2acf9c25c5e3)] __-__ __version__: the next version will be 0.8.6 (*Jina Dev Bot*)
 
