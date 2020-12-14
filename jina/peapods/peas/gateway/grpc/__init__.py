@@ -1,6 +1,8 @@
 import asyncio
+import argparse
 import os
 from multiprocessing.synchronize import Event
+from typing import Union, Dict
 
 import grpc
 import zmq.asyncio
@@ -16,6 +18,14 @@ __all__ = ['GatewayPea']
 
 
 class GatewayPea(BasePea):
+
+    def __init__(self,
+                 args: Union['argparse.Namespace', Dict],
+                 ctrl_addr: str,
+                 ctrl_with_ipc: bool):
+        super().__init__(args)
+        self.ctrl_addr = ctrl_addr
+        self.ctrl_with_ipc = ctrl_with_ipc
 
     def run(self, is_ready_event: 'Event'):
         """Do not overridden this method when inheriting from :class:`GatewayPea`"""
@@ -77,6 +87,3 @@ class GatewayPea(BasePea):
 
     def __enter__(self):
         return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        super().__exit__(exc_type, exc_val, exc_tb)

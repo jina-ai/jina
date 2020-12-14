@@ -1,4 +1,4 @@
-from argparse import Namespace
+import argparse
 from typing import Union, Dict
 
 from jina.peapods.runtimes import RunTime
@@ -8,7 +8,7 @@ __all__ = ['RemoteRunTime']
 
 class RemoteRunTime(RunTime):
 
-    def __init__(self, args: Union['Namespace', Dict], kind: str):
+    def __init__(self, args: Union['argparse.Namespace', Dict], kind: str):
         super().__init__(args)
         self.kind = kind
 

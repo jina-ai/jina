@@ -11,7 +11,7 @@ from multiprocessing.synchronize import Event
 
 import zmq
 
-from ..zmq import Zmqlet, ZmqStreamlet
+from ..zmq import ZmqStreamlet
 from ... import Message
 from ... import Request
 from ...enums import PeaRoleType, SkipOnErrorType
@@ -66,10 +66,6 @@ class BasePea(ExitStack):
             self.name = self.args.name
         if 'role' in self.args and self.args.role == PeaRoleType.PARALLEL:
             self.name = f'{self.name}-{self.args.pea_id}'
-        if 'host' in self.args and 'port_ctrl' in self.args and 'ctrl_with_ipc' in self.args:
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl,
-                                                                         self.args.ctrl_with_ipc)
-
         if 'log_id' in self.args and 'log_config' in self.args:
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,

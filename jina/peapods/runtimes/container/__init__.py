@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import argparse
 import asyncio
 import os
 import time
@@ -47,6 +48,10 @@ class ContainerRunTime(RunTime):
             finally:
                 pass
         client.close()
+
+    @property
+    def is_idle(self) -> bool:
+        raise NotImplementedError
 
     def _docker_run(self):
         # important to notice, that client is not assigned as instance member to avoid potential
@@ -152,7 +157,8 @@ class ContainerRunTime(RunTime):
         finally:
             import docker
             try:
-                self._container.stop()
+                if getattr(self, '_container'):
+                    self._container.stop()
             except docker.errors.NotFound:
                 self.logger.warning(
                     'the container is already shutdown (mostly because of some error inside the container)')

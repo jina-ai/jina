@@ -261,4 +261,4 @@ def get_jinad_api(kind: str, host: str, port: int, logger: JinaLogger, **kwargs)
     elif kind == 'pod':
         return PodAPI(host=host, port=port, logger=logger, **kwargs)
     else:
-        raise ValueError(f'kind must be pea/pod but it is {self.kind}')
+        raise ValueError(f'kind must be pea/pod but it is {kind}')

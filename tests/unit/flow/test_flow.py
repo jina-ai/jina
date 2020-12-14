@@ -11,7 +11,7 @@ from jina.enums import FlowOptimizeLevel, SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
-from jina.peapods.peas import BasePea
+from jina.peapods.runtimes.local import LocalRunTime
 from jina.peapods.pods import BasePod
 from jina.proto.jina_pb2 import DocumentProto
 from tests import random_docs, rm_files
@@ -25,14 +25,14 @@ def test_ping():
     a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
 
     with pytest.raises(SystemExit) as cm:
-        with BasePea(a1):
+        with LocalRunTime(a1):
             NetworkChecker(a2)
 
     assert cm.value.code == 0
 
     # test with bad addresss
     with pytest.raises(SystemExit) as cm:
-        with BasePea(a1):
+        with LocalRunTime(a1):
             NetworkChecker(a3)
 
     assert cm.value.code == 1

@@ -97,13 +97,13 @@ class RunTime(metaclass=RuntimeMeta):
         if 'daemon' in args:
             self.daemon = args.daemon
         if 'name' in self.args and self.args.name:
-            self.name = f'support-{self.args.name}'
+            self.name = f'runtime-{self.args.name}'
         if 'role' in self.args and self.args.role == PeaRoleType.PARALLEL:
-            self.name = f'support-{self.args.name}-{self.args.pea_id}'
+            self.name = f'runtime-{self.args.name}-{self.args.pea_id}'
         if 'role' in self.args and self.args.role == PeaRoleType.HEAD:
-            self.name = f'support-{self.args.name}-head'
+            self.name = f'runtime-{self.args.name}-head'
         if 'role' in self.args and self.args.role == PeaRoleType.TAIL:
-            self.name = f'support-{self.args.name}-tail'
+            self.name = f'runtime-{self.args.name}-tail'
         if 'host' in self.args and 'port_ctrl' in self.args and 'ctrl_with_ipc' in self.args:
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl,
                                                                          self.args.ctrl_with_ipc)
@@ -136,6 +136,8 @@ class RunTime(metaclass=RuntimeMeta):
                 self.logger.critical(f'fails to start {typename(self)} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
                 raise PeaFailToStart
+            else:
+                self.logger.info(f'ready to listen')
             return self
         else:
             raise TimeoutError(

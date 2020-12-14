@@ -1,3 +1,4 @@
+import argparse
 from subprocess import Popen, PIPE
 
 from typing import Union, Dict
@@ -21,7 +22,11 @@ class RemoteSSHRunTime(RemoteRunTime):
         method. Lifecycle is handled by :class:`BasePea`.
     """
 
-    def __init__(self, args: Union['Namespace', Dict], kind: str):
+    @property
+    def is_idle(self) -> bool:
+        raise NotImplementedError
+
+    def __init__(self, args: Union['argparse.Namespace', Dict], kind: str):
         super().__init__(args, kind=kind)
 
     @property

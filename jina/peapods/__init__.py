@@ -96,18 +96,22 @@ def Pod(args: Optional['argparse.Namespace'] = None,
 
 
 def Pea(args: Optional['argparse.Namespace'] = None,
+        ctrl_addr: Optional[str] = None,
+        ctrl_with_ipc: Optional[bool] = None,
         gateway: bool = False,
         rest_api: bool = False):
     """Initialize a :class:`BasePea`, :class:`HeadPea` or :class:`TailPea`
 
     :param args: arguments from CLI
+    :param ctrl_addr: control address where runtime will send terminate signals to GatewayPea
+    :param ctrl_with_ipc: parameter to set ipc protocol
     :param gateway: true if gateway pea to be instantiated
     :param rest_api: true if gateway pea to be instantiated with REST (only considered if gateway is True)
 
     """
     if gateway:
         from .peas.gateway import GatewayPea
-        return RESTGatewayPea(args) if rest_api else GatewayPea(args)
+        return RESTGatewayPea(args, ctrl_addr, ctrl_with_ipc) if rest_api else GatewayPea(args, ctrl_addr, ctrl_with_ipc)
     elif args.role == PeaRoleType.HEAD:
         from .peas.headtail import HeadPea
         return HeadPea(args)

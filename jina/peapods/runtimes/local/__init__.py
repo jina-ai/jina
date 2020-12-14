@@ -1,3 +1,4 @@
+import argparse
 import os
 from typing import Dict, Union
 
@@ -20,7 +21,11 @@ class LocalRunTime(RunTime):
 
         if 'env' in self.args and self.args.env:
             self._envs.update(self.args.env)
-        self.pea = Pea(self.args, gateway=gateway, rest_api=rest_api)
+        self.pea = Pea(self.args,
+                       ctrl_addr=self.ctrl_addr,
+                       ctrl_with_ipc=self.ctrl_with_ipc,
+                       gateway=gateway,
+                       rest_api=rest_api)
 
     def set_environment_vars(self):
         """Set environment variable to this pea
