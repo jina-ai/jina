@@ -76,19 +76,18 @@ jobs:
           echo ${{ steps.buildx.outputs.platforms }}
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-      - id: get_version
-        run: |
           echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-      - name: Run Buildx and Upload to Docker Cloud
-        run: |
-          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
-            --output "type=registry" \
-            --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION \
-            -t "jinaai/jina:$JINA_VERSION" -t jinaai/jina:latest \
-            --file ./Dockerfiles/debianx.Dockerfile .
+          echo "JINA_MINOR_VERSION=${JINA_VERSION%.*}" >> $GITHUB_ENV
+      - name: Upload to Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jinaai/jina
+          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          dockerfile: Dockerfiles/debianx.Dockerfile
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
+          tags: "latest, ${{env.JINA_VERSION}}, ${{env.JINA_MINOR_VERSION}}"
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -98,4 +97,4 @@ jobs:
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
-          tags: "latest, ${{env.JINA_VERSION}}"
+          tags: "latest, ${{env.JINA_VERSION}}, ${{env.JINA_MINOR_VERSION}}"
