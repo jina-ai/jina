@@ -2,8 +2,7 @@ from typing import Dict, Set
 
 from . import BasePod, PodRoleType
 from .flow import FlowPod
-from ..peas.gateway.grpc import GatewayPea
-from ..peas.gateway.rest import RESTGatewayPea
+from ..runtimes.local import LocalRunTime
 from ...parser import set_gateway_parser
 
 
@@ -12,9 +11,9 @@ class GatewayPod(BasePod):
 
     def start(self) -> 'GatewayPod':
         for s in self.all_args:
-            p = RESTGatewayPea(s) if getattr(s, 'rest_api', False) else GatewayPea(s)
-            self.peas.append(p)
-            self.enter_context(p)
+            r = LocalRunTime(s, gateway=True, rest_api=getattr(s, 'rest_api', False))
+            self.runtimes.append(r)
+            self.enter_context(r)
 
         self.start_sentinels()
         return self

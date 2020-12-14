@@ -14,7 +14,7 @@ from jina.logging import JinaLogger
 __all__ = ['RuntimeMeta', 'RunTime']
 
 
-def _get_event(obj: 'LocalRunTime') -> Event:
+def _get_event(obj: 'RunTime') -> Event:
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):
@@ -23,7 +23,7 @@ def _get_event(obj: 'LocalRunTime') -> Event:
         raise NotImplementedError
 
 
-def _make_or_event(obj: 'LocalRunTime', *events) -> Event:
+def _make_or_event(obj: 'RunTime', *events) -> Event:
     or_event = _get_event(obj)
 
     def or_set(self):

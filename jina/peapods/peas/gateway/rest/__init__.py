@@ -66,7 +66,8 @@ class RESTGatewayPea(GatewayPea):
         self._server = UvicornCustomServer(config=config)
         self.logger.success(f'{self.__class__.__name__} is listening at: {self.args.host}:{self.args.port_expose}')
         self._server.run()
-        self.set_ready()
+        # TODO: See how to set_ready
+        # self.set_ready()
 
     async def serve_terminate(self):
         await self._server.shutdown()

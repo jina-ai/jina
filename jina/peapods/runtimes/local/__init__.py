@@ -10,13 +10,17 @@ __all__ = ['LocalRunTime']
 
 class LocalRunTime(RunTime):
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self,
+                 args: Union['argparse.Namespace', Dict],
+                 gateway: bool = False,
+                 rest_api: bool = False):
         super().__init__(args)
-        self.pea = Pea(self.args)
-        self._envs = {'JINA_POD_NAME': self.name}
+        self._envs = {'JINA_POD_NAME': self.name,
+                      'JINA_LOG_ID': self.args.log_id}
 
         if 'env' in self.args and self.args.env:
             self._envs.update(self.args.env)
+        self.pea = Pea(self.args, gateway=gateway, rest_api=rest_api)
 
     def set_environment_vars(self):
         """Set environment variable to this pea

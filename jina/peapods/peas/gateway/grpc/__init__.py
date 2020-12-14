@@ -15,6 +15,7 @@ __all__ = ['GatewayPea']
 
 
 class GatewayPea(BasePea):
+
     def run(self):
         """Do not overridden this method when inheriting from :class:`GatewayPea`"""
         try:
@@ -27,8 +28,6 @@ class GatewayPea(BasePea):
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
             self._teardown()
-            self.unset_ready()
-            self.is_shutdown.set()
 
     async def _wait_for_shutdown(self):
         """Do not overridden this method when inheriting from :class:`GatewayPea`"""
@@ -63,13 +62,20 @@ class GatewayPea(BasePea):
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
         self.logger.success(f'{self.__class__.__name__} is listening at: {bind_addr}')
-        self.set_ready()
+        # TODO: proper handling of set_ready
+        #self.set_ready()
         await self.server.wait_for_termination()
 
     async def _loop_body(self):
-        """Do not overridden this method when inheriting from :class:`GatewayPea`"""
+        """Do not override this method when inheriting from :class:`GatewayPea`"""
         try:
             await asyncio.gather(self.serve_forever(), self._wait_for_shutdown())
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
             await self.server.stop(0)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        super().__exit__(exc_type, exc_val, exc_tb)

@@ -1,12 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Union, Optional
+from typing import Optional
 
 from .. import __default_host__
 from ..enums import PeaRoleType, RemoteAccessType
 from ..helper import is_valid_local_config_source
 from ..logging import default_logger
+from jina.peapods.peas.gateway import GatewayPea, RESTGatewayPea
 
 if False:
     import argparse
@@ -94,13 +95,20 @@ def Pod(args: Optional['argparse.Namespace'] = None,
         return BasePod(args)
 
 
-def Pea(args: Optional['argparse.Namespace'] = None):
+def Pea(args: Optional['argparse.Namespace'] = None,
+        gateway: bool = False,
+        rest_api: bool = False):
     """Initialize a :class:`BasePea`, :class:`HeadPea` or :class:`TailPea`
 
     :param args: arguments from CLI
+    :param gateway: true if gateway pea to be instantiated
+    :param rest_api: true if gateway pea to be instantiated with REST (only considered if gateway is True)
 
     """
-    if args.role == PeaRoleType.HEAD:
+    if gateway:
+        from .peas.gateway import GatewayPea
+        return RESTGatewayPea(args) if rest_api else GatewayPea(args)
+    elif args.role == PeaRoleType.HEAD:
         from .peas.headtail import HeadPea
         return HeadPea(args)
     elif args.role == PeaRoleType.TAIL:

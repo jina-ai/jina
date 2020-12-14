@@ -73,7 +73,6 @@ class BasePea(ExitStack):
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)
-            self._envs['JINA_LOG_ID'] = self.args.log_id
         else:
             self.logger = JinaLogger(self.name)
 
@@ -291,7 +290,6 @@ class BasePea(ExitStack):
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
             self.logger.info(f'request loop ended, tearing down ...')
-            self.unset_environment_vars()
             self._teardown()
 
     def check_memory_watermark(self):
