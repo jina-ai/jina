@@ -5,7 +5,7 @@ import gzip
 import os
 from functools import lru_cache
 from os import path
-from typing import Optional, List, Union, Tuple, Dict, Iterator
+from typing import Optional, List, Union, Tuple, Dict, Sequence
 
 import numpy as np
 
@@ -179,7 +179,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             r = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
             # `==` is required. `is False` does not work in np
             deleted_keys = len(self.valid_indices[self.valid_indices == False])  # noqa
-            if r.shape[0] == self.size + deleted_keys == self.raw_ndarray.shape[0]:
+            if r.shape[0] == (self.size + deleted_keys) == self.raw_ndarray.shape[0]:
                 return r
             else:
                 self.logger.error(
@@ -193,11 +193,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         if self.int2ext_id is not None:
             return {k: idx for idx, k in enumerate(self.int2ext_id)}
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Sequence[int], values: Sequence[bytes], *args, **kwargs) -> None:
         self.delete(keys)
         self.add(np.array(keys), np.array(values))
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Sequence[int], *args, **kwargs) -> None:
         self.check_keys(keys)
         for key in keys:
             # mark as `False` in mask
@@ -205,7 +205,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self._size = self.size - len(list(keys))
         self.touch()
 
-    def check_keys(self, keys):
+    def check_keys(self, keys: Sequence[int]) -> None:
         """checks if keys are present in the indexer. raises if any of them are not"""
         missed = []
         for key in keys:
