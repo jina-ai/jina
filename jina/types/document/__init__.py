@@ -40,8 +40,10 @@ class Document:
             d = Document()
             d.text = 'abc'
 
-    Jina requires each Document to have a string id. You can use :meth:`update_id` or simply
-    use :class:`Document` as a context manager:
+    Jina requires each Document to have a string id. You can set a custom one,
+    or if non has been set a random one will be assigned.
+
+    Or you can use :class:`Document` as a context manager:
 
         .. highlight:: python
         .. code-block:: python
