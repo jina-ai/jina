@@ -188,9 +188,9 @@ class Request:
         Returns None if there are no aliases defined.
         """
         if self._request_type is jina_pb2.RequestProto.IndexRequestProto:
-            if self.method is 'add':
+            if self.method == 'add':
                 return ['IndexRequest', 'Index', 'index', 'Add', 'add', 'Insert', 'insert']
-            elif self.method is 'delete':
+            elif self.method == 'delete':
                 return ['DeleteRequest', 'Delete', 'delete', 'Remove', 'remove', 'Drop', 'drop']
-            elif self.method is 'update':
+            elif self.method == 'update':
                 return ['UpdateRequest', 'Update', 'update']
