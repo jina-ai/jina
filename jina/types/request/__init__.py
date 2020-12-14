@@ -1,4 +1,4 @@
-from typing import Union, Optional, TypeVar, Dict
+from typing import Union, Optional, TypeVar, Dict, List
 
 from google.protobuf import json_format
 
@@ -179,3 +179,18 @@ class Request:
     def command(self) -> str:
         self.is_used = True
         return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.as_pb_object.control.command)
+
+    @property
+    def aliases(self) -> List[str]:
+        """
+        Aliases are used for the yaml configuration.
+        :return: Returns a list of aliases depending on the request type and it's attributes.
+        Returns None if there are no aliases defined.
+        """
+        if self._request_type is jina_pb2.RequestProto.IndexRequestProto:
+            if self.method is 'add':
+                return ['IndexRequest', 'Index', 'index', 'Add', 'add', 'Insert', 'insert']
+            elif self.method is 'delete':
+                return ['DeleteRequest', 'Delete', 'delete', 'Remove', 'remove', 'Drop', 'drop']
+            elif self.method is 'update':
+                return ['UpdateRequest', 'Update', 'update']
