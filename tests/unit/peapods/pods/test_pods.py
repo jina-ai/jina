@@ -7,7 +7,7 @@ from jina.peapods import Pod
 from jina.peapods.pods import BasePod
 from jina.peapods.pods.flow import FlowPod
 from jina.peapods.pods.gateway import GatewayFlowPod, GatewayPod
-#from jina.peapods.pods.mutable import MutablePod
+from jina.peapods.pods.mutable import MutablePod
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
@@ -36,14 +36,14 @@ def test_gateway_pod(runtime):
     GatewayFlowPod({'runtime': runtime}).start().close()
 
 
-# @pytest.mark.parametrize('runtime', ['process', 'thread'])
-# def test_mutable_pod(runtime):
-#     args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
-#
-#     with MutablePod(BasePod(args).peas_args):
-#         pass
-#
-#     MutablePod(BasePod(args).peas_args).start().close()
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_mutable_pod(runtime):
+    args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
+
+    with MutablePod(BasePod(args).peas_args):
+        pass
+
+    MutablePod(BasePod(args).peas_args).start().close()
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])

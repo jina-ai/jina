@@ -100,7 +100,7 @@ def test_pea_proper_terminate(factory, exception_class):
 
 
 @pytest.mark.parametrize('exception_class', [ExecutorFailToLoad, RuntimeError, SystemError,
-                                             KeyboardInterrupt, DriverError, NoDriverForRequest,
+                                             DriverError, NoDriverForRequest,
                                              NotImplementedError])
 def test_pea_proper_terminate_when_load_fails(pea_exception_load_executor_factory, exception_class):
     pea = pea_exception_load_executor_factory.create(exception_class)

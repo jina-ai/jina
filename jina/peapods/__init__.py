@@ -14,11 +14,11 @@ if False:
 
 
 def RuntimePea(args: Optional['argparse.Namespace'] = None,
-                allow_remote: bool = True, **kwargs):
-    """Initialize a :class:`BasePea`, :class:`RemoteSSHPea` or :class:`ContainerPea`
+               allow_remote: bool = True, **kwargs):
+    """Initialize a :class:`LocalRunTime`, :class:`ContainerRunTime` or :class:`RemoteJinaDRunTime`
 
     :param args: arguments from CLI
-    :param allow_remote: allow start a :class:`RemoteSSHPea`
+    :param allow_remote: allow start a :class:`RemoteRuntime`
     :param kwargs: all supported arguments from CLI
 
     """
@@ -44,8 +44,8 @@ def RuntimePea(args: Optional['argparse.Namespace'] = None,
 
 
 def Pod(args: Optional['argparse.Namespace'] = None,
-               allow_remote: bool = True, **kwargs):
-    """Initialize a :class:`BasePod`, :class:`RemoteSSHPod`, :class:`MutablePod` or :class:`RemoteSSHMutablePod`
+        allow_remote: bool = True, **kwargs):
+    """Initialize a :class:`BasePod`, :class:`RemoteJinaDRunTime`, :class:`MutablePod` or :class:`RemoteSSHRunTime`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemoteSSHPod`
@@ -100,7 +100,7 @@ def Pea(args: Optional['argparse.Namespace'] = None,
         ctrl_with_ipc: Optional[bool] = None,
         gateway: bool = False,
         rest_api: bool = False):
-    """Initialize a :class:`BasePea`, :class:`HeadPea` or :class:`TailPea`
+    """Initialize a :class:`BasePea`, :class:`HeadPea`, :class:`TailPea`, or :class:`GatewayPea` or :class: `RESTGatewayPea`
 
     :param args: arguments from CLI
     :param ctrl_addr: control address where runtime will send terminate signals to GatewayPea
@@ -111,7 +111,8 @@ def Pea(args: Optional['argparse.Namespace'] = None,
     """
     if gateway:
         from .peas.gateway import GatewayPea
-        return RESTGatewayPea(args, ctrl_addr, ctrl_with_ipc) if rest_api else GatewayPea(args, ctrl_addr, ctrl_with_ipc)
+        return RESTGatewayPea(args, ctrl_addr, ctrl_with_ipc) if rest_api else GatewayPea(args, ctrl_addr,
+                                                                                          ctrl_with_ipc)
     elif args.role == PeaRoleType.HEAD:
         from .peas.headtail import HeadPea
         return HeadPea(args)
