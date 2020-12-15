@@ -625,6 +625,8 @@ class HubIO:
     def _image_version_exists(self, name, module_version, req_jina_version):
         manifests = _list(self.logger, name)
         # check if matching module version and jina version exists
+        self.logger.debug(f'manifests = {manifests}')
+        print(f'manifests = {manifests}')
         if manifests:
             matching = [
                 m for m in manifests
