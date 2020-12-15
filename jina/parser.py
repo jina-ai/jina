@@ -579,7 +579,7 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--skip-dry-run', action='store_true', default=False,
                      help='skip dry run (connectivity test) before sending every request')
     gp1.add_argument('--continue-on-error', action='store_true', default=False,
-                     help='if to continue when callback function throws an error')
+                     help='if to continue on all requests when callback function throws an error')
     return parser
 
 

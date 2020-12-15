@@ -41,7 +41,7 @@ class GatewayPea(BasePea):
             self._teardown()
 
     async def _wait_for_shutdown(self):
-        """Do not overridden this method when inheriting from :class:`GatewayPea`"""
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         with zmq.asyncio.Context() as ctx, \
                 _init_socket(ctx, self.ctrl_addr, None, SocketType.PAIR_BIND, use_ipc=True)[0] as sock:
             msg = await recv_message_async(sock)
@@ -78,12 +78,12 @@ class GatewayPea(BasePea):
         await self.server.wait_for_termination()
 
     async def _loop_body(self, is_ready_event: 'Event'):
-        """Do not override this method when inheriting from :class:`GatewayPea`"""
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         try:
             await asyncio.gather(self.serve_forever(is_ready_event), self._wait_for_shutdown())
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
-            await self.server.stop(0)
+        await self.serve_terminate()
 
     def __enter__(self):
         return self

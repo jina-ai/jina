@@ -50,7 +50,7 @@ uvloop:                     devel, cicd, perf
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
-grpcio:                     core
+grpcio>=1.33.1:             core
 ruamel.yaml>=0.15.89:       core
 tornado>=5.1.0:             core
 cookiecutter:               hub, devel, cicd

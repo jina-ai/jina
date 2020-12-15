@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import time
+import warnings
 from typing import Optional, Dict
 
 from . import default_logger
@@ -33,6 +34,9 @@ def start_sse_logger(log_config: Dict,
         };
 
     """
+
+    warnings.warn('this function will be removed soon. dashboard will read from "jinad"', DeprecationWarning)
+
     with ImportExtensions(required=True):
         from flask import Flask, Response, jsonify
         from flask_cors import CORS
