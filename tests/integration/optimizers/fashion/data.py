@@ -5,8 +5,6 @@ import os
 import urllib.request
 from pathlib import Path
 
-from jina.clients.python import ProgressBar
-
 
 def load_mnist(path):
     with gzip.open(path, 'rb') as fp:

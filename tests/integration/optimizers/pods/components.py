@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 from jina.executors.encoders import BaseImageEncoder
-from jina.optimizer.parameters import IntegerParameter
+from jina.optimizers.parameters import IntegerParameter
 
 
 class MyEncoder(BaseImageEncoder):
