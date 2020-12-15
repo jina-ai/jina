@@ -685,7 +685,8 @@ def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[
         return pea_args
 
 
-def is_jupyter() -> bool:
+# noqa: F821
+def is_jupyter() -> bool:  # pragma: no cover
     """Check if we're running in a Jupyter notebook,
     using magic command `get_ipython` that only available in Jupyter"""
     try:
