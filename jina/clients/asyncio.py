@@ -35,8 +35,6 @@ class AsyncClient(Client):
         async def heavylifting():
             await other_library.download_big_files(...)
 
-        asyncio.run(asyncio.gather(run_async_flow_5s(), heavylifting()))
-
         async def concurrent_main():
             await asyncio.gather(jina_client_query(), heavylifting())
 
