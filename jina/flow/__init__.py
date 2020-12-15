@@ -778,6 +778,17 @@ class Flow(ExitStack):
         """
         self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
 
+
+    def update(self, input_fn: InputFnType = None,
+              output_fn: Callable[['Request'], None] = None,
+              **kwargs):
+        self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
+
+    def delete(self, input_fn: InputFnType = None,
+              output_fn: Callable[['Request'], None] = None,
+              **kwargs):
+        self._get_client(**kwargs).delete(input_fn, output_fn, **kwargs)
+
     @property
     def _mermaid_str(self):
         mermaid_graph = ["%%{init: {'theme': 'base', "

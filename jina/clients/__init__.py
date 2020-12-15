@@ -122,6 +122,16 @@ class Client:
         self.mode = RequestType.INDEX
         self._submit(input_fn, output_fn, **kwargs)
 
+    def delete(self, input_fn: Optional[InputFnType] = None,
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        self.mode = RequestType.DELETE
+        self._submit(input_fn, output_fn, **kwargs)
+
+    def update(self, input_fn: Optional[InputFnType] = None,
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        self.mode = RequestType.UPDATE
+        self._submit(input_fn, output_fn, **kwargs)
+
     def _submit(self,
                 input_fn: Callable,
                 on_done: Callable,

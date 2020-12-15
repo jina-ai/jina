@@ -240,6 +240,8 @@ class RequestType(BetterEnum):
     SEARCH = 1
     TRAIN = 2
     CONTROL = 3
+    DELETE = 4
+    UPDATE = 5
 
 
 class CompressAlgo(BetterEnum):
