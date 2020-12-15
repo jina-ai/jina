@@ -11,7 +11,7 @@ from . import request
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
-from ..excepts import BadClientRequestGenerator, BadClient, BadInputFunction
+from ..excepts import BadClient, BadClientInput
 from ..helper import typename, run_async
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
@@ -75,7 +75,7 @@ class Client:
                 raise TypeError(f'{typename(r)} is not a valid Request')
         except Exception as ex:
             default_logger.error(f'input_fn is not valid!')
-            raise BadInputFunction from ex
+            raise BadClientInput from ex
 
     def get_requests(self, **kwargs) -> Iterator['Request']:
         """Get request in generator"""
@@ -161,9 +161,9 @@ class Client:
                     self.logger.error(f'{msg}\ninternal error on the server side')
                     raise rpc_ex
                 elif my_code == grpc.StatusCode.UNKNOWN and 'asyncio.exceptions.TimeoutError' in my_details:
-                    raise BadClientRequestGenerator(f'{msg}\n'
-                                                    'often the case is that you define/send a bad input iterator to jina, '
-                                                    'please double check your input iterator') from rpc_ex
+                    raise BadClientInput(f'{msg}\n'
+                                         'often the case is that you define/send a bad input iterator to jina, '
+                                         'please double check your input iterator') from rpc_ex
                 else:
                     raise BadClient(msg) from rpc_ex
 

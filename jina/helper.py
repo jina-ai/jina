@@ -30,8 +30,6 @@ __all__ = ['batch_iterator', 'yaml',
            'cached_property', 'is_url', 'complete_path',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list']
 
-from jina.excepts import EventLoopError
-
 
 def deprecated_alias(**aliases):
     def deco(f):
@@ -687,6 +685,22 @@ def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[
         return pea_args
 
 
+def is_jupyter() -> bool:
+    """Check if we're running in a Jupyter notebook,
+    using magic command `get_ipython` that only available in Jupyter"""
+    try:
+        get_ipython  # type: ignore
+    except NameError:
+        return False
+    shell = get_ipython().__class__.__name__  # type: ignore
+    if shell == 'ZMQInteractiveShell':
+        return True  # Jupyter notebook or qtconsole
+    elif shell == 'TerminalInteractiveShell':
+        return False  # Terminal running IPython
+    else:
+        return False  # Other type (?)
+
+
 def run_async(func, *args, **kwargs):
     """Generalized asyncio.run for jupyter notebook.
 
@@ -702,6 +716,7 @@ def run_async(func, *args, **kwargs):
     :param kwargs: key-value parameters
     :return:
     """
+
     class RunThread(threading.Thread):
         def run(self):
             self.result = asyncio.run(func(*args, **kwargs))
@@ -714,9 +729,18 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        thread = RunThread()
-        thread.start()
-        thread.join()
-        return thread.result
+        if is_jupyter():
+            thread = RunThread()
+            thread.start()
+            thread.join()
+            try:
+                return thread.result
+            except AttributeError:
+                from .excepts import BadClient
+                raise BadClient('something wrong when running the eventloop, result can not be retrieved')
+        else:
+            raise RuntimeError('you have an eventloop running but not using jupyter/ipython, '
+                               'this may mean you are using Jina with other integration? '
+                               'Please report this issue here: https://github.com/jina-ai/jina')
     else:
         return asyncio.run(func(*args, **kwargs))
