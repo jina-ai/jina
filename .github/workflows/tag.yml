@@ -78,6 +78,7 @@ jobs:
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
           echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+          JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
           echo "JINA_MINOR_VERSION=${JINA_VERSION%.*}" >> $GITHUB_ENV
       - name: Upload to Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master

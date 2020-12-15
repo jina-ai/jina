@@ -116,10 +116,10 @@ This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/m
 
 #### Visualize
 
-To visualize the Flow, simply chain it with `.plot()`. If you are using a Jupyter notebook, it will render a flowchart inline:
+To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, it's even easier:
 
 ```python
-f.plot()
+f
 ```
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
@@ -196,6 +196,39 @@ f = (Flow().add(name='p1', needs='gateway')
 ```
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
+
+#### Asynchronous Flow
+
+Synchronous from outside, Jina runs asynchronously underneath: it manages the eventloop(s) for scheduling the jobs. In some scenario, user wants more control over the eventloop, then `AsyncFlow` comes to use. In the example below, Jina is part of the integration where another heavy-lifting job is running concurrently:
+
+```python
+from jina import AsyncFlow
+
+async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
+    with AsyncFlow().add(uses='- !WaitDriver {}') as f:
+        await f.index_ndarray(np.random.random([5, 4]), output_fn=validate)
+
+async def heavylifting():  # total roundtrip takes ~5s
+    print('heavylifting other io-bound jobs, e.g. download, upload, file io')
+    await asyncio.sleep(5)
+    print('heavylifting done after 5s')
+
+async def concurrent_main():  # about 5s; but some dispatch cost, can't be just 5s, usually at <7s
+    await asyncio.gather(run_async_flow_5s(), heavylifting())
+
+if __name__ == '__main__':
+    asyncio.run(concurrent_main())
+```
+
+`AsyncFlow` is very useful when using Jina inside Jupyter Notebook. As Jupyter/ipython already manages an eventloop and thanks to [`autoawait`](https://ipython.readthedocs.io/en/stable/interactive/autoawait.html), the following code can run out-of-the-box in Jupyter:
+
+```python
+from jina import AsyncFlow
+
+with AsyncFlow().add() as f:
+    await f.index_ndarray(np.random.random([5, 4]), output_fn=print)
+```
+
 
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it!
 

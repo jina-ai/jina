@@ -199,6 +199,12 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
+    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        raise NotImplementedError
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        raise NotImplementedError
+
 
 class BaseKVIndexer(BaseIndexer):
     """An abstract class for key-value indexer.

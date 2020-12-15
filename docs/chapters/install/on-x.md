@@ -4,6 +4,14 @@ Linux distributions (not to mention notebooks and other Python environments) are
 
 While installing Jina on Ubuntu is pretty straightforward, other distributions may have their quirks, either with Jina directly or with some of the tools around Jina (like Docker for example). This document aims to be a one-stop resource for any issues you may encounter on different distros, operating systems, or running in notebooks.
 
+## Jupyter Lab/Notebook
+
+Yes! Since `0.8.6` Jina runs smoothly on Jupyter Lab/Notebook. For better experience, use `AsyncFlow` instead of `Flow`.
+
+## Google Colab
+
+Jina requires Python 3.7 or 3.8. At the time of writing Google Colab runs Python 3.6.7 so Jina can't be installed via `pip`.
+
 ## Fedora
 
 While Jina hasn't shown any quirks on Fedora, getting Docker up and running to test Jina examples can be troublesome. Two main errors commonly pop up on a fresh install:
@@ -39,6 +47,3 @@ sudo setenforce 0
 
 If you've got Jina running on other systems, we'd love to hear from you, and especially the steps you had to go through to make it work properly!
 
-## Google Colab
-
-Jina requires Python 3.7 or 3.8. At the time of writing Google Colab runs Python 3.6.7 so Jina can't be installed via `pip`
