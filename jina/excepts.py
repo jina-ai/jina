@@ -88,7 +88,7 @@ class BadClientCallback(BadClient):
     """Error in the callback function on the client side"""
 
 
-class BadClientRequestGenerator(BadClient):
+class BadClientInput(BadClient):
     """Error in the request generator function on the client side"""
 
 
@@ -149,10 +149,6 @@ class CompressionRateTooLow(Exception):
 
 class DryRunException(Exception):
     """Dryrun is not successful on the given flow"""
-
-
-class BadInputFunction(Exception):
-    """Exception when the input function throws an error """
 
 
 class BadDocID(Exception):
