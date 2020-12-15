@@ -56,7 +56,8 @@ class LocalRunTime(RunTime):
         return self.pea.is_idle
 
     def run(self):
-        """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
+        """Start the request loop of this Runtime. It will start a BasePea as a context manager and call its
+        main run entrypoint """
         try:
             self.set_environment_vars()
             with self.pea as pea:

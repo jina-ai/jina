@@ -103,7 +103,10 @@ def test_pea_proper_terminate(factory, exception_class):
                                              DriverError, NoDriverForRequest,
                                              NotImplementedError])
 def test_pea_proper_terminate_when_load_fails(pea_exception_load_executor_factory, exception_class):
-    pea = pea_exception_load_executor_factory.create(exception_class)
-    with pea:
-        pass
-    assert pea.properly_closed
+    with pytest.raises(exception_class):
+        pea = pea_exception_load_executor_factory.create(exception_class)
+        with pea:
+            pass
+
+    # exception happens in __enter__
+    assert not pea.properly_closed

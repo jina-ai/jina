@@ -51,7 +51,6 @@ def Pod(args: Optional['argparse.Namespace'] = None,
     :param allow_remote: allow start a :class:`RemoteSSHPod`
     :param kwargs: all supported arguments from CLI
     """
-
     if args is None:
         from ..parser import set_pod_parser
         from ..helper import get_parsed_args
@@ -73,7 +72,6 @@ def Pod(args: Optional['argparse.Namespace'] = None,
                 from .pods.mutable import MutablePod
                 return MutablePod(args)
             else:
-                # TODO: this part needs to be refactored
                 from .runtimes.remote.jinad import RemoteJinaDRunTime
                 return RemoteJinaDRunTime(args, kind='pod')
 

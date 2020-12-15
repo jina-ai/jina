@@ -14,7 +14,12 @@ class RemoteJinaDRunTime(RemoteRunTime):
         super().__init__(args, kind=kind)
         if isinstance(self.args, Namespace):
             self.ctrl_timeout = self.args.timeout_ctrl
-        self.api = get_jinad_api(kind=self.kind, host=self.args.host, port=self.args.port_expose, logger=self.logger)
+        if isinstance(self.args, Dict):
+            api_args = self.args['peas'][0]
+        else:
+            api_args = self.args
+
+        self.api = get_jinad_api(kind=self.kind, host=api_args.host, port=api_args.port_expose, logger=self.logger)
 
     @cached_property
     def remote_id(self) -> str:
@@ -22,9 +27,9 @@ class RemoteJinaDRunTime(RemoteRunTime):
 
     def spawn_remote(self, **kwargs) -> Optional[str]:
         if self.api.is_alive:
-            pea_args = namespace_to_dict(self.args)
-            if self.api.upload(pea_args, **kwargs):
-                return self.api.create(pea_args, **kwargs)
+            args = namespace_to_dict(self.args)
+            if self.api.upload(args, **kwargs):
+                return self.api.create(args, **kwargs)
 
     def _monitor_remote(self):
         if self.remote_id:
