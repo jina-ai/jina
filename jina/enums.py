@@ -238,10 +238,10 @@ class RequestType(BetterEnum):
     """
     INDEX = 0
     SEARCH = 1
-    TRAIN = 2
-    CONTROL = 3
-    DELETE = 4
-    UPDATE = 5
+    DELETE = 2
+    UPDATE = 3
+    CONTROL = 4
+    TRAIN = 5
 
 
 class CompressAlgo(BetterEnum):
