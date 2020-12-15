@@ -23,17 +23,15 @@ evaluation_value = 0.0
 def compute_mean_evaluation(resp):
     global num_docs_evaluated
     global evaluation_value
-    print(f' COMPUTE MEAN EVALUATION')
     for d in resp.search.docs:
         num_docs_evaluated += 1
         evaluation_value += d.evaluations[0].value
-    print(f' COMPUTE MEAN EVALUATION {evaluation_value/num_docs_evaluated}')
-
 
 
 def evaluate_generator(num_docs: int, target: dict):
     for j in range(num_docs):
-        n = random.randint(0, 10000)  # there are 10000 query examples, so that's the limit
+        num_data = len(target['query-labels']['data'])
+        n = random.randint(0, num_data)
         label_int = target['query-labels']['data'][n][0]
         document = Document(content=(target['query']['data'][n]))
         document.tags['label_id'] = str(label_int)
@@ -55,7 +53,8 @@ def index_generator(num_docs: int, target: dict):
 
 def query_generator(num_docs: int, target: dict):
     for n in range(num_docs):
-        n = random.randint(0, 1000)  # there are 10000 query examples, so that's the limit
+        num_data = len(target['query-labels']['data'])
+        n = random.randint(0, num_data)
         d = Document(content=(target['query']['data'][n]))
         d.update_id()
         label_int = target['query-labels']['data'][n][0]
@@ -70,7 +69,6 @@ def print_result(resp):
         for kk in d.matches:
             kmi = kk.uri
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
-            # k['score']['explained'] = json.loads(kk.score.explained)
         result_html.append('</td></tr>\n')
 
 
@@ -79,6 +77,8 @@ def write_html(html_path):
             open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
+        evaluation_percentage = evaluation_value/num_docs_evaluated * 100.0
+        t = t.replace('{% EVALUATION %}', '{:.2f}%'.format(evaluation_percentage))
         fw.write(t)
 
     url_html_path = 'file://' + os.path.abspath(html_path)

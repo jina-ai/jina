@@ -45,5 +45,5 @@ class MyEvaluator(BaseRankingEvaluator):
             if match_label == desired_label:
                 ret += 1.0
 
-        divisor = min(self.eval_at, len(desired))
+        divisor = min(self.eval_at, len(actual))
         return ret / divisor if divisor != 0.0 else 0.0

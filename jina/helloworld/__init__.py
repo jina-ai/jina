@@ -78,7 +78,11 @@ def hello_world(args):
                  batch_size=args.query_batch_size,
                  top_k=args.top_k)
 
-    # now load query flow from another YAML file
+    # wait for couple of seconds
+    countdown(8, reason=colored('behold! im going to switch to evaluate', 'cyan',
+                                attrs=['underline', 'bold', 'reverse']))
+
+    # now load evaluate flow from another YAML file
     f = Flow.load_config(args.uses_evaluate)
     # run it!
     with f:
