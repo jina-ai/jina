@@ -105,6 +105,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -206,6 +207,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.8.2`)](#release-note-082)
 - [Release Note (`0.8.3`)](#release-note-083)
 - [Release Note (`0.8.4`)](#release-note-084)
+- [Release Note (`0.8.5`)](#release-note-085)
+- [Release Note (`0.8.6`)](#release-note-086)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -5909,4 +5912,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```a63d5a5b```](https://github.com/jina-ai/jina/commit/a63d5a5bc76c22167bbe26823a8437e8d8133653)] __-__ hotfix release 0.8.6 (*Han Xiao*)
  - [[```9c9f4c93```](https://github.com/jina-ai/jina/commit/9c9f4c9398e89770fa85a2245b5a2acf9c25c5e3)] __-__ __version__: the next version will be 0.8.6 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-7></a>
+## Release Note (`0.8.7`)
+
+> Release time: 2020-12-15 15:04:50
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```08fa53e3```](https://github.com/jina-ai/jina/commit/08fa53e33eb7abb4f40e6e4a5f545ff220a0f38d)] __-__ __async__: add AsyncClient and AsyncFlow (#1463) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```5e48f590```](https://github.com/jina-ai/jina/commit/5e48f59066a8264dc5ff1bb941ea0a687a379b5d)] __-__ add client bad iterator test (#1462) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```e9a53206```](https://github.com/jina-ai/jina/commit/e9a532069413b8b9376c2ac1c06a874488a70765)] __-__ hotfix release 0.8.7 (*Han Xiao*)
+ - [[```1236a6b5```](https://github.com/jina-ai/jina/commit/1236a6b5317b40fdc752ab8619dac8ec6d6f374f)] __-__ __docs__: update readme (*Jina Dev Bot*)
+ - [[```d4df3241```](https://github.com/jina-ai/jina/commit/d4df3241925bbc1c8acb9fa16154a347d111bedc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9652f02a```](https://github.com/jina-ai/jina/commit/9652f02a5eb5b783941892b58f00ebd4ddf77635)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```cb0bee68```](https://github.com/jina-ai/jina/commit/cb0bee6844ee23050e3fa2a266125ddcd87c0377)] __-__ __docs__: fix friday release to sunday release (*Han Xiao*)
+ - [[```d7f9d659```](https://github.com/jina-ai/jina/commit/d7f9d659531712715582537709fba3b1a7b7d745)] __-__ __ci__: update docker tag alias (*Han Xiao*)
+ - [[```b8ef0898```](https://github.com/jina-ai/jina/commit/b8ef08986932ea266fd7ae6365cd27ec34554113)] __-__ __version__: the next version will be 0.8.7 (*Jina Dev Bot*)
 
