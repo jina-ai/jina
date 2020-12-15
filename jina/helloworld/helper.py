@@ -5,6 +5,7 @@ import gzip
 import os
 import urllib.request
 import webbrowser
+import random
 
 import numpy as np
 from pkg_resources import resource_filename
@@ -12,8 +13,54 @@ from pkg_resources import resource_filename
 from ..helper import colored
 from ..logging import default_logger
 from ..logging.profile import ProgressBar
+from .. import Document
 
 result_html = []
+num_docs_evaluated = 0
+evaluation_value = 0.0
+
+
+def compute_mean_evaluation(resp):
+    global num_docs_evaluated
+    global evaluation_value
+    print(f' COMPUTE MEAN EVALUATION')
+    for d in resp.search.docs:
+        num_docs_evaluated += 1
+        evaluation_value += d.evaluations[0].value
+    print(f' COMPUTE MEAN EVALUATION {evaluation_value/num_docs_evaluated}')
+
+
+
+def evaluate_generator(num_docs: int, target: dict):
+    for j in range(num_docs):
+        n = random.randint(0, 10000)  # there are 10000 query examples, so that's the limit
+        label_int = target['query-labels']['data'][n][0]
+        document = Document(content=(target['query']['data'][n]))
+        document.tags['label_id'] = str(label_int)
+        ground_truth = Document()
+        match = Document()
+        match.tags['label_id'] = str(label_int)
+        ground_truth.matches.append(match)
+        yield document, ground_truth
+
+
+def index_generator(num_docs: int, target: dict):
+    for j in range(num_docs):
+        d = Document(content=target['index']['data'][j])
+        d.update_id()
+        label_int = target['index-labels']['data'][j][0]
+        d.tags['label_id'] = str(label_int)
+        yield d
+
+
+def query_generator(num_docs: int, target: dict):
+    for n in range(num_docs):
+        n = random.randint(0, 1000)  # there are 10000 query examples, so that's the limit
+        d = Document(content=(target['query']['data'][n]))
+        d.update_id()
+        label_int = target['query-labels']['data'][n][0]
+        d.tags['label_id'] = str(label_int)
+        yield d
 
 
 def print_result(resp):
@@ -56,12 +103,20 @@ def download_data(targets, download_proxy=None):
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
     with ProgressBar(task_name='download fashion-mnist', batch_unit='') as t:
-        for v in targets.values():
+        for k, v in targets.items():
             if not os.path.exists(v['filename']):
                 urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update(1))
-            v['data'] = load_mnist(v['filename'])
+            if k == 'index-labels' or k == 'query-labels':
+                v['data'] = load_labels(v['filename'])
+            if k == 'index' or k == 'query':
+                v['data'] = load_mnist(v['filename'])
 
 
 def load_mnist(path):
     with gzip.open(path, 'rb') as fp:
         return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 784])
+
+
+def load_labels(path: str):
+    with gzip.open(path, 'rb') as fp:
+        return np.frombuffer(fp.read(), dtype=np.uint8, offset=8).reshape([-1, 1])
