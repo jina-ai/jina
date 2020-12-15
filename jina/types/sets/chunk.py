@@ -30,8 +30,7 @@ class ChunkSet(DocumentSet):
 
         if not chunk.mime_type:
             chunk.mime_type = self._ref_doc.mime_type
-        #chunk.update_id()
-        chunk.content_hash()
+        chunk.update_content_hash()
         return chunk
 
     @property

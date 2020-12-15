@@ -64,21 +64,6 @@ def test_np_int():
     assert hash2bytes(np.int64(a)) == hash2bytes(a)
 
 
-def test_hash():
-    ds = random_docs(10)
-    tmp = []
-    for d in ds:
-        h = new_doc_hash(d)
-        id = new_doc_id(d)
-        print(f'{id}: {h}')
-        assert id2hash(id) == h
-        assert hash2id(h) == id
-        tmp.append(h)
-
-    tmp = np.array(tmp)
-    assert tmp.dtype == np.int64
-
-
 def test_dunder_get():
     a = SimpleNamespace()
     a.b = {'c': 1}

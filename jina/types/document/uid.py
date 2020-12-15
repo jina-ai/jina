@@ -28,26 +28,21 @@ from ...excepts import BadDocID
 from ...helper import typename
 from ...proto.jina_pb2 import DocumentProto
 
-_doc_field_mask = None
+from jina.logging import default_logger
+
 _digest_size = 8
 _id_regex = re.compile(r'[0-9a-fA-F]{16}')
+_warned_deprecation = False
 
 
-def new_doc_hash(doc: 'DocumentProto') -> int:
-    return id2hash(new_doc_id(doc))
-
-
-def get_document_hash(doc: 'DocumentProto') -> str:
+def get_content_hash(doc: 'DocumentProto') -> str:
     """ Generate a new hexdigest based on the content of the document.
 
     :param doc: a non-empty document
     :return: the hexdigest based on :meth:`blake2b`
     """
-    d = doc
-    if _doc_field_mask:
-        d = DocumentProto()
-        _doc_field_mask.MergeMessage(doc, d)
-    return blake2b(d.SerializeToString(), digest_size=_digest_size).hexdigest()
+    # TODO: once `new_doc_id` is removed, the content of this function can directly move to the `Document`.
+    return blake2b(doc.SerializeToString(), digest_size=_digest_size).hexdigest()
 
 
 def new_doc_id(doc: 'DocumentProto') -> str:
@@ -59,15 +54,11 @@ def new_doc_id(doc: 'DocumentProto') -> str:
     :param doc: a non-empty document
     :return: the hexdigest based on :meth:`blake2b`
     """
-    d = doc
-    if _doc_field_mask:
-        d = DocumentProto()
-        _doc_field_mask.MergeMessage(doc, d)
-    return blake2b(d.SerializeToString(), digest_size=_digest_size).hexdigest()
-
-
-def new_doc_bytes(doc: 'DocumentProto') -> bytes:
-    return id2bytes(new_doc_id(doc))
+    global _warned_deprecation
+    if not _warned_deprecation:
+        default_logger.warning('This function name is deprecated and will be renamed to `get_content_hash` latest with Jina 1.0.0. Please already use the updated name.')
+        _warned_deprecation = True
+    return get_content_hash(doc)
 
 
 def hash2bytes(value: int) -> bytes:

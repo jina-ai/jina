@@ -87,7 +87,7 @@ class Document:
     """
 
     def __init__(self, document: Optional[DocumentSourceType] = None,
-                 copy: bool = False, custom_id: Optional[str] = None, **kwargs):
+                 copy: bool = False, **kwargs):
         """
 
         :param document: the document to construct from. If ``bytes`` is given
@@ -137,11 +137,9 @@ class Document:
                              f'if you are trying to set the content '
                              f'you may use "Document(content=your_content)"') from ex
 
-        if custom_id is None:
+        if self._document.id is None or self._document.id == '':
             import random
-            custom_id = random.randint(0, 9)
-
-        self.id = custom_id
+            self.id = random.randint(0, 9223372036854775807)
 
         self.set_attrs(**kwargs)
 
@@ -189,7 +187,7 @@ class Document:
 
     def update_content_hash(self):
         """Update the document hash according to its content."""
-        self._document.content_hash = new_doc_id(self._document)
+        self._document.content_hash = get_content_hash(self._document)
 
     @property
     def id(self) -> 'UniqueId':
