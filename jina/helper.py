@@ -685,15 +685,15 @@ def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[
         return pea_args
 
 
-# noqa: F821
+
 def is_jupyter() -> bool:  # pragma: no cover
     """Check if we're running in a Jupyter notebook,
     using magic command `get_ipython` that only available in Jupyter"""
     try:
-        get_ipython  # type: ignore
+        get_ipython  # noqa: F821
     except NameError:
         return False
-    shell = get_ipython().__class__.__name__  # type: ignore
+    shell = get_ipython().__class__.__name__  # noqa: F821
     if shell == 'ZMQInteractiveShell':
         return True  # Jupyter notebook or qtconsole
     elif shell == 'TerminalInteractiveShell':
