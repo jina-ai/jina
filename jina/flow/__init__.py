@@ -35,6 +35,9 @@ if False:
 
 
 class Flow(ExitStack):
+    _cls_pod = FlowPod  #: the type of the Pod, can be changed to other class
+    _cls_client = Client  #: the type of the Client, can be changed to other class
+
     def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
         """Initialize a flow object
 
@@ -57,7 +60,6 @@ class Flow(ExitStack):
         """
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._cls_pod = FlowPod  #: the type of the Pod, can be changed to other class
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
@@ -537,7 +539,7 @@ class Flow(ExitStack):
         return a._pod_nodes == b._pod_nodes
 
     @build_required(FlowBuildLevel.GRAPH)
-    def _get_client(self, **kwargs):
+    def _get_client(self, **kwargs) -> 'Client':
         kwargs.update(self._common_kwargs)
         if 'port_expose' not in kwargs:
             kwargs['port_expose'] = self.port_expose
@@ -545,7 +547,7 @@ class Flow(ExitStack):
             kwargs['host'] = self.host
 
         _, args, _ = get_parsed_args(kwargs, set_client_cli_parser())
-        return Client(args)
+        return self._cls_client(args)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def train(self, input_fn: InputFnType = None,
@@ -585,7 +587,7 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client('train', input_fn, output_fn, **kwargs)
+        self._get_client(**kwargs).train(input_fn, output_fn, **kwargs)
 
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                       output_fn: Callable[['Request'], None] = None,

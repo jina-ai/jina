@@ -110,61 +110,57 @@ class Client:
     def train(self, input_fn: Optional[InputFnType] = None,
               output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.TRAIN
-        self._submit(input_fn, output_fn, **kwargs)
+        run_async(self._get_results, input_fn, output_fn, **kwargs)
 
     def search(self, input_fn: Optional[InputFnType] = None,
                output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.SEARCH
-        self._submit(input_fn, output_fn, **kwargs)
+        run_async(self._get_results, input_fn, output_fn, **kwargs)
 
     def index(self, input_fn: Optional[InputFnType] = None,
               output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
         self.mode = RequestType.INDEX
-        self._submit(input_fn, output_fn, **kwargs)
+        run_async(self._get_results, input_fn, output_fn, **kwargs)
 
-    def _submit(self,
-                input_fn: Callable,
-                on_done: Callable,
-                on_error: Callable = None,
-                on_always: Callable = None, **kwargs):
+    async def _get_results(self, input_fn: Callable,
+                           on_done: Callable,
+                           on_error: Callable = None,
+                           on_always: Callable = None, **kwargs):
+        try:
+            self.input_fn = input_fn
+            req_iter, tname = self.get_requests(**kwargs)
+            async with grpc.aio.insecure_channel(f'{self.args.host}:{self.args.port_expose}',
+                                                 options=[('grpc.max_send_message_length', -1),
+                                                          ('grpc.max_receive_message_length', -1)]) as channel:
+                stub = jina_pb2_grpc.JinaRPCStub(channel)
+                self.logger.success(f'connected to the gateway at {self.args.host}:{self.args.port_expose}!')
+                with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
+                    async for response in stub.Call(req_iter):
+                        callback_exec(response=response,
+                                      on_error=on_error,
+                                      on_done=on_done,
+                                      on_always=on_always,
+                                      continue_on_error=self.args.continue_on_error,
+                                      logger=self.logger)
+                        p_bar.update(self.args.batch_size)
+        except KeyboardInterrupt:
+            self.logger.warning('user cancel the process')
+        except grpc.aio._call.AioRpcError as rpc_ex:
+            # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
+            my_code = rpc_ex.code()
+            my_details = rpc_ex.details()
+            msg = f'gRPC error: {my_code} {my_details}'
+            if my_code == grpc.StatusCode.UNAVAILABLE:
+                self.logger.error(
+                    f'{msg}\nthe ongoing request is terminated as the server is not available or closed already')
+                raise rpc_ex
+            elif my_code == grpc.StatusCode.INTERNAL:
+                self.logger.error(f'{msg}\ninternal error on the server side')
+                raise rpc_ex
+            elif my_code == grpc.StatusCode.UNKNOWN and 'asyncio.exceptions.TimeoutError' in my_details:
+                raise BadClientInput(f'{msg}\n'
+                                     'often the case is that you define/send a bad input iterator to jina, '
+                                     'please double check your input iterator') from rpc_ex
+            else:
+                raise BadClient(msg) from rpc_ex
 
-        async def _inner():
-            try:
-                self.input_fn = input_fn
-                req_iter, tname = self.get_requests(**kwargs)
-                async with grpc.aio.insecure_channel(f'{self.args.host}:{self.args.port_expose}',
-                                                     options=[('grpc.max_send_message_length', -1),
-                                                              ('grpc.max_receive_message_length', -1)]) as channel:
-                    stub = jina_pb2_grpc.JinaRPCStub(channel)
-                    self.logger.success(f'connected to the gateway at {self.args.host}:{self.args.port_expose}!')
-                    with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-                        async for response in stub.Call(req_iter):
-                            callback_exec(response=response,
-                                          on_error=on_error,
-                                          on_done=on_done,
-                                          on_always=on_always,
-                                          continue_on_error=self.args.continue_on_error,
-                                          logger=self.logger)
-                            p_bar.update(self.args.batch_size)
-            except KeyboardInterrupt:
-                self.logger.warning('user cancel the process')
-            except grpc.aio._call.AioRpcError as rpc_ex:
-                # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
-                my_code = rpc_ex.code()
-                my_details = rpc_ex.details()
-                msg = f'gRPC error: {my_code} {my_details}'
-                if my_code == grpc.StatusCode.UNAVAILABLE:
-                    self.logger.error(
-                        f'{msg}\nthe ongoing request is terminated as the server is not available or closed already')
-                    raise rpc_ex
-                elif my_code == grpc.StatusCode.INTERNAL:
-                    self.logger.error(f'{msg}\ninternal error on the server side')
-                    raise rpc_ex
-                elif my_code == grpc.StatusCode.UNKNOWN and 'asyncio.exceptions.TimeoutError' in my_details:
-                    raise BadClientInput(f'{msg}\n'
-                                         'often the case is that you define/send a bad input iterator to jina, '
-                                         'please double check your input iterator') from rpc_ex
-                else:
-                    raise BadClient(msg) from rpc_ex
-
-        run_async(_inner)

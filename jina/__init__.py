@@ -154,6 +154,11 @@ from jina.types.sets import DocumentSet, QueryLangSet
 
 # Flow
 from jina.flow import Flow
+from jina.flow.asyncio import AsyncFlow
+
+# Client
+from jina.clients import Client
+from jina.clients.asyncio import AsyncClient
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])
