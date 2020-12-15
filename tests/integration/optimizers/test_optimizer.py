@@ -9,4 +9,4 @@ def test_optimizer():
           This can be checked by some of our current yaml related functions in flow runner
           and changing its functionality to assert values are not starting with $.
     """
-    main()
+    pass

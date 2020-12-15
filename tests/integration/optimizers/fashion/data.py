@@ -24,14 +24,14 @@ def download_data(target, download_proxy=None):
         proxy = urllib.request.ProxyHandler({'http': download_proxy, 'https': download_proxy})
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
-    with ProgressBar(task_name='download fashion-mnist', batch_unit='') as t:
-        for k, v in target.items():
-            if not os.path.exists(v['filename']):
-                urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update(1))
-            if k == 'index-labels' or k == 'query-labels':
-                v['data'] = load_labels(v['filename'])
-            if k == 'index' or k == 'query':
-                v['data'] = load_mnist(v['filename'])
+    print('Downloading fashion-mnist dataset...')
+    for k, v in target.items():
+        if not os.path.exists(v['filename']):
+            urllib.request.urlretrieve(v['url'], v['filename'])
+        if k == 'index-labels' or k == 'query-labels':
+            v['data'] = load_labels(v['filename'])
+        if k == 'index' or k == 'query':
+            v['data'] = load_mnist(v['filename'])
 
 
 def get_data(data_directory):
