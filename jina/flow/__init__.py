@@ -846,7 +846,7 @@ class Flow(ExitStack):
              vertical_layout: bool = False,
              inline_display: bool = False,
              build: bool = True,
-             copy_flow: bool = True) -> 'Flow':
+             copy_flow: bool = False) -> 'Flow':
         """
         Visualize the flow up to the current point
         If a file name is provided it will create a jpg image with that name,
@@ -873,8 +873,7 @@ class Flow(ExitStack):
 
         # deepcopy causes the below error while reusing a flow in Jupyter
         # 'Pickling an AuthenticationString object is disallowed for security reasons'
-        op_flow = self
-        # op_flow = copy.deepcopy(self) if copy_flow else self
+        op_flow = copy.deepcopy(self) if copy_flow else self
 
         if build:
             op_flow.build(False)
