@@ -122,6 +122,16 @@ class Client:
         self.mode = RequestType.INDEX
         run_async(self._get_results, input_fn, output_fn, **kwargs)
 
+    def update(self, input_fn: Optional[InputFnType] = None,
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        self.mode = RequestType.UPDATE
+        run_async(self._get_results, input_fn, output_fn, **kwargs)
+
+    def delete(self, input_fn: Optional[InputFnType] = None,
+              output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+        self.mode = RequestType.DELETE
+        run_async(self._get_results, input_fn, output_fn, **kwargs)
+
     async def _get_results(self, input_fn: Callable,
                            on_done: Callable,
                            on_error: Callable = None,
