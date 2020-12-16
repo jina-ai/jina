@@ -1,0 +1,12 @@
+!MyEvaluator
+with:
+  eval_at: 5
+metas:
+  name: evaluator  # a customized name
+requests:
+  on:
+    SearchRequest:
+      - !RankEvaluateDriver
+        with:
+          field: tags__label_id
+          traversal_paths: [ 'r' ]
