@@ -14,9 +14,9 @@ def pod(args):
 
 def pea(args):
     """Start a Pea"""
-    from jina.peapods import RuntimePea
+    from jina.peapods import Runtime
     try:
-        with RuntimePea(args) as p:
+        with Runtime(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass

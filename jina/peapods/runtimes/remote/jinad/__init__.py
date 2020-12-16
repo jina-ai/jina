@@ -2,12 +2,12 @@ from argparse import Namespace
 from typing import Union, Dict, Optional
 
 from jina.peapods.runtimes.remote.jinad.api import PeaAPI
-from jina.peapods.runtimes.remote import RemoteRunTime
+from jina.peapods.runtimes.remote import RemoteRuntime
 from jina.helper import cached_property, namespace_to_dict, colored, typename
 from .api import get_jinad_api
 
 
-class RemoteJinaDRunTime(RemoteRunTime):
+class RemoteJinaDRuntime(RemoteRuntime):
     """REST based Pea for remote Pea management
     """
     def __init__(self, args: Union['Namespace', Dict], kind: str):

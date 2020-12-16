@@ -3,12 +3,12 @@ from typing import Union, Dict
 
 from jina.peapods.peas import PeaRoleType
 from jina.peapods.zmq import Zmqlet, send_ctrl_message
-from jina.peapods.runtimes import RunTime
+from jina.peapods.runtimes import BaseRuntime
 
-__all__ = ['RemoteRunTime']
+__all__ = ['RemoteRuntime']
 
 
-class RemoteRunTime(RunTime):
+class RemoteRuntime(BaseRuntime):
 
     def __init__(self, args: Union['argparse.Namespace', Dict], kind: str):
         super().__init__(args)

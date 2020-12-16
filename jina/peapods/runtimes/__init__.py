@@ -11,10 +11,10 @@ from jina.excepts import PeaFailToStart
 from jina.helper import typename
 from jina.logging import JinaLogger
 
-__all__ = ['RuntimeMeta', 'RunTime']
+__all__ = ['RuntimeMeta', 'BaseRuntime']
 
 
-def _get_event(obj: 'RunTime') -> Event:
+def _get_event(obj: 'BaseRuntime') -> Event:
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):
@@ -23,7 +23,7 @@ def _get_event(obj: 'RunTime') -> Event:
         raise NotImplementedError
 
 
-def _make_or_event(obj: 'RunTime', *events) -> Event:
+def _make_or_event(obj: 'BaseRuntime', *events) -> Event:
     or_event = _get_event(obj)
 
     def or_set(self):
@@ -55,7 +55,7 @@ def _make_or_event(obj: 'RunTime', *events) -> Event:
 
 
 class RuntimeMeta(type):
-    """Meta class of :class:`BasePea` to enable switching between ``thread`` and ``process`` backend. """
+    """Meta class of :class:`BaseRuntime` to enable switching between ``thread`` and ``process`` backend. """
     _dct = {}
 
     def __new__(cls, name, bases, dct):
@@ -83,7 +83,7 @@ class RuntimeMeta(type):
         return type.__call__(_cls, *args, **kwargs)
 
 
-class RunTime(metaclass=RuntimeMeta):
+class BaseRuntime(metaclass=RuntimeMeta):
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__()
         self.args = args
@@ -169,7 +169,7 @@ class RunTime(metaclass=RuntimeMeta):
         raise NotImplementedError
 
     def send_terminate_signal(self):
-        """Send a terminate signal to the Pea supported by this LocalRunTime """
+        """Send a terminate signal to the Pea supported by this LocalRuntime """
         return send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
 
     def close(self) -> None:

@@ -3,13 +3,13 @@ import os
 from typing import Dict, Union
 
 from jina import __stop_msg__
-from jina.peapods.runtimes import RunTime
+from jina.peapods.runtimes import BaseRuntime
 from jina.peapods.peas import Pea
 
-__all__ = ['LocalRunTime']
+__all__ = ['LocalRuntime']
 
 
-class LocalRunTime(RunTime):
+class LocalRuntime(BaseRuntime):
 
     def __init__(self,
                  args: Union['argparse.Namespace', Dict],

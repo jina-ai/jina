@@ -12,9 +12,9 @@ if False:
     import argparse
 
 
-def RuntimePea(args: Optional['argparse.Namespace'] = None,
+def Runtime(args: Optional['argparse.Namespace'] = None,
                allow_remote: bool = True, **kwargs):
-    """Initialize a :class:`LocalRunTime`, :class:`ContainerRunTime` or :class:`RemoteJinaDRunTime`
+    """Initialize a :class:`LocalRuntime`, :class:`ContainerRuntime` or :class:`RemoteJinaDRuntime`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemoteRuntime`
@@ -32,19 +32,19 @@ def RuntimePea(args: Optional['argparse.Namespace'] = None,
             default_logger.warning(f'setting host to {__default_host__} as allow_remote set to False')
 
     if args.host != __default_host__:
-        from .runtimes.remote.jinad import RemoteJinaDRunTime
-        return RemoteJinaDRunTime(args, kind='pea')
+        from .runtimes.remote.jinad import RemoteJinaDRuntime
+        return RemoteJinaDRuntime(args, kind='pea')
     elif args.uses and not is_valid_local_config_source(args.uses):
-        from .runtimes.container import ContainerRunTime
-        return ContainerRunTime(args)
+        from .runtimes.container import ContainerRuntime
+        return ContainerRuntime(args)
     else:
-        from .runtimes.local import LocalRunTime
-        return LocalRunTime(args)
+        from .runtimes.local import LocalRuntime
+        return LocalRuntime(args)
 
 
 def Pod(args: Optional['argparse.Namespace'] = None,
         allow_remote: bool = True, **kwargs):
-    """Initialize a :class:`BasePod`, :class:`RemoteJinaDRunTime`, :class:`MutablePod` or :class:`RemoteSSHRunTime`
+    """Initialize a :class:`BasePod`, :class:`RemoteJinaDRuntime`, :class:`MutablePod` or :class:`RemoteSSHRuntime`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemoteSSHPod`
@@ -71,8 +71,8 @@ def Pod(args: Optional['argparse.Namespace'] = None,
                 from .pods.mutable import MutablePod
                 return MutablePod(args)
             else:
-                from .runtimes.remote.jinad import RemoteJinaDRunTime
-                return RemoteJinaDRunTime(args, kind='pod')
+                from .runtimes.remote.jinad import RemoteJinaDRuntime
+                return RemoteJinaDRuntime(args, kind='pod')
 
     if not allow_remote and args.host != __default_host__:
         args.host = __default_host__
@@ -80,11 +80,11 @@ def Pod(args: Optional['argparse.Namespace'] = None,
 
     if args.host != __default_host__:
         if args.remote_access == RemoteAccessType.JINAD:
-            from .runtimes.remote.jinad import RemoteJinaDRunTime
-            return RemoteJinaDRunTime(args, kind='pod')
+            from .runtimes.remote.jinad import RemoteJinaDRuntime
+            return RemoteJinaDRuntime(args, kind='pod')
         elif args.remote_access == RemoteAccessType.SSH:
-            from .runtimes.remote.ssh import RemoteSSHRunTime
-            return RemoteSSHRunTime(args, kind='pod')
+            from .runtimes.remote.ssh import RemoteSSHRuntime
+            return RemoteSSHRuntime(args, kind='pod')
         else:
             raise ValueError(f'{args.remote_access} is not supported')
     else:

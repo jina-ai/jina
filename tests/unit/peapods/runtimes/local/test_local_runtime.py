@@ -2,40 +2,40 @@ import pytest
 
 from jina.excepts import PeaFailToStart
 from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
-from jina.peapods.runtimes.local import LocalRunTime
+from jina.peapods.runtimes.local import LocalRuntime
 from jina.peapods.pods import BasePod
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_local_runtime_context(runtime):
     args = set_pea_parser().parse_args(['--runtime', runtime])
-    with LocalRunTime(args):
+    with LocalRuntime(args):
         pass
 
-    LocalRunTime(args).start().close()
+    LocalRuntime(args).start().close()
 
 
 @pytest.mark.parametrize('rest_api', [False, True])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_gateway_runtime(runtime, rest_api):
     args = set_gateway_parser().parse_args(['--runtime', runtime])
-    with LocalRunTime(args, gateway=True, rest_api=rest_api):
+    with LocalRuntime(args, gateway=True, rest_api=rest_api):
         pass
 
-    LocalRunTime(args, gateway=True, rest_api=False).start().close()
+    LocalRuntime(args, gateway=True, rest_api=False).start().close()
 
 
 def test_address_in_use():
     with pytest.raises(PeaFailToStart):
         args1 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
         args2 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
-        with LocalRunTime(args1), LocalRunTime(args2):
+        with LocalRuntime(args1), LocalRuntime(args2):
             pass
 
     with pytest.raises(PeaFailToStart):
         args1 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
         args2 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
-        with LocalRunTime(args1), LocalRunTime(args2):
+        with LocalRuntime(args1), LocalRuntime(args2):
             pass
 
 

@@ -8,7 +8,7 @@ from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
 from jina.parser import set_pea_parser, set_ping_parser
-from jina.peapods.runtimes.container import ContainerRunTime
+from jina.peapods.runtimes.container import ContainerRuntime
 from tests import random_docs
 
 cur_dir = Path(__file__).parent
@@ -34,11 +34,11 @@ def docker_image_built():
 def test_simple_container(docker_image_built):
     args = set_pea_parser().parse_args(['--uses', img_name])
 
-    with ContainerRunTime(args):
+    with ContainerRuntime(args):
         pass
 
     time.sleep(2)
-    ContainerRunTime(args).start().close()
+    ContainerRuntime(args).start().close()
 
 
 def test_simple_container_with_ext_yaml(docker_image_built):
@@ -46,7 +46,7 @@ def test_simple_container_with_ext_yaml(docker_image_built):
                                         '--uses-internal',
                                         str(cur_dir.parent.parent.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml')])
 
-    with ContainerRunTime(args):
+    with ContainerRuntime(args):
         time.sleep(2)
 
 
@@ -137,7 +137,7 @@ def test_container_ping(docker_image_built):
 
     # test with container
     with pytest.raises(SystemExit) as cm:
-        with ContainerRunTime(a4):
+        with ContainerRuntime(a4):
             NetworkChecker(a5)
 
     assert cm.value.code == 0
@@ -163,7 +163,7 @@ def test_container_status():
     args = set_pea_parser().parse_args(['--uses', img_name,
                                         '--uses-internal',
                                         str(cur_dir.parent.parent.parent / 'mwu-encoder' / 'mwu_encoder_ext.yml')])
-    runtime = ContainerRunTime(args)
+    runtime = ContainerRuntime(args)
     assert not runtime.is_ready
     with runtime:
         time.sleep(2.)

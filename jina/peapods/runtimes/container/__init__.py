@@ -12,14 +12,13 @@ from jina.peapods.zmq import Zmqlet
 from jina import __ready_msg__, __stop_msg__
 from jina.helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
 from jina.logging import JinaLogger
+from jina.peapods.runtimes import BaseRuntime
 
-from .. import RunTime
-
-__all__ = ['ContainerRunTime']
+__all__ = ['ContainerRuntime']
 
 
-class ContainerRunTime(RunTime):
-    """A ContainerRunTime that will spawn a dockerized `BasePea`
+class ContainerRuntime(BaseRuntime):
+    """A ContainerRuntime that will spawn a dockerized `BasePea`
 
     It requires a docker-corresponding valid ``args.uses``.
     """
