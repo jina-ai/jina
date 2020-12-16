@@ -7,17 +7,20 @@ from .. import __default_host__
 from ..enums import RemoteAccessType
 from ..helper import is_valid_local_config_source
 from ..logging import default_logger
+from .peas import BasePea
 
 if False:
     import argparse
 
 
 def Runtime(args: Optional['argparse.Namespace'] = None,
-               allow_remote: bool = True, **kwargs):
-    """Initialize a :class:`LocalRuntime`, :class:`ContainerRuntime` or :class:`RemoteJinaDRuntime`
+            allow_remote: bool = True,
+            pea_cls: BasePea = BasePea, **kwargs):
+    """Initialize a :class:`LocalRuntime`, :class:`ContainerRuntime` or :class:`RemoteRuntime`
 
     :param args: arguments from CLI
     :param allow_remote: allow start a :class:`RemoteRuntime`
+    :param pea_cls: declares the type of `Pea` to be instantiated by `LocalRuntime`
     :param kwargs: all supported arguments from CLI
 
     """
@@ -39,7 +42,7 @@ def Runtime(args: Optional['argparse.Namespace'] = None,
         return ContainerRuntime(args)
     else:
         from .runtimes.local import LocalRuntime
-        return LocalRuntime(args)
+        return LocalRuntime(args, pea_cls=pea_cls)
 
 
 def Pod(args: Optional['argparse.Namespace'] = None,

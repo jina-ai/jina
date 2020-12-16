@@ -31,7 +31,7 @@ class BasePea(ExitStack):
     communicates with others via protobuf and ZeroMQ. It also is a context manager of an Executor .
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['argparse.Namespace', Dict], **kwargs):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI

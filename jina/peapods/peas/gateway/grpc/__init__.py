@@ -22,8 +22,9 @@ class GatewayPea(BasePea):
     def __init__(self,
                  args: Union['argparse.Namespace', Dict],
                  ctrl_addr: str,
-                 ctrl_with_ipc: bool):
-        super().__init__(args)
+                 ctrl_with_ipc: bool,
+                 **kwargs):
+        super().__init__(args, **kwargs)
         self.ctrl_addr = ctrl_addr
         self.ctrl_with_ipc = ctrl_with_ipc
 

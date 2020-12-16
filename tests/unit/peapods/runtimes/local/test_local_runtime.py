@@ -4,6 +4,7 @@ from jina.excepts import PeaFailToStart
 from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
 from jina.peapods.runtimes.local import LocalRuntime
 from jina.peapods.pods import BasePod
+from jina.peapods.peas.gateway import GatewayPea, RESTGatewayPea
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
@@ -15,14 +16,14 @@ def test_local_runtime_context(runtime):
     LocalRuntime(args).start().close()
 
 
-@pytest.mark.parametrize('rest_api', [False, True])
+@pytest.mark.parametrize('pea_cls', [GatewayPea, RESTGatewayPea])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_gateway_runtime(runtime, rest_api):
+def test_gateway_runtime(runtime, pea_cls):
     args = set_gateway_parser().parse_args(['--runtime', runtime])
-    with LocalRuntime(args, gateway=True, rest_api=rest_api):
+    with LocalRuntime(args, pea_cls=pea_cls):
         pass
 
-    LocalRuntime(args, gateway=True, rest_api=False).start().close()
+    LocalRuntime(args, pea_cls=pea_cls).start().close()
 
 
 def test_address_in_use():
