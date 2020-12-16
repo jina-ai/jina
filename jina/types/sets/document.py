@@ -6,6 +6,7 @@ import numpy as np
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 
 from ...proto.jina_pb2 import DocumentProto
+from ..document.uid import UniqueId
 
 if False:
     from ..document import Document
@@ -30,6 +31,8 @@ class DocumentSet(MutableSequence):
     def __setitem__(self, key, value: 'Document'):
         if isinstance(key, int):
             self._docs_proto[key].CopyFrom(value)
+        elif isinstance(key, UniqueId):
+            self._docs_map[str(key)].CopyFrom(value)
         elif isinstance(key, str):
             self._docs_map[key].CopyFrom(value)
         else:
@@ -50,6 +53,8 @@ class DocumentSet(MutableSequence):
         from ..document import Document
         if isinstance(item, int):
             return Document(self._docs_proto[item])
+        elif isinstance(item, UniqueId):
+            return Document(self._docs_map[str(item)])
         elif isinstance(item, str):
             return Document(self._docs_map[item])
         else:

@@ -27,7 +27,7 @@ class VectorIndexDriver(BaseIndexDriver):
             self.pea.logger.warning(f'these bad docs can not be added: {bad_docs}')
 
         if docs_pts:
-            self.exec_fn(np.array([hash(doc.id) for doc in docs_pts]), np.stack(embed_vecs))
+            self.exec_fn(np.array([int(doc.id) for doc in docs_pts]), np.stack(embed_vecs))
 
 
 class KVIndexDriver(BaseIndexDriver):
@@ -35,6 +35,6 @@ class KVIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        keys = [hash(doc.id) for doc in docs]
+        keys = [int(doc.id) for doc in docs]
         values = [doc.SerializeToString() for doc in docs]
         self.exec_fn(keys, values)

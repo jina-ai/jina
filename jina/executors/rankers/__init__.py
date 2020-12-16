@@ -32,7 +32,9 @@ class Chunk2DocRanker(BaseRanker):
 
     required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
     COL_MATCH_PARENT_HASH = 'match_parent_hash'
+    COL_MATCH_PARENT_ID = 'match_parent_hash'
     COL_MATCH_HASH = 'match_hash'
+    COL_MATCH_ID = 'match_hash'
     COL_DOC_CHUNK_HASH = 'doc_chunk_hash'
     COL_SCORE = 'score'
 
@@ -106,6 +108,7 @@ class Match2DocRanker(BaseRanker):
     """
 
     COL_MATCH_HASH = 'match_hash'
+    COL_MATCH_ID = 'match_hash'
     COL_SCORE = 'score'
 
     def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':

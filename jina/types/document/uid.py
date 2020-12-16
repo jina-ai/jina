@@ -4,7 +4,7 @@ Remarks on the ``id``, we have three views for it
 
 - ``id``: ``str`` is a hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable. it will be used as the major view.
 - ``bytes``: ``bytes`` is the binary format of str, it has 8 bytes fixed length, so it can be used in the dense file storage, e.g. BinaryPbIndexer, as it requires the key has to be fixed length.
-- ``hash``:``int64`` is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
+- ``int``:``int64`` (formerly names ``hash``) is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
 
 .. note:
 
@@ -61,11 +61,11 @@ def new_doc_id(doc: 'DocumentProto') -> str:
     return get_content_hash(doc)
 
 
-def hash2bytes(value: int) -> bytes:
+def int2bytes(value: int) -> bytes:
     return int(value).to_bytes(_digest_size, sys.byteorder, signed=True)
 
 
-def bytes2hash(value: bytes) -> int:
+def bytes2int(value: bytes) -> int:
     return int.from_bytes(value, sys.byteorder, signed=True)
 
 
@@ -80,12 +80,16 @@ def bytes2id(value: bytes) -> str:
     return value.hex()
 
 
-def hash2id(value: int) -> str:
-    return bytes2id(hash2bytes(value))
+def int2id(value: int) -> str:
+    return bytes2id(int2bytes(value))
 
 
 def id2hash(value: str) -> int:
-    return bytes2hash(id2bytes(value))
+    return bytes2int(id2bytes(value))
+
+
+def id2int(value: str) -> int:
+    return bytes2int(id2bytes(value))
 
 
 def is_valid_id(value: str) -> bool:
@@ -100,7 +104,7 @@ def is_valid_id(value: str) -> bool:
 class UniqueId(str):
     def __new__(cls, seq):
         if isinstance(seq, (int, np.integer)):
-            seq = hash2id(int(seq))
+            seq = int2id(int(seq))
         elif isinstance(seq, bytes):
             seq = bytes2id(seq)
         elif seq == '':
@@ -112,12 +116,20 @@ class UniqueId(str):
 
         return str.__new__(cls, seq)
 
+    def __int__(self):
+        """The document id in the integer form of bytes, as 8 bytes map to int64.
+        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
+        such as ranker and Numpyindexer
+        """
+        return id2int(self)
+
     def __hash__(self):
         """The document id in the integer form of bytes, as 8 bytes map to int64.
         This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
         such as ranker and Numpyindexer
         """
-        return id2hash(self)
+        # Deprecated. Please use `int(doc_id)` instead.
+        return id2int(self)
 
     def __bytes__(self):
         """The document id in the binary format of str, it has 8 bytes fixed length,

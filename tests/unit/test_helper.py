@@ -61,7 +61,7 @@ def test_time_context():
 
 def test_np_int():
     a = random.randint(0, 100000)
-    assert hash2bytes(np.int64(a)) == hash2bytes(a)
+    assert int2bytes(np.int64(a)) == int2bytes(a)
 
 
 def test_dunder_get():

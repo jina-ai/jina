@@ -137,9 +137,9 @@ class Document:
                              f'if you are trying to set the content '
                              f'you may use "Document(content=your_content)"') from ex
 
-        if self._document.id is None or self._document.id == '':
+        if self._document.id is None or not self._document.id:
             import random
-            self.id = random.randint(0, 9223372036854775807)
+            self.id = random.randint(0, np.iinfo(np.int64).max)
 
         self.set_attrs(**kwargs)
 
