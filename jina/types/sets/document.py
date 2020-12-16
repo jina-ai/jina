@@ -91,7 +91,7 @@ class DocumentSet(MutableSequence):
         """Build a doc_id to doc mapping so one can later index a Document using
         doc_id as string key
         """
-        self._docs_map = {d.id: d for d in self._docs_proto}
+        self._docs_map = {str(d.id): d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)

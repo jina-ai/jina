@@ -1,6 +1,7 @@
 import pytest
 
 from jina import Document
+from jina.types.document.uid import UniqueId
 from jina.types.sets import DocumentSet
 
 DOCUMENTS_PER_LEVEL = 1
@@ -10,7 +11,7 @@ DOCUMENTS_PER_LEVEL = 1
 def document_factory():
     class DocumentFactory(object):
         def create(self, idx, text):
-            with Document() as d:
+            with Document(id=idx) as d:
                 d.tags['id'] = idx
                 d.text = text
             return d
@@ -79,8 +80,9 @@ def test_build(docset):
 def test_set_get_success(docset, document_factory):
     docset.build()
     doc = document_factory.create(4, 'test 4')
-    docset[2] = doc
-    assert docset[2].text == 'test 4'
+    doc_id = str(UniqueId(2))
+    docset[doc_id] = doc
+    assert docset[doc_id].text == 'test 4'
     doc_0_id = docset[0].id
     docset[doc_0_id] = doc
     assert docset[doc_0_id].text == 'test 4'
