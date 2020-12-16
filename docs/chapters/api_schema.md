@@ -5,7 +5,7 @@ Every time [jina-ai/jina](https://github.com/jina-ai/jina) is updated or release
 
 ## Schema URL
 
-- [`https://api.jina.ai/latest`](https://api.jina.ai/latest) gives you the latest stable API schema (corresponds to the last Friday release) in JSON
+- [`https://api.jina.ai/latest`](https://api.jina.ai/latest) gives you the latest stable API schema (corresponds to the last Sunday release) in JSON
 - [`https://api.jina.ai/devel`](https://api.jina.ai/devel) gives you the latest development API schema (corresponds to the last master update of [jina-ai/jina](https://github.com/jina-ai/jina) in JSON
 
 ```bash

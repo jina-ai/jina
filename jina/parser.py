@@ -4,11 +4,34 @@ __license__ = "Apache-2.0"
 import argparse
 import os
 
+
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
 def add_arg_group(parser, title):
     return parser.add_argument_group(title)
+
+
+class KVAppendAction(argparse.Action):
+    """
+    argparse action to split an argument into KEY=VALUE form
+    on the first = and append to a dictionary.
+    This is used for setting up --env
+    """
+
+    def __call__(self, parser, args, values, option_string=None):
+        import json
+        d = getattr(args, self.dest) or {}
+        for value in values:
+            try:
+                d.update(json.loads(value))
+            except json.JSONDecodeError:
+                try:
+                    (k, v) = value.split('=', 2)
+                except ValueError:
+                    raise argparse.ArgumentError(f'could not parse argument \"{values[0]}\" as k=v format')
+                d[k] = v
+        setattr(args, self.dest, d)
 
 
 def set_base_parser():
@@ -142,7 +165,7 @@ def set_hub_list_parser(parser=None):
                         help='name of hub image')
     parser.add_argument('--kind', type=str,
                         help='kind of hub image')
-    parser.add_argument('--keywords', type=str, nargs='+',
+    parser.add_argument('--keywords', type=str, nargs='+', metavar='KEYWORD',
                         help='keywords for searching')
     parser.add_argument('--type', type=str, default='pod', choices=['pod', 'app'],
                         help='type of the hub image')
@@ -248,7 +271,8 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--name', type=str,
                      help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
-                     help='the identity of the sockets, default a random string (Important for load balancing messages')
+                     help='the identity of the sockets, default a random string (Important for load balancing messages'
+                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     gp0.add_argument('--uses', type=str, default='_pass',
                      help='the config of the executor, it could be '
                           '> a YAML file path, '
@@ -256,9 +280,12 @@ def set_pea_parser(parser=None):
                           '> one of "_clear", "_pass", "_logforward" '
                           '> the content of YAML config (must starts with "!")'
                           '> a docker image')  # pod(no use) -> pea
-    gp0.add_argument('--py-modules', type=str, nargs='*',
+    gp0.add_argument('--py-modules', type=str, nargs='*', metavar='PATH',
                      help='the customized python modules need to be imported before loading the'
                           ' executor')
+    gp0.add_argument('--env', action=KVAppendAction,
+                     metavar='KEY=VALUE', nargs='*',
+                     help='a map of environment variables that are available to all peas in the pod.')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--uses-internal', type=str, default='BaseExecutor',
@@ -269,7 +296,7 @@ def set_pea_parser(parser=None):
                           'when not set then the docker image ENTRYPOINT takes effective.')
     gp1.add_argument('--pull-latest', action='store_true', default=False,
                      help='pull the latest image before running')
-    gp1.add_argument('--volumes', type=str, nargs='*',
+    gp1.add_argument('--volumes', type=str, nargs='*', metavar='DIR',
                      help='the path on the host to be mounted inside the container. '
                           'they will be mounted to the root path, i.e. /user/test/my-workspace will be mounted to '
                           '/my-workspace inside the container. all volumes are mounted with read-write mode.')
@@ -426,9 +453,9 @@ def set_export_api_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--yaml-path', type=str, nargs='*',
+    parser.add_argument('--yaml-path', type=str, nargs='*', metavar='PATH',
                         help='the YAML file path for storing the exported API')
-    parser.add_argument('--json-path', type=str, nargs='*',
+    parser.add_argument('--json-path', type=str, nargs='*', metavar='PATH',
                         help='the JSON file path for storing the exported API')
     return parser
 
@@ -552,7 +579,7 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--skip-dry-run', action='store_true', default=False,
                      help='skip dry run (connectivity test) before sending every request')
     gp1.add_argument('--continue-on-error', action='store_true', default=False,
-                     help='if to continue when callback function throws an error')
+                     help='if to continue on all requests when callback function throws an error')
     return parser
 
 

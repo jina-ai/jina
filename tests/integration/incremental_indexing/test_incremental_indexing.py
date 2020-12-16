@@ -1,6 +1,6 @@
 import os
 
-from jina.clients.python import PyClient
+from jina.clients import Client
 from jina.executors import BaseExecutor
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.vector import NumpyIndexer
@@ -21,8 +21,8 @@ def test_incremental_indexing_sequential_indexers(random_workspace):
          .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer.yml'))
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml')))
 
-    PyClient.check_input(duplicate_docs[:10])
-    PyClient.check_input(duplicate_docs)
+    Client.check_input(duplicate_docs[:10])
+    Client.check_input(duplicate_docs)
 
     with f:
         f.index(duplicate_docs[:10])

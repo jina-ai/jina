@@ -3,13 +3,14 @@ __license__ = "Apache-2.0"
 
 from typing import Iterator, Union, Tuple, Sequence
 
-from ... import Request
-from ...enums import RequestType, DataInputType
-from ...excepts import BadDocType
-from ...helper import batch_iterator
-from ...types.document import Document, DocumentSourceType, DocumentContentType
-from ...types.querylang import QueryLang
-from ...types.sets.querylang import AcceptQueryLangType
+from .. import Request
+from ..enums import RequestType, DataInputType
+from ..excepts import BadDocType
+from ..helper import batch_iterator
+from ..logging import default_logger
+from ..types.document import Document, DocumentSourceType, DocumentContentType
+from ..types.querylang import QueryLang
+from ..types.sets.querylang import AcceptQueryLangType
 
 GeneratorSourceType = Iterator[Union[DocumentContentType,
                                      DocumentSourceType,
@@ -61,28 +62,32 @@ def _generate(data: GeneratorSourceType,
 
     _kwargs = dict(mime_type=mime_type, length=batch_size, weight=1.0)
 
-    for batch in batch_iterator(data, batch_size):
-        req = Request()
-        req.request_type = str(mode)
-        for content in batch:
-            if isinstance(content, tuple) and len(content) == 2:
-                # content comes in pair,  will take the first as the input and the second as the groundtruth
+    try:
+        for batch in batch_iterator(data, batch_size):
+            req = Request()
+            req.request_type = str(mode)
+            for content in batch:
+                if isinstance(content, tuple) and len(content) == 2:
+                    # content comes in pair,  will take the first as the input and the second as the groundtruth
 
-                # note how data_type is cached
-                d, data_type = _build_doc(content[0], data_type, override_doc_id, **_kwargs)
-                gt, _ = _build_doc(content[1], data_type, override_doc_id, **_kwargs)
-                req.docs.append(d)
-                req.groundtruths.append(gt)
-            else:
-                d, data_type = _build_doc(content, data_type, override_doc_id, **_kwargs)
-                req.docs.append(d)
+                    # note how data_type is cached
+                    d, data_type = _build_doc(content[0], data_type, override_doc_id, **_kwargs)
+                    gt, _ = _build_doc(content[1], data_type, override_doc_id, **_kwargs)
+                    req.docs.append(d)
+                    req.groundtruths.append(gt)
+                else:
+                    d, data_type = _build_doc(content, data_type, override_doc_id, **_kwargs)
+                    req.docs.append(d)
 
-        if isinstance(queryset, Sequence):
-            req.queryset.extend(queryset)
-        elif queryset is not None:
-            req.queryset.append(queryset)
+            if isinstance(queryset, Sequence):
+                req.queryset.extend(queryset)
+            elif queryset is not None:
+                req.queryset.append(queryset)
 
-        yield req
+            yield req
+    except Exception as ex:
+        # must be handled here, as grpc channel wont handle Python exception
+        default_logger.critical(f'input_fn is not valid! {repr(ex)}', exc_info=True)
 
 
 def index(*args, **kwargs):
@@ -101,7 +106,7 @@ def train(*args, **kwargs):
 def search(*args, **kwargs):
     """Generate a searching request """
     if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
-        from ...drivers.search import VectorSearchDriver
+        from ..drivers.search import VectorSearchDriver
         topk_ql = QueryLang(VectorSearchDriver(top_k=kwargs['top_k'], priority=1))
         if 'queryset' not in kwargs:
             kwargs['queryset'] = [topk_ql]

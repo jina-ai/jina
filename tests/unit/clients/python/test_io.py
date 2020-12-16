@@ -3,8 +3,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from jina.clients.python import PyClient
-from jina.clients.python.io import input_files, input_lines, input_numpy
+from jina.clients import Client
+from jina.clients.sugary_io import input_files, input_lines, input_numpy
+from jina.excepts import BadClientInput
 
 
 @pytest.fixture(scope='function')
@@ -48,7 +49,7 @@ def test_input_lines_with_empty_filepath_and_lines():
     ]
 )
 def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
-    PyClient.check_input(
+    Client.check_input(
         input_files(
             patterns=patterns,
             recursive=recursive,
@@ -60,10 +61,10 @@ def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
 
 
 def test_input_files_with_invalid_read_mode():
-    with pytest.raises(RuntimeError):
-        PyClient.check_input(input_files(patterns='*.*', read_mode='invalid'))
+    with pytest.raises(BadClientInput):
+        Client.check_input(input_files(patterns='*.*', read_mode='invalid'))
 
 
 @pytest.mark.parametrize('array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']])
 def test_input_numpy(array):
-    PyClient.check_input(input_numpy(array))
+    Client.check_input(input_numpy(array))

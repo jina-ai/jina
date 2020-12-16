@@ -1,18 +1,19 @@
+import os
 from pathlib import Path
 
+import numpy as np
 import pytest
 import requests
-import numpy as np
 
 from jina import JINA_GLOBAL
 from jina.checker import NetworkChecker
 from jina.enums import FlowOptimizeLevel, SocketType
+from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.pods import BasePod
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.request.common import IndexDryRunRequest
 from tests import random_docs, rm_files
 
 cur_dir = Path(__file__).parent
@@ -49,7 +50,7 @@ def test_flow_with_jump():
          .add(name='r10', needs=['r9', 'r8']))
 
     with f:
-        f.dry_run()
+        pass
 
     node = f._pod_nodes['gateway']
     assert node.head_args.socket_in == SocketType.PULL_CONNECT
@@ -99,7 +100,7 @@ def test_flow_with_jump():
     Flow.load_config('tmp.yml')
 
     with Flow.load_config('tmp.yml') as fl:
-        fl.dry_run()
+        pass
 
     rm_files(['tmp.yml'])
 
@@ -197,14 +198,6 @@ def test_flow_identical():
     rm_files(['test2.yml'])
 
 
-def test_dryrun():
-    f = (Flow()
-         .add(name='dummyEncoder', uses=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder.yml')))
-
-    with f:
-        f.dry_run()
-
-
 def test_pod_status():
     args = set_pod_parser().parse_args(['--parallel', '3'])
     with BasePod(args) as p:
@@ -286,9 +279,7 @@ def test_shards():
     rm_files(['test-docshard-tmp'])
 
 
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_py_client():
+def test_py_client():
     f = (Flow().add(name='r1')
          .add(name='r2')
          .add(name='r3', needs='r1')
@@ -298,13 +289,6 @@ async def test_py_client():
          .add(name='r8', needs='r6')
          .add(name='r9', needs='r5')
          .add(name='r10', needs=['r9', 'r8']))
-
-    with f:
-        f.dry_run()
-        from jina.clients import py_client_old
-        client = py_client_old(port_expose=f.port_expose, host=f.host)
-        await client.configure_client()
-        await client.dry_run(IndexDryRunRequest())
 
     with f:
         node = f._pod_nodes['gateway']
@@ -374,8 +358,6 @@ def test_dry_run_with_two_pathways_diverging_at_gateway():
             assert node.peas_args['peas'][0] == node.head_args
             assert node.peas_args['peas'][0] == node.tail_args
 
-        f.dry_run()
-
 
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
     f = (Flow().add(name='r1')
@@ -403,7 +385,6 @@ def test_dry_run_with_two_pathways_diverging_at_non_gateway():
         for name, node in f._pod_nodes.items():
             assert node.peas_args['peas'][0] == node.head_args
             assert node.peas_args['peas'][0] == node.tail_args
-        f.dry_run()
 
 
 def test_refactor_num_part():
@@ -499,7 +480,6 @@ def test_index_text_files(mocker):
 
 
 def test_flow_with_publish_driver(mocker):
-
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
@@ -606,3 +586,32 @@ def test_flow_needs_all():
 
     with f:
         f.index_ndarray(np.random.random([10, 10]))
+
+
+def test_flow_with_pod_envs():
+    f = Flow.load_config('yaml/flow-with-envs.yml')
+
+    class EnvChecker1(BaseExecutor):
+        """Class used in Flow YAML"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # pea/pod-specific
+            assert os.environ['key1'] == 'value1'
+            assert os.environ['key2'] == 'value2'
+            # inherit from parent process
+            assert os.environ['key_parent'] == 'value3'
+
+    class EnvChecker2(BaseExecutor):
+        """Class used in Flow YAML"""
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # pea/pod-specific
+            assert 'key1' not in os.environ
+            assert 'key2' not in os.environ
+            # inherit from parent process
+            assert os.environ['key_parent'] == 'value3'
+
+    with f:
+        pass

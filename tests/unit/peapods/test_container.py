@@ -114,7 +114,6 @@ def test_flow_topo_parallel(docker_image_built):
          .join(['d9', 'd8']))
 
     with f:
-        f.dry_run()
         f.index(input_fn=random_docs(1000))
 
 
@@ -151,7 +150,6 @@ def test_tail_host_docker2local_parallel(docker_image_built):
          .add(name='d11'))
     with f:
         assert getattr(f._pod_nodes['d10'].peas_args['tail'], 'host_out') == defaulthost
-        f.dry_run()
 
 
 def test_tail_host_docker2local(docker_image_built):
@@ -160,7 +158,6 @@ def test_tail_host_docker2local(docker_image_built):
          .add(name='d13'))
     with f:
         assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == localhost
-        f.dry_run()
 
 
 def test_container_status():
